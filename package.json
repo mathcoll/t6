@@ -1,0 +1,28 @@
+{
+  "name": "Easy-IOT",
+  "version": "2.0.1",
+  "description": "Easy IOT is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "dependencies": {
+    "bearer": "0.0.20",
+    "body-parser": "~1.12.4",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.1.1",
+    "express": "~4.12.4",
+    "influx": "~4.0.1",
+    "jsonapi-serializer": "~2.0.4",
+    "moment": "~2.11.2",
+    "morgan": "^1.5.3",
+    "mqtt": "^1.7.0",
+    "node-json-db": "^0.6.2",
+    "node-uuid": "^1.4.7",
+    "path": "~0.12.7",
+    "serve-favicon": "~2.2.1",
+    "sprintf-js": "~1.0.3",
+    "sqlite3": "^3.0.5",
+    "squel": "~4.2.3"
+  }
+}

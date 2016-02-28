@@ -1,0 +1,41 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          EasyIOT
+# Required-Start:    $remote_fs $syslog $network
+# Required-Stop:     $remote_fs $syslog $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: EasyIOT server
+# Description:       Easy IOT is an "oriented-Data" platform to connect physical Objects with timeseries DB.
+### END INIT INFO
+
+NAME="EasyIOT"
+DESC="Easy-IOT server"
+LOG_DIR=/var/log/node/$NAME
+NODE_ENV="development"
+BASE_URL="http://127.0.0.1:3000"
+
+case "$1" in
+	'start')
+	echo -n "Starting "$NAME" on "$BASE_URL
+	export NODE_ENV=$NODE_ENV
+	export BASE_URL=$BASE_URL
+	export STARTED=`date +%s`
+	cd /home/mathieu/Bureau/Easy-IOT
+	node ./bin/www >$LOG_DIR 2>&1 &
+	echo
+	;;
+	'stop')
+	echo -n "Stopping "$NAME
+	killall node && success || failure
+	;;
+	'reload')
+	echo -n "Reloading "$NAME
+	killall -s SIGHUP node && success || failure
+	;;
+	*)
+	echo "Usage: $0 { start | stop | reload }"
+	;;
+esac
+exit 0
