@@ -2,36 +2,57 @@
 var express = require('express');
 var router = express.Router();
 
+
+
+router.get('/authenticate', function (req, res) {
+	// todo
+	// should refresh the Bearer for 1 hour then Bearer is not valid anymore
+});
+
 router.get('/status', function(req, res, next) {
 	var status = {
 		links: {
-			root: {
-				baseUrl: baseUrl,
-				description: ''
+			self: {
+				baseUrl: baseUrl+'/status',
+				description: 'Get Server status and basic documentation.',
+				permissions: '',
+				verbs: ['GET'],
 			},
 			users: {
 				baseUrl: baseUrl+'/'+version+'/users',
-				description: ''
+				description: 'User API to create, modify or delete a user.',
+				permissions: '',
+				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			data: {
 				baseUrl: baseUrl+'/'+version+'/data',
-				description: ''
+				description: 'Data API to create, modify or delete data.',
+				permissions: '',
+				verbs: ['GET', 'POST'],
 			},
 			objects: {
 				baseUrl: baseUrl+'/'+version+'/objects',
-				description: ''
+				description: 'Object API to create, modify or delete an object.',
+				permissions: '',
+				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			datatypes: {
 				baseUrl: baseUrl+'/'+version+'/datatypes',
-				description: ''
+				description: 'Datatype API to create, modify or delete a data-type.',
+				permissions: '',
+				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			flows: {
 				baseUrl: baseUrl+'/'+version+'/flows',
-				description: ''
+				description: 'Flow API to create, modify or delete a flow.',
+				permissions: '',
+				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			units: {
 				baseUrl: baseUrl+'/'+version+'/units',
-				description: ''
+				description: 'Unit API to create, modify or delete a unit.',
+				permissions: '',
+				verbs: ['GET'],
 			},
 		},
 		version: version,

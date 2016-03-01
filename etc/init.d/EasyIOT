@@ -21,6 +21,7 @@ case "$1" in
 	echo -n "Starting "$NAME" on "$BASE_URL
 	export NODE_ENV=$NODE_ENV
 	export BASE_URL=$BASE_URL
+	export NAME=$NAME
 	export STARTED=`date +%s`
 	cd /home/mathieu/Bureau/Easy-IOT
 	node ./bin/www >$LOG_DIR 2>&1 &

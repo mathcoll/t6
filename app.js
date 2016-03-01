@@ -12,6 +12,7 @@ var mqtt					= require('mqtt');
 var JsonDB				= require('node-json-db');
 sprintf						= require('sprintf-js').sprintf;
 moment						= require('moment');
+passgen						= require('passgen');
 squel							= require('squel');
 uuid							= require('node-uuid');
 client							= mqtt.connect('mqtt://192.168.0.7:1883');
@@ -24,7 +25,7 @@ baseUrl						= process.env.BASE_URL;
 
 if ( db_type === "sqlite3" ) {
 	var sqlite3	= require('sqlite3').verbose();
-	dbSQLite3		= new sqlite3.Database(path.join(__dirname, 'data/objects.db'));
+	dbSQLite3		= new sqlite3.Database(path.join(__dirname, 'data/data.db'));
 } else if( db_type === "influxdb" ) {
 	var influx		= require('influx');
 	dbInfluxDB	= influx({ host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' });
@@ -45,7 +46,7 @@ var datatypes	= require('./routes/datatypes');
 var app				= express();
 
 client.on("connect", function () {
-	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, API Just have started. :-)"}), {retain: false});
+	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)"}), {retain: false});
 });
 
 app.use(logger('dev'));

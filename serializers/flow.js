@@ -4,7 +4,7 @@ var JSONAPISerializer = require('jsonapi-serializer');
 function FlowSerializer(flow) {
 	this.serialize = function() {
 		return new JSONAPISerializer('flow', flow, {
-			attributes : [ 'name', 'unit', 'objects' ],
+			attributes : [ 'name', 'unit', 'objects', 'perm' ],
 			topLevelLinks : {
 				parent : sprintf('%s/v%s/flows', baseUrl, version)
 			},
@@ -17,7 +17,7 @@ function FlowSerializer(flow) {
 					}
 				},
 				data : function(flow) {
-					if ( flow.unit_id!='' ) {
+					if ( flow.id!='' ) {
 						return sprintf('%s/v%s/data/%s', baseUrl, version, flow.id);
 					} else {
 						return null;
@@ -35,7 +35,7 @@ function FlowSerializer(flow) {
 				attributes : [ 'object_id' ],
 				dataLinks: {
 					self: function (flow) {
-						return sprintf('%s/v%s/objects/', baseUrl, version);
+						return sprintf('%s/v%s/objects/%s', baseUrl, version, flow.object_id);
 					}
 				}
 			}

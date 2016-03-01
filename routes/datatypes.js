@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var DataTypeSerializer = require('../serializers/datatype');
 var datatypes = dbDatatypes.getData("/datatypes");
+//var users = dbUsers.getData("/users");
 
 router.get('/', function (req, res) {
 	dbDatatypes.reload();
