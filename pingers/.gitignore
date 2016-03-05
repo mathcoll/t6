@@ -1,6 +1,6 @@
 # Pingers
-.sh
-.js
+*.sh
+*.js
 
 
 # Dependency directories
