@@ -2,10 +2,9 @@
 var JSONAPISerializer = require('jsonapi-serializer');
 
 function UserSerializer(user) {
-
   this.serialize = function () {
     return new JSONAPISerializer('user', user, {
-    	attributes: ['firstName', 'lastName', 'login', 'password', 'email', 'subscription_date'],
+    	attributes: ['firstName', 'lastName', 'login', 'password', 'email', 'subscription_date', 'token'],
 		topLevelLinks : {
 			parent : sprintf('%s/v%s/users', baseUrl, version)
 		},

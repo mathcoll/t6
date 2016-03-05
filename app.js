@@ -2,25 +2,25 @@
  * 
  * 
  */
-var express				= require('express');
-var path					= require('path');
-var logger					= require('morgan');
+var express			= require('express');
+var path			= require('path');
+var logger			= require('morgan');
 var cookieParser	= require('cookie-parser');
 var bodyParser		= require('body-parser');
-var bearer				= require('bearer');
-var mqtt					= require('mqtt');
-var JsonDB				= require('node-json-db');
-sprintf						= require('sprintf-js').sprintf;
-moment						= require('moment');
-passgen						= require('passgen');
-squel							= require('squel');
-uuid							= require('node-uuid');
-client							= mqtt.connect('mqtt://192.168.0.7:1883');
-mqtt_info					= 'couleurs/api';
-db_type						= 'sqlite3'; // sqlite3 | influxdb
-version						= '2.0.1';
-appName					= process.env.NAME;
-baseUrl						= process.env.BASE_URL;
+var bearer			= require('bearer');
+var mqtt			= require('mqtt');
+var loki			= require('lokijs');
+sprintf				= require('sprintf-js').sprintf;
+moment				= require('moment');
+passgen				= require('passgen');
+squel				= require('squel');
+uuid				= require('node-uuid');
+client				= mqtt.connect('mqtt://192.168.0.7:1883');
+mqtt_info			= 'couleurs/api';
+db_type				= 'sqlite3'; // sqlite3 | influxdb
+version				= '2.0.1';
+appName				= process.env.NAME;
+baseUrl				= process.env.BASE_URL;
 
 
 if ( db_type === "sqlite3" ) {
@@ -30,19 +30,20 @@ if ( db_type === "sqlite3" ) {
 	var influx		= require('influx');
 	dbInfluxDB	= influx({ host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' });
 }
-dbUsers				= new JsonDB(path.join(__dirname, 'data/users.json'), true, false);
-dbFlows				= new JsonDB(path.join(__dirname, 'data/flows.json'), true, false);
-dbObjects			= new JsonDB(path.join(__dirname, 'data/objects.json'), true, false);
-dbDatatypes		= new JsonDB(path.join(__dirname, 'data/datatypes.json'), true, false);
-dbUnits				= new JsonDB(path.join(__dirname, 'data/units.json'), true, false);
+
+db	= new loki(path.join(__dirname, 'data/db.json'), {autoload: true, autosave: true});
+db.loadDatabase(path.join(__dirname, 'data/db.json'));
+
+/* temporary debug */
+console.log(uuid.v4());
 
 var index			= require('./routes/index');
-var objects		= require('./routes/objects');
+var objects			= require('./routes/objects');
 var users			= require('./routes/users');
 var data			= require('./routes/data');
 var flows			= require('./routes/flows');
 var units			= require('./routes/units');
-var datatypes	= require('./routes/datatypes');
+var datatypes		= require('./routes/datatypes');
 var app				= express();
 
 client.on("connect", function () {

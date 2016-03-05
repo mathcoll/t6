@@ -2,58 +2,88 @@
 var express = require('express');
 var router = express.Router();
 var DataTypeSerializer = require('../serializers/datatype');
-var datatypes = dbDatatypes.getData("/datatypes");
-//var users = dbUsers.getData("/users");
+var datatypes;
+var users;
 
 router.get('/', function (req, res) {
-	dbDatatypes.reload();
-	var json = new DataTypeSerializer(datatypes).serialize();
-	res.send(json);
+	datatypes	= db.getCollection('datatypes');
+	res.send(new DataTypeSerializer(datatypes.find()).serialize());
 });
 
-router.post('/', function (req, res) {
+router.get('/:datatype_id([0-9a-z\-]+)', function (req, res) {
+	var datatype_id = (req.params.datatype_id).toString(); //TODO: not always an Integer !!!
+	datatypes	= db.getCollection('datatypes');
+	//console.log(datatype_id);
+	res.send(new DataTypeSerializer(datatypes.find({ 'id': datatype_id })).serialize());
+});
+
+router.post('/', bearerAuth, function (req, res) {
 	// only for admins
-	dbDatatypes.reload();
-	console.log(datatypes);
+	datatypes	= db.getCollection('datatypes');
+	//console.log(datatypes);
 	var new_datatype = {
-		id: uuid.v4(),
-		name:  req.body.name!==undefined?req.body.name:item.name,
+		id:			uuid.v4(),
+		name:	req.body.name!==undefined?req.body.name:'unamed',
 	};
-	datatypes.push(new_datatype);
+	datatypes.insert(new_datatype);
 	//console.log(datatypes);
-	dbDatatypes.push("/datatypes", datatypes);
-	res.send({ 'code': 201, message: 'Created', datatype: new_datatype }, 201);
+	res.send({ 'code': 201, message: 'Created', datatype: new_datatype }, 201); // TODO: missing serializer
 });
 
-router.put('/:datatype_id([0-9a-z\-]+)', function (req, res) {
+router.put('/:datatype_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	// only for admins
 	var datatype_id = req.params.datatype_id;
-	dbDatatypes.reload();
+	datatypes	= db.getCollection('datatypes');
 	//console.log(datatypes);
-	var result = datatypes.filter(function(item) {
-		if ( item.id == datatype_id ) {
-			item.name = req.body.name!==undefined?req.body.name:item.name;
-	    	return true;
-	    }
-	})[0];
-	//console.log(datatypes);
-	dbDatatypes.push("/datatypes", datatypes);
-	res.send({ 'code': 200, message: 'Successfully updated', datatype: result }, 200);
+	var result;
+	datatypes.findAndUpdate(
+		function(i){return i.id==datatype_id},
+		function(item){
+			item.name		= req.body.name!==undefined?req.body.name:item.name;
+			result = item;
+		}
+	);
+	db.save();
+	res.send({ 'code': 200, message: 'Successfully updated', datatype: result }, 200); // TODO: missing serializer
 });
 
-router.delete('/:datatype_id([0-9a-z\-]+)', function (req, res) {
+router.delete('/:datatype_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	// only for admins
-	var datatype_id = req.params.datatype_id;
-	dbDatatypes.reload();
-	var removeIndex = datatypes.map(function(item) { return item.id; }).indexOf(datatype_id);
-	if (removeIndex > -1 && datatypes.splice(removeIndex, 1) ) {
-		var removed_id = datatype_id;
-		//console.log(datatypes);
-		dbDatatypes.push("/datatypes", datatypes);
-		res.send({ 'code': 200, message: 'Successfully deleted', removed_id: removed_id }, 200);
+	//TODO: look to fail in deletion
+	var datatype_id = req.params.datatype_id; //TODO: not always an Integer !!!
+	datatypes	= db.getCollection('datatypes');
+	var d = datatypes.find({'id': { '$eq': datatype_id }});
+	//console.log(d);
+	if (d) {
+		datatypes.remove(d);
+		db.save();
+		res.send({ 'code': 200, message: 'Successfully deleted', removed_id: datatype_id }, 200); // TODO: missing serializer
 	} else {
 		res.send({ 'code': 404, message: 'Not Found' }, 404);
 	}
 });
+
+function bearerAuth(req, res, next) {
+	var bearerToken;
+	var bearerHeader = req.headers['authorization'];
+	users	= db.getCollection('users');
+	if ( typeof bearerHeader !== 'undefined' ) {
+		var bearer = bearerHeader.split(" ");
+		bearerToken = bearer[1];
+		req.token = bearerToken;
+		var queryAdmin = {
+			'$and': [
+				{'role': 'admin'},
+				{'token': { '$eq': req.token }},
+			]
+		};
+		if (req.user = (users.find(queryAdmin))[0] == undefined ) {
+			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		};
+		next();
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	}
+}
 
 module.exports = router;

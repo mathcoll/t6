@@ -2,7 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var DataSerializer = require('../serializers/data');
-var users = dbUsers.getData("/users");
+var users;
 
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -113,70 +113,85 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	}
 });
 
-
-
-
-router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', function (req, res) {
+router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
-	var limit = 1;
-	var page = 1;
-	var sorting = req.query.order=='asc'?true:false;
-
-	if ( db_type == 'influxdb' ) {
-		/* InfluxDB database */
-		var query = squel.select()
-			.field('time, publish, value')
-			.from('data')
-			.where('flow_id=?', flow_id)
-			.where('time=?', data_id)
-			.limit(limit)
-			.toString()
-		;
-		//res.send({query: query}, 200);
-		dbInfluxDB.query(query, function(err, data) {
-			if (err) console.log(err);
-			data[0].id = moment(data[0].time).format('x');
-			data[0].flow_id = flow_id;
-			data[0].page = page;
-			data[0].next = page+1;
-			data[0].prev = page-1;
-			data[0].limit = limit;
-			data[0].order = req.query.order!==undefined?req.query.order:'asc';
-			
-			var json = new DataSerializer(data[0]).serialize();
-			res.send(json);
+	if ( req.user ) {
+		var perm = '';
+		req.user.permissions.map(function(permission) {
+			if ( (permission.flow_id == flow_id) && (permission.perm == 'r' || permission.perm == 'rw') ) {
+				perm = permission.perm;
+			}
 		});
-	} else if ( db_type == 'sqlite3' ) {
-		/* sqlite3 database */
-		var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', flow_id)
-			.where('timestamp=?', data_id)
-			.limit(limit)
-			.toString()
-			;
-		//res.send({query: query}, 200);
-		dbSQLite3.all(query, function(err, data) {
-			if (err) console.log(err);
-			//data.id = moment(data.timestamp).format('x'); //BUG
-			data.flow_id = flow_id;
-			data.page = page;
-			data.next = page+1;
-			data.prev = page-1;
-			data.limit = limit;
-			data.order = req.query.order!==undefined?req.query.order:'asc';
-			//console.log(data);
-			
-			var json = new DataSerializer(data).serialize();
-			res.send(json);
-		});
+		
+		if ( perm != '' ) {
+			var limit = 1;
+			var page = 1;
+			var sorting = req.query.order=='asc'?true:false;
+		
+			if ( db_type == 'influxdb' ) {
+				/* InfluxDB database */
+				var query = squel.select()
+					.field('time, publish, value')
+					.from('data')
+					.where('flow_id=?', flow_id)
+					.where('time=?', data_id)
+					.limit(limit)
+					.toString()
+				;
+				//res.send({query: query}, 200);
+				dbInfluxDB.query(query, function(err, data) {
+					if (err) console.log(err);
+					data[0].id = moment(data[0].time).format('x');
+					data[0].flow_id = flow_id;
+					data[0].page = page;
+					data[0].next = page+1;
+					data[0].prev = page-1;
+					data[0].limit = limit;
+					data[0].order = req.query.order!==undefined?req.query.order:'asc';
+					
+					var json = new DataSerializer(data[0]).serialize();
+					res.send(json);
+				});
+			} else if ( db_type == 'sqlite3' ) {
+				/* sqlite3 database */
+				var query = squel.select()
+					.field('timestamp, value, flow_id, timestamp AS id')
+					.from('data')
+					.where('flow_id=?', flow_id)
+					.where('timestamp=?', data_id)
+					.limit(limit)
+					.toString()
+					;
+				//res.send({query: query}, 200);
+				dbSQLite3.all(query, function(err, data) {
+					if (err) console.log(err);
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					data.flow_id = flow_id;
+					data.page = page;
+					data.next = page+1;
+					data.prev = page-1;
+					data.limit = limit;
+					data.order = req.query.order!==undefined?req.query.order:'asc';
+					//console.log(data);
+					
+					if ( data.length > 0 ) {
+						res.send(new DataSerializer(data).serialize());
+					} else {
+						res.send({ 'code': 404, message: 'Not Found' }, 404);
+					}
+				});
+			}
+		}// End perm
+	} // End req.user
+	else {
+		res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
 	}
 });
 
 router.post('/:flow_id([0-9a-z\-]+)', function (req, res) {
-	var flow_id		= req.params.flow_id!==undefined?parseInt(req.params.flow_id):parseInt(req.body.flow_id);
+	// TODO require user permission on flow
+	var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
 	var time			= req.body.timestamp!==undefined?parseInt(req.body.timestamp):moment().format('x');
 	if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
 	
@@ -238,26 +253,22 @@ router.post('/:flow_id([0-9a-z\-]+)', function (req, res) {
 	
 	data.flow_id = flow_id;
 	data.id = time;
-	var json = new DataSerializer(data).serialize();
-	res.send(json);
+	res.send(new DataSerializer(data).serialize());
 });
 
 function bearerAuth(req, res, next) {
-    var bearerToken;
-    var bearerHeader = req.headers['authorization'];
-    if ( typeof bearerHeader !== 'undefined' ) {
-        var bearer = bearerHeader.split(" ");
-        bearerToken = bearer[1];
-        req.token = bearerToken;
-        
-			req.user = users.filter(function(u) {
-        		//console.log(req.token+' != '+u.token);
-			   return u.token == req.token;
-			})[0];
-        next();
-    } else {
-        res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
-    }
+	var bearerToken;
+	var bearerHeader = req.headers['authorization'];
+	users	= db.getCollection('users');
+	if ( typeof bearerHeader !== 'undefined' ) {
+		var bearer = bearerHeader.split(" ");
+		bearerToken = bearer[1];
+		req.token = bearerToken;
+		req.user = (users.find({'token': { '$eq': req.token }}))[0];
+		next();
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	}
 }
 
 module.exports = router;

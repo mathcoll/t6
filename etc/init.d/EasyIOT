@@ -23,7 +23,7 @@ case "$1" in
 	export BASE_URL=$BASE_URL
 	export NAME=$NAME
 	export STARTED=`date +%s`
-	cd /home/mathieu/Bureau/Easy-IOT
+	cd /home/mathieu/Projets/2016/internetcollaboratif.info/api/Easy-IOT
 	node ./bin/www >$LOG_DIR 2>&1 &
 	echo
 	;;

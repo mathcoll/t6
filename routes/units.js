@@ -2,86 +2,101 @@
 var express = require('express');
 var router = express.Router();
 var UnitSerializer = require('../serializers/unit');
-var units = dbUnits.getData("/units");
+var units;
+var users;
 
 router.get('/', function (req, res) {
 	var type = req.query.type;
-	dbUnits.reload();
-	console.log(req.query);
+	units	= db.getCollection('units');
+	//console.log( units );
 	if ( type === undefined ) {
-		var json = new UnitSerializer(units).serialize();
+		var json = new UnitSerializer(units.find()).serialize();
 		res.send(json);
 	} else {
-		var id = units.map(function(item) { return item.type; }).indexOf(type);
-		if ( id > -1 ) {
-			var json = new UnitSerializer(id).serialize();
-			res.send(json);
-		}
+		var json = new UnitSerializer(units.find({'type': { '$eq': type }})).serialize();
+		res.send(json);
 	}
 });
 
 router.get('/:unit_id([0-9a-z\-]+)', function (req, res) {
-	dbUnits.reload();
-	var unit_id = req.params.unit_id;
-	
-	var result = units.filter(function(item) {
-	    return item.id == unit_id;
-	})[0];
-	if ( result !== undefined ) {
-		var json = new UnitSerializer(result).serialize();
-		res.send(json);
-	} else {
-		res.send({ 'code': 404, message: 'Not Found' }, 404);
-	}
+	var unit_id = parseInt(req.params.unit_id); //TODO: not always an Integer !!!
+	units	= db.getCollection('units');
+	//console.log(unit_id);
+	var json = new UnitSerializer(units.find({'id': { '$eq': unit_id }})).serialize();
+	res.send(json);
 });
 
-router.post('/', function (req, res) {
+router.post('/', bearerAuth, function (req, res) {
 	// only for admins
-	dbUnits.reload();
-	console.log(units);
+	units	= db.getCollection('units');
+	//console.log(units);
 	var new_unit = {
 		id: uuid.v4(),
-		name:  req.body.name!==undefined?req.body.name:item.name,
-		format:  req.body.format!==undefined?req.body.format:item.format,
-		type:  req.body.type!==undefined?req.body.type:item.type,
+		name:	req.body.name!==undefined?req.body.name:item.name,
+		format:	req.body.format!==undefined?req.body.format:item.format,
+		type: 		req.body.type!==undefined?req.body.type:item.type,
 	};
-	units.push(new_unit);
+	units.insert(new_unit);
 	//console.log(units);
-	dbUnits.push("/units", units);
-	res.send({ 'code': 201, message: 'Created', unit: new_unit }, 201);
+	res.send({ 'code': 201, message: 'Created', unit: new_unit }, 201); // TODO: missing serializer
 });
 
-router.put('/:unit_id([0-9a-z\-]+)', function (req, res) {
+router.put('/:unit_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	// only for admins
 	var unit_id = req.params.unit_id;
-	dbUnits.reload();
-	//console.log(datatypes);
-	var result = units.filter(function(item) {
-		if ( item.id == unit_id ) {
-			item.name = req.body.name!==undefined?req.body.name:item.name;
-			item.format = req.body.format!==undefined?req.body.format:item.format;
-			item.type = req.body.type!==undefined?req.body.type:item.type;
-	    	return true;
-	    }
-	})[0];
+	units	= db.getCollection('units');
 	//console.log(units);
-	dbUnits.push("/units", units);
-	res.send({ 'code': 200, message: 'Successfully updated', unit: result }, 200);
+	var result;
+	units.findAndUpdate(
+		function(i){return i.id==unit_id},
+		function(item){
+			item.name		= req.body.name!==undefined?req.body.name:item.name;
+			item.format		= req.body.format!==undefined?req.body.format:item.format;
+			item.type			= req.body.type!==undefined?req.body.type:item.type;
+			result = item;
+		}
+	);
+	db.save();
+	res.send({ 'code': 200, message: 'Successfully updated', unit: result }, 200); // TODO: missing serializer
 });
 
-router.delete('/:unit_id([0-9a-z\-]+)', function (req, res) {
+router.delete('/:unit_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	// only for admins
-	var unit_id = req.params.unit_id;
-	dbUnits.reload();
-	var removeIndex = units.map(function(item) { return item.id; }).indexOf(unit_id);
-	if (removeIndex > -1 && units.splice(removeIndex, 1) ) {
-		var removed_id = unit_id;
-		//console.log(units);
-		dbUnits.push("/units", units);
-		res.send({ 'code': 200, message: 'Successfully deleted', removed_id: removed_id }, 200);
+	//TODO: look to fail in deletion
+	var unit_id = req.params.unit_id; //TODO: not always an Integer !!!
+	units	= db.getCollection('units');
+	var u = units.find({'id': { '$eq': unit_id }});
+	//console.log(u);
+	if (u) {
+		units.remove(u);
+		db.save();
+		res.send({ 'code': 200, message: 'Successfully deleted', removed_id: unit_id }, 200); // TODO: missing serializer
 	} else {
 		res.send({ 'code': 404, message: 'Not Found' }, 404);
 	}
 });
+
+function bearerAuth(req, res, next) {
+	var bearerToken;
+	var bearerHeader = req.headers['authorization'];
+	users	= db.getCollection('users');
+	if ( typeof bearerHeader !== 'undefined' ) {
+		var bearer = bearerHeader.split(" ");
+		bearerToken = bearer[1];
+		req.token = bearerToken;
+		var queryAdmin = {
+			'$and': [
+				{'role': 'admin'},
+				{'token': { '$eq': req.token }},
+			]
+		};
+		if (req.user = (users.find(queryAdmin))[0] == undefined ) {
+			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		};
+		next();
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	}
+}
 
 module.exports = router;

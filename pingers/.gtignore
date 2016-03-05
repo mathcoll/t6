@@ -1,0 +1,9 @@
+# Pingers
+.sh
+.js
+
+
+# Dependency directories
+old
+node_modules
+jspm_packages
