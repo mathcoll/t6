@@ -6,11 +6,11 @@ var flows;
 var users;
 
 router.get('/', bearerAuth, function (req, res) {
+	var results = Array();
 	if ( req.token !== undefined && req.user !== undefined) {
 		flows	= db.getCollection('flows');
 		users	= db.getCollection('users');
-		var results = Array();
-		req.user.permissions.map(function(permission){
+		req.user.permissions.map(function(permission) {
 			if ( permission.perm == 'r' || permission.perm == 'rw' ) {
 				var f = flows.find( {id: permission.flow_id } );
 				if ( f.length > 0 ) {
@@ -20,7 +20,7 @@ router.get('/', bearerAuth, function (req, res) {
 			}
 		});		
 	}
-	if ( results !== undefined ) {
+	if ( results.length > 0 ) {
 		res.send(new FlowSerializer(results).serialize());
 	} else {
 		res.send({ 'code': 404, message: 'Not Found' }, 404);
@@ -29,6 +29,7 @@ router.get('/', bearerAuth, function (req, res) {
 
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	var flow_id = req.params.flow_id;
+	var json;
 	if ( req.token !== undefined ) {
 		flows	= db.getCollection('flows');
 		var query = {
@@ -38,7 +39,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 			]
 		};
 		//console.log(query);
-		var json = flows.find(query);
+		json = flows.find(query);
 	}
 	if ( json.length > 0 ) {
 		res.send(new FlowSerializer(json).serialize());
@@ -53,7 +54,7 @@ router.post('/', bearerAuth, function (req, res) {
 		var flow_id = uuid.v4();
 		var new_flow = {
 			id:			flow_id,
-			name: 	req.body.name!==undefined?req.body.name:'unamed',
+			name: 		req.body.name!==undefined?req.body.name:'unamed',
 			unit:  		req.body.unit!==undefined?req.body.unit:'',
 			objects:	req.body.objects!==undefined?req.body.objects:new Array(),
 		};
@@ -66,7 +67,7 @@ router.post('/', bearerAuth, function (req, res) {
 		
 		
 		
-		res.send({ 'code': 201, message: 'Created', flow: new_flow }, 201); // TODO: missing serializer
+		res.send({ 'code': 201, message: 'Created', flow: new FlowSerializer(new_flow).serialize() }, 201);
 	}
 });
 
@@ -80,18 +81,22 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 			function(i){return i.id==flow_id},
 			function(item){
 				item.name		= req.body.name!==undefined?req.body.name:item.name;
-				item.unit			=	req.body.unit!==undefined?req.body.unit:item.unit;
-				item.objects		=	req.body.objects!==undefined?req.body.objects:item.objects;
+				item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
+				item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
 				result = item;
 			}
 		);
 		//console.log(flows);
-		db.save();
-		res.send({ 'code': 200, message: 'Successfully updated', flow: result }, 200); // TODO: missing serializer
+		if ( result !== undefined ) {
+			db.save();
+			res.send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }, 200);
+		} else {
+			res.send({ 'code': 404, message: 'Not Found' }, 404);
+		}
 	}
 });
 
-router.delete('/:flow_id([0-9a-z\-]+)', function (req, res) {
+router.delete('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	//TODO
 });
 

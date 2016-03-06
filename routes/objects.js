@@ -41,18 +41,18 @@ router.post('/', bearerAuth, function (req, res) {
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
 		var new_object = {
-			id:					uuid.v4(),
+			id:				uuid.v4(),
 			type:  			req.body.type!==undefined?req.body.type:'default',
 			name:			req.body.name!==undefined?req.body.name:'unamed',
 			description:	req.body.description!==undefined?req.body.description:'',
 			position: 	 	req.body.position!==undefined?req.body.position:'',
 			ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
-			ipv6:				req.body.ipv6!==undefined?req.body.ipv6:'',
-			user_id:			req.user.id,
+			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
+			user_id:		req.user.id,
 		};
 		objects.insert(new_object);
 		//console.log(objects);
-		res.send({ 'code': 201, message: 'Created', object: new_object }, 201); // TODO: missing serializer
+		res.send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() }, 201);
 	}
 });
 
@@ -65,23 +65,23 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 		objects.findAndUpdate(
 			function(i){return i.id==object_id},
 			function(item){
-				item.type					=	req.body.type!==undefined?req.body.type:item.type;
+				item.type				= req.body.type!==undefined?req.body.type:item.type;
 				item.name				= req.body.name!==undefined?req.body.name:item.name;
-				item.description		=	req.body.description!==undefined?req.body.description:item.description;
-				item.position			=	req.body.position!==undefined?req.body.position:item.position;
-				item.ipv4					=	req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
-				item.ipv6					= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
+				item.description		= req.body.description!==undefined?req.body.description:item.description;
+				item.position			= req.body.position!==undefined?req.body.position:item.position;
+				item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
+				item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
 				result = item;
 			}
 		);
 		//console.log(objects);
 		db.save();
-		res.send({ 'code': 200, message: 'Successfully updated', object: result }, 200); // TODO: missing serializer
+		res.send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() }, 200);
 	}
 });
 
 router.delete('/:object_id([0-9a-z\-]+)', function (req, res) {
-	//todo
+	//TODO: implement permissions
 	var object_id = req.params.object_id; //TODO: not always an Integer !!!
 	objects	= db.getCollection('objects');
 	var o = objects.find({'id': { '$eq': object_id }});

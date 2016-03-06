@@ -34,11 +34,11 @@ router.post('/', bearerAuth, function (req, res) {
 		id: uuid.v4(),
 		name:	req.body.name!==undefined?req.body.name:item.name,
 		format:	req.body.format!==undefined?req.body.format:item.format,
-		type: 		req.body.type!==undefined?req.body.type:item.type,
+		type: 	req.body.type!==undefined?req.body.type:item.type,
 	};
 	units.insert(new_unit);
 	//console.log(units);
-	res.send({ 'code': 201, message: 'Created', unit: new_unit }, 201); // TODO: missing serializer
+	res.send({ 'code': 201, message: 'Created', unit: new UnitSerializer(new_unit).serialize() }, 201);
 });
 
 router.put('/:unit_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
@@ -52,17 +52,16 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 		function(item){
 			item.name		= req.body.name!==undefined?req.body.name:item.name;
 			item.format		= req.body.format!==undefined?req.body.format:item.format;
-			item.type			= req.body.type!==undefined?req.body.type:item.type;
+			item.type		= req.body.type!==undefined?req.body.type:item.type;
 			result = item;
 		}
 	);
 	db.save();
-	res.send({ 'code': 200, message: 'Successfully updated', unit: result }, 200); // TODO: missing serializer
+	res.send({ 'code': 200, message: 'Successfully updated', unit: new UnitSerializer(result).serialize() }, 200);
 });
 
 router.delete('/:unit_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
-	// only for admins
-	//TODO: look to fail in deletion
+	// TODO: Implement permissions
 	var unit_id = req.params.unit_id; //TODO: not always an Integer !!!
 	units	= db.getCollection('units');
 	var u = units.find({'id': { '$eq': unit_id }});

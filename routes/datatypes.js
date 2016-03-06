@@ -27,11 +27,11 @@ router.post('/', bearerAuth, function (req, res) {
 	};
 	datatypes.insert(new_datatype);
 	//console.log(datatypes);
-	res.send({ 'code': 201, message: 'Created', datatype: new_datatype }, 201); // TODO: missing serializer
+	res.send({ 'code': 201, message: 'Created', datatype: new DataTypeSerializer(new_datatype).serialize() }, 201);
 });
 
 router.put('/:datatype_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
-	// only for admins
+	// TODO: Impement permissions
 	var datatype_id = req.params.datatype_id;
 	datatypes	= db.getCollection('datatypes');
 	//console.log(datatypes);
@@ -44,7 +44,7 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 		}
 	);
 	db.save();
-	res.send({ 'code': 200, message: 'Successfully updated', datatype: result }, 200); // TODO: missing serializer
+	res.send({ 'code': 200, message: 'Successfully updated', datatype: new DataTypeSerializer(result).serialize() }, 200);
 });
 
 router.delete('/:datatype_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
