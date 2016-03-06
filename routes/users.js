@@ -26,6 +26,22 @@ router.get('/me', bearerAuth, function (req, res) {
 	}
 });
 
+router.get('/:user_id', bearerAuth, function (req, res) {
+	var user_id = req.params.user_id;
+	if ( !req.user ) {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	} else {
+		if ( req.token !== undefined && user_id == req.user.id ) {
+			var json = new UserSerializer(req.user).serialize();
+			if ( json !== undefined ) {
+				res.send(json);
+			} else {
+				res.send({ 'code': 404, message: 'Not Found' }, 404);
+			}
+		}
+	}
+});
+
 router.get('/me/permissions', bearerAuth, function (req, res) {
 	if ( req.token !== undefined ) {
 		var json = new PermissionSerializer(req.user).serialize();
@@ -42,9 +58,9 @@ router.post('/me/token', function (req, res) {
 	
 	// {"key": "frerkotko", "secret": "frefr"}	
 	
-	users						= db.getCollection('users');
-	tokens					= db.getCollection('tokens');
-	var API_KEY			= req.params.key!==undefined?req.params.key:req.body.key;
+	users			= db.getCollection('users');
+	tokens			= db.getCollection('tokens');
+	var API_KEY		= req.params.key!==undefined?req.params.key:req.body.key;
 	var API_SECRET	= req.params.secret!==undefined?req.params.secret:req.body.secret;
 	
 	if  ( API_KEY && API_SECRET ) {
@@ -59,30 +75,26 @@ router.post('/me/token', function (req, res) {
 		if ( !tk ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		}	else {
-			// check expiraton date
-					if ( tk.expiration > moment().format('x') ) {
-						res.send({ 'code': 403, 'error': 'Forbidden expired token' }, 403); // TODO, is there any better Status here?
-					} else {
-						// generates a temporary access token that will expire
-						// in a specified amount of time
-						var new_token = {
-							expiration: moment().format('x'), // TODO: + 1 hour !!!
-							API_TOKEN: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
-						};
-						tokens.insert();
-						
-						// Finf and remove expired tokens from Db
-						//db.save();
-						
-						
-						
-						// scopes for permissions
-					}
-		}
-		
-	
-	
-		
+			// check expiration date
+			if ( tk.expiration > moment().format('x') ) {
+				res.send({ 'code': 403, 'error': 'Forbidden expired token' }, 403); // TODO, is there any better Status here?
+			} else {
+				// generates a temporary access token that will expire
+				// in a specified amount of time
+				var new_token = {
+					expiration: moment().format('x'), // TODO: + 1 hour !!!
+					API_TOKEN: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
+				};
+				tokens.insert();
+				
+				// Find and remove expired tokens from Db
+				//db.save();
+				
+				
+				
+				// scopes for permissions
+			}
+		}	
 	} else {
 		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}	
@@ -91,17 +103,17 @@ router.post('/me/token', function (req, res) {
 router.post('/', function (req, res) {
 	users	= db.getCollection('users');
 	var new_user = {
-		id:						uuid.v4(),
+		id:					uuid.v4(),
 		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
 		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
-		email:					req.body.email!==undefined?req.body.email:'',
+		email:				req.body.email!==undefined?req.body.email:'',
 		subscription_date:  moment().format('x'),
-		token:					passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
+		token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
 		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
-		permissions:	req.body.permissions!==undefined?req.body.permissions:new Array(),
+		permissions:		req.body.permissions!==undefined?req.body.permissions:new Array(),
 	};
 	users.insert(new_user);
-	res.send({ 'code': 201, message: 'Created', user: new_user }, 201); // TODO: missing serializer
+	res.send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize() }, 201);
 });
 
 router.put('/:user_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
@@ -115,14 +127,15 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 			function(item){
 				item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
 				item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
-				item.email				=	req.body.email!==undefined?req.body.email:item.email;
-				item.permissions	=	req.body.permissions!==undefined?req.body.permissions:item.permissions;
+				item.email			= req.body.email!==undefined?req.body.email:item.email;
+				item.permissions	= req.body.permissions!==undefined?req.body.permissions:item.permissions;
+				subscription_date	= item.subscription_date;
 				result = item;
 			}
 		);
 		//console.log(users);
 		db.save();
-		res.send({ 'code': 200, message: 'Successfully updated', user: result }, 200); // TODO: missing serializer
+		res.send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(result).serialize() }, 200);
 	}
 });
 
