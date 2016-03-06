@@ -88,18 +88,32 @@ _Flows_ are defined for each _Users_ and are having permissions.
 * 'rw' on flows
 
 
+## Mqtt rules to handle Actions
+### Rules
+"Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months.
+To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
 
-## Rules to handle Actions
+### Actions
 _Actions_ are triggered when something is happening on the Easy-IOT platform.
-//
+Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
 
 
-# Installation
+# Easy-IOT Installation
 ```
 git clone https://github.com/mathcoll/Easy-IOT.git ./Easy-IOT & cd Easy-IOT
 npm install
 ```
 
+You can add the server running as a service, tested with Ubuntu and Debian:
+* First: install the server in services:
+```
+sudo ln -s /var/www/EasyIOT/etc/init.d/EasyIOT /etc/init.d/Easy-IOT
+```
+
+* Then set the server to run at start: 
+```
+sudo update-rc.d Easy-IOT defaults
+```
 
 # Benchmark
 
