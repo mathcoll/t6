@@ -6,6 +6,11 @@ Easy IOT is an "oriented-Data" platform to connect physical Objects with timeser
 Physical World are composed by your sensors and actuators.
 Physical Objects require a virtual _Object_ in Easy-IOT and then, they could add _Data_ to _Flows_. 
 
+### General
+
+| Verb | Endpoint | Auth | Description |
+| ------------- | ------------- | ------------- | ------------- |
+| GET | http://127.0.0.1:3000/v2.0.1/status | _n/a_ | Get the status of the API |
 
 ### Objects
 _Objects_ are virtual items dedicated to push data to flows.
