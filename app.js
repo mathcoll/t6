@@ -3,6 +3,7 @@
  * 
  */
 var express			= require('express');
+var timeout			= require('connect-timeout');
 var path			= require('path');
 var logger			= require('morgan');
 var cookieParser	= require('cookie-parser');
@@ -54,6 +55,7 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(timeout('10s'));
 app.disable('x-powered-by');
 app.use(function (req, res, next) { res.setHeader('X-Powered-By', appName+'@'+version); next(); });
 
@@ -65,6 +67,12 @@ app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
+
+app.use(function(req, res, next) {
+	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	next();
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
