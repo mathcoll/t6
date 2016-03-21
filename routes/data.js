@@ -13,8 +13,8 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 				perm = permission.perm;
 			}
 		});
-		
-		 if ( perm != '' ) {
+
+		if ( perm != '' ) {
 			//var limit = req.params.limit!==undefined?parseInt(req.params.limit):10;
 			//var page = req.params.page!==undefined?parseInt(req.params.page):1;
 			//var sort = req.query.sort!==undefined?req.query.sort:'time';
@@ -23,16 +23,16 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 			if (isNaN(page) || page < 1) {
 			  page = 1;
 			}
-		
+
 			var limit = parseInt(req.query.limit, 10);
 			if (isNaN(limit)) {
 			  limit = 10;
-			} else if (limit > 50) {
+			} else if (limit > 500) {
 			  limit = 50;
 			} else if (limit < 1) {
 			  limit = 1;
 			}
-		
+
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 			if ( db_type == 'influxdb' ) {
 				/* InfluxDB database */
@@ -73,24 +73,24 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 				;
 				
 				if ( req.query.start != undefined ) {
-						if ( !isNaN(req.query.start) ) {
-							//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
-							query.where('timestamp>=?', req.query.start);
-						} else {
-							query.where('timestamp>=?', moment(req.query.start).format('X')); // TODO,houd be "x" lower case 
-						}
+					if ( !isNaN(req.query.start) ) {
+						//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
+						query.where('timestamp>=?', req.query.start);
+					} else {
+						query.where('timestamp>=?', moment(req.query.start).format('X')); // TODO, should be "x" lower case 
+					}
 				}	
 				if ( req.query.end != undefined ) {
-						if ( !isNaN(req.query.end) ) {
-							//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
-							query.where('timestamp<=?', req.query.end);
-						} else {
-							query.where('timestamp<=?', moment(req.query.end).format('X')); // TODO,houd be "x" lower case 
-						}
+					if ( !isNaN(req.query.end) ) {
+						//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
+						query.where('timestamp<=?', req.query.end);
+					} else {
+						query.where('timestamp<=?', moment(req.query.end).format('X')); // TODO, should be "x" lower case 
+					}
 				}	
 					
 				query = query.toString();
-				
+				console.log(query);
 				//res.send({q: req.query, query: query}, 200);
 				dbSQLite3.all(query, function(err, data) {
 					if (err) console.log(err);
@@ -103,13 +103,14 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 					data.order = req.query.order!==undefined?req.query.order:'asc';
 					//console.log(data);
 					
-					var json = new DataSerializer(data).serialize();
-					res.send(json);
+					res.send(new DataSerializer(data).serialize());
 				});
 			}
-		 } else {
+		} else {
 			res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
 		}
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
@@ -192,15 +193,15 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuth, function 
 router.post('/:flow_id([0-9a-z\-]+)', function (req, res) {
 	// TODO require user permission on flow
 	var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
-	var time			= req.body.timestamp!==undefined?parseInt(req.body.timestamp):moment().format('x');
+	var time		= req.body.timestamp!==undefined?parseInt(req.body.timestamp):moment().format('x');
 	if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
 	
-	var value			= req.body.value!==undefined?req.body.value:"";
+	var value		= req.body.value!==undefined?req.body.value:"";
 	var publish		= req.body.publish!==undefined?JSON.parse(req.body.publish):false;
-	var save			= req.body.save!==undefined?JSON.parse(req.body.save):true;
-	var unit				= req.body.unit!==undefined?req.body.unit:"";
+	var save		= req.body.save!==undefined?JSON.parse(req.body.save):true;
+	var unit		= req.body.unit!==undefined?req.body.unit:"";
 	var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"";
-	var text				= req.body.text!==undefined?req.body.text:"";
+	var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo is using this 'text' to customize tinyScreen icon displayed.
 	
 	var data = [ { time:time, value: value } ];
 	if ( save == true ) {
