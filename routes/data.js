@@ -215,13 +215,7 @@ router.post('/:flow_id([0-9a-z\-]+)', function (req, res) {
 			if ( text !== "" ) tags.text = text;
 			if ( mqtt_topic !== "" ) tags.mqtt_topic = mqtt_topic;
 			dbInfluxDB.writePoint("data", data[0], tags, {}, function(err, response) {
-				if (err) {
-					console.log('Err: '+err);
-				} else {
-					if( publish == true && mqtt_topic !== undefined ) {
-						client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}));
-					}
-				}
+				if (err) { }
 				if (response) console.log('Res: '+response);
 			});
 		} else if ( db_type == 'sqlite3' ) {
@@ -235,20 +229,16 @@ router.post('/:flow_id([0-9a-z\-]+)', function (req, res) {
 			;
 			//console.log(query);
 			dbSQLite3.run(query, function(err) {
-				if (err) {
-					if( publish == true && mqtt_topic !== undefined ) {
-						//client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}));
-					}
-				} else {
-					if( publish == true && mqtt_topic !== undefined ) {
-						if ( text !== undefined ) {
-							client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text}));
-						} else {
-							client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}));
-						}
-					}
-				}
+				if (err) { }
 			});
+		}
+	}
+	
+	if( publish == true && mqtt_topic !== undefined ) {
+		if ( text !== undefined ) {
+			client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text}));
+		} else {
+			client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}));
 		}
 	}
 	
