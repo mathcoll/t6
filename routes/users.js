@@ -43,6 +43,7 @@ router.get('/:user_id', bearerAuth, function (req, res) {
 });
 
 router.get('/me/permissions', bearerAuth, function (req, res) {
+	// TODO: to be rewritten!
 	if ( req.token !== undefined ) {
 		var json = new PermissionSerializer(req.user).serialize();
 		if ( req.user !== undefined ) {
@@ -55,9 +56,9 @@ router.get('/me/permissions', bearerAuth, function (req, res) {
 
 router.post('/me/token', function (req, res) {
 	// specific Collection for user_id, API_KEY, API_SECRET, expiration
+	// {"key": "09adc1a3-c0be-4881-a848-9bd8890a11a6", "secret": "a1285052-f449-443b-a278-95f995323f4c"}
 	
-	// {"key": "frerkotko", "secret": "frefr"}	
-	
+	// TODO: how to set permission on this token ??
 	users			= db.getCollection('users');
 	tokens			= db.getCollection('tokens');
 	var API_KEY		= req.params.key!==undefined?req.params.key:req.body.key;
@@ -65,36 +66,47 @@ router.post('/me/token', function (req, res) {
 	
 	if  ( API_KEY && API_SECRET ) {
 		// check KEY+SECRET against Collection and expiration date
-		// 
-		var tk = tokens.find({ '$and': [
-					{ 'API_KEY' : API_KEY }, // returns only object from current user
-					{ 'API_SECRET' : API_SECRET }
-				]
-			}
+		var auth = tokens.find(
+			{ '$and': [
+                // returns only object from current user
+				{ 'key': API_KEY },
+				{ 'secret': API_SECRET },
+			]}
 		);
-		if ( !tk ) {
+		if ( auth.length <= 0 ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
-		}	else {
+		} else {
 			// check expiration date
-			if ( tk.expiration > moment().format('x') ) {
+			if ( auth.expiration > moment().format('x') ) {
+				// TODO: is it necessary to check the expiration on an API KEY + SECRET?
 				res.send({ 'code': 403, 'error': 'Forbidden expired token' }, 403); // TODO, is there any better Status here?
 			} else {
 				// generates a temporary access token that will expire
 				// in a specified amount of time
 				var new_token = {
-					expiration: moment().format('x'), // TODO: + 1 hour !!!
-					API_TOKEN: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
+					user_id: auth[0].user_id,
+					expiration: moment().add(1, 'hours').format('x'),
+					token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				};
-				tokens.insert();
+				console.log(new_token);
+				tokens.insert(new_token);
+				//db.save();
+				new_token.note = 'Please use that Token in you Api calls with a Bearer';
+				res.send({ 'code': 201, message: 'Created', token: new_token }, 201);
 				
 				// Find and remove expired tokens from Db
-				//db.save();
+				var expired = tokens.chain().find(
+					{ '$and': [
+				           { 'expiration' : { '$lt': moment().format('x') } },
+				           { 'expiration' : { '$ne': '' } },
+					]}
+				).remove();
+				if ( expired ) db.save();
 				
+				// TODO: scopes for permissions
 				
-				
-				// scopes for permissions
 			}
-		}	
+		}
 	} else {
 		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}	
@@ -108,8 +120,8 @@ router.post('/', function (req, res) {
 		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
 		email:				req.body.email!==undefined?req.body.email:'',
 		subscription_date:  moment().format('x'),
-		token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
-		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&~#{([-|`_\^à)]=}!§+°%£µø$<>'),
+		token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 		permissions:		req.body.permissions!==undefined?req.body.permissions:new Array(),
 	};
 	users.insert(new_user);
