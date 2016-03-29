@@ -13,43 +13,43 @@ router.get('/status', function(req, res, next) {
 	var status = {
 		links: {
 			self: {
-				baseUrl: baseUrl+'/status',
+				baseUrl: baseUrl+'/v'+version+'/status',
 				description: 'Get Server status and basic documentation.',
 				permissions: '',
 				verbs: ['GET'],
 			},
 			users: {
-				baseUrl: baseUrl+'/'+version+'/users',
+				baseUrl: baseUrl+'/v'+version+'/users',
 				description: 'User API to create, modify or delete a user.',
 				permissions: '',
 				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			data: {
-				baseUrl: baseUrl+'/'+version+'/data',
+				baseUrl: baseUrl+'/v'+version+'/data',
 				description: 'Data API to create, modify or delete data.',
 				permissions: '',
 				verbs: ['GET', 'POST'],
 			},
 			objects: {
-				baseUrl: baseUrl+'/'+version+'/objects',
+				baseUrl: baseUrl+'/v'+version+'/objects',
 				description: 'Object API to create, modify or delete an object.',
 				permissions: '',
 				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			datatypes: {
-				baseUrl: baseUrl+'/'+version+'/datatypes',
+				baseUrl: baseUrl+'/v'+version+'/datatypes',
 				description: 'Datatype API to create, modify or delete a data-type.',
 				permissions: '',
 				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			flows: {
-				baseUrl: baseUrl+'/'+version+'/flows',
+				baseUrl: baseUrl+'/v'+version+'/flows',
 				description: 'Flow API to create, modify or delete a flow.',
 				permissions: '',
 				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
 			},
 			units: {
-				baseUrl: baseUrl+'/'+version+'/units',
+				baseUrl: baseUrl+'/v'+version+'/units',
 				description: 'Unit API to create, modify or delete a unit.',
 				permissions: '',
 				verbs: ['GET'],
