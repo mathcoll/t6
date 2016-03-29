@@ -37,7 +37,8 @@ db	= new loki(path.join(__dirname, 'data/db.json'), {autoload: true, autosave: t
 db.loadDatabase(path.join(__dirname, 'data/db.json'));
 
 /* temporary debug */
-console.log(uuid.v4());
+//console.log(uuid.v4());
+//console.log(passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'));
 
 var index			= require('./routes/index');
 var objects			= require('./routes/objects');
