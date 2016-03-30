@@ -138,7 +138,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 			var limit = 1;
 			var page = 1;
 			var sorting = req.query.order=='asc'?true:false;
-		
+
 			if ( db_type == 'influxdb' ) {
 				/* InfluxDB database */
 				var query = squel.select()

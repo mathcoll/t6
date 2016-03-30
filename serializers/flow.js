@@ -4,7 +4,7 @@ var JSONAPISerializer = require('jsonapi-serializer');
 function FlowSerializer(flow) {
 	this.serialize = function() {
 		return new JSONAPISerializer('flow', flow, {
-			attributes : [ 'name', 'unit', 'objects', 'perm' ],
+			attributes : [ 'name', 'unit', 'objects', 'permission' ],
 			topLevelLinks : {
 				parent : sprintf('%s/v%s/flows', baseUrl, version)
 			},
