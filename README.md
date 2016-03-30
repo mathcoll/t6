@@ -83,18 +83,60 @@ _Flows_ are defined for each _Users_ and are having permissions.
 | DELETE | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer_ | Delete a _User_ from platform. |
 
 
-### Security
-* Make a HTTP POST request to endpoint (http://127.0.0.1:3000/v2.0.1/users/me/token) with your own private API_KEY and API_SECRET, which validates the user's API key pair:
-Body content: ```{"key": "09grc1a3-c0be-1239-a848-9bd8890a11k6", "secret": "a128y052-f449-658a-a278-95f995323f4c"}```
-* API generates a temporary access token that will expire in 1 hour
-* Then you can use any _Bearer_ endpoint by adding "Authorization: Bearer _token_". 
+### Security & Tokens
+Process to handle a connection and publish data to flows:
+* Create the User:
 
-Permissions granted - TODO:
-* On _Flows_ and _Data_:
-* 'r': stands for Readonly access
-* 'rw': stands for Read+Write access
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-X POST http://127.0.0.1:3000/v2.0.1/users/ \
+--data '{"firstName": "My FirstName", "lastName": "My LastName", "email": "myemail@domain.tld"}'```
 
-Some Endpoints require an _Admin_ permission which is set on the user.
+--> Key and Secret are returned by api.
+
+* Create the initial token (without any permission) so that we can then create a Flow:
+
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-X POST http://127.0.0.1:3000/v2.0.1/users/me/token \
+--data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP."}'```
+
+--> Token is returned by api.
+
+* Create a Flow with the previous Bearer Token and permissions:
+
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-H "Authorization: Bearer $bearer" \
+-X POST http://127.0.0.1:3000/v2.0.1/flows \
+--data '{"name": "My Flow Name", "unit": "String", "permission": "644", "objects": ['1', '2']}'```
+
+--> Flow ID is returned by api.
+
+* Create the secondary Token (with permission on the returned Flow_ID) so that we can then post data to the flow:
+
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-X POST http://127.0.0.1:3000/v2.0.1/users/me/token \
+--data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP.", "permission":[ {"flow_id": "d05da218-2751-441d-9ed3-3458296a029e", "permission": "644"} ]}'```
+
+--> Token2 is returned by api.
+
+* Finally, POST data to Flow_ID with Bearer Token2, so that we have permission on that Flow_ID:
+
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-H "Authorization: Bearer $bearer" \
+-X POST http://127.0.0.1:3000/v2.0.1/data \
+--data '{"flow_id":"d05da218-2751-441d-9ed3-3458296a029e", "value":"My String Value", "timestamp": "1459369102418", "publish": "true", "save": "true", "unit": "String", "mqtt_topic": ""}'```
+
+--> Confirmation message is returned by api.
+
 
 ### Mqtt rules to handle Actions
 #### Rules
@@ -130,4 +172,4 @@ sudo update-rc.d Easy-IOT defaults
 * AVG 4.76 insertion/min
 * This is a very low cpu/ram server(Celeron M 900Mhz processor)
 * 100% Http Status-code 200
-* TBC: at the beginning, avg inertion was higher .. this is probably due to latencies in SQLite DB
+* TBC: at the beginning, avg insertion was higher .. this is probably due to latencies in SQLite DB
