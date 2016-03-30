@@ -95,6 +95,8 @@ Process to handle a connection and publish data to flows:
 
 --> Key and Secret are returned by api.
 
+
+
 * Create the initial token (without any permission) so that we can then create a Flow:
 
 ```curl -i \
@@ -104,6 +106,8 @@ Process to handle a connection and publish data to flows:
 --data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP."}'```
 
 --> Token is returned by api.
+
+
 
 * Create a Flow with the previous Bearer Token and permissions:
 
@@ -116,6 +120,8 @@ Process to handle a connection and publish data to flows:
 
 --> Flow ID is returned by api.
 
+
+
 * Create the secondary Token (with permission on the returned Flow_ID) so that we can then post data to the flow:
 
 ```curl -i \
@@ -125,6 +131,8 @@ Process to handle a connection and publish data to flows:
 --data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP.", "permission":[ {"flow_id": "d05da218-2751-441d-9ed3-3458296a029e", "permission": "644"} ]}'```
 
 --> Token2 is returned by api.
+
+
 
 * Finally, POST data to Flow_ID with Bearer Token2, so that we have permission on that Flow_ID:
 
