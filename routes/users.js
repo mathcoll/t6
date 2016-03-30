@@ -50,8 +50,8 @@ router.post('/me/token', function (req, res) {
 		if ( auth.length <= 0 ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
-			var permission = req.body.permission!==undefined?req.body.permission:'600';
-			if ( permission < 600 ) {
+			var permissions = req.body.permissions!==undefined?req.body.permissions:'600';
+			if ( permissions < 600 ) {
 				res.send({ 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!' }, 400);
 			}
 			// check expiration date
@@ -64,7 +64,7 @@ router.post('/me/token', function (req, res) {
 				var new_token = {
 					user_id: auth[0].user_id,
 					expiration: moment().add(1, 'hours').format('x'),
-					permission: permission,
+					permissions: permissions,
 					token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				};
 				//console.log(new_token);

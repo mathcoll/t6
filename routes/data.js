@@ -223,7 +223,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		    return p.flow_id == flow_id; 
 		})[0];
 	
-		if ( p.perm == 'rw' || p.perm == 'w' ) {
+		if ( p.permission == '644' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
 			// In case text != null, we should also save that text to Db!
 			
 			var data = [ { time:time, value: value } ];

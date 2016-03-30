@@ -142,6 +142,44 @@ Process to handle a connection and publish data to flows:
 -H "Authorization: Bearer $bearer" \
 -X POST http://127.0.0.1:3000/v2.0.1/data \
 --data '{"flow_id":"d05da218-2751-441d-9ed3-3458296a029e", "value":"My String Value", "timestamp": "1459369102418", "publish": "true", "save": "true", "unit": "String", "mqtt_topic": ""}'```
+### Security & Tokens
+Process to handle a connection and publish data to flows:
+* Create the User:
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-X POST http://127.0.0.1:3000/v2.0.1/users/ \
+--data '{"firstName": "My FirstName", "lastName": "My LastName", "email": "myemail@domain.tld"}'```
+
+Key and Secret are returned by api.
+
+* Create the initial token (without any permission) so that we can then create a Flow:
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-X POST http://127.0.0.1:3000/v2.0.1/users/me/token \
+--data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP."}'```
+
+Token is returned by api.
+
+* Create a Flow with the previous Bearer Token and permissions:
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-H "Authorization: Bearer $bearer" \
+-X POST http://127.0.0.1:3000/v2.0.1/flows \
+--data '{"name": "My Flow Name", "unit": "String", "permission": "644", "objects": ['1', '2']}'```
+
+Flow ID is returned by api.
+
+* Create the secondary Token (with permission on the returned Flow_ID) so that we can then post data to the flow:
+```curl -i \
+-H "Accept: application/json" \
+-H "Content-Type:application/json" \
+-X POST http://127.0.0.1:3000/v2.0.1/users/me/token \
+--data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP.", "permission":[ {"flow_id": "d05da218-2751-441d-9ed3-3458296a029e", "permission": "644"} ]}'```
+
+Token2 is returned by api.
 
 --> Confirmation message is returned by api.
 
