@@ -44,7 +44,6 @@ router.post('/me/token', function (req, res) {
 		// check KEY+SECRET against Collection and expiration date
 		var auth = tokens.find(
 			{ '$and': [
-                // returns only object from current user
 				{ 'key': API_KEY },
 				{ 'secret': API_SECRET },
 			]}
@@ -82,9 +81,6 @@ router.post('/me/token', function (req, res) {
 					]}
 				).remove();
 				if ( expired ) db.save();
-				
-				// TODO: scopes for permissions
-				
 			}
 		}
 	} else {
@@ -94,7 +90,7 @@ router.post('/me/token', function (req, res) {
 
 router.post('/', function (req, res) {
 	users	= db.getCollection('users');
-	var my_id = uuid.v4()
+	var my_id = uuid.v4();
 	var new_user = {
 		id:					my_id,
 		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
@@ -116,26 +112,17 @@ router.post('/', function (req, res) {
 	res.send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }, 201);
 });
 
-router.put('/:user_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
+router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.token !== undefined && req.user.id == user_id ) {
-		users	= db.getCollection('users');
-		//console.log(users);
-		var result;
-		users.findAndUpdate(
-			function(i){return i.id==user_id},
-			function(item){
-				item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
-				item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
-				item.email			= req.body.email!==undefined?req.body.email:item.email;
-//				item.permissions	= req.body.permissions!==undefined?req.body.permissions:item.permissions;
-				subscription_date	= item.subscription_date;
-				result = item;
-			}
-		);
-		//console.log(users);
-		db.save();
-		res.send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(result).serialize() }, 200);
+		var item = users.findOne( {'id': user_id} );
+		item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
+		item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
+		item.email			= req.body.email!==undefined?req.body.email:item.email;
+		users.update(item);
+		res.send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() }, 200);
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
@@ -185,8 +172,9 @@ function bearerAuthToken(req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
+		
 		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
-		if ( !req.bearer ) {
+		if ( !req.user ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
 			next();
