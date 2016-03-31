@@ -21,14 +21,16 @@ router.get('/tokens', function (req, res) {
 });
 */
 
-router.get('/me', bearerAuth, function (req, res) {
-	if ( req.token !== undefined ) {
+router.get('/me', bearerAuthToken, function (req, res) {
+	if ( req.user !== undefined ) {
 		var json = new UserSerializer(req.user).serialize();
 		if ( json !== undefined ) {
 			res.send(json);
 		} else {
 			res.send({ 'code': 404, message: 'Not Found' }, 404);
 		}
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
@@ -163,6 +165,32 @@ function bearerAuth(req, res, next) {
 		req.token = bearerToken;
 		req.user = (users.find({'token': { '$eq': req.token }}))[0];
 		next();
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	}
+}
+
+function bearerAuthToken(req, res, next) {
+	var bearerToken;
+	var bearerHeader = req.headers['authorization'];
+	tokens	= db.getCollection('tokens');
+	users	= db.getCollection('users');
+	if ( typeof bearerHeader !== 'undefined' ) {
+		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
+		bearerToken = bearer[1];
+		req.token = bearerToken;
+		req.bearer = tokens.findOne(
+			{ '$and': [
+	           {'token': { '$eq': req.token }},
+	           {'expiration': { '$gte': moment().format('x') }},
+			]}
+		);
+		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
+		if ( !req.bearer ) {
+			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		} else {
+			next();
+		}
 	} else {
 		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
