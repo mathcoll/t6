@@ -293,8 +293,9 @@ function bearerAuthToken(req, res, next) {
 		//console.log(req.bearer);
 		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		} else {
+			next();
 		}
-		next();
 	} else {
 		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
