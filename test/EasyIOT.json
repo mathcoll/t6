@@ -1,0 +1,330 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "EasyIOT Full Suite",
+            "tests": [
+                {
+                    "api_calls": [
+                        {
+                            "it": "createUser",
+                            "params": {
+                                "email": "myemail+{{$run_id}}@domain.tld",
+                                "firstName": "My FirstName",
+                                "lastName": "My LastName"
+                            },
+                            "request": "POST /v2.0.1/users",
+                            "assert": [],
+                            "save": {
+                                "saved.key": "body.token.key",
+                                "saved.secret": "body.token.secret",
+                                "saved.user_id": "body.user.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ],
+                    "description": "create a User",
+                    "name": "can create a User"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "it": "can create a simple Token",
+                            "params": {
+                                "key": "{{saved.key}}",
+                                "secret": "{{saved.secret}}"
+                            },
+                            "request": "POST /v2.0.1/users/me/token",
+                            "save": {
+                                "saved.token": "body.token.token"
+                            },
+                            "status": "201"
+                        }
+                    ],
+                    "description": "create a simple Token",
+                    "name": "can create a simple Token for that User"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "update a User",
+                            "params": {
+                                "email": "myemail+{{$run_id}}@domain.tld",
+                                "firstName": "My Updated FirstName",
+                                "lastName": "My Updated LastName"
+                            },
+                            "request": "PUT /v2.0.1/users/{{saved.user_id}}",
+                            "status": "200"
+                        }
+                    ],
+                    "description": "update a User",
+                    "name": "can update a User"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can create an Object",
+                            "params": {
+                                "description": "My object description",
+                                "ipv4": "127.0.0.1",
+                                "ipv6": "2001:0db8:0000:85a3:0000:0000:ac1f:8001",
+                                "name": "My Object",
+                                "position": "LivingRoom",
+                                "type": "phone",
+                                "user_id": "{{saved.user_id}}"
+                            },
+                            "request": "POST /v2.0.1/objects",
+                            "save": {
+                                "saved.object_id": "body.object.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ],
+                    "description": "create an Object",
+                    "name": "can create an Object"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can update an Object",
+                            "params": {
+                                "description": "My object updated description",
+                                "ipv4": "127.0.0.2",
+                                "ipv6": "2001:0db8:0000:85a3:0000:0000:ac1f:4008",
+                                "name": "My Updated Object",
+                                "position": "BedRoom",
+                                "type": "smartphone",
+                                "user_id": "{{saved.user_id}}"
+                            },
+                            "request": "PUT /v2.0.1/objects/{{saved.object_id}}",
+                            "save": {},
+                            "status": "200"
+                        }
+                    ],
+                    "description": "update an Object",
+                    "name": "can update an Object"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can get an Object",
+                            "request": "GET /v2.0.1/objects/{{saved.object_id}}",
+                            "save": {},
+                            "status": "200"
+                        }
+                    ],
+                    "description": "get an Object",
+                    "name": "can get an Object"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can get all my Objects",
+                            "request": "GET /v2.0.1/objects/",
+                            "save": {},
+                            "status": "200"
+                        }
+                    ],
+                    "description": "get all my Objects",
+                    "name": "can get all my Objects"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can create a Flow for that User",
+                            "params": {
+                                "name": "My Flow Name",
+                                "objects": [
+                                    "{{saved.object_id}}",
+                                    "1"
+                                ],
+                                "permission": "644",
+                                "unit": "String"
+                            },
+                            "request": "POST /v2.0.1/flows",
+                            "save": {
+                                "saved.flow_id": "body.flow.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ],
+                    "description": "create a Flow for that User",
+                    "name": "can create a Flow for that User"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can update an Flow",
+                            "params": {
+                                "data_type": "",
+                                "name": "My Flow Name UPDATED",
+                                "objects": [
+                                    "{{saved.object_id}}"
+                                ],
+                                "permission": "644",
+                                "unit": "Boolean"
+                            },
+                            "request": "PUT /v2.0.1/flows",
+                            "save": {},
+                            "status": 404
+                        }
+                    ],
+                    "description": "update a Flow",
+                    "name": "can update a Flow"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "it": "can create a Token with permission to Flow",
+                            "params": {
+                                "key": "{{saved.key}}",
+                                "secret": "{{saved.secret}}",
+                                "permissions":[ {"flow_id": "{{saved.flow_id}}", "permission": "644"} ]
+                            },
+                            "request": "POST /v2.0.1/users/me/token",
+                            "save": {
+                                "saved.token2": "body.token.token"
+                            },
+                            "status": "201"
+                        }
+                    ],
+                    "description": "create a Token with permission to Flow",
+                    "name": "can create a Token with permission to Flow"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token2}}"
+                            },
+                            "it": "can publish data to Flow",
+                            "params": {
+                                "flow_id": "{{saved.flow_id}}",
+                                "mqtt_topic": "couleurs/test",
+                                "publish": "true",
+                                "save": "true",
+                                "timestamp": "",
+                                "unit": "-",
+                                "value": "true"
+                            },
+                            "request": "POST /v2.0.1/data",
+                            "save": {},
+                            "status": "200"
+                        }
+                    ],
+                    "description": "publish data to Flow",
+                    "name": "can publish data to Flow"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token2}}"
+                            },
+                            "it": "can delete a Flow",
+                            "request": "DELETE /v2.0.1/flows",
+                            "save": {},
+                            "status": 404
+                        }
+                    ],
+                    "description": "delete a Flow",
+                    "name": "can delete a Flow"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can delete a Object",
+                            "request": "DELETE /v2.0.1/objects/{{saved.object_id}}",
+                            "save": {},
+                            "status": 200
+                        }
+                    ],
+                    "description": "delete an Object",
+                    "name": "can delete an Object"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can verify a User",
+                            "request": "GET /v2.0.1/users/{{saved.user_id}}",
+                            "save": {},
+                            "status": 200
+                        }
+                    ],
+                    "description": "verify a User",
+                    "name": "can verify a User"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can delete a User",
+                            "request": "DELETE /v2.0.1/users/{{saved.user_id}}",
+                            "save": {},
+                            "status": 200
+                        }
+                    ],
+                    "description": "delete a User",
+                    "name": "can delete a User"
+                },
+                {
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.token}}"
+                            },
+                            "it": "can verify a User has been deleted",
+                            "request": "GET /v2.0.1/users/{{saved.user_id}}",
+                            "save": {},
+                            "status": 403
+                        }
+                    ],
+                    "description": "verify a User has been deleted",
+                    "name": "can verify a User has been deleted"
+                }
+            ]
+        }
+    ]
+}

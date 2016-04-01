@@ -4,7 +4,8 @@
   "description": "Easy IOT is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "jsonapitest ./test/EasyIOT.json"
   },
   "dependencies": {
     "bearer": "0.0.20",
