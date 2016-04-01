@@ -33,9 +33,6 @@ if ( db_type === "sqlite3" ) {
 	dbInfluxDB	= influx({ host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' });
 }
 
-db	= new loki(path.join(__dirname, 'data/db.json'), {autoload: true, autosave: true});
-db.loadDatabase(path.join(__dirname, 'data/db.json'));
-
 /* temporary debug */
 //console.log(uuid.v4());
 //console.log(passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'));
@@ -48,6 +45,9 @@ var flows			= require('./routes/flows');
 var units			= require('./routes/units');
 var datatypes		= require('./routes/datatypes');
 var app				= express();
+
+db	= new loki(path.join(__dirname, 'data/db-'+app.get('env')+'.json'), {autoload: true, autosave: true});
+db.loadDatabase(path.join(__dirname, 'data/db-'+app.get('env')+'.json'));
 
 client.on("connect", function () {
 	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)"}), {retain: false});
