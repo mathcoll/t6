@@ -4,20 +4,23 @@ var router = express.Router();
 var ObjectSerializer = require('../serializers/object');
 var objects;
 var users;
+var tokens;
 
-router.get('/', bearerAuth, function (req, res) {
+router.get('/', bearerAuthToken, function (req, res) {
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
 		var json = new ObjectSerializer(objects.find({'user_id': { '$eq': req.user.id }})).serialize();
-	}
-	if ( json !== undefined ) {
-		res.send(json);
+		if ( json !== undefined ) {
+			res.send(json, 200);
+		} else {
+			res.send({ 'code': 404, message: 'Not Found' }, 404);
+		}
 	} else {
-		res.send({ 'code': 404, message: 'Not Found' }, 404);
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
-router.get('/:object_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
+router.get('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var object_id = req.params.object_id; //TODO: can be an Integer !!!
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
@@ -29,15 +32,17 @@ router.get('/:object_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 		};
 		//console.log(query);
 		var json = objects.find(query);
-	}
-	if ( json.length > 0 ) {
-		res.send(new ObjectSerializer(json).serialize());
+		if ( json.length > 0 ) {
+			res.send(new ObjectSerializer(json).serialize());
+		} else {
+			res.send({ 'code': 404, message: 'Not Found' }, 404);
+		}
 	} else {
-		res.send({ 'code': 404, message: 'Not Found' }, 404);
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
-router.post('/', bearerAuth, function (req, res) {
+router.post('/', bearerAuthToken, function (req, res) {
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
 		var new_object = {
@@ -53,12 +58,14 @@ router.post('/', bearerAuth, function (req, res) {
 		objects.insert(new_object);
 		//console.log(objects);
 		res.send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() }, 201);
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
-router.put('/:object_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
+router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	if ( req.token !== undefined ) {
-		var object_id = req.params.object_id;
+	var object_id = req.params.object_id;
 		objects	= db.getCollection('objects');
 		//console.log(objects);
 		var result;
@@ -77,21 +84,25 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 		//console.log(objects);
 		db.save();
 		res.send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() }, 200);
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
-router.delete('/:object_id([0-9a-z\-]+)', function (req, res) {
-	//TODO: implement permissions
-	var object_id = req.params.object_id; //TODO: not always an Integer !!!
-	objects	= db.getCollection('objects');
-	var o = objects.find({'id': { '$eq': object_id }});
-	//console.log(o);
-	if (o) {
-		objects.remove(o);
-		db.save();
-		res.send({ 'code': 200, message: 'Successfully deleted', removed_id: object_id }, 200); // TODO: missing serializer
+router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+	var object_id = req.params.object_id;
+	if ( req.token !== undefined ) {
+		objects	= db.getCollection('objects');
+		var o = objects.find({'id': { '$eq': object_id }});
+		//console.log(o);
+		if (o) {
+			objects.remove(o);
+			res.send({ 'code': 200, message: 'Successfully deleted', removed_id: object_id }, 200); // TODO: missing serializer
+		} else {
+			res.send({ 'code': 404, message: 'Not Found' }, 404);
+		}
 	} else {
-		res.send({ 'code': 404, message: 'Not Found' }, 404);
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
@@ -105,6 +116,33 @@ function bearerAuth(req, res, next) {
 		req.token = bearerToken;
 		req.user = (users.find({'token': { '$eq': req.token }}))[0];
 		next();
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	}
+}
+
+function bearerAuthToken(req, res, next) {
+	var bearerToken;
+	var bearerHeader = req.headers['authorization'];
+	tokens	= db.getCollection('tokens');
+	users	= db.getCollection('users');
+	if ( typeof bearerHeader !== 'undefined' ) {
+		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
+		bearerToken = bearer[1];
+		req.token = bearerToken;
+		req.bearer = tokens.findOne(
+			{ '$and': [
+	           {'token': { '$eq': req.token }},
+	           {'expiration': { '$gte': moment().format('x') }},
+			]}
+		);
+		
+		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
+		if ( !req.user ) {
+			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		} else {
+			next();
+		}
 	} else {
 		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}

@@ -6,14 +6,19 @@ var PermissionSerializer = require('../serializers/permission');
 var users;
 var tokens;
 
-/*
-router.get('/', function (req, res) {
-	// Todo: only for admins
-	users	= db.getCollection('users');
-	var json = new UserSerializer(users.find()).serialize();
-	res.send(json);
+
+router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+	var user_id = req.params.user_id;
+	if ( req.token !== undefined ) {
+		users	= db.getCollection('users');
+		var json = new UserSerializer(users.find()).serialize();
+		res.send(json, 200);
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	}
 });
 
+/*
 router.get('/tokens', function (req, res) {
 	// Todo: only for admins
 	tokens			= db.getCollection('tokens');
@@ -126,7 +131,7 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
-router.delete('/:user_id([0-9a-z\-]+)', function (req, res) {
+router.delete('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.token !== undefined && req.user.id == user_id ) {
 		users	= db.getCollection('users');
@@ -134,11 +139,12 @@ router.delete('/:user_id([0-9a-z\-]+)', function (req, res) {
 		//console.log(u);
 		if (u) {
 			users.remove(u);
-			db.save();
 			res.send({ 'code': 200, message: 'Successfully deleted', removed_id: user_id }, 200); // TODO: missing serializer
 		} else {
 			res.send({ 'code': 404, message: 'Not Found' }, 404);
 		}
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}
 });
 
