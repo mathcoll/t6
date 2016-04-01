@@ -222,6 +222,8 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		var p = permissions.filter(function(p) { 
 		    return p.flow_id == flow_id; 
 		})[0];
+		
+		// TODO: should test permission to be an array()
 	
 		if ( p.permission == '644' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
 			// In case text != null, we should also save that text to Db!
@@ -290,7 +292,7 @@ function bearerAuthToken(req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
-		//console.log(req.bearer);
+		console.log("req.bearer:"+req.bearer);
 		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {

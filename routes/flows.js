@@ -101,7 +101,6 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						item.name		= req.body.name!==undefined?req.body.name:item.name;
 						item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
 						item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
-						item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
 						item.permission	= permission!==undefined?permission:item.permission;
 						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
 						result = item;
