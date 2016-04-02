@@ -11,7 +11,7 @@ router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.token !== undefined && req.user.id == user_id ) {
 		users	= db.getCollection('users');
-		var json = new UserSerializer(users.find()).serialize();
+		var json = new UserSerializer(users.find({'id': { '$eq': user_id }})).serialize();
 		res.send(json, 200);
 	} else {
 		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
@@ -94,40 +94,49 @@ router.post('/me/token', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-	users	= db.getCollection('users');
-	var my_id = uuid.v4();
-	var new_user = {
-		id:					my_id,
-		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
-		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
-		email:				req.body.email!==undefined?req.body.email:'',
-		subscription_date:  moment().format('x'),
-	};
-	users.insert(new_user);
-	
-	var new_token = {
-		user_id:			my_id,
-		key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-        expiration:			'',
-	};
-	var tokens	= db.getCollection('tokens');
-	tokens.insert(new_token);
-	
-	res.send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }, 201);
+	if ( !req.body.email ) {
+		res.send({ 'code': 412, error: 'Precondition Failed'}, 412);
+	} else {
+		users	= db.getCollection('users');
+		var my_id = uuid.v4();
+		var new_user = {
+			id:					my_id,
+			firstName:			req.body.firstName!==undefined?req.body.firstName:'',
+			lastName:			req.body.lastName!==undefined?req.body.lastName:'',
+			email:				req.body.email!==undefined?req.body.email:'',
+			subscription_date:  moment().format('x'),
+		};
+		users.insert(new_user);
+		
+		var new_token = {
+			user_id:			my_id,
+			key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+			secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+	        expiration:			'',
+		};
+		var tokens	= db.getCollection('tokens');
+		tokens.insert(new_token);
+		
+		res.send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }, 201);
+	}
 });
 
 router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
-	if ( req.token !== undefined && req.user.id == user_id ) {
-		var item = users.findOne( {'id': user_id} );
-		item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
-		item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
-		item.email			= req.body.email!==undefined?req.body.email:item.email;
-		users.update(item);
-		res.send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() }, 200);
+	if ( !(req.body.email || req.body.lastName || req.body.firstName ) ) {
+		res.send({ 'code': 412, error: 'Precondition Failed'}, 412);
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		if ( req.token !== undefined && req.user.id == user_id ) {
+			var item = users.findOne( {'id': user_id} );
+			item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
+			item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
+			item.email			= req.body.email!==undefined?req.body.email:item.email;
+			item.update_date	= moment().format('x');
+			users.update(item);
+			res.send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() }, 200);
+		} else {
+			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		}
 	}
 });
 
