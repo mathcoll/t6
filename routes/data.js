@@ -215,19 +215,18 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	if ( !flow_id ) {
 		res.send({ 'code': 405, 'error': 'Method Not Allowed' }, 405);
 	}
-	if ( !req.bearer.user_id ){
+	
+	if ( !req.user.id ){
 		// Not Authorized because token is invalid
 		res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
 	} else {
 		var permissions = (req.bearer.permissions);
-		var p = permissions.filter(function(p) { 
+		var p = permissions.filter(function(p) {
 		    return p.flow_id == flow_id; 
 		})[0];
-		
-		// TODO: should test permission to be an array()
-	
+
 		if ( p.permission == '644' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
-			// In case text != null, we should also save that text to Db!
+			// TODO: In case text != null, we should also save that text to Db!
 			
 			var data = [ { time:time, value: value } ];
 			if ( save == true ) {
@@ -294,12 +293,14 @@ function bearerAuthToken(req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
-		
-		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
-		if ( !req.user ) {
+		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
-			next();
+			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+				next();
+			} else {
+				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+			}
 		}
 	} else {
 		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
