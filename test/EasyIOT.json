@@ -327,6 +327,53 @@
                     ]
                 }
             ]
+        },
+        {
+            "name": "EasyIOT Open Suite (no Authentification required)",
+            "tests": [
+                {
+                	"name": "can get all DataTypes",
+                	"description": "get all DataTypes",
+                    "api_calls": [
+                        {
+                        	"request": "GET /datatypes",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 8
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get all Units",
+                	"description": "get all Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /units",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 49
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get EasyIOT server status",
+                	"description": "get EasyIOT server status",
+                    "api_calls": [
+                        {
+                        	"request": "GET /status",
+                            "status": 200,
+                            "assert": {
+                            	"select": "body.status",
+                            	"equal": "running"
+        	                }
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }
