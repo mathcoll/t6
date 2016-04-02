@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var DataSerializer = require('../serializers/data');
 var users;
+var tokens;
 
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -281,7 +282,8 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 function bearerAuthToken(req, res, next) {
 	var bearerToken;
 	var bearerHeader = req.headers['authorization'];
-	var tokens	= db.getCollection('tokens');
+	tokens	= db.getCollection('tokens');
+	users	= db.getCollection('users');
 	if ( typeof bearerHeader !== 'undefined' ) {
 		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
 		bearerToken = bearer[1];
@@ -292,14 +294,15 @@ function bearerAuthToken(req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
-		console.log("req.bearer:"+req.bearer);
-		if ( !req.bearer ) {
+		
+		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
+		if ( !req.user ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
 			next();
 		}
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
 	}
 }
 

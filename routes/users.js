@@ -9,7 +9,7 @@ var tokens;
 
 router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
-	if ( req.token !== undefined ) {
+	if ( req.token !== undefined && req.user.id == user_id ) {
 		users	= db.getCollection('users');
 		var json = new UserSerializer(users.find()).serialize();
 		res.send(json, 200);
@@ -30,7 +30,7 @@ router.get('/me', bearerAuthToken, function (req, res) {
 	if ( req.user !== undefined ) {
 		var json = new UserSerializer(req.user).serialize();
 		if ( json !== undefined ) {
-			res.send(json);
+			res.send(json, 200);
 		} else {
 			res.send({ 'code': 404, message: 'Not Found' }, 404);
 		}
@@ -186,7 +186,7 @@ function bearerAuthToken(req, res, next) {
 			next();
 		}
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
 	}
 }
 
