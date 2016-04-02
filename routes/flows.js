@@ -6,46 +6,29 @@ var flows;
 var users;
 var tokens;
 
-router.get('/', bearerAuth, function (req, res) {
+router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 	var results = Array();
+	var flow_id = req.params.flow_id;
 	if ( req.token !== undefined && req.user !== undefined) {
 		flows	= db.getCollection('flows');
 		users	= db.getCollection('users');
-		req.user.permissions.map(function(permission) {
-			if ( permission.perm == 'r' || permission.perm == 'rw' ) { // TODO: if Owner: then should be >= 4, etc ...
-				var f = flows.find( {id: permission.flow_id } );
-				if ( f.length > 0 ) {
-					f = f[0];
-					results.push({ id: f.id, name: f.name, user_id: f.user_id, unit_id: f.unit_id, unit: f.unit, datatype: f.datatype, objects: f.objects, perm: f.perm });
-				}
+		
+		var permissions = (req.bearer.permissions);
+		permissions.map(function(permission) {
+			if ( permission.permission == '644' ) { // TODO: if Owner: then should be >= 4, etc ...
+				var flow = flows.findOne({'id': permission.flow_id });
+				if ( flow && flow_id && flow_id == permission.flow_id ) results.push(flow);
+				else if ( flow && !flow_id ) results.push(flow);
 			}
-		});		
-	}
-	if ( results.length > 0 ) {
-		res.send(new FlowSerializer(results).serialize());
+		});
+		
+		if ( results.length > 0 ) {
+			res.send(new FlowSerializer(results).serialize());
+		} else {
+			res.send({ 'code': 404, message: 'Not Found' }, 404);
+		}	
 	} else {
-		res.send({ 'code': 404, message: 'Not Found' }, 404);
-	}
-});
-
-router.get('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
-	var flow_id = req.params.flow_id;
-	var json;
-	if ( req.token !== undefined ) {
-		flows	= db.getCollection('flows');
-		var query = {
-			'$and': [
-				// TODO: must have permission to read flow (at least) !
-				{ 'id' : ''+flow_id },
-			]
-		};
-		//console.log(query);
-		json = flows.find(query);
-	}
-	if ( json.length > 0 ) {
-		res.send(new FlowSerializer(json).serialize());
-	} else {
-		res.send({ 'code': 404, message: 'Not Found' }, 404);
+		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
 	}
 });
 
