@@ -3,7 +3,7 @@
         "defaults": {
             "api_call": {
                 "request": {
-                    "base_url": "http://127.0.0.1:3000",
+                    "base_url": "http://127.0.0.1:3000/v2.0.1",
                     "headers": {
                         "Accept": "application/json",
                         "Content-Type": "application/json"
@@ -18,15 +18,16 @@
             "name": "EasyIOT Full Suite",
             "tests": [
                 {
+                	"name": "can create a User",
+                	"description": "create a User",
                     "api_calls": [
                         {
-                            "it": "createUser",
+                        	"request": "POST /users",
                             "params": {
                                 "email": "myemail+{{$run_id}}@domain.tld",
                                 "firstName": "My FirstName",
                                 "lastName": "My LastName"
                             },
-                            "request": "POST /v2.0.1/users",
                             "assert": [],
                             "save": {
                                 "saved.key": "body.token.key",
@@ -35,54 +36,52 @@
                             },
                             "status": "201"
                         }
-                    ],
-                    "description": "create a User",
-                    "name": "can create a User"
+                    ]
                 },
                 {
+                	"name": "can create a simple Token for that User",
+                    "description": "create a simple Token",
                     "api_calls": [
                         {
-                            "it": "can create a simple Token",
+                        	"request": "POST /users/me/token",
                             "params": {
                                 "key": "{{saved.key}}",
                                 "secret": "{{saved.secret}}"
                             },
-                            "request": "POST /v2.0.1/users/me/token",
                             "save": {
-                                "saved.token": "body.token.token"
+                                "saved.tokenKS": "body.token.token"
                             },
                             "status": "201"
                         }
-                    ],
-                    "description": "create a simple Token",
-                    "name": "can create a simple Token for that User"
+                    ]
                 },
                 {
+                	"name": "can update a User",
+                    "description": "update a User",
                     "api_calls": [
                         {
+                        	"request": "PUT /users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "update a User",
                             "params": {
                                 "email": "myemail+{{$run_id}}@domain.tld",
                                 "firstName": "My Updated FirstName",
                                 "lastName": "My Updated LastName"
                             },
-                            "request": "PUT /v2.0.1/users/{{saved.user_id}}",
                             "status": "200"
                         }
-                    ],
-                    "description": "update a User",
-                    "name": "can update a User"
+                    ]
                 },
                 {
+                	"name": "can create an Object",
+                    "description": "create an Object",
                     "api_calls": [
                         {
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "can create an Object",
+                            "request": "POST /objects",
                             "params": {
                                 "description": "My object description",
                                 "ipv4": "127.0.0.1",
@@ -92,23 +91,22 @@
                                 "type": "phone",
                                 "user_id": "{{saved.user_id}}"
                             },
-                            "request": "POST /v2.0.1/objects",
                             "save": {
                                 "saved.object_id": "body.object.data.id"
                             },
                             "status": "201"
                         }
-                    ],
-                    "description": "create an Object",
-                    "name": "can create an Object"
+                    ]
                 },
                 {
+                	"name": "can update an Object",
+                    "description": "update an Object",
                     "api_calls": [
                         {
+                        	"request": "PUT /objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "can update an Object",
                             "params": {
                                 "description": "My object updated description",
                                 "ipv4": "127.0.0.2",
@@ -118,51 +116,48 @@
                                 "type": "smartphone",
                                 "user_id": "{{saved.user_id}}"
                             },
-                            "request": "PUT /v2.0.1/objects/{{saved.object_id}}",
                             "save": {},
                             "status": "200"
                         }
-                    ],
-                    "description": "update an Object",
-                    "name": "can update an Object"
+                    ]
                 },
                 {
-                    "api_calls": [
-                        {
-                            "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
-                            },
-                            "it": "can get an Object",
-                            "request": "GET /v2.0.1/objects/{{saved.object_id}}",
-                            "save": {},
-                            "status": "200"
-                        }
-                    ],
+                	"name": "can get an Object",
                     "description": "get an Object",
-                    "name": "can get an Object"
-                },
-                {
                     "api_calls": [
                         {
+                        	"request": "GET /objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "can get all my Objects",
-                            "request": "GET /v2.0.1/objects/",
                             "save": {},
                             "status": "200"
                         }
-                    ],
-                    "description": "get all my Objects",
-                    "name": "can get all my Objects"
+                    ]
                 },
                 {
+                	"name": "can get all my Objects",
+                    "description": "get all my Objects",
                     "api_calls": [
                         {
+                        	"request": "GET /objects/",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "can create a Flow for that User",
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a Flow for that User",
+                    "description": "create a Flow for that User",
+                    "api_calls": [
+                        {
+                        	"request": "POST /flows",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.tokenKS}}"
+                            },
                             "params": {
                                 "name": "My Flow Name",
                                 "objects": [
@@ -172,23 +167,40 @@
                                 "permission": "644",
                                 "unit": "String"
                             },
-                            "request": "POST /v2.0.1/flows",
                             "save": {
                                 "saved.flow_id": "body.flow.data.id"
                             },
                             "status": "201"
                         }
-                    ],
-                    "description": "create a Flow for that User",
-                    "name": "can create a Flow for that User"
+                    ]
                 },
                 {
+                	"name": "can create a Token with permission to Flow",
+                    "description": "create a Token with permission to Flow",
                     "api_calls": [
                         {
-                            "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                        	"request": "POST /users/me/token",
+                            "params": {
+                                "key": "{{saved.key}}",
+                                "secret": "{{saved.secret}}",
+                                "permissions":[ {"flow_id": "{{saved.flow_id}}", "permission": "644"} ]
                             },
-                            "it": "can update an Flow",
+                            "save": {
+                                "saved.bearer": "body.token.token"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can update a Flow",
+                    "description": "update a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /flows",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.tokenKS}}"
+                            },
                             "params": {
                                 "data_type": "",
                                 "name": "My Flow Name UPDATED",
@@ -198,40 +210,20 @@
                                 "permission": "644",
                                 "unit": "Boolean"
                             },
-                            "request": "PUT /v2.0.1/flows",
                             "save": {},
                             "status": 404
                         }
-                    ],
-                    "description": "update a Flow",
-                    "name": "can update a Flow"
+                    ]
                 },
                 {
+                	"name": "can publish data to Flow",
+                    "description": "publish data to Flow",
                     "api_calls": [
                         {
-                            "it": "can create a Token with permission to Flow",
-                            "params": {
-                                "key": "{{saved.key}}",
-                                "secret": "{{saved.secret}}",
-                                "permissions":[ {"flow_id": "{{saved.flow_id}}", "permission": "644"} ]
-                            },
-                            "request": "POST /v2.0.1/users/me/token",
-                            "save": {
-                                "saved.token2": "body.token.token"
-                            },
-                            "status": "201"
-                        }
-                    ],
-                    "description": "create a Token with permission to Flow",
-                    "name": "can create a Token with permission to Flow"
-                },
-                {
-                    "api_calls": [
-                        {
+                        	"request": "POST /data",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token2}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
-                            "it": "can publish data to Flow",
                             "params": {
                                 "flow_id": "{{saved.flow_id}}",
                                 "mqtt_topic": "couleurs/test",
@@ -241,88 +233,80 @@
                                 "unit": "-",
                                 "value": "true"
                             },
-                            "request": "POST /v2.0.1/data",
                             "save": {},
                             "status": "200"
                         }
-                    ],
-                    "description": "publish data to Flow",
-                    "name": "can publish data to Flow"
+                    ]
                 },
                 {
+                	"name": "can delete a Flow",
+                    "description": "delete a Flow",
                     "api_calls": [
                         {
+                        	"request": "DELETE /flows",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token2}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
-                            "it": "can delete a Flow",
-                            "request": "DELETE /v2.0.1/flows",
                             "save": {},
                             "status": 404
                         }
-                    ],
-                    "description": "delete a Flow",
-                    "name": "can delete a Flow"
+                    ]
                 },
                 {
-                    "api_calls": [
-                        {
-                            "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
-                            },
-                            "it": "can delete a Object",
-                            "request": "DELETE /v2.0.1/objects/{{saved.object_id}}",
-                            "save": {},
-                            "status": 200
-                        }
-                    ],
+                	"name": "can delete an Object",
                     "description": "delete an Object",
-                    "name": "can delete an Object"
-                },
-                {
                     "api_calls": [
                         {
+                        	"request": "DELETE /objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "can verify a User",
-                            "request": "GET /v2.0.1/users/{{saved.user_id}}",
                             "save": {},
                             "status": 200
                         }
-                    ],
+                    ]
+                },
+                {
+                	"name": "can verify a User",
                     "description": "verify a User",
-                    "name": "can verify a User"
-                },
-                {
                     "api_calls": [
                         {
+                        	"request": "GET /users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "can delete a User",
-                            "request": "DELETE /v2.0.1/users/{{saved.user_id}}",
                             "save": {},
                             "status": 200
                         }
-                    ],
-                    "description": "delete a User",
-                    "name": "can delete a User"
+                    ]
                 },
                 {
+                	"name": "can delete a User",
+                    "description": "delete a User",
                     "api_calls": [
                         {
+                        	"request": "DELETE /users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.token}}"
+                                "Authorization": "Bearer {{saved.tokenKS}}"
                             },
-                            "it": "can verify a User has been deleted",
-                            "request": "GET /v2.0.1/users/{{saved.user_id}}",
+                            "save": {},
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can verify a User has been deleted",
+                    "description": "verify a User has been deleted",
+                    "api_calls": [
+                        {
+                        	"request": "GET /users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.tokenKS}}"
+                            },
                             "save": {},
                             "status": 403
                         }
-                    ],
-                    "description": "verify a User has been deleted",
-                    "name": "can verify a User has been deleted"
+                    ]
                 }
             ]
         }
