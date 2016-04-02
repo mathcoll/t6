@@ -30,8 +30,8 @@ router.get('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 				{ 'id' : object_id },
 			]
 		};
-		//console.log(query);
 		var json = objects.find(query);
+		//console.log(json);
 		if ( json.length > 0 ) {
 			res.send(new ObjectSerializer(json).serialize());
 		} else {
@@ -90,13 +90,20 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 });
 
 router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
-	var object_id = req.params.object_id;
+	var object_id = req.params.object_id; //TODO: can be an Integer !!!
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
-		var o = objects.find({'id': { '$eq': object_id }});
+		var query = {
+			'$and': [
+				{ 'user_id' : req.user.id }, // delete only object from current user
+				{ 'id' : object_id },
+			]
+		};
+		var o = objects.find(query);
 		//console.log(o);
-		if (o) {
+		if ( o.length > 0 ) {
 			objects.remove(o);
+			db.saveDatabase();
 			res.send({ 'code': 200, message: 'Successfully deleted', removed_id: object_id }, 200); // TODO: missing serializer
 		} else {
 			res.send({ 'code': 404, message: 'Not Found' }, 404);
@@ -137,11 +144,14 @@ function bearerAuthToken(req, res, next) {
 			]}
 		);
 		
-		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
-		if ( !req.user ) {
+		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
-			next();
+			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+				next();
+			} else {
+				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+			}
 		}
 	} else {
 		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
