@@ -144,7 +144,7 @@ function bearerAuthToken(req, res, next) {
 			next();
 		}
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
 	}
 }
 
