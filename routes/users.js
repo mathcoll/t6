@@ -188,11 +188,14 @@ function bearerAuthToken(req, res, next) {
 			]}
 		);
 		
-		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
-		if ( !req.user ) {
+		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
-			next();
+			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+				next();
+			} else {
+				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+			}
 		}
 	} else {
 		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
