@@ -239,6 +239,24 @@
                     ]
                 },
                 {
+                	"name": "can get All Objects",
+                    "description": "get All Objects",
+                    "api_calls": [
+                        {
+                        	"request": "GET /objects",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer}}"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                },
+                            "save": {}
+                        }
+                    ]
+                },
+                {
                 	"name": "can delete a Flow",
                     "description": "delete a Flow",
                     "api_calls": [
@@ -304,7 +322,7 @@
                                 "Authorization": "Bearer {{saved.tokenKS}}"
                             },
                             "save": {},
-                            "status": 403
+                            "status": 404
                         }
                     ]
                 }
