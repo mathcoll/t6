@@ -340,7 +340,7 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 8
+        	                    "size": 7
         	                }
                         }
                     ]

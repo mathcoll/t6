@@ -145,7 +145,6 @@ router.delete('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	if ( req.token !== undefined && req.user.id == user_id ) {
 		users	= db.getCollection('users');
 		var u = users.find({'id': { '$eq': user_id }});
-		//console.log(u);
 		if (u) {
 			users.remove(u);
 			res.send({ 'code': 200, message: 'Successfully deleted', removed_id: user_id }, 200); // TODO: missing serializer
