@@ -18,11 +18,11 @@ _Objects_ are defined for each _Users_.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/objects/ | _Bearer_ | Get the list of _Objects_ from the current _User_. |
-| GET | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer_ | Get details on the selected _Object_. |
-| POST | http://127.0.0.1:3000/v2.0.1/objects | _Bearer_ | Add a new _Object_ to current _User_. |
-| PUT | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer_ | Update an _Object_. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer_ | Delete an _Object_. |
+| GET | http://127.0.0.1:3000/v2.0.1/objects/ | _Bearer Auth Token_ | Get the list of _Objects_ from the current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth Token_ | Get details on the selected _Object_. |
+| POST | http://127.0.0.1:3000/v2.0.1/objects | _Bearer Auth Token_ | Add a new _Object_ to current _User_. |
+| PUT | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth Token_ | Update an _Object_. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth Token_ | Delete an _Object_. |
 
 
 ### Flows
@@ -32,20 +32,20 @@ _Flows_ are defined for each _Users_ and are having permissions.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/flows | _Bearer_ | Get the list of _Flows_ from the current _User_. |
-| GET | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer_ | Get details on the selected _Flow_. |
-| POST | http://127.0.0.1:3000/v2.0.1/flows | _Bearer_ | Add a new _Flow_ and get 'rw' permissions. |
-| PUT | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer_ | Update a _Flow_. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer_ | Delete a _Flow_. |
+| GET | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth Token_ | Get the list of _Flows_ from the current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth Token_ | Get details on the selected _Flow_. |
+| POST | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth Token_ | Add a new _Flow_ and get 'rw' permissions. |
+| PUT | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth Token_ | Update a _Flow_. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth K/S_ | Delete a _Flow_. |
 
 
 ### Data
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer_ | Get data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
-| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id/:data_id | _Bearer_ | Get 1 specific data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
-| POST | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer_ | Add a data to a _Flows_ (_User_ must have 'rw' permission). |
+| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth Token_ | Get data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
+| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id/:data_id | _Bearer Auth Token_ | Get 1 specific data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
+| POST | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth Token_ | Add a data to a _Flows_ (_User_ must have 'rw' permission). |
 
 
 ### Units
@@ -54,9 +54,9 @@ _Flows_ are defined for each _Users_ and are having permissions.
 | ------------- | ------------- | ------------- | ------------- |
 | GET | http://127.0.0.1:3000/v2.0.1/units | _n/a_ | Get the _Units_ list set on the Easy-IOT platform. |
 | GET | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _n/a_ | Get a specific _Units_ details. |
-| POST | http://127.0.0.1:3000/v2.0.1/units | _Bearer_ | Add a _Unit_ to platform, require _Admin_ permissions. |
-| PUT | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer_ | Update a _Unit_ to platform, require _Admin_ permissions. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer_ | Delete a _Unit_ from platform, require _Admin_ permissions. |
+| POST | http://127.0.0.1:3000/v2.0.1/units | _Bearer Admin_ | Add a _Unit_ to platform, require _Admin_ permissions. |
+| PUT | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer Admin_ | Update a _Unit_ to platform, require _Admin_ permissions. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer Admin_ | Delete a _Unit_ from platform, require _Admin_ permissions. |
 
 
 ### Datatypes
@@ -65,25 +65,39 @@ _Flows_ are defined for each _Users_ and are having permissions.
 | ------------- | ------------- | ------------- | ------------- |
 | GET | http://127.0.0.1:3000/v2.0.1/datatypes | _n/a_ | Get the _Datatype_ list set on the Easy-IOT platform. |
 | GET | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _n/a_ | Get a specific _Datatype_ details. |
-| POST | http://127.0.0.1:3000/v2.0.1/datatypes | _Bearer_ | Add a _Datatype_ to platform, require _Admin_ permissions. |
-| PUT | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer_ | Update a _Datatype_ to platform, require _Admin_ permissions. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer_ | Delete a _Datatype_ from platform, require _Admin_ permissions. |
+| POST | http://127.0.0.1:3000/v2.0.1/datatypes | _Bearer Admin_ | Add a _Datatype_ to platform, require _Admin_ permissions. |
+| PUT | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer Admin_ | Update a _Datatype_ to platform, require _Admin_ permissions. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer Admin_ | Delete a _Datatype_ from platform, require _Admin_ permissions. |
 
 
 ### Users and Permissions
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/users | _Bearer_ | Get the _User_ list on the Easy-IOT platform, require _Admin_ permissions. |
-| GET | http://127.0.0.1:3000/v2.0.1/users/me | _Bearer_ | Get self details current _User_). |
-| GET | http://127.0.0.1:3000/v2.0.1/users/me/permissions | _Bearer_ | Get list of current _User_'s permissions on flows. |
-| POST | http://127.0.0.1:3000/v2.0.1/users/me/token | API_KEY+API_SECRET | Refresh token from current _User_. |
-| POST | http://127.0.0.1:3000/v2.0.1/users | _Bearer_ | Add a _User_ to platform. |
-| PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer_ | Update a _User_ to platform. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer_ | Delete a _User_ from platform. |
+| GET | http://127.0.0.1:3000/v2.0.1/users | _Bearer Auth Token_ | Get the _User_ list on the Easy-IOT platform, require _Admin_ permissions. |
+| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | __Bearer Auth Token_ | Get self details current _User_). |
+| POST | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth K/S_ | Refresh token from current _User_. |
+| POST | http://127.0.0.1:3000/v2.0.1/users | _n/a_ | Add a _User_ to platform. |
+| PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth Token_ | Update a _User_ to platform. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth Token_ | Delete a _User_ from platform. |
 
 
 ### Security & Tokens
+#### _Bearer Auth K/S_
+This Token is used to create initial Flows before having permissions.
+
+#### _Bearer Auth Token_
+Once a _Flow_ has been created you are able to authenticate using Auth Token with permissions.
+
+#### _Bearer Admin_
+This Token is only for managing _Units_ and _DataTypes_ from Admins level.
+How do we set a _User_ to be admin... I'm sorry, there is no way (yet) to do so; except manually modify json database for a _User_ y adding: ```"role": "admin"```. 
+
+#### _n/a_
+Some Endpoints are open to any request, no Barear, no authentification at all.
+
+
+
 Process to handle a connection and publish data to flows:
 * Create the User:
 
