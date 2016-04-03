@@ -143,11 +143,11 @@ function bearerAuthToken(req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
-		
 		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
 				res.send({ 'code': 404, 'error': 'Not Found' }, 404);

@@ -197,7 +197,7 @@
                     "description": "update a Flow",
                     "api_calls": [
                         {
-                        	"request": "PUT /flows",
+                        	"request": "PUT /flows/{{saved.flow_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.tokenKS}}"
                             },
@@ -211,7 +211,27 @@
                                 "unit": "Boolean"
                             },
                             "save": {},
-                            "status": 404
+                            "status": 500
+                        }
+                    ]
+                },
+                {
+                	"name": "can get permissions from Token",
+                    "description": "get permissions from Token",
+                    "api_calls": [
+                        {
+                        	"request": "GET /users/me/token",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer}}"
+                            },
+                            "status": "200",
+                            "assert": [{
+        	                    "select": "body.data.attributes.permissions",
+        	                    "size": 1
+        	                },{
+        	                    "select": "body.data.attributes.permissions.0.flow-id",
+        	                    "equal": "{{saved.flow_id}}"
+        	                }]
                         }
                     ]
                 },

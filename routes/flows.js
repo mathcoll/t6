@@ -65,8 +65,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			res.send({ 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!' }, 400);
 		} else {
 			flows	= db.getCollection('flows');
-			var flow = flows.findOne( {'id': { '$eq': flow_id }} );
-			
+			var flow = flows.findOne( {'id': flow_id} );
 			if ( flow ) {
 				var flow_user_id = flow.user_id
 				// Check if Token is allowed (write permission) to modify the Flow
@@ -145,12 +144,15 @@ function bearerAuthToken(req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
-		
-		req.user = users.findOne({'id': { '$eq': req.bearer.user_id }});
-		if ( !req.user ) {
+		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
-			next();
+			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+				req.user.permissions = req.bearer.permissions;
+				next();
+			} else {
+				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+			}
 		}
 	} else {
 		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
