@@ -18,27 +18,6 @@ router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
-/*
-router.get('/tokens', function (req, res) {
-	// Todo: only for admins
-	tokens			= db.getCollection('tokens');
-	res.send({ 'code': 200, tokens: tokens }, 200);
-});
-*/
-
-router.get('/me', bearerAuthToken, function (req, res) {
-	if ( req.user !== undefined ) {
-		var json = new UserSerializer(req.user).serialize();
-		if ( json !== undefined ) {
-			res.send(json, 200);
-		} else {
-			res.send({ 'code': 404, message: 'Not Found' }, 404);
-		}
-	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
-	}
-});
-
 router.post('/me/token', function (req, res) {
 	users			= db.getCollection('users');
 	tokens			= db.getCollection('tokens');
@@ -91,6 +70,19 @@ router.post('/me/token', function (req, res) {
 	} else {
 		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 	}	
+});
+
+router.get('/me/token', bearerAuthToken, function (req, res) {
+	if ( req.user !== undefined ) {
+		var json = new UserSerializer(req.user).serialize();
+		if ( json !== undefined ) {
+			res.send(json, 200);
+		} else {
+			res.send({ 'code': 404, message: 'Not Found' }, 404);
+		}
+	} else {
+		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+	}
 });
 
 router.post('/', function (req, res) {
@@ -186,11 +178,11 @@ function bearerAuthToken(req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
-		
 		if ( !req.bearer ) {
 			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
 				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
