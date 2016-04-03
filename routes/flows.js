@@ -65,40 +65,45 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			res.send({ 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!' }, 400);
 		} else {
 			flows	= db.getCollection('flows');
-			var flow_user_id = flows.findOne( {'id': { '$eq': flow_id }} ).user_id;
-
-			// Check if Token is allowed (write permission) to modify the Flow
-			// Token can be from the Owner, the Group, or Other
-			var permissions = (req.bearer.permissions);
-			var p = permissions.filter(function(p) { 
-			    return p.flow_id == flow_id; 
-			})[0];
-			var OwnerPerm = ((p.permission).split(''))[0];
-			var GroupPerm = ((p.permission).split(''))[1]; // Not really used yet
-			var OtherPerm = ((p.permission).split(''))[2];
+			var flow = flows.findOne( {'id': { '$eq': flow_id }} );
 			
-			if ( (req.bearer.user_id == flow_user_id && OwnerPerm >= 4 ) || (req.bearer.user_id != flow_user_id && OtherPerm >= 4 ) ) { // TODO sur about that ????????
-				var result;
-				flows.findAndUpdate(
-					function(i){return i.id==flow_id},
-					function(item){
-						item.name		= req.body.name!==undefined?req.body.name:item.name;
-						item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
-						item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
-						item.permission	= permission!==undefined?permission:item.permission;
-						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
-						result = item;
+			if ( flow ) {
+				var flow_user_id = flow.user_id
+				// Check if Token is allowed (write permission) to modify the Flow
+				// Token can be from the Owner, the Group, or Other
+				var permissions = (req.bearer.permissions);
+				var p = permissions.filter(function(p) { 
+				    return p.flow_id == flow_id; 
+				})[0];
+				var OwnerPerm = ((p.permission).split(''))[0];
+				var GroupPerm = ((p.permission).split(''))[1]; // Not really used yet
+				var OtherPerm = ((p.permission).split(''))[2];
+				
+				if ( (req.bearer.user_id == flow_user_id && OwnerPerm >= 4 ) || (req.bearer.user_id != flow_user_id && OtherPerm >= 4 ) ) { // TODO sur about that ????????
+					var result;
+					flows.findAndUpdate(
+						function(i){return i.id==flow_id},
+						function(item){
+							item.name		= req.body.name!==undefined?req.body.name:item.name;
+							item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
+							item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
+							item.permission	= permission!==undefined?permission:item.permission;
+							item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
+							result = item;
+						}
+					);
+					//console.log(flows);
+					if ( result !== undefined ) {
+						db.save();
+						res.send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }, 200);
+					} else {
+						res.send({ 'code': 404, message: 'Not Found' }, 404);
 					}
-				);
-				//console.log(flows);
-				if ( result !== undefined ) {
-					db.save();
-					res.send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }, 200);
 				} else {
-					res.send({ 'code': 404, message: 'Not Found' }, 404);
+					res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
 				}
 			} else {
-				res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+				res.send({ 'code': 401, 'error': 'Forbidden ??' }, 401);
 			}
 		}
 	}
@@ -106,6 +111,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 
 router.delete('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	//TODO
+	// TODO: delete all data related to that flow?
 	res.send({ 'code': 404, message: 'Not Found', details: 'Not yet implemented... Sorry.' }, 404);
 });
 
