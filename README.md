@@ -74,8 +74,7 @@ _Flows_ are defined for each _Users_ and are having permissions.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/users | _Bearer Auth Token_ | Get the _User_ list on the Easy-IOT platform, require _Admin_ permissions. |
-| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth Token_ | Get self details current _User_). |
+| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth Token_ | Get self details current _User_. |
 | POST | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth K/S_ | Refresh token from current _User_. |
 | POST | http://127.0.0.1:3000/v2.0.1/users | _n/a_ | Add a _User_ to platform. |
 | PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth Token_ | Update a _User_ to platform. |
