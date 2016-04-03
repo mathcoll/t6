@@ -75,7 +75,7 @@ _Flows_ are defined for each _Users_ and are having permissions.
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
 | GET | http://127.0.0.1:3000/v2.0.1/users | _Bearer Auth Token_ | Get the _User_ list on the Easy-IOT platform, require _Admin_ permissions. |
-| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | __Bearer Auth Token_ | Get self details current _User_). |
+| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth Token_ | Get self details current _User_). |
 | POST | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth K/S_ | Refresh token from current _User_. |
 | POST | http://127.0.0.1:3000/v2.0.1/users | _n/a_ | Add a _User_ to platform. |
 | PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth Token_ | Update a _User_ to platform. |
@@ -83,22 +83,7 @@ _Flows_ are defined for each _Users_ and are having permissions.
 
 
 ### Security & Tokens
-#### _Bearer Auth K/S_
-This Token is used to create initial Flows before having permissions.
-
-#### _Bearer Auth Token_
-Once a _Flow_ has been created you are able to authenticate using Auth Token with permissions.
-
-#### _Bearer Admin_
-This Token is only for managing _Units_ and _DataTypes_ from Admins level.
-How do we set a _User_ to be admin... I'm sorry, there is no way (yet) to do so; except manually modify json database for a _User_ y adding: ```"role": "admin"```. 
-
-#### _n/a_
-Some Endpoints are open to any request, no Barear, no authentification at all.
-
-
-
-Process to handle a connection and publish data to flows:
+#### Process to handle a connection and publish data to flows:
 * Create the User:
 
 ```curl -i \
@@ -156,6 +141,22 @@ Process to handle a connection and publish data to flows:
 -H "Authorization: Bearer $bearer" \
 -X POST http://127.0.0.1:3000/v2.0.1/data \
 --data '{"flow_id":"d05da218-2751-441d-9ed3-3458296a029e", "value":"My String Value", "timestamp": "1459369102418", "publish": "true", "save": "true", "unit": "String", "mqtt_topic": ""}'```
+
+
+#### Details on Tokens
+##### _Bearer Auth K/S_
+This Token is used to create initial Flows before having permissions.
+
+##### _Bearer Auth Token_
+Once a _Flow_ has been created you are able to authenticate using Auth Token with permissions.
+
+##### _Bearer Admin_
+This Token is only for managing _Units_ and _DataTypes_ from Admins level.
+How do we set a _User_ to be admin... I'm sorry, there is no way (yet) to do so; except manually modify json database for a _User_ y adding: ```"role": "admin"```. 
+
+##### _n/a_
+Some Endpoints are open to any request, no Barear, no authentification at all.
+
 
 
 ### Mqtt rules to handle Actions
