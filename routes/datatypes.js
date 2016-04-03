@@ -73,29 +73,6 @@ router.delete('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	}
 });
 
-function bearerAuth(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		var queryAdmin = {
-			'$and': [
-				{'role': 'admin'},
-				{'token': { '$eq': req.token }},
-			]
-		};
-		if (req.user = (users.find(queryAdmin))[0] == undefined ) {
-			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
-		};
-		next();
-	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
-	}
-}
-
 function bearerAdmin(req, res, next) {
 	var bearerToken;
 	var bearerHeader = req.headers['authorization'];

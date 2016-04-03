@@ -113,21 +113,6 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
-function bearerAuth(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.user = (users.find({'token': { '$eq': req.token }}))[0];
-		next();
-	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
-	}
-}
-
 function bearerAuthToken(req, res, next) {
 	var bearerToken;
 	var bearerHeader = req.headers['authorization'];
