@@ -16,11 +16,11 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
 	} else {
 		var permissions = (req.bearer.permissions);
-		var p = permissions.filter(function(p) { 
+		var p = permissions.filter(function(p) {
 		    return p.flow_id == flow_id; 
 		})[0];
 	
-		if ( p.perm == 'rw' || p.perm == 'r' ) {
+		if ( p.permission == '644' ) { //TODO
 			//var limit = req.params.limit!==undefined?parseInt(req.params.limit):10;
 			//var page = req.params.page!==undefined?parseInt(req.params.page):1;
 			//var sort = req.query.sort!==undefined?req.query.sort:'time';
@@ -131,11 +131,11 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 		res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
 	} else {
 		var permissions = (req.bearer.permissions);
-		var p = permissions.filter(function(p) { 
+		var p = permissions.filter(function(p) {
 		    return p.flow_id == flow_id; 
 		})[0];
 	
-		if ( p.perm == 'rw' || p.perm == 'r' ) {
+		if ( p.permission == '644' ) { // TODO
 			var limit = 1;
 			var page = 1;
 			var sorting = req.query.order=='asc'?true:false;
