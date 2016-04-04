@@ -32,7 +32,8 @@
                             "save": {
                                 "saved.key": "body.token.key",
                                 "saved.secret": "body.token.secret",
-                                "saved.user_id": "body.user.data.id"
+                                "saved.user_id": "body.user.data.id",
+                                "saved.subscription_date": "body.user.data.subscription_date"
                             },
                             "status": "201"
                         }
@@ -265,8 +266,37 @@
                                 "unit": "-",
                                 "value": "true"
                             },
-                            "save": {},
-                            "status": "200"
+                            "save": {
+                            	"saved.data_id": "body.data.links.self"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a specific data from Flow",
+                    "description": "get a specific data from Flow",
+                    "api_calls": [
+                        {
+                        	"request": "GET {{saved.data_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer}}"
+                            },
+                            "save": {
+                            	"saved.data_id": "body.data.links.self"
+                            },
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                },{
+        	                    "select": "body.data.0.attributes.flow_id",
+        	                    "equal": "{{saved.flow_id}}"
+        	                }]
                         }
                     ]
                 },
@@ -283,8 +313,7 @@
                             "assert": {
         	                    "select": "body.data",
         	                    "size": 1
-        	                },
-                            "save": {}
+        	                }
                         }
                     ]
                 },
@@ -312,7 +341,11 @@
                                 "Authorization": "Bearer {{saved.tokenKS}}"
                             },
                             "save": {},
-                            "status": 200
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.removed_id",
+        	                    "equal": "{{saved.object_id}}"
+        	                }
                         }
                     ]
                 },
@@ -327,10 +360,13 @@
                             },
                             "save": {},
                             "status": 200,
-                            "assert": {
+                            "assert": [{
         	                    "select": "body.data",
         	                    "size": 1
-        	                }
+        	                },{
+        	                    "select": "body.subscription_date",
+        	                    "equal": "{{saved.subscription_date}}"
+        	                }]
                         }
                     ]
                 },
@@ -344,7 +380,11 @@
                                 "Authorization": "Bearer {{saved.tokenKS}}"
                             },
                             "save": {},
-                            "status": 200
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.removed_id",
+        	                    "equal": "{{saved.user_id}}"
+        	                }
                         }
                     ]
                 },
@@ -358,7 +398,11 @@
                                 "Authorization": "Bearer {{saved.tokenKS}}"
                             },
                             "save": {},
-                            "status": 404
+                            "status": 404,
+                            "assert": {
+        	                    "select": "body.error",
+        	                    "equal": "Not Found"
+        	                }
                         }
                     ]
                 }
