@@ -202,7 +202,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 
 router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
-	var time		= req.body.timestamp!==undefined?parseInt(req.body.timestamp):moment().format('x');
+	var time		= req.body.timestamp!==''?parseInt(req.body.timestamp):moment().format('x');
 	if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
 	
 	var value		= req.body.value!==undefined?req.body.value:"";
@@ -228,7 +228,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		if ( p.permission == '644' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
 			// TODO: In case text != null, we should also save that text to Db!
 			
-			var data = [ { time:time, value: value } ];
+			var data = [ { time:time, value: value } ]; // TODO: is it only for influxdb???
 			if ( save == true ) {
 				if ( db_type == 'influxdb' ) {
 					/* InfluxDB database */
@@ -266,9 +266,13 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}));
 				}
 			}
-			
+
 			data.flow_id = flow_id;
-			data.id = time;
+			data[0].parent;
+			data[0].first;
+			data[0].prev;
+			data[0].next;
+			data[0].id = time;
 			res.send(new DataSerializer(data).serialize());
 			
 		} else {
