@@ -2,6 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var DataSerializer = require('../serializers/data');
+var ErrorSerializer = require('../serializers/error');
 var users;
 var tokens;
 
@@ -9,11 +10,11 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
 	
 	if ( !flow_id ) {
-		res.send({ 'code': 405, 'error': 'Method Not Allowed' }, 405);
+		res.send(new ErrorSerializer({'id': 56, 'code': 405, 'message': 'Method Not Allowed'}).serialize(), 405);
 	}
 	if ( !req.bearer.user_id ){
 		// Not Authorized because token is invalid
-		res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
+		res.send(new ErrorSerializer({'id': 57, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
 	} else {
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
@@ -96,7 +97,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 				}	
 					
 				query = query.toString();
-				console.log(query);
+				//console.log(query);
 				//res.send({q: req.query, query: query}, 200);
 				dbSQLite3.all(query, function(err, data) {
 					if (err) console.log(err);
@@ -114,7 +115,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			}
 		} else {
 			// no permission
-			res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
+			res.send(new ErrorSerializer({'id': 58, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
 		}
 	}
 });
@@ -124,11 +125,11 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 	var data_id = req.params.data_id;
 	
 	if ( !flow_id ) {
-		res.send({ 'code': 405, 'error': 'Method Not Allowed' }, 405);
+		res.send(new ErrorSerializer({'id': 59, 'code': 405, 'message': 'Method Not Allowed'}).serialize(), 405);
 	}
 	if ( !req.bearer.user_id ){
 		// Not Authorized because token is invalid
-		res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
+		res.send(new ErrorSerializer({'id': 60, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
 	} else {
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
@@ -189,13 +190,13 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					if ( data.length > 0 ) {
 						res.send(new DataSerializer(data).serialize());
 					} else {
-						res.send({ 'code': 404, message: 'Not Found' }, 404);
+						res.send(new ErrorSerializer({'id': 61, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 					}
 				});
 			}
 		} else {
 			// no permission
-			res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
+			res.send(new ErrorSerializer({'id': 62, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
 		}
 	}
 });
@@ -218,7 +219,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	
 	if ( !req.user.id ){
 		// Not Authorized because token is invalid
-		res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
+		res.send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
 	} else {
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
@@ -277,7 +278,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 			
 		} else {
 			// Not Authorized due to permission
-			res.send({ 'code': 401, 'error': 'Not Authorized' }, 401);
+			res.send(new ErrorSerializer({'id': 65, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
 		}
 	}
 });
@@ -298,17 +299,17 @@ function bearerAuthToken(req, res, next) {
 			]}
 		);
 		if ( !req.bearer ) {
-			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+			res.send(new ErrorSerializer({'id': 66, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
 				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
-				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+				res.send(new ErrorSerializer({'id': 67, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 			}
 		}
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 68, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 }
 

@@ -2,6 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var ObjectSerializer = require('../serializers/object');
+var ErrorSerializer = require('../serializers/error');
 var objects;
 var users;
 var tokens;
@@ -13,10 +14,10 @@ router.get('/', bearerAuthToken, function (req, res) {
 		if ( json !== undefined ) {
 			res.send(json, 200);
 		} else {
-			res.send({ 'code': 404, message: 'Not Found' }, 404);
+			res.send(new ErrorSerializer({'id': 25, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 		}
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send(new ErrorSerializer({'id': 26, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 	}
 });
 
@@ -35,10 +36,10 @@ router.get('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		if ( json.length > 0 ) {
 			res.send(new ObjectSerializer(json).serialize());
 		} else {
-			res.send({ 'code': 404, message: 'Not Found' }, 404);
+			res.send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 		}
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send(new ErrorSerializer({'id': 28, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 	}
 });
 
@@ -59,7 +60,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 		//console.log(objects);
 		res.send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() }, 201);
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send(new ErrorSerializer({'id': 29, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 	}
 });
 
@@ -85,7 +86,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		db.save();
 		res.send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() }, 200);
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send(new ErrorSerializer({'id': 30, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 	}
 });
 
@@ -106,10 +107,10 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			db.saveDatabase();
 			res.send({ 'code': 200, message: 'Successfully deleted', removed_id: object_id }, 200); // TODO: missing serializer
 		} else {
-			res.send({ 'code': 404, message: 'Not Found' }, 404);
+			res.send(new ErrorSerializer({'id': 31, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 		}
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send(new ErrorSerializer({'id': 32, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 	}
 });
 
@@ -129,17 +130,17 @@ function bearerAuthToken(req, res, next) {
 			]}
 		);
 		if ( !req.bearer ) {
-			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+			res.send(new ErrorSerializer({'id': 33, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
 				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
-				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+				res.send(new ErrorSerializer({'id': 34, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 			}
 		}
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 35, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 }
 

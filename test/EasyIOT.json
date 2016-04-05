@@ -177,7 +177,7 @@
                                     "{{saved.object_id}}",
                                     "1"
                                 ],
-                                "permission": "644",
+                                "permission": 644,
                                 "unit": "String"
                             },
                             "save": {
@@ -220,7 +220,7 @@
                                 "objects": [
                                     "{{saved.object_id}}"
                                 ],
-                                "permission": "644",
+                                "permission": 644,
                                 "unit": "Boolean"
                             },
                             "save": {},
@@ -400,7 +400,7 @@
                             "save": {},
                             "status": 404,
                             "assert": {
-        	                    "select": "body.error",
+        	                    "select": "body.data.attributes.message",
         	                    "equal": "Not Found"
         	                }
                         }

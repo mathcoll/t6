@@ -2,6 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var DataTypeSerializer = require('../serializers/datatype');
+var ErrorSerializer = require('../serializers/error');
 var datatypes;
 var users;
 var tokens;
@@ -19,7 +20,7 @@ router.get('/:datatype_id([0-9a-z\-]+)', function (req, res) {
 	if ( json.length > 0 ) {
 		res.send(new DataTypeSerializer(json).serialize(), 200);
 	} else {
-		res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+		res.send(new ErrorSerializer({'id': 48, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 	}
 });
 
@@ -33,7 +34,7 @@ router.post('/', bearerAdmin, function (req, res) {
 		datatypes.insert(new_datatype);
 		res.send({ 'code': 201, message: 'Created', datatype: new DataTypeSerializer(new_datatype).serialize() }, 201);
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 49, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 });
 
@@ -52,7 +53,7 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 		db.save();
 		res.send({ 'code': 200, message: 'Successfully updated', datatype: new DataTypeSerializer(result).serialize() }, 200);
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 50, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 });
 
@@ -66,10 +67,10 @@ router.delete('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 			db.save();
 			res.send({ 'code': 200, message: 'Successfully deleted', removed_id: datatype_id }, 200); // TODO: missing serializer
 		} else {
-			res.send({ 'code': 404, message: 'Not Found' }, 404);
+			res.send(new ErrorSerializer({'id': 51, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 		}
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 52, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 });
 
@@ -89,16 +90,16 @@ function bearerAdmin(req, res, next) {
 			]}
 		);
 		if ( !req.bearer ) {
-			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+			res.send(new ErrorSerializer({'id': 53, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }, 'role': 'admin'}) ) {
 				next();
 			} else {
-				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+				res.send(new ErrorSerializer({'id': 54, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 			}
 		}
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 55, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 }
 

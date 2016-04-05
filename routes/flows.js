@@ -2,6 +2,7 @@
 var express = require('express');
 var router = express.Router();
 var FlowSerializer = require('../serializers/flow');
+var ErrorSerializer = require('../serializers/error');
 var flows;
 var users;
 var tokens;
@@ -25,10 +26,10 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 		if ( results.length > 0 ) {
 			res.send(new FlowSerializer(results).serialize());
 		} else {
-			res.send({ 'code': 404, message: 'Not Found' }, 404);
+			res.send(new ErrorSerializer({'id': 36, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 		}	
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 37, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 });
 
@@ -36,7 +37,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 	if ( req.token !== undefined ) {
 		var permission = req.body.permission!==undefined?req.body.permission:'600'; // default to Owner: Read+Write
 		if ( permission < 600 ) {
-			res.send({ 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!' }, 400);
+			res.send(new ErrorSerializer({'id': 38, 'code': 400, 'message': 'Bad Request', details: 'Permission must be greater than 600!'}).serialize(), 400);
 		} else {
 			flows	= db.getCollection('flows');
 			var flow_id = uuid.v4();
@@ -62,7 +63,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		var flow_id = req.params.flow_id;
 		var permission = req.body.permission!==undefined?req.body.permission:undefined;
 		if ( permission < 600 ) {
-			res.send({ 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!' }, 400);
+			res.send(new ErrorSerializer({'id': 39, 'code': 400, 'message': 'Bad Request', 'details': 'Permission must be greater than 600!'}).serialize(), 400);
 		} else {
 			flows	= db.getCollection('flows');
 			var flow = flows.findOne( {'id': flow_id} );
@@ -97,12 +98,13 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						res.send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }, 200);
 					} else {
 						res.send({ 'code': 404, message: 'Not Found' }, 404);
+						res.send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 					}
 				} else {
-					res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+					res.send(new ErrorSerializer({'id': 41, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 				}
 			} else {
-				res.send({ 'code': 401, 'error': 'Forbidden ??' }, 401);
+				res.send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize(), 401);
 			}
 		}
 	}
@@ -111,7 +113,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 router.delete('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
 	//TODO
 	// TODO: delete all data related to that flow?
-	res.send({ 'code': 404, message: 'Not Found', details: 'Not yet implemented... Sorry.' }, 404);
+	res.send(new ErrorSerializer({'id': 43, 'code': 404, 'message': 'Not Found', details: 'Not yet implemented... Sorry.'}).serialize(), 404);
 });
 
 function bearerAuth(req, res, next) {
@@ -125,7 +127,7 @@ function bearerAuth(req, res, next) {
 		req.user = (users.find({'token': { '$eq': req.token }}))[0];
 		next();
 	} else {
-		res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+		res.send(new ErrorSerializer({'id': 44, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 	}
 }
 
@@ -145,17 +147,17 @@ function bearerAuthToken(req, res, next) {
 			]}
 		);
 		if ( !req.bearer ) {
-			res.send({ 'code': 403, 'error': 'Forbidden' }, 403);
+			res.send(new ErrorSerializer({'id': 45, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
 				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
-				res.send({ 'code': 404, 'error': 'Not Found' }, 404);
+				res.send(new ErrorSerializer({'id': 46, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 			}
 		}
 	} else {
-		res.send({ 'code': 401, 'error': 'Unauthorized' }, 401);
+		res.send(new ErrorSerializer({'id': 44, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 }
 
