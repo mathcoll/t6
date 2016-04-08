@@ -135,8 +135,8 @@
                     ]
                 },
                 {
-                	"name": "can get an Object",
-                    "description": "get an Object",
+                	"name": "can get a specific Object",
+                    "description": "get a specific Object",
                     "api_calls": [
                         {
                         	"request": "GET /objects/{{saved.object_id}}",
@@ -145,6 +145,24 @@
                             },
                             "save": {},
                             "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get an Object from name",
+                    "description": "get an Object from name",
+                    "api_calls": [
+                        {
+                        	"request": "GET /objects/?name=Updated%20Object",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.tokenKS}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
                         }
                     ]
                 },
@@ -158,7 +176,11 @@
                                 "Authorization": "Bearer {{saved.tokenKS}}"
                             },
                             "save": {},
-                            "status": "200"
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
                         }
                     ]
                 },

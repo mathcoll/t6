@@ -7,32 +7,37 @@ var objects;
 var users;
 var tokens;
 
-router.get('/', bearerAuthToken, function (req, res) {
+router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
+	var object_id = req.params.object_id;
+	var name = req.query.name;
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
-		var json = new ObjectSerializer(objects.find({'user_id': { '$eq': req.user.id }})).serialize();
-		if ( json !== undefined ) {
-			res.send(json, 200);
-		} else {
-			res.send(new ErrorSerializer({'id': 25, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
-		}
-	} else {
-		res.send(new ErrorSerializer({'id': 26, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
-	}
-});
-
-router.get('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
-	var object_id = req.params.object_id; // TODO: can be an Integer !!!
-	if ( req.token !== undefined ) {
-		objects	= db.getCollection('objects');
-		var query = {
+		var query;
+		if ( object_id !== undefined ) {
+			query = {
 			'$and': [
-				{ 'user_id' : req.user.id }, // returns only object from current user
-				{ 'id' : object_id },
-			]
-		};
+					{ 'user_id' : req.user.id },
+					{ 'id' : object_id },
+				]
+			};
+		} else {
+			if ( name !== undefined ) {
+				query = {
+				'$and': [
+						{ 'user_id' : req.user.id },
+						{ 'name': { '$regex': [name, 'i'] } }
+					]
+				};
+			} else {
+				query = {
+				'$and': [
+						{ 'user_id' : req.user.id },
+					]
+				};
+			}
+		}
 		var json = objects.find(query);
-		//console.log(json);
+		//console.log(query);
 		if ( json.length > 0 ) {
 			res.send(new ObjectSerializer(json).serialize());
 		} else {
@@ -91,7 +96,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 });
 
 router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
-	var object_id = req.params.object_id; // TODO can be an Integer !!!
+	var object_id = req.params.object_id;
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
 		var query = {
