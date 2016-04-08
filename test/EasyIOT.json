@@ -440,6 +440,34 @@
                     ]
                 },
                 {
+                	"name": "can get Volumes Units",
+                	"description": "get Volumes Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /units?type=Volume",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 16
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Volumes Units",
+                	"description": "get Volumes Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /units?type=Température",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 6
+        	                }
+                        }
+                    ]
+                },
+                {
                 	"name": "can get EasyIOT server status",
                 	"description": "get EasyIOT server status",
                     "api_calls": [

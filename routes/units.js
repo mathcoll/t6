@@ -7,23 +7,21 @@ var units;
 var users;
 var tokens;
 
-router.get('/', function (req, res) {
-	var type = req.query.type;
-	units = db.getCollection('units');
-	if ( type === undefined ) {
-		var json = new UnitSerializer(units.find()).serialize();
-		res.send(json);
-	} else {
-		var json = new UnitSerializer(units.find({'type': { '$eq': type }})).serialize();
-		res.send(json);
-	}
-});
-
-router.get('/:unit_id([0-9a-z\-]+)', function (req, res) {
+router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res) {
+	var json;
 	var unit_id = req.params.unit_id;
+	var type = req.query.type;
 	units	= db.getCollection('units');
-	var json = units.find({ 'id': { '$eq': unit_id } });
-	console.log(json);
+	if ( type === undefined ) {
+		if ( unit_id === undefined ) {
+			json = units.find();
+		} else {
+			json = units.find({ 'id': unit_id });
+		}
+	} else {
+		json = units.find({'type': { '$eq': type }});
+	}
+	
 	if ( json.length > 0 ) {
 		res.send(new UnitSerializer(json).serialize(), 200);
 	} else {
