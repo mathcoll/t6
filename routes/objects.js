@@ -22,7 +22,7 @@ router.get('/', bearerAuthToken, function (req, res) {
 });
 
 router.get('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
-	var object_id = req.params.object_id; //TODO: can be an Integer !!!
+	var object_id = req.params.object_id; // TODO: can be an Integer !!!
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
 		var query = {
@@ -91,7 +91,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 });
 
 router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
-	var object_id = req.params.object_id; //TODO: can be an Integer !!!
+	var object_id = req.params.object_id; // TODO can be an Integer !!!
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
 		var query = {

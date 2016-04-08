@@ -21,7 +21,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		    return p.flow_id == flow_id; 
 		})[0];
 	
-		if ( p.permission == '644' ) { //TODO
+		if ( p.permission == '644' ) { // TODO
 			//var limit = req.params.limit!==undefined?parseInt(req.params.limit):10;
 			//var page = req.params.page!==undefined?parseInt(req.params.page):1;
 			//var sort = req.query.sort!==undefined?req.query.sort:'time';
