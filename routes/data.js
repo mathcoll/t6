@@ -253,7 +253,6 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 						.set("flow_id", flow_id)
 						.toString()
 					;
-					//console.log(query);
 					dbSQLite3.run(query, function(err) {
 						if (err) { }
 					});
