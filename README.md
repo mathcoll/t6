@@ -177,7 +177,7 @@ npm install
 You can add the server running as a service, tested with Ubuntu and Debian:
 * First: install the server in services:
 ```
-sudo ln -s /var/www/EasyIOT/etc/init.d/EasyIOT /etc/init.d/Easy-IOT
+sudo ln -s /var/www/EasyIOT/etc/init.d/EasyIOT /etc/init.d/EasyIOT
 ```
 
 * Then set the server to run at start: 
