@@ -5,6 +5,7 @@ Temperature=0
 TemperatureDec=0
 Checksum = 0
 ChecksumTest=0
+LastChecked=0
 
 function M.init(pin)
     Humidity=0
@@ -19,6 +20,7 @@ function M.init(pin)
     
     if status == dht.OK then
         --print("DHT Temperature:"..temp..";".."Humidity:"..humi)
+        LastChecked=tmr.now() -- timestamp ?!
     elseif status == dht.ERROR_CHECKSUM then
         print( "DHT Checksum error." )
     elseif status == dht.ERROR_TIMEOUT then
@@ -32,6 +34,10 @@ end
  
 function M.getHumidity()
     return Humidity
+end
+ 
+function M.getLastChecked()
+    return LastChecked
 end
 
 return M

@@ -3,12 +3,14 @@ dofile("wifi.lua")
 dofile("webserver.lua")
 DHT=require("dht11")
 DHT.init(DHT_PIN)
+Glc=0
 
 function readDHT11()
     DHT=require("dht11")
     DHT.init(DHT_PIN)
     Temperature = DHT.getTemperature()
     Humidity = DHT.getHumidity()
+    Glc = DHT.getLastChecked()
     --print("-----> Temperature"..Temperature.."; ".."Humidity:"..Humidity)
     DHT = nil
     package.loaded["dht11"]=nil
@@ -56,3 +58,4 @@ function sendToServer(data)
     end)
 end
 tmr.alarm(1, (timeping*60000), 1, function() pushData() end )
+tmr.alarm(2, (timeping*60000)/4, 1, function() readDHT11() end )
