@@ -1,0 +1,10 @@
+.starter-template {
+  padding: 0px 15px 0px 15px;
+  margin-top:60px;
+  text-align: center;
+}
+.sidebar-module-inset {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 15px;
+}

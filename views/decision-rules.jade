@@ -1,0 +1,24 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    .container
+      .starter-template
+        h2 Decision Rules
+
+      .col-sm-8
+        .panel.panel-default
+          .panel-body
+            h3#rules.list-group Rules
+            include ./includes/rule_item_list.jade
+            include ./includes/rule_item_list.jade
+            include ./includes/rule_item_list.jade
+
+      .col-sm-4
+        div.affix-top
+          blockquote.glyphicon.glyphicon-comment  "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months. To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
+
+
+    include ./includes/foot.jade
+

@@ -1,0 +1,32 @@
+#carousel.carousel.slide(data-ride='carousel')
+  ol.carousel-indicators
+    li(data-target='#carousel', data-slide-to='0')
+    li(data-target='#carousel', data-slide-to='1')
+    li(data-target='#carousel', data-slide-to='2')
+
+  .carousel-inner(role='listbox')
+    .item.active
+      img(src='/img/slide1.png', alt='...')
+      .carousel-caption
+        h3 First slide
+        p  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+    .item
+      img(src='/img/slide2.png', alt='...')
+      .carousel-caption
+        h3 Second slide
+        p  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+    .item
+      img(src='/img/slide3.png', alt='...')
+      .carousel-caption
+        h3 Third slide
+        p  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+
+  // Controls
+  a.left.carousel-control(href='#carousel', role='button', data-slide='prev')
+    span.glyphicon.glyphicon-chevron-left(aria-hidden='true')
+    span.sr-only Previous
+  a.right.carousel-control(href='#carousel', role='button', data-slide='next')
+    span.glyphicon.glyphicon-chevron-right(aria-hidden='true')
+    span.sr-only Next

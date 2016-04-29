@@ -1,0 +1,52 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    .container
+      .starter-template
+        h2 Objects from your library
+
+    .container
+      .col-sm-8
+        - for(object in objects) {
+          include ./includes/object_item_list.jade
+        - }
+        include ./includes/pagination.jade
+
+      .col-sm-4
+        div.affix-top
+          blockquote.glyphicon.glyphicon-comment  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
+        
+      .col-sm-4
+        div.sidebar-module-inset
+          h3 Add an Object to your library
+          form(action="/objects/add#content", method="post")
+            .form-group
+              label.control-label(for="Title") Object Name:
+                span.mandatory *
+              input.form-control(type="text", name="title", placeholder="Object Name", id="Title")
+
+            .form-group
+              label.control-label(for="Type") Type:
+                span.mandatory *
+
+            .form-group
+              label.control-label(for="Position") Position/Localisation:
+              input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position")
+
+            .form-group
+              label.control-label(for="Ip") Ip:
+              input.form-control(type="text", name="ip", placeholder="Ip v4: 192.168.0.1", id="Ip")
+
+            .form-group
+              label.control-label(for="Description") Description:
+              textarea.form-control(name="description", placeholder="Object description", id="Description")
+
+            .form-group
+              button.btn.btn-primary.m-t.pull-right
+                span.glyphicon.glyphicon-plus  Add Object
+          p &nbsp; 
+
+    include ./includes/foot.jade
+

@@ -1,0 +1,97 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    .container
+      .starter-template
+        h2 Profile of #{user.firstName} #{user.lastName}
+
+      .col-sm-4
+        .panel.panel-default
+          .panel-body
+            img.img-responsive.img-thumbnail.center-block(src='http://www.gravatar.com/avatar/#{user.hash}?s=240&d=mm&r=g', alt='Profile Image')
+            a.center-block.btn.btn-primary.btn-xm(href="http://www.gravatar.com", role="button") 
+              span.glyphicon.glyphicon-picture  Modify On Gravatar
+            h3 General Information
+            ul.profile-details
+              li.media
+                div
+                  i.glyphicon.glyphicon-user
+                  |  First-Name:
+                i  #{user.firstName}
+              li.media
+                div
+                  i.glyphicon.glyphicon-user
+                  |  Last-Name:
+                i  #{user.lastName}
+              li.media
+                div
+                  i.fa.fa-briefcase
+                  |  Plan Type:
+                i  #{user.role}
+
+            h3 Contact Information
+            ul.profile-details
+              li.media
+                div
+                  i.fa.fa-envelope
+                  |  E-mail:
+                i  #{user.email}
+                
+              button.btn.btn-simple.fa.fa-facebook-square(href="")
+              | &nbsp;
+
+              button.btn.btn-simple.fa.fa-twitter-square(href="")
+              | &nbsp;
+
+              button.btn.btn-simple.fa.fa-google-plus-square(href="")
+              | &nbsp;
+
+          .panel-footer
+            button.btn.btn-primary.m-t.pull-right
+              span.glyphicon.glyphicon-pencil  Edit
+            p &nbsp;
+
+      .col-sm-8
+        .panel.panel-default
+          .panel-body
+            h3#objects.list-group User Statistics
+            a.list-group-item(href="/objects", role="button")
+              h4.list-group-item-heading
+                span.glyphicon.glyphicon-inbox
+                |  #{objects} Objects
+                |  &ndash;
+                small  ? max Objects
+                
+            a.list-group-item(href="/flows", role="button")
+              h4.list-group-item-heading
+                span.glyphicon.glyphicon-random
+                |  #{flows} Flows
+                |  &ndash;
+                small  ? max Flows
+
+            a.list-group-item(href="#", role="button")
+              h4.list-group-item-heading
+                span.glyphicon.glyphicon-lock
+                |  #{tokens}  API Keys
+                
+            a.list-group-item(href="/flows", role="button")
+              h4.list-group-item-heading
+                span.glyphicon.glyphicon-road
+                |  ? API calls in the past 7 days
+                |  &ndash;
+                small  ? max API calls
+
+      .col-sm-8
+        .panel.panel-default
+          .panel-body
+            h3#objects.list-group Last Data inserted
+            include ./includes/data_item_list.jade
+            include ./includes/data_item_list.jade
+            include ./includes/data_item_list.jade
+            include ./includes/data_item_list.jade
+            include ./includes/data_item_list.jade
+
+    include ./includes/foot.jade
+

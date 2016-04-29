@@ -1,0 +1,50 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    
+    .container
+      .starter-template
+        - if (q)
+            h2 Search Results for "#{q}"
+        - else
+            h2 Search Results
+
+    .container
+      .col-sm-8
+        h3 #{objects.length} Objects
+        #objects.list-group
+        - if (objects.length)
+          - for(object in objects) {
+            include ./includes/object_item_list.jade
+          - }
+        - else
+            .list-group-item
+              .alert.alert-danger.alert-dismissible(role='alert')
+                p No Result in Objects
+      
+      .col-sm-4
+        div.affix-top(data-spy="affix")
+          h3 Search Results
+          ul
+            li
+              a(href="#objects") #{objects.length} Objects
+            li
+              a(href="#flows") #{flows.length} Flows
+
+    .container
+      .col-sm-8
+        h3 #{flows.length} Flows
+        #flows.list-group
+        - if (flows.length)
+          - for(flow in flows) {
+            include ./includes/flow_item_list.jade
+          - }
+        - else
+            .list-group-item
+              .alert.alert-danger.alert-dismissible(role='alert')
+                p No Result in Flows
+
+    include ./includes/foot.jade
+

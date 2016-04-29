@@ -1,0 +1,17 @@
+a.list-group-item
+  h4.list-group-item-heading
+    span.glyphicon.glyphicon-random
+    | &nbsp;#{flows[flow].name} 
+    p 
+      small #{flows[flow].description} 
+        button.btn.btn-primary.btn-sm.pull-right
+          span.glyphicon.glyphicon-pencil  Edit
+    small
+      - if (flows[flow].id)
+        span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
+        | &nbsp;
+      - if (flows[flow].unit)
+        span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Unit') #{flows[flow].unit}
+        | &nbsp;
+      - if (flows[flow].permissions)
+        span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Permissions') #{flows[flow].permissions}

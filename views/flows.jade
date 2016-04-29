@@ -1,0 +1,32 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    
+    .container
+      .starter-template
+        h2 Flows from your library
+
+    .container
+
+      .col-sm-8
+        - for(flow in flows) {
+          include ./includes/flow_item_list.jade
+        - }
+        include ./includes/pagination.jade
+
+      .col-sm-4
+        div.affix-top
+          blockquote.glyphicon.glyphicon-comment  Flows contains data collections. Flows are datastore to save time/value. Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
+
+      .col-sm-4
+        div.sidebar-module-inset
+          h3 Add a Flow to your library
+          form(action="/flows/add#content", method="post")
+            .form-group
+              button.btn.btn-primary.m-t.pull-right
+                span.glyphicon.glyphicon-plus  Add Flow
+          p &nbsp; 
+
+    include ./includes/foot.jade

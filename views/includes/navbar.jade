@@ -1,0 +1,69 @@
+// Static navbar
+nav.navbar.navbar-default.navbar-fixed-top
+  .container
+    .navbar-header
+      button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(href='/') EasyIOT
+    #navbar.navbar-collapse.collapse
+      ul.nav.navbar-nav
+        li
+          a(href='/objects') 
+            i.glyphicon.glyphicon-inbox
+              |  Objects
+        li
+          a(href='/flows')
+            i.glyphicon.glyphicon-random
+              |  Flows
+        li.dropdown
+          a.dropdown-toggle(aria-expanded='false', aria-haspopup='true', role='button', data-toggle='dropdown', href='#')
+            | Dashboards 
+            span.caret
+          ul.dropdown-menu
+            li
+              a(href='/dashboards')
+                span.glyphicon.glyphicon-th-list &nbsp;My Dashboards
+            li.divider(role='separator')
+            li
+              a(href='/dashboards/1')
+                span.glyphicon.glyphicon-th-large &nbsp;Dashboard 1
+            li
+              a(href='/dashboards/2')
+                span.glyphicon.glyphicon-th-large &nbsp;Dashboard 2
+            li
+              a(href='/dashboards/3')
+                span.glyphicon.glyphicon-th-large &nbsp;Dashboard 3
+
+      ul.nav.navbar-nav.navbar-right
+        li
+          form.header-search(method='post', action='/search')
+            .row(style='padding-top: 8px;')
+              .col-lg-12
+                .input-group
+                  input.form-control(name='q', type='text', placeholder='Search Object, Flows...', style='width:140px')
+                  span.input-group-btn
+                    button.btn.btn-default.glyphicon.glyphicon-search(type='submit', style='top:0;') 
+
+        li.dropdown
+          a.dropdown-toggle(aria-expanded='false', aria-haspopup='true', role='button', data-toggle='dropdown', href='#')
+            i.glyphicon.glyphicon-user
+            |  My Account 
+            span.caret
+          ul.dropdown-menu
+            li
+              a(href='/profile')
+                img.img-responsive.img-circle(src='http://www.gravatar.com/avatar/0cb0a67831358250366c1d5fbe2ff925?s=40&d=mm&r=g', align='left', alt='Responsive image')
+                span Mathieu Lory
+                br
+                span
+                  i Admin
+            li.divider(role='separator')
+            li
+              a(href='/decision-rules')
+                span.glyphicon.glyphicon-filter &nbsp;Decision Rules
+            li
+              a(href='#')
+                span.glyphicon.glyphicon-off &nbsp;Logout

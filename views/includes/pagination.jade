@@ -1,0 +1,26 @@
+- var p = 1
+- if (page>0)
+  - var prevPage = page-1
+- if (page<pagenb)
+  - var nextPage = prevPage+2
+- else
+  - var nextPage = ''
+
+nav
+  ul.pagination
+    - if (prevPage>0)
+      li
+        a(href='?page=#{prevPage}', aria-label='Previous')
+          span(aria-hidden='true') «
+    - while (p <= pagenb)
+      - if (p == page)
+        li.active
+          a #{p}
+      - else
+        li
+          a(href="?page=#{p}") #{p}
+      - var p=(p+1)
+    - if (nextPage)
+      li
+        a(href='?page=#{nextPage}', aria-label='Next')
+          span(aria-hidden='true') »

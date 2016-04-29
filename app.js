@@ -4,16 +4,18 @@
  */
 var express			= require('express');
 var timeout			= require('connect-timeout');
-var path			= require('path');
+var path			= require('path');	
 var logger			= require('morgan');
 var cookieParser	= require('cookie-parser');
 var bodyParser		= require('body-parser');
 var bearer			= require('bearer');
 var mqtt			= require('mqtt');
 var loki			= require('lokijs');
+var jade			= require('jade');
 sprintf				= require('sprintf-js').sprintf;
 moment				= require('moment');
 passgen				= require('passgen');
+md5					= require('md5');
 squel				= require('squel');
 uuid				= require('node-uuid');
 os					= require('os');
@@ -44,6 +46,8 @@ var data			= require('./routes/data');
 var flows			= require('./routes/flows');
 var units			= require('./routes/units');
 var datatypes		= require('./routes/datatypes');
+var modules			= require('./routes/modules');
+var dashboard		= require('./routes/dashboard');
 var app				= express();
 
 db	= new loki(path.join(__dirname, 'data/db-'+app.get('env')+'.json'), {autoload: true, autosave: true});
@@ -61,7 +65,9 @@ app.use(timeout('10s'));
 app.disable('x-powered-by');
 app.use(function (req, res, next) { res.setHeader('X-Powered-By', appName+'@'+version); next(); });
 
-app.use(express.static(path.join(__dirname, '/public/www/production/')));
+app.use(express.static(path.join(__dirname, '/public')));
+app.set('views', path.join(__dirname, '/views'));
+app.set('view engine', 'jade');
 app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);
@@ -69,6 +75,8 @@ app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
+app.use('/modules', modules);
+app.use('/', dashboard);
 
 app.use(function(req, res, next) {
 	res.header('Access-Control-Allow-Origin', '*');

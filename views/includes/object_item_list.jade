@@ -1,0 +1,20 @@
+a.list-group-item
+  h4.list-group-item-heading
+    span.glyphicon.glyphicon-inbox(data-toggle='tooltip' data-placement='top' title='#{objects[object].type}')
+    | &nbsp;#{objects[object].name} 
+    p 
+      small #{objects[object].description}
+        button.btn.btn-primary.btn-sm.pull-right
+          span.glyphicon.glyphicon-pencil  Edit
+    small
+      - if (objects[object].ip)
+        span.label.label-default(data-toggle='tooltip' data-placement='top' title='IPv4 adress') #{objects[object].ip}
+        | &nbsp;
+      - if (objects[object].type)
+        span.label.label-default(data-toggle='tooltip' data-placement='top' title='Object Type') Type: #{objects[object].type}
+        | &nbsp;
+      - if (objects[object].position)
+        span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Object localisation') #{objects[object].position}
+        | &nbsp;
+      - if (objects[object].id)
+        span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Object ID') #{objects[object].id}
