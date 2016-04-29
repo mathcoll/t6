@@ -259,11 +259,11 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 				}
 			}
 			
-			if( publish == true && mqtt_topic !== undefined ) {
-				if ( text !== undefined ) {
-					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text}));
+			if( publish == true && mqtt_topic !== "" ) {
+				if ( text !== "" ) {
+					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text}), {retain: true});
 				} else {
-					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}));
+					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}), {retain: true});
 				}
 			}
 
