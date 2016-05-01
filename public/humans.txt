@@ -1,0 +1,12 @@
+/* TEAM */
+    Project Manager: Mathieu L.
+    Contact: mathieu@internetcollaboratif.info
+    Twtter: https://twitter.com/mathcoll
+    From: Paris, France
+
+/* THANKS */
+   Mathieu L.
+
+/* TECHNOLOGY */
+    HTML5, CSS3
+    jQuery, Node-js, SQLite, Express, Jade... ...

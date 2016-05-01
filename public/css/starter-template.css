@@ -8,3 +8,48 @@
     border-radius: 4px;
     padding: 15px;
 }
+a.white {
+	color: #fff;
+}
+.form-signin {
+    margin: 0 auto;
+    max-width: 330px;
+    padding: 15px;
+}
+.center-text {
+	text-align: center;
+	display: block;
+}
+.bottom-text {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+}
+
+.form-signin .form-control {
+    box-sizing: border-box;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    position: relative;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+.form-signin input[type="email"], 
+.form-signin input[type="key"] {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: -1px;
+}
+.form-signin input#firstname {
+    border-radius: 0;
+    margin-bottom: -1px;
+}
+.form-signin input[type="password"],
+.form-signin input[type="secret"],
+.form-signin input#lastname {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    margin-bottom: 10px;
+}

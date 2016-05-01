@@ -20,9 +20,13 @@
            span.fa.fa-github
            |  GitHub
 
-script(type='text/javascript', src='//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js')
+script(type='text/javascript', src='/js/vendor/jquery.min.js')
 script.
   window.jQuery || document.write('<script src="/js/vendor/jquery.min.js"><\\/script>')
 script(type='text/javascript', src='/js/bootstrap.min.js')
 // IE10 viewport hack for Surface/desktop Windows 8 bug
 script(type='text/javascript', src='/js/ie10-viewport-bug-workaround.js')
+script(type='text/javascript').
+  $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+  })

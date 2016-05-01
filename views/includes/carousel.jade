@@ -1,32 +1,46 @@
-#carousel.carousel.slide(data-ride='carousel')
+#myCarousel.carousel.slide(data-ride='carousel')
+
   ol.carousel-indicators
-    li(data-target='#carousel', data-slide-to='0')
-    li(data-target='#carousel', data-slide-to='1')
-    li(data-target='#carousel', data-slide-to='2')
+    li.active(data-target='#myCarousel', data-slide-to='0')
+    li(data-target='#myCarousel', data-slide-to='1')
+    li(data-target='#myCarousel', data-slide-to='2')
 
   .carousel-inner(role='listbox')
+
     .item.active
-      img(src='/img/slide1.png', alt='...')
-      .carousel-caption
-        h3 First slide
-        p  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      img.third-slide(height='500', src='/img/opl_img.jpg', alt='')
+      .container
+        .carousel-caption
+          h1 Make Decision
+          p
+            | Decision-Rules are customizable Actions triggered on Events.
+          p
+            a.btn.btn-lg.btn-primary(href='/decision-rules', role='button') Learn more  
 
     .item
-      img(src='/img/slide2.png', alt='...')
-      .carousel-caption
-        h3 Second slide
-        p  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      img.first-slide(height='500', src='/img/opl_img.jpg', alt='')
+      .container
+        .carousel-caption
+          h1 Control your data
+          p
+            | 
+          p
+            a.btn.btn-lg.btn-primary(href='/register', role='button') Sign-up
 
     .item
-      img(src='/img/slide3.png', alt='...')
-      .carousel-caption
-        h3 Third slide
-        p  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+      img.second-slide(height='500', src='/img/opl_img.jpg', alt='')
+      .container
+        .carousel-caption
+          h1 Monitor your systems
+          p
+            | 
+          p
+            a.btn.btn-lg.btn-primary(href='#', role='button') Learn more
 
-  // Controls
-  a.left.carousel-control(href='#carousel', role='button', data-slide='prev')
+  a.left.carousel-control(href='#myCarousel', role='button', data-slide='prev')
     span.glyphicon.glyphicon-chevron-left(aria-hidden='true')
     span.sr-only Previous
-  a.right.carousel-control(href='#carousel', role='button', data-slide='next')
+
+  a.right.carousel-control(href='#myCarousel', role='button', data-slide='next')
     span.glyphicon.glyphicon-chevron-right(aria-hidden='true')
     span.sr-only Next
