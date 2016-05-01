@@ -1,0 +1,25 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    .container
+      .starter-template
+        h2 Create an account to Easy-IOT
+
+    .container
+      form.form-signin(method="post", action="/login")
+        h3.form-signin-heading Register to Easy-IOT
+        label.sr-only(for='mail') Email Address
+        input#mail.form-control(name='mail', type='email', placeholder='Email', required='', autofocus='')
+        label.sr-only(for='firstname') First-Name
+        input#firstname.form-control(name='firstname', placeholder='First-Name', autofocus='')
+        label.sr-only(for='lastname') First-Name
+        input#lastname.form-control(name='lastname', placeholder='Last-Name', autofocus='')
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-up
+
+    .container &nbsp;
+    .container &nbsp;
+    .container &nbsp;
+
+    include ./includes/foot.jade

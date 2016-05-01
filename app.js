@@ -26,6 +26,13 @@ version				= '2.0.1';
 appName				= process.env.NAME;
 baseUrl				= process.env.BASE_URL;
 
+session				= require('express-session');
+FileStore			= require('session-file-store')(session);
+secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz";
+sessionDuration		= 3600*24*10;
+store				= new FileStore({ttl: sessionDuration});
+sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
+cookie				= sessionSettings.cookie;
 
 if ( db_type === "sqlite3" ) {
 	var sqlite3	= require('sqlite3').verbose();
@@ -68,6 +75,7 @@ app.use(function (req, res, next) { res.setHeader('X-Powered-By', appName+'@'+ve
 app.use(express.static(path.join(__dirname, '/public')));
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'jade');
+app.use(session(sessionSettings));
 app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);
