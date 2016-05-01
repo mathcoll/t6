@@ -13,4 +13,14 @@ function getBootReason()
     end
 end
 
-print(getBootReason())
+
+function timeSynch()
+    sntp.sync('81.6.42.224',
+      function(sec,usec,server)
+        print('sync', sec, usec, server)
+      end,
+      function()
+       print('failed!')
+      end
+    )
+end

@@ -20,7 +20,7 @@ function M.init(pin)
     
     if status == dht.OK then
         --print("DHT Temperature:"..temp..";".."Humidity:"..humi)
-        LastChecked=tmr.now() -- timestamp ?!
+        LastChecked=tmr.now()
     elseif status == dht.ERROR_CHECKSUM then
         print( "DHT Checksum error." )
     elseif status == dht.ERROR_TIMEOUT then
