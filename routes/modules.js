@@ -3,6 +3,14 @@ var express = require('express');
 var router	= express.Router();
 var proxy	= require('express-http-proxy');
 
+/*
+router.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+*/
+
 router.use('/16', proxy('192.168.0.16', {
 	filter: function(req, res) {
 		return req.method == 'GET';
