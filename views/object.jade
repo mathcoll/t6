@@ -1,0 +1,64 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    .container
+      .starter-template
+        h2 Object&nbsp;
+          strong #{object.name}
+
+    .container
+      .col-sm-8
+        h3 Object details
+        div
+          .media
+            .media-body
+              h4.media-heading
+                span.glyphicon.glyphicon-minus     Object Name:
+                small
+                  div     #{object.name}
+
+          .media
+            .media-body
+              h4.media-heading
+                span.glyphicon.glyphicon-minus     Type:
+                small
+                  div.label.label-default     #{object.type}
+
+          .media
+            .media-body
+              h4.media-heading
+                span.glyphicon.glyphicon-minus     Position/Location:
+                small
+                  div.label.label-primary     #{object.position}
+
+          .media
+            .media-body
+              h4.media-heading
+                span.glyphicon.glyphicon-minus     Ip:
+                small
+                  div.label.label-danger     #{object.ipv4}
+
+          .media
+            .media-body
+              h4.media-heading
+                span.glyphicon.glyphicon-minus     Description:
+                small
+                  div     #{object.description}
+
+      .col-sm-4
+        div.sidebar-module-inset
+          h3 Contextual Links
+          ul
+            li
+              a(href="/objects/#{object.id}/edit")
+                span.glyphicon.glyphicon-pencil  Modify '#{object.name}'
+            li
+              a(href="#") Other '#{object.type}' Objects
+            li
+              a(href="#") Objects in the same location '#{object.position}' 
+      p &nbsp; 
+
+    include ./includes/foot.jade
+

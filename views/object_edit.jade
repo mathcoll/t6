@@ -1,0 +1,46 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+    .container
+      .starter-template
+        h2 Object&nbsp;
+          strong #{object.name}
+
+    .container
+      .col-sm-12
+        h3 Update an Object to your library
+        form(action="/objects/#{object.id}/edit", method="post")
+          .form-group
+            label.control-label(for="Title") Object Name:
+              span.mandatory *
+            input.form-control(type="text", name="title", placeholder="Object Name", id="Title" value="#{object.name}")
+
+          .form-group
+            label.control-label(for="Type") Type:
+              span.mandatory *
+
+          .form-group
+            label.control-label(for="Position") Position/Location:
+            input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value="#{object.position}")
+
+          .form-group
+            label.control-label(for="Ip") Ip:
+            input.form-control(type="text", name="ip", placeholder="Ip v4: 192.168.0.1", id="Ip", value="#{object.ipv4}")
+
+          .form-group
+            label.control-label(for="Description") Description:
+            textarea.form-control(name="description", placeholder="Object description", id="Description") #{object.description}
+
+          .form-group
+            a.btn.btn-primary.m-t.pull-right
+              span.glyphicon.glyphicon-plus  Update Object
+              | &nbsp;
+            a.btn.btn-primary.m-t.pull-right(href="/objects/#{object.id}")
+              span.glyphicon.glyphicon-plus  Cancel
+              | &nbsp;
+        p &nbsp; 
+
+    include ./includes/foot.jade
+
