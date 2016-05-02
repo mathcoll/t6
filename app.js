@@ -96,6 +96,10 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
+	res.render(err.status, {
+		title : 'EasyIOT',
+		user: req.session.user
+	});
 	next(err);
 });
 
