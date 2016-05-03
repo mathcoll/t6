@@ -344,7 +344,7 @@
                     "description": "delete a Flow",
                     "api_calls": [
                         {
-                        	"request": "DELETE /flows",
+                        	"request": "DELETE /flows/{{saved.flow_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer}}"
                             },
