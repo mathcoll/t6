@@ -110,7 +110,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
-router.delete('/:flow_id([0-9a-z\-]+)', bearerAuth, function (req, res) {
+router.delete('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	// TODO
 	// TODO: delete all data related to that flow?
 	res.send(new ErrorSerializer({'id': 43, 'code': 404, 'message': 'Not Found', details: 'Not yet implemented... Sorry.'}).serialize(), 404);

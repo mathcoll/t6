@@ -1,6 +1,8 @@
 'use strict';
+var async = require('async');
 var express = require('express');
 var router	= express.Router();
+var DataSerializer = require('../serializers/data');
 var users;
 var objects;
 var flows;
@@ -197,9 +199,220 @@ router.get('/about', function(req, res) {
 
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
-	res.render('dashboard'+dashboard_id, {
-		title : 'Dashboard EasyIOT',
-		user: req.session.user
+	var flows = [
+		{flow_id: "1", limit: 100, page: 1, sort: 0},
+		{flow_id: "2", limit: 100, page: 1, sort: 0},
+		{flow_id: "4", limit: 100, page: 1, sort: 0},
+		{flow_id: "5", limit: 100, page: 1, sort: 0},
+		{flow_id: "24", limit: 100, page: 1, sort: 0},
+		{flow_id: "19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f", limit: 100, page: 1, sort: 0},
+		{flow_id: "6d844fbf-29c0-4a41-8c6a-0e9f3336cea3", limit: 100, page: 1, sort: 0}
+	];
+	var json = {};
+
+	var wf = [
+		function(callback) { // only callback here
+			var f = flows.pop();
+			var query = squel.select()
+			.field('timestamp, value, flow_id, timestamp AS id')
+			.from('data')
+			.where('flow_id=?', f.flow_id)
+			.limit(f.limit)
+			.offset((f.page - 1) * f.limit)
+			.order('timestamp', f.sort)
+			.toString()
+			;
+			dbSQLite3.all(query, function(err, data) {
+				if (err) console.log(err);
+				else if(data.length > 0) {
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					//console.log(data);
+					data.flow_id = f.flow_id;
+					data.page = f.page;
+					data.next = f.page+1;
+					data.prev = f.page-1;
+					data.limit = f.limit;
+					data.order = f.order!==undefined?f.order:'asc';
+					json[f.flow_id] = (new DataSerializer(data).serialize());
+					callback(null, json);
+				}
+			});
+		},
+		function(json, callback) {
+			var f = flows.pop();
+			var query = squel.select()
+			.field('timestamp, value, flow_id, timestamp AS id')
+			.from('data')
+			.where('flow_id=?', f.flow_id)
+			.limit(f.limit)
+			.offset((f.page - 1) * f.limit)
+			.order('timestamp', f.sort)
+			.toString()
+			;
+			dbSQLite3.all(query, function(err, data) {
+				if (err) console.log(err);
+				else if(data.length > 0) {
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					//console.log(data);
+					data.flow_id = f.flow_id;
+					data.page = f.page;
+					data.next = f.page+1;
+					data.prev = f.page-1;
+					data.limit = f.limit;
+					data.order = f.order!==undefined?f.order:'asc';
+					json[f.flow_id] = (new DataSerializer(data).serialize());
+					callback(null, json);
+				}
+			});
+		},
+		function(json, callback) {
+			var f = flows.pop();
+			var query = squel.select()
+			.field('timestamp, value, flow_id, timestamp AS id')
+			.from('data')
+			.where('flow_id=?', f.flow_id)
+			.limit(f.limit)
+			.offset((f.page - 1) * f.limit)
+			.order('timestamp', f.sort)
+			.toString()
+			;
+			dbSQLite3.all(query, function(err, data) {
+				if (err) console.log(err);
+				else if(data.length > 0) {
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					//console.log(data);
+					data.flow_id = f.flow_id;
+					data.page = f.page;
+					data.next = f.page+1;
+					data.prev = f.page-1;
+					data.limit = f.limit;
+					data.order = f.order!==undefined?f.order:'asc';
+					json[f.flow_id] = (new DataSerializer(data).serialize());
+					callback(null, json);
+				}
+			});
+		},
+		function(json, callback) {
+			var f = flows.pop();
+			var query = squel.select()
+			.field('timestamp, value, flow_id, timestamp AS id')
+			.from('data')
+			.where('flow_id=?', f.flow_id)
+			.limit(f.limit)
+			.offset((f.page - 1) * f.limit)
+			.order('timestamp', f.sort)
+			.toString()
+			;
+			dbSQLite3.all(query, function(err, data) {
+				if (err) console.log(err);
+				else if(data.length > 0) {
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					//console.log(data);
+					data.flow_id = f.flow_id;
+					data.page = f.page;
+					data.next = f.page+1;
+					data.prev = f.page-1;
+					data.limit = f.limit;
+					data.order = f.order!==undefined?f.order:'asc';
+					json[f.flow_id] = (new DataSerializer(data).serialize());
+					callback(null, json);
+				}
+			});
+		},
+		function(json, callback) {
+			var f = flows.pop();
+			var query = squel.select()
+			.field('timestamp, value, flow_id, timestamp AS id')
+			.from('data')
+			.where('flow_id=?', f.flow_id)
+			.limit(f.limit)
+			.offset((f.page - 1) * f.limit)
+			.order('timestamp', f.sort)
+			.toString()
+			;
+			dbSQLite3.all(query, function(err, data) {
+				if (err) console.log(err);
+				else if(data.length > 0) {
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					//console.log(data);
+					data.flow_id = f.flow_id;
+					data.page = f.page;
+					data.next = f.page+1;
+					data.prev = f.page-1;
+					data.limit = f.limit;
+					data.order = f.order!==undefined?f.order:'asc';
+					json[f.flow_id] = (new DataSerializer(data).serialize());
+					callback(null, json);
+				}
+			});
+		},
+		function(json, callback) {
+			var f = flows.pop();
+			var query = squel.select()
+			.field('timestamp, value, flow_id, timestamp AS id')
+			.from('data')
+			.where('flow_id=?', f.flow_id)
+			.limit(f.limit)
+			.offset((f.page - 1) * f.limit)
+			.order('timestamp', f.sort)
+			.toString()
+			;
+			dbSQLite3.all(query, function(err, data) {
+				if (err) console.log(err);
+				else if(data.length > 0) {
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					//console.log(data);
+					data.flow_id = f.flow_id;
+					data.page = f.page;
+					data.next = f.page+1;
+					data.prev = f.page-1;
+					data.limit = f.limit;
+					data.order = f.order!==undefined?f.order:'asc';
+					json[f.flow_id] = (new DataSerializer(data).serialize());
+					callback(null, json);
+				}
+			});
+		},
+		function(json, callback) {
+			var f = flows.pop();
+			var query = squel.select()
+			.field('timestamp, value, flow_id, timestamp AS id')
+			.from('data')
+			.where('flow_id=?', f.flow_id)
+			.limit(f.limit)
+			.offset((f.page - 1) * f.limit)
+			.order('timestamp', f.sort)
+			.toString()
+			;
+			dbSQLite3.all(query, function(err, data) {
+				if (err) console.log(err);
+				else if(data.length > 0) {
+					//data.id = moment(data.timestamp).format('x'); //BUG
+					//console.log(data);
+					data.flow_id = f.flow_id;
+					data.page = f.page;
+					data.next = f.page+1;
+					data.prev = f.page-1;
+					data.limit = f.limit;
+					data.order = f.order!==undefined?f.order:'asc';
+					json[f.flow_id] = (new DataSerializer(data).serialize());
+					callback(null, json);
+				}
+			});
+		}
+	];
+	
+	async.waterfall(wf, function(error) {
+		if (error) {
+			console.log(error);
+		} else {
+			console.log(json);
+			res.render('dashboard'+dashboard_id, {
+				title : 'Dashboard EasyIOT',
+				user: req.session.user,
+				json: JSON.stringify(json),
+			});
+		}
 	});
 });
 
@@ -257,7 +470,7 @@ function Auth(req, res, next) {
 	var key = req.body.key;
 	var secret = req.body.secret;
 	if ( key && secret ) {
-		console.log("I have a Key and a Secret");
+		//console.log("I have a Key and a Secret");
 		var queryT = {
 				'$and': [
 							{ 'key': key },
@@ -268,7 +481,7 @@ function Auth(req, res, next) {
 		var token = tokens.findOne(queryT);
 		if ( token ) {
 			// Connect Success
-			console.log("I have found a valid Token");
+			//console.log("I have found a valid Token");
 			var queryU = {
 					'$and': [
 								{ 'id': token.user_id },
@@ -276,31 +489,32 @@ function Auth(req, res, next) {
 						};
 			var user = users.findOne(queryU);
 			if ( user ) {
-				console.log("I have found a valid User");
+				//console.log("I have found a valid User");
 				var SESS_ID = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
-				console.log("I have created a SESS_ID: "+SESS_ID);
+				//console.log("I have created a SESS_ID: "+SESS_ID);
 
-				console.log(req.session);
 				req.session.user = user;
+				//req.session.bearer = token;
 				req.session.session_id = SESS_ID;
+				//console.log(req.session);
 				res.cookie('session_id', SESS_ID);
 			} else {
-				console.log("I have not found a valid User");
+				//console.log("I have not found a valid User");
 				res.redirect('/unauthorized');
 			}
 		} else {
 			// Invalid Credentials
-			console.log("I have not found a valid Token");
+			//console.log("I have not found a valid Token");
 			res.redirect('/unauthorized');
 		}
 	} else {
-		console.log("I haven't any Key nor Secret");
+		//console.log("I haven't any Key nor Secret");
 		// trying to retrieve User from the session... if any...
 		if ( req.cookies.session_id ) {
-			console.log("I have a session_id: "+req.cookies.session_id);
+			//console.log("I have a session_id: "+req.cookies.session_id);
 			if( req.session && req.session.user ) {
-				console.log("I have a session: "+req.session);
-				console.log("I have a User in session: "+req.session.user);
+				//console.log("I have a session: "+req.session);
+				//console.log("I have a User in session: "+req.session.user);
 //				if ( req.cookies.connect.sid == ?????? ) {
 //					
 //				} else {
@@ -310,9 +524,9 @@ function Auth(req, res, next) {
 				res.redirect('/unauthorized');
 			}
 		} else {
-			console.log("I don't have any session_id");
-			console.log("but cookies:");
-			console.log(req.cookies);
+			//console.log("I don't have any session_id");
+			//console.log("but cookies:");
+			//console.log(req.cookies);
 		//	if( !req.session && !req.session.user ) {
 				res.redirect('/unauthorized');
 		//	}

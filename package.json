@@ -16,6 +16,7 @@
     "check-security": "nsp check"
   },
   "dependencies": {
+    "async": "^2.0.0-rc.3",
     "bearer": "0.0.20",
     "body-parser": "~1.12.4",
     "connect-timeout": "^1.7.0",
