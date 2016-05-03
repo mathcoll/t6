@@ -163,13 +163,13 @@ router.post('/search', Auth, function(req, res) {
 	} else {
 		var queryO = {
 				'$and': [
-							{ 'user_id': '44800701-d6de-48f7-9577-4b3ea1fab81a' }, // TODO: HARD CODED FOR TESTING!
+							{ 'user_id': req.session.user.id },
 							{ 'name': {'$regex': [req.body.q, 'i'] } }
 						]
 					};
 		var queryF = {
 				'$and': [
-							{ 'user_id': '44800701-d6de-48f7-9577-4b3ea1fab81a' }, // TODO: HARD CODED FOR TESTING!
+							{ 'user_id': req.session.user.id },
 							{ 'name': {'$regex': [req.body.q, 'i'] } }
 						]
 					};
