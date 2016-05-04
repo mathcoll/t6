@@ -70,6 +70,8 @@ html(lang='en')
             .panel-footer Updated at xx/xx/xxxx xx:xx'xx
 
     include ./includes/foot.jade
+    #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
+    
 
     script(type='text/javascript', src='/js/chartjs/chart.min.js')
     script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
@@ -83,45 +85,73 @@ html(lang='en')
     script(type='text/javascript', src='/js/flot/curvedLines.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
-    script.
-      var jsonFAKE = Array();
-      var json = !{json};
-
-      var d = Array();
-      d.push({
-      data : (json["6d844fbf-29c0-4a41-8c6a-0e9f3336cea3"].data).map(function(i) {
-      return [parseInt(i.attributes.timestamp),
-      parseInt(i.attributes.value)]
-      }),
-      label : 'Temperature Indoor',
-      name : 'Temperature Indoor',
-      unit : '°C',
-      lines : {
-      show : true,
-      fill : true,
-      lineWidth : 2,
-      steps : false
-      },
-      points : {
-      show : true
-      },
-      yaxis : 2,
-      threshold : [{
-      //	below : 50,
-      //	color : 'rgb(200, 20, 30)'
-      }, {
-      //	below : 3,
-      //	color : 'rgb(175, 216, 248)'
-      }],
+    script.script.
+      var d = new Array();
+      var data = new Array();
+      var flows = new Array(
+      // flow_id, callback, container, limit, page , sort
+      ["1", doGraph, "graph3", 50, 1, 'desc'],
+      ["2", doGraph, "graph4", 50, 1, 'desc'],
+      ["4", doGraph, "graph5", 50, 1, 'desc'],
+      ["5", doGraph, "graph2", 50, 1, 'desc'],
+      ["24", doGraph, "graph6", 50, 1, 'desc'],
+      ["19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f", doGraph2, "graph1", 50, 1, 'desc'],
+      ["6d844fbf-29c0-4a41-8c6a-0e9f3336cea3", doGraph2, "graph1", 50, 1, 'desc']
+      );  
+        
+      flows.map(function(f) {
+      var flow_id = f[0];
+      var callback = f[1];
+      var container = f[2];
+      var limit = f[3];
+      var page = f[4];
+      var sort = f[5];
+      return getData('http://127.0.0.1:3000/v2.0.1/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort);
       });
-      d.push({
-      data : (json["19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f"].data).map(function(i) {
+      
+      function getData(base, flow_id, type, CType, callback, container, limit, page , sort) {
+      $.ajax({
+      url: base+flow_id,
+      type: type,
+      data:{limit: limit, page: page , sort: sort},
+      success: function(d){
+      data[flow_id] = (d.data).map(function(i) {
       return [parseInt(i.attributes.timestamp),
       parseInt(i.attributes.value)]
-      }),
-      label : 'Humidity Indoor',
-      name : 'Humidity Indoor',
-      unit : '%',
+      });
+      var lastValue = ((d.data)[0].attributes.timestamp);
+      callback(data[flow_id], container, flow_id, lastValue);
+      },
+      error: function(d) {
+      console.log('ERROR '+base);
+      console.log(d);
+      }
+      });
+      }
+      
+      function doGraph(data, container, flow_id, lastValue) {
+      var date = new Date(lastValue);
+      lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
+      $.plot($('#'+container), [data], options);
+      $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
+      $('#'+container).bind("plothover", function (event, pos, item) {
+      if (item) {
+      var x = item.datapoint[0].toFixed(2),
+      y = item.datapoint[1].toFixed(2);
+      $("#tooltip").html(y)
+      .css({top: item.pageY+5, left: item.pageX+5}).show();
+      } else {
+      $("#tooltip").hide();
+      }
+      });
+      };
+      
+      function doGraph2(data, container, flow_id, lastValue) {
+      d.push({
+      data : data,
+      label : 'aaaa', // TODO - Humidity Indoor / 
+      name : 'bbbb', // TODO - Humidity Indoor / 
+      unit : '%', // TODO
       lines : {
       show : true,
       fill : false,
@@ -140,6 +170,25 @@ html(lang='en')
       //	color : 'rgb(175, 216, 248)'
       }],
       });
+
+      if (d.length == 2) {
+      var date = new Date(lastValue);
+      lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
+      $.plot($('#'+container), d, options);
+      $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
+      $('#'+container).bind("plothover", function (event, pos, item) {
+      if (item) {
+      var x = item.datapoint[0].toFixed(2),
+      y = item.datapoint[1].toFixed(2);
+      $("#tooltip").html(y)
+      .css({top: item.pageY+5, left: item.pageX+5}).show();
+      } else {
+      $("#tooltip").hide();
+      }
+      });
+      }
+      };
+
       function weekendAreas(axes) {
       var markings = [];
       var d = new Date(axes.xaxis.min);
@@ -180,81 +229,4 @@ html(lang='en')
       xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
       yaxis: [ { autoscale: true, position: null }, { autoscale: true, position: 1 } ],
       };
-      
-      $("<div id='tooltip'></div>").css({
-      position: "absolute",
-      display: "none",
-      border: "1px solid #fdd",
-      padding: "2px",
-      "background-color": "#fee",
-      opacity: 0.80
-      }).appendTo("body");
-      
-      var chart1 = $.plot($('#graph1'), d, options);
-      var chart2 = $.plot($('#graph2'), [(json[5].data).map(function(i) { return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)] })], options);
-      var chart3 = $.plot($('#graph3'), [(json[1].data).map(function(i) { return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)] })], options);
-      var chart4 = $.plot($('#graph4'), [(json[2].data).map(function(i) { return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)] })], options);
-      var chart5 = $.plot($('#graph5'), [(json[4].data).map(function(i) { return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)] })], options);
-      var chart6 = $.plot($('#graph6'), [(json[24].data).map(function(i) { return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)] })], options);
-
-
-      $("#graph1").bind("plothover", function (event, pos, item) {
-      if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
-      $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
-      } else {
-      $("#tooltip").hide();
-      }
-      });
-      $("#graph2").bind("plothover", function (event, pos, item) {
-      if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
-      $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
-      } else {
-      $("#tooltip").hide();
-      }
-      });
-      $("#graph3").bind("plothover", function (event, pos, item) {
-      if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
-      $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
-      } else {
-      $("#tooltip").hide();
-      }
-      });
-      $("#graph4").bind("plothover", function (event, pos, item) {
-      if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
-      $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
-      } else {
-      $("#tooltip").hide();
-      }
-      });
-      $("#graph5").bind("plothover", function (event, pos, item) {
-      if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
-      $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
-      } else {
-      $("#tooltip").hide();
-      }
-      });
-      $("#graph6").bind("plothover", function (event, pos, item) {
-      if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
-      $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
-      } else {
-      $("#tooltip").hide();
-      }
-      });
+   

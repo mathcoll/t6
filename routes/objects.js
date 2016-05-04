@@ -124,20 +124,27 @@ function bearerAuthToken(req, res, next) {
 	var bearerHeader = req.headers['authorization'];
 	tokens	= db.getCollection('tokens');
 	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.bearer = tokens.findOne(
-			{ '$and': [
-	           {'token': { '$eq': req.token }},
-	           {'expiration': { '$gte': moment().format('x') }},
-			]}
-		);
+	if ( typeof bearerHeader !== 'undefined' || req.session.bearer ) {
+		if ( req.session && !bearerHeader ) { // Login using the session
+			req.user = req.session.user;
+			req.token = req.session.token;
+			req.bearer = req.session.bearer;
+		} else {
+			var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
+			bearerToken = bearer[1];
+			req.token = bearerToken;
+			req.bearer = tokens.findOne(
+				{ '$and': [
+		           {'token': { '$eq': req.token }},
+		           {'expiration': { '$gte': moment().format('x') }},
+				]}
+			);
+		}
+		
 		if ( !req.bearer ) {
 			res.send(new ErrorSerializer({'id': 33, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
 		} else {
-			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) { // TODO: in case of Session, should be removed !
 				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
