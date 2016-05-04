@@ -3,7 +3,6 @@ var JSONAPISerializer = require('jsonapi-serializer');
 
 function DataSerializer(data) {
 	this.serialize = function() {
-		console.log(data);
 		return new JSONAPISerializer('data', data, {
 	    	keyForAttribute: 'underscore_case',
 			attributes : [ 'flow', 'flow_id', 'time', 'timestamp', 'value', 'publish' ],
