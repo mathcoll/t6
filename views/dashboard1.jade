@@ -74,25 +74,6 @@ html(lang='en')
       }
       });
       }
-      function getDataP(url, type, CType, id) {
-      $.ajax({
-      url: url,
-      type: type,
-      dataType: 'jsonp',
-      jsonp: 'callback',
-      success: function(data){ 
-      if(CType == 'text/html') { $(id).append(data); }
-      if(CType == 'application/json') { console.log(data.value); }
-      },
-      error: function(data) {
-      console.log('ERROR '+url);
-      $(id).append(getError(url));
-      }
-      });
-      }
-      function callback(d) {
-      console.log(d);
-      }
       $( window ).load(function() {
       getData('/modules/16/Tmod', 'GET', 'text/html', '#contentWeather');
       getData('/modules/16/Hmod', 'GET', 'text/html', '#contentWeather');

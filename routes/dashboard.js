@@ -1,5 +1,4 @@
 'use strict';
-var async = require('async');
 var express = require('express');
 var router	= express.Router();
 var DataSerializer = require('../serializers/data');
@@ -111,7 +110,6 @@ router.get('/profile', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	tokens	= db.getCollection('tokens');
 	
-	console.log(req.session);
 	var user = req.session.user;
 	user.hash = md5(req.session.user.email);
 
@@ -199,220 +197,10 @@ router.get('/about', function(req, res) {
 
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
-	var flows = [
-		{flow_id: "1", limit: 100, page: 1, sort: 0},
-		{flow_id: "2", limit: 100, page: 1, sort: 0},
-		{flow_id: "4", limit: 100, page: 1, sort: 0},
-		{flow_id: "5", limit: 100, page: 1, sort: 0},
-		{flow_id: "24", limit: 100, page: 1, sort: 0},
-		{flow_id: "19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f", limit: 100, page: 1, sort: 0},
-		{flow_id: "6d844fbf-29c0-4a41-8c6a-0e9f3336cea3", limit: 100, page: 1, sort: 0}
-	];
-	var json = {};
-
-	var wf = [
-		function(callback) { // only callback here
-			var f = flows.pop();
-			var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', f.flow_id)
-			.limit(f.limit)
-			.offset((f.page - 1) * f.limit)
-			.order('timestamp', f.sort)
-			.toString()
-			;
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				else if(data.length > 0) {
-					//data.id = moment(data.timestamp).format('x'); //BUG
-					//console.log(data);
-					data.flow_id = f.flow_id;
-					data.page = f.page;
-					data.next = f.page+1;
-					data.prev = f.page-1;
-					data.limit = f.limit;
-					data.order = f.order!==undefined?f.order:'asc';
-					json[f.flow_id] = (new DataSerializer(data).serialize());
-					callback(null, json);
-				}
-			});
-		},
-		function(json, callback) {
-			var f = flows.pop();
-			var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', f.flow_id)
-			.limit(f.limit)
-			.offset((f.page - 1) * f.limit)
-			.order('timestamp', f.sort)
-			.toString()
-			;
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				else if(data.length > 0) {
-					//data.id = moment(data.timestamp).format('x'); //BUG
-					//console.log(data);
-					data.flow_id = f.flow_id;
-					data.page = f.page;
-					data.next = f.page+1;
-					data.prev = f.page-1;
-					data.limit = f.limit;
-					data.order = f.order!==undefined?f.order:'asc';
-					json[f.flow_id] = (new DataSerializer(data).serialize());
-					callback(null, json);
-				}
-			});
-		},
-		function(json, callback) {
-			var f = flows.pop();
-			var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', f.flow_id)
-			.limit(f.limit)
-			.offset((f.page - 1) * f.limit)
-			.order('timestamp', f.sort)
-			.toString()
-			;
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				else if(data.length > 0) {
-					//data.id = moment(data.timestamp).format('x'); //BUG
-					//console.log(data);
-					data.flow_id = f.flow_id;
-					data.page = f.page;
-					data.next = f.page+1;
-					data.prev = f.page-1;
-					data.limit = f.limit;
-					data.order = f.order!==undefined?f.order:'asc';
-					json[f.flow_id] = (new DataSerializer(data).serialize());
-					callback(null, json);
-				}
-			});
-		},
-		function(json, callback) {
-			var f = flows.pop();
-			var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', f.flow_id)
-			.limit(f.limit)
-			.offset((f.page - 1) * f.limit)
-			.order('timestamp', f.sort)
-			.toString()
-			;
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				else if(data.length > 0) {
-					//data.id = moment(data.timestamp).format('x'); //BUG
-					//console.log(data);
-					data.flow_id = f.flow_id;
-					data.page = f.page;
-					data.next = f.page+1;
-					data.prev = f.page-1;
-					data.limit = f.limit;
-					data.order = f.order!==undefined?f.order:'asc';
-					json[f.flow_id] = (new DataSerializer(data).serialize());
-					callback(null, json);
-				}
-			});
-		},
-		function(json, callback) {
-			var f = flows.pop();
-			var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', f.flow_id)
-			.limit(f.limit)
-			.offset((f.page - 1) * f.limit)
-			.order('timestamp', f.sort)
-			.toString()
-			;
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				else if(data.length > 0) {
-					//data.id = moment(data.timestamp).format('x'); //BUG
-					//console.log(data);
-					data.flow_id = f.flow_id;
-					data.page = f.page;
-					data.next = f.page+1;
-					data.prev = f.page-1;
-					data.limit = f.limit;
-					data.order = f.order!==undefined?f.order:'asc';
-					json[f.flow_id] = (new DataSerializer(data).serialize());
-					callback(null, json);
-				}
-			});
-		},
-		function(json, callback) {
-			var f = flows.pop();
-			var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', f.flow_id)
-			.limit(f.limit)
-			.offset((f.page - 1) * f.limit)
-			.order('timestamp', f.sort)
-			.toString()
-			;
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				else if(data.length > 0) {
-					//data.id = moment(data.timestamp).format('x'); //BUG
-					//console.log(data);
-					data.flow_id = f.flow_id;
-					data.page = f.page;
-					data.next = f.page+1;
-					data.prev = f.page-1;
-					data.limit = f.limit;
-					data.order = f.order!==undefined?f.order:'asc';
-					json[f.flow_id] = (new DataSerializer(data).serialize());
-					callback(null, json);
-				}
-			});
-		},
-		function(json, callback) {
-			var f = flows.pop();
-			var query = squel.select()
-			.field('timestamp, value, flow_id, timestamp AS id')
-			.from('data')
-			.where('flow_id=?', f.flow_id)
-			.limit(f.limit)
-			.offset((f.page - 1) * f.limit)
-			.order('timestamp', f.sort)
-			.toString()
-			;
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				else if(data.length > 0) {
-					//data.id = moment(data.timestamp).format('x'); //BUG
-					//console.log(data);
-					data.flow_id = f.flow_id;
-					data.page = f.page;
-					data.next = f.page+1;
-					data.prev = f.page-1;
-					data.limit = f.limit;
-					data.order = f.order!==undefined?f.order:'asc';
-					json[f.flow_id] = (new DataSerializer(data).serialize());
-					callback(null, json);
-				}
-			});
-		}
-	];
-	
-	async.waterfall(wf, function(error) {
-		if (error) {
-			console.log(error);
-		} else {
-			console.log(json);
-			res.render('dashboard'+dashboard_id, {
-				title : 'Dashboard EasyIOT',
-				user: req.session.user,
-				json: JSON.stringify(json),
-			});
-		}
+	res.render('dashboard'+dashboard_id, {
+		title : 'Dashboard EasyIOT',
+		user: req.session.user,
+		version: version,
 	});
 });
 
@@ -453,7 +241,7 @@ router.post('/login', Auth, function(req, res) {
 			user: req.session.user
 		});
 	} else {
-		console.log(req.session.user);
+		//console.log(req.session.user);
 		if ( req.url == "/login" ) {
 		//res.redirect('/dashboards');
 			res.redirect('/profile');
@@ -466,6 +254,7 @@ router.post('/login', Auth, function(req, res) {
 function Auth(req, res, next) {
 	users	= db.getCollection('users');
 	tokens	= db.getCollection('tokens');
+	flows	= db.getCollection('flows');
 
 	var key = req.body.key;
 	var secret = req.body.secret;
@@ -494,7 +283,18 @@ function Auth(req, res, next) {
 				//console.log("I have created a SESS_ID: "+SESS_ID);
 
 				req.session.user = user;
-				//req.session.bearer = token;
+				req.session.token = '';
+				req.session.bearer = token;
+				// TODO: set permissions to 644 ; Should be 600 !!
+				var permissions = new Array();
+				(flows.find({'user_id':req.session.user.id})).map(function(p) {
+					permissions.push( { flow_id: p.id, permission: p.permission } );
+				}); // End permissions on all User Flows
+				console.log(permissions);
+				
+				req.session.bearer.permissions = permissions;
+				req.session.user.permissions = req.session.bearer.permissions;
+				
 				req.session.session_id = SESS_ID;
 				//console.log(req.session);
 				res.cookie('session_id', SESS_ID);

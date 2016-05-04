@@ -117,6 +117,8 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	if ( !(req.body.email || req.body.lastName || req.body.firstName ) ) {
 		res.send(new ErrorSerializer({'id': 8,'code': 412, 'message': 'Precondition Failed'}).serialize(), 412);
 	} else {
+		req.token = req.token!==undefined?req.token:req.session.token;
+		req.user = req.user!==undefined?req.user:req.session.user;
 		if ( req.token !== undefined && req.user.id == user_id ) {
 			var item = users.findOne( {'id': user_id} );
 			item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
@@ -167,28 +169,35 @@ function bearerAuthToken(req, res, next) {
 	var bearerHeader = req.headers['authorization'];
 	tokens	= db.getCollection('tokens');
 	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.bearer = tokens.findOne(
-			{ '$and': [
-	           {'token': { '$eq': req.token }},
-	           {'expiration': { '$gte': moment().format('x') }},
-			]}
-		);
-		if ( !req.bearer ) {
-			res.send(new ErrorSerializer({'id': 3,'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+	if ( typeof bearerHeader !== 'undefined' || req.session.bearer ) {
+		if ( req.session && !bearerHeader ) { // Login using the session
+			req.user = req.session.user;
+			req.token = req.session.token;
+			req.bearer = req.session.bearer;
 		} else {
-			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) {
+			var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
+			bearerToken = bearer[1];
+			req.token = bearerToken;
+			req.bearer = tokens.findOne(
+				{ '$and': [
+		           {'token': { '$eq': req.token }},
+		           {'expiration': { '$gte': moment().format('x') }},
+				]}
+			);
+		}
+
+		if ( !req.bearer ) {
+			res.send(new ErrorSerializer({'id': 3, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+		} else {
+			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) { // TODO: in case of Session, should be removed !
 				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
-				res.send(new ErrorSerializer({'id': 2,'code': 404, 'message': 'Not Found'}).serialize(), 404);
+				res.send(new ErrorSerializer({'id': 2, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
 			}
 		}
 	} else {
-		res.send(new ErrorSerializer({'id': 1,'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
+		res.send(new ErrorSerializer({'id': 1, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
 	}
 }
 
