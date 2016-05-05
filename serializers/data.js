@@ -12,6 +12,9 @@ function DataSerializer(data) {
 				prev	: data.prev>0?sprintf('%s/v%s/data/%s?limit=%s&page=%s&order=%s', baseUrl, version, data.flow_id, data.limit, data.prev, data.order):null,
 				next	: data.next>0?sprintf('%s/v%s/data/%s?limit=%s&page=%s&order=%s', baseUrl, version, data.flow_id, data.limit, data.next, data.order):null,/*
 				last	: data.last>0?sprintf('%s/v%s/data/%s/p5', baseUrl, version, data.flow_id, data.flow_id):null,*/
+				title	: data.title,
+				ttl		: data.ttl,
+				unit	: data.unit,
 			},
 			dataLinks : {
 				self	:  sprintf('%s/v%s/data/%s/%s', baseUrl, version, data.flow_id, data[0].id)

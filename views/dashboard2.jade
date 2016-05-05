@@ -15,7 +15,7 @@ html(lang='en')
                  | &nbsp;Indoor Temperature & Humidity (dht11)
             .panel-body
                #graph1.col-xs-12(style='height:300px;')
-            .panel-footer Updated at xx/xx/xxxx xx:xx'xx
+            .panel-footer 
 
         .col-sm-6
           .panel.panel-default
@@ -25,7 +25,7 @@ html(lang='en')
                  | &nbsp;VOC (Yoctopuce)
             .panel-body
                #graph2.col-xs-12(style='height:300px;')
-            .panel-footer Updated at xx/xx/xxxx xx:xx'xx
+            .panel-footer 
 
       .starter-template
         .col-sm-6
@@ -36,7 +36,7 @@ html(lang='en')
                  | &nbsp;Failed Root Login
             .panel-body
                #graph3.col-xs-12(style='height:300px;')
-            .panel-footer Updated at xx/xx/xxxx xx:xx'xx
+            .panel-footer 
 
         .col-sm-6
           .panel.panel-info
@@ -46,7 +46,7 @@ html(lang='en')
                  | &nbsp;Free space left
             .panel-body
                #graph4.col-xs-12(style='height:300px;')
-            .panel-footer Updated at xx/xx/xxxx xx:xx'xx
+            .panel-footer 
 
       .starter-template
         .col-sm-6
@@ -57,7 +57,7 @@ html(lang='en')
                  | &nbsp;Memory usage
             .panel-body
                #graph5.col-xs-12(style='height:300px;')
-            .panel-footer Updated at xx/xx/xxxx xx:xx'xx
+            .panel-footer 
 
         .col-sm-6
           .panel.panel-info
@@ -67,7 +67,7 @@ html(lang='en')
                  | &nbsp;CPU usage
             .panel-body
                #graph6.col-xs-12(style='height:300px;')
-            .panel-footer Updated at xx/xx/xxxx xx:xx'xx
+            .panel-footer 
 
     include ./includes/foot.jade
     #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
@@ -92,7 +92,7 @@ html(lang='en')
       // flow_id, callback, container, limit, page , sort
       ["1", doGraph, "graph3", 50, 1, 'desc'],
       ["2", doGraph, "graph4", 50, 1, 'desc'],
-      ["4", doGraph, "graph5", 50, 1, 'desc'],
+      ["4", doGraph, "graph5", 10, 1, 'desc'],
       ["5", doGraph, "graph2", 50, 1, 'desc'],
       ["24", doGraph, "graph6", 50, 1, 'desc'],
       ["19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f", doGraph2, "graph1", 50, 1, 'desc'],
@@ -109,7 +109,7 @@ html(lang='en')
       return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort);
       });
       
-      function getData(base, flow_id, type, CType, callback, container, limit, page , sort) {
+      function getData(base, flow_id, type, CType, callback, container, limit, page, sort) {
       $.ajax({
       url: base+flow_id,
       type: type,
@@ -120,7 +120,9 @@ html(lang='en')
       parseInt(i.attributes.value)]
       });
       var lastValue = ((d.data)[0].attributes.timestamp);
-      callback(data[flow_id], container, flow_id, lastValue);
+      var title = d.links.title;
+      var unit = d.links.unit;
+      callback(data[flow_id], container, flow_id, lastValue, title, unit);
       },
       error: function(d) {
       console.log('ERROR '+base);
@@ -129,24 +131,26 @@ html(lang='en')
       });
       }
       
-      function doGraph(data, container, flow_id, lastValue) {
+      function doGraph(data, container, flow_id, lastValue, title, unit) {
       var date = new Date(lastValue);
       lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
       $.plot($('#'+container), [data], options);
       $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
+      $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span>'+title);
       $('#'+container).bind("plothover", function (event, pos, item) {
       if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
+      var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
+      date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
+      y = date+'<br /><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
       $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
+      .css({top: item.pageY+15, left: item.pageX+15}).show();
       } else {
       $("#tooltip").hide();
       }
       });
       };
       
-      function doGraph2(data, container, flow_id, lastValue) {
+      function doGraph2(data, container, flow_id, lastValue, title, unit) {
       d.push({
       data : data,
       label : 'aaaa', // TODO - Humidity Indoor / 
@@ -178,10 +182,11 @@ html(lang='en')
       $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
       $('#'+container).bind("plothover", function (event, pos, item) {
       if (item) {
-      var x = item.datapoint[0].toFixed(2),
-      y = item.datapoint[1].toFixed(2);
+      var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
+      date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
+      y = date+'<br /><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
       $("#tooltip").html(y)
-      .css({top: item.pageY+5, left: item.pageX+5}).show();
+      .css({top: item.pageY+15, left: item.pageX+15}).show();
       } else {
       $("#tooltip").hide();
       }
