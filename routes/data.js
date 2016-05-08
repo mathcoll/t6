@@ -40,9 +40,11 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			} else if (limit < 1) {
 			  limit = 1;
 			}
-			
+
 			flows = db.getCollection('flows');
-			var flow = flows.findOne({'id': { '$regex': '/^'+flow_id+'$/' } });
+			//if( flow_id.length < 3 )  flow_id = parseInt(flow_id, 0);
+			//var flow = flows.findOne({ 'id' : flow_id });
+			var flow = flows.findOne({ 'id' : { '$aeq' : flow_id } });
 	
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 			if ( db_type == 'influxdb' ) {
