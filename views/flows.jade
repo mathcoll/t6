@@ -6,6 +6,8 @@ html(lang='en')
     
     .container
       .starter-template
+        span.pull-left.hidden-lg.hidden-md
+          a(href="#add") Add a Flow
         h2 Flows from your library
 
     .container
@@ -20,10 +22,56 @@ html(lang='en')
         div.affix-top
           blockquote.glyphicon.glyphicon-comment  Flows contains data collections. Flows are datastore to save time/value. Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
 
-      .col-sm-4
+      .col-sm-4#add
         div.sidebar-module-inset
           h3 Add a Flow to your library
-          form(action="/flows/add#content", method="post")
+          form(action="/flows/add", method="post")
+            .form-group
+              label.control-label(for="name") Flow Name:
+                span.mandatory *
+              input.form-control(type="text", name="name", placeholder="Flow Name", id="name")
+
+            .form-group
+              label.control-label(for="datatype") Data-Type:
+                span.mandatory *
+              select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
+                - for(datatype in datatypes) {
+                  option(name="#{datatypes[datatype].id}") #{datatypes[datatype].name}
+                - }
+
+            .form-group
+              label.control-label(for="unit") Unit:
+                span.mandatory *
+              select.form-control(type="text", name="position", placeholder="Unit", id="unit")
+                - for(unit in units) {
+                  option(name="#{units[unit].id}") #{units[unit].name}
+                - }
+
+            .form-group
+              label Owner permission:&nbsp;&nbsp;&nbsp;&nbsp;
+                span
+                  label.control-label(for="OpermissionW") Write 
+                    input#OpermissionW(type='checkbox', value='6') 
+                  | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  label.control-label(for="OpermissionR") Read 
+                    input#OpermissionR(type='checkbox', value='4') 
+                    
+            .form-group
+              label Group permission:&nbsp;&nbsp;&nbsp;&nbsp;
+                span
+                  label.control-label(for="GpermissionW") Write 
+                    input#GpermissionW(type='checkbox', value='6') 
+                  | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  label.control-label(for="GpermissionR") Read 
+                    input#GpermissionR(type='checkbox', value='4') 
+
+            .form-group
+              label.control-label(for="objects") Objects:
+              select.form-control(multiple name="objects", placeholder="Objects", id="objects")
+                - for(object in objects) {
+                  option(name="#{objects[object].id}") #{objects[object].name}
+                - }
+
             .form-group
               button.btn.btn-primary.m-t.pull-right
                 span.glyphicon.glyphicon-plus  Add Flow

@@ -5,6 +5,7 @@ var DataSerializer = require('../serializers/data');
 var ErrorSerializer = require('../serializers/error');
 var users;
 var tokens;
+var flows;
 
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -39,6 +40,11 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			} else if (limit < 1) {
 			  limit = 1;
 			}
+			
+			flows = db.getCollection('flows');
+			//if( flow_id.length < 3 )  flow_id = parseInt(flow_id, 0);
+			//var flow = flows.findOne({ 'id' : flow_id });
+			var flow = flows.findOne({ 'id' : { '$aeq' : flow_id } });
 	
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 			if ( db_type == 'influxdb' ) {
@@ -98,17 +104,18 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					
 				query = query.toString();
 				//console.log(query);
-				//res.send({q: req.query, query: query}, 200);
 				dbSQLite3.all(query, function(err, data) {
 					if (err) console.log(err);
-					//data.id = moment(data.timestamp).format('x'); //BUG
+					
+					data.title = flow!==null?flow.name:'';
+					data.unit = flow!==null?flow.unit:'';
+					data.ttl = 3600;
 					data.flow_id = flow_id;
 					data.page = page;
 					data.next = page+1;
 					data.prev = page-1;
 					data.limit = limit;
 					data.order = req.query.order!==undefined?req.query.order:'asc';
-					//console.log(data);
 					
 					res.send(new DataSerializer(data).serialize());
 				});

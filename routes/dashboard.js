@@ -4,7 +4,9 @@ var router	= express.Router();
 var DataSerializer = require('../serializers/data');
 var users;
 var objects;
+var units;
 var flows;
+var datatypes;
 var tokens;
 
 router.get('/', function(req, res) {
@@ -87,6 +89,10 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 
 router.get('/flows', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
+	objects	= db.getCollection('objects');
+	units	= db.getCollection('units');
+	datatypes	= db.getCollection('datatypes');
+
 	var query = {
 			'$and': [
 						{ 'user_id': req.session.user.id },
@@ -96,9 +102,15 @@ router.get('/flows', Auth, function(req, res) {
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	var f = flows.chain().find(query).offset(offset).limit(pagination).data();
+	var o = objects.chain().find(query).data();
+	var dt = datatypes.find();
+	var u = units.find();
 	res.render('flows', {
 		title : 'Flows EasyIOT',
 		flows: f,
+		objects: o,
+		datatypes: dt,
+		units: u,
 		page: req.query.page,
 		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
 		user: req.session.user
@@ -200,6 +212,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	res.render('dashboard'+dashboard_id, {
 		title : 'Dashboard EasyIOT',
 		user: req.session.user,
+		version: version,
 	});
 });
 
@@ -289,7 +302,7 @@ function Auth(req, res, next) {
 				(flows.find({'user_id':req.session.user.id})).map(function(p) {
 					permissions.push( { flow_id: p.id, permission: p.permission } );
 				}); // End permissions on all User Flows
-				console.log(permissions);
+				//console.log(permissions);
 				
 				req.session.bearer.permissions = permissions;
 				req.session.user.permissions = req.session.bearer.permissions;
@@ -297,6 +310,7 @@ function Auth(req, res, next) {
 				req.session.session_id = SESS_ID;
 				//console.log(req.session);
 				res.cookie('session_id', SESS_ID);
+				next();
 			} else {
 				//console.log("I have not found a valid User");
 				res.redirect('/unauthorized');
@@ -310,28 +324,16 @@ function Auth(req, res, next) {
 		//console.log("I haven't any Key nor Secret");
 		// trying to retrieve User from the session... if any...
 		if ( req.cookies.session_id ) {
-			//console.log("I have a session_id: "+req.cookies.session_id);
-			if( req.session && req.session.user ) {
-				//console.log("I have a session: "+req.session);
-				//console.log("I have a User in session: "+req.session.user);
-//				if ( req.cookies.connect.sid == ?????? ) {
-//					
-//				} else {
-//					
-//				}
-			} else {				
+			if( !(req.session && req.session.user) ) {				
 				res.redirect('/unauthorized');
+			} else {
+				//console.log("I have a session_id: "+req.cookies.session_id);
+				next();
 			}
 		} else {
-			//console.log("I don't have any session_id");
-			//console.log("but cookies:");
-			//console.log(req.cookies);
-		//	if( !req.session && !req.session.user ) {
-				res.redirect('/unauthorized');
-		//	}
+			res.redirect('/unauthorized');
 		}
 	}
-	next();
 }
 
 module.exports = router;
