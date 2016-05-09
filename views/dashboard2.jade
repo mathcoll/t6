@@ -22,10 +22,12 @@ html(lang='en')
         .col-sm-6
           .panel.panel-default
             .panel-heading
-               h3.panel-title
+               h3.panel-title.pull-left
                  span.glyphicon.glyphicon-scale
-                 | &nbsp;VOC (Yoctopuce)
-            .panel-body
+                 | 
+               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph2" aria-expanded="true" aria-controls="collapseGraph2") 
+               div.clearfix
+            .panel-body.collapse.in#collapseGraph2
                #graph2.col-xs-12(style='height:300px;')
             .panel-footer 
 
@@ -33,41 +35,51 @@ html(lang='en')
         .col-sm-6
           .panel.panel-default
             .panel-heading
-               h3.panel-title
+               h3.panel-title.pull-left
                  span.glyphicon.glyphicon-scale
-                 | &nbsp;Failed Root Login
-            .panel-body
+                 | 
+               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph3" aria-expanded="true" aria-controls="collapseGraph3") 
+               div.clearfix
+            .panel-body.collapse.in#collapseGraph3
                #graph3.col-xs-12(style='height:300px;')
             .panel-footer 
 
         .col-sm-6
-          .panel.panel-info
+          .col-sm-6
+          .panel.panel-default
             .panel-heading
-               h3.panel-title
+               h3.panel-title.pull-left
                  span.glyphicon.glyphicon-scale
-                 | &nbsp;Free space left
-            .panel-body
+                 | 
+               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph4" aria-expanded="true" aria-controls="collapseGraph4") 
+               div.clearfix
+            .panel-body.collapse.in#collapseGraph4
                #graph4.col-xs-12(style='height:300px;')
             .panel-footer 
 
       .starter-template
         .col-sm-6
-          .panel.panel-info
+          .panel.panel-default
             .panel-heading
-               h3.panel-title
+               h3.panel-title.pull-left
                  span.glyphicon.glyphicon-scale
-                 | &nbsp;Memory usage
-            .panel-body
+                 | 
+               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph5" aria-expanded="true" aria-controls="collapseGraph5") 
+               div.clearfix
+            .panel-body.collapse.in#collapseGraph5
                #graph5.col-xs-12(style='height:300px;')
             .panel-footer 
 
         .col-sm-6
-          .panel.panel-info
+          .col-sm-6
+          .panel.panel-default
             .panel-heading
-               h3.panel-title
+               h3.panel-title.pull-left
                  span.glyphicon.glyphicon-scale
-                 | &nbsp;CPU usage
-            .panel-body
+                 | 
+               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph6" aria-expanded="true" aria-controls="collapseGraph6") 
+               div.clearfix
+            .panel-body.collapse.in#collapseGraph6
                #graph6.col-xs-12(style='height:300px;')
             .panel-footer 
 
@@ -138,7 +150,7 @@ html(lang='en')
       lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
       $.plot($('#'+container), [data], options);
       $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
-      $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span>'+title);
+      $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
       $('#'+container).bind("plothover", function (event, pos, item) {
       if (item) {
       var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
@@ -155,9 +167,9 @@ html(lang='en')
       function doGraph2(data, container, flow_id, lastValue, title, unit) {
       d.push({
       data : data,
-      label : 'aaaa', // TODO - Humidity Indoor / 
-      name : 'bbbb', // TODO - Humidity Indoor / 
-      unit : '%', // TODO
+      label : title,
+      name : title, // TODO - Humidity Indoor / 
+      unit : unit,
       lines : {
       show : true,
       fill : false,
@@ -168,13 +180,6 @@ html(lang='en')
       show : true
       },
       yaxis : 1,
-      threshold : [{
-      //	below : 50,
-      //	color : 'rgb(200, 20, 30)'
-      }, {
-      //	below : 3,
-      //	color : 'rgb(175, 216, 248)'
-      }],
       });
 
       if (d.length == 2) {
@@ -182,6 +187,7 @@ html(lang='en')
       lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
       $.plot($('#'+container), d, options);
       $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
+      $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
       $('#'+container).bind("plothover", function (event, pos, item) {
       if (item) {
       var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
