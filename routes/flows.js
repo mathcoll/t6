@@ -10,7 +10,7 @@ var tokens;
 router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 	var results = Array();
 	var flow_id = req.params.flow_id;
-	if ( req.token !== undefined && req.user !== undefined) {
+	if ( req.token !== undefined && req.user !== undefined ) {
 		flows	= db.getCollection('flows');
 		users	= db.getCollection('users');
 		
