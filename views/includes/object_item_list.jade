@@ -13,6 +13,9 @@ a.list-group-item(href='/objects/#{objects[object].id}')
       - if (objects[object].ipv4)
         span.label.label-danger(data-toggle='tooltip' data-placement='top' title='IPv4 Adress') #{objects[object].ipv4}
         | &nbsp;
+      - if (objects[object].ipv6)
+        span.label.label-danger(data-toggle='tooltip' data-placement='top' title='IPv6 Adress') #{objects[object].ipv6}
+        | &nbsp;
       - if (objects[object].type)
         span.label.label-default(data-toggle='tooltip' data-placement='top' title='Object Type') #{objects[object].type}
         | &nbsp;

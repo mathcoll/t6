@@ -11,10 +11,10 @@ html(lang='en')
         - else
             h2 Search Results
 
-    .container
+    .container#objects
       .col-sm-8
         h3 #{objects.length} Objects
-        #objects.list-group
+        .list-group
         - if (objects.length)
           - for(object in objects) {
             include ./includes/object_item_list.jade
@@ -33,10 +33,10 @@ html(lang='en')
             li
               a(href="#flows") #{flows.length} Flows
 
-    .container
+    .container#flows
       .col-sm-8
         h3 #{flows.length} Flows
-        #flows.list-group
+        .list-group
         - if (flows.length)
           - for(flow in flows) {
             include ./includes/flow_item_list.jade

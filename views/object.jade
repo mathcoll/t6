@@ -38,7 +38,11 @@ html(lang='en')
               h4.media-heading
                 span.glyphicon.glyphicon-minus     Ip:
                 small
-                  div.label.label-danger     #{object.ipv4}
+                  div.label.label-danger     #{object.ipv4} 
+                  -if (object.ipv6)
+                    | &nbsp;
+                    div.label.label-danger     #{object.ipv6} 
+                  -end
 
           .media
             .media-body
