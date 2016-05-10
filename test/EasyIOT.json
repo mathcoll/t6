@@ -15,7 +15,7 @@
     "data": {},
     "suites": [
         {
-            "name": "EasyIOT Full Suite",
+            "name": "Easy-IOT Full Suite",
             "tests": [
                 {
                 	"name": "can create a User",
@@ -431,7 +431,7 @@
             ]
         },
         {
-            "name": "EasyIOT Open Suite (no Authentification required)",
+            "name": "Easy-IOT Open Suite (no Authentification required)",
             "tests": [
                 {
                 	"name": "can get all DataTypes",
@@ -490,8 +490,8 @@
                     ]
                 },
                 {
-                	"name": "can get EasyIOT server status",
-                	"description": "get EasyIOT server status",
+                	"name": "can get Easy-IOT server status",
+                	"description": "get Easy-IOT server status",
                     "api_calls": [
                         {
                         	"request": "GET /status",

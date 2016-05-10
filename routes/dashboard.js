@@ -11,7 +11,7 @@ var tokens;
 
 router.get('/', function(req, res) {
 	res.render('index', {
-		title : 'Dashboard EasyIOT',
+		title : 'Dashboard Easy-IOT',
 		user: req.session.user
 	});
 });
@@ -28,7 +28,7 @@ router.get('/objects', Auth,  function(req, res) {
 	var offset = (req.query.page -1) * pagination;
 	var o = objects.chain().find(query).offset(offset).limit(pagination).data();
 	res.render('objects', {
-		title : 'Objects EasyIOT',
+		title : 'Objects Easy-IOT',
 		objects: o,
 		page: req.query.page,
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
@@ -106,7 +106,7 @@ router.get('/flows', Auth, function(req, res) {
 	var dt = datatypes.find();
 	var u = units.find();
 	res.render('flows', {
-		title : 'Flows EasyIOT',
+		title : 'Flows Easy-IOT',
 		flows: f,
 		objects: o,
 		datatypes: dt,
@@ -143,7 +143,7 @@ router.get('/profile', Auth, function(req, res) {
 					]
 				};
 	res.render('profile', {
-		title : 'Profile EasyIOT',
+		title : 'Profile Easy-IOT',
 		objects: ((objects.chain().find(queryO).data()).length),
 		flows: ((flows.chain().find(queryF).data()).length),
 		tokens: ((tokens.chain().find(queryT).data()).length),
@@ -153,7 +153,7 @@ router.get('/profile', Auth, function(req, res) {
 
 router.get('/search', Auth, function(req, res) {
 	res.render('search', {
-		title : 'Search EasyIOT',
+		title : 'Search Easy-IOT',
 		objects: [],
 		flows: [],
 		user: req.session.user
@@ -165,7 +165,7 @@ router.post('/search', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	if (!req.body.q) {
 		res.render('search', {
-			title : 'Search EasyIOT',
+			title : 'Search Easy-IOT',
 			objects: [],
 			flows: [],
 			user: req.session.user
@@ -184,7 +184,7 @@ router.post('/search', Auth, function(req, res) {
 						]
 					};
 		res.render('search', {
-			title : 'Search EasyIOT',
+			title : 'Search Easy-IOT',
 			objects: objects.find(queryO),
 			flows: flows.find(queryF),
 			q:req.body.q,
@@ -195,14 +195,14 @@ router.post('/search', Auth, function(req, res) {
 
 router.get('/decision-rules', Auth, function(req, res) {
 	res.render('decision-rules', {
-		title : 'Decision Rules EasyIOT',
+		title : 'Decision Rules Easy-IOT',
 		user: req.session.user
 	});
 });
 
 router.get('/about', function(req, res) {
 	res.render('about', {
-		title : 'About EasyIOT',
+		title : 'About Easy-IOT',
 		user: req.session.user
 	});
 });
@@ -210,7 +210,7 @@ router.get('/about', function(req, res) {
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
 	res.render('dashboard'+dashboard_id, {
-		title : 'Dashboard EasyIOT',
+		title : 'Dashboard Easy-IOT',
 		user: req.session.user,
 		version: version,
 	});
@@ -218,21 +218,21 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 
 router.get('/register', function(req, res) {
 	res.render('register', {
-		title : 'Register to EasyIOT',
+		title : 'Register to Easy-IOT',
 		user: req.session.user
 	});
 });
 
 router.get('/login', function(req, res) {
 	res.render('login', {
-		title : 'Log-in to EasyIOT',
+		title : 'Log-in to Easy-IOT',
 		user: req.session.user
 	});
 });
 
 router.get('/unauthorized', function(req, res) {
 	res.render('unauthorized', {
-		title : 'Unauthorized, Please log-in again to EasyIOT',
+		title : 'Unauthorized, Please log-in again to Easy-IOT',
 		user: req.session.user
 	});
 });
@@ -249,7 +249,7 @@ router.post('/login', Auth, function(req, res) {
 	if ( !req.session.user ) {
 		console.log("Error! invalid credentials, user not found");
 		res.render('login', {
-			title : 'Log-in Failed to EasyIOT',
+			title : 'Log-in Failed to Easy-IOT',
 			user: req.session.user
 		});
 	} else {
