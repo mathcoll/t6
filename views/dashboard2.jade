@@ -103,14 +103,14 @@ html(lang='en')
       var d = new Array();
       var data = new Array();
       var flows = new Array(
-      // flow_id, callback, container, limit, page , sort
-      ["1", doGraph, "graph3", 50, 1, 'desc'],
-      ["2", doGraph, "graph4", 50, 1, 'desc'],
-      ["4", doGraph, "graph5", 10, 1, 'desc'],
-      ["5", doGraph, "graph2", 50, 1, 'desc'],
-      ["24", doGraph, "graph6", 50, 1, 'desc'],
-      ["19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f", doGraph2, "graph1", 50, 1, 'desc'],
-      ["6d844fbf-29c0-4a41-8c6a-0e9f3336cea3", doGraph2, "graph1", 50, 1, 'desc']
+      // flow_id, callback, container, limit, page , sort, color
+      ["1", doGraph, "graph3", 50, 1, 'desc', '#edc240'],
+      ["2", doGraph, "graph4", 50, 1, 'desc', '#ed6b40'],
+      ["4", doGraph, "graph5", 10, 1, 'desc', '#40c2ed'],
+      ["5", doGraph, "graph2", 50, 1, 'desc', '#c2ed40'],
+      ["24", doGraph, "graph6", 50, 1, 'desc', '#c240ed'],
+      ["6d844fbf-29c0-4a41-8c6a-0e9f3336cea3", doGraph2, "graph1", 30, 1, 'desc', '#edc240'],
+      ["19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f", doGraph2, "graph1", 30, 1, 'desc', '#afd8f8']
       );
         
       flows.map(function(f) {
@@ -120,10 +120,11 @@ html(lang='en')
       var limit = f[3];
       var page = f[4];
       var sort = f[5];
-      return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort);
+      var color = f[6];
+      return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort, color);
       });
       
-      function getData(base, flow_id, type, CType, callback, container, limit, page, sort) {
+      function getData(base, flow_id, type, CType, callback, container, limit, page, sort, color) {
       $.ajax({
       url: base+flow_id,
       type: type,
@@ -136,7 +137,7 @@ html(lang='en')
       var lastValue = ((d.data)[0].attributes.timestamp);
       var title = d.links.title;
       var unit = d.links.unit;
-      callback(data[flow_id], container, flow_id, lastValue, title, unit);
+      callback(data[flow_id], container, flow_id, lastValue, title, unit, color);
       },
       error: function(d) {
       console.log('ERROR '+base);
@@ -145,9 +146,10 @@ html(lang='en')
       });
       }
       
-      function doGraph(data, container, flow_id, lastValue, title, unit) {
+      function doGraph(data, container, flow_id, lastValue, title, unit, color) {
       var date = new Date(lastValue);
       lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
+      options.colors = [color];
       $.plot($('#'+container), [data], options);
       $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
       $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
@@ -157,29 +159,30 @@ html(lang='en')
       date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
       y = date+'<br /><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
       $("#tooltip").html(y)
-      .css({top: item.pageY+15, left: item.pageX+15}).show();
+      .css({backgroundColor: color, top: item.pageY+15, left: item.pageX+15}).show();
       } else {
       $("#tooltip").hide();
       }
       });
       };
       
-      function doGraph2(data, container, flow_id, lastValue, title, unit) {
+      function doGraph2(data, container, flow_id, lastValue, title, unit, color) {
       d.push({
       data : data,
-      label : title,
-      name : title, // TODO - Humidity Indoor / 
+      label : title+' ('+unit+')',
+      name : title,
       unit : unit,
+      color: color,
       lines : {
       show : true,
-      fill : false,
-      lineWidth : 2,
+      fill : true,
+      lineWidth : 3,
       steps : false
       },
       points : {
       show : true
       },
-      yaxis : 1,
+      yaxis: d.length+1,
       });
 
       if (d.length == 2) {
@@ -192,9 +195,9 @@ html(lang='en')
       if (item) {
       var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
       date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
-      y = date+'<br /><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
+      y = item.series.name+'<br />'+date+'<br /><b>'+item.datapoint[1].toFixed(2)+item.series.unit+'</b>';
       $("#tooltip").html(y)
-      .css({top: item.pageY+15, left: item.pageX+15}).show();
+      .css({backgroundColor: color, top: item.pageY+15, left: item.pageX+15}).show();
       } else {
       $("#tooltip").hide();
       }
@@ -240,6 +243,6 @@ html(lang='en')
       mouseActiveRadius: 10
       },
       xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-      yaxis: [ { autoscale: true, position: null }, { autoscale: true, position: 1 } ],
+      yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
       };
    
