@@ -150,6 +150,12 @@ html(lang='en')
       var date = new Date(lastValue);
       lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
       options.colors = [color];
+      if (flow_id==5) {
+      options.series = { bars: {show: true}};
+      options.bars = { align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 }
+      } else {
+      options.series = { bars: {show: false}};
+      }
       $.plot($('#'+container), [data], options);
       $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
       $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
