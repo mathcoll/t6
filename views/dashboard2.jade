@@ -154,7 +154,7 @@ html(lang='en')
       options.series = { bars: {show: true}};
       options.bars = { align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 }
       } else {
-      options.series = { bars: {show: false}};
+      options.series = { bars: {show: false} };
       }
       $.plot($('#'+container), [data], options);
       $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
@@ -175,20 +175,14 @@ html(lang='en')
       function doGraph2(data, container, flow_id, lastValue, title, unit, color) {
       d.push({
       data : data,
+      yaxis: d.length+1,
       label : title+' ('+unit+')',
       name : title,
       unit : unit,
       color: color,
-      lines : {
-      show : true,
-      fill : true,
-      lineWidth : 3,
-      steps : false
-      },
-      points : {
-      show : true
-      },
-      yaxis: d.length+1,
+      lines : { show: true, fill: true, lineWidth: 3, steps: false },
+      points : { show : true },
+      legend: {show: true, position: "sw" },
       });
 
       if (d.length == 2) {
@@ -228,26 +222,13 @@ html(lang='en')
       } while (i < axes.xaxis.max);
       return markings;
       }
+      
       var options = {
-      grid: {
-      borderWidth: {
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0
-      },
-      borderColor: {
-      top: "#7F8790",
-      right: "#7F8790",
-      bottom: "#7F8790",
-      left: "#7F8790"
-      },
-      markings: weekendAreas,
-      clickable: true,
-      hoverable: true,
-      autoHighlight: true,
-      mouseActiveRadius: 10
-      },
+      lines : { show: true, fill: true, lineWidth: 3, steps: false },
+      points : { show : true },
+      bars: { show: false, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
+      legend: {show: true, position: "sw"},
+      grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
       xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
       yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
       };
