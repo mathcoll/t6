@@ -323,7 +323,7 @@ function Auth(req, res, next) {
 	} else {
 		//console.log("I haven't any Key nor Secret");
 		// trying to retrieve User from the session... if any...
-		if ( req.cookies.session_id ) {
+		if ( req.session !== undefined && req.session.user !== undefined && req.session.user.id !== undefined ) {
 			if( !(req.session && req.session.user) ) {				
 				res.redirect('/unauthorized');
 			} else {
