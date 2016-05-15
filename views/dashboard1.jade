@@ -63,6 +63,12 @@ html(lang='en')
       $.ajax({
       url: url,
       type: type,
+      crossDomain: true,
+      cors: true,
+      contentType: CType+';charset=utf-8',
+      beforeSend: function (request) {
+      request.setRequestHeader("Access-Control-Allow-Origin", "*");
+      },
       success: function(data){ 
       if(CType == 'text/html') { $(id).append(data); }
       if(CType == 'application/json') { console.log(data.value); }
@@ -73,13 +79,14 @@ html(lang='en')
       $(id).append(getError(url));
       }
       });
+      
       }
       $( window ).load(function() {
       getData('/modules/16/Tmod', 'GET', 'text/html', '#contentWeather');
       getData('/modules/16/Hmod', 'GET', 'text/html', '#contentWeather');
       getData('/modules/17/OTem', 'GET', 'text/html', '#contentWeather');
       
-      //getData('/modules/yoctopuce/cov-5', 'text/html', 'GET', '#contentYVOC');
+      getData('/modules/yoctopuce/cov-5', 'GET', 'text/html', '#contentYVOC');
       
       //getData('/modules/guruplug/root_login_failure-1', 'text/html', 'GET', '#contentServer');
       //getData('/modules/guruplug/hd_space-2', 'text/html', 'GET', '#contentServer');
@@ -123,10 +130,10 @@ html(lang='en')
       var limit = f[3];
       var page = f[4];
       var sort = f[5];
-      return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort);
+      return getDataSparkline(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort);
       });
 
-      function getData(base, flow_id, type, CType, callback, container, limit, page, sort) {
+      function getDataSparkline(base, flow_id, type, CType, callback, container, limit, page, sort) {
       $.ajax({
       url: base+flow_id,
       type: type,

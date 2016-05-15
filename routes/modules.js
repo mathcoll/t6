@@ -5,9 +5,17 @@ var proxy	= require('express-http-proxy');
 
 /*
 router.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
+	res.header('Access-Control-Allow-Origin', (req.headers.origin || '*'));
+	res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,HEAD,DELETE,OPTIONS');
+	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+	res.header('Access-Control-Allow-Credentials', 'true');
+	res.header('Access-Control-Max-Age', 10);
+	
+	res.header('tsv', 'N');
+	res.header('Cache-Control', 'no-cache');
+	res.header('Expires', 'Thu, 01 Dec 1994 16:00:00 GMT');
+	res.header('Connection', 'Keep-Alive');
+	next();
 });
 */
 
@@ -29,7 +37,7 @@ router.use('/17', proxy('192.168.0.17', {
 	}
 }));
 
-router.get('/yoctopuce/cov-5', function (req, res) {
+router.use('/yoctopuce/cov-5', function (req, res) {
 	var yoctolib= require('yoctolib');
 	var YAPI = yoctolib.YAPI;
 	var YVoc = yoctolib.YVoc;
