@@ -53,7 +53,28 @@ html(lang='en')
     script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
     script.
-      getData = function(url, type, CType, id) {
+      getData = function(flow_id, id, sort) {
+        $.ajax({
+          url: '/v#{version}/data/'+flow_id+'?limit=1&sort='+sort,
+          type: 'GET',
+          success: function(data) { 
+            data.icon = 'glyphicon-cloud';
+            data.name = data.links.title;
+            data.description = '&nbsp;';
+            data.unit = data.links.units!==undefined?data.links.units:'';
+            data.value = data.data[0].attributes.value;
+            if( data.value ) { $(id).append(displayModule(data)); }
+            else { console.log('ERROR (a) '+data); $(id).append(displayError(flow_id)); }
+          },
+          error: function(data) {
+            console.log('ERROR (b)'+flow_id);
+            console.log(data);
+            $(id).append(displayError(flow_id));
+          }
+        });
+      } // end getData
+      
+      getRealTimeData = function(url, type, CType, id) {
         $.ajax({
           url: url,
           type: type,
@@ -63,12 +84,33 @@ html(lang='en')
             else { console.log('ERROR (a) '+data); $(id).append(displayError(url)); }
           },
           error: function(data) {
-            console.log('ERROR (b)'+url);
+            console.log('ERROR (c)'+url);
             console.log(data);
             $(id).append(displayError(url));
           }
         });
-      } // end getData
+      } // end getRealTimeData
+
+      getDataSparkline = function (base, flow_id, type, CType, callback, container, limit, page, sort) {
+        $.ajax({
+          url: base+flow_id,
+          type: type,
+          data: {limit: limit, page: page , sort: sort},
+          success: function(d) {
+            data[flow_id] = (d.data).map(function(i) {
+              return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)]
+            });
+            var lastValue = ((d.data)[0].attributes.timestamp);
+            var title = d.links.title;
+            var unit = d.links.unit;
+            callback(data[flow_id], container, flow_id, lastValue, title, unit);
+          },
+          error: function(d) {
+            console.log('ERROR (d)'+base);
+            console.log(d);
+          }
+        });
+      } // end getDataSparkline
 
       displayError = function(url) {
         return "<div class='alert alert-danger alert-dismissible fade in' role='alert'>"
@@ -78,20 +120,22 @@ html(lang='en')
       } // end displayError
  
       displayModule = function(data) {
-        var content = "<a name='#' class='list-group-item'><h4 class='list-group-item-heading'> <span class='glyphicon "+data.icon+"' aria-hidden='true'></span> "+data.name+"</h4>"+data.description+"<span class='badge'>"+data.value+""+data.unit+"</span></a>";
-        return content;
+        return "<a name='#' class='list-group-item'><h4 class='list-group-item-heading'> "
+        + "<span class='glyphicon "+data.icon+"' aria-hidden='true'></span> "+data.name+"</h4>"
+        + data.description+"<span class='badge'>"+data.value+""+data.unit+"</span></a>";
       } // end displayModule
 
       $( window ).load(function() {
-        getData('/modules/16/temp.json', 'GET', 'application/json', '#contentWeather');
-        getData('/modules/16/humi.json', 'GET', 'application/json', '#contentWeather');
-        getData('/modules/17/temp.json', 'GET', 'application/json', '#contentWeather');
-        getData('/modules/yoctopuce/cov-5', 'GET', 'text/html', '#contentYVOC');
-        //getData('/modules/17/plan.json', 'GET', 'application/json', '#contentPlants');
-        //getData('/modules/guruplug/root_login_failure-1', 'text/html', 'GET', '#contentServer');
-        //getData('/modules/guruplug/hd_space-2', 'text/html', 'GET', '#contentServer');
-        //getData('/modules/guruplug/memory-4', 'text/html', 'GET', '#contentServer');
-        //getData('/modules/guruplug/cpu-24', 'text/html', 'GET', '#contentServer');
+        getRealTimeData('/modules/16/temp.json', 'GET', 'application/json', '#contentWeather');
+        getRealTimeData('/modules/16/humi.json', 'GET', 'application/json', '#contentWeather');
+        getRealTimeData('/modules/17/temp.json', 'GET', 'application/json', '#contentWeather');
+        getRealTimeData('/modules/yoctopuce/cov-5', 'GET', 'text/html', '#contentYVOC');
+        getData('1', '#contentServer', 'desc');
+        getData('2', '#contentServer', 'desc');
+        getData('4', '#contentServer', 'desc');
+        getData('24', '#contentServer', 'desc');
+        
+        //getRealTimeData('/modules/17/plan.json', 'GET', 'application/json', '#contentPlants');
       });
       
       var d = new Array();
@@ -130,24 +174,3 @@ html(lang='en')
         var sort = f[5];
         return getDataSparkline('/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort);
       });
-
-      function getDataSparkline(base, flow_id, type, CType, callback, container, limit, page, sort) {
-        $.ajax({
-          url: base+flow_id,
-          type: type,
-          data: {limit: limit, page: page , sort: sort},
-          success: function(d) {
-            data[flow_id] = (d.data).map(function(i) {
-              return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)]
-            });
-            var lastValue = ((d.data)[0].attributes.timestamp);
-            var title = d.links.title;
-            var unit = d.links.unit;
-            callback(data[flow_id], container, flow_id, lastValue, title, unit);
-          },
-          error: function(d) {
-            console.log('ERROR '+base);
-            console.log(d);
-          }
-        });
-      }
