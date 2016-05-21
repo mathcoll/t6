@@ -4,7 +4,9 @@ Easy IOT is an "oriented-Data" platform to connect physical Objects with timeser
 ## Structure & Context
 ### Physical World
 Physical World are composed by your sensors and actuators.
-Physical Objects require a virtual _Object_ in Easy-IOT and then, they could add _Data_ to _Flows_. 
+Physical Objects require a virtual _Object_ in Easy-IOT and then, they could add _Data_ to _Flows_.
+
+![Easy-IOT screenshot](https://raw.githubusercontent.com/mathcoll/Easy-IOT/master/docs/Easy-IOT-screenshot.png)
 
 ### General
 
