@@ -2,7 +2,7 @@ srv = net.createServer(net.TCP)
 srv:listen(PORT, function(conn)
     conn:on("receive", function(conn, payload)
         lc = math.floor((tmr.now() - Glc)/60000000)
-        command = string.sub(payload, 6, 9) -- Get characters 6 to 9
+        command = string.sub(payload, 6, 14) -- Get characters 6 to 14
         print("Got query...", "'"..command.."'")
         print("Heap: "..node.heap().." Bytes")
         print("Time since start: "..tmr.time().." sec")
@@ -14,26 +14,27 @@ srv:listen(PORT, function(conn)
             .."<font size=\"+2\">"
 
         conn:send("HTTP/1.1 200 OK\r\n")
-        if (command == "temp") then
+        if (command == "temp.html") then
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = reply.."Temperature: "..Temperature.."°C<br />"
                 .."Last Measure: "..lc.." min ago.<br />"
                 .."</font></body></html>"
                 
-        elseif (command == "humi") then
+        elseif (command == "temp.json") then
+            conn:send("Content-Type: application/json; charset=utf-8\r\n")
+            reply = '{"value": "'..Temperature..'", "unit": "°C", "name": "Indoor Temperature", "description": "Temperature DHT11 module powered by NodeMCU", "icon": "glyphicon-cloud"}'
+                
+        elseif (command == "humi.json") then
+            conn:send("Content-Type: application/json; charset=utf-8\r\n")
+            reply = '{"value": "'..Humidity..'", "unit": "%", "name": "Indoor Humidity", "description": "Humidity DHT11 module powered by NodeMCU", "icon": "glyphicon-cloud"}'
+                
+        elseif (command == "humi.html") then
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = reply.."Humidity: "..Humidity.."%<br />"
                 .."Last Measure: "..lc.." min ago.<br />"
                 .."</font></body></html>"
                 
-        elseif (command == "humi.json") then
-            conn:send("Content-Type: application/json; charset=utf-8\r\n")
-            json = '{"dtepoch":"","value":"'..Humidity..'","text":""}'
-            reply = reply.."Humidity: "..Humidity.."%<br />"
-                .."Last Measure: "..lc.." min ago.<br />"
-                .."</font></body></html>"
-                
-        elseif (command == "Tmod") then
+        elseif (command == "Tmod.html") then
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = "<a class='list-group-item' href='#'>"
                 .."<h4 class='list-group-item-heading'>"
@@ -43,8 +44,8 @@ srv:listen(PORT, function(conn)
                 .."Temperature module powered by NodeMCU"
                 .."<span class='badge'>"..Temperature.."°C</span>"
               .."</a>"
-              
-        elseif (command == "Hmod") then
+
+        elseif (command == "Hmod.html") then
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = "<a class='list-group-item' href='#'>"
                 .."<h4 class='list-group-item-heading'>"
@@ -54,7 +55,7 @@ srv:listen(PORT, function(conn)
                 .."Humidity module powered by NodeMCU"
                 .."<span class='badge'>"..Humidity.."%</span>"
               .."</a>"
-                
+
         else
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = reply.."Temperature: "..Temperature.."°C<br />"
