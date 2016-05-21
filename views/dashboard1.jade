@@ -53,15 +53,17 @@ html(lang='en')
     script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
     script.
-      getData = function(flow_id, id, sort) {
+      getData = function(flow_id, id, sort, icon) {
         $.ajax({
           url: '/v#{version}/data/'+flow_id+'?limit=1&sort='+sort,
           type: 'GET',
           success: function(data) { 
-            data.icon = 'glyphicon-cloud';
-            data.name = data.links.title;
-            data.description = '&nbsp;';
-            data.unit = data.links.units!==undefined?data.links.units:'';
+            data.icon = data.links.icon!==undefined?data.links.icon:icon;
+            data.name = data.links.title!==undefined?data.links.title:'Flow '+flow_id;
+            var date = new Date(data.data[0].attributes.timestamp);
+            lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
+            data.description = 'Last updated at '+lastValue;
+            data.unit = data.links.unit!==undefined?data.links.unit:'';
             data.value = data.data[0].attributes.value;
             if( data.value ) { $(id).append(displayModule(data)); }
             else { console.log('ERROR (a) '+data); $(id).append(displayError(flow_id)); }
@@ -130,10 +132,10 @@ html(lang='en')
         getRealTimeData('/modules/16/humi.json', 'GET', 'application/json', '#contentWeather');
         getRealTimeData('/modules/17/temp.json', 'GET', 'application/json', '#contentWeather');
         getRealTimeData('/modules/yoctopuce/cov-5', 'GET', 'text/html', '#contentYVOC');
-        getData('1', '#contentServer', 'desc');
-        getData('2', '#contentServer', 'desc');
-        getData('4', '#contentServer', 'desc');
-        getData('24', '#contentServer', 'desc');
+        getData('1', '#contentServer', 'desc', 'glyphicon-ban-circle');
+        getData('2', '#contentServer', 'desc', 'glyphicon-cloud');
+        getData('4', '#contentServer', 'desc', 'glyphicon-hdd');
+        getData('24', '#contentServer', 'desc', 'glyphicon-scale');
         
         //getRealTimeData('/modules/17/plan.json', 'GET', 'application/json', '#contentPlants');
       });
