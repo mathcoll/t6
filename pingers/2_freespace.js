@@ -14,7 +14,7 @@ var mqtt_topic	= 'couleurs/'+os.hostname()+'/freespace';
 var unit		= 'byte';
 var timestamp = moment().format('x');
 
-var df = exec('df -t rootfs | tail -1 | cut -d: -f2 | awk \'{ print $4}\'', function(error, stdout, stderr) {
+var df = exec('df -t rootfs | tail -1 | cut -d: -f2 | awk \'{ print $4}\' ORS=\'\'', function(error, stdout, stderr) {
     if (error !== null) {
         console.log('exec error: ' + error + stderr);
     } else if( stdout ) {
