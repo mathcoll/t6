@@ -20,6 +20,13 @@ html(lang='en')
           .form-group
             label.control-label(for="Type") Type:
               span.mandatory *
+            select.form-control(type="text", name="type", id="type")
+              - for(type in types) {
+                  if ( types[type] == object.type )
+                    option(value='#{types[type]}', selected) #{types[type]}
+                  else
+                    option(value='#{types[type]}') #{types[type]}
+              - }
 
           .form-group
             label.control-label(for="Position") Position/Location:

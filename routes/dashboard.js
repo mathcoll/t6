@@ -26,12 +26,13 @@ router.get('/objects', Auth,  function(req, res) {
 	var pagination=8;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
-	var o = objects.chain().find(query).offset(offset).limit(pagination).data();
 	res.render('objects', {
 		title : 'Objects Easy-IOT',
-		objects: o,
+		objects: objects.chain().find(query).simplesort('name').offset(offset).limit(pagination).data(),
 		page: req.query.page,
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
+		types: ['compass', 'phone', 'smartphone', 'tablet', 'server'],
+		message: {},
 		user: req.session.user
 	});
 });
@@ -76,6 +77,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		res.render('object_edit', {
 			title : 'Object '+json.name,
 			object: json,
+			types: ['compass', 'phone', 'smartphone', 'tablet', 'server'],
 			user: req.session.user
 		});
 	} else {
@@ -84,7 +86,54 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 });
 
 router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
-	
+	// TODO
+});
+
+router.post('/objects/add', Auth, function(req, res) {
+	objects	= db.getCollection('objects');
+	if ( req.body.name && req.session.user.id ) {
+		var new_object = {
+			id:				uuid.v4(),
+			type:  			req.body.type!==undefined?req.body.type:'default',
+			name:			req.body.name!==undefined?req.body.name:'unamed',
+			description:	req.body.description!==undefined?req.body.description:'',
+			position: 	 	req.body.position!==undefined?req.body.position:'',
+			ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
+			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
+			user_id:		req.session.user.id,
+		};
+		objects.insert(new_object);
+		db.save();
+		
+		res.render('objects', {
+			title : 'Objects Easy-IOT',
+			objects: objects.chain().simplesort('name').data(),
+			page: req.query.page,
+			pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
+			types: ['compass', 'phone', 'smartphone', 'tablet', 'server'],
+			user: req.session.user,
+			message: {type: 'success', value: 'Successfully added.'}
+		});
+	} else {
+		var query = {
+				'$and': [
+							{ 'user_id': req.session.user.id },
+						]
+					};
+		var pagination=8;
+		req.query.page=req.query.page!==undefined?req.query.page:1;
+		var offset = (req.query.page -1) * pagination;
+		var o = objects.chain().find(query).offset(offset).limit(pagination).data();
+		res.render('objects', {
+			title : 'Objects Easy-IOT',
+			objects: o,
+			page: req.query.page,
+			pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
+			types: ['compass', 'phone', 'smartphone', 'tablet', 'server'],
+			user: req.session.user,
+			message: {type: 'danger', value: 'Please give a name to your object!'}
+		});
+	}
 });
 
 router.get('/flows', Auth, function(req, res) {
