@@ -89,6 +89,10 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 	// TODO
 });
 
+router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
+	// TODO
+});
+
 router.post('/objects/add', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	if ( req.body.name && req.session.user.id ) {

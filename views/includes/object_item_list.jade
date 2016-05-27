@@ -1,15 +1,24 @@
-a.list-group-item(href='/objects/#{objects[object].id}')
+.clearfix.list-group-item(name='#{objects[object].id}')
   h4.list-group-item-heading
-    span.glyphicon.glyphicon-inbox(data-toggle='tooltip' data-placement='top' title='#{objects[object].type}')
+    span.glyphicon.glyphicon-inbox
     | &nbsp;#{objects[object].name}&nbsp;
     - if (objects[object].id)
       small
-        span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Object ID') #{objects[object].id}
-    p 
+
+  div.col-sm-8
       small #{objects[object].description}
-          button.btn.btn-primary.btn-sm.pull-right(href='/objects/#{objects[object].id}/edit', onclick="window.location.href='/objects/#{objects[object].id}/edit'; return false;")
-            span.glyphicon.glyphicon-pencil  Edit
+
+  div.col-sm-2
+      a.btn.btn-primary.btn-sm.pull-right(href='/objects/#{objects[object].id}/edit')
+        span.glyphicon.glyphicon-pencil  Edit
+
+  div.col-sm-2
+      a.btn.btn-danger.btn-sm.pull-right(href='/objects/#{objects[object].id}/remove')
+        span.glyphicon.glyphicon-remove  Remove
+  div.col-sm-12
     small
+      span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Object ID') #{objects[object].id}
+      | &nbsp;
       - if (objects[object].ipv4)
         span.label.label-danger(data-toggle='tooltip' data-placement='top' title='IPv4 Adress') #{objects[object].ipv4}
         | &nbsp;

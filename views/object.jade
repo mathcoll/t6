@@ -22,6 +22,13 @@ html(lang='en')
           .media
             .media-body
               h4.media-heading
+                span.glyphicon.glyphicon-minus     Description:
+                small
+                  div     #{object.description}
+
+          .media
+            .media-body
+              h4.media-heading
                 span.glyphicon.glyphicon-minus     Type:
                 small
                   div.label.label-default     #{object.type}
@@ -43,13 +50,6 @@ html(lang='en')
                     | &nbsp;
                     div.label.label-danger     #{object.ipv6} 
                   -end
-
-          .media
-            .media-body
-              h4.media-heading
-                span.glyphicon.glyphicon-minus     Description:
-                small
-                  div     #{object.description}
 
       .col-sm-4
         div.sidebar-module-inset
