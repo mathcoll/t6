@@ -176,7 +176,6 @@ router.get('/profile', Auth, function(req, res) {
 	tokens	= db.getCollection('tokens');
 	
 	var user = req.session.user;
-	user.hash = md5(req.session.user.email);
 
 	var queryO = { 'user_id' : req.session.user.id };
 	var queryF = { 'user_id' : req.session.user.id };
@@ -361,7 +360,6 @@ router.get('/logout', function(req, res) {
 });
 
 router.post('/login', Auth, function(req, res) {
-	console.log("inside POST /login");
 	if ( !req.session.user ) {
 		console.log("Error! invalid credentials, user not found");
 		res.render('login', {
@@ -422,6 +420,7 @@ function Auth(req, res, next) {
 				
 				req.session.bearer.permissions = permissions;
 				req.session.user.permissions = req.session.bearer.permissions;
+				req.session.user.mail_hash = md5(req.session.user.email);
 				
 				req.session.session_id = SESS_ID;
 				//console.log(req.session);

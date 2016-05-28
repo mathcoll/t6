@@ -54,7 +54,7 @@ nav.navbar.navbar-default
             ul.dropdown-menu
               li
                 a(href='/profile')
-                  img.img-responsive.img-circle(src='http://www.gravatar.com/avatar/0cb0a67831358250366c1d5fbe2ff925?s=40&d=mm&r=g', align='left', alt='Responsive image')
+                  img.img-responsive.img-circle(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=40&d=mm&r=g', align='left')
                   span #{user.firstName} #{user.lastName}
                   br
                   span
