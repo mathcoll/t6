@@ -53,7 +53,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			user: req.session.user
 		});
 	} else {
-		// 404
+		res.redirect('/404');
 	}
 });
 
@@ -78,7 +78,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			user: req.session.user
 		});
 	} else {
-		// 404
+		res.redirect('/404');
 	}
 });
 
