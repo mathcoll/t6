@@ -166,7 +166,8 @@ router.get('/flows', Auth, function(req, res) {
 		units: u,
 		page: req.query.page,
 		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
-		user: req.session.user
+		user: req.session.user,
+		message: {type: '', value: ''}
 	});
 });
 

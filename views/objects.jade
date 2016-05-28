@@ -21,51 +21,51 @@ html(lang='en')
         div.affix-top
           blockquote.glyphicon.glyphicon-comment  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
       
-      if (message && message.type == 'danger' && message.value)
-      .col-sm-4(class='alert alert-#{message.type}')#add
+        if (message && message.type == 'danger' && message.value)
+        .col-sm-12(class='alert alert-#{message.type}')#add
 
-        div.sidebar-module-inset
-          h3 Add an Object to your library
-          if (message && message.type && message.value)
-            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+          div.sidebar-module-inset
+            h3 Add an Object to your library
+            if (message && message.type && message.value)
+              div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
-          form(action="/objects/add#add", method="post")
-            .form-group
-              label.control-label(for="name") Object Name:
-                span.mandatory *
-              input.form-control(type="text", name="name", placeholder="Object Name", id="name", value=new_object.name)
+            form(action="/objects/add#add", method="post")
+              .form-group
+                label.control-label(for="name") Object Name:
+                  span.mandatory *
+                input.form-control(type="text", name="name", placeholder="Object Name", id="name", value=new_object.name)
 
-            .form-group
-              label.control-label(for="Type") Type:
-                span.mandatory *
-              select.form-control(type="text", name="type", id="type")
-                - for(type in types) {
-                  if (new_object.type == types[type])
-                    option(value='#{types[type]}' selected) #{types[type]}
-                  else
-                    option(value='#{types[type]}') #{types[type]}
-                - }
+              .form-group
+                label.control-label(for="Type") Type:
+                  span.mandatory *
+                select.form-control(type="text", name="type", id="type")
+                  - for(type in types) {
+                    if (new_object.type == types[type])
+                      option(value='#{types[type]}' selected) #{types[type]}
+                    else
+                      option(value='#{types[type]}') #{types[type]}
+                  - }
 
-            .form-group
-              label.control-label(for="Position") Position/Location:
-              input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=new_object.position)
+              .form-group
+                label.control-label(for="Position") Position/Location:
+                input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=new_object.position)
 
-            .form-group
-              label.control-label(for="Ipv4") Ip v4:
-              input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="Ipv4", value=new_object.ipv4)
+              .form-group
+                label.control-label(for="Ipv4") Ip v4:
+                input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="Ipv4", value=new_object.ipv4)
               
-            .form-group
-              label.control-label(for="Ipv6") Ip v6:
-              input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="Ipv6", value=new_object.ipv6)
+              .form-group
+                label.control-label(for="Ipv6") Ip v6:
+                input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="Ipv6", value=new_object.ipv6)
 
-            .form-group
-              label.control-label(for="Description") Description:
-              textarea.form-control(name="description", placeholder="Object description", id="Description")= new_object.description
+              .form-group
+                label.control-label(for="Description") Description:
+                textarea.form-control(name="description", placeholder="Object description", id="Description")= new_object.description
 
-            .form-group
-              button.btn.btn-primary.m-t.pull-right
-                span.glyphicon.glyphicon-plus  Add Object
-          p &nbsp; 
+              .form-group
+                button.btn.btn-primary.m-t.pull-right
+                  span.glyphicon.glyphicon-plus  Add Object
+            p &nbsp; 
 
     include ./includes/foot.jade
 
