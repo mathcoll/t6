@@ -7,16 +7,18 @@ html(lang='en')
       .starter-template
         h2 Create an account to Easy-IOT
 
-    .container
-      form.form-signin(method="post", action="/login")
-        h3.form-signin-heading Register to Easy-IOT
-        label.sr-only(for='mail') Email Address
-        input#mail.form-control(name='mail', type='email', placeholder='Email', required='', autofocus='')
-        label.sr-only(for='firstname') First-Name
-        input#firstname.form-control(name='firstname', placeholder='First-Name', autofocus='')
-        label.sr-only(for='lastname') First-Name
-        input#lastname.form-control(name='lastname', placeholder='Last-Name', autofocus='')
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-up
+      .col-sm-12
+        form.form-signin(method="post", action="/register")
+          h3.form-signin-heading Register to Easy-IOT
+          if (message && message.type && message.value)
+            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+          label.sr-only(for='email') Email Address
+          input#mail.form-control(name='email', type='email', placeholder='Email', required='', autofocus='')
+          label.sr-only(for='firstName') First-Name
+          input#firstname.form-control(name='firstName', placeholder='First Name', autofocus='')
+          label.sr-only(for='lastName') First-Name
+          input#lastname.form-control(name='lastName', placeholder='Last Name', autofocus='')
+          button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-up
 
     .container &nbsp;
     .container &nbsp;

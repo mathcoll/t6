@@ -262,6 +262,83 @@ router.get('/register', function(req, res) {
 	});
 });
 
+router.post('/register', function(req, res) {
+	users	= db.getCollection('users');
+	var my_id = uuid.v4();
+	var new_user = {
+		id:					my_id,
+		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
+		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
+		email:				req.body.email!==undefined?req.body.email:'',
+		subscription_date:  moment().format('x'),
+	};
+	if ( new_user.email && new_user.id ) {
+		users.insert(new_user);
+		var new_token = {
+				user_id:			new_user.id,
+				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+		        expiration:			'',
+		};
+		var tokens	= db.getCollection('tokens');
+		tokens.insert(new_token);
+		
+		res.render('emails/welcome', {user: new_user, token: new_token}, function(err, html) {
+			var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
+			var mailOptions = {
+				from: from,
+				bcc: bcc,
+				to: to,
+				subject: 'Welcome to Easy-IOT',
+				text: 'Html email client is required',
+				html: html
+			};
+			transporter.sendMail(mailOptions, function(err, info){
+			    if( err ){
+			    	res.redirect('/404');
+			    } else {
+			    	res.render('login', {
+						title : 'Login to Easy-IOT',
+						user: req.session.user,
+						message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
+					});
+			    }
+			});
+		});
+		
+		//res.redirect('/profile');
+	} else {
+		res.render('register', {
+			title : 'Register to Easy-IOT',
+			user: req.session.user,
+			message: {type: 'danger', value: 'Please, give me your name!'}
+		});
+	}
+	
+});
+
+router.get('/mail/welcome', function(req, res) {
+	var fake_user = {
+			id:					uuid.v4(),
+			firstName:			'firstName',
+			lastName:			'lastName',
+			email:				'lastName@domain.tld',
+			subscription_date:  moment().format('x'),
+		};
+	var fake_token = {
+		user_id:			fake_user.id,
+		key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+        expiration:			'',
+	};
+	res.render('emails/welcome', {
+		title : 'Log-in to Easy-IOT',
+		baseUrl: baseUrl,
+		user: fake_user,
+		token: fake_token
+	});
+});
+
 router.get('/login', function(req, res) {
 	res.render('login', {
 		title : 'Log-in to Easy-IOT',

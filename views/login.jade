@@ -7,18 +7,20 @@ html(lang='en')
       .starter-template
         h2 Sign-in to Easy-IOT
 
-    .container
-      form.form-signin(method="post", action="/login")
-        h3.form-signin-heading Please sign-in
-        label.sr-only(for='key') Key
-        input#key.form-control(name='key', type='key', placeholder='Key', required='', autofocus='')
-        label.sr-only(for='secret') Secret
-        input#secret.form-control(name='secret', type='password', placeholder='Secret', required='')
-        .checkbox
-          label
-            input(type='checkbox', value='remember-me')
-            |  Remember me
-        button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-in
+      .col-sm-12
+        form.form-signin(method="post", action="/login")
+          h3.form-signin-heading Please sign-in
+          if (message && message.type && message.value)
+            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+          label.sr-only(for='key') Key
+          input#key.form-control(name='key', type='key', placeholder='Key', required='', autofocus='')
+          label.sr-only(for='secret') Secret
+          input#secret.form-control(name='secret', type='password', placeholder='Secret', required='')
+          .checkbox
+            label
+              input(type='checkbox', value='remember-me')
+              |  Remember me
+          button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-in
 
     .container &nbsp;
     .container &nbsp;

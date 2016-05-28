@@ -26,6 +26,15 @@ version				= '2.0.1';
 appName				= process.env.NAME;
 baseUrl				= process.env.BASE_URL;
 
+/* Email settings */
+nodemailer			= require('nodemailer');
+from				= "Easy-IOT <contact@domain.tld>";
+bcc					= "Easy-IOT <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
+mailhost			= "my_smtp.domain.tld";
+mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" };
+transporter			= nodemailer.createTransport({ host: mailhost, ignoreTLS: true, auth: mailauth });
+
+/* Session settings */
 session				= require('express-session');
 FileStore			= require('session-file-store')(session);
 secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz";
@@ -34,6 +43,7 @@ store				= new FileStore({ttl: sessionDuration});
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
 
+/* Database settings */
 if ( db_type === "sqlite3" ) {
 	var sqlite3	= require('sqlite3').verbose();
 	dbSQLite3		= new sqlite3.Database(path.join(__dirname, 'data/data.db'));
