@@ -54,15 +54,20 @@ html(lang='en')
       .col-sm-4
         div.sidebar-module-inset
           h3 Contextual Links
-          ul
-            li
-              a(href="/objects/#{object.id}/edit")
-                span.glyphicon.glyphicon-pencil  Modify '#{object.name}'
-            li
-              a(href="#") Other '#{object.type}' Objects
-            li
-              a(href="#") Objects in the same location '#{object.position}' 
-      p &nbsp; 
+          div.col-sm-
+            a.btn.btn-primary.btn-sm.pull-right(href='./#{object.id}/edit')
+              span.glyphicon.glyphicon-pencil  Edit
+              
+          div.col-sm-
+            a.btn.btn-danger.btn-sm.pull-right(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
+              span.glyphicon.glyphicon-remove  Remove
+
+          div.col-sm-
+            a(href="#") Other '#{object.type}' Objects
+          
+          div.col-sm-
+            a(href="#") Objects in the same location '#{object.position}' 
+        p &nbsp; 
 
     include ./includes/foot.jade
 

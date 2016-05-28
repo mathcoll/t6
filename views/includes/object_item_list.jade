@@ -14,7 +14,7 @@
         span.glyphicon.glyphicon-pencil  Edit
 
   div.col-sm-2
-      a.btn.btn-danger.btn-sm.pull-right(href='/objects/#{objects[object].id}/remove')
+      a.btn.btn-danger.btn-sm.pull-right(href='/objects/#{objects[object].id}/remove', onclick="if(confirm('Are you sure to remove #{objects[object].name} ?')) {return true;}; return false;")
         span.glyphicon.glyphicon-remove  Remove
   div.col-sm-12
     small

@@ -87,7 +87,23 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 });
 
 router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
-	// TODO
+	var object_id = req.params.object_id;
+	objects	= db.getCollection('objects');
+	if ( object_id !== undefined ) {
+		var queryO = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : object_id },
+			]
+		};
+	}
+	var json = objects.chain().find(queryO).limit(1).remove().data();
+	//console.log(json);
+	if ( json ) {
+		res.redirect('/objects');
+	} else {
+		res.redirect('/404');
+	}
 });
 
 router.post('/objects/add', Auth, function(req, res) {
