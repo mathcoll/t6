@@ -18,11 +18,7 @@ router.get('/', function(req, res) {
 
 router.get('/objects', Auth,  function(req, res) {
 	objects	= db.getCollection('objects');
-	var query = {
-			'$and': [
-						{ 'user_id': req.session.user.id },
-					]
-				};
+	var query = { 'user_id': req.session.user.id };
 	var pagination=8;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
@@ -138,18 +134,14 @@ router.get('/flows', Auth, function(req, res) {
 	units	= db.getCollection('units');
 	datatypes	= db.getCollection('datatypes');
 
-	var query = {
-			'$and': [
-						{ 'user_id': req.session.user.id },
-					]
-				};
+	var query = { 'user_id': req.session.user.id };
 	var pagination=8;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
-	var f = flows.chain().find(query).offset(offset).limit(pagination).data();
-	var o = objects.chain().find(query).data();
-	var dt = datatypes.find();
-	var u = units.find();
+	var f = flows.chain().find(query).simplesort('name').offset(offset).limit(pagination).data();
+	var o = objects.chain().find(query).simplesort('name').data();
+	var dt = datatypes.chain().find().simplesort('name').data();
+	var u = units.chain().find().simplesort('name').data();
 	res.render('flows', {
 		title : 'Flows Easy-IOT',
 		flows: f,
@@ -170,23 +162,9 @@ router.get('/profile', Auth, function(req, res) {
 	var user = req.session.user;
 	user.hash = md5(req.session.user.email);
 
-	var queryO = {
-			'$and': [
-						{ 'user_id' : req.session.user.id },
-					]
-				};
-
-	var queryF = {
-			'$and': [
-						{ 'user_id' : req.session.user.id },
-					]
-				};
-
-	var queryT = {
-			'$and': [
-						{ 'user_id' : req.session.user.id },
-					]
-				};
+	var queryO = { 'user_id' : req.session.user.id };
+	var queryF = { 'user_id' : req.session.user.id };
+	var queryT = { 'user_id' : req.session.user.id };
 	res.render('profile', {
 		title : 'Profile Easy-IOT',
 		objects: ((objects.chain().find(queryO).data()).length),

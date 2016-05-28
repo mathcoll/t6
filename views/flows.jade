@@ -44,7 +44,7 @@ html(lang='en')
                 span.mandatory *
               select.form-control(type="text", name="position", placeholder="Unit", id="unit")
                 - for(unit in units) {
-                  option(name="#{units[unit].id}") #{units[unit].name}
+                  option(name="#{units[unit].id}") #{units[unit].type} - #{units[unit].name}
                 - }
 
             .form-group
