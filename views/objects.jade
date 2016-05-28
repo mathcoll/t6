@@ -28,7 +28,7 @@ html(lang='en')
           if (message && message.type && message.value)
             div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
-          form(action="/objects/add", method="post")
+          form(action="/objects/add#add", method="post")
             .form-group
               label.control-label(for="name") Object Name:
                 span.mandatory *
