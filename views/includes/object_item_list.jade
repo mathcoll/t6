@@ -1,9 +1,10 @@
 .clearfix.list-group-item(name='#{objects[object].id}')
   h4.list-group-item-heading
-    span.glyphicon.glyphicon-inbox
-    | &nbsp;#{objects[object].name}&nbsp;
-    - if (objects[object].id)
-      small
+    a(href='/objects/#{objects[object].id}')
+      span.glyphicon.glyphicon-inbox
+      | &nbsp;#{objects[object].name}&nbsp;
+      - if (objects[object].id)
+        small
 
   div.col-sm-8
       small #{objects[object].description}
