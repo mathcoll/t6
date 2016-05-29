@@ -9,6 +9,10 @@ var flows;
 var datatypes;
 var tokens;
 
+function alphaSort(obj1, obj2) {
+    return (obj1.name).toLowerCase().localeCompare((obj2.name).toLowerCase());
+};
+
 router.get('/', function(req, res) {
 	res.render('index', {
 		title : 'Dashboard Easy-IOT',
@@ -24,7 +28,7 @@ router.get('/objects', Auth,  function(req, res) {
 	var offset = (req.query.page -1) * pagination;
 	res.render('objects', {
 		title : 'Objects Easy-IOT',
-		objects: objects.chain().find(query).simplesort('name').offset(offset).limit(pagination).data(),
+		objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 		new_object: {},
 		page: req.query.page,
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
@@ -134,7 +138,7 @@ router.post('/objects/add', Auth, function(req, res) {
 	
 	res.render('objects', {
 		title : 'Objects Easy-IOT',
-		objects: objects.chain().find(query).simplesort('name').offset(offset).limit(pagination).data(),
+		objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 		new_object: new_object,
 		page: req.query.page,
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
@@ -154,10 +158,10 @@ router.get('/flows', Auth, function(req, res) {
 	var pagination=8;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
-	var f = flows.chain().find(query).simplesort('name').offset(offset).limit(pagination).data();
-	var o = objects.chain().find(query).simplesort('name').data();
-	var dt = datatypes.chain().find().simplesort('name').data();
-	var u = units.chain().find().simplesort('name').data();
+	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	var o = objects.chain().find(query).sort(alphaSort).data();
+	var dt = datatypes.chain().find().sort(alphaSort).data();
+	var u = units.chain().find().sort(alphaSort).data();
 	res.render('flows', {
 		title : 'Flows Easy-IOT',
 		flows: f,
@@ -318,13 +322,7 @@ router.post('/register', function(req, res) {
 });
 
 router.get('/mail/welcome', function(req, res) {
-	var fake_user = {
-			id:					uuid.v4(),
-			firstName:			'firstName',
-			lastName:			'lastName',
-			email:				'lastName@domain.tld',
-			subscription_date:  moment().format('x'),
-		};
+	var fake_user = req.session.user;
 	var fake_token = {
 		user_id:			fake_user.id,
 		key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
