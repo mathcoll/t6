@@ -11,10 +11,14 @@ html(lang='en')
 
     .container
       .col-sm-8
-        - for(object in objects) {
-          include ./includes/object_item_list.jade
-        - }
-        include ./includes/pagination.jade
+        if (objects.length)
+          - for(object in objects) {
+            include ./includes/object_item_list.jade
+          - }
+          include ./includes/pagination.jade
+        else
+          p &nbsp;
+          div.alert.alert-warning You don't have any Object yet in your library. You can add an Object from the right-end form.
         p &nbsp;
 
       .col-sm-4

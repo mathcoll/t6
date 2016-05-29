@@ -13,10 +13,15 @@ html(lang='en')
     .container
 
       .col-sm-8
-        - for(flow in flows) {
-          include ./includes/flow_item_list.jade
-        - }
-        include ./includes/pagination.jade
+        if (objects.length)
+          - for(flow in flows) {
+            include ./includes/flow_item_list.jade
+          - }
+          include ./includes/pagination.jade
+        else
+          p &nbsp;
+          div.alert.alert-warning You don't have any Flow yet in your library. You can add a Flow from the right-end form.
+        p &nbsp;
 
       .col-sm-4
         div.affix-top
