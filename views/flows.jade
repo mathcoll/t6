@@ -75,7 +75,7 @@ html(lang='en')
                 label.control-label(for="objects") Objects:
                 select.form-control(multiple name="objects", placeholder="Objects", id="objects")
                   - for(object in objects) {
-                    option(name="#{objects[object].id}") #{objects[object].name}
+                    option(name="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
                   - }
 
               .form-group

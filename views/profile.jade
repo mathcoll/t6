@@ -16,28 +16,28 @@ html(lang='en')
             h3 General Information
             ul.profile-details
               li.media
-                div
+                span
                   i.glyphicon.glyphicon-user
                   |  First-Name:
-                i  #{user.firstName}
+                i(style='font-size: 18px;')  #{user.firstName}
               li.media
-                div
+                span
                   i.glyphicon.glyphicon-user
                   |  Last-Name:
-                i  #{user.lastName}
+                i(style='font-size: 18px;')  #{user.lastName}
               li.media
-                div
+                span
                   i.fa.fa-briefcase
                   |  Plan Type:
-                i  #{user.role}
+                i(style='font-size: 18px;')  #{user.role}
 
             h3 Contact Information
             ul.profile-details
               li.media
-                div
+                span
                   i.fa.fa-envelope
                   |  E-mail:
-                i  #{user.email}
+                i(style='font-size: 18px;')  #{user.email}
                 
               button.btn.btn-simple.fa.fa-facebook-square(href="")
               | &nbsp;

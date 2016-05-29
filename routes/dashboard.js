@@ -8,6 +8,7 @@ var units;
 var flows;
 var datatypes;
 var tokens;
+var objectTypes = ['rooter', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'tablet', 'server', 'printer'];
 
 function alphaSort(obj1, obj2) {
     return (obj1.name).toLowerCase().localeCompare((obj2.name).toLowerCase());
@@ -32,7 +33,7 @@ router.get('/objects', Auth,  function(req, res) {
 		new_object: {},
 		page: req.query.page,
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
-		types: ['compass', 'phone', 'smartphone', 'tablet', 'server'],
+		types: objectTypes,
 		message: {},
 		user: req.session.user
 	});
@@ -78,7 +79,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		res.render('object_edit', {
 			title : 'Object '+json.name,
 			object: json,
-			types: ['compass', 'phone', 'smartphone', 'tablet', 'server'],
+			types: objectTypes,
 			user: req.session.user
 		});
 	} else {
@@ -142,7 +143,7 @@ router.post('/objects/add', Auth, function(req, res) {
 		new_object: new_object,
 		page: req.query.page,
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
-		types: ['compass', 'phone', 'smartphone', 'tablet', 'server'],
+		types: objectTypes,
 		user: req.session.user,
 		message: message
 	});

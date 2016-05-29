@@ -11,7 +11,7 @@ nav
     - if (prevPage>0)
       li
         a(href='?page=#{prevPage}', aria-label='Previous')
-          span(aria-hidden='true') «
+          span(aria-hidden='true') ← Previous
     - while (p <= pagenb)
       - if (p == page)
         li.active
@@ -23,4 +23,4 @@ nav
     - if (nextPage)
       li
         a(href='?page=#{nextPage}', aria-label='Next')
-          span(aria-hidden='true') »
+          span(aria-hidden='true') Next →
