@@ -192,12 +192,3 @@ sudo ln -s /var/www/EasyIOT/etc/init.d/EasyIOT /etc/init.d/EasyIOT
 ```
 sudo update-rc.d Easy-IOT defaults
 ```
-
-## Benchmark
-
-* 20000 batch insert (cURL post queries)
-* Total Duration: 70 minutes
-* AVG 4.76 insertion/min
-* This is a very low cpu/ram server(Celeron M 900Mhz processor)
-* 100% Http Status-code 200
-* TBC: at the beginning, avg insertion was higher .. this is probably due to latencies in SQLite DB
