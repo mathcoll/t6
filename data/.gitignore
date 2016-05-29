@@ -1,3 +1,7 @@
 data.db
 data-empty.db
 db.json
+db-bleu.json
+db-guruplug.json
+settings-bleu.js
+settings-guruplug.js

@@ -9,6 +9,7 @@ Sample nodeMCU and Arduino scripts are available in the _pingers_ repositories.
 
 ### Application Dashboard Screenshot
 ![Easy-IOT screenshot](https://raw.githubusercontent.com/mathcoll/Easy-IOT/master/docs/Easy-IOT-screenshot.png)
+
 Physical Objects require a virtual _Object_ in Easy-IOT and then, they could add _Data_ to _Flows_.
 
 ### General
@@ -177,6 +178,8 @@ Actions can be: email, SMS, API calls (e.g. twitter), etc ...
 ```
 git clone https://github.com/mathcoll/Easy-IOT.git ./Easy-IOT & cd Easy-IOT
 npm install
+rename "settings-default_hostname.js" according to your server hostname and edit the file.
+rename "db-default_hostname.json" according to your server hostname.
 ```
 
 You can add the server running as a service, tested with Ubuntu and Debian:

@@ -4,14 +4,14 @@
  */
 var express			= require('express');
 var timeout			= require('connect-timeout');
-var path			= require('path');	
 var logger			= require('morgan');
 var cookieParser	= require('cookie-parser');
 var bodyParser		= require('body-parser');
 var bearer			= require('bearer');
-var mqtt			= require('mqtt');
-var loki			= require('lokijs');
 var jade			= require('jade');
+path				= require('path');	
+mqtt				= require('mqtt');
+loki				= require('lokijs');
 sprintf				= require('sprintf-js').sprintf;
 moment				= require('moment');
 passgen				= require('passgen');
@@ -19,38 +19,9 @@ md5					= require('md5');
 squel				= require('squel');
 uuid				= require('node-uuid');
 os					= require('os');
-client				= mqtt.connect('mqtt://192.168.0.7:1883');
-mqtt_info			= 'couleurs/'+os.hostname()+'/api';
-db_type				= 'sqlite3'; // sqlite3 | influxdb
-version				= '2.0.1';
-appName				= process.env.NAME;
-baseUrl				= process.env.BASE_URL;
 
-/* Email settings */
-nodemailer			= require('nodemailer');
-from				= "Easy-IOT <contact@domain.tld>";
-bcc					= "Easy-IOT <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
-mailhost			= "my_smtp.domain.tld";
-mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" };
-transporter			= nodemailer.createTransport({ host: mailhost, ignoreTLS: true, auth: mailauth });
-
-/* Session settings */
-session				= require('express-session');
-FileStore			= require('session-file-store')(session);
-secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz";
-sessionDuration		= 3600*24*10;
-store				= new FileStore({ttl: sessionDuration});
-sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
-cookie				= sessionSettings.cookie;
-
-/* Database settings */
-if ( db_type === "sqlite3" ) {
-	var sqlite3	= require('sqlite3').verbose();
-	dbSQLite3		= new sqlite3.Database(path.join(__dirname, 'data/data.db'));
-} else if( db_type === "influxdb" ) {
-	var influx		= require('influx');
-	dbInfluxDB	= influx({ host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' });
-}
+/* Environment settings */
+require(sprintf('./data/settings-%s.js', os.hostname()));
 
 /* temporary debug */
 //console.log(uuid.v4());
@@ -66,9 +37,6 @@ var datatypes		= require('./routes/datatypes');
 var modules			= require('./routes/modules');
 var dashboard		= require('./routes/dashboard');
 var app				= express();
-
-db	= new loki(path.join(__dirname, 'data/db-'+app.get('env')+'.json'), {autoload: true, autosave: true});
-db.loadDatabase(path.join(__dirname, 'data/db-'+app.get('env')+'.json'));
 
 client.on("connect", function () {
 	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)"}), {retain: false});
