@@ -43,6 +43,7 @@ html(lang='en')
                 label.control-label(for="Type") Type:
                   span.mandatory *
                 select.form-control(type="text", name="type", id="type")
+                  option(value='') Please select a type
                   - for(type in types) {
                     if (new_object.type == types[type])
                       option(value='#{types[type]}' selected) #{types[type]}

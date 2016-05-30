@@ -129,12 +129,12 @@ router.post('/objects/add', Auth, function(req, res) {
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	
-	if ( new_object.name && new_object.user_id ) {
+	if ( new_object.name && new_object.type && new_object.user_id ) {
 		objects.insert(new_object);
 		db.save();
 		message = {type: 'success', value: 'Successfully added.'};
 	} else {
-		message = {type: 'danger', value: 'Please give a name to your object!'};
+		message = {type: 'danger', value: 'Please give a name and a type to your Object!'};
 	}
 	
 	res.render('objects', {
@@ -190,7 +190,7 @@ router.get('/profile', Auth, function(req, res) {
 		title : 'Profile Easy-IOT',
 		objects: ((objects.chain().find(queryO).data()).length),
 		flows: ((flows.chain().find(queryF).data()).length),
-		tokens: ((tokens.chain().find(queryT).data()).length),
+		tokens: (tokens.chain().find(queryT).data()),
 		user: req.session.user
 	});
 });
