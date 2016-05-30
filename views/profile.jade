@@ -57,31 +57,61 @@ html(lang='en')
         .panel.panel-default
           .panel-body
             h3#objects.list-group User Statistics
-            a.list-group-item(href="/objects", role="button")
-              h4.list-group-item-heading
-                span.glyphicon.glyphicon-inbox
-                |  #{objects} Objects
-                |  &ndash;
-                small  ? max Objects
-                
-            a.list-group-item(href="/flows", role="button")
-              h4.list-group-item-heading
-                span.glyphicon.glyphicon-random
-                |  #{flows} Flows
-                |  &ndash;
-                small  ? max Flows
+              #accordion.panel-group(role='tablist', aria-multiselectable='true')
+                .panel.panel-default
+                  #headingOne.panel-heading(role='tab')
+                    h4.panel-title
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne', aria-expanded='false', aria-controls='collapseOne')
+                        span.glyphicon.glyphicon-inbox
+                        |  #{objects} Objects
+                  #collapseOne.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingOne')
+                    .panel-body
+                      |  &ndash;
+                      small  ? max Objects
 
-            a.list-group-item(href="#", role="button")
-              h4.list-group-item-heading
-                span.glyphicon.glyphicon-lock
-                |  #{tokens}  API Keys
-                
-            a.list-group-item(href="/flows", role="button")
-              h4.list-group-item-heading
-                span.glyphicon.glyphicon-ice-lolly-tasted
-                |  ? API calls in the past 7 days
-                |  &ndash;
-                small  ? max API calls
+                  #headingTwo.panel-heading(role='tab')
+                    h4.panel-title
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseTwo', aria-expanded='false', aria-controls='collapseTwo')
+                        span.glyphicon.glyphicon-random
+                        |  #{flows} Flows
+                  #collapseTwo.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingTwo')
+                    .panel-body
+                      |  &ndash;
+                      small  ? max Flows
+
+                  #headingThree.panel-heading(role='tab')
+                    h4.panel-title
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseThree', aria-expanded='false', aria-controls='collapseThree')
+                        span.glyphicon.glyphicon-random
+                        |  #{tokens.length}  API Keys
+                  #collapseThree.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingThree')
+                    .panel-body
+                      small
+                        ul
+                          - for(token in tokens) {
+                            if (tokens[token].key && tokens[token].key)
+                              li K/S #{tokens[token].secret}/#{tokens[token].secret}
+                            else
+                              li Bearer #{tokens[token].token}
+                            if tokens[token].expiration
+                              div (Exp.: #{tokens[token].expiration})
+                            if tokens[token].permissions
+                              div Permissions:
+                              - for(p in tokens[token].permissions) {
+                                a(title='/flows/#{(tokens[token].permissions)[p].flow_id}') #{(tokens[token].permissions)[p].permission}, 
+                              - }
+                            
+                          - }
+                      
+                  #headingFour.panel-heading(role='tab')
+                    h4.panel-title
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFour', aria-expanded='false', aria-controls='collapseFour')
+                        span.glyphicon.glyphicon-random
+                        |  ? API calls in the past 7 days
+                  #collapseFour.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFour')
+                    .panel-body
+                      |  &ndash;
+                      small  ? max API calls
 
       .col-sm-8
         .panel.panel-default
