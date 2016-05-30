@@ -22,6 +22,13 @@ os					= require('os');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
+if ( db_type === "sqlite3" ) {
+	var sqlite3	= require('sqlite3').verbose();
+	dbSQLite3		= new sqlite3.Database(SQLite3Settings);
+} else if( db_type === "influxdb" ) {
+	var influx		= require('influx');
+	dbInfluxDB	= influx(influxSettings);
+}
 
 /* temporary debug */
 //console.log(uuid.v4());

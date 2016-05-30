@@ -26,13 +26,8 @@ transporter			= nodemailer.createTransport({ host: mailhost, ignoreTLS: true, au
 
 /* Database settings - Storage */
 db_type				= 'sqlite3'; // sqlite3 | influxdb
-if ( db_type === "sqlite3" ) {
-	var sqlite3	= require('sqlite3').verbose();
-	dbSQLite3		= new sqlite3.Database(path.join(__dirname, 'data.db'));
-} else if( db_type === "influxdb" ) {
-	var influx		= require('influx');
-	dbInfluxDB	= influx({ host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' });
-}
+SQLite3Settings = path.join(__dirname, 'data.db');
+influxSettings = { host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' }
 
 /* Database settings -  */
 db	= new loki(path.join(__dirname, 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
