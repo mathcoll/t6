@@ -10,17 +10,28 @@ nav
   ul.pagination
     - if (prevPage>0)
       li
-        a(href='?page=#{prevPage}', aria-label='Previous')
-          span(aria-hidden='true') ← Previous
+        - if ( currentUrl === '/objects/add' || currentUrl === '/flows/add' )
+          a(href='/objects?page=#{prevPage}', aria-label='Previous')
+            span(aria-hidden='true') ← Previous
+        - else
+          a(href='?page=#{prevPage}', aria-label='Previous')
+            span(aria-hidden='true') ← Previous
     - while (p <= pagenb)
       - if (p == page)
         li.active
           a #{p}
       - else
         li
-          a(href="?page=#{p}") #{p}
+          - if ( currentUrl === '/objects/add' || currentUrl === '/flows/add' )
+            a(href="/objects?page=#{p}") #{p}
+          - else
+            a(href="?page=#{p}") #{p}
       - var p=(p+1)
     - if (nextPage)
       li
-        a(href='?page=#{nextPage}', aria-label='Next')
-          span(aria-hidden='true') Next →
+        - if ( currentUrl === '/objects/add' || currentUrl === '/flows/add' )
+          a(href='/objects?page=#{nextPage}', aria-label='Next')
+            span(aria-hidden='true') Next →
+        - else
+          a(href='?page=#{nextPage}', aria-label='Next')
+            span(aria-hidden='true') Next →

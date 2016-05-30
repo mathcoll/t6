@@ -145,7 +145,8 @@ router.post('/objects/add', Auth, function(req, res) {
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
 		types: objectTypes,
 		user: req.session.user,
-		message: message
+		message: message,
+		currentUrl: req.path,
 	});
 });
 
