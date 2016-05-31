@@ -88,7 +88,36 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 });
 
 router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
-	// TODO
+	var object_id = req.params.object_id;
+	if ( object_id !== undefined ) {
+		objects	= db.getCollection('objects');
+		var queryO = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : object_id },
+			]
+		};
+		var json = (objects.chain().find(queryO).limit(1).data())[0];
+		//console.log(json);
+		if ( json ) {
+			json.name 			= req.body.name!==undefined?req.body.name:json.name;
+			json.type 			= req.body.type!==undefined?req.body.type:json.type;
+			json.description	= req.body.description!==undefined?req.body.description:json.description;
+			json.position		= req.body.position!==undefined?req.body.position:json.description;
+			json.ipv4			= req.body.ipv4!==undefined?req.body.ipv4:json.ipv4;
+			json.ipv6			= req.body.ipv6!==undefined?req.body.ipv6:json.ipv6;
+			json.user_id		= req.session.user.id;
+			
+			objects.update(json);
+			db.save();
+			
+			res.redirect('/objects/'+object_id);
+		} else {
+			res.redirect('/404');
+		}
+	} else {
+		res.redirect('/404');
+	}
 });
 
 router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {

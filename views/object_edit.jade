@@ -13,9 +13,9 @@ html(lang='en')
         h3 Update an Object to your library
         form(action="/objects/#{object.id}/edit", method="post")
           .form-group
-            label.control-label(for="Title") Object Name:
+            label.control-label(for="name") Object Name:
               span.mandatory *
-            input.form-control(type="text", name="title", placeholder="Object Name", id="Title" value="#{object.name}")
+            input.form-control(type="text", name="name", placeholder="Object Name", id="name" value="#{object.name}")
 
           .form-group
             label.control-label(for="Type") Type:
@@ -33,20 +33,25 @@ html(lang='en')
             input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value="#{object.position}")
 
           .form-group
-            label.control-label(for="Ip") Ip:
-            input.form-control(type="text", name="ip", placeholder="Ip v4: 192.168.0.1", id="Ip", value="#{object.ipv4}")
+            label.control-label(for="ipv4") Ip v4:
+            input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="ipv4", value="#{object.ipv4}")
+
+          .form-group
+            label.control-label(for="ipv6") Ip:
+            input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value="#{object.ipv6}")
 
           .form-group
             label.control-label(for="Description") Description:
             textarea.form-control(name="description", placeholder="Object description", id="Description") #{object.description}
 
           .form-group
-            a.btn.btn-primary.m-t.pull-right
+            button.btn.btn-primary.m-t.pull-right(type="submit", value="Update Object")
               span.glyphicon.glyphicon-plus  Update Object
-              | &nbsp;
+            | &nbsp;
+          .form-group
             a.btn.btn-primary.m-t.pull-right(href="/objects/#{object.id}")
               span.glyphicon.glyphicon-plus  Cancel
-              | &nbsp;
+            | &nbsp;
         p &nbsp; 
 
     include ./includes/foot.jade
