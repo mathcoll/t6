@@ -2,10 +2,33 @@
 var express = require('express');
 var router = express.Router();
 
-
+//catch API calls for quotas
+router.get('*', function (req, res, next) {
+	var bearerHeader = req.headers['authorization'];
+	if ( bearerHeader ) {
+		var bearer = bearerHeader.split(" "); // TODO split with Bearer as prefix!
+		req.session.bearer = { token: bearer[1], key: '' };
+	} else {
+		req.session.bearer = { token: req.session.bearer, key: req.session.key };
+	}
+	var o = {
+		key: req.session.bearer.key,
+		secret: req.session.bearer.secret,
+		token: req.session.bearer.token,
+		user_id: req.session.bearer.user_id,
+	};
+	console.log('API has been called on ');
+	console.log(o);
+	if( false ) {
+		// TODO: when limit is reach
+		//res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
+	} else {
+		next();
+	}
+});
 
 router.get('/authenticate', function (req, res) {
-	// todo
+	// TODO
 	// should refresh the Bearer for 1 hour then Bearer is not valid anymore
 });
 
