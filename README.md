@@ -176,6 +176,8 @@ Actions can be: email, SMS, API calls (e.g. twitter), etc ...
 
 ## Easy-IOT Installation
 ```
+Install node (if needed): https://nodejs.org/en/
+Install npm (if needed): https://github.com/npm/npm
 git clone https://github.com/mathcoll/Easy-IOT.git ./Easy-IOT & cd Easy-IOT
 npm install
 rename "settings-default_hostname.js" according to your server hostname and edit the file.
