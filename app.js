@@ -91,15 +91,13 @@ app.use(function(req, res, next) {
 // development error handler
 if (app.get('env') === 'development') {
 	app.use(function(err, req, res, next) {
-		res.status(err.status || 500);
-		res.send({ 'code': err.status, 'error': err.message, 'stack': err.stack });
+		res.status(err.status || 500).send({ 'code': err.status, 'error': err.message, 'stack': err.stack });
 	});
 }
 
 // production error handler
 app.use(function(err, req, res, next) {
-	res.status(err.status || 500);
-	res.send({ 'code': err.status, 'error': err.message });
+	res.status(err.status || 500).send({ 'code': err.status, 'error': err.message });
 });
 
 module.exports = app;

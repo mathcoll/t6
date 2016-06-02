@@ -58,7 +58,7 @@ router.use('/yoctopuce/cov-5', function (req, res) {
 		html += "			</div>";
 		html += "		</div>";
 		html += "</a>";
-	res.send(html, 200);
+	res.status(200).send(html);
 });
 
 module.exports = router;

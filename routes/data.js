@@ -11,11 +11,11 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
 	
 	if ( !flow_id ) {
-		res.send(new ErrorSerializer({'id': 56, 'code': 405, 'message': 'Method Not Allowed'}).serialize(), 405);
+		res.status(405).send(new ErrorSerializer({'id': 56, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
 	}
 	if ( !req.bearer.user_id ){
 		// Not Authorized because token is invalid
-		res.send(new ErrorSerializer({'id': 57, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
+		res.status(401).send(new ErrorSerializer({'id': 57, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	} else {
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
@@ -70,8 +70,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					data[0].limit = limit;
 					data[0].order = req.query.order!==undefined?req.query.order:'asc';
 					
-					var json = new DataSerializer(data[0]).serialize();
-					res.send(json);
+					res.status(200).send(new DataSerializer(data[0]).serialize());
 				});
 			} else if ( db_type == 'sqlite3' ) {
 				/* sqlite3 database */
@@ -117,12 +116,12 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					data.limit = limit;
 					data.order = req.query.order!==undefined?req.query.order:'asc';
 					
-					res.send(new DataSerializer(data).serialize());
+					res.status(200).send(new DataSerializer(data).serialize());
 				});
 			}
 		} else {
 			// no permission
-			res.send(new ErrorSerializer({'id': 58, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
+			res.status(401).send(new ErrorSerializer({'id': 58, 'code': 401, 'message': 'Not Authorized'}).serialize());
 		}
 	}
 });
@@ -132,11 +131,11 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 	var data_id = req.params.data_id;
 	
 	if ( !flow_id ) {
-		res.send(new ErrorSerializer({'id': 59, 'code': 405, 'message': 'Method Not Allowed'}).serialize(), 405);
+		res.status(405).send(new ErrorSerializer({'id': 59, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
 	}
 	if ( !req.bearer.user_id ){
 		// Not Authorized because token is invalid
-		res.send(new ErrorSerializer({'id': 60, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
+		res.status(401).send(new ErrorSerializer({'id': 60, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	} else {
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
@@ -158,7 +157,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					.limit(limit)
 					.toString()
 				;
-				//res.send({query: query}, 200);
+
 				dbInfluxDB.query(query, function(err, data) {
 					if (err) console.log(err);
 					data[0].id = moment(data[0].time).format('x');
@@ -169,8 +168,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					data[0].limit = limit;
 					data[0].order = req.query.order!==undefined?req.query.order:'asc';
 					
-					var json = new DataSerializer(data[0]).serialize();
-					res.send(json);
+					res.status(200).send(new DataSerializer(data[0]).serialize());
 				});
 			} else if ( db_type == 'sqlite3' ) {
 				/* sqlite3 database */
@@ -182,7 +180,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					.limit(limit)
 					.toString()
 					;
-				//res.send({query: query}, 200);
+
 				dbSQLite3.all(query, function(err, data) {
 					if (err) console.log(err);
 					//data.id = moment(data.timestamp).format('x'); //BUG
@@ -195,15 +193,15 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					//console.log(data);
 					
 					if ( data.length > 0 ) {
-						res.send(new DataSerializer(data).serialize());
+						res.status(200).send(new DataSerializer(data).serialize());
 					} else {
-						res.send(new ErrorSerializer({'id': 61, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
+						res.status(404).send(new ErrorSerializer({'id': 61, 'code': 404, 'message': 'Not Found'}).serialize());
 					}
 				});
 			}
 		} else {
 			// no permission
-			res.send(new ErrorSerializer({'id': 62, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
+			res.status(401).send(new ErrorSerializer({'id': 62, 'code': 401, 'message': 'Not Authorized'}).serialize());
 		}
 	}
 });
@@ -221,12 +219,12 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
 
 	if ( !flow_id ) {
-		res.send({ 'code': 405, 'error': 'Method Not Allowed' }, 405);
+		res.status(405).send(new ErrorSerializer({'id': 63, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
 	}
 	
 	if ( !req.user.id ){
 		// Not Authorized because token is invalid
-		res.send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
+		res.status(401).send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	} else {
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
@@ -280,11 +278,11 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 			data[0].prev;
 			data[0].next;
 			data[0].id = time;
-			res.send(new DataSerializer(data).serialize());
+			res.status(200).send(new DataSerializer(data).serialize());
 			
 		} else {
 			// Not Authorized due to permission
-			res.send(new ErrorSerializer({'id': 65, 'code': 401, 'message': 'Not Authorized'}).serialize(), 401);
+			res.status(401).send(new ErrorSerializer({'id': 65, 'code': 401, 'message': 'Not Authorized'}).serialize());
 		}
 	}
 });
@@ -312,17 +310,17 @@ function bearerAuthToken(req, res, next) {
 		}
 		
 		if ( !req.bearer ) {
-			res.send(new ErrorSerializer({'id': 66, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+			res.status(403).send(new ErrorSerializer({'id': 66, 'code': 403, 'message': 'Forbidden'}).serialize());
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) { // TODO: in case of Session, should be removed !
 				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
-				res.send(new ErrorSerializer({'id': 67, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
+				res.status(404).send(new ErrorSerializer({'id': 67, 'code': 404, 'message': 'Not Found'}).serialize());
 			}
 		}
 	} else {
-		res.send(new ErrorSerializer({'id': 68, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
+		res.status(401).send(new ErrorSerializer({'id': 68, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}
 }
 

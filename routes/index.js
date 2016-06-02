@@ -84,7 +84,7 @@ router.get('/status', function(req, res, next) {
 		appName: process.env.NAME,
 		started_at: moment(process.env.STARTED*1000).format('DD/MM/Y H:m:s'),
 	};
-	res.send(status);
+	res.status(200).send(status);
 });
 
 module.exports = router;

@@ -12,10 +12,9 @@ router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.token !== undefined && req.user.id == user_id ) {
 		users	= db.getCollection('users');
-		var json = new UserSerializer(users.find({'id': { '$eq': user_id }})).serialize();
-		res.send(json, 200);
+		res.status(200).send(new UserSerializer(users.find({'id': { '$eq': user_id }})).serialize());
 	} else {
-		res.send(new ErrorSerializer({'id': 16, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+		res.status(403).send(new ErrorSerializer({'id': 16, 'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
 
@@ -34,16 +33,16 @@ router.post('/me/token', function (req, res) {
 			]}
 		);
 		if ( auth.length <= 0 ) {
-			res.send(new ErrorSerializer({'id': 15, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+			res.status(403).send(new ErrorSerializer({'id': 15, 'code': 403, 'message': 'Forbidden'}).serialize());
 		} else {
 			var permissions = req.body.permissions!==undefined?req.body.permissions:'600';
 			if ( permissions < 600 ) {
-				res.send(new ErrorSerializer({'id': 14, 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!'}).serialize(), 400);
+				res.status(400).send(new ErrorSerializer({'id': 14, 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!'}).serialize());
 			}
 			// check expiration date
 			if ( auth.expiration > moment().format('x') ) {
 				// TODO: is it necessary to check the expiration on an API KEY + SECRET?
-				res.send(new ErrorSerializer({'id': 13,'code': 403, 'message': 'Forbidden expired token'}).serialize(), 403); // TODO, is there any better Status here?
+				res.status(403).send(new ErrorSerializer({'id': 13,'code': 403, 'message': 'Forbidden expired token'}).serialize()); // TODO, is there any better Status here?
 			} else {
 				// generates a temporary access token that will expire
 				// in a specified amount of time
@@ -54,7 +53,7 @@ router.post('/me/token', function (req, res) {
 					token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				};
 				tokens.insert(new_token);
-				res.send({ 'code': 201, message: 'Created', token: new_token }, 201);
+				res.status(201).send({ 'code': 201, message: 'Created', token: new_token }); // TODO: missing serializer
 				
 				// Find and remove expired tokens from Db
 				var expired = tokens.chain().find(
@@ -67,7 +66,7 @@ router.post('/me/token', function (req, res) {
 			}
 		}
 	} else {
-		res.send(new ErrorSerializer({'id': 12,'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+		res.status(403).send(new ErrorSerializer({'id': 12,'code': 403, 'message': 'Forbidden'}).serialize());
 	}	
 });
 
@@ -75,18 +74,18 @@ router.get('/me/token', bearerAuthToken, function (req, res) {
 	if ( req.user !== undefined ) {
 		var json = new UserSerializer(req.user).serialize();
 		if ( json !== undefined ) {
-			res.send(json, 200);
+			res.status(200).send(json);
 		} else {
-			res.send(new ErrorSerializer({'id': 11,'code': 404, 'message': 'Not Found'}).serialize(), 404);
+			res.status(404).send(new ErrorSerializer({'id': 11,'code': 404, 'message': 'Not Found'}).serialize());
 		}
 	} else {
-		res.send(new ErrorSerializer({'id': 10,'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+		res.status(403).send(new ErrorSerializer({'id': 10,'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
 
 router.post('/', function (req, res) {
 	if ( !req.body.email ) {
-		res.send(new ErrorSerializer({'id': 9,'code': 412, 'message': 'Precondition Failed'}).serialize(), 412);
+		res.status(412).send(new ErrorSerializer({'id': 9,'code': 412, 'message': 'Precondition Failed'}).serialize());
 	} else {
 		users	= db.getCollection('users');
 		var my_id = uuid.v4();
@@ -108,14 +107,14 @@ router.post('/', function (req, res) {
 		var tokens	= db.getCollection('tokens');
 		tokens.insert(new_token);
 		
-		res.send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }, 201);
+		res.status(201).send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }); // TODO: missing serializer
 	}
 });
 
 router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( !(req.body.email || req.body.lastName || req.body.firstName ) ) {
-		res.send(new ErrorSerializer({'id': 8,'code': 412, 'message': 'Precondition Failed'}).serialize(), 412);
+		res.status(412).send(new ErrorSerializer({'id': 8,'code': 412, 'message': 'Precondition Failed'}).serialize());
 	} else {
 		req.token = req.token!==undefined?req.token:req.session.token;
 		req.user = req.user!==undefined?req.user:req.session.user;
@@ -126,9 +125,9 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			item.email			= req.body.email!==undefined?req.body.email:item.email;
 			item.update_date	= moment().format('x');
 			users.update(item);
-			res.send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() }, 200);
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() }); // TODO: missing serializer
 		} else {
-			res.send(new ErrorSerializer({'id': 7,'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+			res.status(403).send(new ErrorSerializer({'id': 7,'code': 403, 'message': 'Forbidden'}).serialize());
 		}
 	}
 });
@@ -140,12 +139,12 @@ router.delete('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		var u = users.find({'id': { '$eq': user_id }});
 		if (u) {
 			users.remove(u);
-			res.send({ 'code': 200, message: 'Successfully deleted', removed_id: user_id }, 200); // TODO: missing serializer
+			res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: user_id }); // TODO: missing serializer
 		} else {
-			res.send(new ErrorSerializer({'id': 6,'code': 404, 'message': 'Not Found'}).serialize(), 404);
+			res.status(404).send(new ErrorSerializer({'id': 6,'code': 404, 'message': 'Not Found'}).serialize());
 		}
 	} else {
-		res.send(new ErrorSerializer({'id': 5,'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+		res.status(403).send(new ErrorSerializer({'id': 5,'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
 
@@ -160,7 +159,7 @@ function bearerAuth(req, res, next) {
 		req.user = (users.find({'token': { '$eq': req.token }}))[0];
 		next();
 	} else {
-		res.send(new ErrorSerializer({'id': 4,'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+		res.status(403).send(new ErrorSerializer({'id': 4,'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 }
 
@@ -187,17 +186,17 @@ function bearerAuthToken(req, res, next) {
 		}
 
 		if ( !req.bearer ) {
-			res.send(new ErrorSerializer({'id': 3, 'code': 403, 'message': 'Forbidden'}).serialize(), 403);
+			res.status(403).send(new ErrorSerializer({'id': 3, 'code': 403, 'message': 'Forbidden'}).serialize());
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) { // TODO: in case of Session, should be removed !
 				req.user.permissions = req.bearer.permissions;
 				next();
 			} else {
-				res.send(new ErrorSerializer({'id': 2, 'code': 404, 'message': 'Not Found'}).serialize(), 404);
+				res.status(404).send(new ErrorSerializer({'id': 2, 'code': 404, 'message': 'Not Found'}).serialize());
 			}
 		}
 	} else {
-		res.send(new ErrorSerializer({'id': 1, 'code': 401, 'message': 'Unauthorized'}).serialize(), 401);
+		res.status(401).send(new ErrorSerializer({'id': 1, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}
 }
 
