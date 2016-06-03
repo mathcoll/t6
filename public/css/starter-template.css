@@ -57,3 +57,6 @@ a.white {
   width: auto !important;
   height: auto !important;
 }
+.carousel-inner > .item > a > img, .carousel-inner > .item > img {
+  min-height: 280px;
+}
