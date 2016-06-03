@@ -297,6 +297,8 @@ function bearerAuthToken(req, res, next) {
 			req.user = req.session.user;
 			req.token = req.session.token;
 			req.bearer = req.session.bearer;
+			req.bearer.user_id = req.session.user.id;
+			req.bearer.permissions = req.session.user.permissions;
 		} else {
 			var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
 			bearerToken = bearer[1];
