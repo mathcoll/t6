@@ -268,9 +268,84 @@ router.post('/search', Auth, function(req, res) {
 });
 
 router.get('/decision-rules', Auth, function(req, res) {
+	var rules = new Array();
+	rules['Alert_on_Threshold'] = {
+	    "condition": "AND",
+	    "rules": [{
+	          id: 'environment',
+	          operator: 'equal',
+	          value: 'production'
+	    },{
+	      condition: 'AND',
+	      rules: [{
+	          id: 'mqtt_topic',
+	          operator: 'equal',
+	          value: 'couleurs/yoctovoc/voc'
+	      },{
+	          id: 'deltaValue',
+	          operator: 'greater',
+	          value: 'production'
+	      },{
+	          id: 'isDayTime',
+	          operator: 'equal',
+	          value: 1
+	      }]
+	    }]
+	  };
+	rules['auth_log'] = {
+		    "condition": "AND",
+		    "rules": [{
+		          id: 'environment',
+		          operator: 'equal',
+		          value: 'production'
+		    },{
+		      condition: 'AND',
+		      rules: [{
+		          id: 'mqtt_topic',
+		          operator: 'equal',
+		          value: 'couleurs/guruplug/auth_log'
+		      },{
+		          id: 'value',
+		          operator: 'greater',
+		          value: 0
+		      },{
+		          id: 'value',
+		          operator: 'greater',
+		          value: 'previousValue'
+		      },{
+		          id: 'isDayTime',
+		          operator: 'equal',
+		          value: 1
+		      }]
+		    }]
+		  };
+	rules['COV_Threshold'] = {
+		    "condition": "AND",
+		    "rules": [{
+		          id: 'environment',
+		          operator: 'equal',
+		          value: 'production'
+		    },{
+		      condition: 'AND',
+		      rules: [{
+		          id: 'mqtt_topic',
+		          operator: 'equal',
+		          value: 'couleurs/yoctovoc/voc'
+		      },{
+		          id: 'value',
+		          operator: 'greater',
+		          value: 2500
+		      },{
+		          id: 'isDayTime',
+		          operator: 'equal',
+		          value: 1
+		      }]
+		    }]
+		  };
 	res.render('decision-rules', {
 		title : 'Decision Rules Easy-IOT',
-		user: req.session.user
+		user: req.session.user,
+		rules: rules,
 	});
 });
 

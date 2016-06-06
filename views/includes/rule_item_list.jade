@@ -1,23 +1,21 @@
-div.list-group-item
-  h4.list-group-item-heading
-    span.glyphicon.glyphicon-filter  Rule Name
+.panel.panel-default
+  div.list-group-item.panel-heading(role='tab', id='Heading#{rule_id}')
+    h4.panel-title
+      a.glyphicon.glyphicon-filter(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rule_id}', aria-expanded='false', aria-controls='#{rule_id}')    #{rule_name}
+      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rule_id}', aria-expanded='false', aria-controls='#{rule_id}')
+      div.panel-collapse.collapse(id='#{rule_id}', role='tabpanel', aria-labelledby='Heading#{rule_id}')
     
-    div
-      small Watch 
-        | &nbsp;
-        span.label.label-primary Mqtt topic
-      
-    div
-      small Triggered on
-        | &nbsp;
-        span.label.label-success Event 1
-        | &nbsp;and&nbsp;
-        span.label.label-success Event 2
-        | &nbsp;and&nbsp;
-        span.label.label-success Event 3
-        
-    div
-      small Actions
+        div.panel-body 
+          a.btn.btn-primary.btn-sm(href="#", id='Export#{rule_id}')
+            span.glyphicon.glyphicon-share-alt  Export Rule
+          | &nbsp;
+          a.btn.btn-info.btn-sm(href="#", id='Share#{rule_id}')
+            span.glyphicon.glyphicon-retweet  Share Rule
+          | &nbsp;
+          a.btn.btn-success.btn-sm(href="#", id='Save#{rule_id}')
+            span.glyphicon.glyphicon-check  Save Rule
+
+      div.panel-body Actions:
         | &nbsp;
         span.label.label-info SMS
         | &nbsp;
@@ -25,4 +23,29 @@ div.list-group-item
         | &nbsp;
         span.label.label-info Arduino TinyDisplay
 
-    
+    script(type='text/javascript').
+      if ( rules === undefined ) var rules = new Array(); rules['#{rule_id}'] = !{JSON.stringify(rules[rule_id])};
+      $(function () { $('##{rule_id}').queryBuilder({ plugins: [ 'sortable', 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters, rules: rules['#{rule_id}'] }); })
+      
+      $('#Save#{rule_id}').on('click', function() {
+        var myRules = $('##{rule_id}').queryBuilder('getRules');
+        if (myRules.condition) {
+          $.ajax({
+            type: "POST",
+            url: '/decision-rules/save-rule/#{rule_id}',
+            data: JSON.stringify(myRules, null, 0),
+            success: function (saved) { console.log(saved); }
+          });
+        }
+        return false;
+      });
+      $('#Share#{rule_id}').on('click', function() {
+        var myRules = $('##{rule_id}').queryBuilder('getRules');
+        if (myRules.condition) alert('Please Copy-Paste to send (manually) to your friends:\n' + JSON.stringify(myRules, null, 0));
+        return false;
+      });
+      $('#Export#{rule_id}').on('click', function() {
+        var myRules = $('##{rule_id}').queryBuilder('getRules');
+        if (myRules.condition) alert(JSON.stringify(myRules, null, 0));
+        return false;
+      });

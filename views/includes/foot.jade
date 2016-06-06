@@ -1,32 +1,102 @@
 .footer
   p 
-    .container.text-center
-       p.text-muted
-         | Easy-IOT v2.0.1
+  .container.text-center
+     p.text-muted
+     | Easy-IOT v2.0.1
 
-         span &nbsp;&ndash;&nbsp;
-         a(href='/contact') Contact
+     span &nbsp;&ndash;&nbsp;
+     a(href='/contact') Contact
 
-         span &nbsp;&ndash;&nbsp;
-         a(href='/about') About
+     span &nbsp;&ndash;&nbsp;
+     a(href='/about') About
 
-         span &nbsp;&ndash;&nbsp;
-         a(href='/v2.0.1/status')
-           span.glyphicon.glyphicon-heart-empty
-           |  API Status
+     span &nbsp;&ndash;&nbsp;
+     a(href='/v2.0.1/status')
+       span.glyphicon.glyphicon-heart-empty
+       |  API Status
 
-         span &nbsp;&ndash;&nbsp;
-         a(href='https://github.com/mathcoll/Easy-IOT')
-           span.fa.fa-github
-           |  GitHub
+     span &nbsp;&ndash;&nbsp;
+     a(href='https://github.com/mathcoll/Easy-IOT')
+       span.fa.fa-github
+       |  GitHub
 
-script(type='text/javascript', src='/js/vendor/jquery.min.js')
-script.
-  window.jQuery || document.write('<script src="//code.jquery.com/jquery-1.12.3.min.js"><\\/script>')
+
+link(href='/css/query-builder/query-builder.2.3.3.css', rel='stylesheet')
+link(href='/css/bootstrap-slider/bootstrap-slider-7.1.1.css', rel='stylesheet')
+link(href='/css/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css', rel='stylesheet')
+
+// Rules
+script(src='https://raw.githubusercontent.com/olado/doT/master/doT.min.js')
+script(src='https://raw.githubusercontent.com/mistic100/jQuery.extendext/master/jQuery.extendext.min.js')
+script(src='https://raw.githubusercontent.com/silviomoreto/bootstrap-select/master/dist/js/bootstrap-select.min.js')
+script(src='http://bootboxjs.com/bootbox.js')
+script(src='https://raw.githubusercontent.com/seiyria/bootstrap-slider/master/dist/bootstrap-slider.min.js')
+script(src='http://selectize.github.io/selectize.js/js/selectize.js')
+script(src='https://raw.githubusercontent.com/mistic100/jQuery-QueryBuilder/master/dist/js/query-builder.js')
+
 script(type='text/javascript', src='/js/bootstrap.min.js')
 // IE10 viewport hack for Surface/desktop Windows 8 bug
 script(type='text/javascript', src='/js/ie10-viewport-bug-workaround.js')
 script(type='text/javascript').
   $(function () {
-  $('[data-toggle="tooltip"]').tooltip()
+    $('[data-toggle="tooltip"]').tooltip()
   })
+  
+  var filters = [{
+    id: 'mqtt_topic',
+    label: 'MQTT Topic',
+    type: 'string',
+    description: 'MQTT Topic set when you calls the API.',
+    operators: ['equal', 'not_equal', 'in', 'not_in', 'begins_with', 'not_begins_with', 'contains', 'not_contains', 'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null']
+  }, {
+    id: 'value',
+    label: 'Value',
+    type: 'double',
+    validation: {
+      step: 0.01
+    },
+    description: 'The Value sent to TimeSeries.'
+  }, {
+    id: 'previousValue',
+    label: 'Previous Value',
+    type: 'double',
+    validation: {
+      step: 0.01
+    },
+    description: 'The Value which was sent to TimeSeries just before Value.'
+  }, {
+    id: 'deltaValue',
+    label: 'Delta Value',
+    type: 'double',
+    validation: {
+      step: 0.01
+    },
+    description: 'The Difference between previousValue and Value.',
+    operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between']
+  }, {
+    id: 'isDayTime',
+    label: 'is Day Time',
+    type: 'integer',
+    input: 'radio',
+    values: {
+      1: 'Yes',
+      0: 'No'
+    },
+    colors: {
+      1: 'success',
+      0: 'danger'
+    },
+    description: 'Between sunshine and sunset.',
+    operators: ['equal', 'not_equal']
+  }, {
+    id: 'environment',
+    label: 'Environment',
+    type: 'string',
+    input: 'select',
+    values: {
+      'production': 'Production',
+      'development': 'Development'
+    },
+    description: 'Allows to set actions based on the server Environment.',
+    operators: ['equal', 'not_equal']
+  }];
