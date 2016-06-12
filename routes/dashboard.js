@@ -284,7 +284,7 @@ router.get('/decision-rules', Auth, function(req, res) {
 	      },{
 	          id: 'deltaValue',
 	          operator: 'greater',
-	          value: 'production'
+	          value: 1234 // delta
 	      },{
 	          id: 'isDayTime',
 	          operator: 'equal',
@@ -311,7 +311,7 @@ router.get('/decision-rules', Auth, function(req, res) {
 		      },{
 		          id: 'value',
 		          operator: 'greater',
-		          value: 'previousValue'
+		          value: 123 // previousValue
 		      },{
 		          id: 'isDayTime',
 		          operator: 'equal',

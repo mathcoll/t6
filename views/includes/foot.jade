@@ -53,7 +53,7 @@ script(type='text/javascript').
     label: 'Value',
     type: 'double',
     validation: {
-      step: 0.01
+      step: 0.1
     },
     description: 'The Value sent to TimeSeries.'
   }, {
@@ -61,7 +61,7 @@ script(type='text/javascript').
     label: 'Previous Value',
     type: 'double',
     validation: {
-      step: 0.01
+      step: 0.1
     },
     description: 'The Value which was sent to TimeSeries just before Value.'
   }, {
@@ -69,9 +69,9 @@ script(type='text/javascript').
     label: 'Delta Value',
     type: 'double',
     validation: {
-      step: 0.01
+      step: 0.1
     },
-    description: 'The Difference between previousValue and Value.',
+    description: 'The Difference between previous Value and current Value.',
     operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between']
   }, {
     id: 'isDayTime',

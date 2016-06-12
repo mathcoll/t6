@@ -4,7 +4,34 @@
       a.glyphicon.glyphicon-filter(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rule_id}', aria-expanded='false', aria-controls='#{rule_id}')    #{rule_name}
       a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rule_id}', aria-expanded='false', aria-controls='#{rule_id}')
       div.panel-collapse.collapse(id='#{rule_id}', role='tabpanel', aria-labelledby='Heading#{rule_id}')
-    
+
+        div.panel-body Status:
+          br
+          input(type='radio', name='on', value='On', id='#{rule_id}On', checked=on=="On")
+          label(for='#{rule_id}On') &nbsp;On
+          | &nbsp;
+          input(type='radio', name='on', value='Off', id='#{rule_id}Off', checked=on=="Off")
+          label(for='#{rule_id}Off') &nbsp;Off
+
+        div.panel-body Flow Control:
+          br
+          input(type='radio', name='next', value='next', id='#{rule_id}next', checked=next=="next")
+          label(for='#{rule_id}next') &nbsp;Continues to next Rule
+          br
+          input(type='radio', name='next', value='stop', id='#{rule_id}stop', checked=next=="stop")
+          label(for='#{rule_id}stop') &nbsp;Stop Rules
+          br
+          input(type='radio', name='next', value='restart', id='#{rule_id}restart', checked=next=="restart")
+          label(for='#{rule_id}restart') &nbsp;Restart Rules
+        
+        div.panel-body Consequence:
+          br
+          span.label.label-info SMS
+          | &nbsp;
+          span.label.label-info Email
+          | &nbsp;
+          span.label.label-info Arduino TinyDisplay
+          
         div.panel-body 
           a.btn.btn-primary.btn-sm(href="#", id='Export#{rule_id}')
             span.glyphicon.glyphicon-share-alt  Export Rule
@@ -12,20 +39,17 @@
           a.btn.btn-info.btn-sm(href="#", id='Share#{rule_id}')
             span.glyphicon.glyphicon-retweet  Share Rule
           | &nbsp;
-          a.btn.btn-success.btn-sm(href="#", id='Save#{rule_id}')
+          a.btn.btn-danger.btn-sm(href="#", id='Delete#{rule_id}')
+            span.glyphicon.glyphicon-remove  Delete
+          | &nbsp;
+          a.btn.btn-success.btn-sm.pull-right(href="#", id='Save#{rule_id}')
             span.glyphicon.glyphicon-check  Save Rule
 
-      div.panel-body Actions:
-        | &nbsp;
-        span.label.label-info SMS
-        | &nbsp;
-        span.label.label-info Email
-        | &nbsp;
-        span.label.label-info Arduino TinyDisplay
+        div.panel-body() Condition:
 
     script(type='text/javascript').
       if ( rules === undefined ) var rules = new Array(); rules['#{rule_id}'] = !{JSON.stringify(rules[rule_id])};
-      $(function () { $('##{rule_id}').queryBuilder({ plugins: [ 'sortable', 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters, rules: rules['#{rule_id}'] }); })
+      $(function () { $('##{rule_id}').queryBuilder({ plugins: [ 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters, rules: rules['#{rule_id}'] }); })
       
       $('#Save#{rule_id}').on('click', function() {
         var myRules = $('##{rule_id}').queryBuilder('getRules');
@@ -37,6 +61,9 @@
             success: function (saved) { console.log(saved); }
           });
         }
+        return false;
+      });
+      $('#Delete#{rule_id}').on('click', function() {
         return false;
       });
       $('#Share#{rule_id}').on('click', function() {
