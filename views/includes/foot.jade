@@ -33,6 +33,7 @@ script(src='http://bootboxjs.com/bootbox.js')
 script(src='https://raw.githubusercontent.com/seiyria/bootstrap-slider/master/dist/bootstrap-slider.min.js')
 script(src='http://selectize.github.io/selectize.js/js/selectize.js')
 script(src='https://raw.githubusercontent.com/mistic100/jQuery-QueryBuilder/master/dist/js/query-builder.js')
+script(src='https://code.jquery.com/ui/1.11.4/jquery-ui.js')
 
 script(type='text/javascript', src='/js/bootstrap.min.js')
 // IE10 viewport hack for Surface/desktop Windows 8 bug
@@ -100,3 +101,8 @@ script(type='text/javascript').
     description: 'Allows to set actions based on the server Environment.',
     operators: ['equal', 'not_equal']
   }];
+  
+script(type='text/javascript').
+  $( '#sortable' ).sortable({
+    axis: "y", cursor: "move", opacity: 0.5
+  });

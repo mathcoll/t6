@@ -8,6 +8,7 @@ var units;
 var flows;
 var datatypes;
 var tokens;
+var rules;
 var objectTypes = ['rooter', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'tablet', 'server', 'printer'];
 
 function alphaSort(obj1, obj2) {
@@ -268,85 +269,27 @@ router.post('/search', Auth, function(req, res) {
 });
 
 router.get('/decision-rules', Auth, function(req, res) {
-	var rules = new Array();
-	rules['Alert_on_Threshold'] = {
-	    "condition": "AND",
-	    "rules": [{
-	          id: 'environment',
-	          operator: 'equal',
-	          value: 'production'
-	    },{
-	      condition: 'AND',
-	      rules: [{
-	          id: 'mqtt_topic',
-	          operator: 'equal',
-	          value: 'couleurs/yoctovoc/voc'
-	      },{
-	          id: 'deltaValue',
-	          operator: 'greater',
-	          value: 1234 // delta
-	      },{
-	          id: 'isDayTime',
-	          operator: 'equal',
-	          value: 1
-	      }]
-	    }]
-	  };
-	rules['auth_log'] = {
-		    "condition": "AND",
-		    "rules": [{
-		          id: 'environment',
-		          operator: 'equal',
-		          value: 'production'
-		    },{
-		      condition: 'AND',
-		      rules: [{
-		          id: 'mqtt_topic',
-		          operator: 'equal',
-		          value: 'couleurs/guruplug/auth_log'
-		      },{
-		          id: 'value',
-		          operator: 'greater',
-		          value: 0
-		      },{
-		          id: 'value',
-		          operator: 'greater',
-		          value: 123 // previousValue
-		      },{
-		          id: 'isDayTime',
-		          operator: 'equal',
-		          value: 1
-		      }]
-		    }]
-		  };
-	rules['COV_Threshold'] = {
-		    "condition": "AND",
-		    "rules": [{
-		          id: 'environment',
-		          operator: 'equal',
-		          value: 'production'
-		    },{
-		      condition: 'AND',
-		      rules: [{
-		          id: 'mqtt_topic',
-		          operator: 'equal',
-		          value: 'couleurs/yoctovoc/voc'
-		      },{
-		          id: 'value',
-		          operator: 'greater',
-		          value: 2500
-		      },{
-		          id: 'isDayTime',
-		          operator: 'equal',
-		          value: 1
-		      }]
-		    }]
-		  };
+	rules = dbRules.getCollection("rules");
+	var queryR = { 'user_id': req.session.user.id };
+	/*queryR = {
+		'$and': [
+					{ 'user_id': req.session.user.id },
+					{ 'id': 'ceda166a-df25-4bc4-ae77-3823f63193f9' }
+				]
+			};
+	*/
+	var r = rules.chain().find(queryR).simplesort('on', 'priority', 'name').data();
 	res.render('decision-rules', {
 		title : 'Decision Rules Easy-IOT',
 		user: req.session.user,
-		rules: rules,
+		rules: r,
 	});
+});
+
+router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(req, res) {
+	//req.body;
+	rules = dbRules.getCollection("rules");
+	res.status(501).send({'error': 'Sorry, not yet implemented!'});
 });
 
 router.get('/about', function(req, res) {

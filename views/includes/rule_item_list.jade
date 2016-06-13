@@ -1,78 +1,90 @@
-.panel.panel-default
-  div.list-group-item.panel-heading(role='tab', id='Heading#{rule_id}')
+li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
+  div.list-group-item.panel-heading(role='tab', id='Heading#{rules[rule].id}')
     h4.panel-title
-      a.glyphicon.glyphicon-filter(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rule_id}', aria-expanded='false', aria-controls='#{rule_id}')    #{rule_name}
-      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rule_id}', aria-expanded='false', aria-controls='#{rule_id}')
-      div.panel-collapse.collapse(id='#{rule_id}', role='tabpanel', aria-labelledby='Heading#{rule_id}')
+      - if ( rules[rule].on == true ) {
+        a.glyphicon.glyphicon-expand(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')    #{rules[rule].name}
+      - } else {
+        a.glyphicon.glyphicon-unchecked(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')    #{rules[rule].name}
+      - }
+      | &nbsp;
+      span.label.label-info Priority: #{rules[rule].priority}
+      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')
 
-        div.panel-body Status:
-          br
-          input(type='radio', name='on', value='On', id='#{rule_id}On', checked=on=="On")
-          label(for='#{rule_id}On') &nbsp;On
-          | &nbsp;
-          input(type='radio', name='on', value='Off', id='#{rule_id}Off', checked=on=="Off")
-          label(for='#{rule_id}Off') &nbsp;Off
 
-        div.panel-body Flow Control:
-          br
-          input(type='radio', name='next', value='next', id='#{rule_id}next', checked=next=="next")
-          label(for='#{rule_id}next') &nbsp;Continues to next Rule
-          br
-          input(type='radio', name='next', value='stop', id='#{rule_id}stop', checked=next=="stop")
-          label(for='#{rule_id}stop') &nbsp;Stop Rules
-          br
-          input(type='radio', name='next', value='restart', id='#{rule_id}restart', checked=next=="restart")
-          label(for='#{rule_id}restart') &nbsp;Restart Rules
-        
-        div.panel-body Consequence:
-          br
-          span.label.label-info SMS
-          | &nbsp;
-          span.label.label-info Email
-          | &nbsp;
-          span.label.label-info Arduino TinyDisplay
-          
-        div.panel-body 
-          a.btn.btn-primary.btn-sm(href="#", id='Export#{rule_id}')
-            span.glyphicon.glyphicon-share-alt  Export Rule
-          | &nbsp;
-          a.btn.btn-info.btn-sm(href="#", id='Share#{rule_id}')
-            span.glyphicon.glyphicon-retweet  Share Rule
-          | &nbsp;
-          a.btn.btn-danger.btn-sm(href="#", id='Delete#{rule_id}')
-            span.glyphicon.glyphicon-remove  Delete
-          | &nbsp;
-          a.btn.btn-success.btn-sm.pull-right(href="#", id='Save#{rule_id}')
-            span.glyphicon.glyphicon-check  Save Rule
+  div.panel-body.panel-collapse.collapse(id='#{rules[rule].id}', role='tabpanel', aria-labelledby='Heading#{rules[rule].id}')
+    div.panel-body Status:
+      br
+      input(type='radio', name='#{rules[rule].id}on', value='true', id='#{rules[rule].id}True', checked=(rules[rule].on==true ? "checked" : undefined))
+      label(for='#{rules[rule].id}True') &nbsp;On
+      | &nbsp;
+      input(type='radio', name='#{rules[rule].id}on', value='false', id='#{rules[rule].id}False', checked=(rules[rule].on==false ? "checked" : undefined))
+      label(for='#{rules[rule].id}False') &nbsp;Off
 
-        div.panel-body() Condition:
+    div.panel-body Flow Control:
+      br
+      .col-sm-4
+        input(type='radio', name='next', value='next', id='#{rules[rule].id}next', checked=next=="next")
+        label(for='#{rules[rule].id}next') &nbsp;Continues to next Rule
+        br
+        input(type='radio', name='next', value='stop', id='#{rules[rule].id}stop', checked=next=="stop")
+        label(for='#{rules[rule].id}stop') &nbsp;Stop Rules
+        br
+        input(type='radio', name='next', value='restart', id='#{rules[rule].id}restart', checked=next=="restart")
+        label(for='#{rules[rule].id}restart') &nbsp;Restart Rules
+      .col-sm-8
+        blockquote.glyphicon.glyphicon-comment  Flow Control: Stop refers to stop processing the rule engine. Restart tells the rule engine to start applying all the rules again to the fact. Next is to instruct the rule engine to continue applying the rest of the rules to the fact before stoping.
+
+    div.panel-body Consequence:&nbsp;
+      span.label.label-info SMS
+      | &nbsp;
+      span.label.label-info Email
+      | &nbsp;
+      span.label.label-info Arduino TinyDisplay
+
+    div.panel-body Condition:
+
+  div.panel-footer 
+    a.btn.btn-primary.btn-xs(href="#", id='Export#{rules[rule].id}')
+      span.glyphicon.glyphicon-share-alt  Export Rule
+    | &nbsp;
+    a.btn.btn-info.btn-xs(href="#", id='Share#{rules[rule].id}')
+      span.glyphicon.glyphicon-retweet  Share Rule
+    | &nbsp;
+    a.btn.btn-danger.btn-xs(href="#", id='Delete#{rules[rule].id}')
+      span.glyphicon.glyphicon-remove  Delete
+    | &nbsp;
+    a.btn.btn-success.btn-xs.pull-right(href="#", id='Save#{rules[rule].id}')
+      span.glyphicon.glyphicon-check  Save Rule
+  
+  - if ( rules[rule].condition.condition ) {
+    script(type='text/javascript').
+      if ( rules === undefined ) var rules = new Array(); rules['#{rules[rule].id}'] = !{JSON.stringify(rules[rule].condition)};
+      $(function () { $('##{rules[rule].id}').queryBuilder({ plugins: [ 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters, rules: rules['#{rules[rule].id}'] }); })
+  - }
 
     script(type='text/javascript').
-      if ( rules === undefined ) var rules = new Array(); rules['#{rule_id}'] = !{JSON.stringify(rules[rule_id])};
-      $(function () { $('##{rule_id}').queryBuilder({ plugins: [ 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters, rules: rules['#{rule_id}'] }); })
-      
-      $('#Save#{rule_id}').on('click', function() {
-        var myRules = $('##{rule_id}').queryBuilder('getRules');
+      $('#Save#{rules[rule].id}').on('click', function() {
+        var myRules = $('##{rules[rule].id}').queryBuilder('getRules');
         if (myRules.condition) {
           $.ajax({
             type: "POST",
-            url: '/decision-rules/save-rule/#{rule_id}',
+            url: '/decision-rules/save-rule/#{rules[rule].id}',
             data: JSON.stringify(myRules, null, 0),
             success: function (saved) { console.log(saved); }
           });
         }
         return false;
       });
-      $('#Delete#{rule_id}').on('click', function() {
+      $('#Delete#{rules[rule].id}').on('click', function() {
         return false;
       });
-      $('#Share#{rule_id}').on('click', function() {
-        var myRules = $('##{rule_id}').queryBuilder('getRules');
+      $('#Share#{rules[rule].id}').on('click', function() {
+        var myRules = $('##{rules[rule].id}').queryBuilder('getRules');
         if (myRules.condition) alert('Please Copy-Paste to send (manually) to your friends:\n' + JSON.stringify(myRules, null, 0));
         return false;
       });
-      $('#Export#{rule_id}').on('click', function() {
-        var myRules = $('##{rule_id}').queryBuilder('getRules');
+      $('#Export#{rules[rule].id}').on('click', function() {
+        var myRules = $('##{rules[rule].id}').queryBuilder('getRules');
         if (myRules.condition) alert(JSON.stringify(myRules, null, 0));
         return false;
       });

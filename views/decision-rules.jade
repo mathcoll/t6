@@ -8,21 +8,13 @@ html(lang='en')
         h2 Decision Rules
 
       #accordion.col-sm-8.panel-group(role='tablist', aria-multiselectable='true')
-        - var rule_name = 'Alert on Threshold'
-        - var rule_id = 'Alert_on_Threshold'
-        include ./includes/rule_item_list.jade
-        
-        - var rule_name = 'Alert on auth_log'
-        - var rule_id = 'auth_log'
-        include ./includes/rule_item_list.jade
-        
-        - var rule_name = 'Big COV Alert'
-        - var rule_id = 'COV_Threshold'
-        include ./includes/rule_item_list.jade
+        ul.list-unstyled#sortable
+          - for(rule in rules) {
+            include ./includes/rule_item_list.jade
+          - }
 
       .col-sm-4
         div.affix-top
           blockquote.glyphicon.glyphicon-comment  "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months. To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
-          blockquote.glyphicon.glyphicon-comment  Flow Control: Stop refers to stop processing the rule engine. Restart tells the rule engine to start applying all the rules again to the fact. Next is to instruct the rule engine to continue applying the rest of the rules to the fact before stoping.
 
     include ./includes/foot.jade

@@ -32,3 +32,6 @@ influxSettings = { host : 'localhost', port : 8086, protocol : 'http', username 
 /* Database settings -  */
 db	= new loki(path.join(__dirname, 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 db.loadDatabase(path.join(__dirname, 'db-'+os.hostname()+'.json'));
+
+dbRules	= new loki(path.join(__dirname, 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbRules.loadDatabase(path.join(__dirname, 'rules-'+os.hostname()+'.json'));
