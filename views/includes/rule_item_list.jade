@@ -7,9 +7,8 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
         a.glyphicon.glyphicon-unchecked(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}') #{rules[rule].name}
       - }
       | &nbsp;
-      span.label.label-info Priority: #{rules[rule].priority}
+      span.label.label-info Priority: #{rules[rule].priority}&nbsp;
       a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')
-
 
   div.panel-body.panel-collapse.collapse(id='#{rules[rule].id}', role='tabpanel', aria-labelledby='Heading#{rules[rule].id}')
     div.panel-body Status:
@@ -44,18 +43,18 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
 
     div.panel-body Condition:
 
-  div.panel-footer 
-    a.btn.btn-primary.btn-xs(href="#", id='Export#{rules[rule].id}')
-      span.glyphicon.glyphicon-share-alt  Export Rule
-    | &nbsp;
-    a.btn.btn-info.btn-xs(href="#", id='Share#{rules[rule].id}')
-      span.glyphicon.glyphicon-retweet  Share Rule
-    | &nbsp;
-    a.btn.btn-danger.btn-xs(href="#", id='Delete#{rules[rule].id}')
-      span.glyphicon.glyphicon-remove  Delete
-    | &nbsp;
-    a.btn.btn-success.btn-xs.pull-right(href="#", id='Save#{rules[rule].id}')
-      span.glyphicon.glyphicon-check  Save Rule
+    div.panel-footer 
+      a.btn.btn-primary.btn-xs(href="#", id='Export#{rules[rule].id}')
+        span.glyphicon.glyphicon-share-alt  Export Rule
+      | &nbsp;
+      a.btn.btn-info.btn-xs(href="#", id='Share#{rules[rule].id}')
+        span.glyphicon.glyphicon-retweet  Share Rule
+      | &nbsp;
+      a.btn.btn-danger.btn-xs(href="#", id='Delete#{rules[rule].id}')
+        span.glyphicon.glyphicon-remove  Delete
+      | &nbsp;
+      a.btn.btn-success.btn-xs.pull-right(href="#", id='Save#{rules[rule].id}')
+        span.glyphicon.glyphicon-check  Save Rule
   
     script(type='text/javascript').
       if ( rules === undefined ) var rules = new Array(); rules['#{rules[rule].id}'] = !{JSON.stringify(rules[rule].condition)};
@@ -74,7 +73,7 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
         myRules.condition = $('##{rules[rule].id}').queryBuilder('getRules');
         if ( myRules.condition.condition ) {
           myRules.name = $('#Heading#{rules[rule].id} h4 a').text();
-          myRules.priority = 100000000;
+          myRules.priority = ($('#Heading#{rules[rule].id}').parent().parent().find('> li').size()) - ($('#Heading#{rules[rule].id}').parent().index());
           myRules.on = $('##{rules[rule].id}True').is(':checked')!==false?true:false;
           myRules.consequence = {};
           
