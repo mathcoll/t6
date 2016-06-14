@@ -2,6 +2,7 @@
 var express = require('express');
 var router	= express.Router();
 var DataSerializer = require('../serializers/data');
+var ErrorSerializer = require('../serializers/error');
 var users;
 var objects;
 var units;
@@ -287,9 +288,30 @@ router.get('/decision-rules', Auth, function(req, res) {
 });
 
 router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(req, res) {
-	//req.body;
-	rules = dbRules.getCollection("rules");
-	res.status(501).send({'error': 'Sorry, not yet implemented!'});
+	var rule_id = req.params.rule_id;
+	if ( !rule_id || !req.body.name ) {
+		res.status(412).send(new ErrorSerializer({'id': 1009,'code': 412, 'message': 'Precondition Failed'}).serialize());
+	} else {
+		rules = dbRules.getCollection("rules");
+		var queryR = {
+			'$and': [
+						{ 'user_id': req.session.user.id },
+						{ 'id': rule_id }
+					]
+				};
+		var rule = rules.findOne(queryR);
+		if ( !rule ) {
+			res.status(404).send(new ErrorSerializer({'id': 1006,'code': 404, 'message': 'Not Found'}).serialize());
+		} else {
+			rule.name			= req.body.name;
+			rule.on				= req.body.on;
+			rule.priority		= req.body.priority;
+			rule.consequence	= req.body.consequence;
+			rule.condition		= req.body.condition;
+			rules.update(rule);
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', rule: rule });
+		}
+	}
 });
 
 router.get('/about', function(req, res) {

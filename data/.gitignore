@@ -5,3 +5,6 @@ db-bleu.json
 db-guruplug.json
 settings-bleu.js
 settings-guruplug.js
+rules-bleu.js
+rules-guruplug.js
+/rules-bleu.json

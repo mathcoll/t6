@@ -1,10 +1,10 @@
 li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
-  div.list-group-item.panel-heading(role='tab', id='Heading#{rules[rule].id}')
+  div.list-group-item.panel-heading(role='tab', id='Heading#{rules[rule].id}', class=(rules[rule].on==true ? "" : " progress-bar-striped"))
     h4.panel-title
       - if ( rules[rule].on == true ) {
-        a.glyphicon.glyphicon-expand(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')    #{rules[rule].name}
+        a.glyphicon.glyphicon-expand(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}') #{rules[rule].name}
       - } else {
-        a.glyphicon.glyphicon-unchecked(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')    #{rules[rule].name}
+        a.glyphicon.glyphicon-unchecked(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}') #{rules[rule].name}
       - }
       | &nbsp;
       span.label.label-info Priority: #{rules[rule].priority}
@@ -14,11 +14,12 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
   div.panel-body.panel-collapse.collapse(id='#{rules[rule].id}', role='tabpanel', aria-labelledby='Heading#{rules[rule].id}')
     div.panel-body Status:
       br
-      input(type='radio', name='#{rules[rule].id}on', value='true', id='#{rules[rule].id}True', checked=(rules[rule].on==true ? "checked" : undefined))
-      label(for='#{rules[rule].id}True') &nbsp;On
-      | &nbsp;
-      input(type='radio', name='#{rules[rule].id}on', value='false', id='#{rules[rule].id}False', checked=(rules[rule].on==false ? "checked" : undefined))
-      label(for='#{rules[rule].id}False') &nbsp;Off
+      div.radio.radio-success
+        input(type='radio', name='#{rules[rule].id}on', value='true', id='#{rules[rule].id}True', checked=(rules[rule].on==true ? "checked" : undefined))
+        label(for='#{rules[rule].id}True') &nbsp;On
+      div.radio.radio-danger
+        input(type='radio', name='#{rules[rule].id}on', value='false', id='#{rules[rule].id}False', checked=(rules[rule].on==false ? "checked" : undefined))
+        label(for='#{rules[rule].id}False') &nbsp;Off
 
     div.panel-body Flow Control:
       br
@@ -56,18 +57,32 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
     a.btn.btn-success.btn-xs.pull-right(href="#", id='Save#{rules[rule].id}')
       span.glyphicon.glyphicon-check  Save Rule
   
-  - if ( rules[rule].condition.condition ) {
     script(type='text/javascript').
       if ( rules === undefined ) var rules = new Array(); rules['#{rules[rule].id}'] = !{JSON.stringify(rules[rule].condition)};
-      $(function () { $('##{rules[rule].id}').queryBuilder({ plugins: [ 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters, rules: rules['#{rules[rule].id}'] }); })
-  - }
+
+    - if ( rules[rule].condition.condition ) {
+      script(type='text/javascript').
+        $(function () { $('##{rules[rule].id}').queryBuilder({ plugins: [ 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters, rules: rules['#{rules[rule].id}'] }); })
+    - } else {
+      script(type='text/javascript').
+        $(function () { $('##{rules[rule].id}').queryBuilder({ plugins: [ 'filter-description', 'bt-tooltip-errors', 'bt-checkbox' ], filters: filters }); })
+    - }
 
     script(type='text/javascript').
       $('#Save#{rules[rule].id}').on('click', function() {
-        var myRules = $('##{rules[rule].id}').queryBuilder('getRules');
-        if (myRules.condition) {
+        var myRules = {};
+        myRules.condition = $('##{rules[rule].id}').queryBuilder('getRules');
+        if ( myRules.condition.condition ) {
+          myRules.name = $('#Heading#{rules[rule].id} h4 a').text();
+          myRules.priority = 100000000;
+          myRules.on = $('##{rules[rule].id}True').is(':checked')!==false?true:false;
+          myRules.consequence = {};
+          
           $.ajax({
             type: "POST",
+            contentType: 'application/json',
+            dataType: 'json',
+            processData: true,
             url: '/decision-rules/save-rule/#{rules[rule].id}',
             data: JSON.stringify(myRules, null, 0),
             success: function (saved) { console.log(saved); }
