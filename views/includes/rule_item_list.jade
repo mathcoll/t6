@@ -85,7 +85,7 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
             processData: true,
             url: '/decision-rules/save-rule/#{rules[rule].id}',
             data: JSON.stringify(myRules, null, 0),
-            success: function (saved) { console.log(saved); }
+            success: function (saved) { var msg = $("h2").parent().append("<div class='alert alert-success' role='alert'>Your rule have been updated.</div>"); setTimeout(function(){ $(msg).find('div[role=alert]').fadeOut(3000, function(){ $(this).remove();}); }, 5000); }
           });
         }
         return false;
