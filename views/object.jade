@@ -10,46 +10,31 @@ html(lang='en')
 
     .container
       .col-sm-8
-        h3 Object details
         div
-          .media
-            .media-body
-              h4.media-heading
-                span.glyphicon.glyphicon-minus     Object Name:
-                small
-                  div     #{object.name}
-
-          .media
-            .media-body
-              h4.media-heading
-                span.glyphicon.glyphicon-minus     Description:
-                small
-                  div     #{object.description}
-
-          .media
-            .media-body
-              h4.media-heading
-                span.glyphicon.glyphicon-minus     Type:
-                small
-                  div.label.label-default     #{object.type}
-
-          .media
-            .media-body
-              h4.media-heading
-                span.glyphicon.glyphicon-minus     Position/Location:
-                small
-                  div.label.label-primary     #{object.position}
-
-          .media
-            .media-body
-              h4.media-heading
-                span.glyphicon.glyphicon-minus     Ip:
-                small
-                  div.label.label-danger     #{object.ipv4} 
-                  -if (object.ipv6)
-                    | &nbsp;
-                    div.label.label-danger     #{object.ipv6} 
-                  -end
+          dl.dl-horizontal
+            dt Name:
+            dd #{object.name}
+            
+            dt Description:
+            dd #{object.description}
+            
+            dt Type:
+            dd #{object.type}
+            
+            dt Position/Location:
+            dd #{object.position}
+            
+            -if (object.ipv4)
+              dt Ip v4:
+              dd
+                span.label.label-danger #{object.ipv4}
+            -end
+            
+            -if (object.ipv6)
+              dt Ip v6:
+              dd
+                span.label.label-danger #{object.ipv6}
+            -end
 
       .col-sm-4
         div.sidebar-module-inset
