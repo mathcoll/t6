@@ -212,17 +212,19 @@ router.get('/profile', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	flows	= db.getCollection('flows');
 	tokens	= db.getCollection('tokens');
-	
-	var user = req.session.user;
+	rules	= dbRules.getCollection('rules');
 
 	var queryO = { 'user_id' : req.session.user.id };
 	var queryF = { 'user_id' : req.session.user.id };
 	var queryT = { 'user_id' : req.session.user.id };
+	var queryR = { 'user_id' : req.session.user.id };
 	res.render('profile', {
 		title : 'Profile Easy-IOT',
 		objects: ((objects.chain().find(queryO).data()).length),
 		flows: ((flows.chain().find(queryF).data()).length),
+		rules: (rules.chain().find(queryR).data().length),
 		tokens: (tokens.chain().find(queryT).data()),
+		quota: quota.admin, // TODO
 		user: req.session.user
 	});
 });
@@ -308,6 +310,7 @@ router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(re
 			rule.priority		= req.body.priority;
 			rule.consequence	= req.body.consequence;
 			rule.condition		= req.body.condition;
+			rule.flow_control	= req.body.flow_control;
 			rules.update(rule);
 			res.status(200).send({ 'code': 200, message: 'Successfully updated', rule: rule });
 		}

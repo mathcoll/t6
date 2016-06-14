@@ -59,32 +59,52 @@ html(lang='en')
             h3#objects.list-group User Statistics
               #accordion.panel-group(role='tablist', aria-multiselectable='true')
                 .panel.panel-default
-                  #headingOne.panel-heading(role='tab')
+                  #headingObjects.panel-heading(role='tab')
                     h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseOne', aria-expanded='false', aria-controls='collapseOne')
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
                         span.glyphicon.glyphicon-inbox
                         |  #{objects} Objects
-                  #collapseOne.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingOne')
+                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+                  #collapseObjects.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingObjects')
                     .panel-body
                       |  &ndash;
-                      small  ? max Objects
+                      small  Your library is containing #{objects}/#{quota.objects} 
+                        a(href='/objects') Objects
+                        | .
 
-                  #headingTwo.panel-heading(role='tab')
+                  #headingFlows.panel-heading(role='tab')
                     h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseTwo', aria-expanded='false', aria-controls='collapseTwo')
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
                         span.glyphicon.glyphicon-random
                         |  #{flows} Flows
-                  #collapseTwo.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingTwo')
+                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+                  #collapseFlows.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFlows')
                     .panel-body
                       |  &ndash;
-                      small  ? max Flows
+                      small  Your library is containing #{flows}/#{quota.flows} 
+                        a(href='/flows') Flows
+                        | .
 
-                  #headingThree.panel-heading(role='tab')
+                  #headingRules.panel-heading(role='tab')
                     h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseThree', aria-expanded='false', aria-controls='collapseThree')
-                        span.glyphicon.glyphicon-random
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                        span.glyphicon.glyphicon-filter
+                        |  #{rules} Rules
+                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                  #collapseRules.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingRules')
+                    .panel-body
+                      |  &ndash;
+                      small  Your library is containing #{rules}/#{quota.rules} 
+                        a(href='/decision-rules') Rules
+                        | .
+
+                  #headingKeys.panel-heading(role='tab')
+                    h4.panel-title
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                        span.glyphicon.glyphicon-flash
                         |  #{tokens.length}  API Keys
-                  #collapseThree.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingThree')
+                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                  #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
                     .panel-body
                       small
                         ul
@@ -100,18 +120,18 @@ html(lang='en')
                               - for(p in tokens[token].permissions) {
                                 a(title='/flows/#{(tokens[token].permissions)[p].flow_id}') #{(tokens[token].permissions)[p].permission}, 
                               - }
-                            
                           - }
                       
-                  #headingFour.panel-heading(role='tab')
+                  #headingCalls.panel-heading(role='tab')
                     h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFour', aria-expanded='false', aria-controls='collapseFour')
-                        span.glyphicon.glyphicon-random
-                        |  ? API calls in the past 7 days
-                  #collapseFour.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFour')
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='false', aria-controls='collapseCalls')
+                        span.glyphicon.glyphicon-flash
+                        |  #{calls} API calls in the past 7 days
+                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='false', aria-controls='collapseCalls')
+                  #collapseCalls.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingCalls')
                     .panel-body
                       |  &ndash;
-                      small  ? max API calls
+                      small  Your performed #{calls}/#{quota.calls} API calls in the past 7 days.
 
       .col-sm-8
         .panel.panel-default

@@ -16,6 +16,12 @@ store				= new FileStore({ttl: sessionDuration});
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
 
+/* Quota settings */
+quota = {
+	'admin': {objects: 999, flows: 999, rules: 999, tokens: 999, calls: 999},
+	'user': {objects: 5, flows: 8, rules: 8, tokens: 8, calls: 999}
+};
+
 /* Email settings */
 nodemailer			= require('nodemailer');
 from				= "Easy-IOT <contact@domain.tld>"; // The Sender email adress
