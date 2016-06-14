@@ -8,7 +8,7 @@ html(lang='en')
         h2 Decision Rules
 
       #accordion.col-sm-8.panel-group(role='tablist', aria-multiselectable='true')
-        ul.list-unstyled#sortable
+        ol#sortable
           - for(rule in rules) {
             include ./includes/rule_item_list.jade
           - }

@@ -12,6 +12,10 @@ html(lang='en')
       .col-sm-8
         div
           dl.dl-horizontal
+            dt Id:
+            dd
+              span.label.label-warning #{object.id}
+
             dt Name:
             dd #{object.name}
             
@@ -19,10 +23,14 @@ html(lang='en')
             dd #{object.description}
             
             dt Type:
-            dd #{object.type}
+            dd
+              span.label.label-default #{object.type}
             
-            dt Position/Location:
-            dd #{object.position}
+            -if (object.position)
+              dt Position/Location:
+              dd
+                span.label.label-primary #{object.position}
+            -end
             
             -if (object.ipv4)
               dt Ip v4:

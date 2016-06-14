@@ -20,16 +20,16 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
         input(type='radio', name='#{rules[rule].id}on', value='false', id='#{rules[rule].id}False', checked=(rules[rule].on==false ? "checked" : undefined))
         label(for='#{rules[rule].id}False') &nbsp;Off
 
-    div.panel-body Flow Control:
+    div.panel-body Flow Control: (#{rules[rule].flow_control})
       br
       .col-sm-4
-        input(type='radio', name='next', value='next', id='#{rules[rule].id}next', checked=next=="next")
+        input(type='radio', name='next', value='next', id='#{rules[rule].id}next', checked=(rules[rule].flow_control=="next" ? "checked" : undefined))
         label(for='#{rules[rule].id}next') &nbsp;Continues to next Rule
         br
-        input(type='radio', name='next', value='stop', id='#{rules[rule].id}stop', checked=next=="stop")
+        input(type='radio', name='next', value='stop', id='#{rules[rule].id}stop', checked=(rules[rule].flow_control=="stop" ? "checked" : undefined))
         label(for='#{rules[rule].id}stop') &nbsp;Stop Rules
         br
-        input(type='radio', name='next', value='restart', id='#{rules[rule].id}restart', checked=next=="restart")
+        input(type='radio', name='next', value='restart', id='#{rules[rule].id}restart', checked=(rules[rule].flow_control=="restart" ? "checked" : undefined))
         label(for='#{rules[rule].id}restart') &nbsp;Restart Rules
       .col-sm-8
         blockquote.glyphicon.glyphicon-comment  Flow Control: Stop refers to stop processing the rule engine. Restart tells the rule engine to start applying all the rules again to the fact. Next is to instruct the rule engine to continue applying the rest of the rules to the fact before stoping.
@@ -75,6 +75,7 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
           myRules.name = $('#Heading#{rules[rule].id} h4 a').text();
           myRules.priority = ($('#Heading#{rules[rule].id}').parent().parent().find('> li').size()) - ($('#Heading#{rules[rule].id}').parent().index());
           myRules.on = $('##{rules[rule].id}True').is(':checked')!==false?true:false;
+          myRules.flow_control = $('##{rules[rule].id} div div input:radio[name=next]:checked').val();
           myRules.consequence = {};
           
           $.ajax({
