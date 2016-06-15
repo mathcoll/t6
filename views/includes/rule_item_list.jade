@@ -85,7 +85,9 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
             processData: true,
             url: '/decision-rules/save-rule/#{rules[rule].id}',
             data: JSON.stringify(myRules, null, 0),
-            success: function (saved) { var msg = $("h2").parent().append("<div class='alert alert-success affix affix-bottom' style='z-index:9999; bottom: 60px;' role='alert'>Your rule have been updated.</div>"); setTimeout(function(){ $(msg).find('div[role=alert]').fadeOut(3000, function(){ $(this).remove();}); }, 5000); }
+            success: function (saved) {
+              $.notify({ icon: 'glyphicon glyphicon-check', title: '<strong>Rule "#{rules[rule].name}"</strong><br />', message: 'Your rule (#{rules[rule].id}) have been successfully updated.' },{ type: 'success' });
+            }
           });
         }
         return false;
