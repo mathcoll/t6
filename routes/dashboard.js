@@ -224,6 +224,7 @@ router.get('/profile', Auth, function(req, res) {
 		flows: ((flows.chain().find(queryF).data()).length),
 		rules: (rules.chain().find(queryR).data().length),
 		tokens: (tokens.chain().find(queryT).data()),
+		calls: 125,
 		quota: quota.admin, // TODO
 		user: req.session.user
 	});

@@ -71,6 +71,16 @@ html(lang='en')
                       small  Your library is containing #{objects}/#{quota.objects} 
                         a(href='/objects') Objects
                         | .
+                      div.progress
+                        - var percent = Math.round(objects*100/quota.objects)
+                        - var style = "success"
+                        - if (percent > 60)
+                          - style = "warning"
+                        - end
+                        - if (percent > 85)
+                          - style = "danger"
+                        - end
+                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%")
 
                   #headingFlows.panel-heading(role='tab')
                     h4.panel-title
@@ -84,6 +94,17 @@ html(lang='en')
                       small  Your library is containing #{flows}/#{quota.flows} 
                         a(href='/flows') Flows
                         | .
+                      div.progress
+                        - var percent = Math.round(flows*100/quota.flows)
+                        - var style = "success"
+                        - if (percent > 60)
+                          - style = "warning"
+                        - end
+                        - if (percent > 85)
+                          - style = "danger"
+                        - end
+                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{flows}", aria-valuemin="0", aria-valuemax="#{quota.flows}", style="width: #{percent}%")
+                        
 
                   #headingRules.panel-heading(role='tab')
                     h4.panel-title
@@ -97,6 +118,17 @@ html(lang='en')
                       small  Your library is containing #{rules}/#{quota.rules} 
                         a(href='/decision-rules') Rules
                         | .
+                      div.progress
+                        - var percent = Math.round(rules*100/quota.rules)
+                        - var style = "success"
+                        - if (percent > 60)
+                          - style = "warning"
+                        - end
+                        - if (percent > 85)
+                          - style = "danger"
+                        - end
+                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%")
+                        
 
                   #headingKeys.panel-heading(role='tab')
                     h4.panel-title
@@ -124,14 +156,24 @@ html(lang='en')
                       
                   #headingCalls.panel-heading(role='tab')
                     h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='false', aria-controls='collapseCalls')
+                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
                         span.glyphicon.glyphicon-flash
-                        |  #{calls} API calls in the past 7 days
-                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='false', aria-controls='collapseCalls')
-                  #collapseCalls.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingCalls')
+                        |  #{calls} API calls
+                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+                  #collapseCalls(role='tabpanel', aria-labelledby='headingCalls')
                     .panel-body
                       |  &ndash;
-                      small  Your performed #{calls}/#{quota.calls} API calls in the past 7 days.
+                      small  You have consumed #{calls}/#{quota.calls} API calls in the past 7 days.
+                      div.progress
+                        - var percent = Math.round(calls*100/quota.calls)
+                        - var style = "success"
+                        - if (percent > 60)
+                          - style = "warning"
+                        - end
+                        - if (percent > 85)
+                          - style = "danger"
+                        - end
+                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
 
       .col-sm-8
         .panel.panel-default
