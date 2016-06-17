@@ -278,7 +278,8 @@ router.post('/search', Auth, function(req, res) {
 			objects: objects.find(queryO),
 			flows: flows.find(queryF),
 			q:req.body.q,
-			user: req.session.user
+			user: req.session.user,
+			nl2br: nl2br
 		});
 	}
 });
