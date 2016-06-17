@@ -10,7 +10,13 @@ var flows;
 var datatypes;
 var tokens;
 var rules;
-var objectTypes = ['rooter', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'tablet', 'server', 'printer'];
+var qt;
+var objectTypes = ['rooter', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'nodemcu', 'tablet', 'server', 'printer'];
+
+function nl2br(str, isXhtml) {
+    var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
+    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+};
 
 function alphaSort(obj1, obj2) {
     return (obj1.name).toLowerCase().localeCompare((obj2.name).toLowerCase());
@@ -37,7 +43,8 @@ router.get('/objects', Auth,  function(req, res) {
 		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
 		types: objectTypes,
 		message: {},
-		user: req.session.user
+		user: req.session.user,
+		nl2br: nl2br
 	});
 });
 
@@ -57,7 +64,8 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 		res.render('object', {
 			title : 'Object '+json.name,
 			object: json,
-			user: req.session.user
+			user: req.session.user,
+			nl2br: nl2br
 		});
 	} else {
 		res.redirect('/404');
@@ -213,18 +221,20 @@ router.get('/profile', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	tokens	= db.getCollection('tokens');
 	rules	= dbRules.getCollection('rules');
+	qt	= dbQuota.getCollection('quota');
 
 	var queryO = { 'user_id' : req.session.user.id };
 	var queryF = { 'user_id' : req.session.user.id };
 	var queryT = { 'user_id' : req.session.user.id };
 	var queryR = { 'user_id' : req.session.user.id };
+	var queryQ = { 'user_id' : req.session.user.id };
 	res.render('profile', {
 		title : 'Profile Easy-IOT',
 		objects: ((objects.chain().find(queryO).data()).length),
 		flows: ((flows.chain().find(queryF).data()).length),
 		rules: (rules.chain().find(queryR).data().length),
 		tokens: (tokens.chain().find(queryT).data()),
-		calls: 125,
+		calls: (qt.chain().find(queryQ).data().length),
 		quota: quota.admin, // TODO
 		user: req.session.user
 	});

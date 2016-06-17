@@ -7,7 +7,7 @@
         small
 
   div.col-sm-8
-      span #{objects[object].description}
+      span !{nl2br(objects[object].description)}
 
   div.col-sm-2
       a.btn.btn-primary.btn-sm.pull-right(href='/objects/#{objects[object].id}/edit')
