@@ -66,12 +66,10 @@ html(lang='en')
             data.unit = data.links.unit!==undefined?data.links.unit:'';
             data.value = data.data[0].attributes.value;
             if( data.value ) { $(id).append(displayModule(data)); }
-            else { console.log('ERROR (a) '+data); $(id).append(displayError(flow_id)); }
+            else { $(id).append(displayError(flow_id, data.status)); }
           },
           error: function(data) {
-            console.log('ERROR (b)'+flow_id);
-            console.log(data);
-            $(id).append(displayError(flow_id));
+            $(id).append(displayError(flow_id, data.status));
           }
         });
       } // end getData
@@ -83,12 +81,10 @@ html(lang='en')
           success: function(data) { 
             if(CType == 'text/html') { $(id).append(data); }
             else if(CType == 'application/json' && data.value ) { $(id).append(displayModule(data)); }
-            else { console.log('ERROR (a) '+data); $(id).append(displayError(url)); }
+            else { console.log('ERROR (a) '+data); $(id).append(displayError(url, data.status)); }
           },
           error: function(data) {
-            console.log('ERROR (c)'+url);
-            console.log(data);
-            $(id).append(displayError(url));
+            $(id).append(displayError(url, data.status));
           }
         });
       } // end getRealTimeData
@@ -108,16 +104,21 @@ html(lang='en')
             callback(data[flow_id], container, flow_id, lastValue, title, unit);
           },
           error: function(d) {
-            console.log('ERROR (d)'+base);
-            console.log(d);
+            //console.log('ERROR (d)'+base);
+            //console.log(d);
           }
         });
       } // end getDataSparkline
 
-      displayError = function(url) {
+      displayError = function(url, status=null) {
+        if ( status == 404 ) { message = "Ooooops, Not Found."; }
+        else if ( status == 429 ) { message = "Ooooops, Too Many Requests."; }
+        else if ( status == 500 ) { message = "Ooooops, Internal Server Error."; }
+        else { message = "Ooooops, Something went wrong."; }
+        
         return "<div class='alert alert-danger alert-dismissible fade in' role='alert'>"
         + "<button class='close' aria-label='Close' data-dismiss='alert' type='button'><span aria-hidden='true'>&times;</span></button>"
-        + "<h4 class='list-group-item-heading'> <span aria-hidden='true' class='glyphicon glyphicon-alert'></span> Ooooops, Something went wrong.</h4>"
+        + "<h4 class='list-group-item-heading'> <span aria-hidden='true' class='glyphicon glyphicon-alert'></span> "+message+"</h4>"
         + "Trying to load data from module \""+url+"\".</div>";
       } // end displayError
  
