@@ -186,6 +186,7 @@ router.post('/objects/add', Auth, function(req, res) {
 		user: req.session.user,
 		message: message,
 		currentUrl: req.path,
+		nl2br: nl2br
 	});
 });
 
