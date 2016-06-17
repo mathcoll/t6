@@ -10,6 +10,7 @@ var flows;
 var datatypes;
 var tokens;
 var rules;
+var qt;
 var objectTypes = ['rooter', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'tablet', 'server', 'printer'];
 
 function alphaSort(obj1, obj2) {
@@ -213,18 +214,20 @@ router.get('/profile', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	tokens	= db.getCollection('tokens');
 	rules	= dbRules.getCollection('rules');
+	qt	= dbQuota.getCollection('quota');
 
 	var queryO = { 'user_id' : req.session.user.id };
 	var queryF = { 'user_id' : req.session.user.id };
 	var queryT = { 'user_id' : req.session.user.id };
 	var queryR = { 'user_id' : req.session.user.id };
+	var queryQ = { 'user_id' : req.session.user.id };
 	res.render('profile', {
 		title : 'Profile Easy-IOT',
 		objects: ((objects.chain().find(queryO).data()).length),
 		flows: ((flows.chain().find(queryF).data()).length),
 		rules: (rules.chain().find(queryR).data().length),
 		tokens: (tokens.chain().find(queryT).data()),
-		calls: 125,
+		calls: (qt.chain().find(queryQ).data().length),
 		quota: quota.admin, // TODO
 		user: req.session.user
 	});

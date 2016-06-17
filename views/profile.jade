@@ -72,7 +72,7 @@ html(lang='en')
                         a(href='/objects') Objects
                         | .
                       div.progress
-                        - var percent = Math.round(objects*100/quota.objects)
+                        - var percent = Math.round((objects*100/quota.objects)*100) /100
                         - var style = "success"
                         - if (percent > 60)
                           - style = "warning"
@@ -95,7 +95,7 @@ html(lang='en')
                         a(href='/flows') Flows
                         | .
                       div.progress
-                        - var percent = Math.round(flows*100/quota.flows)
+                        - var percent = Math.round((flows*100/quota.flows)*100) /100
                         - var style = "success"
                         - if (percent > 60)
                           - style = "warning"
@@ -119,7 +119,7 @@ html(lang='en')
                         a(href='/decision-rules') Rules
                         | .
                       div.progress
-                        - var percent = Math.round(rules*100/quota.rules)
+                        - var percent = Math.round((rules*100/quota.rules)*100) /100
                         - var style = "success"
                         - if (percent > 60)
                           - style = "warning"
@@ -165,7 +165,7 @@ html(lang='en')
                       |  &ndash;
                       small  You have consumed #{calls}/#{quota.calls} API calls in the past 7 days.
                       div.progress
-                        - var percent = Math.round(calls*100/quota.calls)
+                        - var percent = Math.round((calls*100/quota.calls)*100) /100
                         - var style = "success"
                         - if (percent > 60)
                           - style = "warning"
