@@ -1,24 +1,36 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
+var tokens;
+var quota;
 
 //catch API calls for quotas
-router.get('*', function (req, res, next) {
+router.all('*', function (req, res, next) {
+	tokens	= db.getCollection('tokens');
+	quota = dbQuota.getCollection('quota');
 	var bearerHeader = req.headers['authorization'];
 	if ( bearerHeader ) {
-		var bearer = bearerHeader.split(" "); // TODO split with Bearer as prefix!
-		req.session.bearer = { token: bearer[1], key: '' };
-	} else {
-		req.session.bearer = { token: req.session.bearer, key: req.session.key };
+		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
+		req.token = bearer[1];
+		req.bearer = tokens.findOne(
+			{ '$and': [
+	           {'token': { '$eq': req.token }},
+	           {'expiration': { '$gte': moment().format('x') }},
+			]}
+		);
 	}
+	
 	var o = {
-		key: req.session.bearer.key,
-		secret: req.session.bearer.secret,
-		token: req.session.bearer.token,
-		user_id: req.session.bearer.user_id,
+		key:		req.bearer!==undefined?req.bearer.key:req.session.bearer!==undefined?req.session.bearer.key:null,
+		secret:		req.bearer!==undefined?req.bearer.secret:req.session.bearer!==undefined?req.session.bearer.secret:null,
+		user_id:	req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null,
+		session_id:	req.bearer!==undefined?req.bearer.session_id:req.session.bearer!==undefined?req.session.bearer.session_id:null,
+		verb:		req.method,
+		url:		req.originalUrl,
+		date:		moment().format()
 	};
-	console.log('API has been called on ');
-	console.log(o);
+	quota.insert(o);
+
 	if( false ) {
 		// TODO: when limit is reach
 		//res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
