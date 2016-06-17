@@ -1,13 +1,14 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
+var ErrorSerializer = require('../serializers/error');
 var tokens;
-var quota;
+var qt;
 
 //catch API calls for quotas
 router.all('*', function (req, res, next) {
 	tokens	= db.getCollection('tokens');
-	quota = dbQuota.getCollection('quota');
+	qt = dbQuota.getCollection('quota');
 	var bearerHeader = req.headers['authorization'];
 	if ( bearerHeader ) {
 		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
@@ -29,12 +30,12 @@ router.all('*', function (req, res, next) {
 		url:		req.originalUrl,
 		date:		moment().format()
 	};
-	quota.insert(o);
-
-	if( false ) {
-		// TODO: when limit is reach
-		//res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
+	
+	var i = (qt.find({'user_id': req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null})).length;
+	if( i >= quota.admin.calls ) { //TODO, not only Admins as role!
+		res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 	} else {
+		qt.insert(o);
 		next();
 	}
 });
