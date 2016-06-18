@@ -28,7 +28,7 @@ router.all('*', function (req, res, next) {
 		session_id:	req.bearer!==undefined?req.bearer.session_id:req.session.bearer!==undefined?req.session.bearer.session_id:null,
 		verb:		req.method,
 		url:		req.originalUrl,
-		date:		moment().format()
+		date:		moment().format('x')
 	};
 	
 	var i = (qt.find({'user_id': req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null})).length;
