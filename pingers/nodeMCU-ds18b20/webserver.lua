@@ -31,6 +31,7 @@ srv:listen(PORT, function(conn)
         else
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = reply.."Temperature: "..ds18b20.read().."&deg;C<br />"
+                .."Time since start: "..tmr.time().." sec.<br />"
                 .."</font></body></html>"
 
         end

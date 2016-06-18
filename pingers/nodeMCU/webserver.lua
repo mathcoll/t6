@@ -18,6 +18,13 @@ srv:listen(PORT, function(conn)
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = reply.."Temperature: "..Temperature.."°C<br />"
                 .."Last Measure: "..lc.." min ago.<br />"
+                .."Time since start: "..tmr.time().." sec.<br />"
+                .."</font></body></html>"
+
+        elseif (command == "humi.html") then
+            conn:send("Content-Type: text/html; charset=utf-8\r\n")
+            reply = reply.."Humidity: "..Humidity.."%<br />"
+                .."Last Measure: "..lc.." min ago.<br />"
                 .."</font></body></html>"
                 
         elseif (command == "temp.json") then
@@ -27,13 +34,7 @@ srv:listen(PORT, function(conn)
         elseif (command == "humi.json") then
             conn:send("Content-Type: application/json; charset=utf-8\r\n")
             reply = '{"value": "'..Humidity..'", "unit": "%", "name": "Indoor Humidity", "description": "Humidity DHT11 module powered by NodeMCU", "icon": "glyphicon-cloud"}'
-                
-        elseif (command == "humi.html") then
-            conn:send("Content-Type: text/html; charset=utf-8\r\n")
-            reply = reply.."Humidity: "..Humidity.."%<br />"
-                .."Last Measure: "..lc.." min ago.<br />"
-                .."</font></body></html>"
-                
+
         elseif (command == "Tmod.html") then
             conn:send("Content-Type: text/html; charset=utf-8\r\n")
             reply = "<a class='list-group-item' href='#'>"
@@ -61,6 +62,7 @@ srv:listen(PORT, function(conn)
             reply = reply.."Temperature: "..Temperature.."°C<br />"
                 .."Humidity: "..Humidity.."%<br />"
                 .."Last Measure: "..lc.." min ago.<br />"
+                .."Time since start: "..tmr.time().." sec.<br />"
                 .."</font></body></html>"
 
         end
