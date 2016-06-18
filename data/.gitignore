@@ -9,3 +9,5 @@ rules-bleu.js
 rules-guruplug.js
 /rules-bleu.json
 /rules-guruplug.json
+/quota-bleu.json
+/quota-guruplug.json
