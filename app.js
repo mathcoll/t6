@@ -10,6 +10,7 @@ var bodyParser		= require('body-parser');
 var bearer			= require('bearer');
 var jade			= require('jade');
 var compression		= require('compression');
+request				= require('request');
 path				= require('path');	
 mqtt				= require('mqtt');
 loki				= require('lokijs');

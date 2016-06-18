@@ -228,16 +228,43 @@ router.get('/profile', Auth, function(req, res) {
 	var queryF = { 'user_id' : req.session.user.id };
 	var queryT = { 'user_id' : req.session.user.id };
 	var queryR = { 'user_id' : req.session.user.id };
-	var queryQ = { 'user_id' : req.session.user.id };
-	res.render('profile', {
-		title : 'Profile Easy-IOT',
-		objects: ((objects.chain().find(queryO).data()).length),
-		flows: ((flows.chain().find(queryF).data()).length),
-		rules: (rules.chain().find(queryR).data().length),
-		tokens: (tokens.chain().find(queryT).data()),
-		calls: (qt.chain().find(queryQ).data().length),
-		quota: quota.admin, // TODO
-		user: req.session.user
+	var queryQ = { '$and': [
+     	           {'user_id' : req.session.user.id},
+    	           {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
+    			]};
+
+	var options = {
+	  url: 'http://en.gravatar.com/' + req.session.user.mail_hash + '.json',
+	  headers: {
+	    'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/44.0'
+	  }
+	};
+	request(options, function(error, response, body) {
+		if ( !error && response.statusCode != 404 ) {
+			res.render('profile', {
+				title : 'Profile Easy-IOT',
+				objects : ((objects.chain().find(queryO).data()).length),
+				flows : ((flows.chain().find(queryF).data()).length),
+				rules : (rules.chain().find(queryR).data().length),
+				tokens : (tokens.chain().find(queryT).data()),
+				calls : (qt.chain().find(queryQ).data().length),
+				quota : quota.admin, // TODO
+				user : req.session.user,
+				gravatar : JSON.parse(body)
+			});
+		} else {
+			res.render('profile', {
+				title : 'Profile Easy-IOT',
+				objects : ((objects.chain().find(queryO).data()).length),
+				flows : ((flows.chain().find(queryF).data()).length),
+				rules : (rules.chain().find(queryR).data().length),
+				tokens : (tokens.chain().find(queryT).data()),
+				calls : (qt.chain().find(queryQ).data().length),
+				quota : quota.admin, // TODO
+				user : req.session.user,
+				gravatar : null
+			});
+		}
 	});
 });
 

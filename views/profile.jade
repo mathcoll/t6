@@ -20,16 +20,26 @@ html(lang='en')
                   i.glyphicon.glyphicon-user
                   |  First-Name:
                 i(style='font-size: 18px;')  #{user.firstName}
+
               li.media
                 span
                   i.glyphicon.glyphicon-user
                   |  Last-Name:
                 i(style='font-size: 18px;')  #{user.lastName}
+
               li.media
                 span
                   i.fa.fa-briefcase
                   |  Plan Type:
                 i(style='font-size: 18px;')  #{user.role}
+
+              - if ( gravatar.entry[0].currentLocation )
+                li.media
+                  span
+                    i.glyphicon.glyphicon-map-marker
+                    |  Location:
+                  i(style='font-size: 18px;')  #{gravatar.entry[0].currentLocation}
+              - end
 
             h3 Contact Information
             ul.profile-details
@@ -38,15 +48,86 @@ html(lang='en')
                   i.fa.fa-envelope
                   |  E-mail:
                 i(style='font-size: 18px;')  #{user.email}
+
+            - if ( gravatar.entry[0].ims )
+              - for ( i in gravatar.entry[0].ims )
+                - var im = gravatar.entry[0].ims[i]
+                - var icon = ''
+                - var href = ''
+                - if ( im.type == 'skype' )
+                  - icon = 'fa-skype'
+                  - href = 'skype:'+im.value+'?call'
+                - end
+                - if ( im.type == 'yahoo' )
+                  - icon = 'fa-yahoo'
+                  - href = 'yahoo:'+im.value
+                - end
+                - if ( im.type == 'gtalk' )
+                  - icon = 'fa-google'
+                  - href = 'xmpp:'+im.value
+                - end
+                - if ( im.type == 'icq' )
+                  - icon = 'fa-icq'
+                  - href = 'http://'+im.value
+                - end
+                - if ( im.type == 'icq' )
+                  - icon = 'fa-icq'
+                  - href = 'http://'+im.value
+                - end
+
+                a(href="#{href}")
+                  button.btn.btn-simple.fa(class="#{icon}") &nbsp;
+                | &nbsp;
+              - end
+            - end
                 
-              button.btn.btn-simple.fa.fa-facebook-square(href="")
-              | &nbsp;
+              - if ( gravatar.entry[0].urls )
+                - for ( i in gravatar.entry[0].urls )
+                  - var url = gravatar.entry[0].urls[i]
+                  a(href="#{url.value}")
+                    button.btn.btn-simple.fa.fa-link #{url.title}
+                  | &nbsp;
+                - end
+              - end
 
-              button.btn.btn-simple.fa.fa-twitter-square(href="")
-              | &nbsp;
+            h3 Crypto-currencies
+            - if ( gravatar.entry[0].currency )
+              button.btn.btn-simple.fa.fa-bitcoin(title="#{gravatar.entry[0].currency[0].type}")
+              | #{gravatar.entry[0].currency[0].value}
+            - end
 
-              button.btn.btn-simple.fa.fa-google-plus-square(href="")
-              | &nbsp;
+            h3 Social links
+            - if ( gravatar.entry[0].accounts )
+              - for ( i in gravatar.entry[0].accounts )
+                - var account = gravatar.entry[0].accounts[i]
+                - var icon = ''
+                - if ( account.shortname == 'facebook' )
+                  - icon = 'fa-facebook-square'
+                - end
+                - if ( account.shortname == 'twitter' )
+                  - icon = 'fa-twitter-square'
+                - end
+                - if ( account.shortname == 'linkedin' )
+                  - icon = 'fa-linkedin-square'
+                - end
+                - if ( account.shortname == 'google' )
+                  - icon = 'fa-google-plus-square'
+                - end
+                - if ( account.shortname == 'facebook' )
+                  - icon = 'fa-facebook-square'
+                - end
+                - if ( account.shortname == 'youtube' )
+                  - icon = 'fa-youtube-square'
+                - end
+                - if ( account.shortname == 'pinterest' )
+                  - icon = 'fa-pinterest-square'
+                - end
+
+                a(href="#{account.url}")
+                  button.btn.btn-simple.fa(class="#{icon}") &nbsp;
+                | &nbsp;
+              - end
+            - end
 
           .panel-footer
             button.btn.btn-primary.m-t.pull-right
