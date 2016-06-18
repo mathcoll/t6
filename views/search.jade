@@ -13,7 +13,7 @@ html(lang='en')
 
     .container#objects
       .col-sm-8
-        h3 #{objects.length} Objects
+        h3 #{objects.length} Objects found
         .list-group
         - if (objects.length)
           - for(object in objects) {
@@ -35,7 +35,7 @@ html(lang='en')
 
     .container#flows
       .col-sm-8
-        h3 #{flows.length} Flows
+        h3 #{flows.length} Flows found
         .list-group
         - if (flows.length)
           - for(flow in flows) {
