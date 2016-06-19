@@ -31,6 +31,8 @@ html(lang='en')
         .col-sm-12(class='alert alert-#{message.type}')#add
           div.sidebar-module-inset
             h3 Add a Flow to your library
+            if (message && message.type && message.value)
+              div.alert(class='alert-#{message.type}', role='alert') #{message.value}
             form(action="/flows/add", method="post")
               .form-group
                 label.control-label(for="name") Flow Name:
