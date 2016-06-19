@@ -30,15 +30,15 @@ html(lang='en')
 
           .form-group
             label.control-label(for="Position") Position/Location:
-            input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value="#{object.position}")
+            input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=(object.position!==undefined ? object.position : undefined))
 
           .form-group
             label.control-label(for="ipv4") Ip v4:
-            input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="ipv4", value="#{object.ipv4}")
+            input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="ipv4", value=(object.ipv4!==undefined ? object.ipv4 : undefined))
 
           .form-group
             label.control-label(for="ipv6") Ip v6:
-            input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value="#{object.ipv6}")
+            input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value=(object.ipv6!==undefined ? object.ipv6 : undefined))
 
           .form-group
             label.control-label(for="Description") Description:
