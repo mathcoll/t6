@@ -153,6 +153,9 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 router.post('/objects/add', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	var message = '';
+	var queryQ = { '$and': [
+        {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null}
+ 	]};
 	var new_object = {
 		id:				uuid.v4(),
 		name:			req.body.name!==undefined?req.body.name:'unamed',
@@ -163,17 +166,22 @@ router.post('/objects/add', Auth, function(req, res) {
 		ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 		user_id:		req.session.user.id,
 	};
-	var query = { 'user_id': req.session.user.id };
-	var pagination=8;
-	req.query.page=req.query.page!==undefined?req.query.page:1;
-	var offset = (req.query.page -1) * pagination;
-	
-	if ( new_object.name && new_object.type && new_object.user_id ) {
-		objects.insert(new_object);
-		db.save();
-		message = {type: 'success', value: 'Successfully added.'};
+	var i = (objects.find(queryQ)).length;
+	if( i >= quota.admin.objects ) { //TODO, not only Admins as role!
+		message = {type: 'danger', value: 'Over Quota!'};
 	} else {
-		message = {type: 'danger', value: 'Please give a name and a type to your Object!'};
+		var query = { 'user_id': req.session.user.id };
+		var pagination=8;
+		req.query.page=req.query.page!==undefined?req.query.page:1;
+		var offset = (req.query.page -1) * pagination;
+		
+		if ( new_object.name && new_object.type && new_object.user_id ) {
+			objects.insert(new_object);
+			db.save();
+			message = {type: 'success', value: 'Successfully added.'};
+		} else {
+			message = {type: 'danger', value: 'Please give a name and a type to your Object!'};
+		}
 	}
 	
 	res.render('objects', {
@@ -214,6 +222,54 @@ router.get('/flows', Auth, function(req, res) {
 		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
 		user: req.session.user,
 		message: {type: '', value: ''}
+	});
+});
+
+router.post('/flows/add', Auth, function(req, res) {
+	flows	= db.getCollection('flows');
+	objects	= db.getCollection('objects');
+	units	= db.getCollection('units');
+	datatypes	= db.getCollection('datatypes');
+	
+	var message = '';
+	var queryQ = { '$and': [
+        {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null}
+ 	]};
+	var new_flow = {}; // TODO: permissions, etc ....
+	var i = (flows.find(queryQ)).length;
+	if( i >= quota.admin.flows ) { //TODO, not only Admins as role!
+		message = {type: 'danger', value: 'Over Quota!'};
+	} else {
+		if ( new_flow.name && new_flow.type && new_flow.user_id && new_flow.unit ) {
+			// TODO: permissions, etc ....
+			//flows.insert(new_flow);
+			//db.save();
+			//message = {type: 'success', value: 'Successfully added.'};
+			message = {type: 'danger', value: 'Internal error! - Adding a flow is not yet implemented.'};
+		} else {
+			message = {type: 'danger', value: 'Please give a name, a type and a unit to your Flow!'};
+		}
+	}
+	var query = { 'user_id': req.session.user.id };
+	var pagination=8;
+	req.query.page=req.query.page!==undefined?req.query.page:1;
+	var offset = (req.query.page -1) * pagination;
+	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	var o = objects.chain().find(query).sort(alphaSort).data();
+	var dt = datatypes.chain().find().sort(alphaSort).data();
+	var u = units.chain().find().sort(alphaSort).data();
+	
+	res.render('flows', {
+		title : 'Flows Easy-IOT',
+		flows: f,
+		objects: o,
+		datatypes: dt,
+		units: u,
+		page: req.query.page,
+		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
+		user: req.session.user,
+		message: message,
+		currentUrl: req.path,
 	});
 });
 

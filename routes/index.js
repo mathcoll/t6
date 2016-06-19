@@ -31,7 +31,11 @@ router.all('*', function (req, res, next) {
 		date:		moment().format('x')
 	};
 	
-	var i = (qt.find({'user_id': req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null})).length;
+	var queryQ = { '$and': [
+       {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null},
+       {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
+	]};
+	var i = (qt.find(queryQ)).length;
 	if( i >= quota.admin.calls ) { //TODO, not only Admins as role!
 		res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 	} else {
