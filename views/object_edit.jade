@@ -42,7 +42,7 @@ html(lang='en')
 
           .form-group
             label.control-label(for="Description") Description:
-            textarea.form-control(name="description", placeholder="Object description", id="Description") #{object.description}
+            textarea.form-control.vresize(name="description", placeholder="Object description", id="Description") #{object.description}
 
           .form-group
             a.m-t.pull-left(href="/objects/#{object.id}") ← Back to Object
