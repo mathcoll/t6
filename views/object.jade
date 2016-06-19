@@ -43,24 +43,54 @@ html(lang='en')
               dd
                 span.label.label-danger #{object.ipv6}
             -end
-
+        
       .col-sm-4
         div.sidebar-module-inset
-          h3 Contextual Links
+          p &nbsp;
+          div.text-center
+            - if (object.type == 'rooter')
+              - var style = ""
+            - else if (object.type == 'sensor')
+              - var style = "glyphicon glyphicon-tint"
+            - else if (object.type == 'computer')
+              - var style = "fa fa-desktop"
+            - else if (object.type == 'laptop')
+              - var style = "fa fa-laptop"
+            - else if (object.type == 'desktop')
+              - var style = "fa fa-desktop"
+            - else if (object.type == 'phone')
+              - var style = "glyphicon glyphicon-earphone"
+            - else if (object.type == 'smartphone')
+              - var style = "glyphicon glyphicon-phone"
+            - else if (object.type == 'nodemcu')
+              - var style = "fa fa-shield"
+            - else if (object.type == 'tablet')
+              - var style = "fa fa-tablet"
+            - else if (object.type == 'server')
+              - var style = "glyphicon glyphicon-tasks"
+            - else if (object.type == 'printer')
+              - var style = "glyphicon glyphicon-print"
+            - end
+            div.glyphicon.glyphicon-pencil(style="font-size:94px;", class="#{style}")
+            p &nbsp; 
+
+          div
+            a(href="#") All '#{object.type}' Objects
+            p &nbsp; 
+          
           div
             a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
               span.glyphicon.glyphicon-pencil  Edit Object
             | &nbsp;
             a.btn.btn-danger.btn-sm(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
               span.glyphicon.glyphicon-remove  Remove
-            p &nbsp; 
 
-          div
-            a(href="#") All '#{object.type}' Objects
-          
-          div
-            a(href="#") All Objects located in '#{object.position}' 
+          - if (object.position)
+            div
+              a(href="#") All Objects located in '#{object.position}'
+          - end
         p &nbsp; 
+
 
     include ./includes/foot.jade
 

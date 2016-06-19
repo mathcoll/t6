@@ -63,6 +63,12 @@ a.white {
 .caps {
     text-transform: capitalize;
 }
+.vresize {
+  resize: vertical; 
+}
+.hresize {
+  resize: horizontal;  
+}
 dl dt, dl dd {
     line-height: 26px;
 }
