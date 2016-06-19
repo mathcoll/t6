@@ -47,19 +47,19 @@ html(lang='en')
       .col-sm-4
         div.sidebar-module-inset
           h3 Contextual Links
-          div.col-sm-
-            a.btn.btn-primary.btn-sm.pull-right(href='./#{object.id}/edit')
-              span.glyphicon.glyphicon-pencil  Edit
-              
-          div.col-sm-
-            a.btn.btn-danger.btn-sm.pull-right(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
+          div
+            a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
+              span.glyphicon.glyphicon-pencil  Edit Object
+            | &nbsp;
+            a.btn.btn-danger.btn-sm(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
               span.glyphicon.glyphicon-remove  Remove
+            p &nbsp; 
 
-          div.col-sm-
-            a(href="#") Other '#{object.type}' Objects
+          div
+            a(href="#") All '#{object.type}' Objects
           
-          div.col-sm-
-            a(href="#") Objects in the same location '#{object.position}' 
+          div
+            a(href="#") All Objects located in '#{object.position}' 
         p &nbsp; 
 
     include ./includes/foot.jade

@@ -9,7 +9,7 @@ html(lang='en')
           strong #{object.name}
 
     .container
-      .col-sm-12
+      .col-sm-8
         h3 Update an Object to your library
         form(action="/objects/#{object.id}/edit", method="post")
           .form-group
@@ -45,14 +45,19 @@ html(lang='en')
             textarea.form-control(name="description", placeholder="Object description", id="Description") #{object.description}
 
           .form-group
+            a.m-t.pull-left(href="/objects/#{object.id}") ← Back to Object
             button.btn.btn-primary.m-t.pull-right(type="submit", value="Update Object")
-              span.glyphicon.glyphicon-plus  Update Object
+              span.glyphicon.glyphicon-edit  Update Object
             | &nbsp;
-          .form-group
-            a.btn.btn-primary.m-t.pull-right(href="/objects/#{object.id}")
-              span.glyphicon.glyphicon-plus  Cancel
-            | &nbsp;
+
         p &nbsp; 
+
+      .col-sm-4
+        div.sidebar
+          blockquote.glyphicon.glyphicon-comment  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
+          blockquote.glyphicon.glyphicon-hand-right  Object 'type' allow to classify your library.
+          blockquote.glyphicon.glyphicon-hand-right  Position is a free field to let you remind where your object is.
+          blockquote.glyphicon.glyphicon-hand-right  IPs (v4, v6), to connect your Objects to internet.
 
     include ./includes/foot.jade
 
