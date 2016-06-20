@@ -225,6 +225,17 @@ router.get('/flows', Auth, function(req, res) {
 	});
 });
 
+router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
+	var flow_id = req.params.flow_id;
+	res.render('flow_graph', {
+		title : 'Graph a Flow',
+		objects: [],
+		flow_id: flow_id,
+		user: req.session.user
+	});
+});
+
+
 router.post('/flows/add', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	objects	= db.getCollection('objects');

@@ -1,27 +1,39 @@
 .list-group-item
   h4.list-group-item-heading
-    span.glyphicon.glyphicon-random
-    | &nbsp;#{flows[flow].name} 
-    - if (flows[flow].id)
+
+  div.clearfix
+    div.glyphicon.glyphicon-random.col-sm-12
+      | &nbsp;#{flows[flow].name}
+
+    div.col-sm-8
       small
         span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
-    p 
+        | &nbsp;
+          
+        - if (flows[flow].unit)
+          span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Unit') #{flows[flow].unit}
+          | &nbsp;
+        - if (flows[flow].permission)
+          span.label.label-danger(data-toggle='tooltip' data-placement='top' title='Flow Permissions') #{flows[flow].permission}
+          | &nbsp;
+
+        - if (flows[flow].objects.length)
+          div Objects:
+            div
+              - for(object in flows[flow].objects) {
+                span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
+                  a.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
+                | &nbsp;
+              - }
+    
+    div.col-sm-4
       small #{flows[flow].description} 
-        button.btn.btn-primary.btn-sm.pull-right
-          span.glyphicon.glyphicon-pencil  Edit
-    small
-      - if (flows[flow].unit)
-        span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Unit') #{flows[flow].unit}
+        a(href="#")
+          button.btn.btn-primary.btn-sm.pull-right
+            span.glyphicon.glyphicon-pencil  Edit
         | &nbsp;
-      - if (flows[flow].permission)
-        span.label.label-danger(data-toggle='tooltip' data-placement='top' title='Flow Permissions') #{flows[flow].permission}
+
+        a(href="/flows/#{flows[flow].id}/graph")
+          button.btn.btn-primary.btn-sm
+            span.glyphicon.glyphicon-signal  Graph data
         | &nbsp;
-      - if (flows[flow].objects.length)
-        p
-        div Objects:
-          p
-            - for(object in flows[flow].objects) {
-              span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
-                a.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
-              | &nbsp;
-            - }
