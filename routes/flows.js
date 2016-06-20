@@ -38,7 +38,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.token.user_id };
 	var i = (flows.find(queryQ)).length;
-	if( i >= quota.admin.flows ) { //TODO, not only Admins as role!
+	if( i >= (quota[req.session.user.role]).flows ) {
 		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
 	} else {
 		if ( req.token !== undefined ) {
@@ -164,6 +164,7 @@ function bearerAuthToken(req, res, next) {
 		} else {
 			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) { // TODO: in case of Session, should be removed !
 				req.user.permissions = req.bearer.permissions;
+				req.session.user = req.user;
 				next();
 			} else {
 				res.status(404).send(new ErrorSerializer({'id': 46, 'code': 404, 'message': 'Not Found'}).serialize());
