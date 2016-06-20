@@ -94,6 +94,7 @@ router.post('/', function (req, res) {
 			firstName:			req.body.firstName!==undefined?req.body.firstName:'',
 			lastName:			req.body.lastName!==undefined?req.body.lastName:'',
 			email:				req.body.email!==undefined?req.body.email:'',
+			role:				'user', // no admin creation from the API
 			subscription_date:  moment().format('x'),
 		};
 		users.insert(new_user);
