@@ -34,26 +34,33 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 });
 
 router.post('/', bearerAuthToken, function (req, res) {
-	if ( req.token !== undefined ) {
-		var permission = req.body.permission!==undefined?req.body.permission:'600'; // default to Owner: Read+Write
-		if ( permission < 600 ) {
-			res.status(400).send(new ErrorSerializer({'id': 38, 'code': 400, 'message': 'Bad Request', details: 'Permission must be greater than 600!'}).serialize());
-		} else {
-			flows	= db.getCollection('flows');
-			var flow_id = uuid.v4();
-			var new_flow = {
-				id:			flow_id,
-				user_id:	req.token.user_id,
-				name: 		req.body.name!==undefined?req.body.name:'unamed',
-				data_type:	req.body.data_type!==undefined?req.body.data_type:'',
-				unit:  		req.body.unit!==undefined?req.body.unit:'',
-				permission:	permission,
-				objects:	req.body.objects!==undefined?req.body.objects:new Array(),
-			};
-			flows.insert(new_flow);
-			//console.log(flows);
-			
-			res.status(201).send({ 'code': 201, message: 'Created', flow: new FlowSerializer(new_flow).serialize() }); // TODO: missing serializer
+	flows	= db.getCollection('flows');
+	/* Check for quota limitation */
+	var queryQ = { 'user_id' : req.token.user_id };
+	var i = (flows.find(queryQ)).length;
+	if( i >= quota.admin.flows ) { //TODO, not only Admins as role!
+		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
+	} else {
+		if ( req.token !== undefined ) {
+			var permission = req.body.permission!==undefined?req.body.permission:'600'; // default to Owner: Read+Write
+			if ( permission < 600 ) {
+				res.status(400).send(new ErrorSerializer({'id': 38, 'code': 400, 'message': 'Bad Request', details: 'Permission must be greater than 600!'}).serialize());
+			} else {
+				var flow_id = uuid.v4();
+				var new_flow = {
+					id:			flow_id,
+					user_id:	req.token.user_id,
+					name: 		req.body.name!==undefined?req.body.name:'unamed',
+					data_type:	req.body.data_type!==undefined?req.body.data_type:'',
+					unit:  		req.body.unit!==undefined?req.body.unit:'',
+					permission:	permission,
+					objects:	req.body.objects!==undefined?req.body.objects:new Array(),
+				};
+				flows.insert(new_flow);
+				//console.log(flows);
+				
+				res.status(201).send({ 'code': 201, message: 'Created', flow: new FlowSerializer(new_flow).serialize() }); // TODO: missing serializer
+			}
 		}
 	}
 });
