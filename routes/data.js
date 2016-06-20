@@ -105,18 +105,22 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 				//console.log(query);
 				dbSQLite3.all(query, function(err, data) {
 					if (err) console.log(err);
-					
-					data.title = flow!==null?flow.name:'';
-					data.unit = flow!==null?flow.unit:'';
-					data.ttl = 3600;
-					data.flow_id = flow_id;
-					data.page = page;
-					data.next = page+1;
-					data.prev = page-1;
-					data.limit = limit;
-					data.order = req.query.order!==undefined?req.query.order:'asc';
-					
-					res.status(200).send(new DataSerializer(data).serialize());
+					if ( data.length > 0 ) {
+						data.id = moment(data.id).format('x');
+						data.title = flow!==null?flow.name:'';
+						data.unit = flow!==null?flow.unit:'';
+						data.ttl = 3600;
+						data.flow_id = flow_id;
+						data.page = page;
+						data.next = page+1;
+						data.prev = page-1;
+						data.limit = limit;
+						data.order = req.query.order!==undefined?req.query.order:'asc';
+						
+						res.status(200).send(new DataSerializer(data).serialize());
+					} else {
+						res.status(404).send(new ErrorSerializer({'id': 598, 'code': 404, 'message': 'Not Found'}).serialize());
+					}
 				});
 			}
 		} else {
