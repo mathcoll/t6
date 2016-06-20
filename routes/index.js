@@ -3,12 +3,15 @@ var express = require('express');
 var router = express.Router();
 var ErrorSerializer = require('../serializers/error');
 var tokens;
+var users;
 var qt;
 
 //catch API calls for quotas
 router.all('*', function (req, res, next) {
 	tokens	= db.getCollection('tokens');
-	qt = dbQuota.getCollection('quota');
+	users	= db.getCollection('users');
+	qt 		= dbQuota.getCollection('quota');
+	var unlimited = false;
 	var bearerHeader = req.headers['authorization'];
 	if ( bearerHeader ) {
 		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
@@ -19,6 +22,14 @@ router.all('*', function (req, res, next) {
 	           {'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
+	} else if ( req.session ) {
+		req.user = req.session.user;
+		req.token = req.session.token;
+		req.bearer = req.session.bearer;
+	} else {
+		// there might be no Auth, when creating a User. :-)
+		unlimited = true; 
+		req.bearer.user_id = null;
 	}
 	
 	var o = {
@@ -35,8 +46,10 @@ router.all('*', function (req, res, next) {
        {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null},
        {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
 	]};
+	req.user = users.findOne({'id': { '$eq': o.user_id }});
 	var i = (qt.find(queryQ)).length;
-	if( i >= quota.admin.calls ) { //TODO, not only Admins as role!
+	if( (req.user && i >= (quota[req.user.role]).calls) && !unlimited ) {
+		// TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
 		res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 	} else {
 		qt.insert(o);
