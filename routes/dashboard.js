@@ -167,7 +167,7 @@ router.post('/objects/add', Auth, function(req, res) {
 		user_id:		req.session.user.id,
 	};
 	var i = (objects.find(queryQ)).length;
-	if( i >= quota.admin.objects ) { //TODO, not only Admins as role!
+	if( i >= (quota[req.session.user.role]).objects ) {
 		message = {type: 'danger', value: 'Over Quota!'};
 	} else {
 		var query = { 'user_id': req.session.user.id };
@@ -237,7 +237,7 @@ router.post('/flows/add', Auth, function(req, res) {
  	]};
 	var new_flow = {}; // TODO: permissions, etc ....
 	var i = (flows.find(queryQ)).length;
-	if( i >= quota.admin.flows ) { //TODO, not only Admins as role!
+	if( i >= (quota[req.session.user.role]).flows ) {
 		message = {type: 'danger', value: 'Over Quota!'};
 	} else {
 		if ( new_flow.name && new_flow.type && new_flow.user_id && new_flow.unit ) {
@@ -304,7 +304,7 @@ router.get('/profile', Auth, function(req, res) {
 				rules : (rules.chain().find(queryR).data().length),
 				tokens : (tokens.chain().find(queryT).data()),
 				calls : (qt.chain().find(queryQ).data().length),
-				quota : quota.admin, // TODO
+				quota : (quota[req.session.user.role]),
 				user : req.session.user,
 				gravatar : JSON.parse(body)
 			});
@@ -316,7 +316,7 @@ router.get('/profile', Auth, function(req, res) {
 				rules : (rules.chain().find(queryR).data().length),
 				tokens : (tokens.chain().find(queryT).data()),
 				calls : (qt.chain().find(queryQ).data().length),
-				quota : quota.admin, // TODO
+				quota : (quota[req.session.user.role]),
 				user : req.session.user,
 				gravatar : null
 			});
