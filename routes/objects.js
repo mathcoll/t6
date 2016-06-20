@@ -49,23 +49,30 @@ router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 });
 
 router.post('/', bearerAuthToken, function (req, res) {
-	if ( req.token !== undefined ) {
-		objects	= db.getCollection('objects');
-		var new_object = {
-			id:				uuid.v4(),
-			type:  			req.body.type!==undefined?req.body.type:'default',
-			name:			req.body.name!==undefined?req.body.name:'unamed',
-			description:	req.body.description!==undefined?req.body.description:'',
-			position: 	 	req.body.position!==undefined?req.body.position:'',
-			ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
-			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
-			user_id:		req.user.id,
-		};
-		objects.insert(new_object);
-		//console.log(objects);
-		res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() });
+	objects	= db.getCollection('objects');
+	/* Check for quota limitation */
+	var queryQ = { 'user_id' : req.user.id };
+	var i = (objects.find(queryQ)).length;
+	if( i >= quota.admin.objects ) { //TODO, not only Admins as role!
+		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 29, 'code': 403, 'message': 'Forbidden'}).serialize());
+		if ( req.token !== undefined ) {
+			var new_object = {
+				id:				uuid.v4(),
+				type:  			req.body.type!==undefined?req.body.type:'default',
+				name:			req.body.name!==undefined?req.body.name:'unamed',
+				description:	req.body.description!==undefined?req.body.description:'',
+				position: 	 	req.body.position!==undefined?req.body.position:'',
+				ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
+				ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
+				user_id:		req.user.id,
+			};
+			objects.insert(new_object);
+			//console.log(objects);
+			res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() });
+		} else {
+			res.status(403).send(new ErrorSerializer({'id': 29, 'code': 403, 'message': 'Forbidden'}).serialize());
+		}
 	}
 });
 
