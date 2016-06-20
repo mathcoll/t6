@@ -94,14 +94,17 @@ html(lang='en')
                   - end
               - end
 
-            h3 Crypto-currencies
             - if ( gravatar.entry[0].currency )
-              button.btn.btn-simple.fa.fa-bitcoin(title="#{gravatar.entry[0].currency[0].type}")
-              |  #{gravatar.entry[0].currency[0].value}
+              h3 Crypto-currencies
+              - for ( i in gravatar.entry[0].currency )
+                - var curr = gravatar.entry[0].currency[i]
+                button.btn.btn-simple.fa.fa-bitcoin(title="#{curr.type}")
+                |  #{curr.value}
+              - end
             - end
 
-            h3 Social links
             - if ( gravatar.entry[0].accounts )
+              h3 Social links
               - for ( i in gravatar.entry[0].accounts )
                 - var account = gravatar.entry[0].accounts[i]
                 - var icon = ''
