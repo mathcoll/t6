@@ -8,7 +8,7 @@ srv:listen(PORT, function(conn)
             conn:send("Content-Type: application/json; charset=utf-8\r\n")
             value = string.sub(payload, 10, 13)
             print("value ", value)
-            pwm.setduty(gpio2, value); pwm.start(gpio2); tmr.delay(delay); pwm.stop(gpio2)
+            pwm.setduty(SERpin, value); pwm.start(SERpin); tmr.delay(delay); pwm.stop(SERpin)
             reply = "{\"status\":\"ok\"}"
 
         else
