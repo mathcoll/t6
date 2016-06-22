@@ -32,10 +32,6 @@ if ( db_type === "sqlite3" ) {
 	dbInfluxDB	= influx(influxSettings);
 }
 
-/* temporary debug */
-//console.log(uuid.v4());
-//console.log(passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'));
-
 var index			= require('./routes/index');
 var objects			= require('./routes/objects');
 var users			= require('./routes/users');
@@ -52,23 +48,22 @@ client.on("connect", function () {
 });
 
 app.use(compression());
-app.use(logger('dev'));
+app.use(logger(logFormat));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(timeout('10s'));
 app.disable('x-powered-by');
-app.use(function (req, res, next) { res.setHeader('X-Powered-By', appName+'@'+version); next(); });
 
 var staticOptions = {
     etag: true,
     maxAge: 86400000, //oneDay
 };
 
-app.use(express.static(path.join(__dirname, '/public'), staticOptions));
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'jade');
 app.use(session(sessionSettings));
+app.use(express.static(path.join(__dirname, '/public'), staticOptions));
 app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);
@@ -80,6 +75,7 @@ app.use('/modules', modules);
 app.use('/', dashboard);
 
 app.use(function(req, res, next) {
+	res.setHeader('X-Powered-By', appName+'@'+version);
 	res.header('Access-Control-Allow-Origin', '*');
 	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
 	if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
@@ -87,8 +83,6 @@ app.use(function(req, res, next) {
 	}
 	next();
 });
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
