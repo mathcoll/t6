@@ -63,6 +63,9 @@ router.post('/', bearerAuthToken, function (req, res) {
 				name:			req.body.name!==undefined?req.body.name:'unamed',
 				description:	req.body.description!==undefined?req.body.description:'',
 				position: 	 	req.body.position!==undefined?req.body.position:'',
+				longitude:		req.body.longitude!==undefined?req.body.longitude:'',
+				latitude:		req.body.latitude!==undefined?req.body.latitude:'',
+				isPublic:		req.body.isPublic!==undefined?req.body.isPublic:'false',
 				ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
 				ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 				user_id:		req.user.id,
@@ -89,6 +92,9 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 				item.name				= req.body.name!==undefined?req.body.name:item.name;
 				item.description		= req.body.description!==undefined?req.body.description:item.description;
 				item.position			= req.body.position!==undefined?req.body.position:item.position;
+				item.longitude			= req.body.longitude!==undefined?req.body.longitude:item.longitude;
+				item.latitude			= req.body.latitude!==undefined?req.body.latitude:item.latitude;
+				item.isPublic			= req.body.isPublic!==undefined?req.body.isPublic:item.isPublic;
 				item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
 				item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
 				result = item;

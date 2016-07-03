@@ -27,11 +27,33 @@ html(lang='en')
                   else
                     option(value='#{types[type]}') #{types[type]}
               - }
+          .form-group
+            label.control-label(for="Description") Description:
+            textarea.form-control.vresize(name="description", placeholder="Object description", id="Description") #{object.description}
 
+          .form-group
+            label.control-label is Public:
+            br/
+            input(type='radio', name='isPublic', value='true', id='isPublic', checked=(object.isPublic=='true' ? "checked" : undefined))
+            label.control-label(for="isPublic") &nbsp;Yes
+            br/
+            input(type='radio', name='isPublic', value='false', id='isNotPublic', checked=(object.isPublic=='false' ? "checked" : undefined))
+            label.control-label(for="isNotPublic") &nbsp;No
+
+          hr/
           .form-group
             label.control-label(for="Position") Position/Location:
             input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=(object.position!==undefined ? object.position : undefined))
 
+          .form-group
+            label.control-label(for="Longitude") Longitude:
+            input.form-control(type="text", name="longitude", placeholder="Longitude", id="Longitude", value=(object.longitude!==undefined ? object.longitude : undefined))
+
+          .form-group
+            label.control-label(for="Latitude") Latitude:
+            input.form-control(type="text", name="latitude", placeholder="Latitude", id="Latitude", value=(object.latitude!==undefined ? object.latitude : undefined))
+
+          hr/
           .form-group
             label.control-label(for="ipv4") Ip v4:
             input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="ipv4", value=(object.ipv4!==undefined ? object.ipv4 : undefined))
@@ -39,10 +61,6 @@ html(lang='en')
           .form-group
             label.control-label(for="ipv6") Ip v6:
             input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value=(object.ipv6!==undefined ? object.ipv6 : undefined))
-
-          .form-group
-            label.control-label(for="Description") Description:
-            textarea.form-control.vresize(name="description", placeholder="Object description", id="Description") #{object.description}
 
           .form-group
             a.m-t.pull-left(href="/objects/#{object.id}") ← Back to Object
@@ -57,6 +75,7 @@ html(lang='en')
           blockquote.glyphicon.glyphicon-comment  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
           blockquote.glyphicon.glyphicon-hand-right  Object 'type' allow to classify your library.
           blockquote.glyphicon.glyphicon-hand-right  Position is a free field to let you remind where your object is.
+          blockquote.glyphicon.glyphicon-hand-right  Longitude and Latitude allow to locate your object.
           blockquote.glyphicon.glyphicon-hand-right  IPs (v4, v6), to connect your Objects to internet.
 
     include ./includes/foot.jade
