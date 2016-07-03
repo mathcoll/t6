@@ -117,7 +117,10 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			json.name 			= req.body.name!==undefined?req.body.name:json.name;
 			json.type 			= req.body.type!==undefined?req.body.type:json.type;
 			json.description	= req.body.description!==undefined?req.body.description:json.description;
-			json.position		= req.body.position!==undefined?req.body.position:json.description;
+			json.position		= req.body.position!==undefined?req.body.position:json.position;
+			json.longitude		= req.body.longitude!==undefined?req.body.longitude:json.longitude;
+			json.latitude		= req.body.latitude!==undefined?req.body.latitude:json.latitude;
+			json.isPublic		= req.body.isPublic!==undefined?req.body.isPublic:json.isPublic;
 			json.ipv4			= req.body.ipv4!==undefined?req.body.ipv4:json.ipv4;
 			json.ipv6			= req.body.ipv6!==undefined?req.body.ipv6:json.ipv6;
 			json.user_id		= req.session.user.id;
@@ -166,6 +169,9 @@ router.post('/objects/add', Auth, function(req, res) {
 		type:  			req.body.type!==undefined?req.body.type:'default',
 		description:	req.body.description!==undefined?req.body.description:'',
 		position: 	 	req.body.position!==undefined?req.body.position:'',
+		longitude:		req.body.longitude!==undefined?req.body.longitude:'',
+		latitude:		req.body.latitude!==undefined?req.body.latitude:'',
+		isPublic:		req.body.isPublic!==undefined?req.body.isPublic:'false',
 		ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
 		ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 		user_id:		req.session.user.id,

@@ -56,6 +56,15 @@ html(lang='en')
                 input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=new_object.position)
 
               .form-group
+                label.control-label(for="Longitude") Longitude:
+                input.form-control(type="text", name="longitude", placeholder="Longitude", id="Longitude", value=new_object.longitude)
+
+              .form-group
+                label.control-label(for="Latitude") Latitude:
+                input.form-control(type="text", name="latitude", placeholder="Latitude", id="Latitude", value=new_object.latitude)
+
+              
+              .form-group
                 label.control-label(for="Ipv4") Ip v4:
                 input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="Ipv4", value=new_object.ipv4)
               
@@ -68,8 +77,18 @@ html(lang='en')
                 textarea.form-control.vresize(name="description", placeholder="Object description", id="Description")= new_object.description
 
               .form-group
+                label.control-label is Public:
+                br/
+                input(type='radio', name='isPublic', value='true', id='isPublic', checked=(object.isPublic=='true' ? "checked" : undefined))
+                label.control-label(for="isPublic") &nbsp;Yes
+                br/
+                input(type='radio', name='isPublic', value='false', id='isNotPublic', checked=(object.isPublic=='false' ? "checked" : undefined))
+                label.control-label(for="isNotPublic") &nbsp;No
+
+              .form-group
                 button.btn.btn-primary.m-t.pull-right
                   span.glyphicon.glyphicon-plus  Add Object
+
             p &nbsp; 
 
     include ./includes/foot.jade

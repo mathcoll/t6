@@ -8,6 +8,10 @@
 
   div.col-sm-8
       span !{nl2br(objects[object].description)}
+      - if(objects[object].latitude && objects[object].longitude)
+        br/
+        span.glyphicon.glyphicon-map-marker #{objects[object].latitude} - #{objects[object].longitude}
+      - end
 
   div.col-sm-2
       a.btn.btn-primary.btn-sm.pull-right(href='/objects/#{objects[object].id}/edit')
@@ -16,6 +20,7 @@
   div.col-sm-2
       a.btn.btn-danger.btn-sm.pull-right(href='/objects/#{objects[object].id}/remove', onclick="if(confirm('Are you sure to remove #{objects[object].name} ?')) {return true;}; return false;")
         span.glyphicon.glyphicon-remove  Remove
+
   div.col-sm-12
     small
       span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Object ID') #{objects[object].id}
