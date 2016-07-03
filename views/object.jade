@@ -17,10 +17,8 @@ html(lang='en')
               span.label.label-warning #{object.id}
 
             dt Name:
-            dd #{object.name}
-            
-            dt Description:
-            dd !{nl2br(object.description)}
+            dd
+              strong #{object.name}
             
             dt Type:
             dd
@@ -43,10 +41,13 @@ html(lang='en')
               dd
                 span.label.label-danger #{object.ipv6}
             -end
-        
+            
+            dt Description:
+            dd !{nl2br(object.description)}
+
       .col-sm-4
         div.sidebar-module-inset
-          p &nbsp;
+          p.text-center.img-responsive.center-block !{qr_img}
           div.text-center
             - if (object.type == 'rooter')
               - var style = ""
@@ -89,7 +90,7 @@ html(lang='en')
             div
               a(href="#") All Objects located in '#{object.position}'
           - end
-        p &nbsp; 
+        p &nbsp;
 
 
     include ./includes/foot.jade

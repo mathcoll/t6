@@ -21,6 +21,7 @@ md5					= require('md5');
 squel				= require('squel');
 uuid				= require('node-uuid');
 os					= require('os');
+qrCode				= require('qrcode-npm');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));

@@ -48,7 +48,7 @@ router.get('/objects', Auth,  function(req, res) {
 	});
 });
 
-router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
+router.get('/objects/:object_id([0-9a-z\-]+)(/public)?', Auth, function(req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection('objects');
 	if ( object_id !== undefined ) {
@@ -61,11 +61,15 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 	}
 	var json = objects.findOne(queryO);
 	if ( json ) {
+		var qr = qrCode.qrcode(9, 'M');
+		qr.addData(baseUrl+'/objects/'+object_id+'/public');
+		qr.make();
 		res.render('object', {
 			title : 'Object '+json.name,
 			object: json,
 			user: req.session.user,
-			nl2br: nl2br
+			nl2br: nl2br,
+			qr_img: qr.createImgTag(2)
 		});
 	} else {
 		res.redirect('/404');
