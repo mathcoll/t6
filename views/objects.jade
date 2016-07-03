@@ -7,7 +7,7 @@ html(lang='en')
       .starter-template
         span.pull-left.hidden-lg.hidden-md
           a(href="#add") Add an Object
-        h2 Objects from your library
+        h2.glyphicon.glyphicon-inbox &nbsp;Objects from your library
 
     .container
       .col-sm-8
@@ -63,7 +63,6 @@ html(lang='en')
                 label.control-label(for="Latitude") Latitude:
                 input.form-control(type="text", name="latitude", placeholder="Latitude", id="Latitude", value=new_object.latitude)
 
-              
               .form-group
                 label.control-label(for="Ipv4") Ip v4:
                 input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="Ipv4", value=new_object.ipv4)
@@ -81,7 +80,7 @@ html(lang='en')
                 br/
                 input(type='radio', name='isPublic', value='true', id='isPublic', checked=(object.isPublic=='true' ? "checked" : undefined))
                 label.control-label(for="isPublic") &nbsp;Yes
-                br/
+                | &nbsp;&nbsp;
                 input(type='radio', name='isPublic', value='false', id='isNotPublic', checked=(object.isPublic=='false' ? "checked" : undefined))
                 label.control-label(for="isNotPublic") &nbsp;No
 

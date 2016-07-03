@@ -1,0 +1,42 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    h2.text-center #{title}
+      small (#{object_id})
+    div.text-center You can print and glue the following stickers to #{title} | #{url}
+    .container
+      .col-sm-6
+        small.text-center.img-responsive.center-block XXS
+        div.text-center !{qr_img1}
+        
+        small.text-center.img-responsive.center-block XS
+        div.text-center !{qr_img2}
+        
+        small.text-center.img-responsive.center-block S
+        div.text-center !{qr_img3}
+        
+        small.text-center.img-responsive.center-block M
+        div.text-center !{qr_img4}
+        
+        small.text-center.img-responsive.center-block L
+        div.text-center !{qr_img5}
+
+      .col-sm-6
+        small.text-center.img-responsive.center-block XXS
+        div.text-center !{qr_img1}
+        
+        small.text-center.img-responsive.center-block XS
+        div.text-center !{qr_img2}
+        
+        small.text-center.img-responsive.center-block S
+        div.text-center !{qr_img3}
+        
+        small.text-center.img-responsive.center-block M
+        div.text-center !{qr_img4}
+        
+        small.text-center.img-responsive.center-block L
+        div.text-center !{qr_img5}
+
+  script.
+    window.print();

@@ -10,7 +10,9 @@
       span !{nl2br(objects[object].description)}
       - if(objects[object].latitude && objects[object].longitude)
         br/
-        span.glyphicon.glyphicon-map-marker #{objects[object].latitude} - #{objects[object].longitude}
+        span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{objects[object].latitude}
+        | &nbsp;&nbsp;
+        span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{objects[object].longitude}
       - end
 
   div.col-sm-2
@@ -22,7 +24,7 @@
         span.glyphicon.glyphicon-remove  Remove
 
   div.col-sm-12
-    small
+    div
       span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Object ID') #{objects[object].id}
       | &nbsp;
       - if (objects[object].ipv4)
@@ -32,7 +34,30 @@
         span.label.label-danger(data-toggle='tooltip' data-placement='top' title='IPv6 Adress') #{objects[object].ipv6}
         | &nbsp;
       - if (objects[object].type)
-        span.label.label-default(data-toggle='tooltip' data-placement='top' title='Object Type') #{objects[object].type}
+        - if (objects[object].type == 'rooter')
+          - var style = "glyphicon glyphicon-inbox"
+        - else if (objects[object].type == 'sensor')
+          - var style = "glyphicon glyphicon-tint"
+        - else if (objects[object].type == 'computer')
+          - var style = "fa fa-desktop"
+        - else if (objects[object].type == 'laptop')
+          - var style = "fa fa-laptop"
+        - else if (objects[object].type == 'desktop')
+          - var style = "fa fa-desktop"
+        - else if (objects[object].type == 'phone')
+          - var style = "glyphicon glyphicon-earphone"
+        - else if (objects[object].type == 'smartphone')
+          - var style = "glyphicon glyphicon-phone"
+        - else if (objects[object].type == 'nodemcu')
+          - var style = "fa fa-shield"
+        - else if (objects[object].type == 'tablet')
+          - var style = "fa fa-tablet"
+        - else if (objects[object].type == 'server')
+          - var style = "glyphicon glyphicon-tasks"
+        - else if (objects[object].type == 'printer')
+          - var style = "glyphicon glyphicon-print"
+        - end
+        a.label.label-default(href='#', class="#{style}", data-toggle='tooltip' data-placement='top' title='Object Type')  #{objects[object].type}
         | &nbsp;
       - if (objects[object].position)
         span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Object Location') #{objects[object].position}

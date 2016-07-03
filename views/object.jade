@@ -5,7 +5,7 @@ html(lang='en')
     include ./includes/navbar.jade
     .container
       .starter-template
-        h2 Object&nbsp;
+        h2.glyphicon.glyphicon-inbox &nbsp;Object&nbsp;
           strong #{object.name}
 
     .container
@@ -21,59 +21,8 @@ html(lang='en')
               strong #{object.name}
             
             dt Type:
-            dd
-              span.label.label-default #{object.type}
-            
-            -if (object.position)
-              dt Position/Location:
-              dd
-                span.label.label-primary #{object.position}
-            -end
-            
-            -if (object.ipv4)
-              dt Ip v4:
-              dd
-                span.label.label-danger #{object.ipv4}
-            -end
-            
-            -if (object.ipv6)
-              dt Ip v6:
-              dd
-                span.label.label-danger #{object.ipv6}
-            -end
-            
-            -if (object.isPublic)
-              dt isPublic:
-              dd
-                span.label.label-default #{object.isPublic}
-            -end
-            
-            dt Description:
-            dd !{nl2br(object.description)}
-
-            - if(object.latitude && object.longitude)
-              dt Longitude:
-              dd #{object.longitude}
-            
-              dt Latitude:
-              dd #{object.latitude}
-            
-              dt Map:
-              dd 
-                iframe(width='100%', height='350', frameborder='0', scrolling='no', marginheight='0', marginwidth='0', src='http://www.openstreetmap.org/export/embed.html?bbox=#{object.longitude}%2C#{object.latitude}%2C#{object.longitude}%2C#{object.latitude}&amp;layer=mapnik&marker=#{object.latitude}%2C#{object.longitude}')
-                br/
-                a(href='geo:#{object.latitude},#{object.longitude}?z=18') Geo link
-            - end
-
-        .form-group
-          a.m-t.pull-left(href="/objects/") ← Back to Objects
-
-      .col-sm-4
-        div.sidebar-module-inset
-          p.text-center.img-responsive.center-block !{qr_img}
-          div.text-center
             - if (object.type == 'rooter')
-              - var style = ""
+              - var style = "glyphicon glyphicon-inbox"
             - else if (object.type == 'sensor')
               - var style = "glyphicon glyphicon-tint"
             - else if (object.type == 'computer')
@@ -95,26 +44,68 @@ html(lang='en')
             - else if (object.type == 'printer')
               - var style = "glyphicon glyphicon-print"
             - end
-            div.glyphicon.glyphicon-pencil(style="font-size:94px;", class="#{style}")
-            p &nbsp; 
+            dd
+              a.label.label-default(href='#', class="#{style}")   #{object.type}
+            
+            -if (object.position)
+              dt Position/Location:
+              dd
+                a.label.label-primary(href='#') #{object.position}
+            -end
+            
+            -if (object.ipv4)
+              dt Ip v4:
+              dd
+                span.label.label-danger #{object.ipv4}
+            -end
+            
+            -if (object.ipv6)
+              dt Ip v6:
+              dd
+                span.label.label-danger #{object.ipv6}
+            -end
+            
+            -if (object.isPublic)
+              dt isPublic:
+              dd
+                span.label.label-default #{object.isPublic}
+                blockquote.glyphicon.glyphicon-comment  Public Objects can be visible to everybody.
+            -end
+            
+            dt Description:
+            dd !{nl2br(object.description)}
 
-          div
-            a(href="#") All '#{object.type}' Objects
-            p &nbsp; 
-          
-          div
+            - if(object.latitude && object.longitude)
+              dt Latitude:
+              dd
+                span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{object.latitude}
+
+              dt Longitude:
+              dd
+                span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{object.longitude}
+            
+              dt Map:
+              dd 
+                iframe(width='100%', height='350', frameborder='0', scrolling='no', marginheight='0', marginwidth='0', src='http://www.openstreetmap.org/export/embed.html?bbox=#{object.longitude}%2C#{object.latitude}%2C#{object.longitude}%2C#{object.latitude}&amp;layer=mapnik&marker=#{object.latitude}%2C#{object.longitude}')
+                br/
+                a(href='geo:#{object.latitude},#{object.longitude}?z=18') Geo link
+            - end
+
+        .form-group
+          a.m-t.pull-left(href="/objects/") ← Back to Objects
+
+      .col-sm-4
+        div.sidebar-module-inset
+          p.text-center.img-responsive.center-block !{qr_img}
+          p.text-center
+            a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
+              span.glyphicon.glyphicon-print  QR code
+            | &nbsp;
             a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
-              span.glyphicon.glyphicon-pencil  Edit Object
+              span.glyphicon.glyphicon-pencil  Edit
             | &nbsp;
             a.btn.btn-danger.btn-sm(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
               span.glyphicon.glyphicon-remove  Remove
-
-          - if (object.position)
-            div
-              a(href="#") All Objects located in '#{object.position}'
-          - end
-        p &nbsp;
-
 
     include ./includes/foot.jade
 

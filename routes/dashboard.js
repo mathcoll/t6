@@ -69,7 +69,39 @@ router.get('/objects/:object_id([0-9a-z\-]+)(/public)?', Auth, function(req, res
 			object: json,
 			user: req.session.user,
 			nl2br: nl2br,
-			qr_img: qr.createImgTag(2)
+			qr_img: qr.createImgTag(5)
+		});
+	} else {
+		res.redirect('/404');
+	}
+});
+
+router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection('objects');
+	if ( object_id !== undefined ) {
+		var queryO = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : object_id },
+			]
+		};
+	}
+	var json = objects.findOne(queryO);
+	if ( json ) {
+		var qr = qrCode.qrcode(9, 'M');
+		var url = baseUrl+'/objects/'+object_id+'/public';
+		qr.addData(url);
+		qr.make();
+		res.render('object_qrprint', {
+			title : 'Object '+json.name,
+			url: url,
+			qr_img1: qr.createImgTag(1),
+			qr_img2: qr.createImgTag(2),
+			qr_img3: qr.createImgTag(3),
+			qr_img4: qr.createImgTag(4),
+			qr_img5: qr.createImgTag(5),
+			object_id: object_id,
 		});
 	} else {
 		res.redirect('/404');
