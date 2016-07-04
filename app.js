@@ -89,23 +89,23 @@ app.use(function(req, res, next) {
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
-	res.render(err.status, {
+	res.status(err.status || 500).render(err.status, {
 		title : 'Easy-IOT',
 		user: req.session.user
 	});
-	next(err);
+	//next(err);
 });
 
-// development error handler
 if (app.get('env') === 'development') {
+	// development error handler
 	app.use(function(err, req, res, next) {
-		res.status(err.status || 500).send({ 'code': err.status, 'error': err.message, 'stack': err.stack });
+		res.status(err.status || 500).send({ 'code': err.status, 'error': err.message, 'stack': err.stack }).end();
+	});
+} else {
+	// production error handler
+	app.use(function(err, req, res, next) {
+		res.status(err.status || 500).send({ 'code': err.status, 'error': err.message }).end();
 	});
 }
-
-// production error handler
-app.use(function(err, req, res, next) {
-	res.status(err.status || 500).send({ 'code': err.status, 'error': err.message });
-});
 
 module.exports = app;
