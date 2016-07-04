@@ -48,7 +48,7 @@ router.get('/objects', Auth,  function(req, res) {
 	});
 });
 
-router.get('/objects/:object_id([0-9a-z\-]+)(/public)?', Auth, function(req, res) {
+router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection('objects');
 	if ( object_id !== undefined ) {
@@ -72,7 +72,39 @@ router.get('/objects/:object_id([0-9a-z\-]+)(/public)?', Auth, function(req, res
 			qr_img: qr.createImgTag(5)
 		});
 	} else {
-		res.redirect('/404');
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Easy-IOT',
+			user: req.session.user
+		});
+	}
+});
+
+router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection('objects');
+	var queryO = {
+		'$and': [
+					{ 'isPublic': 'true' },
+					{ 'id' : object_id },
+				]
+	};
+	var json = objects.findOne(queryO);
+	if ( json ) {
+		res.render('object_public', {
+			title : 'Object '+json.name,
+			object: json,
+			user: req.session.user,
+			nl2br: nl2br,
+		});
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Easy-IOT',
+			user: req.session.user
+		});
 	}
 });
 
@@ -104,7 +136,12 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 			object_id: object_id,
 		});
 	} else {
-		res.redirect('/404');
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Easy-IOT',
+			user: req.session.user
+		});
 	}
 });
 
@@ -129,7 +166,12 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			user: req.session.user
 		});
 	} else {
-		res.redirect('/404');
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Easy-IOT',
+			user: req.session.user
+		});
 	}
 });
 
@@ -162,10 +204,20 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			
 			res.redirect('/objects/'+object_id);
 		} else {
-			res.redirect('/404');
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Easy-IOT',
+				user: req.session.user
+			});
 		}
 	} else {
-		res.redirect('/404');
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Easy-IOT',
+			user: req.session.user
+		});
 	}
 });
 
@@ -185,7 +237,12 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 	if ( json ) {
 		res.redirect('/objects');
 	} else {
-		res.redirect('/404');
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Easy-IOT',
+			user: req.session.user
+		});
 	}
 });
 
@@ -521,7 +578,12 @@ router.post('/register', function(req, res) {
 			};
 			transporter.sendMail(mailOptions, function(err, info){
 			    if( err ){
-			    	res.redirect('/404');
+					var err = new Error('Not Found');
+					err.status = 404;
+					res.status(err.status || 500).render(err.status, {
+						title : 'Easy-IOT',
+						user: req.session.user
+					});
 			    } else {
 			    	res.render('login', {
 						title : 'Login to Easy-IOT',
