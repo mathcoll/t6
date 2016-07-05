@@ -94,11 +94,11 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 				]
 	};
 	var json = objects.chain().simplesort('user_id').find(queryO).limit(1);
-	var meta = ((json.data())[0]).meta;
+	var meta = ((json.data())[0])!==undefined?((json.data())[0]).meta:'';
 	var r = (json.eqJoin(users.chain(), 'user_id', 'id').data())[0];
-	r.left.created = moment(meta.created).format('dddd, MMMM Do YYYY, H:mm:ss');
-	r.left.updated = moment(meta.updated).format('dddd, MMMM Do YYYY, H:mm:ss');
-	if ( json ) {
+	if ( r ) {
+		r.left.created = moment(meta.created).format('dddd, MMMM Do YYYY, H:mm:ss');
+		r.left.updated = moment(meta.updated).format('dddd, MMMM Do YYYY, H:mm:ss');
 		res.render('object_public', {
 			title : 'Object '+r.left.name,
 			object: r.left,
