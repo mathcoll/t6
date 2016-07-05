@@ -22,6 +22,7 @@ squel				= require('squel');
 uuid				= require('node-uuid');
 os					= require('os');
 qrCode				= require('qrcode-npm');
+striptags			= require('striptags');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));

@@ -44,7 +44,8 @@ router.get('/objects', Auth,  function(req, res) {
 		types: objectTypes,
 		message: {},
 		user: req.session.user,
-		nl2br: nl2br
+		nl2br: nl2br,
+		striptags: striptags
 	});
 });
 
@@ -69,6 +70,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			object: json,
 			user: req.session.user,
 			nl2br: nl2br,
+			striptags: striptags,
 			qr_img: qr.createImgTag(5)
 		});
 	} else {
@@ -97,6 +99,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 			object: json,
 			user: req.session.user,
 			nl2br: nl2br,
+			striptags: striptags
 		});
 	} else {
 		var err = new Error('Not Found');
@@ -134,6 +137,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 			qr_img4: qr.createImgTag(4),
 			qr_img5: qr.createImgTag(5),
 			object_id: object_id,
+			striptags: striptags
 		});
 	} else {
 		var err = new Error('Not Found');

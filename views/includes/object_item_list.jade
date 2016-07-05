@@ -7,7 +7,7 @@
         small
 
   div.col-sm-8
-      span !{nl2br(objects[object].description)}
+      span !{nl2br(striptags(objects[object].description))}
       - if(objects[object].latitude && objects[object].longitude)
         br/
         span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{objects[object].latitude}

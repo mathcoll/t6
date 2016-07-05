@@ -73,7 +73,7 @@ html(lang='en')
             -end
             
             dt Description:
-            dd !{nl2br(object.description)}
+            dd !{nl2br(striptags(object.description))}
 
             - if(object.latitude && object.longitude)
               dt Latitude:
