@@ -88,7 +88,13 @@ html(lang='en')
         div.sidebar-module-inset
           dl.dl-horizontal
             dt Owner
-            dd xxxx xxxx
+            dd #{owner.firstName} #{owner.lastName}
+            
+            dt Creation date
+            dd #{object.created}
+            
+            dt Update date
+            dd #{object.updated}
 
     include ./includes/foot.jade
 
