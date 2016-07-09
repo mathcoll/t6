@@ -59,27 +59,27 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 				{ 'id' : object_id },
 			]
 		};
-	}
-	var json = objects.findOne(queryO);
-	if ( json ) {
-		var qr = qrCode.qrcode(9, 'M');
-		qr.addData(baseUrl+'/objects/'+object_id+'/public');
-		qr.make();
-		res.render('object', {
-			title : 'Object '+json.name,
-			object: json,
-			user: req.session.user,
-			nl2br: nl2br,
-			striptags: striptags,
-			qr_img: qr.createImgTag(5)
-		});
-	} else {
-		var err = new Error('Not Found');
-		err.status = 404;
-		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT',
-			user: req.session.user
-		});
+		var json = objects.findOne(queryO);
+		if ( json ) {
+			var qr = qrCode.qrcode(9, 'M');
+			qr.addData(baseUrl+'/objects/'+object_id+'/public');
+			qr.make();
+			res.render('object', {
+				title : 'Object '+json.name,
+				object: json,
+				user: req.session.user,
+				nl2br: nl2br,
+				striptags: striptags,
+				qr_img: qr.createImgTag(5)
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Easy-IOT',
+				user: req.session.user
+			});
+		}
 	}
 });
 
@@ -348,22 +348,37 @@ router.post('/flows/add', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	units	= db.getCollection('units');
 	datatypes	= db.getCollection('datatypes');
-	
+	var user_id = req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null;
 	var message = '';
-	var queryQ = { '$and': [
-        {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null}
- 	]};
-	var new_flow = {}; // TODO: permissions, etc ....
+	var queryQ = { '$and': [  {'user_id' : user_id} ]};
+	
+	var flow_id = uuid.v4();
+	var owner_permission = req.body.owner_permission!==undefined?req.body.owner_permission:'6';
+	var group_permission = req.body.group_permission!==undefined?req.body.group_permission:'0';
+	var other_permission = req.body.other_permission!==undefined?req.body.other_permission:'0';
+	var linked_objects = req.body['objects[]']!==undefined?req.body['objects[]']:new Array();
+	if ( typeof linked_objects !== 'object' ) linked_objects = new Array(linked_objects);
+	
+	var new_flow = {
+		id:				flow_id,
+		data_type:		req.body.datatype!==undefined?req.body.datatype:null,
+		name:			req.body.name!==undefined?req.body.name:null,
+		permission:		owner_permission+group_permission+other_permission,
+		objects:		linked_objects,
+		unit:			'', // TODO
+		unit_id:		req.body.unit!==undefined?req.body.unit:null,
+		user_id:		user_id
+	};
+	//console.log(new_flow);
 	var i = (flows.find(queryQ)).length;
 	if( i >= (quota[req.session.user.role]).flows ) {
 		message = {type: 'danger', value: 'Over Quota!'};
 	} else {
-		if ( new_flow.name && new_flow.type && new_flow.user_id && new_flow.unit ) {
-			// TODO: permissions, etc ....
-			//flows.insert(new_flow);
-			//db.save();
-			//message = {type: 'success', value: 'Successfully added.'};
-			message = {type: 'danger', value: 'Internal error! - Adding a flow is not yet implemented.'};
+		if ( new_flow.name && new_flow.data_type && new_flow.user_id && new_flow.unit_id ) {
+			flows.insert(new_flow);
+			db.save();
+			message = {type: 'success', value: 'Successfully added.'};
+			//message = {type: 'danger', value: 'Internal error! - Adding a flow is not yet implemented.'};
 		} else {
 			message = {type: 'danger', value: 'Please give a name, a type and a unit to your Flow!'};
 		}

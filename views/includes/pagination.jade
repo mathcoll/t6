@@ -10,8 +10,11 @@ nav
   ul.pagination
     - if (prevPage>0)
       li
-        - if ( currentUrl === '/objects/add' || currentUrl === '/flows/add' )
+        - if ( currentUrl === '/objects/add' )
           a(href='/objects?page=#{prevPage}', aria-label='Previous')
+            span(aria-hidden='true') ← Previous
+        - else if ( currentUrl === '/flows/add' )
+          a(href='/flows?page=#{prevPage}', aria-label='Previous')
             span(aria-hidden='true') ← Previous
         - else
           a(href='?page=#{prevPage}', aria-label='Previous')
@@ -22,15 +25,20 @@ nav
           a #{p}
       - else
         li
-          - if ( currentUrl === '/objects/add' || currentUrl === '/flows/add' )
+          - if ( currentUrl === '/objects/add' )
             a(href="/objects?page=#{p}") #{p}
+          - else if ( currentUrl === '/flows/add' )
+            a(href="/flows?page=#{p}") #{p}
           - else
             a(href="?page=#{p}") #{p}
       - var p=(p+1)
     - if (nextPage)
       li
-        - if ( currentUrl === '/objects/add' || currentUrl === '/flows/add' )
+        - if ( currentUrl === '/objects/add' )
           a(href='/objects?page=#{nextPage}', aria-label='Next')
+            span(aria-hidden='true') Next →
+        - else if ( currentUrl === '/flows/add' )
+          a(href='/flows?page=#{nextPage}', aria-label='Next')
             span(aria-hidden='true') Next →
         - else
           a(href='?page=#{nextPage}', aria-label='Next')

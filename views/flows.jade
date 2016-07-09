@@ -11,7 +11,6 @@ html(lang='en')
         h2.glyphicon.glyphicon-random &nbsp;Flows from your library
 
     .container
-
       .col-sm-8
         if (objects.length)
           - for(flow in flows) {
@@ -33,51 +32,72 @@ html(lang='en')
             h3 Add a Flow to your library
             if (message && message.type && message.value)
               div.alert(class='alert-#{message.type}', role='alert') #{message.value}
-            form(action="/flows/add", method="post")
-              .form-group
+            form(action="/flows/add#add", method="post")
+              .form-group(is='null')
                 label.control-label(for="name") Flow Name:
                   span.mandatory *
-                input.form-control(type="text", name="name", placeholder="Flow Name", id="name")
+                span.input-group(is='null')
+                  span.input-group-addon(is='null')
+                    span.glyphicon.glyphicon-random(is='null')
+                  input.form-control(type="text", name="name", placeholder="Flow Name", id="name")
 
               .form-group
                 label.control-label(for="datatype") Data-Type:
                   span.mandatory *
                 select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
                   - for(datatype in datatypes) {
-                    option(name="#{datatypes[datatype].id}") #{datatypes[datatype].name}
+                    option(value="#{datatypes[datatype].id}") #{datatypes[datatype].name}
                   - }
 
               .form-group
                 label.control-label(for="unit") Unit:
                   span.mandatory *
-                select.form-control(type="text", name="position", placeholder="Unit", id="unit")
+                select.form-control(type="text", name="unit", placeholder="Unit", id="unit")
                   - for(unit in units) {
-                    option(name="#{units[unit].id}") #{units[unit].type} - #{units[unit].name}
+                    option(value="#{units[unit].id}") #{units[unit].type} - #{units[unit].name}
                   - }
 
               .form-group
-                label Owner permission:&nbsp;&nbsp;&nbsp;&nbsp;
+                label.glyphicon.glyphicon-user  Owner permission:&nbsp;&nbsp;
+                  br/ 
                   span
                     label.control-label(for="OpermissionW") Write 
-                      input#OpermissionW(type='checkbox', value='6') 
-                    | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      input#OpermissionW(name='owner_permission', type='radio', value='6', checked='checked') 
+                    | &nbsp;&nbsp;
                     label.control-label(for="OpermissionR") Read 
-                      input#OpermissionR(type='checkbox', value='4') 
+                      input#OpermissionR(name='owner_permission', type='radio', value='4') 
                     
               .form-group
-                label Group permission:&nbsp;&nbsp;&nbsp;&nbsp;
+                label.glyphicon.glyphicon-user  Group permission:&nbsp;&nbsp;
+                  br/ 
                   span
                     label.control-label(for="GpermissionW") Write 
-                      input#GpermissionW(type='checkbox', value='6') 
-                    | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      input#GpermissionW(name='group_permission', type='radio', value='6') 
+                    | &nbsp;&nbsp;
                     label.control-label(for="GpermissionR") Read 
-                      input#GpermissionR(type='checkbox', value='4') 
+                      input#GpermissionR(name='group_permission', type='radio', value='4') 
+                    | &nbsp;&nbsp;
+                    label.control-label(for="GpermissionN") None 
+                      input#GpermissionN(name='group_permission', type='radio', value='0', checked='checked') 
+                    
+              .form-group
+                label.glyphicon.glyphicon-user  Other permission:&nbsp;&nbsp;
+                  br/ 
+                  span
+                    label.control-label(for="ApermissionW") Write 
+                      input#ApermissionW(name='other_permission', type='radio', value='6', disabled) 
+                    | &nbsp;&nbsp;
+                    label.control-label(for="ApermissionR") Read 
+                      input#ApermissionR(name='other_permission', type='radio', value='4', disabled) 
+                    | &nbsp;&nbsp;
+                    label.control-label(for="ApermissionN") None 
+                      input#ApermissionN(name='other_permission', type='radio', value='0', checked='checked') 
 
               .form-group
                 label.control-label(for="objects") Objects:
-                select.form-control(multiple name="objects", placeholder="Objects", id="objects")
+                select.form-control(multiple name="objects[]", placeholder="Objects", id="objects")
                   - for(object in objects) {
-                    option(name="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
+                    option(value="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
                   - }
 
               .form-group

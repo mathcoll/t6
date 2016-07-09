@@ -34,10 +34,13 @@ html(lang='en')
               div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
             form(action="/objects/add#add", method="post")
-              .form-group
+              .form-group(is='null')
                 label.control-label(for="name") Object Name:
                   span.mandatory *
-                input.form-control(type="text", name="name", placeholder="Object Name", id="name", value=new_object.name)
+                span.input-group(is='null')
+                  span.input-group-addon(is='null')
+                    span.glyphicon.glyphicon-inbox(is='null')
+                  input.form-control(type="text", name="name", placeholder="Object Name", id="name", value=new_object.name)
 
               .form-group
                 label.control-label(for="Type") Type:
@@ -51,17 +54,26 @@ html(lang='en')
                       option(value='#{types[type]}') #{types[type]}
                   - }
 
-              .form-group
+              .form-group(is='null')
                 label.control-label(for="Position") Position/Location:
-                input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=new_object.position)
+                span.input-group(is='null')
+                  span.input-group-addon(is='null')
+                    span.glyphicon.glyphicon-screenshot(is='null')
+                  input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=new_object.position)
 
-              .form-group
+              .form-group(is='null')
                 label.control-label(for="Longitude") Longitude:
-                input.form-control(type="text", name="longitude", placeholder="Longitude", id="Longitude", value=new_object.longitude)
+                span.input-group(is='null')
+                  span.input-group-addon(is='null')
+                    span.glyphicon.glyphicon-map-marker(is='null')
+                  input.form-control(type="text", name="longitude", placeholder="Longitude", id="Longitude", value=new_object.longitude)
 
-              .form-group
+              .form-group(is='null')
                 label.control-label(for="Latitude") Latitude:
-                input.form-control(type="text", name="latitude", placeholder="Latitude", id="Latitude", value=new_object.latitude)
+                span.input-group(is='null')
+                  span.input-group-addon(is='null')
+                    span.glyphicon.glyphicon-map-marker(is='null')
+                  input.form-control(type="text", name="latitude", placeholder="Latitude", id="Latitude", value=new_object.latitude)
 
               .form-group
                 label.control-label(for="Ipv4") Ip v4:

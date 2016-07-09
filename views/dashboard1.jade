@@ -129,15 +129,18 @@ html(lang='en')
       } // end displayModule
 
       $( window ).load(function() {
-        getRealTimeData('/modules/16/temp.json', 'GET', 'application/json', '#contentWeather');
-        getRealTimeData('/modules/16/humi.json', 'GET', 'application/json', '#contentWeather');
-        getRealTimeData('/modules/17/temp.json', 'GET', 'application/json', '#contentWeather');
+        //getRealTimeData('/modules/16/temp.json', 'GET', 'application/json', '#contentWeather');
+        //getRealTimeData('/modules/16/humi.json', 'GET', 'application/json', '#contentWeather');
+        getData('6d844fbf-29c0-4a41-8c6a-0e9f3336cea3', '#contentWeather', 'desc', 'glyphicon-cloud');
+        getData('19fc7ca5-a4f1-4af3-91c9-2426bd1a3f0f', '#contentWeather', 'desc', 'glyphicon-cloud');
+        //getRealTimeData('/modules/17/temp.json', 'GET', 'application/json', '#contentWeather');
+        getData('8', '#contentWeather', 'desc', 'glyphicon-cloud');
         getRealTimeData('/modules/yoctopuce/cov-5', 'GET', 'text/html', '#contentYVOC');
         getData('1', '#contentServer', 'desc', 'glyphicon-ban-circle');
         getData('2', '#contentServer', 'desc', 'glyphicon-cloud');
         getData('4', '#contentServer', 'desc', 'glyphicon-hdd');
         getData('24', '#contentServer', 'desc', 'glyphicon-scale');
-        
+        getData('536d8bfc-370d-4473-a9f5-fdb97547d693', '#contentPlants', 'desc', 'glyphicon-cloud');
         //getRealTimeData('/modules/17/plan.json', 'GET', 'application/json', '#contentPlants');
       });
       

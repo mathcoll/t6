@@ -248,7 +248,7 @@ html(lang='en')
                         span.glyphicon.glyphicon-flash
                         |  #{calls} API calls
                       a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
-                  #collapseCalls(role='tabpanel', aria-labelledby='headingCalls')
+                  #collapseCalls.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingCalls')
                     .panel-body
                       |  &ndash;
                       small  You have consumed #{calls}/#{quota.calls} API calls in the past 7 days.
