@@ -8,7 +8,7 @@ html(lang='en')
       .starter-template
         h2 Graph a Flow
 
-        .col-sm-12
+        .col-sm-8
           .panel.panel-default
             .panel-heading
                h3.panel-title.pull-left
@@ -19,6 +19,92 @@ html(lang='en')
             .panel-body.collapse.in#collapseGraph1
                #graph1.col-xs-12(style='height:300px;')
             .panel-footer
+
+
+        .col-sm-4
+          div.affix-top
+            blockquote.glyphicon.glyphicon-comment  Configure your Flow and add graph it to your Dashboard.
+
+        .col-sm-4
+          .sidebar-module-inset
+            h3 Setup a Flow to graph
+            form
+              .form-group
+                label.control-label(for="Title") Graph Title
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-pencil
+                  input.form-control(type='text', name="title", placeholder="Title", id="Title", value="")
+
+              .form-group
+                label.control-label(for="Color") Color
+                #colorpicker.input-group.colorpicker-component
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-tint
+                  input.form-control(type='text', value='#edc240')
+                  span.input-group-addon
+                    i
+                  
+              .form-group
+                label(for="Autorefresh") Auto Refresh
+                .input-group
+                  span.input-group-addon
+                    input(type='checkbox', name="autorefresh", id="Autorefresh", value="true")
+                  label.form-control(for="Autorefresh") Refresh chart automatically
+
+              .form-group
+                label.control-label(for="Ttl") Ttl
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-time
+                  input.form-control(type='text', name="title", placeholder="Ttl", id="Ttl", value="")
+
+              .form-group
+                label.control-label(for="startdate") Start date
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-calendar
+                  input.form-control(type='text', name="startdate", placeholder="Start date", id="startdate", value="")
+                  
+              .form-group
+                label.control-label(for="max") Max Flow points
+                span.input-group.spinner
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-fullscreen
+                  input.form-control(type='text', name="max", placeholder="Start date", id="max", value="50")
+                  .input-group-btn-vertical
+                    button.btn.btn-default(type='button')
+                      i.fa.fa-caret-up
+                    button.btn.btn-default(type='button')
+                      i.fa.fa-caret-down
+
+              .form-group
+                label(for="weekendAreas") Show Weekend Areas
+                .input-group
+                  span.input-group-addon
+                    input(type='checkbox', name="weekendAreas", id="weekendAreas", value="true")
+                  label.form-control(for="weekendAreas") Show Weekend Areas
+
+              .form-group
+                label.control-label(for="chart_type") Chart Type:
+                select.form-control( name="chart_type", id="chart_type")
+                  option(value="") Bar
+                  option(value="") Histogram
+                  option(value="") Pie
+                  option(value="") xxx
+
+              .form-group
+                label.control-label(for="layout") Layout:
+                select.form-control( name="layout", id="layout")
+                  option(value="12") Full width
+                  option(value="9") 3/4 width
+                  option(value="6") 1/2 width
+                  option(value="3") 1/4 width
+
+              .form-group
+                button.btn.btn-primary.m-t.pull-right
+                  span.glyphicon.glyphicon-ok  Update
+            p &nbsp; 
 
         .col-sm-12
           a.m-t.pull-left(href="/flows") ← Back to Flows
@@ -38,7 +124,21 @@ html(lang='en')
     script(type='text/javascript', src='/js/flot/curvedLines.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
+    
+    script(type='text/javascript', src='/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
+    link(href='/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
+
     script.script.
+      $('#colorpicker').colorpicker();
+      
+      // spinner
+      $('.spinner .btn:first-of-type').on('click', function() {
+        $('.spinner input').val( parseInt($('.spinner input').val(), 10) + 1);
+      });
+      $('.spinner .btn:last-of-type').on('click', function() {
+        $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
+      });
+      
       getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, color) {
         $.ajax({
           url: base+flow_id,

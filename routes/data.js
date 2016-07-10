@@ -21,8 +21,8 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		var p = permissions.filter(function(p) {
 		    return p.flow_id == flow_id; 
 		})[0];
-	
-		if ( p!== undefined && p.permission == '644' ) { // TODO
+
+		if ( p!== undefined && (p.permission == '644' || p.permission == '620' || p.permission == '600') ) { // TODO
 			//var limit = req.params.limit!==undefined?parseInt(req.params.limit):10;
 			//var page = req.params.page!==undefined?parseInt(req.params.page):1;
 			//var sort = req.query.sort!==undefined?req.query.sort:'time';
@@ -235,7 +235,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		    return p.flow_id == flow_id; 
 		})[0];
 
-		if ( p.permission == '644' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
+		if ( p.permission == '644' || p.permission == '620' || p.permission == '600' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
 			// TODO: In case text != null, we should also save that text to Db!
 			
 			var data = [ { time:time, value: value } ]; // TODO: is it only for influxdb???
