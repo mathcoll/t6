@@ -8,7 +8,7 @@ html(lang='en')
       .starter-template
         h2 Graph a Flow
 
-        .col-sm-8
+        div(class='col-sm-#{graph_layout}')
           .panel.panel-default
             .panel-heading
                h3.panel-title.pull-left
@@ -40,10 +40,8 @@ html(lang='en')
                 label.control-label(for="Color") Color
                 #colorpicker.input-group.colorpicker-component
                   span.input-group-addon
-                    span.glyphicon.glyphicon-tint
-                  input.form-control(type='text', value='#edc240')
-                  span.input-group-addon
                     i
+                  input.form-control(type='text', name='color', value='#{graph_color}')
                   
               .form-group
                 label(for="Autorefresh") Auto Refresh
@@ -57,21 +55,21 @@ html(lang='en')
                 span.input-group
                   span.input-group-addon
                     span.glyphicon.glyphicon-time
-                  input.form-control(type='text', name="title", placeholder="Ttl", id="Ttl", value="")
+                  input.form-control(type='text', name="title", placeholder="Ttl", id="Ttl", value="#{graph_ttl}")
 
               .form-group
                 label.control-label(for="startdate") Start date
-                span.input-group
+                span.input-group.date.datepicker
                   span.input-group-addon
-                    span.glyphicon.glyphicon-calendar
-                  input.form-control(type='text', name="startdate", placeholder="Start date", id="startdate", value="")
+                    i.glyphicon.glyphicon-calendar
+                  input.form-control(type='text', name="startdate", id="startdate", value="#{graph_startdate}")
                   
               .form-group
                 label.control-label(for="max") Max Flow points
                 span.input-group.spinner
                   span.input-group-addon
                     span.glyphicon.glyphicon-fullscreen
-                  input.form-control(type='text', name="max", placeholder="Start date", id="max", value="50")
+                  input.form-control(type='text', name="max", id="max", value="#{graph_max}")
                   .input-group-btn-vertical
                     button.btn.btn-default(type='button')
                       i.fa.fa-caret-up
@@ -82,7 +80,7 @@ html(lang='en')
                 label(for="weekendAreas") Show Weekend Areas
                 .input-group
                   span.input-group-addon
-                    input(type='checkbox', name="weekendAreas", id="weekendAreas", value="true")
+                    input(type='checkbox', name="weekendAreas", id="weekendAreas", value="true", checked=(graph_weekendAreas=='true' ? "checked" : undefined))
                   label.form-control(for="weekendAreas") Show Weekend Areas
 
               .form-group
@@ -96,10 +94,11 @@ html(lang='en')
               .form-group
                 label.control-label(for="layout") Layout:
                 select.form-control( name="layout", id="layout")
-                  option(value="12") Full width
-                  option(value="9") 3/4 width
-                  option(value="6") 1/2 width
-                  option(value="3") 1/4 width
+                  option(value="12", selected=(graph_layout=='12' ? "selected" : undefined)) Full width
+                  option(value="9", selected=(graph_layout=='9' ? "selected" : undefined)) 3/4 width
+                  option(value="8", selected=(graph_layout=='8' ? "selected" : undefined)) 2/3 width (default)
+                  option(value="6", selected=(graph_layout=='6' ? "selected" : undefined)) 1/2 width
+                  option(value="3", selected=(graph_layout=='3' ? "selected" : undefined)) 1/4 width
 
               .form-group
                 button.btn.btn-primary.m-t.pull-right
@@ -127,9 +126,19 @@ html(lang='en')
     
     script(type='text/javascript', src='/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
     link(href='/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
+    
+    script(type='text/javascript', src='/js/bootstrap-datepicker/bootstrap-datepicker-1.6.1.min.js')
+    link(href='/css/bootstrap-datepicker/bootstrap-datepicker-1.6.1.min.css', rel='stylesheet')
 
     script.script.
       $('#colorpicker').colorpicker();
+      $('.datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        startDate: '-3y',
+        weekStart: 1,
+        daysOfWeekHighlighted: '0,6',
+        autoclose: true,
+      });
       
       // spinner
       $('.spinner .btn:first-of-type').on('click', function() {
@@ -165,12 +174,6 @@ html(lang='en')
         var date = new Date(lastValue);
         lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
         options.colors = [color];
-        if (flow_id==5) {
-          options.series = { bars: {show: true}};
-          options.bars = { align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 }
-        } else {
-          options.series = { bars: {show: false} };
-        }
         $.plot($('#'+container), [data], options);
         $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
         $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
@@ -217,7 +220,7 @@ html(lang='en')
       };
       var flows = new Array(
         // flow_id, callback, container, limit, page , sort, color
-        ["#{flow_id}", doGraph, "graph1", 50, 1, 'desc', '#edc240']
+        ["#{flow_id}", doGraph, "graph1", #{graph_max}, 1, 'desc', '#{graph_color}']
       );
         
       flows.map(function(f) {
