@@ -55,15 +55,24 @@ html(lang='en')
                 span.input-group
                   span.input-group-addon
                     span.glyphicon.glyphicon-time
-                  input.form-control(type='text', name="title", placeholder="Ttl", id="Ttl", value="#{graph_ttl}")
+                  input.form-control(type='text', name="ttl", placeholder="Ttl", id="Ttl", value="#{graph_ttl}")
 
               .form-group
                 label.control-label(for="startdate") Start date
-                span.input-group.date.datepicker
+                span.input-group.date.datepicker.start
                   span.input-group-addon
                     i.glyphicon.glyphicon-calendar
-                  input.form-control(type='text', name="startdate", id="startdate", value="#{graph_startdate}")
-                  
+                  input.form-control(type='text', id="startdate", value="#{graph_startdate}")
+              input.hide(type='text', name="startdate", id="startdate2", value="#{graph_startdate2}")
+
+              .form-group
+                label.control-label(for="enddate") End date
+                span.input-group.date.datepicker.end
+                  span.input-group-addon
+                    i.glyphicon.glyphicon-calendar
+                  input.form-control(type='text', id="enddate", value="#{graph_enddate}")
+              input.hide(type='text', name="enddate", id="enddate2", value="#{graph_enddate2}")
+
               .form-group
                 label.control-label(for="max") Max Flow points
                 span.input-group.spinner
@@ -85,11 +94,11 @@ html(lang='en')
 
               .form-group
                 label.control-label(for="chart_type") Chart Type:
-                select.form-control( name="chart_type", id="chart_type")
-                  option(value="") Bar
-                  option(value="") Histogram
-                  option(value="") Pie
-                  option(value="") xxx
+                select.form-control(name="chart_type", id="chart_type")
+                  option(value="bars", selected=(graph_chart_type=='bars' ? "selected" : undefined)) Bar
+                  option(value="lines", selected=(graph_chart_type=='lines' ? "selected" : undefined)) Lines
+                  option(value="", selected=(graph_chart_type=='' ? "selected" : undefined)) Histogram
+                  option(value="pie", selected=(graph_chart_type=='pie' ? "selected" : undefined)) Pie
 
               .form-group
                 label.control-label(for="layout") Layout:
@@ -130,17 +139,26 @@ html(lang='en')
     script(type='text/javascript', src='/js/bootstrap-datepicker/bootstrap-datepicker-1.6.1.min.js')
     link(href='/css/bootstrap-datepicker/bootstrap-datepicker-1.6.1.min.css', rel='stylesheet')
 
-    script.script.
+    script(type='text/javascript').
       $('#colorpicker').colorpicker();
-      $('.datepicker').datepicker({
+      $('.datepicker.start').datepicker({
+        clearBtn: true,
         format: 'dd/mm/yyyy',
-        startDate: '-3y',
         weekStart: 1,
         daysOfWeekHighlighted: '0,6',
-        autoclose: true,
+        autoclose: true
+      }).on('changeDate', function(e) {
+        $('#startdate2').val(e.date.getTime());
       });
-      
-      // spinner
+      $('.datepicker.end').datepicker({
+        clearBtn: true,
+        format: 'dd/mm/yyyy',
+        weekStart: 1,
+        daysOfWeekHighlighted: '0,6',
+        autoclose: true
+      }).on('changeDate', function(e) {
+        $('#enddate2').val(e.date.getTime());
+      });
       $('.spinner .btn:first-of-type').on('click', function() {
         $('.spinner input').val( parseInt($('.spinner input').val(), 10) + 1);
       });
@@ -148,11 +166,11 @@ html(lang='en')
         $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
       });
       
-      getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, color) {
+      getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, start, end, color) {
         $.ajax({
           url: base+flow_id,
           type: type,
-          data:{limit: limit, page: page , sort: sort},
+          data:{limit: limit, page: page , sort: sort, start: start!==""?start:undefined, end: end!==""?end:undefined},
           success: function(d){
             data[flow_id] = (d.data).map(function(i) {
               return [parseInt(i.attributes.timestamp),
@@ -189,38 +207,56 @@ html(lang='en')
         });
       }; // end doGraph
 
-      weekendAreas = function(axes) {
-        var markings = [];
-        var d = new Date(axes.xaxis.min);
-        // go to the first Saturday
-        d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
-        d.setUTCSeconds(0);
-        d.setUTCMinutes(0);
-        d.setUTCHours(0);
-        var i = d.getTime();
-        do {
-          // when we don't set yaxis, the rectangle automatically
-          // extends to infinity upwards and downwards
-          markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
-          i += 7 * 24 * 60 * 60 * 1000;
-        } while (i < axes.xaxis.max);
-        return markings;
-      }; // end weekendAreas
+      if ('#{graph_weekendAreas}' == 'true') {
+        weekendAreas = function(axes) {
+          var markings = [];
+          var d = new Date(axes.xaxis.min);
+          // go to the first Saturday
+          d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
+          d.setUTCSeconds(0);
+          d.setUTCMinutes(0);
+          d.setUTCHours(0);
+          var i = d.getTime();
+          do {
+            // when we don't set yaxis, the rectangle automatically
+            // extends to infinity upwards and downwards
+            markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
+            i += 7 * 24 * 60 * 60 * 1000;
+          } while (i < axes.xaxis.max);
+          return markings;
+        }; // end weekendAreas
+      };
       
       var d = new Array();
       var data = new Array();
-      var options = {
-        lines : { show: true, fill: true, lineWidth: 3, steps: false },
-        points : { show : true },
-        bars: { show: false, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
-        legend: {show: true, position: "sw"},
-        grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
-        xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-        yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
-      };
+      var options = {};
+      
+      // Show graph as bars
+      if ('#{graph_chart_type}' == 'bars') {
+        options = {
+          lines : { show: false, fill: true, lineWidth: 3, steps: false },
+          bars: { show: true, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
+          points : { show : true },
+          legend: {show: true, position: "sw"},
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+        };
+      } else {
+        options = {
+          lines : { show: true, fill: true, lineWidth: 3, steps: false },
+          bars: { show: false, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
+          points : { show : true },
+          legend: {show: true, position: "sw"},
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+        };
+      }
+      
       var flows = new Array(
         // flow_id, callback, container, limit, page , sort, color
-        ["#{flow_id}", doGraph, "graph1", #{graph_max}, 1, 'desc', '#{graph_color}']
+        ["#{flow_id}", doGraph, "graph1", #{graph_max}, 1, 'asc', '#{graph_startdate2}', '#{graph_enddate2}', '#{graph_color}']
       );
         
       flows.map(function(f) {
@@ -230,6 +266,8 @@ html(lang='en')
         var limit = f[3];
         var page = f[4];
         var sort = f[5];
-        var color = f[6];
-        return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort, color);
+        var start = f[6];
+        var end = f[7];
+        var color = f[8];
+        return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort, start, end, color);
       }); // end

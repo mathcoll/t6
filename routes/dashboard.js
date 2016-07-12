@@ -52,6 +52,7 @@ router.get('/objects', Auth,  function(req, res) {
 router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection('objects');
+	flows	= db.getCollection('flows');
 	if ( object_id !== undefined ) {
 		var queryO = {
 		'$and': [
@@ -59,14 +60,18 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 				{ 'id' : object_id },
 			]
 		};
-		var json = objects.findOne(queryO);
-		if ( json ) {
+		var json = {
+			object: objects.findOne(queryO),
+			flows: flows.findOne({ 'user_id': req.session.user.id })
+		}
+		if ( json.object ) {
 			var qr = qrCode.qrcode(9, 'M');
 			qr.addData(baseUrl+'/objects/'+object_id+'/public');
 			qr.make();
 			res.render('object', {
 				title : 'Object '+json.name,
-				object: json,
+				object: json.object,
+				flows: json.flows,
 				user: req.session.user,
 				nl2br: nl2br,
 				striptags: striptags,
@@ -336,10 +341,23 @@ router.get('/flows', Auth, function(req, res) {
 
 router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 	var flow_id = req.params.flow_id;
+	console.log(moment(req.query.startdate!==undefined?req.query.startdate:'', 'x').format('DD/MM/YYYY'));
 	res.render('flow_graph', {
 		title : 'Graph a Flow',
 		flow_id: flow_id,
-		user: req.session.user
+		user: req.session.user,
+		moment: moment,
+		graph_title:		req.query.title!==undefined?req.query.title:'Default Title',
+		graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment(), 'x').format('DD/MM/YYYY'),
+		graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().format('x'),
+		graph_enddate:		moment(req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd'), 'x').format('DD/MM/YYYY'),
+		graph_enddate2:		req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd').format('x'),
+		graph_max:			req.query.max!==undefined?req.query.max:'50',
+		graph_ttl:			req.query.graph_ttl!==undefined?req.query.graph_ttl:'',
+		graph_weekendAreas:	req.query.weekendAreas!==undefined?req.query.weekendAreas:'',
+		graph_color:		req.query.color!==undefined?req.query.color:'#edc240',
+		graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bar',
+		graph_layout:		req.query.layout!==undefined?req.query.layout:8,
 	});
 });
 
