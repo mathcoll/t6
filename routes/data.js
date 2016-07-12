@@ -26,7 +26,10 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			//var limit = req.params.limit!==undefined?parseInt(req.params.limit):10;
 			//var page = req.params.page!==undefined?parseInt(req.params.page):1;
 			//var sort = req.query.sort!==undefined?req.query.sort:'time';
-			var sorting = req.query.order=='asc'?true:false;
+			var sorting = req.query.order!==undefined?req.query.order:undefined;
+			sorting = req.query.order=='asc'?true:false;
+			sorting = req.query.sort!==undefined?req.query.sort:undefined;
+			sorting = req.query.sort=='asc'?true:false;
 			var page = parseInt(req.query.page, 10);
 			if (isNaN(page) || page < 1) {
 			  page = 1;
