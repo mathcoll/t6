@@ -44,10 +44,17 @@ html(lang='en')
                   input.form-control(type='text', name='color', value='#{graph_color}')
                   
               .form-group
+                label(for="Fill") Fill
+                .input-group
+                  span.input-group-addon
+                    input(type='checkbox', name="fill", id="Fill", value="true", checked=(graph_fill=='true' ? "checked" : undefined))
+                  label.form-control(for="Fill") Fill
+                  
+              .form-group
                 label(for="Autorefresh") Auto Refresh
                 .input-group
                   span.input-group-addon
-                    input(type='checkbox', name="autorefresh", id="Autorefresh", value="true")
+                    input(type='checkbox', name="autorefresh", id="Autorefresh", value="true", checked=(graph_autorefresh=='true' ? "checked" : undefined))
                   label.form-control(for="Autorefresh") Refresh chart automatically
 
               .form-group
@@ -56,6 +63,8 @@ html(lang='en')
                   span.input-group-addon
                     span.glyphicon.glyphicon-time
                   input.form-control(type='text', name="ttl", placeholder="Ttl", id="Ttl", value="#{graph_ttl}")
+                  span.input-group-addon
+                    i secondes
 
               .form-group
                 label.control-label(for="startdate") Start date
@@ -97,12 +106,12 @@ html(lang='en')
                 select.form-control(name="chart_type", id="chart_type")
                   option(value="bars", selected=(graph_chart_type=='bars' ? "selected" : undefined)) Bar
                   option(value="lines", selected=(graph_chart_type=='lines' ? "selected" : undefined)) Lines
-                  option(value="", selected=(graph_chart_type=='' ? "selected" : undefined)) Histogram
+                  option(value="", selected=(graph_chart_type=='histogram' ? "selected" : undefined)) Histogram
                   option(value="pie", selected=(graph_chart_type=='pie' ? "selected" : undefined)) Pie
 
               .form-group
                 label.control-label(for="layout") Layout:
-                select.form-control( name="layout", id="layout")
+                select.form-control(name="layout", id="layout")
                   option(value="12", selected=(graph_layout=='12' ? "selected" : undefined)) Full width
                   option(value="9", selected=(graph_layout=='9' ? "selected" : undefined)) 3/4 width
                   option(value="8", selected=(graph_layout=='8' ? "selected" : undefined)) 2/3 width (default)
@@ -110,9 +119,23 @@ html(lang='en')
                   option(value="3", selected=(graph_layout=='3' ? "selected" : undefined)) 1/4 width
 
               .form-group
-                button.btn.btn-primary.m-t.pull-right
-                  span.glyphicon.glyphicon-ok  Update
-            p &nbsp; 
+                .dropup.pull-left
+                  button#dropdownMenu.btn.btn-primary.dropdown-toggle.m-t(type='button', data-toggle='dropdown', aria-expanded='true')
+                    | Add to Dashboard&nbsp;
+                    span.caret
+                  ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                    li
+                      a(href='#')
+                        span.glyphicon.glyphicon-th-large  Dashboard 1
+                    li
+                      a(href='#')
+                        span.glyphicon.glyphicon-th-large  Dashboard 2
+                        
+                div.pull-right
+                  button.btn.btn-primary.m-t(type="submit")
+                    span.glyphicon.glyphicon-ok  Update
+                  | &nbsp;
+              p &nbsp;
 
         .col-sm-12
           a.m-t.pull-left(href="/flows") ← Back to Flows
@@ -171,11 +194,17 @@ html(lang='en')
           url: base+flow_id,
           type: type,
           data:{limit: limit, page: page , sort: sort, start: start!==""?start:undefined, end: end!==""?end:undefined},
-          success: function(d){
-            data[flow_id] = (d.data).map(function(i) {
-              return [parseInt(i.attributes.timestamp),
-              parseInt(i.attributes.value)]
-            });
+          success: function(d) {
+            if ( options.series.pie !== undefined ) {
+              data[flow_id] = (d.data).map(function(i) {
+                return parseInt(i.attributes.value)
+              });
+            } else {
+              data[flow_id] = [(d.data).map(function(i) {
+                return [parseInt(i.attributes.timestamp),
+                parseInt(i.attributes.value)]
+              })];
+            }
             var lastValue = ((d.data)[0].attributes.timestamp);
             var title = d.links.title;
             var unit = d.links.unit;
@@ -192,7 +221,7 @@ html(lang='en')
         var date = new Date(lastValue);
         lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
         options.colors = [color];
-        $.plot($('#'+container), [data], options);
+        $.plot($('#'+container), data, options);
         $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
         $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
         $('#'+container).bind("plothover", function (event, pos, item) {
@@ -231,18 +260,36 @@ html(lang='en')
       var data = new Array();
       var options = {};
       
-      // Show graph as bars
       if ('#{graph_chart_type}' == 'bars') {
+        // Show graph as bars
         options = {
+          series: { bars: { show: true, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 } },
           lines : { show: false, fill: true, lineWidth: 3, steps: false },
-          bars: { show: true, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
           points : { show : true },
-          legend: {show: true, position: "sw"},
+          legend: { show: true, position: "sw" },
           grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
           xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
           yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
         };
-      } else {
+      } else if ('#{graph_chart_type}' == 'lines') {
+        // Show graph as lines
+        options = {
+          series: { lines : { show: true, fill: #{graph_fill}, lineWidth: 3, steps: false } },
+          points : { show : true },
+          legend: { show: true, position: "sw" },
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+        };
+      } else if ('#{graph_chart_type}' == 'pie') {
+        // Show graph as pie
+        options = {
+          series: { pie : { show: true }, radius: 1, label: { show: true, radius: 2/3 } },
+          legend: { show: true, position: "sw" },
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+        };
+      } else if ('#{graph_chart_type}' == '?????') {
+        // Show graph
         options = {
           lines : { show: true, fill: true, lineWidth: 3, steps: false },
           bars: { show: false, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
@@ -269,5 +316,5 @@ html(lang='en')
         var start = f[6];
         var end = f[7];
         var color = f[8];
-        return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort, start, end, color);
+        return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page, sort, start, end, color);
       }); // end
