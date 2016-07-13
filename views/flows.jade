@@ -33,29 +33,35 @@ html(lang='en')
             if (message && message.type && message.value)
               div.alert(class='alert-#{message.type}', role='alert') #{message.value}
             form(action="/flows/add#add", method="post")
-              .form-group(is='null')
+              .form-group
                 label.control-label(for="name") Flow Name:
                   span.mandatory *
-                span.input-group(is='null')
-                  span.input-group-addon(is='null')
-                    span.glyphicon.glyphicon-random(is='null')
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-random
                   input.form-control(type="text", name="name", placeholder="Flow Name", id="name")
 
               .form-group
                 label.control-label(for="datatype") Data-Type:
                   span.mandatory *
-                select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
-                  - for(datatype in datatypes) {
-                    option(value="#{datatypes[datatype].id}") #{datatypes[datatype].name}
-                  - }
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-bookmark
+                  select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
+                    - for(datatype in datatypes) {
+                      option(value="#{datatypes[datatype].id}") #{datatypes[datatype].name}
+                    - }
 
               .form-group
                 label.control-label(for="unit") Unit:
                   span.mandatory *
-                select.form-control(type="text", name="unit", placeholder="Unit", id="unit")
-                  - for(unit in units) {
-                    option(value="#{units[unit].id}") #{units[unit].type} - #{units[unit].name}
-                  - }
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-magnet
+                  select.form-control(type="text", name="unit", placeholder="Unit", id="unit")
+                    - for(unit in units) {
+                      option(value="#{units[unit].id}") #{units[unit].type} - #{units[unit].name}
+                    - }
 
               .form-group
                 label.glyphicon.glyphicon-user  Owner permission:&nbsp;&nbsp;

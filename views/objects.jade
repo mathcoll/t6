@@ -34,58 +34,70 @@ html(lang='en')
               div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
             form(action="/objects/add#add", method="post")
-              .form-group(is='null')
+              .form-group
                 label.control-label(for="name") Object Name:
                   span.mandatory *
-                span.input-group(is='null')
-                  span.input-group-addon(is='null')
-                    span.glyphicon.glyphicon-inbox(is='null')
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-inbox
                   input.form-control(type="text", name="name", placeholder="Object Name", id="name", value=new_object.name)
 
               .form-group
                 label.control-label(for="Type") Type:
                   span.mandatory *
-                select.form-control(type="text", name="type", id="type")
-                  option(value='') Please select a type
-                  - for(type in types) {
-                    if (new_object.type == types[type])
-                      option(value='#{types[type]}' selected) #{types[type]}
-                    else
-                      option(value='#{types[type]}') #{types[type]}
-                  - }
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-tags
+                  select.form-control(type="text", name="type", id="type")
+                    option(value='') Please select a type
+                    - for(type in types) {
+                      if (new_object.type == types[type])
+                        option(value='#{types[type]}' selected) #{types[type]}
+                      else
+                        option(value='#{types[type]}') #{types[type]}
+                    - }
 
-              .form-group(is='null')
+              .form-group
                 label.control-label(for="Position") Position/Location:
-                span.input-group(is='null')
-                  span.input-group-addon(is='null')
-                    span.glyphicon.glyphicon-screenshot(is='null')
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-screenshot
                   input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=new_object.position)
 
-              .form-group(is='null')
+              .form-group
                 label.control-label(for="Longitude") Longitude:
-                span.input-group(is='null')
-                  span.input-group-addon(is='null')
-                    span.glyphicon.glyphicon-map-marker(is='null')
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-map-marker
                   input.form-control(type="text", name="longitude", placeholder="Longitude", id="Longitude", value=new_object.longitude)
 
-              .form-group(is='null')
+              .form-group
                 label.control-label(for="Latitude") Latitude:
-                span.input-group(is='null')
-                  span.input-group-addon(is='null')
-                    span.glyphicon.glyphicon-map-marker(is='null')
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-map-marker
                   input.form-control(type="text", name="latitude", placeholder="Latitude", id="Latitude", value=new_object.latitude)
 
               .form-group
                 label.control-label(for="Ipv4") Ip v4:
-                input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="Ipv4", value=new_object.ipv4)
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon IP
+                  input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="Ipv4", value=new_object.ipv4)
               
               .form-group
                 label.control-label(for="Ipv6") Ip v6:
-                input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="Ipv6", value=new_object.ipv6)
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon IP
+                  input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="Ipv6", value=new_object.ipv6)
 
               .form-group
                 label.control-label(for="Description") Description:
-                textarea.form-control.vresize(name="description", placeholder="Object description", id="Description")= new_object.description
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-pencil
+                  textarea.form-control.vresize(name="description", placeholder="Object description", id="Description")= new_object.description
 
               .form-group
                 label.control-label is Public:
