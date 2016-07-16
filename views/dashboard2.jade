@@ -6,82 +6,175 @@ html(lang='en')
 
     .container
       .starter-template
-        h2.glyphicon.glyphicon-th-large &nbsp;Dashboard
-        .col-sm-12
-          .panel.panel-default
-            .panel-heading
-               h3.panel-title.pull-left
-                 span.glyphicon.glyphicon-scale
-                 | 
-               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph1" aria-expanded="true" aria-controls="collapseGraph1") 
-               div.clearfix
-            .panel-body.collapse.in#collapseGraph1
-               #graph1.col-xs-12(style='height:300px;')
-            .panel-footer 
+        h2.glyphicon.glyphicon-th-large &nbsp;Dashboard&nbsp;
+          .dropdown.pull-right
+            button#dropdownMenu.btn.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+              span.glyphicon.glyphicon-cog &nbsp;
+              span.caret
+            ul.dropdown-menu(aria-labelledby='dropdownMenu')
+              li
+                a(href='#')
+                  span.glyphicon.glyphicon-pencil  Rename
+              li
+                a(href='#')
+                  span.glyphicon.glyphicon-user  Edit permission
+              li
+                a(href='#')
+                  span.glyphicon.glyphicon-remove-sign  Delete
 
-        .col-sm-4
-          .panel.panel-default
-            .panel-heading
-               h3.panel-title.pull-left
-                 span.glyphicon.glyphicon-scale
-                 | 
-               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph2" aria-expanded="true" aria-controls="collapseGraph2") 
-               div.clearfix
-            .panel-body.collapse.in#collapseGraph2
-               #graph2.col-xs-12(style='height:300px;')
-            .panel-footer 
+        ul.list-unstyled#sortable
+          li.col-sm-12
+            .panel.panel-default.panel-resizable
+              .panel-heading.handle
+                 h3.panel-title.pull-left
+                   span.glyphicon.glyphicon-scale
+                 span.btn.btn-xs.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph1" aria-expanded="true" aria-controls="collapseGraph1") 
+                 .dropdown.pull-right
+                    button#dropdownMenu.btn.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                      span.glyphicon.glyphicon-cog &nbsp;
+                      span.caret
+                    ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-refresh  Refresh Data
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-pencil  Edit Module
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-remove-sign  Remove
+                 div.clearfix
+              .panel-body.collapse.in#collapseGraph1
+                 #graph1.col-xs-12(style='height:300px;')
+              .panel-footer 
 
-        .col-sm-4
-          .panel.panel-default
-            .panel-heading
-               h3.panel-title.pull-left
-                 span.glyphicon.glyphicon-scale
-                 | 
-               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph3" aria-expanded="true" aria-controls="collapseGraph3") 
-               div.clearfix
-            .panel-body.collapse.in#collapseGraph3
-               #graph3.col-xs-12(style='height:300px;')
-            .panel-footer 
+          li.col-sm-4
+            .panel.panel-default
+              .panel-heading.handle
+                 h3.panel-title.pull-left
+                   span.glyphicon.glyphicon-scale
+                 span.btn.btn-xs.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph2" aria-expanded="true" aria-controls="collapseGraph2") 
+                 .dropdown.pull-right
+                    button#dropdownMenu.btn.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                      span.glyphicon.glyphicon-cog &nbsp;
+                      span.caret
+                    ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-refresh  Refresh Data
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-pencil  Edit Module
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-remove-sign  Remove
+                 div.clearfix
+              .panel-body.collapse.in#collapseGraph2
+                 #graph2.col-xs-12(style='height:300px;')
+              .panel-footer 
 
-        .col-sm-4
-          .panel.panel-default
-            .panel-heading
-               h3.panel-title.pull-left
-                 span.glyphicon.glyphicon-scale
-                 | 
-               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph4" aria-expanded="true" aria-controls="collapseGraph4") 
-               div.clearfix
-            .panel-body.collapse.in#collapseGraph4
-               #graph4.col-xs-12(style='height:300px;')
-            .panel-footer 
+          li.col-sm-4
+            .panel.panel-default
+              .panel-heading.handle
+                 h3.panel-title.pull-left
+                   span.glyphicon.glyphicon-scale
+                 span.btn.btn-xs.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph3" aria-expanded="true" aria-controls="collapseGraph3") 
+                 .dropdown.pull-right
+                    button#dropdownMenu.btn.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                      span.glyphicon.glyphicon-cog &nbsp;
+                      span.caret
+                    ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-refresh  Refresh Data
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-pencil  Edit Module
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-remove-sign  Remove
+                 div.clearfix
+              .panel-body.collapse.in#collapseGraph3
+                 #graph3.col-xs-12(style='height:300px;')
+              .panel-footer 
 
-        .col-sm-6
-          .panel.panel-default
-            .panel-heading
-               h3.panel-title.pull-left
-                 span.glyphicon.glyphicon-scale
-                 | 
-               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph5" aria-expanded="true" aria-controls="collapseGraph5") 
-               div.clearfix
-            .panel-body.collapse.in#collapseGraph5
-               #graph5.col-xs-12(style='height:300px;')
-            .panel-footer 
+          li.col-sm-4
+            .panel.panel-default
+              .panel-heading.handle
+                 h3.panel-title.pull-left
+                   span.glyphicon.glyphicon-scale
+                 span.btn.btn-xs.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph4" aria-expanded="true" aria-controls="collapseGraph4") 
+                 .dropdown.pull-right
+                    button#dropdownMenu.btn.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                      span.glyphicon.glyphicon-cog &nbsp;
+                      span.caret
+                    ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-refresh  Refresh Data
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-pencil  Edit Module
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-remove-sign  Remove
+                 div.clearfix
+              .panel-body.collapse.in#collapseGraph4
+                 #graph4.col-xs-12(style='height:300px;')
+              .panel-footer 
 
-        .col-sm-6
-          .panel.panel-default
-            .panel-heading
-               h3.panel-title.pull-left
-                 span.glyphicon.glyphicon-scale
-                 | 
-               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph6" aria-expanded="true" aria-controls="collapseGraph6") 
-               div.clearfix
-            .panel-body.collapse.in#collapseGraph6
-               #graph6.col-xs-12(style='height:300px;')
-            .panel-footer 
+          li.col-sm-6
+            .panel.panel-default
+              .panel-heading.handle
+                 h3.panel-title.pull-left
+                   span.glyphicon.glyphicon-scale
+                 span.btn.btn-xs.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph5" aria-expanded="true" aria-controls="collapseGraph5") 
+                 .dropdown.pull-right
+                    button#dropdownMenu.btn.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                      span.glyphicon.glyphicon-cog &nbsp;
+                      span.caret
+                    ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-refresh  Refresh Data
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-pencil  Edit Module
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-remove-sign  Remove
+                 div.clearfix
+              .panel-body.collapse.in#collapseGraph5
+                 #graph5.col-xs-12(style='height:300px;')
+              .panel-footer 
+
+          li.col-sm-6
+            .panel.panel-default
+              .panel-heading.handle
+                 h3.panel-title.pull-left
+                   span.glyphicon.glyphicon-scale
+                 span.btn.btn-xs.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph6" aria-expanded="true" aria-controls="collapseGraph6") 
+                 .dropdown.pull-right
+                    button#dropdownMenu.btn.btn-xs.dropdown-toggle(type='button', data-toggle='dropdown', aria-expanded='true')
+                      span.glyphicon.glyphicon-cog &nbsp;
+                      span.caret
+                    ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-refresh  Refresh Data
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-pencil  Edit Module
+                      li
+                        a(href='#')
+                          span.glyphicon.glyphicon-remove-sign  Remove
+                 div.clearfix
+              .panel-body.collapse.in#collapseGraph6
+                 #graph6.col-xs-12(style='height:300px;')
+              .panel-footer 
 
     include ./includes/foot.jade
     #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
-    
 
     script(type='text/javascript', src='/js/chartjs/chart.min.js')
     script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
@@ -96,6 +189,12 @@ html(lang='en')
     script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
     script.script.
+      $( '#sortable' ).sortable({
+        axis: "xy",
+        cursor: "move",
+        opacity: 0.6,
+        handle: '.panel-heading'
+      });
       getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, color) {
         $.ajax({
           url: base+flow_id,

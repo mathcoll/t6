@@ -104,10 +104,12 @@ html(lang='en')
               .form-group
                 label.control-label(for="chart_type") Chart Type:
                 select.form-control(name="chart_type", id="chart_type")
-                  option(value="bars", selected=(graph_chart_type=='bars' ? "selected" : undefined)) Bar
+                  option(value="bars", selected=(graph_chart_type=='bars' ? "selected" : undefined)) Bars
                   option(value="lines", selected=(graph_chart_type=='lines' ? "selected" : undefined)) Lines
-                  option(value="", selected=(graph_chart_type=='histogram' ? "selected" : undefined)) Histogram
+                  option(value="histogram", selected=(graph_chart_type=='histogram' ? "selected" : undefined)) Histogram
                   option(value="pie", selected=(graph_chart_type=='pie' ? "selected" : undefined)) Pie
+                  option(value="rectangularpie", selected=(graph_chart_type=='rectangularpie' ? "selected" : undefined)) Rectangular Pie
+                  option(value="donut", selected=(graph_chart_type=='donut' ? "selected" : undefined)) Donut
 
               .form-group
                 label.control-label(for="layout") Layout:
@@ -188,6 +190,10 @@ html(lang='en')
       $('.spinner .btn:last-of-type').on('click', function() {
         $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
       });
+      
+      labelFormatter = function(label, series) {
+        return "<div style='font-size:12pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
+      } // end labelFormatter
       
       getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, start, end, color) {
         $.ajax({
@@ -285,8 +291,23 @@ html(lang='en')
         // Show graph as pie
         options = {
           series: { pie : { show: true }, radius: 1, label: { show: true, radius: 2/3 } },
-          legend: { show: true, position: "sw" },
+          combine: {color: '#999',threshold: 0.1},
+          legend: { show: false, position: "sw" },
           grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+        };
+      } else if ('#{graph_chart_type}' == 'donut') {
+        // Show graph as rectangular donut
+        options = {
+          series: { pie : { show: true, radius: 1, innerRadius: .4 }, label: { show: true, formatter: labelFormatter, background: { opacity: 0.5, color: '#000' }, threshold: 0.1 } },
+          grid: { hoverable: true, autoHighlight: true },
+          legend: { show: false },
+        };
+      } else if ('#{graph_chart_type}' == 'rectangularpie') {
+        // Show graph as rectangular rectangularpie
+        options = {
+          series: { pie : { show: true, radius: 500 }, label: { show: true, formatter: labelFormatter, background: { opacity: 0.5, color: '#000' }, threshold: 0.1 } },
+          grid: { hoverable: true, autoHighlight: true },
+          legend: { show: false },
         };
       } else if ('#{graph_chart_type}' == '?????') {
         // Show graph
@@ -300,6 +321,8 @@ html(lang='en')
           yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
         };
       }
+      
+      console.log(options);
       
       var flows = new Array(
         // flow_id, callback, container, limit, page , sort, color

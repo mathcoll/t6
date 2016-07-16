@@ -64,6 +64,16 @@ html(lang='en')
                     - }
 
               .form-group
+                label.control-label(for="objects") Objects:
+                span.input-group
+                  span.input-group-addon
+                    span.glyphicon.glyphicon-inbox
+                  select.form-control(multiple name="objects[]", placeholder="Objects", id="objects")
+                    - for(object in objects) {
+                      option(value="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
+                    - }
+
+              .form-group
                 label.glyphicon.glyphicon-user  Owner permission:&nbsp;&nbsp;
                   br/ 
                   span
@@ -71,7 +81,7 @@ html(lang='en')
                       input#OpermissionW(name='owner_permission', type='radio', value='6', checked='checked') 
                     | &nbsp;&nbsp;
                     label.control-label(for="OpermissionR") Read 
-                      input#OpermissionR(name='owner_permission', type='radio', value='4') 
+                      input#OpermissionR(name='owner_permission', type='radio', value='4', disabled) 
                     
               .form-group
                 label.glyphicon.glyphicon-user  Group permission:&nbsp;&nbsp;
@@ -98,13 +108,6 @@ html(lang='en')
                     | &nbsp;&nbsp;
                     label.control-label(for="ApermissionN") None 
                       input#ApermissionN(name='other_permission', type='radio', value='0', checked='checked') 
-
-              .form-group
-                label.control-label(for="objects") Objects:
-                select.form-control(multiple name="objects[]", placeholder="Objects", id="objects")
-                  - for(object in objects) {
-                    option(value="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
-                  - }
 
               .form-group
                 button.btn.btn-primary.m-t.pull-right
