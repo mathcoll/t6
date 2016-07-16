@@ -358,7 +358,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 		graph_color:		req.query.color!==undefined?req.query.color:'#edc240',
 		graph_fill:			req.query.fill!==undefined?req.query.fill:'false',
 		graph_autorefresh:	req.query.autorefresh!==undefined?req.query.autorefresh:'false',
-		graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bar',
+		graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bars',
 		graph_layout:		req.query.layout!==undefined?req.query.layout:8,
 	});
 });

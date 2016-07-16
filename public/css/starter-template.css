@@ -103,3 +103,10 @@ dl dt, dl dd {
   top: 0;
   left: 4px;
 }
+.panel-resizable {
+	resize: horizontal;
+	overflow: auto;
+}
+.handle {
+	cursor: move;
+}
