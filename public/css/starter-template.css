@@ -110,3 +110,8 @@ dl dt, dl dd {
 .handle {
 	cursor: move;
 }
+.vcenter {
+    display: inline-block;
+    vertical-align: middle;
+    float: none;
+}

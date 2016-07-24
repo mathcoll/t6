@@ -1,64 +1,15 @@
-.clearfix.list-group-item(name='#{objects[object].id}')
+a.clearfix.list-group-item(name='#{objects[object].id}', href='/objects/#{objects[object].id}')
   h4.list-group-item-heading
-    a(href='/objects/#{objects[object].id}')
-      span.glyphicon.glyphicon-inbox
-      | &nbsp;#{objects[object].name}&nbsp;
-      - if (objects[object].id)
-        small
-
-  div.col-sm-8
-      span !{nl2br(striptags(objects[object].description))}
-      - if(objects[object].latitude && objects[object].longitude)
-        br/
-        span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{objects[object].latitude}
-        | &nbsp;&nbsp;
-        span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{objects[object].longitude}
-      - end
-
-  div.col-sm-2
-      a.btn.btn-primary.btn-sm.pull-right(href='/objects/#{objects[object].id}/edit')
-        span.glyphicon.glyphicon-pencil  Edit
-
-  div.col-sm-2
-      a.btn.btn-danger.btn-sm.pull-right(href='/objects/#{objects[object].id}/remove', onclick="if(confirm('Are you sure to remove #{objects[object].name} ?')) {return true;}; return false;")
-        span.glyphicon.glyphicon-remove  Remove
+    span.glyphicon.glyphicon-inbox
+    | &nbsp;#{objects[object].name}&nbsp;
+  span.vcenter.glyphicon.glyphicon-chevron-right.pull-right 
 
   div.col-sm-12
-    div
-      span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Object ID') #{objects[object].id}
-      | &nbsp;
-      - if (objects[object].ipv4)
-        span.label.label-danger(data-toggle='tooltip' data-placement='top' title='IPv4 Adress') #{objects[object].ipv4}
-        | &nbsp;
-      - if (objects[object].ipv6)
-        span.label.label-danger(data-toggle='tooltip' data-placement='top' title='IPv6 Adress') #{objects[object].ipv6}
-        | &nbsp;
-      - if (objects[object].type)
-        - if (objects[object].type == 'rooter')
-          - var style = "glyphicon glyphicon-inbox"
-        - else if (objects[object].type == 'sensor')
-          - var style = "glyphicon glyphicon-tint"
-        - else if (objects[object].type == 'computer')
-          - var style = "fa fa-desktop"
-        - else if (objects[object].type == 'laptop')
-          - var style = "fa fa-laptop"
-        - else if (objects[object].type == 'desktop')
-          - var style = "glyphicon glyphicon-modal-window"
-        - else if (objects[object].type == 'phone')
-          - var style = "glyphicon glyphicon-earphone"
-        - else if (objects[object].type == 'smartphone')
-          - var style = "glyphicon glyphicon-phone"
-        - else if (objects[object].type == 'nodemcu')
-          - var style = "fa fa-shield"
-        - else if (objects[object].type == 'tablet')
-          - var style = "glyphicon glyphicon-phone"
-        - else if (objects[object].type == 'server')
-          - var style = "glyphicon glyphicon-tasks"
-        - else if (objects[object].type == 'printer')
-          - var style = "glyphicon glyphicon-print"
-        - end
-        a.label.label-default(href='#', class="#{style}", data-toggle='tooltip' data-placement='top' title='Object Type')  #{objects[object].type}
-        | &nbsp;
-      - if (objects[object].position)
-        span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Object Location') #{objects[object].position}
-        | &nbsp;
+    - if(objects[object].latitude && objects[object].longitude)
+      span &nbsp;&nbsp;
+      span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{objects[object].latitude}
+      | &nbsp;&nbsp;
+      span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{objects[object].longitude}
+    - else
+      span &nbsp;&nbsp;
+    - end
