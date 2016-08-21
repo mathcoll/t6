@@ -12,7 +12,7 @@
 
 NAME="EasyIOT"
 DESC="Easy-IOT server"
-LOG_DIR=/var/log/node/$NAME
+LOG_DIR=/var/log/node/$NAME.log
 NODE_ENV="development"
 BASE_URL="http://127.0.0.1:3000"
 
