@@ -32,7 +32,7 @@ router.get('/', function(req, res) {
 router.get('/objects', Auth,  function(req, res) {
 	objects	= db.getCollection('objects');
 	var query = { 'user_id': req.session.user.id };
-	var pagination=8;
+	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	res.render('objects', {
@@ -69,7 +69,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			qr.addData(baseUrl+'/objects/'+object_id+'/public');
 			qr.make();
 			res.render('object', {
-				title : 'Object '+json.name,
+				title : 'Object '+json.object.name,
 				object: json.object,
 				flows: json.flows,
 				user: req.session.user,
@@ -175,7 +175,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 	//console.log(json);
 	if ( json ) {
 		res.render('object_edit', {
-			title : 'Object '+json.name,
+			title : 'Edit Object '+json.name,
 			object: json,
 			types: objectTypes,
 			user: req.session.user
@@ -285,7 +285,7 @@ router.post('/objects/add', Auth, function(req, res) {
 		message = {type: 'danger', value: 'Over Quota!'};
 	} else {
 		var query = { 'user_id': req.session.user.id };
-		var pagination=8;
+		var pagination=12;
 		req.query.page=req.query.page!==undefined?req.query.page:1;
 		var offset = (req.query.page -1) * pagination;
 		
@@ -319,7 +319,7 @@ router.get('/flows', Auth, function(req, res) {
 	datatypes	= db.getCollection('datatypes');
 
 	var query = { 'user_id': req.session.user.id };
-	var pagination=8;
+	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
@@ -404,7 +404,7 @@ router.post('/flows/add', Auth, function(req, res) {
 		}
 	}
 	var query = { 'user_id': req.session.user.id };
-	var pagination=8;
+	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
