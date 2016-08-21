@@ -16,9 +16,6 @@ store				= new FileStore({ttl: sessionDuration});
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
 
-/* Logs settings */
-logFormat			= 'combined'; // common|dev|combined|tiny|short
-
 /* Email settings */
 nodemailer			= require('nodemailer');
 from				= "Easy-IOT <contact@domain.tld>"; // The Sender email address
