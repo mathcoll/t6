@@ -1,10 +1,13 @@
-.clearfix.list-group-item(name='#{flows[flow].id}')
+a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].id}/graph')
   h4.list-group-item-heading
-    a(href='#')
-      span.glyphicon.glyphicon-random
-      | &nbsp;#{flows[flow].name}&nbsp;
+    span.glyphicon.glyphicon-random
+    | &nbsp;#{flows[flow].name}&nbsp
 
-  div.col-sm-8
+  div.col-sm-12
+    div.glyphicon.glyphicon-chevron-right.pull-right 
+    div #{flows[flow].description}
+
+  div.col-sm-12
     span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
     | &nbsp;
           
@@ -16,23 +19,9 @@
       | &nbsp;
 
     - if (flows[flow].objects.length)
-      div Objects:
-        div
-        - for(object in flows[flow].objects) {
-          span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
-            a.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
-          | &nbsp;
-        - }
-    
-  div.col-sm-2
-    small #{flows[flow].description} 
-      a(href="#")
-        button.btn.btn-primary.btn-sm.pull-right
-          span.glyphicon.glyphicon-pencil  Edit
-      | &nbsp;
- 
-  div.col-sm-2
-      a(href="/flows/#{flows[flow].id}/graph")
-        button.btn.btn-primary.btn-sm
-          span.glyphicon.glyphicon-signal  Graph
-      | &nbsp;
+      div
+      - for(object in flows[flow].objects) {
+        span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
+          span.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
+        | &nbsp;
+      - }
