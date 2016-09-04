@@ -11,6 +11,9 @@ router.all('*', function (req, res, next) {
 	tokens	= db.getCollection('tokens');
 	users	= db.getCollection('users');
 	qt 		= dbQuota.getCollection('quota');
+	if ( !tokens ) console.error('db tokens is failing');
+	if ( !users ) console.error('db users is failing');
+	if ( !qt ) console.error('db quota is failing');
 	var unlimited = false;
 	var bearerHeader = req.headers['authorization'];
 	if ( bearerHeader ) {

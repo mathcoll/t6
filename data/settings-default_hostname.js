@@ -16,11 +16,19 @@ store				= new FileStore({ttl: sessionDuration});
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
 
+/* Http settings */
+timeoutDuration		= '10s'; // Http timeout limit
+
+/* Logs settings */
+logFormat			= 'combined'; // common|dev|combined|tiny|short
+logAccessFile		= '/var/log/node/EasyIOT-access.log'; // Log file for Http/Api access
+logErrorFile		= '/var/log/node/EasyIOT-error.log'; // Log file for errors
+
 /* Email settings */
 nodemailer			= require('nodemailer');
 from				= "Easy-IOT <contact@domain.tld>"; // The Sender email address
 bcc					= "Easy-IOT <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
-mailhost			= "my_smtp.domain.tld"; // Your Smtp server
+mailhost			= "my_smtp.domain.tld";			   // Your Smtp server
 mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smtp credentials
 transporter			= nodemailer.createTransport({ host: mailhost, ignoreTLS: true, auth: mailauth });
 

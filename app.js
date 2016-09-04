@@ -23,6 +23,8 @@ uuid				= require('node-uuid');
 os					= require('os');
 qrCode				= require('qrcode-npm');
 striptags			= require('striptags');
+fs					= require('fs');
+util				= require('util');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
@@ -49,12 +51,21 @@ var modules			= require('./routes/modules');
 var dashboard		= require('./routes/dashboard');
 var app				= express();
 
+/* Logging */
+console.log('Setting Access Logs to', logAccessFile);
+console.log('Setting Error Logs to', logErrorFile);
+var error = fs.createWriteStream(logErrorFile, { flags: 'a' });
+process.stdout.write = process.stderr.write = error.write.bind(error);
+process.on('uncaughtException', function(err) {
+	console.error((err && err.stack) ? err.stack : err);
+});
+
 app.use(compression());
-app.use(morgan(logFormat));
+app.use(morgan(logFormat, {stream: fs.createWriteStream(logAccessFile, {flags: 'a'})}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(timeout('10s'));
+app.use(timeout(timeoutDuration));
 app.disable('x-powered-by');
 
 var staticOptions = {

@@ -7,36 +7,59 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: EasyIOT server
-# Description:       Easy IOT is an "oriented-Data" platform to connect physical Objects with timeseries DB.
+# Description:       EasyIOT is an "oriented-Data" platform to connect physical Objects with timeseries DB.
 ### END INIT INFO
 
 NAME="EasyIOT"
-DESC="Easy-IOT server"
-LOG_DIR=/var/log/node/$NAME.log
+DESC="EasyIOT server"
+LOG=/var/log/node/$NAME.log
+PIDFILE=/var/run/$NAME.pid
 NODE_ENV="development"
 BASE_URL="http://127.0.0.1:3000"
+DAEMON=/home/mathieu/Projets/2016/internetcollaboratif.info/api/bin/www
+DAEMON_ARGS=""
+EXEC="/usr/bin/node -- $DAEMON" # $DAEMON_ARGS >>$LOG 2>&1
+USER=root
 
-case "$1" in
-	'start')
-	echo -n "Starting "$NAME" on "$BASE_URL
+[ -x "$DAEMON" ] || exit 0
+. /lib/lsb/init-functions
+
+do_start() {
+	echo -n "Starting "$NAME" on "$BASE_URL ...
 	export NODE_ENV=$NODE_ENV
 	export BASE_URL=$BASE_URL
 	export NAME=$NAME
 	export STARTED=`date +%s`
-	cd /home/mathieu/Projets/2016/internetcollaboratif.info/api/
-	node ./bin/www >$LOG_DIR 2>&1 &
-	echo
-	;;
-	'stop')
-	echo -n "Stopping "$NAME
-	killall node && success || failure
-	;;
-	'reload')
-	echo -n "Reloading "$NAME
-	killall -s SIGHUP node && success || failure
-	;;
-	*)
-	echo "Usage: $0 { start | stop | reload }"
-	;;
+	start-stop-daemon --start --background --make-pidfile --user "$USER" --pidfile $PIDFILE --exec $EXEC
+}
+
+do_stop() {
+	echo -n "Stopping "$NAME ...
+	start-stop-daemon --stop --remove-pidfile --retry=TERM/30/KILL/5 --pidfile $PIDFILE
+	echo 
+}
+
+do_status() {
+    status_of_proc -p $PIDFILE $DAEMON $NAME
+}
+
+case "$1" in
+	start)
+		do_start
+		do_status
+    ;;
+	stop)
+		do_stop
+		do_status
+    ;;
+	restart)
+		do_stop
+		do_status
+		do_start
+		do_status
+    ;;
+	status)
+		do_status
+    ;;
 esac
 exit 0
