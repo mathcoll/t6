@@ -1,5 +1,6 @@
 # Easy-IOT
 Easy IOT is an "oriented-Data" platform to connect physical Objects with timeseries DB.
+Please referes to CONTRIBUTING.md in case you would like to help :-)
 
 ## Structure & Context
 ### Physical World
@@ -178,9 +179,11 @@ Actions can be: email, SMS, API calls (e.g. twitter), etc ...
 ```
 Install node (if needed): https://nodejs.org/en/
 Install npm (if needed): https://github.com/npm/npm
-git clone https://github.com/mathcoll/Easy-IOT.git ./Easy-IOT & cd Easy-IOT
+git clone https://github.com/mathcoll/Easy-IOT.git ./Easy-IOT & cd ./Easy-IOT
 npm install
 rename "settings-default_hostname.js" according to your server hostname and edit the file.
+rename "rules-default_hostname.js" according to your server hostname.
+rename "quota-default_hostname.js" according to your server hostname.
 rename "db-default_hostname.json" according to your server hostname.
 ```
 
