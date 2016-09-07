@@ -25,6 +25,7 @@ function alphaSort(obj1, obj2) {
 router.get('/', function(req, res) {
 	res.render('index', {
 		title : 'Dashboard Easy-IOT',
+		currentUrl: req.path,
 		user: req.session.user
 	});
 });
@@ -45,6 +46,7 @@ router.get('/objects', Auth,  function(req, res) {
 		message: {},
 		user: req.session.user,
 		nl2br: nl2br,
+		currentUrl: req.path,
 		striptags: striptags
 	});
 });
@@ -75,6 +77,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 				user: req.session.user,
 				nl2br: nl2br,
 				striptags: striptags,
+				currentUrl: req.path,
 				qr_img: qr.createImgTag(5)
 			});
 		} else {
@@ -110,6 +113,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 			owner: r.right,
 			user: req.session.user,
 			nl2br: nl2br,
+			currentUrl: req.path,
 			striptags: striptags
 		});
 	} else {
@@ -148,6 +152,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 			qr_img4: qr.createImgTag(4),
 			qr_img5: qr.createImgTag(5),
 			object_id: object_id,
+			currentUrl: req.path,
 			striptags: striptags
 		});
 	} else {
@@ -178,6 +183,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			title : 'Edit Object '+json.name,
 			object: json,
 			types: objectTypes,
+			currentUrl: req.path,
 			user: req.session.user
 		});
 	} else {
@@ -335,6 +341,7 @@ router.get('/flows', Auth, function(req, res) {
 		page: req.query.page,
 		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
 		user: req.session.user,
+		currentUrl: req.path,
 		message: {type: '', value: ''}
 	});
 });
@@ -347,6 +354,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 		flow_id: flow_id,
 		user: req.session.user,
 		moment: moment,
+		currentUrl: req.path,
 		graph_title:		req.query.title!==undefined?req.query.title:'Default Title',
 		graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
 		graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd').format('x'),
@@ -459,6 +467,7 @@ router.get('/profile', Auth, function(req, res) {
 				calls : (qt.chain().find(queryQ).data().length),
 				quota : (quota[req.session.user.role]),
 				user : req.session.user,
+				currentUrl: req.path,
 				gravatar : JSON.parse(body)
 			});
 		} else {
@@ -471,6 +480,7 @@ router.get('/profile', Auth, function(req, res) {
 				calls : (qt.chain().find(queryQ).data().length),
 				quota : (quota[req.session.user.role]),
 				user : req.session.user,
+				currentUrl: req.path,
 				gravatar : null
 			});
 		}
@@ -482,6 +492,7 @@ router.get('/search', Auth, function(req, res) {
 		title : 'Search Easy-IOT',
 		objects: [],
 		flows: [],
+		currentUrl: req.path,
 		user: req.session.user
 	});
 });
@@ -494,6 +505,7 @@ router.post('/search', Auth, function(req, res) {
 			title : 'Search Easy-IOT',
 			objects: [],
 			flows: [],
+			currentUrl: req.path,
 			user: req.session.user
 		});
 	} else {
@@ -515,6 +527,7 @@ router.post('/search', Auth, function(req, res) {
 			flows: flows.find(queryF),
 			q:req.body.q,
 			user: req.session.user,
+			currentUrl: req.path,
 			nl2br: nl2br
 		});
 	}
@@ -534,6 +547,7 @@ router.get('/decision-rules', Auth, function(req, res) {
 	res.render('decision-rules', {
 		title : 'Decision Rules Easy-IOT',
 		user: req.session.user,
+		currentUrl: req.path,
 		rules: r,
 	});
 });
@@ -569,6 +583,7 @@ router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(re
 router.get('/about', function(req, res) {
 	res.render('about', {
 		title : 'About Easy-IOT',
+		currentUrl: req.path,
 		user: req.session.user
 	});
 });
@@ -578,6 +593,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	res.render('dashboard'+dashboard_id, {
 		title : 'Dashboard Easy-IOT',
 		user: req.session.user,
+		currentUrl: req.path,
 		version: version,
 	});
 });
@@ -585,6 +601,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 router.get('/register', function(req, res) {
 	res.render('register', {
 		title : 'Register to Easy-IOT',
+		currentUrl: req.path,
 		user: req.session.user
 	});
 });
@@ -633,6 +650,7 @@ router.post('/register', function(req, res) {
 			    	res.render('login', {
 						title : 'Login to Easy-IOT',
 						user: req.session.user,
+						currentUrl: req.path,
 						message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
 					});
 			    }
@@ -644,6 +662,7 @@ router.post('/register', function(req, res) {
 		res.render('register', {
 			title : 'Register to Easy-IOT',
 			user: req.session.user,
+			currentUrl: req.path,
 			message: {type: 'danger', value: 'Please, give me your name!'}
 		});
 	}
@@ -662,6 +681,7 @@ router.get('/mail/welcome', function(req, res) {
 		title : 'Log-in to Easy-IOT',
 		baseUrl: baseUrl,
 		user: fake_user,
+		currentUrl: req.path,
 		token: fake_token
 	});
 });
@@ -669,6 +689,7 @@ router.get('/mail/welcome', function(req, res) {
 router.get('/login', function(req, res) {
 	res.render('login', {
 		title : 'Log-in to Easy-IOT',
+		currentUrl: req.path,
 		user: req.session.user
 	});
 });
@@ -676,6 +697,7 @@ router.get('/login', function(req, res) {
 router.get('/unauthorized', function(req, res) {
 	res.render('unauthorized', {
 		title : 'Unauthorized, Please log-in again to Easy-IOT',
+		currentUrl: req.path,
 		user: req.session.user
 	});
 });
@@ -692,6 +714,7 @@ router.post('/login', Auth, function(req, res) {
 		console.log("Error! invalid credentials, user not found");
 		res.render('login', {
 			title : 'Log-in Failed to Easy-IOT',
+			currentUrl: req.path,
 			user: req.session.user
 		});
 	} else {

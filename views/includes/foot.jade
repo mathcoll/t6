@@ -1,24 +1,57 @@
-.footer
-  p 
-  .container.text-center
-     p.text-muted
-     | Easy-IOT v2.0.1
+footer.footer.navbar-fixed-bottom
+  .visible-xs-block
+    .btn-group.btn-group-justified
+      - if (user)
+        a.btn-group.btn(href='/objects', data-toggle='tooltip-', data-placement='top', title='My Objects')
+          i.glyphicon.glyphicon-inbox  
+            span.center-block Objects
+        
+        -if ( currentUrl === '/objects' )
+          a.btn-group.btn(href='#add', title='Add an Object')
+            i.glyphicon.glyphicon-plus
+              span.center-block Add Object
+        
+        a.btn-group.btn(href='/flows' data-toggle='tooltip-', data-placement='top', title='My Flows')
+          i.glyphicon.glyphicon-random  
+            span.center-block Flows
+        
+        -if ( currentUrl === '/flows' )
+          a.btn-group.btn(href='#add', data-toggle='tooltip-', data-placement='top', title='Add an Object')
+            i.glyphicon.glyphicon-plus
+              span.center-block Add Flow
+        
+        a.btn-group.btn(href='/profile', data-toggle='tooltip-', data-placement='top', title='My Profile')
+          i.glyphicon.glyphicon-user  
+            span.center-block Profile
+            
+      - else
+        a.btn-group.btn(href='/login', data-toggle='tooltip-', data-placement='top', title='Sign In')
+          i.glyphicon.glyphicon-user    
+            span.center-block Sign In
+            
+        a.btn-group.btn(href='/register', data-toggle='tooltip-', data-placement='top', title='Sign Up')
+          i.glyphicon.glyphicon-plus-sign    
+            span.center-block Sign Up
 
-     span &nbsp;&ndash;&nbsp;
-     a(href='/contact') Contact
+  .container.hidden-xs.text-center
+    p.text-muted
+    | Easy-IOT v2.0.1
 
-     span &nbsp;&ndash;&nbsp;
-     a(href='/about') About
+    span &nbsp;&ndash;&nbsp;
+    a(href='/contact') Contact
 
-     span &nbsp;&ndash;&nbsp;
-     a(href='/v2.0.1/status')
-       span.glyphicon.glyphicon-heart-empty
-       |  API Status
+    span &nbsp;&ndash;&nbsp;
+    a(href='/about') About
 
-     span &nbsp;&ndash;&nbsp;
-     a(href='https://github.com/mathcoll/Easy-IOT')
-       span.fa.fa-github
-       |  GitHub
+    span &nbsp;&ndash;&nbsp;
+    a(href='/v2.0.1/status')
+      span.glyphicon.glyphicon-heart-empty
+      |  API Status
+
+    span &nbsp;&ndash;&nbsp;
+    a(href='https://github.com/mathcoll/Easy-IOT')
+      span.fa.fa-github
+      |  GitHub
 
 
 link(href='/css/query-builder/query-builder.2.3.3.css', rel='stylesheet')

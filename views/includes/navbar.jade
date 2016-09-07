@@ -1,12 +1,17 @@
 nav.navbar.navbar-default.navbar-fixed-top
   div
     .navbar-header
-      button.navbar-toggle.collapsed(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
+      button.navbar-toggle.collapsed.navbar-left(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
         span.sr-only Toggle navigation
         span.icon-bar
         span.icon-bar
         span.icon-bar
       a.navbar-brand(href='/') Easy-IOT
+      
+      -if(title)
+        .visible-xs-inline.btn-group-justified
+          a.navbar-brand(style='color: #337ab7; font-weight: bold;') !{title}
+
     #navbar.navbar-collapse.collapse
       ul.nav.navbar-nav
         - if (user)
@@ -50,7 +55,7 @@ nav.navbar.navbar-default.navbar-fixed-top
           li.dropdown
             a.dropdown-toggle(aria-expanded='false', aria-haspopup='true', role='button', data-toggle='dropdown', href='#')
               i.glyphicon.glyphicon-user
-              |  My Account 
+              |  My Profile 
               span.caret
             ul.dropdown-menu
               li
@@ -77,10 +82,10 @@ nav.navbar.navbar-default.navbar-fixed-top
         - else
               li
                 a(href='/login')
-                  span.glyphicon.glyphicon-off &nbsp;Login
+                  span.glyphicon.glyphicon-user &nbsp;Sign In
               li
                 a(href='/register')
-                  span.glyphicon.glyphicon-off &nbsp;Register
+                  span.glyphicon.glyphicon-plus-sign &nbsp;Sign Up
               li
                 a(href='/v2.0.1/status')
                   span.glyphicon.glyphicon-heart-empty
