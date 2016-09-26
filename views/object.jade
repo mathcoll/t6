@@ -3,109 +3,113 @@ html(lang='en')
   include ./includes/head.jade
   body
     include ./includes/navbar.jade
-    .container
-      .starter-template
-        h2.glyphicon.glyphicon-inbox &nbsp;Object&nbsp;
-          strong #{object.name}
 
-    .container
-      .col-sm-8
-        div
-          dl.dl-horizontal
-            dt Id:
-            dd
-              span.label.label-warning #{object.id}
+    .container-fluid
+      .row.side-body
+        .col-sm-12
+          h2.glyphicon.glyphicon-inbox &nbsp;Object&nbsp;
+            strong #{object.name}
+          if (message && message.type && message.value)
+            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
-            dt Name:
-            dd
-              strong #{object.name}
-            
-            dt Type:
-            - if (object.type == 'rooter')
-              - var style = "glyphicon glyphicon-inbox"
-            - else if (object.type == 'sensor')
-              - var style = "glyphicon glyphicon-tint"
-            - else if (object.type == 'computer')
-              - var style = "fa fa-desktop"
-            - else if (object.type == 'laptop')
-              - var style = "fa fa-laptop"
-            - else if (object.type == 'desktop')
-              - var style = "fa fa-desktop"
-            - else if (object.type == 'phone')
-              - var style = "glyphicon glyphicon-earphone"
-            - else if (object.type == 'smartphone')
-              - var style = "glyphicon glyphicon-phone"
-            - else if (object.type == 'nodemcu')
-              - var style = "fa fa-shield"
-            - else if (object.type == 'tablet')
-              - var style = "fa fa-tablet"
-            - else if (object.type == 'server')
-              - var style = "glyphicon glyphicon-tasks"
-            - else if (object.type == 'printer')
-              - var style = "glyphicon glyphicon-print"
-            - end
-            dd
-              a.label.label-default(href='#', class="#{style}")   #{object.type}
-            
-            -if (object.position)
-              dt Position/Location:
+      .row.side-body
+        .col-sm-6.col-md-8.col-md-offset-0
+          div
+            dl.dl-horizontal
+              dt Id:
               dd
-                a.label.label-primary(href='#') #{object.position}
-            -end
-            
-            -if (object.ipv4)
-              dt Ip v4:
-              dd
-                span.label.label-danger #{object.ipv4}
-            -end
-            
-            -if (object.ipv6)
-              dt Ip v6:
-              dd
-                span.label.label-danger #{object.ipv6}
-            -end
-            
-            -if (object.isPublic)
-              dt isPublic:
-              dd
-                span.label.label-default #{object.isPublic}
-                blockquote.glyphicon.glyphicon-comment  Public Objects can be visible to everybody.
-            -end
-            
-            dt Description:
-            dd !{nl2br(striptags(object.description))}
+                span.label.label-warning #{object.id}
 
-            - if(object.latitude && object.longitude)
-              dt Latitude:
+              dt Name:
               dd
-                span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{object.latitude}
-
-              dt Longitude:
-              dd
-                span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{object.longitude}
+                strong #{object.name}
             
-              dt Map:
-              dd 
-                iframe(width='100%', height='350', frameborder='0', scrolling='no', marginheight='0', marginwidth='0', src='http://www.openstreetmap.org/export/embed.html?bbox=#{object.longitude}%2C#{object.latitude}%2C#{object.longitude}%2C#{object.latitude}&amp;layer=mapnik&marker=#{object.latitude}%2C#{object.longitude}')
-                br/
-                a(href='geo:#{object.latitude},#{object.longitude}?z=18') Geo link
-            - end
+              dt Type:
+              - if (object.type == 'rooter')
+                - var style = "glyphicon glyphicon-inbox"
+              - else if (object.type == 'sensor')
+                - var style = "glyphicon glyphicon-tint"
+              - else if (object.type == 'computer')
+                - var style = "fa fa-desktop"
+              - else if (object.type == 'laptop')
+                - var style = "fa fa-laptop"
+              - else if (object.type == 'desktop')
+                - var style = "fa fa-desktop"
+              - else if (object.type == 'phone')
+                - var style = "glyphicon glyphicon-earphone"
+              - else if (object.type == 'smartphone')
+                - var style = "glyphicon glyphicon-phone"
+              - else if (object.type == 'nodemcu')
+                - var style = "fa fa-shield"
+              - else if (object.type == 'tablet')
+                - var style = "fa fa-tablet"
+              - else if (object.type == 'server')
+                - var style = "glyphicon glyphicon-tasks"
+              - else if (object.type == 'printer')
+                - var style = "glyphicon glyphicon-print"
+              - end
+              dd
+                a.label.label-default(href='#', class="#{style}")   #{object.type}
+            
+              -if (object.position)
+                dt Position/Location:
+                dd
+                  a.label.label-primary(href='#') #{object.position}
+              -end
+            
+              -if (object.ipv4)
+                dt Ip v4:
+                dd
+                  span.label.label-danger #{object.ipv4}
+              -end
+            
+              -if (object.ipv6)
+                dt Ip v6:
+                dd
+                  span.label.label-danger #{object.ipv6}
+              -end
+            
+              -if (object.isPublic)
+                dt isPublic:
+                dd
+                  span.label.label-default #{object.isPublic}
+                  blockquote.glyphicon.glyphicon-comment  Public Objects can be visible to everybody.
+              -end
+            
+              dt Description:
+              dd !{nl2br(striptags(object.description))}
 
-        .form-group
-          a.m-t.pull-left(href="/objects/") ← Back to Objects
+              - if(object.latitude && object.longitude)
+                dt Latitude:
+                dd
+                  span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{object.latitude}
 
-      .col-sm-4
-        div.sidebar-module-inset
-          p.text-center.img-responsive.center-block !{qr_img}
-          p.text-center
-            a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
-              span.glyphicon.glyphicon-print  QR code
-            | &nbsp;
-            a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
-              span.glyphicon.glyphicon-pencil  Edit
-            | &nbsp;
-            a.btn.btn-danger.btn-sm(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
-              span.glyphicon.glyphicon-remove  Remove
+                dt Longitude:
+                dd
+                  span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{object.longitude}
+            
+                dt Map:
+                dd 
+                  iframe(width='100%', height='350', frameborder='0', scrolling='no', marginheight='0', marginwidth='0', src='http://www.openstreetmap.org/export/embed.html?bbox=#{object.longitude}%2C#{object.latitude}%2C#{object.longitude}%2C#{object.latitude}&amp;layer=mapnik&marker=#{object.latitude}%2C#{object.longitude}')
+                  br/
+                  a(href='geo:#{object.latitude},#{object.longitude}?z=18') Geo link
+              - end
+
+          .form-group
+            a.m-t.pull-left(href="/objects/") ← Back to Objects
+
+        .col-sm-6.col-md-4.col-md-offset-0
+          .sidebar-module-inset
+            p.text-center.img-responsive.center-block !{qr_img}
+            p.text-center
+              a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
+                span.glyphicon.glyphicon-print  QR code
+              | &nbsp;
+              a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
+                span.glyphicon.glyphicon-pencil  Edit
+              | &nbsp;
+              a.btn.btn-danger.btn-sm(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
+                span.glyphicon.glyphicon-remove  Remove
 
     include ./includes/foot.jade
 

@@ -7,7 +7,7 @@
   - var nextPage = ''
 
 nav
-  ul.pagination
+  ul.pagination.col-xs-12.clearfix
     - if (prevPage>0)
       li
         - if ( currentUrl === '/objects/add' )
@@ -43,3 +43,13 @@ nav
         - else
           a(href='?page=#{nextPage}', aria-label='Next')
             span(aria-hidden='true') Next →
+    li.separator &nbsp;
+    li.pull-right
+      - if ( currentUrl === '/objects' )
+        a.btn.btn-primary.m-t(href="/objects/add")
+          span.glyphicon.glyphicon-plus  Add Object
+      - else if ( currentUrl === '/flows' )
+        a.btn.btn-primary.m-t(href="/flows/add")
+          span.glyphicon.glyphicon-plus  Add Flow
+
+div &nbsp;

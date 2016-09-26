@@ -4,114 +4,23 @@ html(lang='en')
   body
     include ./includes/navbar.jade
     
-    .container
-      .starter-template
-        span.pull-left.hidden-lg.hidden-md
-          a(href="#add") Add a Flow
+    .container-fluid
+      .row.side-body
         h2.glyphicon.glyphicon-random &nbsp;Flows from your library
-
-    .container
-      .col-sm-8
-        if (objects.length)
-          - for(flow in flows) {
-            include ./includes/flow_item_list.jade
-          - }
-          include ./includes/pagination.jade
-        else
+        if (message && message.type && message.value)
+          div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+        blockquote.glyphicon.glyphicon-comment  Flows contains data collections. Flows are datastore to save time/value. Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
+        
+        .col-sm-12
+          if (flows.length)
+            include ./includes/pagination.jade
+            - for(flow in flows) {
+              include ./includes/flow_item_list.jade
+            - }
+            include ./includes/pagination.jade
+          else
+            p &nbsp;
+            div.alert.alert-warning You don't have any Flow yet in your library. You can add a Flow from the right-end form.
           p &nbsp;
-          div.alert.alert-warning You don't have any Flow yet in your library. You can add a Flow from the right-end form.
-        p &nbsp;
-
-      .col-sm-4
-        div
-          blockquote.glyphicon.glyphicon-comment  Flows contains data collections. Flows are datastore to save time/value. Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
-
-        if (message && message.type == 'danger' && message.value)
-        .col-sm-12(class='alert alert-#{message.type}')#add
-          div.sidebar-module-inset
-            h3 Add a Flow to your library
-            if (message && message.type && message.value)
-              div.alert(class='alert-#{message.type}', role='alert') #{message.value}
-            form(action="/flows/add#add", method="post")
-              .form-group
-                label.control-label(for="name") Flow Name:
-                  span.mandatory *
-                span.input-group
-                  span.input-group-addon
-                    span.glyphicon.glyphicon-random
-                  input.form-control(type="text", name="name", placeholder="Flow Name", id="name")
-
-              .form-group
-                label.control-label(for="datatype") Data-Type:
-                  span.mandatory *
-                span.input-group
-                  span.input-group-addon
-                    span.glyphicon.glyphicon-bookmark
-                  select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
-                    - for(datatype in datatypes) {
-                      option(value="#{datatypes[datatype].id}") #{datatypes[datatype].name}
-                    - }
-
-              .form-group
-                label.control-label(for="unit") Unit:
-                  span.mandatory *
-                span.input-group
-                  span.input-group-addon
-                    span.glyphicon.glyphicon-magnet
-                  select.form-control(type="text", name="unit", placeholder="Unit", id="unit")
-                    - for(unit in units) {
-                      option(value="#{units[unit].id}") #{units[unit].type} - #{units[unit].name}
-                    - }
-
-              .form-group
-                label.control-label(for="objects") Objects:
-                span.input-group
-                  span.input-group-addon
-                    span.glyphicon.glyphicon-inbox
-                  select.form-control(multiple name="objects[]", placeholder="Objects", id="objects")
-                    - for(object in objects) {
-                      option(value="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
-                    - }
-
-              .form-group
-                label.glyphicon.glyphicon-user  Owner permission:&nbsp;&nbsp;
-                  br/ 
-                  span
-                    label.control-label(for="OpermissionW") Write 
-                      input#OpermissionW(name='owner_permission', type='radio', value='6', checked='checked') 
-                    | &nbsp;&nbsp;
-                    label.control-label(for="OpermissionR") Read 
-                      input#OpermissionR(name='owner_permission', type='radio', value='4', disabled) 
-                    
-              .form-group
-                label.glyphicon.glyphicon-user  Group permission:&nbsp;&nbsp;
-                  br/ 
-                  span
-                    label.control-label(for="GpermissionW") Write 
-                      input#GpermissionW(name='group_permission', type='radio', value='6') 
-                    | &nbsp;&nbsp;
-                    label.control-label(for="GpermissionR") Read 
-                      input#GpermissionR(name='group_permission', type='radio', value='4') 
-                    | &nbsp;&nbsp;
-                    label.control-label(for="GpermissionN") None 
-                      input#GpermissionN(name='group_permission', type='radio', value='0', checked='checked') 
-                    
-              .form-group
-                label.glyphicon.glyphicon-user  Other permission:&nbsp;&nbsp;
-                  br/ 
-                  span
-                    label.control-label(for="ApermissionW") Write 
-                      input#ApermissionW(name='other_permission', type='radio', value='6', disabled) 
-                    | &nbsp;&nbsp;
-                    label.control-label(for="ApermissionR") Read 
-                      input#ApermissionR(name='other_permission', type='radio', value='4', disabled) 
-                    | &nbsp;&nbsp;
-                    label.control-label(for="ApermissionN") None 
-                      input#ApermissionN(name='other_permission', type='radio', value='0', checked='checked') 
-
-              .form-group
-                button.btn.btn-primary.m-t.pull-right
-                  span.glyphicon.glyphicon-plus  Add Flow
-            p &nbsp; 
 
     include ./includes/foot.jade

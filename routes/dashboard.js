@@ -24,7 +24,7 @@ function alphaSort(obj1, obj2) {
 
 router.get('/', function(req, res) {
 	res.render('index', {
-		title : 'Dashboard Easy-IOT',
+		title : 'Easy-IOT',
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -37,7 +37,7 @@ router.get('/objects', Auth,  function(req, res) {
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	res.render('objects', {
-		title : 'Objects Easy-IOT',
+		title : 'Objects in my library',
 		objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 		new_object: {},
 		page: req.query.page,
@@ -45,6 +45,19 @@ router.get('/objects', Auth,  function(req, res) {
 		types: objectTypes,
 		message: {},
 		user: req.session.user,
+		nl2br: nl2br,
+		currentUrl: req.path,
+		striptags: striptags
+	});
+});
+
+router.get('/objects/add', Auth, function(req, res) {
+	res.render('objects_add', {
+		title : 'Add an Object',
+		message: {},
+		user: req.session.user,
+		types: objectTypes,
+		new_object: {},
 		nl2br: nl2br,
 		currentUrl: req.path,
 		striptags: striptags
@@ -70,12 +83,15 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			var qr = qrCode.qrcode(9, 'M');
 			qr.addData(baseUrl+'/objects/'+object_id+'/public');
 			qr.make();
+			var message = req.session.message!==null?req.session.message:null;
+			req.session.message = null; // Force to unset
 			res.render('object', {
 				title : 'Object '+json.object.name,
 				object: json.object,
 				flows: json.flows,
 				user: req.session.user,
 				nl2br: nl2br,
+				message: message,
 				striptags: striptags,
 				currentUrl: req.path,
 				qr_img: qr.createImgTag(5)
@@ -84,7 +100,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			var err = new Error('Not Found');
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
-				title : 'Easy-IOT',
+				title : 'Easy-IOT Not Found',
 				user: req.session.user
 			});
 		}
@@ -120,7 +136,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT',
+			title : 'Easy-IOT Not Found',
 			user: req.session.user
 		});
 	}
@@ -159,7 +175,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT',
+			title : 'Easy-IOT Not Found',
 			user: req.session.user
 		});
 	}
@@ -190,7 +206,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT',
+			title : 'Easy-IOT Not Found',
 			user: req.session.user
 		});
 	}
@@ -228,7 +244,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			var err = new Error('Not Found');
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
-				title : 'Easy-IOT',
+				title : 'Easy-IOT Not Found',
 				user: req.session.user
 			});
 		}
@@ -236,7 +252,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT',
+			title : 'Easy-IOT Not Found',
 			user: req.session.user
 		});
 	}
@@ -261,7 +277,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT',
+			title : 'Easy-IOT Not Found',
 			user: req.session.user
 		});
 	}
@@ -269,7 +285,8 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 
 router.post('/objects/add', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
-	var message = '';
+	var message = undefined;
+	var error = undefined;
 	var queryQ = { '$and': [
         {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null}
  	]};
@@ -289,6 +306,7 @@ router.post('/objects/add', Auth, function(req, res) {
 	var i = (objects.find(queryQ)).length;
 	if( i >= (quota[req.session.user.role]).objects ) {
 		message = {type: 'danger', value: 'Over Quota!'};
+		error = true;
 	} else {
 		var query = { 'user_id': req.session.user.id };
 		var pagination=12;
@@ -299,50 +317,70 @@ router.post('/objects/add', Auth, function(req, res) {
 			objects.insert(new_object);
 			db.save();
 			message = {type: 'success', value: 'Successfully added.'};
+			req.session.message = message;
 		} else {
 			message = {type: 'danger', value: 'Please give a name and a type to your Object!'};
+			error = true;
 		}
 	}
 	
-	res.render('objects', {
-		title : 'Objects Easy-IOT',
-		objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
-		new_object: new_object,
-		page: req.query.page,
-		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
-		types: objectTypes,
-		user: req.session.user,
-		message: message,
-		currentUrl: req.path,
-		nl2br: nl2br
-	});
+	if ( error ) {
+		res.render('objects_add', {
+			title : 'Objects Easy-IOT',
+			objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
+			new_object: new_object,
+			page: req.query.page,
+			pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
+			types: objectTypes,
+			user: req.session.user,
+			message: message,
+			currentUrl: req.path,
+			nl2br: nl2br
+		});
+	} else {
+		res.redirect('/objects/'+new_object.id);
+	}
 });
 
 router.get('/flows', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
-	objects	= db.getCollection('objects');
-	units	= db.getCollection('units');
-	datatypes	= db.getCollection('datatypes');
-
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
-	var o = objects.chain().find(query).sort(alphaSort).data();
-	var dt = datatypes.chain().find().sort(alphaSort).data();
-	var u = units.chain().find().sort(alphaSort).data();
+	var message = req.session.message!==null?req.session.message:null;
+	req.session.message = null; // Force to unset
 	res.render('flows', {
 		title : 'Flows Easy-IOT',
 		flows: f,
-		objects: o,
-		datatypes: dt,
-		units: u,
 		page: req.query.page,
 		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
 		user: req.session.user,
 		currentUrl: req.path,
-		message: {type: '', value: ''}
+		message: message,
+	});
+});
+
+router.get('/flows/add', Auth, function(req, res) {
+	objects	= db.getCollection('objects');
+	units	= db.getCollection('units');
+	datatypes	= db.getCollection('datatypes');
+	var query = { 'user_id': req.session.user.id };
+	var o = objects.chain().find(query).sort(alphaSort).data();
+	var dt = datatypes.chain().find().sort(alphaSort).data();
+	var u = units.chain().find().sort(alphaSort).data();
+	res.render('flows_add', {
+		title : 'Add a Flow',
+		message: {},
+		objects: o,
+		datatypes: dt,
+		units: u,
+		user: req.session.user,
+		new_object: {},
+		nl2br: nl2br,
+		currentUrl: req.path,
+		striptags: striptags
 	});
 });
 
@@ -376,6 +414,7 @@ router.post('/flows/add', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	units	= db.getCollection('units');
 	datatypes	= db.getCollection('datatypes');
+	var error = undefined;
 	var user_id = req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null;
 	var message = '';
 	var queryQ = { '$and': [  {'user_id' : user_id} ]};
@@ -401,14 +440,16 @@ router.post('/flows/add', Auth, function(req, res) {
 	var i = (flows.find(queryQ)).length;
 	if( i >= (quota[req.session.user.role]).flows ) {
 		message = {type: 'danger', value: 'Over Quota!'};
+		error = true;
 	} else {
 		if ( new_flow.name && new_flow.data_type && new_flow.user_id && new_flow.unit_id ) {
 			flows.insert(new_flow);
 			db.save();
 			message = {type: 'success', value: 'Successfully added.'};
-			//message = {type: 'danger', value: 'Internal error! - Adding a flow is not yet implemented.'};
+			req.session.message = message;
 		} else {
 			message = {type: 'danger', value: 'Please give a name, a type and a unit to your Flow!'};
+			error = true;
 		}
 	}
 	var query = { 'user_id': req.session.user.id };
@@ -420,18 +461,22 @@ router.post('/flows/add', Auth, function(req, res) {
 	var dt = datatypes.chain().find().sort(alphaSort).data();
 	var u = units.chain().find().sort(alphaSort).data();
 	
-	res.render('flows', {
-		title : 'Flows Easy-IOT',
-		flows: f,
-		objects: o,
-		datatypes: dt,
-		units: u,
-		page: req.query.page,
-		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
-		user: req.session.user,
-		message: message,
-		currentUrl: req.path,
-	});
+	if ( error ) {
+		res.render('flows_add', {
+			title : 'Flows Easy-IOT',
+			flows: f,
+			objects: o,
+			datatypes: dt,
+			units: u,
+			page: req.query.page,
+			pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
+			user: req.session.user,
+			message: message,
+			currentUrl: req.path,
+		});
+	} else {
+		res.redirect('/flows/'); //+new_flow.id
+	}
 });
 
 router.get('/profile', Auth, function(req, res) {
@@ -459,7 +504,7 @@ router.get('/profile', Auth, function(req, res) {
 	request(options, function(error, response, body) {
 		if ( !error && response.statusCode != 404 ) {
 			res.render('profile', {
-				title : 'Profile Easy-IOT',
+				title : 'My Profile Easy-IOT',
 				objects : ((objects.chain().find(queryO).data()).length),
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
@@ -472,7 +517,7 @@ router.get('/profile', Auth, function(req, res) {
 			});
 		} else {
 			res.render('profile', {
-				title : 'Profile Easy-IOT',
+				title : 'My Profile Easy-IOT',
 				objects : ((objects.chain().find(queryO).data()).length),
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
@@ -643,7 +688,7 @@ router.post('/register', function(req, res) {
 					var err = new Error('Not Found');
 					err.status = 404;
 					res.status(err.status || 500).render(err.status, {
-						title : 'Easy-IOT',
+						title : 'Easy-IOT Not Found',
 						user: req.session.user
 					});
 			    } else {

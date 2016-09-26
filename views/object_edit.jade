@@ -3,13 +3,14 @@ html(lang='en')
   include ./includes/head.jade
   body
     include ./includes/navbar.jade
-    .container
-      .starter-template
+
+    .container-fluid
+      .row.side-body
         h2.glyphicon.glyphicon-inbox &nbsp;Object&nbsp;
           strong #{object.name}
 
-    .container
-      .col-sm-8
+    .container-fluid
+      .row.side-body
         h3 Update an Object to your library
         form(action="/objects/#{object.id}/edit", method="post")
           .form-group
@@ -76,7 +77,7 @@ html(lang='en')
 
         p &nbsp; 
 
-      .col-sm-4
+      .row.side-body
         div.sidebar
           blockquote.glyphicon.glyphicon-comment  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
           blockquote.glyphicon.glyphicon-hand-right  Object 'type' allow to classify your library.

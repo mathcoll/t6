@@ -3,15 +3,14 @@ html(lang='en')
   include ./includes/head.jade
   body
     include ./includes/navbar.jade
+    
 
-    include ./includes/carousel.jade
-
-    .container.marketing
-      .row &nbsp;
-      .row &nbsp;
+    .container-fluid.marketing
+      .row.side-body
+        include ./includes/carousel.jade
       
-    .container.dmarketing
-      .row
+    .container-fluid.dmarketing
+      .row.side-body
         .col-lg-3(style='min-height:345px')
           hr.featurette-divider
           span.center-text.glyphicon.glyphicon-record(style="font-size:94px;")
@@ -54,7 +53,7 @@ html(lang='en')
 
 
       hr.featurette-divider
-      .row.featurette
+      .row.side-body.featurette
         .col-md-7
           h2.featurette-heading
             | Objects 
@@ -65,7 +64,7 @@ html(lang='en')
           span.center-text.glyphicon.glyphicon-gift(style="font-size:128px;")
 
       hr.featurette-divider
-      .row.featurette
+      .row.side-body.featurette
         .col-md-7.col-md-push-5
           h2.featurette-heading
             | Data Flows 
@@ -76,7 +75,7 @@ html(lang='en')
           span.center-text.glyphicon.glyphicon-random(style="font-size:128px;")
 
       hr.featurette-divider
-      .row.featurette
+      .row.side-body.featurette
         .col-md-7
           h2.featurette-heading
             | Dashboards 
@@ -87,7 +86,7 @@ html(lang='en')
           span.center-text.glyphicon.glyphicon-dashboard(style="font-size:128px;")
 
       hr.featurette-divider
-      .row.featurette
+      .row.side-body.featurette
         .col-md-7.col-md-push-5
           h2.featurette-heading
             | API 

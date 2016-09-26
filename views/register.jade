@@ -3,22 +3,31 @@ html(lang='en')
   include ./includes/head.jade
   body
     include ./includes/navbar.jade
-    .container
-      .starter-template
-        h2 Create an account to Easy-IOT
 
-      .col-sm-12
-        form.form-signin(method="post", action="/register")
-          h3.form-signin-heading Register to Easy-IOT
-          if (message && message.type && message.value)
-            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
-          label.sr-only(for='email') Email Address
-          input#mail.form-control(name='email', type='email', placeholder='Email', required='', autofocus='')
-          label.sr-only(for='firstName') First-Name
-          input#firstname.form-control(name='firstName', placeholder='First Name', autofocus='')
-          label.sr-only(for='lastName') First-Name
-          input#lastname.form-control(name='lastName', placeholder='Last Name', autofocus='')
-          button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-up
+    .container-fluid
+      .row.side-body
+        .col-sm-6.col-md-4.col-md-offset-4
+          h2.text-center.login-title Create an account to Easy-IOT
+
+          .account-wall
+            img.profile-img(src='/img/defaultuser.png', alt='')
+            
+            form.form-signin(method="post", action="/register")
+              if (message && message.type && message.value)
+                div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+
+              label.sr-only(for='email') Email Address
+              input#mail.form-control(name='email', type='email', placeholder='Email', required='', autofocus='')
+              label.sr-only(for='firstName') First-Name
+              input#firstname.form-control(name='firstName', placeholder='First Name', autofocus='')
+              label.sr-only(for='lastName') First-Name
+              input#lastname.form-control(name='lastName', placeholder='Last Name', autofocus='')
+              button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-up
+              a.need-help(href='#') Need help? 
+            
+              span.clearfix
+            a.text-center.new-account(href='/login') Sign-in
+
 
     .container &nbsp;
     .container &nbsp;

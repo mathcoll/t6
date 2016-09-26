@@ -1,96 +1,102 @@
-nav.navbar.navbar-default.navbar-fixed-top
-  div
-    .navbar-header
-      button.navbar-toggle.collapsed.navbar-left(type='button', data-toggle='collapse', data-target='#navbar', aria-expanded='false', aria-controls='navbar')
-        span.sr-only Toggle navigation
-        span.icon-bar
-        span.icon-bar
-        span.icon-bar
-      a.navbar-brand(href='/') Easy-IOT
+.row
+  .side-menu
+    nav.navbar.navbar-default(role='navigation')
+      .navbar-header
+        .brand-wrapper
+          button.navbar-toggle(type='button')
+            span.sr-only Toggle navigation
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          .brand-name-wrapper
+            a.navbar-brand.hidden-xs(href='/')
+              | Easy-IOT
       
-      -if(title)
-        .visible-xs-inline.btn-group-justified
-          a.navbar-brand(style='color: #337ab7; font-weight: bold;') !{title}
+            -if(title)
+              .visible-xs-inline.btn-group-justified
+                a.navbar-brand(style='color: #337ab7; font-weight: bold;') !{title}
 
-    #navbar.navbar-collapse.collapse
-      ul.nav.navbar-nav
-        - if (user)
-          li
-            a(href='/objects') 
-              i.glyphicon.glyphicon-inbox
+          // Search
+          a#search-trigger.btn.btn-default(data-toggle='collapse', href='#search')
+            span.glyphicon.glyphicon-search
+          // Search body
+          #search.panel-collapse.collapse
+            .panel-body
+              form.navbar-form(role='search', method='post', action='/search')
+                .form-group
+                  input.form-control(type='text', placeholder='Search Object, Flows...')
+                button.btn.btn-default(type='submit')
+                  span.glyphicon.glyphicon-ok
+      // Main Menu
+      .side-menu-container
+        ul.nav.navbar-nav
+          - if (user)
+            li
+              a(href='/objects')
+                span.glyphicon.glyphicon-inbox
                 |  Objects
-          li
-            a(href='/flows')
-              i.glyphicon.glyphicon-random
+            li
+              a(href='/flows')
+                span.glyphicon.glyphicon-random
                 |  Flows
+            li#dropdown.panel.panel-default
+              a(data-toggle='collapse', href='#dropdown-dashboards')
+                span.glyphicon.glyphicon-th-list
+                |  My Dashboards
+                span.caret
+              // Dropdown dashboards
+              #dropdown-dashboards.panel-collapse.collapse
+                .panel-body
+                  ul.nav.navbar-nav
+                    li
+                      a(href='/dashboards/1')
+                        span.glyphicon.glyphicon-th-large &nbsp;Dashboard 1
+                    li
+                      a(href='/dashboards/2')
+                        span.glyphicon.glyphicon-th-large &nbsp;Dashboard 2
 
-          li.dropdown
-            a.dropdown-toggle(aria-expanded='false', aria-haspopup='true', role='button', data-toggle='dropdown', href='#')
-              i.glyphicon.glyphicon-th-list
-              |  Dashboards 
-              span.caret
-            ul.dropdown-menu
-              li
-                a(href='#')
-                  span.glyphicon.glyphicon-th-list &nbsp;My Dashboards
-              li.divider(role='separator')
-              li
-                a(href='/dashboards/1')
-                  span.glyphicon.glyphicon-th-large &nbsp;Dashboard 1
-              li
-                a(href='/dashboards/2')
-                  span.glyphicon.glyphicon-th-large &nbsp;Dashboard 2
-
-      ul.nav.navbar-nav.navbar-right
-        - if (user)
-          li
-            form.header-search(method='post', action='/search')
-              .row(style='padding-top: 8px;')
-                .col-lg-12
-                  .input-group
-                    input.form-control(name='q', type='text', placeholder='Search Object, Flows...', style='width:140px')
-                    span.input-group-btn.hidden-sm
-                      button.btn.btn-default.glyphicon.glyphicon-search(type='submit', style='top:0;') 
-
-          li.dropdown
-            a.dropdown-toggle(aria-expanded='false', aria-haspopup='true', role='button', data-toggle='dropdown', href='#')
-              i.glyphicon.glyphicon-user
-              |  My Profile 
-              span.caret
-            ul.dropdown-menu
-              li
-                a(href='/profile')
-                  img.img-responsive.img-circle(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=40&d=mm&r=g', width='40', align='left')
-                  span #{user.firstName} #{user.lastName}
-                  br
-                  span
-                    i.caps #{user.role}&nbsp;
-              li.divider(role='separator')
-              li
-                a(href='/decision-rules')
-                  span.glyphicon.glyphicon-filter &nbsp;Decision Rules
-              li
-                a(href='/v2.0.1/status')
-                  span.glyphicon.glyphicon-heart-empty &nbsp;API Status
-              li
-                a(href='https://github.com/mathcoll/Easy-IOT')
-                  span.fa.fa-github &nbsp;&nbsp;&nbsp;&nbsp;GitHub
-              li.divider(role='separator')
-              li
-                a(href='/logout')
-                  span.glyphicon.glyphicon-off &nbsp;Logout
-        - else
-              li
-                a(href='/login')
-                  span.glyphicon.glyphicon-user &nbsp;Sign In
-              li
-                a(href='/register')
-                  span.glyphicon.glyphicon-plus-sign &nbsp;Sign Up
-              li
-                a(href='/v2.0.1/status')
-                  span.glyphicon.glyphicon-heart-empty
-                  |  API Status
-              li
-                a(href='https://github.com/mathcoll/Easy-IOT')
-                  span.fa.fa-github
-                  |  GitHub
+            li#dropdown.panel.panel-default
+              a(data-toggle='collapse', href='#dropdown-account')
+                img.img-responsive.img-circle(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=40&d=mm&r=g', width='40', align='left')
+                span #{user.firstName} #{user.lastName}
+                span.caret
+                br
+                span
+                  i.caps #{user.role}&nbsp;
+              // Dropdown account
+              #dropdown-account.panel-collapse.collapse
+                .panel-body
+                  ul.nav.navbar-nav
+                    li
+                      a(href='/profile')
+                        span.glyphicon.glyphicon-user &nbsp;Profile
+                    li
+                      a(href='/decision-rules')
+                        span.glyphicon.glyphicon-filter &nbsp;Decision Rules
+                    li
+                      a(href='/v2.0.1/status')
+                        span.glyphicon.glyphicon-heart-empty &nbsp;API Status
+                    li
+                      a(href='https://github.com/mathcoll/Easy-IOT')
+                        span.fa.fa-github &nbsp;&nbsp;&nbsp;&nbsp;GitHub
+                    li.divider(role='separator')
+                    li
+                      a(href='/logout')
+                        span.glyphicon.glyphicon-off &nbsp;Logout
+          - else
+            li
+              a(href='/login')
+                span.glyphicon.glyphicon-user
+                |  Sign In
+            li
+              a(href='/register')
+                span.glyphicon.glyphicon-plus-sign
+                |  Sign Up
+            li
+              a(href='/v2.0.1/status')
+                span.glyphicon.glyphicon-heart-empty
+                |  API Status
+            li
+              a(href='https://github.com/mathcoll/Easy-IOT')
+                span.fa.fa-github
+                |  &nbsp;GitHub

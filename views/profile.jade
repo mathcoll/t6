@@ -3,275 +3,276 @@ html(lang='en')
   include ./includes/head.jade
   body
     include ./includes/navbar.jade
-    .container
-      .starter-template
+
+    .container-fluid
+      .row.side-body
         h2.glyphicon.glyphicon-user  Profile of #{user.firstName} #{user.lastName}
 
-      .col-sm-4
-        .panel.panel-default
-          .panel-body
-            img.img-responsive.img-thumbnail.center-block(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g', alt='Profile Image')
-            a.center-block.btn.btn-primary.btn-xm(href="http://www.gravatar.com", role="button") 
-              span.glyphicon.glyphicon-picture  Modify On Gravatar
-            h3 General Information
-            ul.profile-details
-              li.media
-                span
-                  i.glyphicon.glyphicon-user
-                  |  First-Name:
-                i(style='font-size: 18px;')  #{user.firstName}
-
-              li.media
-                span
-                  i.glyphicon.glyphicon-user
-                  |  Last-Name:
-                i(style='font-size: 18px;')  #{user.lastName}
-
-              li.media
-                span
-                  i.fa.fa-briefcase
-                  |  Plan Type:
-                i.caps(style='font-size: 18px;')  #{user.role}
-
-              - if ( gravatar.entry[0].currentLocation )
+    .container-fluid
+      .row.side-body
+        .col-sm-4
+          .panel.panel-default
+            .panel-body
+              img.img-responsive.img-thumbnail.center-block(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g', alt='Profile Image')
+              a.center-block.btn.btn-primary.btn-xm(href="http://www.gravatar.com", role="button") 
+                span.glyphicon.glyphicon-picture  Modify On Gravatar
+              h3 General Information
+              ul.profile-details
                 li.media
                   span
-                    i.glyphicon.glyphicon-map-marker
-                    |  Location:
-                  i(style='font-size: 18px;')  #{gravatar.entry[0].currentLocation}
-              - end
+                    i.glyphicon.glyphicon-user
+                    |  First-Name:
+                  i(style='font-size: 18px;')  #{user.firstName}
 
-            h3 Contact Information
-            ul.profile-details
-              li.media
-                span
-                  i.fa.fa-envelope
-                  |  E-mail:
-                i(style='font-size: 18px;')  #{user.email}
+                li.media
+                  span
+                    i.glyphicon.glyphicon-user
+                    |  Last-Name:
+                  i(style='font-size: 18px;')  #{user.lastName}
 
-              - if ( gravatar.entry[0].ims )
-                - for ( i in gravatar.entry[0].ims )
-                  - var im = gravatar.entry[0].ims[i]
-                  - var icon = ''
-                  - var href = ''
-                  - if ( im.type == 'skype' )
-                    - icon = 'fa-skype'
-                    - href = 'skype:'+im.value+'?call'
-                  - end
-                  - if ( im.type == 'yahoo' )
-                    - icon = 'fa-yahoo'
-                    - href = 'yahoo:'+im.value
-                  - end
-                  - if ( im.type == 'gtalk' )
-                    - icon = 'fa-google'
-                    - href = 'xmpp:'+im.value
-                  - end
-                  - if ( im.type == 'icq' )
-                    - icon = 'fa-icq'
-                    - href = 'http://'+im.value
-                  - end
-                  - if ( im.type == 'icq' )
-                    - icon = 'fa-icq'
-                    - href = 'http://'+im.value
-                  - end
+                li.media
+                  span
+                    i.fa.fa-briefcase
+                    |  Plan Type:
+                  i.caps(style='font-size: 18px;')  #{user.role}
 
+                - if ( gravatar.entry[0].currentLocation )
                   li.media
                     span
-                      i.fa(class="#{icon}")
-                      |  #{im.type}:&nbsp;
-                    a(style='font-size: 18px;', href="#{href}") #{im.value}
+                      i.glyphicon.glyphicon-map-marker
+                      |  Location:
+                    i(style='font-size: 18px;')  #{gravatar.entry[0].currentLocation}
                 - end
-              - end
-                
-              - if ( gravatar.entry[0].urls )
+
+              h3 Contact Information
+              ul.profile-details
                 li.media
                   span
-                  - for ( i in gravatar.entry[0].urls )
-                    - var url = gravatar.entry[0].urls[i]
-                    a(href="#{url.value}")
-                      button.btn.btn-simple.fa.fa-link #{url.title}
-                    | &nbsp;
+                    i.fa.fa-envelope
+                    |  E-mail:
+                  i(style='font-size: 18px;')  #{user.email}
+
+                - if ( gravatar.entry[0].ims )
+                  - for ( i in gravatar.entry[0].ims )
+                    - var im = gravatar.entry[0].ims[i]
+                    - var icon = ''
+                    - var href = ''
+                    - if ( im.type == 'skype' )
+                      - icon = 'fa-skype'
+                      - href = 'skype:'+im.value+'?call'
+                    - end
+                    - if ( im.type == 'yahoo' )
+                      - icon = 'fa-yahoo'
+                      - href = 'yahoo:'+im.value
+                    - end
+                    - if ( im.type == 'gtalk' )
+                      - icon = 'fa-google'
+                      - href = 'xmpp:'+im.value
+                    - end
+                    - if ( im.type == 'icq' )
+                      - icon = 'fa-icq'
+                      - href = 'http://'+im.value
+                    - end
+                    - if ( im.type == 'icq' )
+                      - icon = 'fa-icq'
+                      - href = 'http://'+im.value
+                    - end
+
+                    li.media
+                      span
+                        i.fa(class="#{icon}")
+                        |  #{im.type}:&nbsp;
+                      a(style='font-size: 18px;', href="#{href}") #{im.value}
                   - end
+                - end
+                
+                - if ( gravatar.entry[0].urls )
+                  li.media
+                    span
+                    - for ( i in gravatar.entry[0].urls )
+                      - var url = gravatar.entry[0].urls[i]
+                      a(href="#{url.value}")
+                        button.btn.btn-simple.fa.fa-link #{url.title}
+                      | &nbsp;
+                    - end
+                - end
+
+              - if ( gravatar.entry[0].currency )
+                h3 Crypto-currencies
+                - for ( i in gravatar.entry[0].currency )
+                  - var curr = gravatar.entry[0].currency[i]
+                  button.btn.btn-simple.fa.fa-bitcoin(title="#{curr.type}")
+                  |  #{curr.value}
+                - end
               - end
 
-            - if ( gravatar.entry[0].currency )
-              h3 Crypto-currencies
-              - for ( i in gravatar.entry[0].currency )
-                - var curr = gravatar.entry[0].currency[i]
-                button.btn.btn-simple.fa.fa-bitcoin(title="#{curr.type}")
-                |  #{curr.value}
+              - if ( gravatar.entry[0].accounts )
+                h3 Social links
+                - for ( i in gravatar.entry[0].accounts )
+                  - var account = gravatar.entry[0].accounts[i]
+                  - var icon = ''
+                  - if ( account.shortname == 'facebook' )
+                    - icon = 'fa-facebook-square'
+                  - end
+                  - if ( account.shortname == 'twitter' )
+                    - icon = 'fa-twitter-square'
+                - end
+                  - if ( account.shortname == 'linkedin' )
+                    - icon = 'fa-linkedin-square'
+                  - end
+                  - if ( account.shortname == 'google' )
+                    - icon = 'fa-google-plus-square'
+                  - end
+                  - if ( account.shortname == 'facebook' )
+                    - icon = 'fa-facebook-square'
+                  - end
+                  - if ( account.shortname == 'youtube' )
+                    - icon = 'fa-youtube-square'
+                  - end
+                  - if ( account.shortname == 'pinterest' )
+                    - icon = 'fa-pinterest-square'
+                  - end
+
+                  a(href="#{account.url}")
+                    button.btn.btn-simple.fa(class="#{icon}") &nbsp;
+                  | &nbsp;
+                - end
               - end
-            - end
 
-            - if ( gravatar.entry[0].accounts )
-              h3 Social links
-              - for ( i in gravatar.entry[0].accounts )
-                - var account = gravatar.entry[0].accounts[i]
-                - var icon = ''
-                - if ( account.shortname == 'facebook' )
-                  - icon = 'fa-facebook-square'
-                - end
-                - if ( account.shortname == 'twitter' )
-                  - icon = 'fa-twitter-square'
-                - end
-                - if ( account.shortname == 'linkedin' )
-                  - icon = 'fa-linkedin-square'
-                - end
-                - if ( account.shortname == 'google' )
-                  - icon = 'fa-google-plus-square'
-                - end
-                - if ( account.shortname == 'facebook' )
-                  - icon = 'fa-facebook-square'
-                - end
-                - if ( account.shortname == 'youtube' )
-                  - icon = 'fa-youtube-square'
-                - end
-                - if ( account.shortname == 'pinterest' )
-                  - icon = 'fa-pinterest-square'
-                - end
+            .panel-footer
+              button.btn.btn-primary.m-t.pull-right
+                span.glyphicon.glyphicon-pencil  Edit
+              p &nbsp;
 
-                a(href="#{account.url}")
-                  button.btn.btn-simple.fa(class="#{icon}") &nbsp;
-                | &nbsp;
-              - end
-            - end
+        .col-sm-8
+          .panel.panel-default
+            .panel-body
+              h3#objects.list-group User Statistics
+                #accordion.panel-group(role='tablist', aria-multiselectable='true')
+                  .panel.panel-default
+                    #headingObjects.panel-heading(role='tab')
+                      h4.panel-title
+                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+                          span.glyphicon.glyphicon-inbox
+                          |  #{objects} Objects
+                        a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+                    #collapseObjects.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingObjects')
+                      .panel-body
+                        |  &ndash;
+                        small  Your library is containing #{objects}/#{quota.objects} 
+                          a(href='/objects') Objects
+                          | .
+                        div.progress
+                          - var percent = Math.round((objects*100/quota.objects)*100) /100
+                          - var style = "success"
+                          - if (percent > 60)
+                            - style = "warning"
+                          - end
+                          - if (percent > 85)
+                            - style = "danger"
+                          - end
+                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%")
 
-          .panel-footer
-            button.btn.btn-primary.m-t.pull-right
-              span.glyphicon.glyphicon-pencil  Edit
-            p &nbsp;
-
-      .col-sm-8
-        .panel.panel-default
-          .panel-body
-            h3#objects.list-group User Statistics
-              #accordion.panel-group(role='tablist', aria-multiselectable='true')
-                .panel.panel-default
-                  #headingObjects.panel-heading(role='tab')
-                    h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
-                        span.glyphicon.glyphicon-inbox
-                        |  #{objects} Objects
-                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
-                  #collapseObjects.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingObjects')
-                    .panel-body
-                      |  &ndash;
-                      small  Your library is containing #{objects}/#{quota.objects} 
-                        a(href='/objects') Objects
-                        | .
-                      div.progress
-                        - var percent = Math.round((objects*100/quota.objects)*100) /100
-                        - var style = "success"
-                        - if (percent > 60)
-                          - style = "warning"
-                        - end
-                        - if (percent > 85)
-                          - style = "danger"
-                        - end
-                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%")
-
-                  #headingFlows.panel-heading(role='tab')
-                    h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
-                        span.glyphicon.glyphicon-random
-                        |  #{flows} Flows
-                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
-                  #collapseFlows.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFlows')
-                    .panel-body
-                      |  &ndash;
-                      small  Your library is containing #{flows}/#{quota.flows} 
-                        a(href='/flows') Flows
-                        | .
-                      div.progress
-                        - var percent = Math.round((flows*100/quota.flows)*100) /100
-                        - var style = "success"
-                        - if (percent > 60)
-                          - style = "warning"
-                        - end
-                        - if (percent > 85)
-                          - style = "danger"
-                        - end
-                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{flows}", aria-valuemin="0", aria-valuemax="#{quota.flows}", style="width: #{percent}%")
+                    #headingFlows.panel-heading(role='tab')
+                      h4.panel-title
+                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+                          span.glyphicon.glyphicon-random
+                          |  #{flows} Flows
+                        a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+                    #collapseFlows.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFlows')
+                      .panel-body
+                        |  &ndash;
+                        small  Your library is containing #{flows}/#{quota.flows} 
+                          a(href='/flows') Flows
+                          | .
+                        div.progress
+                          - var percent = Math.round((flows*100/quota.flows)*100) /100
+                          - var style = "success"
+                          - if (percent > 60)
+                            - style = "warning"
+                          - end
+                          - if (percent > 85)
+                            - style = "danger"
+                          - end
+                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{flows}", aria-valuemin="0", aria-valuemax="#{quota.flows}", style="width: #{percent}%")
                         
+                    #headingRules.panel-heading(role='tab')
+                      h4.panel-title
+                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                          span.glyphicon.glyphicon-filter
+                          |  #{rules} Rules
+                        a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                    #collapseRules.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingRules')
+                      .panel-body
+                        |  &ndash;
+                        small  Your library is containing #{rules}/#{quota.rules} 
+                          a(href='/decision-rules') Rules
+                          | .
+                        div.progress
+                          - var percent = Math.round((rules*100/quota.rules)*100) /100
+                          - var style = "success"
+                          - if (percent > 60)
+                            - style = "warning"
+                          - end
+                          - if (percent > 85)
+                            - style = "danger"
+                          - end
+                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%")
 
-                  #headingRules.panel-heading(role='tab')
-                    h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
-                        span.glyphicon.glyphicon-filter
-                        |  #{rules} Rules
-                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
-                  #collapseRules.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingRules')
-                    .panel-body
-                      |  &ndash;
-                      small  Your library is containing #{rules}/#{quota.rules} 
-                        a(href='/decision-rules') Rules
-                        | .
-                      div.progress
-                        - var percent = Math.round((rules*100/quota.rules)*100) /100
-                        - var style = "success"
-                        - if (percent > 60)
-                          - style = "warning"
-                        - end
-                        - if (percent > 85)
-                          - style = "danger"
-                        - end
-                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%")
-                        
-
-                  #headingKeys.panel-heading(role='tab')
-                    h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
-                        span.glyphicon.glyphicon-flash
-                        |  #{tokens.length}  API Keys
-                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
-                  #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
-                    .panel-body
-                      small
-                        ul
-                          - for(token in tokens) {
-                            if (tokens[token].key && tokens[token].key)
-                              li K/S #{tokens[token].secret}/#{tokens[token].secret}
-                            else
-                              li Bearer #{tokens[token].token}
-                            if tokens[token].expiration
-                              div (Exp.: #{tokens[token].expiration})
-                            if tokens[token].permissions
-                              div Permissions:
-                              - for(p in tokens[token].permissions) {
-                                a(title='/flows/#{(tokens[token].permissions)[p].flow_id}') #{(tokens[token].permissions)[p].permission}, 
-                              - }
-                          - }
+                    #headingKeys.panel-heading(role='tab')
+                      h4.panel-title
+                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                          span.glyphicon.glyphicon-flash
+                          |  #{tokens.length}  API Keys
+                        a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                    #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
+                      .panel-body
+                        small
+                          ul
+                            - for(token in tokens) {
+                              if (tokens[token].key && tokens[token].key)
+                                li K/S #{tokens[token].secret}/#{tokens[token].secret}
+                              else
+                                li Bearer #{tokens[token].token}
+                              if tokens[token].expiration
+                                div (Exp.: #{tokens[token].expiration})
+                                if tokens[token].permissions
+                                  div Permissions:
+                                - for(p in tokens[token].permissions) {
+                                  a(title='/flows/#{(tokens[token].permissions)[p].flow_id}') #{(tokens[token].permissions)[p].permission}, 
+                                - }
+                            - }
                       
-                  #headingCalls.panel-heading(role='tab')
-                    h4.panel-title
-                      a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
-                        span.glyphicon.glyphicon-flash
-                        |  #{calls} API calls
-                      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
-                  #collapseCalls.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingCalls')
-                    .panel-body
-                      |  &ndash;
-                      small  You have consumed #{calls}/#{quota.calls} API calls in the past 7 days.
-                      div.progress
-                        - var percent = Math.round((calls*100/quota.calls)*100) /100
-                        - var style = "success"
-                        - if (percent > 60)
-                          - style = "warning"
-                        - end
-                        - if (percent > 85)
-                          - style = "danger"
-                        - end
-                        div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
+                    #headingCalls.panel-heading(role='tab')
+                      h4.panel-title
+                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+                          span.glyphicon.glyphicon-flash
+                          |  #{calls} API calls
+                        a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+                    #collapseCalls.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingCalls')
+                      .panel-body
+                        |  &ndash;
+                        small  You have consumed #{calls}/#{quota.calls} API calls in the past 7 days.
+                        div.progress
+                          - var percent = Math.round((calls*100/quota.calls)*100) /100
+                          - var style = "success"
+                          - if (percent > 60)
+                            - style = "warning"
+                          - end
+                          - if (percent > 85)
+                            - style = "danger"
+                          - end
+                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
 
-      .col-sm-8
-        .panel.panel-default
-          .panel-body
-            h3#objects.list-group Last Data inserted
-            include ./includes/data_item_list.jade
-            include ./includes/data_item_list.jade
-            include ./includes/data_item_list.jade
-            include ./includes/data_item_list.jade
-            include ./includes/data_item_list.jade
+        .col-sm-8
+          .panel.panel-default
+            .panel-body
+              h3#objects.list-group Last Data inserted
+              include ./includes/data_item_list.jade
+              include ./includes/data_item_list.jade
+              include ./includes/data_item_list.jade
+              include ./includes/data_item_list.jade
+              include ./includes/data_item_list.jade
 
     include ./includes/foot.jade
 

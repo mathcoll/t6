@@ -3,24 +3,27 @@ html(lang='en')
   include ./includes/head.jade
   body
     include ./includes/navbar.jade
-    .container
-      .starter-template
-        h2 Easy-IOT sign-in
 
-      .col-sm-12
-        form.form-signin(method="post", action="/login")
-          h3.form-signin-heading Please sign-in
-          div.alert(class='alert-danger', role='alert') Please Sign-in to see the page you are looking for.
+    .container-fluid
+      .row.side-body
+        .col-sm-6.col-md-4.col-md-offset-4
+          h2.text-center.login-title Sign-in to Easy-IOT
 
-          label.sr-only(for='key') Key
-          input#key.form-control(name='key', type='key', placeholder='Key', required='', autofocus='')
-          label.sr-only(for='secret') Secret
-          input#secret.form-control(name='secret', type='password', placeholder='Secret', required='')
-          .checkbox
-            label
-              input(type='checkbox', value='remember-me')
-              |  Remember me
-          button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-in
+          .account-wall
+            img.profile-img(src='/img/defaultuser.png', alt='')
+            
+            form.form-signin(method="post", action="/login")
+              div.alert(class='alert-danger', role='alert') Please Sign-in to see the page you are looking for.
+
+              label.sr-only(for='key') Key
+              input#key.form-control(name='key', type='key', placeholder='Key', required='', autofocus='')
+              label.sr-only(for='secret') Secret
+              input#secret.form-control(name='secret', type='password', placeholder='Secret', required='')
+              button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign-in
+              a.need-help(href='#') Need help? 
+            
+              span.clearfix
+            a.text-center.new-account(href='/register') Sign-up
 
     .container &nbsp;
     .container &nbsp;

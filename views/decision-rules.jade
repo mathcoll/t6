@@ -3,19 +3,20 @@ html(lang='en')
   include ./includes/head.jade
   body
     include ./includes/navbar.jade
-    .container
-      .starter-template
+
+    .container-fluid
+      .row.side-body
         h2.glyphicon.glyphicon-filter &nbsp;Decision Rules
+        blockquote.glyphicon.glyphicon-comment  "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months. To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
 
-      #accordion.col-sm-8.panel-group(role='tablist', aria-multiselectable='true')
-        ol#sortable
-          - for(rule in rules) {
-            include ./includes/rule_item_list.jade
-          - }
+    .container-fluid
+      .row.side-body
+        #accordion.col-sm-12.panel-group(role='tablist', aria-multiselectable='true')
+          ol#sortable
+            - for(rule in rules) {
+              include ./includes/rule_item_list.jade
+            - }
 
-      .col-sm-4
-        div.affix-top
-          blockquote.glyphicon.glyphicon-comment  "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months. To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
 
     include ./includes/foot.jade
     script(type='text/javascript').

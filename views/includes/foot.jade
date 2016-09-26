@@ -7,7 +7,7 @@ footer.footer.navbar-fixed-bottom
             span.center-block Objects
         
         -if ( currentUrl === '/objects' )
-          a.btn-group.btn(href='#add', title='Add an Object')
+          a.btn-group.btn(href='/objects/add', title='Add an Object')
             i.glyphicon.glyphicon-plus
               span.center-block Add Object
         
@@ -16,7 +16,7 @@ footer.footer.navbar-fixed-bottom
             span.center-block Flows
         
         -if ( currentUrl === '/flows' )
-          a.btn-group.btn(href='#add', data-toggle='tooltip-', data-placement='top', title='Add an Object')
+          a.btn-group.btn(href='/flows/add', data-toggle='tooltip-', data-placement='top', title='Add an Object')
             i.glyphicon.glyphicon-plus
               span.center-block Add Flow
         
@@ -68,6 +68,28 @@ script(src='/js/selectize.js/selectize-0.12.1.js')
 script(src='/js/query-builder/query-builder-2.3.3.js')
 script(src='/js/jquery-ui/jquery-ui-1.11.4.min.js')
 script(src='/js/bootstrap-notify/bootstrap-notify-3.1.3.min.js')
+
+script(type='text/javascript').
+  $(function () {
+  $('.navbar-toggle').click(function () {
+  $('.navbar-nav').toggleClass('slide-in');
+  $('.side-body').toggleClass('body-slide-in');
+  $('#search').removeClass('in').addClass('collapse').slideUp(200);
+  // uncomment code for absolute positioning tweek see top comment in css
+  //$('.absolute-wrapper').toggleClass('slide-in');
+  });
+  // Remove menu for searching
+  $('#search-trigger').click(function () {
+  $('.navbar-nav').removeClass('slide-in');
+  $('.side-body').removeClass('body-slide-in');
+  // uncomment code for absolute positioning tweek see top comment in css
+  //$('.absolute-wrapper').removeClass('slide-in');
+  });
+  });
+
+
+
+
 
 script(type='text/javascript', src='/js/bootstrap.min.js')
 // IE10 viewport hack for Surface/desktop Windows 8 bug
