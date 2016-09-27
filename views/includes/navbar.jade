@@ -18,7 +18,7 @@
 
           // Search
           a#search-trigger.btn.btn-default(data-toggle='collapse', href='#search')
-            span.glyphicon.glyphicon-search
+            span.fa.fa-search
           // Search body
           #search.panel-collapse.collapse
             .panel-body
@@ -33,15 +33,15 @@
           - if (user)
             li
               a(href='/objects')
-                span.glyphicon.glyphicon-inbox
+                span.fa.fa-cubes
                 |  Objects
             li
               a(href='/flows')
-                span.glyphicon.glyphicon-random
+                span.fa.fa-random
                 |  Flows
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-dashboards')
-                span.glyphicon.glyphicon-th-list
+                span.fa.fa-area-chart
                 |  My Dashboards
                 span.caret
               // Dropdown dashboards
@@ -50,10 +50,10 @@
                   ul.nav.navbar-nav
                     li
                       a(href='/dashboards/1')
-                        span.glyphicon.glyphicon-th-large &nbsp;Dashboard 1
+                        span.fa.fa-line-chart &nbsp;Dashboard 1
                     li
                       a(href='/dashboards/2')
-                        span.glyphicon.glyphicon-th-large &nbsp;Dashboard 2
+                        span.fa.fa-line-chart &nbsp;Dashboard 2
 
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-account')
@@ -69,32 +69,32 @@
                   ul.nav.navbar-nav
                     li
                       a(href='/profile')
-                        span.glyphicon.glyphicon-user &nbsp;Profile
+                        span.fa.fa-user &nbsp;Profile
                     li
                       a(href='/decision-rules')
-                        span.glyphicon.glyphicon-filter &nbsp;Decision Rules
+                        span.fa.fa-filter &nbsp;Decision Rules
                     li
                       a(href='/v2.0.1/status')
-                        span.glyphicon.glyphicon-heart-empty &nbsp;API Status
+                        span.fa.fa-heart-o &nbsp;API Status
                     li
                       a(href='https://github.com/mathcoll/Easy-IOT')
-                        span.fa.fa-github &nbsp;&nbsp;&nbsp;&nbsp;GitHub
+                        span.fa.fa-github &nbsp;GitHub
                     li.divider(role='separator')
                     li
                       a(href='/logout')
-                        span.glyphicon.glyphicon-off &nbsp;Logout
+                        span.fa.fa-sign-out &nbsp;Logout
           - else
             li
               a(href='/login')
-                span.glyphicon.glyphicon-user
+                span.fa.fa-user 
                 |  Sign In
             li
               a(href='/register')
-                span.glyphicon.glyphicon-plus-sign
+                span.fa.fa-user-plus
                 |  Sign Up
             li
               a(href='/v2.0.1/status')
-                span.glyphicon.glyphicon-heart-empty
+                span.fa.fa-heart-o
                 |  API Status
             li
               a(href='https://github.com/mathcoll/Easy-IOT')

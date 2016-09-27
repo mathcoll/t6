@@ -6,7 +6,7 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        h2.glyphicon.glyphicon-inbox &nbsp;Add Object to your library
+        h2.fa.fa-2x.fa-cube &nbsp;Add Object to your library
 
         if (message && message.type == 'danger' && message.value)
         .col-sm-12(class='alert alert-#{message.type}')#add
@@ -21,7 +21,7 @@ html(lang='en')
                   span.mandatory *
                 span.input-group
                   span.input-group-addon
-                    span.glyphicon.glyphicon-inbox
+                    span.fa.fa-cubes
                   input.form-control(type="text", name="name", placeholder="Object Name", id="name", value=new_object.name)
 
               .form-group

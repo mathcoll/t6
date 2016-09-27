@@ -6,7 +6,8 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        h2 Graph a Flow
+        .col-sm-12
+          h2.fa.fa-2x.fa-random &nbsp;Graph a Flow
 
         div(class='col-sm-#{graph_layout}')
           .panel.panel-default
@@ -19,6 +20,7 @@ html(lang='en')
             .panel-body.collapse.in#collapseGraph1
                #graph1.col-xs-12(style='height:300px;')
             .panel-footer
+            a.m-t.pull-left(href="/flows") ← Back to Flows
 
         .col-sm-4
           div.affix-top
@@ -29,8 +31,6 @@ html(lang='en')
             h3 Setup a Flow to graph
             include ./includes/graph_form.jade
 
-        .col-sm-12
-          a.m-t.pull-left(href="/flows") ← Back to Flows
 
     include ./includes/foot.jade
     #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')

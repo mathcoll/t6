@@ -7,7 +7,7 @@ html(lang='en')
     .container-fluid
       .row.side-body
         .col-sm-12
-          h2.glyphicon.glyphicon-inbox &nbsp;Object&nbsp;
+          h2.fa.fa-2x.fa-cube &nbsp;Object&nbsp;
             strong #{object.name}
           if (message && message.type && message.value)
             div.alert(class='alert-#{message.type}', role='alert') #{message.value}
@@ -73,7 +73,8 @@ html(lang='en')
                 dt isPublic:
                 dd
                   span.label.label-default #{object.isPublic}
-                  blockquote.glyphicon.glyphicon-comment  Public Objects can be visible to everybody.
+                  div
+                    blockquote.glyphicon.glyphicon-comment  Public Objects can be visible to everybody.
               -end
             
               dt Description:

@@ -4,33 +4,33 @@ footer.footer.navbar-fixed-bottom
       - if (user)
         -if ( currentUrl === '/objects' || currentUrl === '/objects/' )
           a.btn-group.btn(href='/objects/add', title='Add an Object')
-            i.glyphicon.glyphicon-plus
+            i.fa.fa-2x.fa-plus-square
               span.center-block Add Object
         -else
           a.btn-group.btn(href='/objects', data-toggle='tooltip-', data-placement='top', title='My Objects')
-            i.glyphicon.glyphicon-inbox  
+            i.fa.fa-2x.fa-cubes  
               span.center-block Objects
         
         -if ( currentUrl === '/flows' || currentUrl === '/flows/' )
           a.btn-group.btn(href='/flows/add', data-toggle='tooltip-', data-placement='top', title='Add an Object')
-            i.glyphicon.glyphicon-plus
+            i.fa.fa-2x.fa-plus-square
               span.center-block Add Flow
         -else
           a.btn-group.btn(href='/flows' data-toggle='tooltip-', data-placement='top', title='My Flows')
-            i.glyphicon.glyphicon-random  
+            i.fa.fa-2x.fa-random  
               span.center-block Flows
         
         a.btn-group.btn(href='/profile', data-toggle='tooltip-', data-placement='top', title='My Profile')
-          i.glyphicon.glyphicon-user  
+          i.fa.fa-2x.fa-user  
             span.center-block Profile
             
       - else
         a.btn-group.btn(href='/login', data-toggle='tooltip-', data-placement='top', title='Sign In')
-          i.glyphicon.glyphicon-user    
+          i.fa.fa-2x.fa-user    
             span.center-block Sign In
             
         a.btn-group.btn(href='/register', data-toggle='tooltip-', data-placement='top', title='Sign Up')
-          i.glyphicon.glyphicon-plus-sign    
+          i.fa.fa-2x.fa-user-plus
             span.center-block Sign Up
 
   .container.hidden-xs.text-center
@@ -45,7 +45,7 @@ footer.footer.navbar-fixed-bottom
 
     span &nbsp;&ndash;&nbsp;
     a(href='/v2.0.1/status')
-      span.glyphicon.glyphicon-heart-empty
+      span.fa.fa-heart-o
       |  API Status
 
     span &nbsp;&ndash;&nbsp;

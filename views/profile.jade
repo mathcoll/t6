@@ -6,7 +6,7 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        h2.glyphicon.glyphicon-user  Profile of #{user.firstName} #{user.lastName}
+        h2.fa.fa-2x.fa-user  Profile of #{user.firstName} #{user.lastName}
 
     .container-fluid
       .row.side-body
@@ -20,13 +20,13 @@ html(lang='en')
               ul.profile-details
                 li.media
                   span
-                    i.glyphicon.glyphicon-user
+                    i.fa.fa-user 
                     |  First-Name:
                   i(style='font-size: 18px;')  #{user.firstName}
 
                 li.media
                   span
-                    i.glyphicon.glyphicon-user
+                    i.fa.fa-user 
                     |  Last-Name:
                   i(style='font-size: 18px;')  #{user.lastName}
 
@@ -153,7 +153,7 @@ html(lang='en')
                     #headingObjects.panel-heading(role='tab')
                       h4.panel-title
                         a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
-                          span.glyphicon.glyphicon-inbox
+                          span.fa.fa-cubes
                           |  #{objects} Objects
                         a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
                     #collapseObjects.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingObjects')
@@ -176,7 +176,7 @@ html(lang='en')
                     #headingFlows.panel-heading(role='tab')
                       h4.panel-title
                         a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
-                          span.glyphicon.glyphicon-random
+                          span.fa.fa-random
                           |  #{flows} Flows
                         a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
                     #collapseFlows.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFlows')
@@ -199,7 +199,7 @@ html(lang='en')
                     #headingRules.panel-heading(role='tab')
                       h4.panel-title
                         a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
-                          span.glyphicon.glyphicon-filter
+                          span.fa.fa-filter
                           |  #{rules} Rules
                         a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
                     #collapseRules.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingRules')
@@ -222,7 +222,7 @@ html(lang='en')
                     #headingKeys.panel-heading(role='tab')
                       h4.panel-title
                         a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
-                          span.glyphicon.glyphicon-flash
+                          span.fa.fa-flash
                           |  #{tokens.length}  API Keys
                         a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
                     #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
@@ -246,7 +246,7 @@ html(lang='en')
                     #headingCalls.panel-heading(role='tab')
                       h4.panel-title
                         a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
-                          span.glyphicon.glyphicon-flash
+                          span.fa.fa-flash
                           |  #{calls} API calls
                         a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
                     #collapseCalls.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingCalls')

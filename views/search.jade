@@ -6,10 +6,11 @@ html(lang='en')
     
     .container-fluid
       .row.side-body
+        .col-sm-12
         - if (q)
-            h2.glyphicon.glyphicon-search  Search Results for "#{q}"
+            h2.fa.fa-2x.fa-search  Search Results for "#{q}"
         - else
-            h2.glyphicon.glyphicon-search  Search Results
+            h2.fa.fa-2x.fa-search  Search Results
 
     .container-fluid
       .row.side-body

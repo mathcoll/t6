@@ -6,7 +6,7 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        h2.glyphicon.glyphicon-random &nbsp;Add a Flow to your library
+        h2.fa.fa-random &nbsp;Add a Flow to your library
         
         if (message && message.type == 'danger' && message.value)
         .col-sm-12(class='alert alert-#{message.type}')#add
@@ -21,7 +21,7 @@ html(lang='en')
                   span.mandatory *
                 span.input-group
                   span.input-group-addon
-                    span.glyphicon.glyphicon-random
+                    span.fa.fa-random
                   input.form-control(type="text", name="name", placeholder="Flow Name", id="name")
 
               .form-group
@@ -50,14 +50,14 @@ html(lang='en')
                 label.control-label(for="objects") Objects:
                 span.input-group
                   span.input-group-addon
-                    span.glyphicon.glyphicon-inbox
+                    span.fa.fa-cubes
                   select.form-control(multiple name="objects[]", placeholder="Objects", id="objects")
                     - for(object in objects) {
                       option(value="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
                     - }
 
               .form-group
-                label.glyphicon.glyphicon-user  Owner permission:&nbsp;&nbsp;
+                label.fa.fa-user  Owner permission:&nbsp;&nbsp;
                   br/ 
                   span
                     label.control-label(for="OpermissionW") Write 
@@ -67,7 +67,7 @@ html(lang='en')
                       input#OpermissionR(name='owner_permission', type='radio', value='4', disabled) 
                     
               .form-group
-                label.glyphicon.glyphicon-user  Group permission:&nbsp;&nbsp;
+                label.fa.fa-user  Group permission:&nbsp;&nbsp;
                   br/ 
                   span
                     label.control-label(for="GpermissionW") Write 
@@ -80,7 +80,7 @@ html(lang='en')
                       input#GpermissionN(name='group_permission', type='radio', value='0', checked='checked') 
                     
               .form-group
-                label.glyphicon.glyphicon-user  Other permission:&nbsp;&nbsp;
+                label.fa.fa-user  Other permission:&nbsp;&nbsp;
                   br/ 
                   span
                     label.control-label(for="ApermissionW") Write 
