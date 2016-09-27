@@ -11,91 +11,35 @@ html(lang='en')
       
     .container-fluid.dmarketing
       .row.side-body
-        .col-lg-3(style='min-height:345px')
-          hr.featurette-divider
-          span.center-text.glyphicon.glyphicon-record(style="font-size:94px;")
-          h2 Sense
-            small  events.
-          p
-            | Whether it's your own sensors or external Flows from Internet, sensors collect values and communicate them to the Easy-IOT.
-          p(style='bottom:0;position:absolute;width:235px;margin:0 15px;')
-            a.center-block.btn.btn-default(href='#', role='button') View details »
+        hr.featurette-divider
+        h2 Features
+        - var featurette = {class: "fa fa-flask", title: "Sense", subtitle: "events.", description: "Whether it's your own sensors or external Flows from Internet, sensors collect values and communicate them to the Easy-IOT.", link: "#"}
+        include ./includes/featurette.jade
+        
+        - var featurette = {class: "fa fa-database", title: "Store", subtitle: "values.", description: "Data Storage as time-series. SQLite Database for storage and planning to support additional DB in future releases.", link: "#"}
+        include ./includes/featurette.jade
+        
+        - var featurette = {class: "fa fa-eye", title: "Monitor", subtitle: "information.", description: "Real-time dashboards provides control on data captured by the sensors. You can easily monitor figures an track your data.", link: "#"}
+        include ./includes/featurette.jade
+        
+        - var featurette = {class: "fa fa-bell", title: "Alert", subtitle: "through email, sms, twitter, Mqtt...", description: "According to your own rules and data values, send alerts via email, SMS, Twitter... Decision-Rule allows you to control your alerts.", link: "#"}
+        include ./includes/featurette.jade
 
-        .col-lg-3(style='min-height:345px')
-          hr.featurette-divider
-          span.center-text.glyphicon.glyphicon-save(style="font-size:94px;")
-          h2 Store
-            small   values.
-          p
-            | Data Storage as time-series.
-          p(style='bottom:0;position:absolute;width:235px;margin:0 15px;')
-            a.center-block.btn.btn-default(href='#', role='button') View details »
-
-        .col-lg-3(style='min-height:345px')
-          hr.featurette-divider
-          span.center-text.glyphicon.glyphicon-eye-open(style="font-size:94px;")
-          h2 Monitor
-            small   information.
-          p
-            | Real-time dashboards provides control on data captured by the sensors.
-          p(style='bottom:0;position:absolute;width:235px;margin:0 15px;')
-            a.center-block.btn.btn-default(href='#', role='button') View details »
-
-        .col-lg-3(style='min-height:345px')
-          hr.featurette-divider
-          span.center-text.glyphicon.glyphicon-bullhorn(style="font-size:94px;")
-          h2 Alert
-            small    through email, sms, twitter, Mqtt...
-          p
-            | According to your own rules and data values, send alerts via email, SMS, Twitter...
-          p(style='bottom:0;position:absolute;width:235px;margin:0 15px;')
-            a.center-block.btn.btn-default(href='#', role='button') View details »
-
-
-      hr.featurette-divider
       .row.side-body.featurette
-        .col-md-7
-          h2.featurette-heading
-            | Objects 
-            span.text-muted Connected.
-          p.lead
-            | Embedded, Automatisation, Domotic, Sensors, any Objects can be connected and communicate to Easy-IOT via API.
-        .col-md-5
-          span.center-text.glyphicon.glyphicon-gift(style="font-size:128px;")
+        hr.featurette-divider
+        h2 How does it works
+        - var featurette = {class: "fa fa-cube", title: "Objects", subtitle: "Connected.", description: "Embedded, Automatisation, Domotic, Sensors, any Objects can be connected and communicate to Easy-IOT via API.", link: "#"}
+        include ./includes/featurette.jade
+        
+        - var featurette = {class: "fa fa-random", title: "Data Flows", subtitle: "as Time-series.", description: "Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.", link: "#"}
+        include ./includes/featurette.jade
 
-      hr.featurette-divider
-      .row.side-body.featurette
-        .col-md-7.col-md-push-5
-          h2.featurette-heading
-            | Data Flows 
-            span.text-muted as Time-series.
-          p.lead
-            |  Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.
-        .col-md-5.col-md-pull-7
-          span.center-text.glyphicon.glyphicon-random(style="font-size:128px;")
+        
+        - var featurette = {class: "fa fa-area-chart", title: "Customizable", subtitle: "Dashboards.", description: "Graphics, data-management, Monitoring, Reporting.", link: "#"}
+        include ./includes/featurette.jade
 
-      hr.featurette-divider
-      .row.side-body.featurette
-        .col-md-7
-          h2.featurette-heading
-            | Dashboards 
-            span.text-muted customizable.
-          p.lead
-            | Graphics, data-management, Monitoring, Reporting.
-        .col-md-5
-          span.center-text.glyphicon.glyphicon-dashboard(style="font-size:128px;")
+        - var featurette = {class: "fa fa-clock-o", title: "API", subtitle: "as Time-series events.", description: "Update flows using the API and remotely manage you data.", link: "#"}
+        include ./includes/featurette.jade
 
-      hr.featurette-divider
-      .row.side-body.featurette
-        .col-md-7.col-md-push-5
-          h2.featurette-heading
-            | API 
-            span.text-muted Time-series, plain-text data.
-          p.lead
-            | Update flows using the API and remotely manage you data.
-        .col-md-5.col-md-pull-7
-          span.center-text.glyphicon.glyphicon-time(style="font-size:128px;")
-
-      hr.featurette-divider
 
     include ./includes/foot.jade
