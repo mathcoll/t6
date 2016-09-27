@@ -11,6 +11,16 @@ html(lang='en')
         - else
             h2.glyphicon.glyphicon-search  Search Results
 
+    .container-fluid
+      .row.side-body
+        div
+          h3 Search Results
+          ul
+            li
+              a(href="#objects") #{objects.length} Objects
+            li
+              a(href="#flows") #{flows.length} Flows
+
     .container-fluid#objects
       .row.side-body
         h3 #{objects.length} Objects found
@@ -23,15 +33,6 @@ html(lang='en')
             .list-group-item
               .alert.alert-danger.alert-dismissible(role='alert')
                 p No Result in Objects
-
-      .row.side-body
-        div
-          h3 Search Results
-          ul
-            li
-              a(href="#objects") #{objects.length} Objects
-            li
-              a(href="#flows") #{flows.length} Flows
 
     .container-fluid#flows
       .row.side-body

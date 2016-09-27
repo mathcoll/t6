@@ -2,23 +2,23 @@ footer.footer.navbar-fixed-bottom
   .visible-xs-block
     .btn-group.btn-group-justified
       - if (user)
-        a.btn-group.btn(href='/objects', data-toggle='tooltip-', data-placement='top', title='My Objects')
-          i.glyphicon.glyphicon-inbox  
-            span.center-block Objects
-        
-        -if ( currentUrl === '/objects' )
+        -if ( currentUrl === '/objects' || currentUrl === '/objects/' )
           a.btn-group.btn(href='/objects/add', title='Add an Object')
             i.glyphicon.glyphicon-plus
               span.center-block Add Object
+        -else
+          a.btn-group.btn(href='/objects', data-toggle='tooltip-', data-placement='top', title='My Objects')
+            i.glyphicon.glyphicon-inbox  
+              span.center-block Objects
         
-        a.btn-group.btn(href='/flows' data-toggle='tooltip-', data-placement='top', title='My Flows')
-          i.glyphicon.glyphicon-random  
-            span.center-block Flows
-        
-        -if ( currentUrl === '/flows' )
+        -if ( currentUrl === '/flows' || currentUrl === '/flows/' )
           a.btn-group.btn(href='/flows/add', data-toggle='tooltip-', data-placement='top', title='Add an Object')
             i.glyphicon.glyphicon-plus
               span.center-block Add Flow
+        -else
+          a.btn-group.btn(href='/flows' data-toggle='tooltip-', data-placement='top', title='My Flows')
+            i.glyphicon.glyphicon-random  
+              span.center-block Flows
         
         a.btn-group.btn(href='/profile', data-toggle='tooltip-', data-placement='top', title='My Profile')
           i.glyphicon.glyphicon-user  
