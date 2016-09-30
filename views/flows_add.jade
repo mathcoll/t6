@@ -6,7 +6,8 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        h2.fa.fa-random &nbsp;Add a Flow to your library
+        .col-sm-12
+          h2.fa.fa-2x.fa-random &nbsp;Add a Flow to your library
         
         if (message && message.type == 'danger' && message.value)
         .col-sm-12(class='alert alert-#{message.type}')#add

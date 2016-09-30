@@ -24,7 +24,7 @@
             .panel-body
               form.navbar-form(role='search', method='post', action='/search')
                 .form-group
-                  input.form-control(type='text', placeholder='Search Object, Flows...')
+                  input.form-control(name='q', type='text', placeholder='Search Object, Flows...')
                 button.btn.btn-default(type='submit')
                   span.glyphicon.glyphicon-ok
       // Main Menu
@@ -34,11 +34,11 @@
             li
               a(href='/objects')
                 span.fa.fa-cubes
-                |  Objects
+                |  My Objects
             li
               a(href='/flows')
                 span.fa.fa-random
-                |  Flows
+                |  My Flows
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-dashboards')
                 span.fa.fa-area-chart
@@ -99,4 +99,4 @@
             li
               a(href='https://github.com/mathcoll/Easy-IOT')
                 span.fa.fa-github
-                |  &nbsp;GitHub
+                |  GitHub
