@@ -2,15 +2,14 @@ doctype html
 html(lang='en')
   include ./includes/head.jade
   body
-    include ./includes/navbar.jade
-    
+    include ./includes/navbar-on-top.jade
 
     .container-fluid.marketing
-      .row.side-body
+      .row
         include ./includes/carousel.jade
       
-    .container-fluid.dmarketing
-      .row.side-body
+    .container-fluid.marketing
+      .row
         hr.featurette-divider
         h2 Features
         - var featurette = {class: "fa fa-flask", title: "Sense", subtitle: "events.", description: "Whether it's your own sensors or external Flows from Internet, sensors collect values and communicate them to the Easy-IOT.", link: "#"}
@@ -25,7 +24,17 @@ html(lang='en')
         - var featurette = {class: "fa fa-bell", title: "Alert", subtitle: "through email, sms, twitter, Mqtt...", description: "According to your own rules and data values, send alerts via email, SMS, Twitter... Decision-Rule allows you to control your alerts.", link: "#"}
         include ./includes/featurette.jade
 
-      .row.side-body.featurette
+      .row.featurette
+        hr.featurette-divider
+        #section3.container
+          .col-sm-8.col-sm-offset-2.text-center
+            h1 Easy-IOT is Mobile-first & Responsive
+            p
+              | Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.
+            img.img-responsive(src='/img/phone.jpg')
+            hr
+
+      .row.featurette
         hr.featurette-divider
         h2 How does it works
         - var featurette = {class: "fa fa-cubes", title: "Objects", subtitle: "Connected.", description: "Embedded, Automatisation, Domotic, Sensors, any Objects can be connected and communicate to Easy-IOT via API.", link: "#"}
@@ -41,5 +50,8 @@ html(lang='en')
         - var featurette = {class: "fa fa-clock-o", title: "API", subtitle: "as Time-series events.", description: "Update flows using the API and remotely manage you data.", link: "#"}
         include ./includes/featurette.jade
 
+      //.row.featurette
+      //  hr.featurette-divider
+      //  include ./includes/plans.jade
 
     include ./includes/foot.jade
