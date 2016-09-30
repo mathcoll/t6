@@ -45,10 +45,10 @@ nav
             span(aria-hidden='true') Next →
     li.separator &nbsp;
     li.pull-right
-      - if ( currentUrl === '/objects' )
+      - if ( currentUrl === '/objects' || currentUrl === '/objects/' )
         a.btn.btn-primary.m-t(href="/objects/add")
           span.glyphicon.glyphicon-plus  Add Object
-      - else if ( currentUrl === '/flows' )
+      - else if ( currentUrl === '/flows' || currentUrl === '/flows/' )
         a.btn.btn-primary.m-t(href="/flows/add")
           span.glyphicon.glyphicon-plus  Add Flow
 
