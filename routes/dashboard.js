@@ -37,7 +37,7 @@ router.get('/objects', Auth,  function(req, res) {
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	res.render('objects', {
-		title : 'Objects in my library',
+		title : 'My Objects',
 		objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 		new_object: {},
 		page: req.query.page,
@@ -100,7 +100,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			var err = new Error('Not Found');
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
-				title : 'Easy-IOT Not Found',
+				title : 'Not Found',
 				user: req.session.user
 			});
 		}
@@ -136,7 +136,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT Not Found',
+			title : 'Not Found',
 			user: req.session.user
 		});
 	}
@@ -175,7 +175,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT Not Found',
+			title : 'Not Found',
 			user: req.session.user
 		});
 	}
@@ -206,7 +206,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT Not Found',
+			title : 'Not Found',
 			user: req.session.user
 		});
 	}
@@ -244,7 +244,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			var err = new Error('Not Found');
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
-				title : 'Easy-IOT Not Found',
+				title : 'Not Found',
 				user: req.session.user
 			});
 		}
@@ -252,7 +252,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT Not Found',
+			title : 'Not Found',
 			user: req.session.user
 		});
 	}
@@ -277,7 +277,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 		var err = new Error('Not Found');
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
-			title : 'Easy-IOT Not Found',
+			title : 'Not Found',
 			user: req.session.user
 		});
 	}
@@ -326,7 +326,7 @@ router.post('/objects/add', Auth, function(req, res) {
 	
 	if ( error ) {
 		res.render('objects_add', {
-			title : 'Objects Easy-IOT',
+			title : 'Add an Objects',
 			objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 			new_object: new_object,
 			page: req.query.page,
@@ -352,7 +352,7 @@ router.get('/flows', Auth, function(req, res) {
 	var message = req.session.message!==null?req.session.message:null;
 	req.session.message = null; // Force to unset
 	res.render('flows', {
-		title : 'Flows Easy-IOT',
+		title : 'My Flows',
 		flows: f,
 		page: req.query.page,
 		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
@@ -504,7 +504,7 @@ router.get('/profile', Auth, function(req, res) {
 	request(options, function(error, response, body) {
 		if ( !error && response.statusCode != 404 ) {
 			res.render('profile', {
-				title : 'My Profile Easy-IOT',
+				title : 'My Profile',
 				objects : ((objects.chain().find(queryO).data()).length),
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
@@ -517,7 +517,7 @@ router.get('/profile', Auth, function(req, res) {
 			});
 		} else {
 			res.render('profile', {
-				title : 'My Profile Easy-IOT',
+				title : 'My Profile',
 				objects : ((objects.chain().find(queryO).data()).length),
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
@@ -534,7 +534,7 @@ router.get('/profile', Auth, function(req, res) {
 
 router.get('/search', Auth, function(req, res) {
 	res.render('search', {
-		title : 'Search Easy-IOT',
+		title : 'Search',
 		objects: [],
 		flows: [],
 		currentUrl: req.path,
@@ -547,7 +547,7 @@ router.post('/search', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	if (!req.body.q) {
 		res.render('search', {
-			title : 'Search Easy-IOT',
+			title : 'Search results',
 			objects: [],
 			flows: [],
 			currentUrl: req.path,
@@ -567,7 +567,7 @@ router.post('/search', Auth, function(req, res) {
 						]
 					};
 		res.render('search', {
-			title : 'Search Easy-IOT',
+			title : 'Search results',
 			objects: objects.find(queryO),
 			flows: flows.find(queryF),
 			q:req.body.q,
@@ -590,7 +590,7 @@ router.get('/decision-rules', Auth, function(req, res) {
 	*/
 	var r = rules.chain().find(queryR).simplesort('on', 'priority', 'name').data();
 	res.render('decision-rules', {
-		title : 'Decision Rules Easy-IOT',
+		title : 'Decision Rules',
 		user: req.session.user,
 		currentUrl: req.path,
 		rules: r,
@@ -645,7 +645,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 
 router.get('/register', function(req, res) {
 	res.render('register', {
-		title : 'Register to Easy-IOT',
+		title : 'Register',
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -688,7 +688,7 @@ router.post('/register', function(req, res) {
 					var err = new Error('Not Found');
 					err.status = 404;
 					res.status(err.status || 500).render(err.status, {
-						title : 'Easy-IOT Not Found',
+						title : 'Not Found',
 						user: req.session.user
 					});
 			    } else {
@@ -705,7 +705,7 @@ router.post('/register', function(req, res) {
 		//res.redirect('/profile');
 	} else {
 		res.render('register', {
-			title : 'Register to Easy-IOT',
+			title : 'Register',
 			user: req.session.user,
 			currentUrl: req.path,
 			message: {type: 'danger', value: 'Please, give me your name!'}
@@ -723,7 +723,7 @@ router.get('/mail/welcome', function(req, res) {
         expiration:			'',
 	};
 	res.render('emails/welcome', {
-		title : 'Log-in to Easy-IOT',
+		title : 'Log-in',
 		baseUrl: baseUrl,
 		user: fake_user,
 		currentUrl: req.path,
@@ -733,7 +733,7 @@ router.get('/mail/welcome', function(req, res) {
 
 router.get('/login', function(req, res) {
 	res.render('login', {
-		title : 'Log-in to Easy-IOT',
+		title : 'Log-in',
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -758,7 +758,7 @@ router.post('/login', Auth, function(req, res) {
 	if ( !req.session.user ) {
 		console.log("Error! invalid credentials, user not found");
 		res.render('login', {
-			title : 'Log-in Failed to Easy-IOT',
+			title : 'Log-in Failed',
 			currentUrl: req.path,
 			user: req.session.user
 		});
