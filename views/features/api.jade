@@ -1,0 +1,430 @@
+doctype html
+html(lang='en')
+  include ../includes/head.jade
+  body
+    include ../includes/navbar.jade
+
+    .container-fluid
+      .row.side-body
+        .col-sm-12
+          h2.fa.fa-2x.fa-clock-o &nbsp;API for developers
+        blockquote.glyphicon.glyphicon-comment  Update events Flows using the Time-series API and remotely manage you data.
+
+        .col-sm-12
+          h3 Users and Permissions
+        
+        .col-sm-12
+          ul#tabs.nav.nav-tabs(data-tabs='tabs')
+            li.active
+              a(href='#curl1', data-toggle='tab') Curl
+            li
+              a(href='#nodejs1', data-toggle='tab') Node.js
+
+          #my-tab-content.tab-content
+            #curl1.tab-pane.active
+              p
+                span.label.label-success GET
+                |  Get self details current User:
+              pre.language-markup 
+              hr/
+              
+              p  Refresh token from current User:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a User to platform:
+              pre.language-markup curl -i \ -H "Accept: application/json" \ -H "Content-Type:application/json" \ -X POST http://127.0.0.1:3000/v2.0.1/users/ \ --data '{"firstName": "My FirstName", "lastName": "My LastName", "email": "myemail@domain.tld"}'
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update a User to platform:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete a User from platform:
+              pre.language-markup 
+              hr/
+              
+              p  Create the initial token (without any permission) so that we can then create a Flow:
+              pre.language-markup curl -i \ -H "Accept: application/json" \ -H "Content-Type:application/json" \ -X POST http://127.0.0.1:3000/v2.0.1/users/me/token \ --data '{"key": ":key", "secret": ":secret"}'
+              hr/
+              
+            #nodejs1.tab-pane
+              p
+                span.label.label-success GET
+                |  Get self details current User:
+              pre.language-javascript 
+              hr/
+              
+              p Refresh token from current User:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a User to platform:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update a User to platform:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete a User from platform:
+              pre.language-javascript 
+              hr/
+
+        .col-sm-12
+          h3 Objects
+        
+        .col-sm-12
+          ul#tabs.nav.nav-tabs(data-tabs='tabs')
+            li.active
+              a(href='#curl2', data-toggle='tab') Curl
+            li
+              a(href='#nodejs2', data-toggle='tab') Node.js
+
+          #my-tab-content.tab-content
+            #curl2.tab-pane.active
+              p
+                span.label.label-success GET
+                |  Get the list of Objects from the current User:
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v2.0.1/objects/' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get details on the selected Object:
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v2.0.1/objects/:object_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a new Object to current User:
+              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v2.0.1/objects' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update an Object:
+              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v2.0.1/objects/:object_id' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete an Object:
+              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v2.0.1/objects/:object_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+            #nodejs2.tab-pane
+              p
+                span.label.label-success GET
+                |  Get the list of Objects from the current User:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get details on the selected Object:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a new Object to current User:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update an Object:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete an Object:
+              pre.language-javascript 
+              hr/
+
+        .col-sm-12
+          h3 Flows
+        
+        .col-sm-12
+          ul#tabs.nav.nav-tabs(data-tabs='tabs')
+            li.active
+              a(href='#curl3', data-toggle='tab') Curl
+            li
+              a(href='#nodejs3', data-toggle='tab') Node.js
+
+          #my-tab-content.tab-content
+            #curl3.tab-pane.active
+              p
+                span.label.label-success GET
+                |  Get the list of Flows from the current User:
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v2.0.1/flows/' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get details on the selected Flow:
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v2.0.1/flows/:flow_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a new Flow and get 'rw' permissions:
+              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v2.0.1/flows' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update a Flow:
+              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v2.0.1/flows/:flow_id' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete a Flow:
+              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v2.0.1/flows/:flow_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              hr/
+              
+            #nodejs3.tab-pane
+              p
+                span.label.label-success GET
+                |  Get the list of Flows from the current User:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get details on the selected Flow:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a new Flow and get 'rw' permissions:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update a Flow:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete a Flow:
+              pre.language-javascript 
+              hr/
+
+        .col-sm-12
+          h3 Data
+        
+        .col-sm-12
+          ul#tabs.nav.nav-tabs(data-tabs='tabs')
+            li.active
+              a(href='#curl4', data-toggle='tab') Curl
+            li
+              a(href='#nodejs4', data-toggle='tab') Node.js
+
+          #my-tab-content.tab-content
+            #curl4.tab-pane.active
+              p
+                span.label.label-success GET
+                |  Get data from a Flows where the current User is authorized ('rw' or 'r'):
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get 1 specific data from a Flows where the current User is authorized ('rw' or 'r'):
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a data to a Flows (User must have 'rw' permission):
+              pre.language-markup 
+              hr/
+              
+            #nodejs4.tab-pane
+              p
+                span.label.label-success GET
+                |  Get data from a Flows where the current User is authorized ('rw' or 'r'):
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get 1 specific data from a Flows where the current User is authorized ('rw' or 'r'):
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a data to a Flows (User must have 'rw' permission):
+              pre.language-javascript 
+              hr/
+
+        .col-sm-12
+          h3 Units
+        
+        .col-sm-12
+          ul#tabs.nav.nav-tabs(data-tabs='tabs')
+            li.active
+              a(href='#curl5', data-toggle='tab') Curl
+            li
+              a(href='#nodejs5', data-toggle='tab') Node.js
+
+          #my-tab-content.tab-content
+            #curl5.tab-pane.active
+              p
+                span.label.label-success GET
+                |  Get the Units list set on the Easy-IOT platform:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get a specific Units details:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a Unit to platform, require Admin permissions:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update a Unit to platform, require Admin permissions:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete a Unit from platform, require Admin permissions:
+              pre.language-markup 
+              hr/
+              
+            #nodejs5.tab-pane
+              p
+                span.label.label-success GET
+                |  Get the Units list set on the Easy-IOT platform:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-success GET
+                |  Get a specific Units details:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                |  Create a Unit to platform, require Admin permissions:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                |  Update a Unit to platform, require Admin permissions:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                |  Delete a Unit from platform, require Admin permissions:
+              pre.language-javascript 
+              hr/
+          
+        .col-sm-12
+          h3 Datatypes
+        
+        .col-sm-12
+          ul#tabs.nav.nav-tabs(data-tabs='tabs')
+            li.active
+              a(href='#curl6', data-toggle='tab') Curl
+            li
+              a(href='#nodejs6', data-toggle='tab') Node.js
+
+          #my-tab-content.tab-content
+            #curl6.tab-pane.active
+              p
+                span.label.label-success GET
+                | Get the Datatype list set on the Easy-IOT platform:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-success GET
+                | Get a specific Datatype details:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                | Create a Datatype to platform, require Admin permissions:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                | Update a Datatype to platform, require Admin permissions:
+              pre.language-markup 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                | Delete a Datatype from platform, require Admin permissions:
+              pre.language-markup 
+              hr/
+              
+            #nodejs6.tab-pane
+              p
+                span.label.label-success GET
+                | Get the Datatype list set on the Easy-IOT platform:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-success GET
+                | Get a specific Datatype details:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-warning POST
+                | Create a Datatype to platform, require Admin permissions:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-primary PUT
+                | Update a Datatype to platform, require Admin permissions:
+              pre.language-javascript 
+              hr/
+              
+              p
+                span.label.label-danger DELETE
+                | Delete a Datatype from platform, require Admin permissions:
+              pre.language-javascript 
+              hr/
+
+    include ../includes/foot.jade
+    link(href='/css/prismjs/prismjs.min.css', rel='stylesheet')
+    script(src='/js/prismjs/prismjs.min.js')
+    

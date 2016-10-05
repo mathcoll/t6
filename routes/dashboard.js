@@ -773,6 +773,15 @@ router.post('/login', Auth, function(req, res) {
 	}
 });
 
+router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
+	var feature = req.params.feature;
+	res.render('features/'+feature, {
+		title : 'Easy-IOT',
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
 function Auth(req, res, next) {
 	users	= db.getCollection('users');
 	tokens	= db.getCollection('tokens');

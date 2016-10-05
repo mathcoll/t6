@@ -1,0 +1,35 @@
+#myCarousel2.carousel.slide
+  .carousel-inner
+    .item.active
+      h2 Easy-IOT is Mobile-first & Responsive
+      a(href='#')
+        img.thumbnail(src='/img/phone.jpg', alt='')
+      .caption
+        p
+          | Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.
+    
+    .item
+      h2 Objects controls Flows in your library
+      a(href='#')
+        img.thumbnail(src='/img/flows-objects.jpg', alt='')
+      .caption
+        p
+          | Define your own Object and Flows library. Objects can store data to multiple Flows.
+
+    .item
+      h2 Dashboards view to graph your data
+      a(href='#')
+        img.thumbnail(src='/img/dashboard.jpg', alt='')
+      .caption
+        p
+          | Data are displayed as graphs and included into Dashboards
+
+  ol.carousel-indicators
+    li.active(data-target='#myCarousel2', data-slide-to='0')
+    li(data-target='#myCarousel2', data-slide-to='1')
+    li(data-target='#myCarousel2', data-slide-to='2')
+
+script(type='text/javascript').
+  $('#myCarousel2').carousel({
+  interval:   4000
+  });

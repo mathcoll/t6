@@ -18,21 +18,24 @@ html(lang='en')
         - var featurette = {class: "fa fa-database", title: "Store", subtitle: "values.", description: "Data Storage as time-series. SQLite Database for storage and planning to support additional DB in future releases.", link: "#"}
         include ./includes/featurette.jade
         
-        - var featurette = {class: "fa fa-eye", title: "Monitor", subtitle: "information.", description: "Real-time dashboards provides control on data captured by the sensors. You can easily monitor figures an track your data.", link: "#"}
+        - var featurette = {class: "fa fa-eye", title: "Monitor", subtitle: "information.", description: "Real-time dashboards provides control on data captured by the sensors. You can easily monitor and track your data.", link: "#"}
+        include ./includes/featurette.jade
+        
+        - var featurette = {class: "fa fa-area-chart", title: "Customizable", subtitle: "Dashboards.", description: "Graphics, data-management, Monitoring, Reporting.", link: "#"}
         include ./includes/featurette.jade
         
         - var featurette = {class: "fa fa-bell", title: "Alert", subtitle: "through email, sms, twitter, Mqtt...", description: "According to your own rules and data values, send alerts via email, SMS, Twitter... Decision-Rule allows you to control your alerts.", link: "#"}
+        include ./includes/featurette.jade
+
+        - var featurette = {class: "fa fa-clock-o", title: "API", subtitle: " for developers", description: "Update events Flows using the Time-series API and remotely manage you data.", link: "/features/api"}
         include ./includes/featurette.jade
 
       .row.featurette
         hr.featurette-divider
         #section3.container
           .col-sm-8.col-sm-offset-2.text-center
-            h1 Easy-IOT is Mobile-first & Responsive
-            p
-              | Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.
-            img.img-responsive(src='/img/phone.jpg')
-            hr
+            include ./includes/carousel2.jade
+            hr/
 
       .row.featurette
         hr.featurette-divider
@@ -42,14 +45,11 @@ html(lang='en')
         
         - var featurette = {class: "fa fa-random", title: "Data Flows", subtitle: "as Time-series.", description: "Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.", link: "#"}
         include ./includes/featurette.jade
-
         
         - var featurette = {class: "fa fa-area-chart", title: "Customizable", subtitle: "Dashboards.", description: "Graphics, data-management, Monitoring, Reporting.", link: "#"}
         include ./includes/featurette.jade
 
-        - var featurette = {class: "fa fa-clock-o", title: "API", subtitle: "as Time-series events.", description: "Update flows using the API and remotely manage you data.", link: "#"}
-        include ./includes/featurette.jade
-
+      hr/
       //.row.featurette
       //  hr.featurette-divider
       //  include ./includes/plans.jade

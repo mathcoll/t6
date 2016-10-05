@@ -159,6 +159,17 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
 .box .space { height: 30px; }
 /* End Home Page Featurettes */
 
+/* Carousel2 */
+.carousel-inner .caption { background:none	; padding: 10px; font-size: 1.4em; }
+.carousel-indicators {
+    bottom:-40px;
+	left:0;
+	width:100%;
+	background:none;
+	padding: 6px 0px;
+	margin-left:0;
+}
+/* End Carousel2 */
 
 /* CSS-only ribbon styles */
 .cnrflash
