@@ -1,18 +1,18 @@
-# Easy-IOT
-Easy IOT is an "oriented-Data" platform to connect physical Objects with timeseries DB.
+# t6
+t6 is an "oriented-Data" platform to connect physical Objects with timeseries DB.
 Please referes to CONTRIBUTING.md in case you would like to help :-)
 
 ## Structure & Context
 ### Physical World
 Physical World are composed by your sensors and actuators.
-Physical Objects require a virtual _Object_ in Easy-IOT and then, they could add _Data_ to _Flows_.
+Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
 Sample nodeMCU and Arduino scripts are available in the _pingers_ repositories.
 
 ### Application Dashboard Screenshot
-![Easy-IOT screenshot](https://raw.githubusercontent.com/mathcoll/Easy-IOT/master/docs/Easy-IOT-screenshot2.png)
-![Easy-IOT screenshot](https://raw.githubusercontent.com/mathcoll/Easy-IOT/master/docs/Easy-IOT-screenshot.png)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png)
 
-Physical Objects require a virtual _Object_ in Easy-IOT and then, they could add _Data_ to _Flows_.
+Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
 
 ### General
 
@@ -60,7 +60,7 @@ _Flows_ are defined for each _Users_ and are having permissions.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/units | _n/a_ | Get the _Units_ list set on the Easy-IOT platform. |
+| GET | http://127.0.0.1:3000/v2.0.1/units | _n/a_ | Get the _Units_ list set on the t6 platform. |
 | GET | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _n/a_ | Get a specific _Units_ details. |
 | POST | http://127.0.0.1:3000/v2.0.1/units | _Bearer Admin_ | Add a _Unit_ to platform, require _Admin_ permissions. |
 | PUT | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer Admin_ | Update a _Unit_ to platform, require _Admin_ permissions. |
@@ -71,7 +71,7 @@ _Flows_ are defined for each _Users_ and are having permissions.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/datatypes | _n/a_ | Get the _Datatype_ list set on the Easy-IOT platform. |
+| GET | http://127.0.0.1:3000/v2.0.1/datatypes | _n/a_ | Get the _Datatype_ list set on the t6 platform. |
 | GET | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _n/a_ | Get a specific _Datatype_ details. |
 | POST | http://127.0.0.1:3000/v2.0.1/datatypes | _Bearer Admin_ | Add a _Datatype_ to platform, require _Admin_ permissions. |
 | PUT | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer Admin_ | Update a _Datatype_ to platform, require _Admin_ permissions. |
@@ -172,15 +172,15 @@ Some Endpoints are open to any request, no Barear, no authentification at all.
 To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
 
 #### Actions
-_Actions_ are triggered when something is happening on the Easy-IOT platform.
+_Actions_ are triggered when something is happening on the t6 platform.
 Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
 
 
-## Easy-IOT Installation
+## t6 Installation
 ```
 Install node (if needed): https://nodejs.org/en/
 Install npm (if needed): https://github.com/npm/npm
-git clone https://github.com/mathcoll/Easy-IOT.git ./Easy-IOT & cd ./Easy-IOT
+git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
 npm install
 rename "settings-default_hostname.js" according to your server hostname and edit the file.
 rename "rules-default_hostname.js" according to your server hostname.
@@ -196,5 +196,5 @@ sudo ln -s /var/www/EasyIOT/etc/init.d/EasyIOT /etc/init.d/EasyIOT
 
 * Then set the server to run at start: 
 ```
-sudo update-rc.d Easy-IOT defaults
+sudo update-rc.d t6 defaults
 ```

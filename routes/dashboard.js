@@ -24,7 +24,7 @@ function alphaSort(obj1, obj2) {
 
 router.get('/', function(req, res) {
 	res.render('index', {
-		title : 'Easy-IOT',
+		title : 't6',
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -463,7 +463,7 @@ router.post('/flows/add', Auth, function(req, res) {
 	
 	if ( error ) {
 		res.render('flows_add', {
-			title : 'Flows Easy-IOT',
+			title : 't6 Flows',
 			flows: f,
 			objects: o,
 			datatypes: dt,
@@ -627,7 +627,7 @@ router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(re
 
 router.get('/about', function(req, res) {
 	res.render('about', {
-		title : 'About Easy-IOT',
+		title : 'About t6',
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -636,7 +636,7 @@ router.get('/about', function(req, res) {
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
 	res.render('dashboard'+dashboard_id, {
-		title : 'Dashboard Easy-IOT',
+		title : 'Dashboard t6',
 		user: req.session.user,
 		currentUrl: req.path,
 		version: version,
@@ -679,7 +679,7 @@ router.post('/register', function(req, res) {
 				from: from,
 				bcc: bcc,
 				to: to,
-				subject: 'Welcome to Easy-IOT',
+				subject: 'Welcome to t6',
 				text: 'Html email client is required',
 				html: html
 			};
@@ -693,7 +693,7 @@ router.post('/register', function(req, res) {
 					});
 			    } else {
 			    	res.render('login', {
-						title : 'Login to Easy-IOT',
+						title : 'Login to t6',
 						user: req.session.user,
 						currentUrl: req.path,
 						message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
@@ -741,7 +741,7 @@ router.get('/login', function(req, res) {
 
 router.get('/unauthorized', function(req, res) {
 	res.render('unauthorized', {
-		title : 'Unauthorized, Please log-in again to Easy-IOT',
+		title : 'Unauthorized, Please log-in again to t6',
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -776,7 +776,7 @@ router.post('/login', Auth, function(req, res) {
 router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
 	var feature = req.params.feature;
 	res.render('features/'+feature, {
-		title : 'Easy-IOT',
+		title : 't6 Feature',
 		currentUrl: req.path,
 		user: req.session.user
 	});

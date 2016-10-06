@@ -1,7 +1,7 @@
 {
-  "name": "Easy-IOT",
+  "name": "t6",
   "version": "2.0.1",
-  "description": "Easy IOT is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
+  "description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
   "author": {
     "name": "Mathieu Lory",
     "email": "mathieu@internetcollaboratif.info"
@@ -10,7 +10,7 @@
   "license": "GPL-3.0",
   "private": true,
   "bugs": {
-    "url": "https://github.com/mathcoll/Easy-IOT/issues"
+    "url": "https://github.com/mathcoll/t6/issues"
   },
   "scripts": {
     "start": "node ./bin/www",
