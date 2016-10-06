@@ -5,7 +5,7 @@ baseUrl				= process.env.BASE_URL;
 
 /* Mqtt settings */
 client				= mqtt.connect('mqtt://localhost:1883'); // Your Mqtt server to connect to
-mqtt_info			= 'easyIOT/'+os.hostname()+'/api'; // Mqtt topic for Easy-IOT api basic logs
+mqtt_info			= 't6/'+os.hostname()+'/api'; // Mqtt topic for t6 api basic logs
 
 /* Session settings */
 session				= require('express-session');
@@ -26,8 +26,8 @@ logErrorFile		= '/var/log/node/EasyIOT-error.log';
 
 /* Email settings */
 nodemailer			= require('nodemailer');
-from				= "Easy-IOT <contact@domain.tld>"; // The Sender email address
-bcc					= "Easy-IOT <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
+from				= "t6 <contact@domain.tld>"; // The Sender email address
+bcc					= "t6 <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
 mailhost			= "my_smtp.domain.tld"; // Your Smtp server
 mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smtp credentials
 transporter			= nodemailer.createTransport({ host: mailhost, ignoreTLS: true, auth: mailauth });
