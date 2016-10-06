@@ -162,7 +162,7 @@ This Token is only for managing _Units_ and _DataTypes_ from Admins level.
 How do we set a _User_ to be admin... I'm sorry, there is no way (yet) to do so; except manually modify json database for a _User_ y adding: ```"role": "admin"```. 
 
 ##### _n/a_
-Some Endpoints are open to any request, no Barear, no authentification at all.
+Some Endpoints are open to any request, no Bearer, no authentification at all.
 
 
 
@@ -191,10 +191,15 @@ rename "db-default_hostname.json" according to your server hostname.
 You can add the server running as a service, tested with Ubuntu and Debian:
 * First: install the server in services:
 ```
-sudo ln -s /var/www/EasyIOT/etc/init.d/EasyIOT /etc/init.d/EasyIOT
+sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
 ```
 
 * Then set the server to run at start: 
 ```
 sudo update-rc.d t6 defaults
 ```
+
+
+## t6 Troobleshooting after installation
+Q: ```sudo /etc/init.d/t6 start``` does not return any output
+A: Try to set chmod +x to file /var/www/t6/bin/www

@@ -1,3 +1,3 @@
 #!/bin/sh
 
-jsonapitest ../test/EasyIOT.json
+jsonapitest ../test/t6.json

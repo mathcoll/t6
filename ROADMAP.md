@@ -1,6 +1,6 @@
-Easy IOT
+t6
 ===========================
-Easy IOT is a platform to connect physical Objects with realtime-timeseries DB.
+t6 is a platform to connect physical Objects with realtime-timeseries DB.
 
 Roadmap
 ===========================
