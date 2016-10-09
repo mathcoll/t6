@@ -1,0 +1,66 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+
+    .container-fluid
+      .row.side-body
+        .col-sm-12
+          h2.fa.fa-2x.fa-random &nbsp;Flow&nbsp;
+            strong #{flow.name}
+          if (message && message.type && message.value)
+            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+
+      .row.side-body
+        .col-sm-6.col-md-8.col-md-offset-0
+          div
+            dl.dl-horizontal
+              dt Id:
+              dd
+                span.label.label-warning #{flow.id}
+
+              dt Name:
+              dd
+                strong #{flow.name}
+
+              dt Datatype:
+              dd
+                strong #{flow.data_type}
+
+              dt Unit:
+              dd
+                strong #{flow.unit_id} (#{flow.unit})
+
+              dt Theme:
+              dd
+                strong #{flow.theme}
+
+          .form-group
+            a.btn.btn-default.btn-sm(href="/flows/")
+              span.fa.fa-random Back to Flows
+
+        .col-sm-6.col-md-4.col-md-offset-0
+          .sidebar-module-inset
+            p.text-center
+              a.btn.btn-primary.btn-sm(href='./#{flow.id}/edit')
+                span.fa.fa-pencil-square-o  Edit
+              | &nbsp;
+              
+              a.btn.btn-primary.btn-sm(href='./#{flow.id}/graph')
+                span.fa.fa-line-chart  Graph
+              | &nbsp;
+              
+              a.btn.btn-primary.btn-sm(href='/snippets/generic/#{flow.id}')
+                span.fa.fa-pencil-square-o  Snippet
+              | &nbsp;
+              
+              a.btn.btn-danger.btn-sm(href='./#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")
+                span.glyphicon.glyphicon-remove  Remove
+              | &nbsp;
+
+            p.text-center
+              -var flow_id = flow.id
+              include ./snippets/generic.jade
+
+    include ./includes/foot.jade

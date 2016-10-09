@@ -18,7 +18,7 @@ html(lang='en')
             .form-group
               label.control-label(for="name") Object Name:
                 span.mandatory *
-              input.form-control(type="text", name="name", placeholder="Object Name", id="name" value="#{object.name}")
+              input.form-control(type="text", name="name", placeholder="Object Name", id="name", value="#{object.name}")
 
             .form-group
               label.control-label(for="Type") Type:
@@ -72,9 +72,10 @@ html(lang='en')
               input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value=(object.ipv6!==undefined ? object.ipv6 : undefined))
 
             .form-group
-              a.m-t.pull-left(href="/objects/#{object.id}") ← Back to Object
+              a.btn.btn-default.btn-sm(href="/objects/#{object.id}")
+                span.fa.fa-cube Back to Object
               button.btn.btn-primary.m-t.pull-right(type="submit", value="Update Object")
-                span.glyphicon.glyphicon-edit  Update Object
+                span.fa.fa-pencil-square-o  Update Object
               | &nbsp;
 
           p &nbsp; 

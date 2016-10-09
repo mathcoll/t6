@@ -20,7 +20,15 @@ html(lang='en')
             .panel-body.collapse.in#collapseGraph1
                #graph1.col-xs-12(style='height:300px;')
             .panel-footer
-            a.m-t.pull-left(href="/flows") ← Back to Flows
+          a.btn.btn-default.btn-sm(href="/snippets/generic/#{flow_id}")
+            span.fa.fa-rocket Snippet
+          | &nbsp;
+          a.btn.btn-default.btn-sm(href="/flows/#{flow_id}")
+            span.fa.fa-random Back to Flow
+          | &nbsp;
+          a.btn.btn-default.btn-sm(href="/flows")
+            span.fa.fa-random Back to Flows
+          | &nbsp;
 
         .col-sm-4
           div.affix-top

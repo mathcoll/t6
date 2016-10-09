@@ -1,0 +1,106 @@
+doctype html
+html(lang='en')
+  include ../includes/head.jade
+  style.
+    #body { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
+    h1#title { color: #fff; font-size: 3em; margin: 0 0 .3em 0; }
+    .icon#icon { color: #fff; font-size: 4em; }
+    .value#value { color: #fff; font-size: 3em; margin: .3em 0 0 0; }
+    .date#date { color: #fff; }
+    #spark { width:100%; height: 150px; }
+    .carousel-control { background: none !important; width: 3em; }
+    .carousel-control span { margin: 100% 0; }
+
+  body
+    //include ../includes/navbar-minimal.jade
+
+    .container-fluid#body
+      -//.row.side-body.center-block
+        .text-center
+          #snippetCaroussel
+            .carousel-inner
+              h1#title
+              div.icon#icon
+              div.value#value
+              div.date#date
+              div.pull-right#spark
+
+              a.left.carousel-control(href='#')
+                span.fa.fa-chevron-left(aria-hidden='true')
+
+              a.right.carousel-control(href='#')
+                span.fa.fa-chevron-right(aria-hidden='true')
+
+    script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
+    script.
+      $(function () {
+        $('.navbar-toggle').click(function () {
+          $('.navbar-nav').toggleClass('slide-in');
+          $('.side-body').toggleClass('body-slide-in');
+        });
+      });
+      
+      var themes = {
+        "orange": {classIcon: "fa fa-x4 fa-eyedropper", background: "#cfa020", fillColor: "#9c7a1e", lineColor: "#624f1a", normalRangeColor: "#c69513"},
+        "blue": {classIcon: "fa fa-x4 fa-tint", background: "#368ae0", fillColor: "#5595c2", lineColor: "#1c4c6e", normalRangeColor: "#c69513"},
+        "green": {classIcon: "fa fa-x4 fa-tint", background: "#3d9693", fillColor: "#c2dddd", lineColor: "#2d422d", normalRangeColor: "#c69513"},
+        "red": {classIcon: "fa fa-x4 fa-battery-4", background: "#f13d25", fillColor: "#d99c8d", lineColor: "#5f1107", normalRangeColor: "#c69513"},
+      };
+      var theme;
+      var data = new Array();
+
+      drawSparkline = function(data, container, flow_id, lastValue, lastDate, title, unit, theme_id) {
+        theme_id = theme_id!==undefined?theme_id:'orange';
+        theme = themes[theme_id];
+        $("h1#title").html(title);
+        $("div#value").html(lastValue+unit);
+        $("div#icon").addClass(theme.classIcon);
+        $("#body").css("background", theme.background);
+        $("div#date").html(lastDate.getDate()+'/'+(lastDate.getMonth()+1)+'/'+lastDate.getFullYear()+' '+lastDate.getHours()+':'+lastDate.getMinutes());
+
+        $("#"+container).sparkline(data, {
+          type: 'line', // line, bar, discrete, pie
+          fillColor: theme.fillColor,
+          lineColor: theme.lineColor,
+          normalRangeColor: theme.normalRangeColor,
+          tooltipSuffix: unit,
+          lineWidth: 5,
+          spotRadius: 5,
+          width: '100%',
+          height: '100%',
+          highlightLineColor: false,
+          highlightSpotColor: undefined,
+          highlightLineColor: undefined,
+          minSpotColor: undefined,
+          maxSpotColor: undefined,
+        });
+      }
+
+      getDataSparkline = function (base, flow_id, type, CType, callback, container) {
+        var limit = 10;
+        var page = 1;
+        var sort = 'desc';
+        $.ajax({
+          url: base+flow_id,
+          type: type,
+          data: {limit: limit, page: page , sort: sort},
+          success: function(d) {
+            data[flow_id] = (d.data).map(function(i) {
+              return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)]
+            });
+            var lastValue = ((d.data)[0].attributes.value);
+            var lastDate = ((d.data)[0].attributes.timestamp);
+            var title = d.links.title;
+            var unit = d.links.unit;
+            var theme_id = d.links.theme;
+            callback(data[flow_id], container, flow_id, lastValue, new Date(lastDate), title, unit, theme_id);
+          },
+          error: function(d) {
+            //console.log('ERROR (d)'+base);
+            //console.log(d);
+          }
+        });
+      } // end getDataSparkline
+      
+      getDataSparkline('/v#{version}/data/', '#{flow_id}', 'GET', 'application/json', drawSparkline, 'spark');
+      
