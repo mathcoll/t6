@@ -384,9 +384,146 @@ router.get('/flows/add', Auth, function(req, res) {
 	});
 });
 
+router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
+	var flow_id = req.params.flow_id;
+	objects	= db.getCollection('objects');
+	flows	= db.getCollection('flows');
+	if ( flow_id !== undefined ) {
+		var queryF = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : flow_id },
+			]
+		};
+		var json = {
+			flow: flows.findOne(queryF)
+		}
+		if ( json.flow ) {
+			var message = req.session.message!==null?req.session.message:null;
+			req.session.message = null; // Force to unset
+			res.render('flow', {
+				title : 'Flow '+json.flow.name,
+				user: req.session.user,
+				nl2br: nl2br,
+				flow: json.flow,
+				message: message,
+				striptags: striptags,
+				currentUrl: req.path,
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user
+			});
+		}
+	}
+});
+
+router.get('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
+	var flow_id = req.params.flow_id;
+	objects	= db.getCollection('objects');
+	units	= db.getCollection('units');
+	datatypes	= db.getCollection('datatypes');
+	flows	= db.getCollection('flows');
+	var query = { 'user_id': req.session.user.id };
+	var o = objects.chain().find(query).sort(alphaSort).data();
+	var dt = datatypes.chain().find().sort(alphaSort).data();
+	var u = units.chain().find().sort(alphaSort).data();
+	if ( flow_id !== undefined ) {
+		var queryF = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : flow_id },
+			]
+		};
+		var json = {
+			flow: flows.findOne(queryF)
+		}
+		if ( json.flow ) {
+			var message = req.session.message!==null?req.session.message:null;
+			req.session.message = null; // Force to unset
+			res.render('flow_edit', {
+				title : 'Edit Flow '+json.flow.name,
+				user: req.session.user,
+				nl2br: nl2br,
+				flow: json.flow,
+				message: message,
+				striptags: striptags,
+				currentUrl: req.path,
+				objects: o,
+				datatypes: dt,
+				units: u,
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user
+			});
+		}
+	}
+});
+
+router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
+	var flow_id = req.params.flow_id;
+	if ( flow_id !== undefined ) {
+		flows	= db.getCollection('flows');
+		var queryF = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : flow_id },
+			]
+		};
+		var json = (flows.chain().find(queryF).limit(1).data())[0];
+		var owner_permission = req.body.owner_permission!==undefined?req.body.owner_permission:'6';
+		var group_permission = req.body.group_permission!==undefined?req.body.group_permission:'0';
+		var other_permission = req.body.other_permission!==undefined?req.body.other_permission:'0';
+		var linked_objects = req.body['objects[]']!==undefined?req.body['objects[]']:new Array();
+		if( req.body['objects[]'] instanceof Array ) {
+			//
+		} else {
+			linked_objects = [linked_objects];
+		}
+		//console.log(json);
+		if ( json ) {
+			json.id=			flow_id;
+			json.data_type=		req.body.datatype!==undefined?req.body.datatype:null;
+			json.name=			req.body.name!==undefined?req.body.name:null;
+			json.permission=	owner_permission+group_permission+other_permission;
+			json.objects=		linked_objects;
+			json.unit=			''; // TODO
+			json.unit_id=		req.body.unit!==undefined?req.body.unit:null;
+			//json.user_id=		user_id; // Don't need to update
+			json.theme=			req.body.theme!==undefined?req.body.theme:null;
+			
+			//flows.update(json);
+			db.save();
+			
+			res.redirect('/flows/'+flow_id);
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user
+			});
+		}
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user
+		});
+	}
+});
+
 router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 	var flow_id = req.params.flow_id;
-	console.log(moment(req.query.startdate!==undefined?req.query.startdate:'', 'x').format('DD/MM/YYYY'));
+	//console.log(moment(req.query.startdate!==undefined?req.query.startdate:'', 'x').format('DD/MM/YYYY'));
 	res.render('flow_graph', {
 		title : 'Graph a Flow',
 		flow_id: flow_id,
@@ -434,7 +571,8 @@ router.post('/flows/add', Auth, function(req, res) {
 		objects:		linked_objects,
 		unit:			'', // TODO
 		unit_id:		req.body.unit!==undefined?req.body.unit:null,
-		user_id:		user_id
+		user_id:		user_id,
+		theme:			req.body.theme!==undefined?req.body.theme:null
 	};
 	//console.log(new_flow);
 	var i = (flows.find(queryQ)).length;
@@ -779,6 +917,17 @@ router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
 		title : 't6 Feature',
 		currentUrl: req.path,
 		user: req.session.user
+	});
+});
+
+router.get('/snippets/:snippet([0-9a-z\-]+)/:flow_id([0-9a-z\-]+)', function(req, res) {
+	var snippet = req.params.snippet;
+	var flow_id = req.params.flow_id;
+	res.render('snippets/'+snippet, {
+		title : 'Snippet',
+		currentUrl: req.path,
+		user: req.session.user,
+		flow_id: flow_id
 	});
 });
 

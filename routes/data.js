@@ -71,6 +71,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					data[0].next = page+1;
 					data[0].prev = page-1;
 					data[0].limit = limit;
+					data[0].theme = flow.theme;
 					data[0].order = req.query.order!==undefined?req.query.order:'asc';
 					
 					res.status(200).send(new DataSerializer(data[0]).serialize());
@@ -118,6 +119,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						data.next = page+1;
 						data.prev = page-1;
 						data.limit = limit;
+						data.theme = flow.theme;
 						data.order = req.query.order!==undefined?req.query.order:'asc';
 						
 						res.status(200).send(new DataSerializer(data).serialize());

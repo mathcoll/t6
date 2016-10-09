@@ -53,6 +53,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 					name: 		req.body.name!==undefined?req.body.name:'unamed',
 					data_type:	req.body.data_type!==undefined?req.body.data_type:'',
 					unit:  		req.body.unit!==undefined?req.body.unit:'',
+					theme:  	req.body.theme!==undefined?req.body.theme:'',
 					permission:	permission,
 					objects:	req.body.objects!==undefined?req.body.objects:new Array(),
 				};

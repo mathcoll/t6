@@ -15,6 +15,7 @@ function DataSerializer(data) {
 				title	: data.title,
 				ttl		: data.ttl,
 				unit	: data.unit,
+				theme	: data.theme,
 			},
 			dataLinks : {
 				self	:  sprintf('%s/v%s/data/%s/%s', baseUrl, version, data.flow_id, data[0].id)

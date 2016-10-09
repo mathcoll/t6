@@ -97,7 +97,8 @@ html(lang='en')
               - end
 
           .form-group
-            a.m-t.pull-left(href="/objects/") ← Back to Objects
+            a.btn.btn-default.btn-sm(href="/objects/")
+              span.fa.fa-cubes Back to Objects
 
         .col-sm-6.col-md-4.col-md-offset-0
           .sidebar-module-inset
@@ -107,7 +108,7 @@ html(lang='en')
                 span.glyphicon.glyphicon-print  QR code
               | &nbsp;
               a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
-                span.glyphicon.glyphicon-pencil  Edit
+                span.fa.fa-pencil-square-o  Edit
               | &nbsp;
               a.btn.btn-danger.btn-sm(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
                 span.glyphicon.glyphicon-remove  Remove

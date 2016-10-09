@@ -8,7 +8,7 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
       - }
       | &nbsp;
       span.label.label-info Priority: #{rules[rule].priority}&nbsp;
-      a.glyphicon.glyphicon-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')
+      a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}')
 
   div.panel-body.panel-collapse.collapse(id='#{rules[rule].id}', role='tabpanel', aria-labelledby='Heading#{rules[rule].id}')
     div.panel-body Status:
