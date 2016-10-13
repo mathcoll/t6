@@ -14,6 +14,14 @@ html(lang='en')
         .col-sm-12
           if (objects.length)
             include ./includes/pagination.jade
+            .row.hidden-xs.table-header
+              span.col-sm-4
+                strong Name
+              span.col-sm-4
+                strong Id
+              span.col-sm-4
+                strong Position
+            
             - for(object in objects) {
               include ./includes/object_item_list.jade
             - }

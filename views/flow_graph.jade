@@ -9,17 +9,8 @@ html(lang='en')
         .col-sm-12
           h2.fa.fa-2x.fa-random &nbsp;Graph a Flow
 
-        div(class='col-sm-#{graph_layout}')
-          .panel.panel-default
-            .panel-heading
-               h3.panel-title.pull-left
-                 span.glyphicon.glyphicon-scale
-                 | 
-               a.btn.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph1" aria-expanded="true" aria-controls="collapseGraph1") 
-               div.clearfix
-            .panel-body.collapse.in#collapseGraph1
-               #graph1.col-xs-12(style='height:300px;')
-            .panel-footer
+        div(class='col-sm-12')
+          include ./snippets/flowgraph.jade
           a.btn.btn-default.btn-sm(href="/snippets/generic/#{flow_id}")
             span.fa.fa-rocket Snippet
           | &nbsp;
@@ -30,212 +21,14 @@ html(lang='en')
             span.fa.fa-random Back to Flows
           | &nbsp;
 
-        .col-sm-4
-          div.affix-top
-            blockquote.glyphicon.glyphicon-comment  Configure your Flow and add graph it to your Dashboard.
+        //.col-sm-4
+          //div.affix-top
+            //blockquote.fa.fa-comment  Configure your Flow and add graph it to your Dashboard.
 
-        .col-sm-4
-          .sidebar-module-inset
-            h3 Setup a Flow to graph
-            include ./includes/graph_form.jade
+        //.col-sm-4
+          //.sidebar-module-inset
+            //h3 Setup a Flow to graph
+            //include ./includes/graph_form.jade
 
 
     include ./includes/foot.jade
-    #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
-
-    script(type='text/javascript', src='/js/chartjs/chart.min.js')
-    script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.pie.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.orderBars.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.time.min.js')
-    script(type='text/javascript', src='/js/flot/date.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.spline.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.stack.js')
-    script(type='text/javascript', src='/js/flot/curvedLines.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
-    
-    script(type='text/javascript', src='/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
-    link(href='/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
-    
-    script(type='text/javascript', src='/js/bootstrap-datepicker/bootstrap-datepicker-1.6.1.min.js')
-    link(href='/css/bootstrap-datepicker/bootstrap-datepicker-1.6.1.min.css', rel='stylesheet')
-
-    script(type='text/javascript').
-      $('#colorpicker').colorpicker();
-      $('.datepicker.start').datepicker({
-        clearBtn: true,
-        format: 'dd/mm/yyyy',
-        weekStart: 1,
-        daysOfWeekHighlighted: '0,6',
-        autoclose: true
-      }).on('changeDate', function(e) {
-        $('#startdate2').val(e.date.getTime());
-      });
-      $('.datepicker.end').datepicker({
-        clearBtn: true,
-        format: 'dd/mm/yyyy',
-        weekStart: 1,
-        daysOfWeekHighlighted: '0,6',
-        autoclose: true
-      }).on('changeDate', function(e) {
-        $('#enddate2').val(e.date.getTime());
-      });
-      $('.spinner .btn:first-of-type').on('click', function() {
-        $('.spinner input').val( parseInt($('.spinner input').val(), 10) + 1);
-      });
-      $('.spinner .btn:last-of-type').on('click', function() {
-        $('.spinner input').val( parseInt($('.spinner input').val(), 10) - 1);
-      });
-      
-      labelFormatter = function(label, series) {
-        return "<div style='font-size:12pt; text-align:center; padding:2px; color:white;'>" + label + "<br/>" + Math.round(series.percent) + "%</div>";
-      } // end labelFormatter
-      
-      getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, start, end, color) {
-        $.ajax({
-          url: base+flow_id,
-          type: type,
-          data:{limit: limit, page: page , sort: sort, start: start!==""?start:undefined, end: end!==""?end:undefined},
-          success: function(d) {
-            if ( options.series.pie !== undefined ) {
-              data[flow_id] = (d.data).map(function(i) {
-                return parseInt(i.attributes.value)
-              });
-            } else {
-              data[flow_id] = [(d.data).map(function(i) {
-                return [parseInt(i.attributes.timestamp),
-                parseInt(i.attributes.value)]
-              })];
-            }
-            var lastValue = ((d.data)[0].attributes.timestamp);
-            var title = d.links.title;
-            var unit = d.links.unit;
-            callback(data[flow_id], container, flow_id, lastValue, title, unit, color);
-          },
-          error: function(d) {
-            console.log('ERROR '+base);
-            console.log(d);
-          }
-        });
-      } // end getData
-      
-      doGraph = function(data, container, flow_id, lastValue, title, unit, color) {
-        var date = new Date(lastValue);
-        lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
-        options.colors = [color];
-        $.plot($('#'+container), data, options);
-        $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
-        $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
-        $('#'+container).bind("plothover", function (event, pos, item) {
-          if (item) {
-            var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
-            date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
-            y = date+'<br /><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
-            $("#tooltip").html(y).css({backgroundColor: color, top: item.pageY+15, left: item.pageX+15}).show();
-          } else {
-            $("#tooltip").hide();
-          }
-        });
-      }; // end doGraph
-
-      if ('#{graph_weekendAreas}' == 'true') {
-        weekendAreas = function(axes) {
-          var markings = [];
-          var d = new Date(axes.xaxis.min);
-          // go to the first Saturday
-          d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
-          d.setUTCSeconds(0);
-          d.setUTCMinutes(0);
-          d.setUTCHours(0);
-          var i = d.getTime();
-          do {
-            // when we don't set yaxis, the rectangle automatically
-            // extends to infinity upwards and downwards
-            markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
-            i += 7 * 24 * 60 * 60 * 1000;
-          } while (i < axes.xaxis.max);
-          return markings;
-        }; // end weekendAreas
-      };
-      
-      var d = new Array();
-      var data = new Array();
-      var options = {};
-      
-      if ('#{graph_chart_type}' == 'bars') {
-        // Show graph as bars
-        options = {
-          series: { bars: { show: true, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 } },
-          lines : { show: false, fill: true, lineWidth: 3, steps: false },
-          points : { show : true },
-          legend: { show: true, position: "sw" },
-          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
-          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
-        };
-      } else if ('#{graph_chart_type}' == 'lines') {
-        // Show graph as lines
-        options = {
-          series: { lines : { show: true, fill: #{graph_fill}, lineWidth: 3, steps: false } },
-          points : { show : true },
-          legend: { show: true, position: "sw" },
-          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
-          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
-        };
-      } else if ('#{graph_chart_type}' == 'pie') {
-        // Show graph as pie
-        options = {
-          series: { pie : { show: true }, radius: 1, label: { show: true, radius: 2/3 } },
-          combine: {color: '#999',threshold: 0.1},
-          legend: { show: false, position: "sw" },
-          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
-        };
-      } else if ('#{graph_chart_type}' == 'donut') {
-        // Show graph as rectangular donut
-        options = {
-          series: { pie : { show: true, radius: 1, innerRadius: .4 }, label: { show: true, formatter: labelFormatter, background: { opacity: 0.5, color: '#000' }, threshold: 0.1 } },
-          grid: { hoverable: true, autoHighlight: true },
-          legend: { show: false },
-        };
-      } else if ('#{graph_chart_type}' == 'rectangularpie') {
-        // Show graph as rectangular rectangularpie
-        options = {
-          series: { pie : { show: true, radius: 500 }, label: { show: true, formatter: labelFormatter, background: { opacity: 0.5, color: '#000' }, threshold: 0.1 } },
-          grid: { hoverable: true, autoHighlight: true },
-          legend: { show: false },
-        };
-      } else if ('#{graph_chart_type}' == '?????') {
-        // Show graph
-        options = {
-          lines : { show: true, fill: true, lineWidth: 3, steps: false },
-          bars: { show: false, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
-          points : { show : true },
-          legend: {show: true, position: "sw"},
-          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
-          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
-        };
-      }
-      
-      console.log(options);
-      
-      var flows = new Array(
-        // flow_id, callback, container, limit, page , sort, color
-        ["#{flow_id}", doGraph, "graph1", #{graph_max}, 1, 'asc', '#{graph_startdate2}', '#{graph_enddate2}', '#{graph_color}']
-      );
-        
-      flows.map(function(f) {
-        var flow_id = f[0];
-        var callback = f[1];
-        var container = f[2];
-        var limit = f[3];
-        var page = f[4];
-        var sort = f[5];
-        var start = f[6];
-        var end = f[7];
-        var color = f[8];
-        return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page, sort, start, end, color);
-      }); // end

@@ -13,34 +13,36 @@ html(lang='en')
             div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
       .row.side-body
-        .col-sm-6.col-md-8.col-md-offset-0
+        .col-sm-6.col-md-6.col-md-offset-0
           div
             dl.dl-horizontal
               dt Id:
               dd
-                span.label.label-warning #{flow.id}
+                span.label.label-warning.ellipis #{flow.id}
 
               dt Name:
-              dd
-                strong #{flow.name}
+              dd #{flow.name}
 
               dt Datatype:
-              dd
-                strong #{flow.data_type}
+              dd #{flow.data_type}
 
               dt Unit:
+              dd #{flow.unit_id}
+                - if (flow.unit)
+                  | (#{flow.unit})
+
+              dt Permission:
               dd
-                strong #{flow.unit_id} (#{flow.unit})
+                span.label.label-danger #{flow.permission}
 
               dt Theme:
-              dd
-                strong #{flow.theme}
+              dd #{flow.theme}
 
           .form-group
             a.btn.btn-default.btn-sm(href="/flows/")
               span.fa.fa-random Back to Flows
 
-        .col-sm-6.col-md-4.col-md-offset-0
+        .col-sm-6.col-md-6.col-md-offset-0
           .sidebar-module-inset
             p.text-center
               a.btn.btn-primary.btn-sm(href='./#{flow.id}/edit')
@@ -52,7 +54,7 @@ html(lang='en')
               | &nbsp;
               
               a.btn.btn-primary.btn-sm(href='/snippets/generic/#{flow.id}')
-                span.fa.fa-pencil-square-o  Snippet
+                span.fa.fa-puzzle-piece  Snippet
               | &nbsp;
               
               a.btn.btn-danger.btn-sm(href='./#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")

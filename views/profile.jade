@@ -82,7 +82,7 @@ html(lang='en')
                       span
                         i.fa(class="#{icon}")
                         |  #{im.type}:&nbsp;
-                      a(style='font-size: 18px;', href="#{href}") #{im.value}
+                      a.btn.btn-default.btn-sm(style='font-size: 18px;', href="#{href}") #{im.value}
                   - end
                 - end
                 
@@ -91,8 +91,8 @@ html(lang='en')
                     span
                     - for ( i in gravatar.entry[0].urls )
                       - var url = gravatar.entry[0].urls[i]
-                      a(href="#{url.value}")
-                        button.btn.btn-simple.fa.fa-link #{url.title}
+                      a.btn.btn-default.btn-sm(href="#{url.value}")
+                        span.fa.fa-link #{url.title}
                       | &nbsp;
                     - end
                 - end
@@ -101,7 +101,7 @@ html(lang='en')
                 h3 Crypto-currencies
                 - for ( i in gravatar.entry[0].currency )
                   - var curr = gravatar.entry[0].currency[i]
-                  button.btn.btn-simple.fa.fa-bitcoin(title="#{curr.type}")
+                  a.btn.btn-simple.fa.fa-bitcoin(title="#{curr.type}")
                   |  #{curr.value}
                 - end
               - end
@@ -133,8 +133,8 @@ html(lang='en')
                     - icon = 'fa-pinterest-square'
                   - end
 
-                  a(href="#{account.url}")
-                    button.btn.btn-simple.fa(class="#{icon}") &nbsp;
+                  a.btn.btn-default.btn-sm(href="#{account.url}")
+                    span.btn.btn-simple.fa(class="#{icon}") &nbsp;
                   | &nbsp;
                 - end
               - end

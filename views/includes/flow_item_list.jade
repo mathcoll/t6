@@ -1,27 +1,32 @@
 a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].id}')
-  h4.list-group-item-heading
-    span.fa.fa-random
-    | &nbsp;#{flows[flow].name}&nbsp
+  div.col-sm-4
+    h4.list-group-item-heading
+      span.fa.fa-random
+      | &nbsp;#{flows[flow].name}&nbsp;
+
+  div.col-sm-2
+    span.label.label-warning.ellipis(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
+
+  div.col-sm-4
+    - if (flows[flow].unit)
+      span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Unit') #{flows[flow].unit}
+      | &nbsp;
+
+  div.col-sm-2
+    - if (flows[flow].permission)
+      span.label.label-danger(data-toggle='tooltip' data-placement='top' title='Flow Permissions') #{flows[flow].permission}
+      | &nbsp;
 
   div.col-sm-12
     div.fa.fa-chevron-right.pull-right 
     div #{flows[flow].description}
 
-  div.col-sm-12
-    span.label.label-warning(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
-    | &nbsp;
-          
-    - if (flows[flow].unit)
-      span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Unit') #{flows[flow].unit}
-      | &nbsp;
-    - if (flows[flow].permission)
-      span.label.label-danger(data-toggle='tooltip' data-placement='top' title='Flow Permissions') #{flows[flow].permission}
-      | &nbsp;
-
-    - if (flows[flow].objects.length)
-      div
+  - if (flows[flow].objects.length)
+    div.col-sm-12
+      ul
       - for(object in flows[flow].objects) {
-        span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
-          span.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
-        | &nbsp;
+        li.vcenter
+          span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
+            span.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
+          | &nbsp;
       - }

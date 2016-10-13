@@ -15,21 +15,20 @@ html(lang='en')
     //include ../includes/navbar-minimal.jade
 
     .container-fluid#body
-      -//.row.side-body.center-block
-        .text-center
-          #snippetCaroussel
-            .carousel-inner
-              h1#title
-              div.icon#icon
-              div.value#value
-              div.date#date
-              div.pull-right#spark
+      .text-center
+        #snippetCaroussel
+          .carousel-inner
+            h1#title
+            div.icon#icon
+            div.value#value
+            div.date#date
+            div.pull-right#spark
 
-              a.left.carousel-control(href='#')
-                span.fa.fa-chevron-left(aria-hidden='true')
+            a.left.carousel-control(href='#')
+              span.fa.fa-chevron-left(aria-hidden='true')
 
-              a.right.carousel-control(href='#')
-                span.fa.fa-chevron-right(aria-hidden='true')
+            a.right.carousel-control(href='#')
+              span.fa.fa-chevron-right(aria-hidden='true')
 
     script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
     script.

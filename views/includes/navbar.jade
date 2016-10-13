@@ -33,33 +33,34 @@
           - if (user)
             li
               a(href='/objects')
-                span.fa.fa-cubes
+                span.fa.fa-cubes.pull-right
                 |  My Objects
             li
               a(href='/flows')
-                span.fa.fa-random
+                span.fa.fa-random.pull-right
                 |  My Flows
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-dashboards')
-                span.fa.fa-area-chart
+                span.caret.pull-right
                 |  My Dashboards
-                span.caret
               // Dropdown dashboards
               #dropdown-dashboards.panel-collapse.collapse
                 .panel-body
                   ul.nav.navbar-nav
                     li
                       a(href='/dashboards/1')
-                        span.fa.fa-line-chart &nbsp;Dashboard 1
+                        span.fa.fa-line-chart.pull-right
+                        | &nbsp;Dashboard 1
                     li
                       a(href='/dashboards/2')
-                        span.fa.fa-line-chart &nbsp;Dashboard 2
+                        span.fa.fa-line-chart.pull-right
+                        | &nbsp;Dashboard 2
 
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-account')
-                img.img-responsive.img-circle(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=40&d=mm&r=g', width='40', align='left')
-                span #{user.firstName} #{user.lastName}
                 span.caret
+                img.img-responsive.img-circle.pull-right(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=40&d=mm&r=g', width='40', align='left')
+                span #{user.firstName} #{user.lastName}
                 br
                 span
                   i.caps #{user.role}&nbsp;
@@ -69,34 +70,39 @@
                   ul.nav.navbar-nav
                     li
                       a(href='/profile')
-                        span.fa.fa-user  Profile
+                        span.fa.fa-user.pull-right
+                        |  Profile
                     li
                       a(href='/decision-rules')
-                        span.fa.fa-filter  Decision Rules
+                        span.fa.fa-filter.pull-right
+                        |  Decision Rules
                     li
                       a(href='/v2.0.1/status')
-                        span.fa.fa-heart-o  API Status
+                        span.fa.fa-heart-o.pull-right
+                        |  API Status
                     li
                       a(href='https://github.com/mathcoll/t6')
-                        span.fa.fa-github  GitHub
+                        span.fa.fa-github.pull-right
+                        |  GitHub
                     li.divider(role='separator')
                     li
                       a(href='/logout')
-                        span.fa.fa-sign-out  Logout
+                        span.fa.fa-sign-out.pull-right
+                        |  Logout
           - else
             li
               a(href='/login')
-                span.fa.fa-user 
+                span.fa.fa-user.pull-right 
                 |  Sign In
             li
               a(href='/register')
-                span.fa.fa-user-plus
+                span.fa.fa-user-plus.pull-right
                 |  Sign Up
             li
               a(href='/v2.0.1/status')
-                span.fa.fa-heart-o
+                span.fa.fa-heart-o.pull-right
                 |  API Status
             li
               a(href='https://github.com/mathcoll/t6')
-                span.fa.fa-github
+                span.fa.fa-github.pull-right
                 | GitHub

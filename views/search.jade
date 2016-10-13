@@ -23,8 +23,16 @@ html(lang='en')
               a(href="#flows") #{flows.length} Flows
 
     .container-fluid#objects
-      .row.side-body
+      .row.side-body.hidden-xs.table-header
         h3 #{objects.length} Objects found
+        span.col-sm-4
+          strong Name
+        span.col-sm-4
+          strong Id
+        span.col-sm-4
+          strong Position
+        
+      .row.side-body
         .list-group
         - if (objects.length)
           - for(object in objects) {
@@ -36,8 +44,18 @@ html(lang='en')
                 p No Result in Objects
 
     .container-fluid#flows
-      .row.side-body
+      .row.side-body.hidden-xs.table-header
         h3 #{flows.length} Flows found
+        span.col-sm-4
+          strong Name
+        span.col-sm-2
+          strong ID
+        span.col-sm-4
+          strong Unit
+        span.col-sm-2
+          strong Permissions
+    
+      .row.side-body
         .list-group
         - if (flows.length)
           - for(flow in flows) {

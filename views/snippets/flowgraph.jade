@@ -1,0 +1,241 @@
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+  doctype html
+  html(lang='en')
+    include ../includes/head.jade
+    style.
+      #body { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
+      h1#title { color: #fff; font-size: 3em; margin: 0 0 .3em 0; }
+      .icon#icon { color: #fff; font-size: 4em; }
+      .value#value { color: #fff; font-size: 3em; margin: .3em 0 0 0; }
+      .date#date { color: #fff; }
+      #spark { width:100%; height: 150px; }
+      .carousel-control { background: none !important; width: 3em; }
+      .carousel-control span { margin: 100% 0; }
+
+    body
+      //include ../includes/navbar-minimal.jade
+- }
+    .container-fluid#body
+      .row
+        ul.list-unstyled(class='col-xs-#{graph_layout}')
+          li
+            .panel.panel-default.panel-resizable
+              .panel-heading.handle
+                 h3.panel-title.pull-left
+                   span.glyphicon.glyphicon-scale
+                 span.btn.btn-xs.pull-right.glyphicon.glyphicon-menu-up(data-toggle="collapse" data-target="#collapseGraph" aria-expanded="true" aria-controls="collapseGraph") 
+                 .dropdown.pull-right
+                    a.dropdown-toggle#dropdownMenu(role="button", type='button', data-toggle='dropdown', aria-expanded='true', aria-haspopup="true")
+                      span.fa.fa-cog &nbsp;
+                      span.caret
+                    ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                      li
+                        a(href="#", onclick="run(); return false;")
+                          span.fa.fa-refresh  Refresh Data
+                      li
+                        a(href="#", data-toggle="modal", data-target="#editSnippet")
+                          span.fa.fa-pencil-square-o  Edit Snippet
+                 div.clearfix
+
+              .panel-body.collapse.in#collapseGraph
+                #graph1(style='height:300px;')
+                #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
+              .panel-footer 
+
+
+  #editSnippet.modal.fade(tabindex='-1', role='dialog', aria-labelledby='modalLabel', aria-hidden='true')
+    .modal-dialog
+      .modal-content
+        form
+          .modal-header
+            button.close(type='button', data-dismiss='modal')
+              span(aria-hidden='true') ×
+              span.sr-only Close
+            h3#lineModalLabel.modal-title Customize Graph
+          .modal-body
+            include ../includes/graph_form.jade
+            
+          .modal-footer
+            .btn-group.btn-group-justified(role='group', aria-label='group button')
+              .btn-group(role='group')
+                button.btn.btn-default(type='button', data-dismiss='modal', role='button') Close
+              .btn-group.dropup.btn-group-justified(role='group')
+                button#dropdownMenu.btn.btn-default.dropdown-toggle.m-t(type='button', data-toggle='dropdown', aria-expanded='true')
+                  | Add to Dashboard&nbsp;
+                  span.caret
+                ul.dropdown-menu(aria-labelledby='dropdownMenu')
+                  li
+                    a(href='#')
+                      span.glyphicon.glyphicon-th-large  Dashboard 1
+                  li
+                    a(href='#')
+                      span.glyphicon.glyphicon-th-large  Dashboard 2
+              .btn-group(role='group')
+                button.btn.btn-default.btn-hover-green.glyphicon.glyphicon-ok(type='submit')  Update
+
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+    script(src='/js/jquery-ui/jquery-ui-1.11.4.min.js')
+    script(type='text/javascript', src='/js/bootstrap.min.js')
+- }
+    
+    script(type='text/javascript', src='/js/chartjs/chart.min.js')
+    script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.pie.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.orderBars.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.time.min.js')
+    script(type='text/javascript', src='/js/flot/date.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.spline.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.stack.js')
+    script(type='text/javascript', src='/js/flot/curvedLines.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
+    script.
+      getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, start, end, color) {
+        $.ajax({
+          url: base+flow_id,
+          type: type,
+          data:{limit: limit, page: page , sort: sort, start: start!==""?start:undefined, end: end!==""?end:undefined},
+          success: function(d) {
+            if ( options.series.pie !== undefined ) {
+              data[flow_id] = (d.data).map(function(i) {
+                return parseInt(i.attributes.value)
+              });
+            } else {
+              data[flow_id] = [(d.data).map(function(i) {
+                return [parseInt(i.attributes.timestamp),
+                parseInt(i.attributes.value)]
+              })];
+            }
+            var lastValue = ((d.data)[0].attributes.timestamp);
+            var title = d.links.title;
+            var unit = d.links.unit;
+            callback(data[flow_id], container, flow_id, lastValue, title, unit, color);
+          },
+          error: function(d) {
+            console.log('ERROR '+base);
+            console.log(d);
+          }
+        });
+      } // end getData
+      
+      doGraph = function(data, container, flow_id, lastValue, title, unit, color) {
+        var date = new Date(lastValue);
+        lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
+        options.colors = [color];
+        $.plot($('#'+container), data, options);
+        $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
+        $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
+        $('#'+container).bind("plothover", function (event, pos, item) {
+          if (item) {
+            var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
+            date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
+            y = date+'<br /><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
+            $("#tooltip").html(y).css({backgroundColor: color, top: item.pageY+15, left: item.pageX+15}).show();
+          } else {
+            $("#tooltip").hide();
+          }
+        });
+      }; // end doGraph
+
+      if ('#{graph_weekendAreas}' == 'true') {
+        weekendAreas = function(axes) {
+          var markings = [];
+          var d = new Date(axes.xaxis.min);
+          // go to the first Saturday
+          d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 1) % 7))
+          d.setUTCSeconds(0);
+          d.setUTCMinutes(0);
+          d.setUTCHours(0);
+          var i = d.getTime();
+          do {
+            // when we don't set yaxis, the rectangle automatically
+            // extends to infinity upwards and downwards
+            markings.push({ xaxis: { from: i, to: i + 2 * 24 * 60 * 60 * 1000 } });
+            i += 7 * 24 * 60 * 60 * 1000;
+          } while (i < axes.xaxis.max);
+          return markings;
+        }; // end weekendAreas
+      };
+      
+      var d = new Array();
+      var data = new Array();
+      var options = {};
+      
+      if ('#{graph_chart_type}' == 'bars') {
+        // Show graph as bars
+        options = {
+          series: { bars: { show: true, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 } },
+          lines : { show: false, fill: true, lineWidth: 3, steps: false },
+          points : { show : true },
+          legend: { show: true, position: "sw" },
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+        };
+      } else if ('#{graph_chart_type}' == 'lines') {
+        // Show graph as lines
+        options = {
+          series: { lines : { show: true, fill: #{graph_fill}, lineWidth: 3, steps: false } },
+          points : { show : true },
+          legend: { show: true, position: "sw" },
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+        };
+      } else if ('#{graph_chart_type}' == 'pie') {
+        // Show graph as pie
+        options = {
+          series: { pie : { show: true }, radius: 1, label: { show: true, radius: 2/3 } },
+          combine: {color: '#999',threshold: 0.1},
+          legend: { show: false, position: "sw" },
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+        };
+      } else if ('#{graph_chart_type}' == 'donut') {
+        // Show graph as rectangular donut
+        options = {
+          series: { pie : { show: true, radius: 1, innerRadius: .4 }, label: { show: true, formatter: labelFormatter, background: { opacity: 0.5, color: '#000' }, threshold: 0.1 } },
+          grid: { hoverable: true, autoHighlight: true },
+          legend: { show: false },
+        };
+      } else if ('#{graph_chart_type}' == 'rectangularpie') {
+        // Show graph as rectangular rectangularpie
+        options = {
+          series: { pie : { show: true, radius: 500 }, label: { show: true, formatter: labelFormatter, background: { opacity: 0.5, color: '#000' }, threshold: 0.1 } },
+          grid: { hoverable: true, autoHighlight: true },
+          legend: { show: false },
+        };
+      } else if ('#{graph_chart_type}' == '?????') {
+        // Show graph
+        options = {
+          lines : { show: true, fill: true, lineWidth: 3, steps: false },
+          bars: { show: false, align: "center", barWidth: 24 * 15 * 60 * 30, lineWidth: 1 },
+          points : { show : true },
+          legend: {show: true, position: "sw"},
+          grid: { borderWidth: { top: 0, right: 0, bottom: 0, left: 0 }, borderColor: { top: "", right: "", bottom: "", left: "" }, markings: weekendAreas, clickable: true, hoverable: true, autoHighlight: true, mouseActiveRadius: 5 },
+          xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+          yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+        };
+      }
+      
+      //console.log(options);
+      
+      run = function() {
+        var flows = new Array(
+          // flow_id, callback, container, limit, page , sort, color
+          ["#{flow_id}", doGraph, "graph1", #{graph_max}, 1, 'desc', '#{graph_startdate2}', '#{graph_enddate2}', '#{graph_color}']
+        );
+        flows.map(function(f) {
+          var flow_id = f[0];
+          var callback = f[1];
+          var container = f[2];
+          var limit = f[3];
+          var page = f[4];
+          var sort = f[5];
+          var start = f[6];
+          var end = f[7];
+          var color = f[8];
+          return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page, sort, start, end, color);
+        }); // end
+      }
+      run();

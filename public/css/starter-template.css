@@ -142,6 +142,21 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
 /* End Sticky footer styles */
 
 
+/* Ellipsis */
+.ellipis {
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    display: block;
+    white-space: nowrap;
+}
+.table-header {
+	padding: 8px;
+	line-height: 1.4;
+}
+/* End Ellipsis */
+
 /* Home Page Featurettes */
 .box > .icon .image i.fa { line-height: 1.7 !important; }
 .box > .icon { text-align: center; position: relative; }
@@ -336,8 +351,6 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
     display: block;
     margin-top: 10px;
 }
-
-
 
 
 

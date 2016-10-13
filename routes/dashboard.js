@@ -927,7 +927,20 @@ router.get('/snippets/:snippet([0-9a-z\-]+)/:flow_id([0-9a-z\-]+)', function(req
 		title : 'Snippet',
 		currentUrl: req.path,
 		user: req.session.user,
-		flow_id: flow_id
+		flow_id: flow_id,
+		graph_title:		req.query.title!==undefined?req.query.title:'Default Title',
+		graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
+		graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd').format('x'),
+		graph_enddate:		moment(req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd'), 'x').format('DD/MM/YYYY'),
+		graph_enddate2:		req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd').format('x'),
+		graph_max:			req.query.max!==undefined?req.query.max:'50',
+		graph_ttl:			req.query.graph_ttl!==undefined?req.query.graph_ttl:'',
+		graph_weekendAreas:	req.query.weekendAreas!==undefined?req.query.weekendAreas:'',
+		graph_color:		req.query.color!==undefined?req.query.color:'#edc240',
+		graph_fill:			req.query.fill!==undefined?req.query.fill:'false',
+		graph_autorefresh:	req.query.autorefresh!==undefined?req.query.autorefresh:'false',
+		graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bars',
+		graph_layout:		req.query.layout!==undefined?req.query.layout:8,
 	});
 });
 
