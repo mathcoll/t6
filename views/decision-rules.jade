@@ -24,3 +24,64 @@ html(lang='en')
       $( '#sortable' ).sortable({
         axis: "y", cursor: "move", opacity: 0.5
       });
+
+script(type='text/javascript').
+  var filters = [{
+    id: 'mqtt_topic',
+    label: 'MQTT Topic',
+    type: 'string',
+    description: 'MQTT Topic set when you calls the API.',
+    operators: ['equal', 'not_equal', 'in', 'not_in', 'begins_with', 'not_begins_with', 'contains', 'not_contains', 'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null']
+  }, {
+    id: 'value',
+    label: 'Value',
+    type: 'double',
+    validation: {
+      step: 0.1
+    },
+    description: 'The Value sent to TimeSeries.'
+  }, {
+    id: 'previousValue',
+    label: 'Previous Value',
+    type: 'double',
+    validation: {
+      step: 0.1
+    },
+    description: 'The Value which was sent to TimeSeries just before Value.'
+  }, {
+    id: 'deltaValue',
+    label: 'Delta Value',
+    type: 'double',
+    validation: {
+      step: 0.1
+    },
+    description: 'The Difference between previous Value and current Value.',
+    operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between']
+  }, {
+    id: 'isDayTime',
+    label: 'is Day Time',
+    type: 'integer',
+    input: 'radio',
+    values: {
+      1: 'Yes',
+      0: 'No'
+    },
+    colors: {
+      1: 'success',
+      0: 'danger'
+    },
+    description: 'Between sunshine and sunset.',
+    operators: ['equal', 'not_equal']
+  }, {
+    id: 'environment',
+    label: 'Environment',
+    type: 'string',
+    input: 'select',
+    values: {
+      'production': 'Production',
+      'development': 'Development'
+    },
+    description: 'Allows to set actions based on the server Environment.',
+    operators: ['equal', 'not_equal']
+  }];
+  

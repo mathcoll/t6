@@ -57,6 +57,7 @@ footer.footer.navbar-fixed-bottom
 link(href='/css/query-builder/query-builder.2.3.3.css', rel='stylesheet')
 link(href='/css/bootstrap-slider/bootstrap-slider-7.1.1.css', rel='stylesheet')
 link(href='/css/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox.css', rel='stylesheet')
+link(href='/css/font-awesome/4.5.0/font-awesome.min.css', rel='stylesheet')
 
 // Rules
 script(src='/js/doT/doT.min.js')
@@ -68,94 +69,20 @@ script(src='/js/selectize.js/selectize-0.12.1.min.js')
 script(src='/js/query-builder/query-builder-2.3.3.min.js')
 script(src='/js/jquery-ui/jquery-ui-1.11.4.min.js')
 script(src='/js/bootstrap-notify/bootstrap-notify-3.1.3.min.js')
-
-script(type='text/javascript').
-  $(function () {
-  $('[data-toggle="tooltip"]').tooltip();
-  $('.navbar-toggle').click(function () {
-  $('.navbar-nav').toggleClass('slide-in');
-  $('.side-body').toggleClass('body-slide-in');
-  $('#search').removeClass('in').addClass('collapse').slideUp(200);
-  // uncomment code for absolute positioning tweek see top comment in css
-  //$('.absolute-wrapper').toggleClass('slide-in');
-  });
-  // Remove menu for searching
-  $('#search-trigger').click(function () {
-  $('.navbar-nav').removeClass('slide-in');
-  $('.side-body').removeClass('body-slide-in');
-  // uncomment code for absolute positioning tweek see top comment in css
-  //$('.absolute-wrapper').removeClass('slide-in');
-  });
-  });
-
-
-
-
-
 script(type='text/javascript', src='/js/bootstrap.min.js')
 // IE10 viewport hack for Surface/desktop Windows 8 bug
 script(type='text/javascript', src='/js/ie10-viewport-bug-workaround.min.js')
 script(type='text/javascript').
   $(function () {
-    $('[data-toggle="tooltip"]').tooltip()
-  })
-  
-  var filters = [{
-    id: 'mqtt_topic',
-    label: 'MQTT Topic',
-    type: 'string',
-    description: 'MQTT Topic set when you calls the API.',
-    operators: ['equal', 'not_equal', 'in', 'not_in', 'begins_with', 'not_begins_with', 'contains', 'not_contains', 'ends_with', 'not_ends_with', 'is_empty', 'is_not_empty', 'is_null', 'is_not_null']
-  }, {
-    id: 'value',
-    label: 'Value',
-    type: 'double',
-    validation: {
-      step: 0.1
-    },
-    description: 'The Value sent to TimeSeries.'
-  }, {
-    id: 'previousValue',
-    label: 'Previous Value',
-    type: 'double',
-    validation: {
-      step: 0.1
-    },
-    description: 'The Value which was sent to TimeSeries just before Value.'
-  }, {
-    id: 'deltaValue',
-    label: 'Delta Value',
-    type: 'double',
-    validation: {
-      step: 0.1
-    },
-    description: 'The Difference between previous Value and current Value.',
-    operators: ['equal', 'not_equal', 'less', 'less_or_equal', 'greater', 'greater_or_equal', 'between', 'not_between']
-  }, {
-    id: 'isDayTime',
-    label: 'is Day Time',
-    type: 'integer',
-    input: 'radio',
-    values: {
-      1: 'Yes',
-      0: 'No'
-    },
-    colors: {
-      1: 'success',
-      0: 'danger'
-    },
-    description: 'Between sunshine and sunset.',
-    operators: ['equal', 'not_equal']
-  }, {
-    id: 'environment',
-    label: 'Environment',
-    type: 'string',
-    input: 'select',
-    values: {
-      'production': 'Production',
-      'development': 'Development'
-    },
-    description: 'Allows to set actions based on the server Environment.',
-    operators: ['equal', 'not_equal']
-  }];
-  
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    $('.navbar-toggle').click(function () {
+      $('.navbar-nav').toggleClass('slide-in');
+      $('.side-body').toggleClass('body-slide-in');
+      $('#search').removeClass('in').addClass('collapse').slideUp(300);
+    });
+    $('#search-trigger').click(function () {
+      $('.navbar-nav').removeClass('slide-in');
+      $('.side-body').removeClass('body-slide-in');
+    });
+  });
