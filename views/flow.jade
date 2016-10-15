@@ -39,30 +39,104 @@ html(lang='en')
               dd #{flow.theme}
 
           .form-group
-            a.btn.btn-default.btn-sm(href="/flows/")
-              span.fa.fa-random Back to Flows
+            ul.list-inline
+              li
+                a.btn.btn-default.btn-sm(href="/flows/")
+                  span.fa.fa-random  Back to Flows
+              
+              li
+                a.btn.btn-primary.btn-sm(href='/flows/#{flow.id}/edit')
+                  span.fa.fa-pencil-square-o  Edit
+              
+              li
+                a.btn.btn-primary.btn-sm(href='/flows/#{flow.id}/graph')
+                  span.fa.fa-line-chart  Graph
+              
+              li
+                a.btn.btn-danger.btn-sm(href='/flows/#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")
+                  span.fa.fa-trash-o   Remove
 
         .col-sm-6.col-md-6.col-md-offset-0
           .sidebar-module-inset
             p.text-center
-              a.btn.btn-primary.btn-sm(href='./#{flow.id}/edit')
-                span.fa.fa-pencil-square-o  Edit
-              | &nbsp;
-              
-              a.btn.btn-primary.btn-sm(href='./#{flow.id}/graph')
-                span.fa.fa-line-chart  Graph
-              | &nbsp;
-              
-              a.btn.btn-primary.btn-sm(href='/snippets/generic/#{flow.id}')
-                span.fa.fa-puzzle-piece  Snippet
-              | &nbsp;
-              
-              a.btn.btn-danger.btn-sm(href='./#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")
-                span.glyphicon.glyphicon-remove  Remove
-              | &nbsp;
-
-            p.text-center
               -var flow_id = flow.id
               include ./snippets/generic.jade
+
+    .container-fluid
+      .row.side-body
+        .col-sm-6
+          h3.fa.fa-2x.fa-puzzle-piece &nbsp;Snippets&nbsp;
+
+      .row.side-body
+        ol.list-unstyled.col-sm-12.col-md-10.col-md-offset-0
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Generic Snippet
+            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-generic.jpg')
+            br/
+            a.btn.btn-primary.center-block(type='button')
+              span.fa.fa-check &nbsp;Select
+            input.hidden(type='radio', checked='', name='snippet', value='generic')
+            
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Flow Graph
+            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-flowgraph.jpg')
+            br/
+            a.btn.btn-primary.center-block(type='button')
+              span.fa.fa-check &nbsp;Select
+            input.hidden(type='radio', checked='', name='snippet', value='flowgraph')
+            
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Weather
+            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-weather.jpg')
+            br/
+            a.btn.btn-primary.center-block(type='button')
+              span.fa.fa-check &nbsp;Select
+            input.hidden(type='radio', checked='', name='snippet', value='weather')
+            
+          li.col-sm-2(style='position:initial; height:100%')
+            strong.fa.fa-eye &nbsp;Theme:
+            div
+              select.form-control(name="theme", id="theme")
+                option(value="orange", selected=(flow.theme=='orange' ? "selected" : undefined)) Orange
+                option(value="blue", selected=(flow.theme=='blue' ? "selected" : undefined)) Blue
+                option(value="red", selected=(flow.theme=='red' ? "selected" : undefined)) Red
+                option(value="green", selected=(flow.theme=='green' ? "selected" : undefined)) Green
+              br/
+            div.error
+            div(style='position:absolute; bottom:0')
+              a.btn.btn-primary#drawSnippet(href='#')
+                i.fa.fa-2x.fa-puzzle-piece.pull-left
+                i.fa.fa-2x.fa-chevron-right.pull-right
+                strong Draw Snippet
+
+      .row.side-body
+        p &nbsp;
+          .btn-radio.hidden
+            input.hidden(type='radio', checked='checked', name='snippet', value='undefined')
+
+      script(type='text/javascript').
+        $(function () {
+          $('.btn-radio').click(function(e) {
+            $('.btn-radio img').removeClass('active');
+            $('.btn-radio img.img-radio').css('opacity','0.2');
+            $('.btn-radio input').prop('checked',false);
+            
+            $(this).children('img.img-radio').addClass('active');
+            $(this).children('img.img-radio').css('opacity','1');
+            $(this).children('input').prop('checked',true);
+            
+            $("div.error").hide();
+          });
+          $('#drawSnippet').click(function(e) {
+            var snippet = $("input[name='snippet']:checked").attr('value');
+            if ( snippet !== 'undefined' ) {
+              var link = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/snippets/'+snippet+'/#{flow.id}';
+              window.open(link, 'snippet', 'width=450, height=350');
+            } else {
+              $("div.error").append("<div class='alert alert-danger fade in' role='alert'><button type='button' class='close close-sm' data-dismiss='alert'><i class='glyphicon glyphicon-remove'></i></button><strong>Error : </strong> Please, select a Snippet.</div>").show();
+            }
+            return false;
+          });
+        });
 
     include ./includes/foot.jade

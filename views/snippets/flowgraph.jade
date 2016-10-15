@@ -2,7 +2,9 @@
   doctype html
   html(lang='en')
     include ../includes/head.jade
+- }
     style.
+      body { margin: 0; }
       #body { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
       h1#title { color: #fff; font-size: 3em; margin: 0 0 .3em 0; }
       .icon#icon { color: #fff; font-size: 4em; }
@@ -11,7 +13,7 @@
       #spark { width:100%; height: 150px; }
       .carousel-control { background: none !important; width: 3em; }
       .carousel-control span { margin: 100% 0; }
-
+- if ( currentUrl.indexOf("snippets") > -1 ) {
     body
       //include ../includes/navbar-minimal.jade
 - }
