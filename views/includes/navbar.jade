@@ -41,8 +41,11 @@
                 |  My Flows
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-dashboards')
-                span.caret.pull-right
+                span.fa.fa-line-chart.caret.pull-right
                 |  My Dashboards
+                br/
+                span
+                  i.caps & Snippets&nbsp;
               // Dropdown dashboards
               #dropdown-dashboards.panel-collapse.collapse
                 .panel-body
@@ -58,10 +61,10 @@
 
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-account')
-                span.caret
-                img.img-responsive.img-circle.pull-right(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=40&d=mm&r=g', width='40', align='left')
-                span #{user.firstName} #{user.lastName}
-                br
+                span.fa.fa-user.caret.pull-right
+                img.img-responsive.img-circle.pull-left(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=30&d=mm&r=g', width='30', align='left')
+                | #{user.firstName} #{user.lastName}
+                br/
                 span
                   i.caps #{user.role}&nbsp;
               // Dropdown account
