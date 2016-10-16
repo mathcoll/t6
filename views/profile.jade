@@ -73,10 +73,6 @@ html(lang='en')
                       - icon = 'fa-icq'
                       - href = 'http://'+im.value
                     - end
-                    - if ( im.type == 'icq' )
-                      - icon = 'fa-icq'
-                      - href = 'http://'+im.value
-                    - end
 
                     li.media
                       span
@@ -92,7 +88,7 @@ html(lang='en')
                     - for ( i in gravatar.entry[0].urls )
                       - var url = gravatar.entry[0].urls[i]
                       a.btn.btn-default.btn-sm(href="#{url.value}")
-                        span.fa.fa-link #{url.title}
+                        span.fa.fa-link  #{url.title}
                       | &nbsp;
                     - end
                 - end
