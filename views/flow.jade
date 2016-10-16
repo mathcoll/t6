@@ -37,6 +37,14 @@ html(lang='en')
 
               dt Theme:
               dd #{flow.theme}
+              
+              - if (flow.objects) {
+                dt Objects:
+                - for(object in flow.objects) {
+                  dd
+                    span.label.label-default #{flow.objects[object]}
+                - }
+              - }
 
           .form-group
             ul.list-inline
@@ -65,49 +73,44 @@ html(lang='en')
     .container-fluid
       .row.side-body
         .col-sm-6
-          h3.fa.fa-2x.fa-puzzle-piece &nbsp;Snippets&nbsp;
+          h3.fa.fa-2x.fa-puzzle-piece &nbsp;Draw your Flow as Snippets&nbsp;
 
       .row.side-body
         ol.list-unstyled.col-sm-12.col-md-10.col-md-offset-0
           li.col-sm-2.btn-radio
             strong.fa.fa-puzzle-piece.center-text &nbsp;Generic Snippet
             img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-generic.jpg')
-            br/
+            input.center-text(type='radio', checked='', name='snippet', value='generic', style='margin:auto')
             a.btn.btn-primary.center-block(type='button')
               span.fa.fa-check &nbsp;Select
-            input.hidden(type='radio', checked='', name='snippet', value='generic')
+            
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Boolean value
+            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-boolean.jpg')
+            input.center-text(type='radio', checked='', name='snippet', value='boolean', style='margin:auto')
+            a.btn.btn-primary.center-block(type='button')
+              span.fa.fa-check &nbsp;Select
             
           li.col-sm-2.btn-radio
             strong.fa.fa-puzzle-piece.center-text &nbsp;Flow Graph
             img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-flowgraph.jpg')
-            br/
+            input.center-text(type='radio', checked='', name='snippet', value='flowgraph', style='margin:auto')
             a.btn.btn-primary.center-block(type='button')
               span.fa.fa-check &nbsp;Select
-            input.hidden(type='radio', checked='', name='snippet', value='flowgraph')
             
           li.col-sm-2.btn-radio
             strong.fa.fa-puzzle-piece.center-text &nbsp;Weather
             img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-weather.jpg')
-            br/
+            input.center-text(type='radio', checked='', name='snippet', value='weather', style='margin:auto')
             a.btn.btn-primary.center-block(type='button')
               span.fa.fa-check &nbsp;Select
-            input.hidden(type='radio', checked='', name='snippet', value='weather')
             
-          li.col-sm-2(style='position:initial; height:100%')
-            strong.fa.fa-eye &nbsp;Theme:
-            div
-              select.form-control(name="theme", id="theme")
-                option(value="orange", selected=(flow.theme=='orange' ? "selected" : undefined)) Orange
-                option(value="blue", selected=(flow.theme=='blue' ? "selected" : undefined)) Blue
-                option(value="red", selected=(flow.theme=='red' ? "selected" : undefined)) Red
-                option(value="green", selected=(flow.theme=='green' ? "selected" : undefined)) Green
-              br/
-            div.error
-            div(style='position:absolute; bottom:0')
-              a.btn.btn-primary#drawSnippet(href='#')
-                i.fa.fa-2x.fa-puzzle-piece.pull-left
-                i.fa.fa-2x.fa-chevron-right.pull-right
-                strong Draw Snippet
+          li.col-sm-4(style='position:initial; height:100%')
+            div.msg 
+            a.col-sm-12.btn.btn-lg.btn-primary#drawSnippet(href='#')
+              i.fa.fa-2x.fa-puzzle-piece.pull-left
+              i.fa.fa-2x.fa-chevron-right.pull-right
+              strong Draw Snippet
 
       .row.side-body
         p &nbsp;
@@ -125,15 +128,19 @@ html(lang='en')
             $(this).children('img.img-radio').css('opacity','1');
             $(this).children('input').prop('checked',true);
             
-            $("div.error").hide();
+            var snippet = $("input[name='snippet']:checked").attr('value');
+            if ( snippet !== 'undefined' ) {
+              var link = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/snippets/'+snippet+'/#{flow.id}';
+              $("div.msg").html("<div class='alert alert-success fade in' role='alert'><button type='button' class='close close-sm' data-dismiss='alert'><i class='glyphicon glyphicon-remove'></i></button><strong>Snippet: </strong> "+link+"</div>").show();
+            }
           });
           $('#drawSnippet').click(function(e) {
             var snippet = $("input[name='snippet']:checked").attr('value');
             if ( snippet !== 'undefined' ) {
               var link = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/snippets/'+snippet+'/#{flow.id}';
-              window.open(link, 'snippet', 'width=450, height=350');
+              window.open(link, 'snippet', 'width=450, height=400');
             } else {
-              $("div.error").append("<div class='alert alert-danger fade in' role='alert'><button type='button' class='close close-sm' data-dismiss='alert'><i class='glyphicon glyphicon-remove'></i></button><strong>Error : </strong> Please, select a Snippet.</div>").show();
+              $("div.msg").append("<div class='alert alert-danger fade in' role='alert'><button type='button' class='close close-sm' data-dismiss='alert'><i class='glyphicon glyphicon-remove'></i></button><strong>Error: </strong> Please, select a Snippet.</div>").show();
             }
             return false;
           });
