@@ -1,0 +1,48 @@
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+  doctype html
+  html(lang='en')
+    include ../includes/head.jade
+- }
+    style.
+      body { margin: 0; }
+      #body { background: #5595c2; margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
+      h1#title { color: #fff; font-size: 3em; margin: .3em 0 .3em 0; }
+      .icon#icon { color: #fff; font-size: 4em; }
+      .icon#iconBck { color: #fff; font-size: 14em; left: 10%; margin: 0; opacity: 0.1; position: absolute; }
+      .value#value { color: #fff; font-size: 3em; margin: .3em 0 0 0; }
+      .date#date { color: #fff; }
+      #spark { width:100%; height: 150px; }
+      .carousel-control { background: none !important; width: 3em; padding: 5em 0px; }
+      .carousel-control span { margin: 100% 0; }
+      #spark { width:100%; height:8em; }
+    link(href='/css/font-awesome/4.5.0/font-awesome.min.css', rel='stylesheet')
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+  body
+    //include ../includes/navbar-minimal.jade
+- }
+    .container-fluid#body
+      .text-center
+        #snippetCaroussel
+          .carousel-inner
+            h1#title Object parameter
+            div.icon#iconBck
+            div.icon.fa.fa-toggle-off#icon
+            span.value#value  Off
+            div.date#date 15/10/2016 19:35
+            div.pull-right#spark 
+            button.btn.btn-default.fa.fa-refresh#refresh(href="#", style="width:100%;margin:0")  Refresh
+
+            a.left.carousel-control(href='#')
+              span.fa.fa-chevron-left(aria-hidden='true')
+
+            a.right.carousel-control(href='#')
+              span.fa.fa-chevron-right(aria-hidden='true')
+
+    script.
+      $(function () {
+        $('.navbar-toggle').click(function () { $('.navbar-nav').toggleClass('slide-in'); $('.side-body').toggleClass('body-slide-in'); });
+        $('#refresh').click(function(e) {
+          
+          return false;
+        });
+      });
