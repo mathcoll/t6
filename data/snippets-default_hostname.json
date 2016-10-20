@@ -1,0 +1,75 @@
+{
+   "filename": "",
+   "collections": [
+      {
+         "name": "snippets",
+         "data": [],
+         "idIndex": [],
+         "binaryIndices": {},
+         "constraints": null,
+         "uniqueNames": [],
+         "transforms": {},
+         "objType": "rules",
+         "dirty": true,
+         "cachedIndex": null,
+         "cachedBinaryIndex": null,
+         "cachedData": null,
+         "transactional": false,
+         "cloneObjects": false,
+         "cloneMethod": "parse-stringify",
+         "asyncListeners": false,
+         "disableChangesApi": true,
+         "autoupdate": false,
+         "ttl": {
+            "age": null,
+            "ttlInterval": null,
+            "daemon": null
+         },
+         "maxId": 16,
+         "DynamicViews": [],
+         "events": {
+            "insert": [
+               null
+            ],
+            "update": [
+               null
+            ],
+            "pre-insert": [],
+            "pre-update": [],
+            "close": [],
+            "flushbuffer": [],
+            "error": [],
+            "delete": [
+               null
+            ],
+            "warning": [
+               null
+            ]
+         },
+         "changes": []
+      }
+   ],
+   "databaseVersion": 1.1,
+   "engineVersion": 1.1,
+   "autosave": true,
+   "autosaveInterval": 5000,
+   "autosaveHandle": null,
+   "options": {
+      "autoload": true,
+      "autosave": true
+   },
+   "persistenceMethod": "fs",
+   "persistenceAdapter": null,
+   "verbose": false,
+   "events": {
+      "init": [
+         null
+      ],
+      "loaded": [],
+      "flushChanges": [],
+      "close": [],
+      "changes": [],
+      "warning": []
+   },
+   "ENV": "NODEJS"
+}

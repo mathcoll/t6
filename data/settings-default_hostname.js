@@ -46,8 +46,12 @@ dbRules.loadDatabase(path.join(__dirname, 'rules-'+os.hostname()+'.json'));
 
 /* Quota settings */
 quota = {
-	'admin': {objects: 99, flows: 99, rules: 99, tokens: 99, calls: 99},
-	'user': {objects: 5, flows: 8, rules: 8, tokens: 8, calls: 999}
+	'admin': {objects: 99, flows: 99, rules: 99, tokens: 99, snippets: 99, calls: 9999999},
+	'user': {objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, calls: 999}
 };
 dbQuota	= new loki(path.join(__dirname, 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbQuota.loadDatabase(path.join(__dirname, 'quota-'+os.hostname()+'.json'));
+
+/* Snippets settings */
+dbSnippets	= new loki(path.join(__dirname, 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbSnippets.loadDatabase(path.join(__dirname, 'snippets-'+os.hostname()+'.json'));

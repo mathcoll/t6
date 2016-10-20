@@ -1,3 +1,7 @@
+.tooltip-inner {
+    white-space:pre;
+    max-width: none;
+}
 .starter-template {
   padding: 0px 15px 0px 15px;
   margin-top:60px;
