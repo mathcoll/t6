@@ -7,6 +7,7 @@ var users;
 var objects;
 var units;
 var flows;
+var snippets;
 var datatypes;
 var tokens;
 var rules;
@@ -24,7 +25,7 @@ function alphaSort(obj1, obj2) {
 
 router.get('/', function(req, res) {
 	res.render('index', {
-		title : 't6',
+		title : 't6, IoT platform and API',
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -406,6 +407,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 				user: req.session.user,
 				nl2br: nl2br,
 				flow: json.flow,
+				flows: flows.chain().find({ 'user_id': req.session.user.id }).sort(alphaSort).data(),
 				message: message,
 				striptags: striptags,
 				currentUrl: req.path,
@@ -683,6 +685,7 @@ router.get('/search', Auth, function(req, res) {
 router.post('/search', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	flows	= db.getCollection('flows');
+	snippets	= dbSnippets.getCollection('snippets');
 	if (!req.body.q) {
 		res.render('search', {
 			title : 'Search results',
@@ -704,10 +707,17 @@ router.post('/search', Auth, function(req, res) {
 							{ 'name': {'$regex': [req.body.q, 'i'] } }
 						]
 					};
+		var queryS = {
+				'$and': [
+							{ 'user_id': req.session.user.id },
+							{ 'name': {'$regex': [req.body.q, 'i'] } }
+						]
+					};
 		res.render('search', {
 			title : 'Search results',
 			objects: objects.find(queryO),
 			flows: flows.find(queryF),
+			snippets: snippets.find(queryS),
 			q:req.body.q,
 			user: req.session.user,
 			currentUrl: req.path,
@@ -736,6 +746,7 @@ router.get('/decision-rules', Auth, function(req, res) {
 });
 
 router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(req, res) {
+	/* no put? */
 	var rule_id = req.params.rule_id;
 	if ( !rule_id || !req.body.name ) {
 		res.status(412).send(new ErrorSerializer({'id': 1009,'code': 412, 'message': 'Precondition Failed'}).serialize());
@@ -920,28 +931,128 @@ router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
 	});
 });
 
-router.get('/snippets/:snippet([0-9a-z\-]+)/:flow_id([0-9a-z\-]+)', function(req, res) {
-	var snippet = req.params.snippet;
-	var flow_id = req.params.flow_id;
-	res.render('snippets/'+snippet, {
-		title : 'Snippet',
-		currentUrl: req.path,
+router.get('/snippets', Auth, function(req, res) {
+	snippets	= dbSnippets.getCollection('snippets');
+	var query = { 'user_id': req.session.user.id };
+	var pagination=12;
+	req.query.page=req.query.page!==undefined?req.query.page:1;
+	var offset = (req.query.page -1) * pagination;
+	var s = snippets.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	var message = req.session.message!==null?req.session.message:null;
+	req.session.message = null; // Force to unset
+	res.render('snippets', {
+		title : 'My Snippets',
+		snippets: s,
+		page: req.query.page,
+		pagenb: Math.ceil(((snippets.chain().find(query).data()).length) / pagination),
 		user: req.session.user,
-		flow_id: flow_id,
-		graph_title:		req.query.title!==undefined?req.query.title:'Default Title',
-		graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
-		graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd').format('x'),
-		graph_enddate:		moment(req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd'), 'x').format('DD/MM/YYYY'),
-		graph_enddate2:		req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd').format('x'),
-		graph_max:			req.query.max!==undefined?req.query.max:'50',
-		graph_ttl:			req.query.graph_ttl!==undefined?req.query.graph_ttl:'',
-		graph_weekendAreas:	req.query.weekendAreas!==undefined?req.query.weekendAreas:'',
-		graph_color:		req.query.color!==undefined?req.query.color:'#edc240',
-		graph_fill:			req.query.fill!==undefined?req.query.fill:'false',
-		graph_autorefresh:	req.query.autorefresh!==undefined?req.query.autorefresh:'false',
-		graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bars',
-		graph_layout:		req.query.layout!==undefined?req.query.layout:8,
+		currentUrl: req.path,
+		message: message,
 	});
+});
+
+router.post('/snippets/add', Auth, function(req, res) {
+	var user_id = req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null;
+	var message = '';
+	if ( false || !user_id ) { // useless :-)
+		res.status(412).send(new ErrorSerializer({'id': 1909,'code': 412, 'message': 'Precondition Failed'}).serialize());
+	} else {
+		snippets	= dbSnippets.getCollection('snippets');
+		var queryS = { '$and': [  {'user_id' : user_id} ]};
+		var flows;
+		if( req.body['flows[]'] instanceof Array ) {
+			flows = req.body['flows[]']!==undefined?req.body['flows[]']:new Array();
+		} else {
+			flows = [req.body['flows[]']!==undefined?req.body['flows[]']:new Array()];
+		}
+		
+		var snippet_id = uuid.v4();
+		var new_snippet = {
+			id:				snippet_id,
+			user_id:		user_id,
+			type:			req.body.type!==undefined?req.body.type:null,
+			name:			req.body.name!==undefined?req.body.name:null,
+			icon:			req.body.icon!==undefined?req.body.icon:null,
+			color:			req.body.color!==undefined?req.body.color:null,
+			flows:			flows,
+			p:				{
+				datatype: req.body['p[datatype]'],
+				unit: req.body['p[unit]'],
+				startdate: req.body['p[startdate]'],
+				enddate: req.body['p[enddate]'],
+				background: req.body['p[background]'],
+				lineColor: req.body['p[lineColor]'],
+				fillColor: req.body['p[fillColor]'],
+				normalRangeColor: req.body['p[normalRangeColor]']
+			}
+		};
+		console.log(new_snippet);
+		//res.status(200).send(new_snippet);
+		var i = (snippets.find(queryS)).length;
+		if( i >= (quota[req.session.user.role]).snippets ) {
+			message = {type: 'danger', value: 'Over Quota!'};
+			req.session.message = message;
+		} else {
+			if ( new_snippet.name ) {
+				snippets.insert(new_snippet);
+				db.save();
+				message = {type: 'success', value: 'Snippet <a href="/snippets/'+new_snippet.id+'">'+new_snippet.name+'</a> successfully added to your library.'};
+				req.session.message = message;
+			} else {
+				message = {type: 'danger', value: 'Please give a name to your Snippet!'};
+				req.session.message = message;
+			}
+		}
+		res.redirect('back');
+	}
+});
+
+router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
+	var snippet_id = req.params.snippet_id;
+	snippets	= dbSnippets.getCollection('snippets');
+
+	if ( snippet_id !== undefined ) {
+		var queryS = { '$and': [ { 'user_id': req.session.user.id }, { 'id' : snippet_id }, ] };
+		var json = (snippets.chain().find(queryS).limit(1).data())[0];
+
+		console.log(json);
+		if ( json ) {
+			res.render('snippets/'+json.type, {
+			title :				json.name,
+			currentUrl:			req.path,
+			user:				req.session.user,
+			snippet:			json,
+			graph_title:		req.query.title!==undefined?req.query.title:json.name,
+			graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
+			graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd').format('x'),
+			graph_enddate:		moment(req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd'), 'x').format('DD/MM/YYYY'),
+			graph_enddate2:		req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd').format('x'),
+			graph_max:			req.query.max!==undefined?req.query.max:'50',
+			graph_ttl:			req.query.graph_ttl!==undefined?req.query.graph_ttl:'',
+			graph_weekendAreas:	req.query.weekendAreas!==undefined?req.query.weekendAreas:'',
+			graph_color:		req.query.color!==undefined?req.query.color:'#edc240',
+			graph_fill:			req.query.fill!==undefined?req.query.fill:'false',
+			graph_autorefresh:	req.query.autorefresh!==undefined?req.query.autorefresh:'false',
+			graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bars',
+			graph_layout:		req.query.layout!==undefined?req.query.layout:8,
+		});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user
+			});
+		}
+		
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user
+		});
+	}
 });
 
 function Auth(req, res, next) {

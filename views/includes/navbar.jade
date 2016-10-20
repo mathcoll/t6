@@ -10,7 +10,7 @@
             span.icon-bar
           .brand-name-wrapper
             a.navbar-brand.hidden-xs(href='/')
-              | t6 for your Objects
+              | t6, IoT platform and API
       
             -if(title)
               .visible-xs-inline.btn-group-justified
@@ -39,13 +39,14 @@
               a(href='/flows')
                 span.fa.fa-random.pull-right
                 |  My Flows
+            li
+              a(href='/snippets')
+                span.fa.fa-puzzle-piece.pull-right
+                |  My Snippets
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-dashboards')
-                span.fa.fa-line-chart.caret.pull-right
+                span.fa.fa-area-chart.caret.pull-right
                 |  My Dashboards
-                br/
-                span
-                  i.caps & Snippets&nbsp;
               // Dropdown dashboards
               #dropdown-dashboards.panel-collapse.collapse
                 .panel-body
@@ -61,7 +62,7 @@
 
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-account')
-                span.fa.fa-user.caret.pull-right
+                span.fa.fa-users.caret.pull-right
                 img.img-responsive.img-circle.pull-left(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=30&d=mm&r=g', width='30', align='left')
                 | #{user.firstName} #{user.lastName}
                 br/

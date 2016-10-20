@@ -21,6 +21,8 @@ html(lang='en')
               a(href="#objects") #{objects.length} Objects
             li
               a(href="#flows") #{flows.length} Flows
+            li
+              a(href="#snippets") #{snippets.length} Snippets
 
     .container-fluid#objects
       .row.side-body.hidden-xs.table-header
@@ -41,7 +43,9 @@ html(lang='en')
         - else
             .list-group-item
               .alert.alert-danger.alert-dismissible(role='alert')
-                p No Result in Objects
+                p No Result in Objects, perhaps you would like to create an 
+                  a(href="/objects/add") Object
+                  | .
 
     .container-fluid#flows
       .row.side-body.hidden-xs.table-header
@@ -64,7 +68,34 @@ html(lang='en')
         - else
             .list-group-item
               .alert.alert-danger.alert-dismissible(role='alert')
-                p No Result in Flows
+                p No Result in Flows, perhaps you would like to create a 
+                  a(href="/flows/add") Flow
+                  | .
+
+    .container-fluid#snippets
+      .row.side-body.hidden-xs.table-header
+        h3 #{snippets.length} Snippets found
+        span.col-sm-8
+          strong Name
+        span.col-sm-2
+          strong Type
+        span.col-sm-2
+          strong Color
+    
+      .row.side-body
+        .list-group
+        - if (snippets.length)
+          - for(snippet in snippets) {
+            include ./includes/snippet_item_list.jade
+          - }
+        - else
+            .list-group-item
+              .alert.alert-danger.alert-dismissible(role='alert')
+                p No Result in Snippets, perhaps you would like to create a Snippet from a 
+                  a(href="/flows") Flow
+                  | .
+
+      
+    .container &nbsp;
 
     include ./includes/foot.jade
-

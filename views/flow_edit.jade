@@ -98,17 +98,6 @@ html(lang='en')
                     input#ApermissionN(name='other_permission', type='radio', value='0', checked='checked') 
 
             .form-group
-                label.control-label(for="theme") Theme:
-                span.input-group
-                  span.input-group-addon
-                    span.fa.fa-eye
-                  select.form-control(name="theme", id="theme")
-                    option(value="orange", selected=(flow.theme=='orange' ? "selected" : undefined)) Orange
-                    option(value="blue", selected=(flow.theme=='blue' ? "selected" : undefined)) Blue
-                    option(value="red", selected=(flow.theme=='red' ? "selected" : undefined)) Red
-                    option(value="green", selected=(flow.theme=='green' ? "selected" : undefined)) Green
-
-            .form-group
               a.btn.btn-default.btn-sm.m-t.pull-left(href="/flows/#{flow.id}")
                 span.fa.fa-random  Back to Flow
               button.btn.btn-primary.m-t.pull-right(type="submit", value="Update Flow")

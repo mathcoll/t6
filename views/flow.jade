@@ -10,11 +10,11 @@ html(lang='en')
           h2.fa.fa-2x.fa-random &nbsp;Flow&nbsp;
             strong #{flow.name}
           if (message && message.type && message.value)
-            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+            div.alert(class='alert-#{message.type}', role='alert') !{message.value}
 
       .row.side-body
-        .col-sm-6.col-md-6.col-md-offset-0
-          div
+        .col-sm-12.col-md-12.col-md-offset-0
+          div.col-md-4
             dl.dl-horizontal
               dt Id:
               dd
@@ -34,9 +34,6 @@ html(lang='en')
               dt Permission:
               dd
                 span.label.label-danger #{flow.permission}
-
-              dt Theme:
-              dd #{flow.theme}
               
               - if (flow.objects) {
                 dt Objects:
@@ -46,7 +43,7 @@ html(lang='en')
                 - }
               - }
 
-          .form-group
+          .form-group.col-md-12
             ul.list-inline
               li
                 a.btn.btn-default.btn-sm(href="/flows/")
@@ -64,12 +61,6 @@ html(lang='en')
                 a.btn.btn-danger.btn-sm(href='/flows/#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")
                   span.fa.fa-trash-o   Remove
 
-        .col-sm-6.col-md-6.col-md-offset-0
-          .sidebar-module-inset
-            p.text-center
-              -var flow_id = flow.id
-              include ./snippets/generic.jade
-
     .container-fluid
       .row.side-body
         .col-sm-6
@@ -78,72 +69,187 @@ html(lang='en')
       .row.side-body
         ol.list-unstyled.col-sm-12.col-md-10.col-md-offset-0
           li.col-sm-2.btn-radio
-            strong.fa.fa-puzzle-piece.center-text &nbsp;Generic Snippet
-            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-generic.jpg')
-            input.center-text(type='radio', checked='', name='snippet', value='generic', style='margin:auto')
-            a.btn.btn-primary.center-block(type='button')
-              span.fa.fa-check &nbsp;Select
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Value Display
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="valuedisplay")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-valuedisplay.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
             
           li.col-sm-2.btn-radio
             strong.fa.fa-puzzle-piece.center-text &nbsp;Boolean value
-            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-boolean.jpg')
-            input.center-text(type='radio', checked='', name='snippet', value='boolean', style='margin:auto')
-            a.btn.btn-primary.center-block(type='button')
-              span.fa.fa-check &nbsp;Select
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="boolean")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-boolean.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
             
           li.col-sm-2.btn-radio
             strong.fa.fa-puzzle-piece.center-text &nbsp;Flow Graph
-            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-flowgraph.jpg')
-            input.center-text(type='radio', checked='', name='snippet', value='flowgraph', style='margin:auto')
-            a.btn.btn-primary.center-block(type='button')
-              span.fa.fa-check &nbsp;Select
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="flowgraph")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-flowgraph.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
             
           li.col-sm-2.btn-radio
             strong.fa.fa-puzzle-piece.center-text &nbsp;Weather
-            img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-weather.jpg')
-            input.center-text(type='radio', checked='', name='snippet', value='weather', style='margin:auto')
-            a.btn.btn-primary.center-block(type='button')
-              span.fa.fa-check &nbsp;Select
-            
-          li.col-sm-4(style='position:initial; height:100%')
-            div.msg 
-            a.col-sm-12.btn.btn-lg.btn-primary#drawSnippet(href='#')
-              i.fa.fa-2x.fa-puzzle-piece.pull-left
-              i.fa.fa-2x.fa-chevron-right.pull-right
-              strong Draw Snippet
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="weather")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-weather.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
 
       .row.side-body
         p &nbsp;
           .btn-radio.hidden
             input.hidden(type='radio', checked='checked', name='snippet', value='undefined')
 
-      script(type='text/javascript').
-        $(function () {
-          $('.btn-radio').click(function(e) {
-            $('.btn-radio img').removeClass('active');
-            $('.btn-radio img.img-radio').css('opacity','0.2');
-            $('.btn-radio input').prop('checked',false);
-            
-            $(this).children('img.img-radio').addClass('active');
-            $(this).children('img.img-radio').css('opacity','1');
-            $(this).children('input').prop('checked',true);
-            
-            var snippet = $("input[name='snippet']:checked").attr('value');
-            if ( snippet !== 'undefined' ) {
-              var link = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/snippets/'+snippet+'/#{flow.id}';
-              $("div.msg").html("<div class='alert alert-success fade in' role='alert'><button type='button' class='close close-sm' data-dismiss='alert'><i class='glyphicon glyphicon-remove'></i></button><strong>Snippet: </strong> "+link+"</div>").show();
-            }
-          });
-          $('#drawSnippet').click(function(e) {
-            var snippet = $("input[name='snippet']:checked").attr('value');
-            if ( snippet !== 'undefined' ) {
-              var link = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/snippets/'+snippet+'/#{flow.id}';
-              window.open(link, 'snippet', 'width=450, height=400');
-            } else {
-              $("div.msg").append("<div class='alert alert-danger fade in' role='alert'><button type='button' class='close close-sm' data-dismiss='alert'><i class='glyphicon glyphicon-remove'></i></button><strong>Error: </strong> Please, select a Snippet.</div>").show();
-            }
-            return false;
-          });
-        });
+      #editSnippet.modal.fade(tabindex='-1', role='dialog', aria-labelledby='modalLabel', aria-hidden='true')
+        .modal-dialog
+          .modal-content
+            form(method="post", action="/snippets/add")
+              input.hidden(type='hidden', name='type', id='type', value='')
+              .modal-header
+                button.close(type='button', data-dismiss='modal')
+                  span(aria-hidden='true') ×
+                  span.sr-only Close
+                h3.fa.fa-2x.fa-puzzle-piece#lineModalLabel.modal-title  Customize your Snippet
+
+              .modal-body
+                .form-group
+                  label.control-label(for="name") Snippet Name:
+                    span.mandatory *
+                  input.form-control(type="text", name="name", placeholder="Snippet Name", id="name", value="")
+
+                .form-group
+                  label.control-label(for="flows") Flows:
+                  span.input-group
+                    span.input-group-addon
+                      span.fa.fa-random
+                    select.form-control(multiple, name="flows[]", id="flows")
+                      - for(f in flows) {
+                        - if( flows[f].id == flow.id )
+                          option(value="#{flows[f].id}", selected="selected") #{flows[f].name}
+                        - else
+                          option(value="#{flows[f].id}") #{flows[f].name}
+                        - end
+                      - }
+
+                .form-group
+                  label.control-label(for="Color") Color
+                  .colorpicker.input-group.colorpicker-component
+                    span.input-group-addon
+                      i
+                    input.form-control(type='text', name='color', value='#000000')
+
+                .form-group
+                  label.control-label(for="icon") Snippet Icon:
+                  ul.list-unstyled.list-inline.iconpicker(data-toggle="buttons")
+                    li
+                      .form-group.btn.btn-default
+                        i.input-group.fa.fa-battery-0 
+                        input.input-group.fa.fa-battery-0(type='radio', name='icon', value='fa fa-battery-0')
+                    li
+                      .form-group.btn.btn-default
+                        i.input-group.fa.fa-battery-1 
+                        input.input-group.fa.fa-battery-1(type='radio', name='icon', value='fa fa-battery-1')
+                    li
+                      .form-group.btn.btn-default
+                        i.input-group.fa.fa-battery-2 
+                        input.input-group.fa.fa-battery-2(type='radio', name='icon', value='fa fa-battery-2')
+                    li
+                      .form-group.btn.btn-default
+                        i.input-group.fa.fa-battery-3 
+                        input.input-group.fa.fa-battery-3(type='radio', name='icon', value='fa fa-battery-3')
+                    li
+                      .form-group.btn.btn-default
+                        i.input-group.fa.fa-battery-4 
+                        input.input-group.fa.fa-battery-4(type='radio', name='icon', value='fa fa-battery-4')
+
+                .form-group#specific
+
+              .modal-footer 
+                .form-group
+                  .btn-group.btn-group-justified(role='group', aria-label='group button')
+                    .btn-group(role='group')
+                      button.btn.btn-default(type='button', data-dismiss='modal', role='button') Close
+                    .btn-group(role='group')
+                      button.btn.btn-default#preview(type='button', data-dismiss='modal', role='button') Preview
+                    .btn-group(role='group')
+                      button.btn.btn-default.btn-hover-green.glyphicon.glyphicon-ok(type='submit')  Save Snippet
 
     include ./includes/foot.jade
+    
+    link(href='/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
+    script(type='text/javascript', src='/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
+
+    script(type='text/javascript').
+      // Types:
+      // datatype, unit, startdate, enddate, background, lineColor, fillColor, normalRangeColor
+      var snippetsTypes = {
+        "valuedisplay": {
+          "parameters":[
+            {"label":"Datatype", "id":"datatype", "type":"text", default:"float", placeholder:"Datatype", isMandatory: false},
+            {"label":"Unit", "id":"unit", "type":"text", default:"°C", placeholder:"Unit", isMandatory: false},
+            {"label":"Background Color", "id":"background", "type":"colorpicker", default:"", placeholder:"", isMandatory: false},
+            {"label":"Line Color", "id":"lineColor", "type":"colorpicker", default:"", placeholder:"", isMandatory: false},
+            {"label":"Fill Color", "id":"fillColor", "type":"colorpicker", default:"", placeholder:"", isMandatory: false},
+            {"label":"Normal Range Color", "id":"normalRangeColor", "type":"colorpicker", default:"", placeholder:"", isMandatory: false},
+          ]
+        },
+        "boolean": {
+          "parameters":[
+            {"label":"Background Color", "id":"background", "type":"colorpicker", default:"#5595c2", placeholder:"", isMandatory: false}
+          ]
+        },
+        "flowgraph": {
+          "parameters":[
+            {"label":"Datatype", "id":"datatype", "type":"text", default:"float", placeholder:"Datatype", isMandatory: false},
+            {"label":"Unit", "id":"unit", "type":"text", default:"°C", placeholder:"Unit", isMandatory: false},
+            {"label":"Start date", "id": "startdate", "type":"text", default:"", placeholder:"", isMandatory: false},
+            {"label":"End date", "id": "enddate", "type":"text", default:"", placeholder:"", isMandatory: false}
+          ]
+        },
+        "weather": {
+          "parameters":[]
+        }
+      };
+      
+      $(function () {
+        $('.iconpicker li .form-group input').on('click', function(){
+          var checkbox = $(this);
+          if (checkbox.is(':checked')) {
+            checkbox.addClass('active');
+          } else {
+            checkbox.removeClass('active');
+          }
+        });
+        
+        $('li.btn-radio a').click(function(e) {
+          var type = $(this).attr("data-type");
+          $('#type').val(type);
+          if ( type && snippetsTypes[type] ) {
+            var output = "";
+            $.each((snippetsTypes[type]).parameters, function(i, parameter) {
+              if ( parameter.type === "text" ) {
+                output += "<div class='form-group'><label for='"+parameter.id+"' class='control-label'>"+parameter.label+":";
+                if ( parameter.isMandatory === true ) {
+                  output += "<span class='mandatory'>*</span>";
+                }
+                output += "</label><input name='p["+parameter.id+"]' placeholder='"+parameter.placeholder+"' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div>";
+
+              } else if( parameter.type === "radio" ) {
+                output += parameter.name+" RADIO "+parameter.default;
+
+              } else if( parameter.type === "colorpicker" ) {
+                output += "<div class='form-group'><label for='"+parameter.id+"' class='control-label'>"+parameter.label+"</label><div class='colorpicker input-group colorpicker-component colorpicker-element'><span class='input-group-addon'><i></i></span><input name='p["+parameter.id+"]' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div></div>";
+
+              } else if( parameter.type === "select" ) {
+                output += "";
+
+              } else if( parameter.type === "multiselect" ) {
+                output += "";
+
+              } else {
+                output += parameter.label+" "+parameter.default;
+
+              }
+            })
+            $('#specific').html(output);
+            $('.colorpicker').colorpicker();
+          }
+        });
+      });
