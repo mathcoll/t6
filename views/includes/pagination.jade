@@ -29,6 +29,8 @@ nav
             a(href="/objects?page=#{p}") #{p}
           - else if ( currentUrl === '/flows/add' )
             a(href="/flows?page=#{p}") #{p}
+          - else if ( currentUrl === '/snippets/add' )
+            a(href="/snippets?page=#{p}") #{p}
           - else
             a(href="?page=#{p}") #{p}
       - var p=(p+1)
@@ -39,6 +41,9 @@ nav
             span(aria-hidden='true') Next →
         - else if ( currentUrl === '/flows/add' )
           a(href='/flows?page=#{nextPage}', aria-label='Next')
+            span(aria-hidden='true') Next →
+        - else if ( currentUrl === '/snippets/add' )
+          a(href='/snippets?page=#{nextPage}', aria-label='Next')
             span(aria-hidden='true') Next →
         - else
           a(href='?page=#{nextPage}', aria-label='Next')
@@ -51,5 +56,8 @@ nav
       - else if ( currentUrl === '/flows' || currentUrl === '/flows/' )
         a.btn.btn-primary.m-t(href="/flows/add")
           span.fa.fa-plus  Add Flow
+      - else if ( currentUrl === '/snippets' || currentUrl === '/snippets/' )
+        a.btn.btn-primary.m-t(href="/snippets/add")
+          span.fa.fa-plus  Add Snippet
 
 div &nbsp;

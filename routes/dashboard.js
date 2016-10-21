@@ -625,11 +625,13 @@ router.get('/profile', Auth, function(req, res) {
 	tokens	= db.getCollection('tokens');
 	rules	= dbRules.getCollection('rules');
 	qt		= dbQuota.getCollection('quota');
+	snippets= dbSnippets.getCollection('snippets');
 
 	var queryO = { 'user_id' : req.session.user.id };
 	var queryF = { 'user_id' : req.session.user.id };
 	var queryT = { 'user_id' : req.session.user.id };
 	var queryR = { 'user_id' : req.session.user.id };
+	var queryS = { 'user_id' : req.session.user.id };
 	var queryQ = { '$and': [
      	           {'user_id' : req.session.user.id},
     	           {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
@@ -648,6 +650,7 @@ router.get('/profile', Auth, function(req, res) {
 				objects : ((objects.chain().find(queryO).data()).length),
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
+				snippets : (snippets.chain().find(queryS).data().length),
 				tokens : (tokens.chain().find(queryT).data()),
 				calls : (qt.chain().find(queryQ).data().length),
 				quota : (quota[req.session.user.role]),
@@ -951,14 +954,35 @@ router.get('/snippets', Auth, function(req, res) {
 	});
 });
 
+router.get('/snippets/add', Auth, function(req, res) {
+	snippets	= dbSnippets.getCollection('snippets');
+	flows		= db.getCollection('flows');
+	var query = { 'user_id': req.session.user.id };
+	var f = flows.chain().find(query).sort(alphaSort).data();
+	res.render('snippets_add', {
+		title : 'Add a Snippet',
+		message: {},
+		flows: f,
+		user: req.session.user,
+		new_snippet: {},
+		nl2br: nl2br,
+		currentUrl: req.path,
+		striptags: striptags
+	});
+});
+
 router.post('/snippets/add', Auth, function(req, res) {
 	var user_id = req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null;
+	snippets	= dbSnippets.getCollection('snippets');
+	flows		= db.getCollection('flows');
+	var query = { 'user_id': req.session.user.id };
+	var f = flows.chain().find(query).sort(alphaSort).data();
+	var queryS = { '$and': [  {'user_id' : user_id} ]};
 	var message = '';
+	var error = undefined;
 	if ( false || !user_id ) { // useless :-)
 		res.status(412).send(new ErrorSerializer({'id': 1909,'code': 412, 'message': 'Precondition Failed'}).serialize());
 	} else {
-		snippets	= dbSnippets.getCollection('snippets');
-		var queryS = { '$and': [  {'user_id' : user_id} ]};
 		var flows;
 		if( req.body['flows[]'] instanceof Array ) {
 			flows = req.body['flows[]']!==undefined?req.body['flows[]']:new Array();
@@ -970,7 +994,7 @@ router.post('/snippets/add', Auth, function(req, res) {
 		var new_snippet = {
 			id:				snippet_id,
 			user_id:		user_id,
-			type:			req.body.type!==undefined?req.body.type:null,
+			type:			req.body.type!==undefined?req.body.type:'valuedisplay',
 			name:			req.body.name!==undefined?req.body.name:null,
 			icon:			req.body.icon!==undefined?req.body.icon:null,
 			color:			req.body.color!==undefined?req.body.color:null,
@@ -992,6 +1016,7 @@ router.post('/snippets/add', Auth, function(req, res) {
 		if( i >= (quota[req.session.user.role]).snippets ) {
 			message = {type: 'danger', value: 'Over Quota!'};
 			req.session.message = message;
+			error = true;
 		} else {
 			if ( new_snippet.name ) {
 				snippets.insert(new_snippet);
@@ -1001,9 +1026,27 @@ router.post('/snippets/add', Auth, function(req, res) {
 			} else {
 				message = {type: 'danger', value: 'Please give a name to your Snippet!'};
 				req.session.message = message;
+				error = true;
 			}
 		}
-		res.redirect('back');
+		if ( error ) {
+			var query = { 'user_id': req.session.user.id };
+			var pagination=12;
+			req.query.page=req.query.page!==undefined?req.query.page:1;
+			var offset = (req.query.page -1) * pagination;
+			res.render('snippets_add', {
+				title : 't6 Snippets',
+				snippets: snippets.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
+				flows: f,
+				page: req.query.page,
+				pagenb: Math.ceil(((snippets.chain().find(query).data()).length) / pagination),
+				user: req.session.user,
+				message: req.session.message,
+				currentUrl: req.path,
+			});
+		} else {
+			res.redirect('/snippets/'); //+new_snippet.id
+		}
 	}
 });
 

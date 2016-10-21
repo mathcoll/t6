@@ -1,0 +1,178 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+
+    .container-fluid
+      .row.side-body
+        .col-sm-12
+          h2.fa.fa-2x.fa-random &nbsp;Add a Snippet to your library
+        
+        if (message && message.type == 'danger' && message.value)
+        .col-sm-12(class='alert alert-#{message.type}')#add
+
+    .container-fluid
+      .row.side-body
+        .col-sm-6
+          h3 Select your Snippets&nbsp;
+      .row.side-body
+        ol.list-unstyled.col-sm-12.col-md-10.col-md-offset-0
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Value Display
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="valuedisplay")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-valuedisplay.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+            
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Boolean value
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="boolean")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-boolean.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+            
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Flow Graph
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="flowgraph")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-flowgraph.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+            
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Weather
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="weather")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-weather.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+
+      .row.side-body
+        div.sidebar-module-inset
+          if (message && message.type && message.value)
+            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+
+          form(method="post", action="/snippets/add")
+            input.hidden(type='hidden', name='type', id='type', value='')
+            .form-group
+              label.control-label(for="name") Snippet Name:
+                span.mandatory *
+              input.form-control(type="text", name="name", placeholder="Snippet Name", id="name", value="")
+
+            .form-group
+              label.control-label(for="flows") Flows:
+              span.input-group
+                span.input-group-addon
+                  span.fa.fa-random
+                select.form-control(multiple, name="flows[]", id="flows")
+                  - for(f in flows) {
+                    - if( typeof(flow) !== 'undefined' && flows[f].id == flow.id )
+                      option(value="#{flows[f].id}", selected="selected") #{flows[f].name}
+                    - else
+                      option(value="#{flows[f].id}") #{flows[f].name}
+                    - end
+                  - }
+
+            .form-group
+              label.control-label(for="Color") Text Color
+              .colorpicker.input-group.colorpicker-component
+                span.input-group-addon
+                  i
+                input.form-control(type='text', name='color', value='#000000')
+
+            .form-group
+              label.control-label(for="icon") Snippet Icon:
+              ul.list-unstyled.list-inline.iconpicker(data-toggle="buttons")
+                - var icons = ['fa fa-battery-0', 'fa fa-battery-1 ', 'fa fa-battery-2', 'fa fa-battery-3', 'fa fa-wifi', 'fa fa-bell-slash-o', 'fa fa-bell', 'fa fa-bullhorn', 'fa fa-bug', 'fa fa-bolt', 'fa fa-eye', 'fa fa-heart-o', 'fa fa-star-o', 'fa fa-rocket']
+                - for (icon in icons)
+                  li
+                    .form-group.btn.btn-default
+                      i.input-group(class="#{icons[icon]}") 
+                      | &nbsp;
+                      input.input-group(class="#{icons[icon]}", type='radio', name='icon', value='#{icons[icon]}')
+                - end
+            .form-group#specific
+
+            .form-group
+              button.btn.btn-primary.m-t.pull-right(type='submit')
+                span.fa.fa-plus  Save Snippet
+              
+          p &nbsp;
+
+    include ./includes/foot.jade
+
+    link(href='/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
+    script(type='text/javascript', src='/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
+
+    script(type='text/javascript').
+      // Types:
+      // datatype, unit, startdate, enddate, background, lineColor, fillColor, normalRangeColor
+      var snippetsTypes = {
+        "valuedisplay": {
+          "parameters":[
+            {"label":"Datatype", "id":"datatype", "type":"text", default:"float", placeholder:"Datatype", isMandatory: false},
+            {"label":"Unit", "id":"unit", "type":"text", default:"°C", placeholder:"Unit", isMandatory: false},
+            {"label":"Background Color", "id":"background", "type":"colorpicker", default:"#000", placeholder:"", isMandatory: false},
+            {"label":"Line Color", "id":"lineColor", "type":"colorpicker", default:"#000", placeholder:"", isMandatory: false},
+            {"label":"Fill Color", "id":"fillColor", "type":"colorpicker", default:"#000", placeholder:"", isMandatory: false},
+            {"label":"Normal Range Color", "id":"normalRangeColor", "type":"colorpicker", default:"#000", placeholder:"", isMandatory: false},
+          ]
+        },
+        "boolean": {
+          "parameters":[
+            {"label":"Background Color", "id":"background", "type":"colorpicker", default:"#5595c2", placeholder:"", isMandatory: false}
+          ]
+        },
+        "flowgraph": {
+          "parameters":[
+            {"label":"Datatype", "id":"datatype", "type":"text", default:"float", placeholder:"Datatype", isMandatory: false},
+            {"label":"Unit", "id":"unit", "type":"text", default:"°C", placeholder:"Unit", isMandatory: false},
+            {"label":"Start date", "id": "startdate", "type":"text", default:"", placeholder:"", isMandatory: false},
+            {"label":"End date", "id": "enddate", "type":"text", default:"", placeholder:"", isMandatory: false}
+          ]
+        },
+        "weather": {
+          "parameters":[]
+        }
+      };
+      
+      $(function () {
+        $('.iconpicker li .form-group input').on('click', function(){
+          var checkbox = $(this);
+          if (checkbox.is(':checked')) {
+            checkbox.addClass('active');
+          } else {
+            checkbox.removeClass('active');
+          }
+        });
+        
+        $('li.btn-radio a').click(function(e) {
+          var type = $(this).attr("data-type");
+          $('#type').val(type);
+          if ( type && snippetsTypes[type] ) {
+            var output = "";
+            $.each((snippetsTypes[type]).parameters, function(i, parameter) {
+              if ( parameter.type === "text" ) {
+                output += "<div class='form-group'><label for='"+parameter.id+"' class='control-label'>"+parameter.label+":";
+                if ( parameter.isMandatory === true ) {
+                  output += "<span class='mandatory'>*</span>";
+                }
+                output += "</label><input name='p["+parameter.id+"]' placeholder='"+parameter.placeholder+"' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div>";
+
+              } else if( parameter.type === "radio" ) {
+                output += parameter.name+" RADIO "+parameter.default;
+
+              } else if( parameter.type === "colorpicker" ) {
+                output += "<div class='form-group'><label for='"+parameter.id+"' class='control-label'>"+parameter.label+":</label><div class='colorpicker input-group colorpicker-component colorpicker-element'><span class='input-group-addon'><i></i></span><input name='p["+parameter.id+"]' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div></div>";
+
+              } else if( parameter.type === "select" ) {
+                output += "";
+
+              } else if( parameter.type === "multiselect" ) {
+                output += "";
+
+              } else {
+                output += parameter.label+" "+parameter.default;
+
+              }
+            })
+            $('#specific').html(output);
+            $('.colorpicker').colorpicker();
+          }
+        });
+      });
