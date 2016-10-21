@@ -32,7 +32,7 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
         input(type='radio', name='flow_control#{rules[rule].id}', value='restart', id='#{rules[rule].id}restart', checked=(rules[rule].flow_control==="restart" ? "checked" : undefined))
         label(for='#{rules[rule].id}restart') &nbsp;Restart Rules
       .col-sm-8
-        blockquote.glyphicon.glyphicon-comment  Flow Control: Stop refers to stop processing the rule engine. Restart tells the rule engine to start applying all the rules again to the fact. Next is to instruct the rule engine to continue applying the rest of the rules to the fact before stoping.
+        blockquote.fa.fa-comment  Flow Control: Stop refers to stop processing the rule engine. Restart tells the rule engine to start applying all the rules again to the fact. Next is to instruct the rule engine to continue applying the rest of the rules to the fact before stoping.
 
     div.panel-body Consequence:&nbsp;
       span.label.label-info SMS

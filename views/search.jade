@@ -25,8 +25,9 @@ html(lang='en')
               a(href="#snippets") #{snippets.length} Snippets
 
     .container-fluid#objects
+      .row.side-body
+        h3.fa.fa-cubes  #{objects.length} Objects found
       .row.side-body.hidden-xs.table-header
-        h3 #{objects.length} Objects found
         span.col-sm-4
           strong Name
         span.col-sm-4
@@ -48,8 +49,9 @@ html(lang='en')
                   | .
 
     .container-fluid#flows
+      .row.side-body
+        h3.fa.fa-random  #{flows.length} Flows found
       .row.side-body.hidden-xs.table-header
-        h3 #{flows.length} Flows found
         span.col-sm-4
           strong Name
         span.col-sm-2
@@ -73,8 +75,9 @@ html(lang='en')
                   | .
 
     .container-fluid#snippets
+      .row.side-body
+        h3.fa.fa-puzzle-piece  #{snippets.length} Snippets found
       .row.side-body.hidden-xs.table-header
-        h3 #{snippets.length} Snippets found
         span.col-sm-8
           strong Name
         span.col-sm-2

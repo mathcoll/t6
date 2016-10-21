@@ -138,27 +138,14 @@ html(lang='en')
                 .form-group
                   label.control-label(for="icon") Snippet Icon:
                   ul.list-unstyled.list-inline.iconpicker(data-toggle="buttons")
-                    li
-                      .form-group.btn.btn-default
-                        i.input-group.fa.fa-battery-0 
-                        input.input-group.fa.fa-battery-0(type='radio', name='icon', value='fa fa-battery-0')
-                    li
-                      .form-group.btn.btn-default
-                        i.input-group.fa.fa-battery-1 
-                        input.input-group.fa.fa-battery-1(type='radio', name='icon', value='fa fa-battery-1')
-                    li
-                      .form-group.btn.btn-default
-                        i.input-group.fa.fa-battery-2 
-                        input.input-group.fa.fa-battery-2(type='radio', name='icon', value='fa fa-battery-2')
-                    li
-                      .form-group.btn.btn-default
-                        i.input-group.fa.fa-battery-3 
-                        input.input-group.fa.fa-battery-3(type='radio', name='icon', value='fa fa-battery-3')
-                    li
-                      .form-group.btn.btn-default
-                        i.input-group.fa.fa-battery-4 
-                        input.input-group.fa.fa-battery-4(type='radio', name='icon', value='fa fa-battery-4')
-
+                    - var icons = ['fa fa-battery-0', 'fa fa-battery-1 ', 'fa fa-battery-2', 'fa fa-battery-3', 'fa fa-wifi', 'fa fa-bell-slash-o', 'fa fa-bell', 'fa fa-bullhorn', 'fa fa-bug', 'fa fa-bolt', 'fa fa-eye', 'fa fa-heart-o', 'fa fa-star-o', 'fa fa-rocket']
+                    - for (icon in icons)
+                      li
+                        .form-group.btn.btn-default
+                          i.input-group(class="#{icons[icon]}") 
+                          | &nbsp;
+                          input.input-group(class="#{icons[icon]}", type='radio', name='icon', value='#{icons[icon]}')
+                    - end
                 .form-group#specific
 
               .modal-footer 
@@ -235,7 +222,7 @@ html(lang='en')
                 output += parameter.name+" RADIO "+parameter.default;
 
               } else if( parameter.type === "colorpicker" ) {
-                output += "<div class='form-group'><label for='"+parameter.id+"' class='control-label'>"+parameter.label+"</label><div class='colorpicker input-group colorpicker-component colorpicker-element'><span class='input-group-addon'><i></i></span><input name='p["+parameter.id+"]' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div></div>";
+                output += "<div class='form-group'><label for='"+parameter.id+"' class='control-label'>"+parameter.label+":</label><div class='colorpicker input-group colorpicker-component colorpicker-element'><span class='input-group-addon'><i></i></span><input name='p["+parameter.id+"]' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div></div>";
 
               } else if( parameter.type === "select" ) {
                 output += "";

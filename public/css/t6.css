@@ -181,12 +181,16 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
 /* Carousel2 */
 .carousel-inner .caption { background:none; padding: 10px; font-size: 1.4em; }
 .carousel-indicators {
-	bottom:-10px;
+	bottom:-30px;
 	left:0;
 	width:100%;
 	background:none;
 	padding: 6px 0px;
 	margin-left:0;
+}
+.carousel-indicators li {
+    height: 22px !important;
+    width: 22px !important;
 }
 /* End Carousel2 */
 

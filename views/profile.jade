@@ -191,7 +191,30 @@ html(lang='en')
                             - style = "danger"
                           - end
                           div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{flows}", aria-valuemin="0", aria-valuemax="#{quota.flows}", style="width: #{percent}%")
-                        
+
+                    #headingSnippets.panel-heading(role='tab')
+                      h4.panel-title
+                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
+                          span.fa.fa-puzzle-piece
+                          |  #{snippets} Snippets
+                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
+                    #collapseSnippets.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingSnippets')
+                      .panel-body
+                        |  &ndash;
+                        small  Your library is containing #{snippets}/#{quota.snippets} 
+                          a(href='/snippets') Snippets
+                          | .
+                        div.progress
+                          - var percent = Math.round((snippets*100/snippets.snippets)*100) /100
+                          - var style = "success"
+                          - if (percent > 60)
+                            - style = "warning"
+                          - end
+                          - if (percent > 85)
+                            - style = "danger"
+                          - end
+                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%")
+                                            
                     #headingRules.panel-heading(role='tab')
                       h4.panel-title
                         a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
