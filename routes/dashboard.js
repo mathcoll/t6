@@ -986,7 +986,7 @@ router.post('/snippets/add', Auth, function(req, res) {
 				normalRangeColor: req.body['p[normalRangeColor]']
 			}
 		};
-		console.log(new_snippet);
+		//console.log(new_snippet);
 		//res.status(200).send(new_snippet);
 		var i = (snippets.find(queryS)).length;
 		if( i >= (quota[req.session.user.role]).snippets ) {
