@@ -1,3 +1,4 @@
+- var rnd = Math.floor(Math.random()*1000)
 - if ( currentUrl.indexOf("snippets") > -1 ) {
   doctype html
   html(lang='en')
@@ -5,19 +6,18 @@
 - }
     style.
       body { margin: 0; }
-      #body { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
-      h1#title { color: #fff; font-size: 3em; margin: 0 0 .3em 0; }
-      .icon#icon { color: #fff; font-size: 4em; }
-      .value#value { color: #fff; font-size: 3em; margin: .3em 0 0 0; }
-      .date#date { color: #fff; }
-      #spark { width:100%; height: 150px; }
+      #body#{rnd} { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
+      h1#title#{rnd} { color: #fff; font-size: 3em; margin: 0 0 .3em 0; }
+      .icon#icon#{rnd} { color: #fff; font-size: 4em; }
+      .value#value#{rnd} { color: #fff; font-size: 3em; margin: .3em 0 0 0; }
+      .date#date#{rnd} { color: #fff; }
       .carousel-control { background: none !important; width: 3em; }
       .carousel-control span { margin: 100% 0; }
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     body
       //include ../includes/navbar-minimal.jade
 - }
-    .container-fluid#body
+    .container-fluid(id="body#{rnd}")
       .row
         ul.list-unstyled(class='col-xs-#{graph_layout}')
           li
@@ -32,7 +32,7 @@
                       span.caret
                     ul.dropdown-menu(aria-labelledby='dropdownMenu')
                       li
-                        a(href="#", onclick="run(); return false;")
+                        a(href="#", onclick="flowGraph#{rnd}(); return false;")
                           span.fa.fa-refresh  Refresh Data
                       li
                         a(href="#", data-toggle="modal", data-target="#editSnippet")
@@ -40,7 +40,7 @@
                  div.clearfix
 
               .panel-body.collapse.in#collapseGraph
-                #graph1(style='height:300px;')
+                div(id="graph#{rnd}", style='height:300px;')
                 #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
               .panel-footer 
 
@@ -92,7 +92,7 @@
     script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
     script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
     script.
-      getData = function(base, flow_id, type, CType, callback, container, limit, page, sort, start, end, color) {
+      getData#{rnd} = function(base, flow_id, type, CType, callback, container, limit, page, sort, start, end, color) {
         $.ajax({
           url: base+flow_id,
           type: type,
@@ -118,12 +118,13 @@
             console.log(d);
           }
         });
-      } // end getData
+      } // end getData#{rnd}
       
-      doGraph = function(data, container, flow_id, lastValue, title, unit, color) {
+      doGraph#{rnd} = function(data, container, flow_id, lastValue, title, unit, color) {
         var date = new Date(lastValue);
         lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
         options.colors = [color];
+        console.log(container);
         $.plot($('#'+container), data, options);
         $('#'+container).parent().parent().find('div.panel-footer').text('Last value at '+lastValue);
         $('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="glyphicon glyphicon-scale"></span> '+title);
@@ -137,7 +138,7 @@
             $("#tooltip").hide();
           }
         });
-      }; // end doGraph
+      }; // end doGraph#{rnd}
 
       if ('#{graph_weekendAreas}' == 'true') {
         weekendAreas = function(axes) {
@@ -218,13 +219,12 @@
           yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
         };
       }
-      
       //console.log(options);
       
-      run = function() {
+      run#{rnd} = function() {
         var flows = new Array(
           // flow_id, callback, container, limit, page , sort, color
-          ["#{flow_id}", doGraph, "graph1", #{graph_max}, 1, 'desc', '#{graph_startdate2}', '#{graph_enddate2}', '#{graph_color}']
+          ["#{snippet.flows[0]}", doGraph#{rnd}, "graph#{rnd}", #{graph_max}, 1, 'desc', '#{graph_startdate2}', '#{graph_enddate2}', '#{graph_color}']
         );
         flows.map(function(f) {
           var flow_id = f[0];
@@ -236,7 +236,7 @@
           var start = f[6];
           var end = f[7];
           var color = f[8];
-          return getData(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page, sort, start, end, color);
+          return getData#{rnd}(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page, sort, start, end, color);
         }); // end
       }
-      run();
+      run#{rnd}();

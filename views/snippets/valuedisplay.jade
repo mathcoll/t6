@@ -1,3 +1,4 @@
+- var rnd = Math.floor(Math.random()*1000)
 - if ( currentUrl.indexOf("snippets") > -1 ) {
   doctype html
   html(lang='en')
@@ -8,13 +9,13 @@
 - end
     style.
       body { margin: 0; color: #{snippet.color} }
-      #body { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
-      h1#title { color: #{snippet.color}; font-size: 3em; margin: .3em 0 .3em 0; }
-      .icon#icon { color: #{snippet.color}; font-size: 4em; }
-      .icon#iconBck { color: #{snippet.color}; font-size: 14em; left: 10%; margin: 0; opacity: 0.1; position: absolute; }
-      .value#value { color: #{snippet.color}; font-size: 3em; margin: .5em 0 0 0; }
-      .date#date { color: #{snippet.color}; }
-      #spark { width:100%; height:8em; }
+      #body#{rnd} { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
+      h1#title#{rnd} { color: #{snippet.color}; font-size: 3em; margin: .3em 0 .3em 0; }
+      .icon#icon#{rnd} { color: #{snippet.color}; font-size: 4em; }
+      .icon#iconBck#{rnd} { color: #{snippet.color}; font-size: 14em; left: 10%; margin: 0; opacity: 0.1; position: absolute; }
+      .value#value#{rnd} { color: #{snippet.color}; font-size: 3em; margin: .5em 0 0 0; }
+      .date#date#{rnd} { color: #{snippet.color}; }
+      #spark#{rnd} { width:100%; height:8em; }
       .carousel-control { background: none !important; width: 3em; padding: 5em 0px; }
       .carousel-control span { margin: 100% 0; }
     link(href='/css/font-awesome/4.5.0/font-awesome.min.css', rel='stylesheet')
@@ -22,17 +23,17 @@
   body
     //include ../includes/navbar-minimal.jade
 - }
-    .container-fluid#body
+    .container-fluid(id="body#{rnd}")
       .text-center
         #snippetCaroussel
           .carousel-inner
-            h1#title
-            div.icon#iconBck
-            div.icon#icon
-            div.value#value
-            div.date#date
-            div.pull-right#spark
-            button.btn.btn-default.fa.fa-refresh#refresh(href="#", style="width:100%;margin:0")  Refresh
+            h1(id="title#{rnd}")
+            div.icon(id="iconBck#{rnd}")
+            div.icon(id="icon#{rnd}")
+            div.value(id="value#{rnd}")
+            div.date(id="date#{rnd}")
+            div.pull-right(id="spark#{rnd}")
+            button.btn.btn-default.fa.fa-refresh(href="#", style="width:100%;margin:0", id="refresh#{rnd}")  Refresh
 
             a.left.carousel-control(href='#')
               span.fa.fa-chevron-left(aria-hidden='true')
@@ -42,23 +43,23 @@
 
     script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
     script.
+      var data = new Array();
+
       $(function () {
         $('.navbar-toggle').click(function () { $('.navbar-nav').toggleClass('slide-in'); $('.side-body').toggleClass('body-slide-in'); });
-        $('#refresh').click(function(e) {
-          getDataSparkline('/v#{version}/data/', '#{snippet.flows[0]}', 'GET', 'application/json', drawSparkline, 'spark');
+        $('#refresh#{rnd}').click(function(e) {
+          getDataSparkline#{rnd}('/v#{version}/data/', '#{snippet.flows[0]}', 'GET', 'application/json', drawSparkline#{rnd}, 'spark#{rnd}');
           return false;
         });
       });
       
-      var data = new Array();
-
-      drawSparkline = function(data, container, flow_id, lastValue, lastDate) {
+      drawSparkline#{rnd} = function(data, container, flow_id, lastValue, lastDate) {
         theme = {classIcon: "#{snippet.icon}", background: "#{snippet.p.background}", fillColor: "#{snippet.p.fillColor}", lineColor: "#{snippet.p.lineColor}", normalRangeColor: "#{snippet.p.normalRangeColor}"};
-        $("h1#title").html('#{snippet.name}');
-        $("div#value").html(lastValue+'#{snippet.p.unit}');
-        $("div.icon").addClass(theme.classIcon);
-        $("#body").css("background", theme.background);
-        $("div#date").html(lastDate.getDate()+'/'+(lastDate.getMonth()+1)+'/'+lastDate.getFullYear()+' '+lastDate.getHours()+':'+lastDate.getMinutes());
+        $("h1#title#{rnd}").html('#{snippet.name}');
+        $("#value#{rnd}").html(lastValue+'#{snippet.p.unit}');
+        $("#icon#{rnd}").addClass(theme.classIcon);
+        $("#body#{rnd}").css("background", theme.background);
+        $("#date#{rnd}").html(lastDate.getDate()+'/'+(lastDate.getMonth()+1)+'/'+lastDate.getFullYear()+' '+lastDate.getHours()+':'+lastDate.getMinutes());
 
         $("#"+container).sparkline(data, {
           type: 'line', // line, bar, discrete, pie
@@ -78,7 +79,7 @@
         });
       }
 
-      getDataSparkline = function (base, flow_id, type, CType, callback, container) {
+      getDataSparkline#{rnd} = function (base, flow_id, type, CType, callback, container) {
         var limit = 10;
         var page = 1;
         var sort = 'desc';
@@ -99,7 +100,7 @@
             //console.log(d);
           }
         });
-      } // end getDataSparkline
+      } // end getDataSparkline#{rnd}
       
-      getDataSparkline('/v#{version}/data/', '#{snippet.flows[0]}', 'GET', 'application/json', drawSparkline, 'spark');
+      getDataSparkline#{rnd}('/v#{version}/data/', '#{snippet.flows[0]}', 'GET', 'application/json', drawSparkline#{rnd}, 'spark#{rnd}');
       
