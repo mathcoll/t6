@@ -8,10 +8,12 @@ nav.navbar.navbar-default.navbar-fixed-top
         span.icon-bar
       
       - if( title )
-        .visible-xs-inline.btn-group-justified
-          a.navbar-brand(style='color: #337ab7; font-weight: bold;') !{title}
+        .brand-name-wrapper
+          a.navbar-brand.visible-md-inline.visible-lg-inline(href='/') !{title}
+          a.navbar-brand.hidden-xs.hidden-md.hidden-lg(href='/') t6
       - else
-        a.navbar-brand(style='color: #337ab7; font-weight: bold;') t6
+        .brand-name-wrapper
+          a.navbar-brand.visible-xs-inline(href='/') t6
       - end
 
     #navbar.navbar-collapse.collapse
@@ -53,11 +55,10 @@ nav.navbar.navbar-default.navbar-fixed-top
           li
             form.header-search(method='post', action='/search')
               .row(style='padding-top: 8px;')
-                .col-lg-12
-                  .input-group
-                    input.form-control(name='q', type='text', placeholder='Search for Objects, Flows...', style='width:140px')
-                    span.input-group-btn.hidden-sm
-                      button.btn.btn-default.fa.fa-search(type='submit', style='top:0;font-size:14px;line-height:20px;') 
+                .input-group
+                  input.form-control(name='q', type='text', placeholder='Search for Objects, Flows...', style='width:80px')
+                  span.input-group-btn
+                    button.btn.btn-default.fa.fa-search(type='submit', style='top:0;font-size:14px;line-height:20px;') 
 
           li.dropdown
             a.dropdown-toggle(aria-expanded='false', aria-haspopup='true', role='button', data-toggle='dropdown', href='#', style='padding:5px 35px 0 15px;')
