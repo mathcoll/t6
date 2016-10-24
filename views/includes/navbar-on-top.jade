@@ -6,11 +6,13 @@ nav.navbar.navbar-default.navbar-fixed-top
         span.icon-bar
         span.icon-bar
         span.icon-bar
-      a.navbar-brand(href='/') t6, IoT platform and API
       
-      -if(title)
+      - if( title )
         .visible-xs-inline.btn-group-justified
           a.navbar-brand(style='color: #337ab7; font-weight: bold;') !{title}
+      - else
+        a.navbar-brand(style='color: #337ab7; font-weight: bold;') t6
+      - end
 
     #navbar.navbar-collapse.collapse
       ul.nav.navbar-nav
