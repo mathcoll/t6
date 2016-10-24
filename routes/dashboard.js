@@ -37,19 +37,25 @@ router.get('/objects', Auth,  function(req, res) {
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
-	res.render('objects', {
-		title : 'My Objects',
-		objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
-		new_object: {},
-		page: req.query.page,
-		pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
-		types: objectTypes,
-		message: {},
-		user: req.session.user,
-		nl2br: nl2br,
-		currentUrl: req.path,
-		striptags: striptags
-	});
+
+	var o = objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	if ( o.length == 0 ) {
+		res.redirect('/objects/add');
+	} else {
+		res.render('objects', {
+			title : 'My Objects',
+			objects: o,
+			new_object: {},
+			page: req.query.page,
+			pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
+			types: objectTypes,
+			message: {},
+			user: req.session.user,
+			nl2br: nl2br,
+			currentUrl: req.path,
+			striptags: striptags
+		});
+	}
 });
 
 router.get('/objects/add', Auth, function(req, res) {
@@ -349,18 +355,23 @@ router.get('/flows', Auth, function(req, res) {
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
-	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
 	var message = req.session.message!==null?req.session.message:null;
 	req.session.message = null; // Force to unset
-	res.render('flows', {
-		title : 'My Flows',
-		flows: f,
-		page: req.query.page,
-		pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
-		user: req.session.user,
-		currentUrl: req.path,
-		message: message,
-	});
+
+	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	if ( f.length == 0 ) {
+		res.redirect('/flows/add');
+	} else {
+		res.render('flows', {
+			title : 'My Flows',
+			flows: f,
+			page: req.query.page,
+			pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
+			user: req.session.user,
+			currentUrl: req.path,
+			message: message,
+		});
+	}
 });
 
 router.get('/flows/add', Auth, function(req, res) {
@@ -940,18 +951,23 @@ router.get('/snippets', Auth, function(req, res) {
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
-	var s = snippets.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
 	var message = req.session.message!==null?req.session.message:null;
 	req.session.message = null; // Force to unset
-	res.render('snippets', {
-		title : 'My Snippets',
-		snippets: s,
-		page: req.query.page,
-		pagenb: Math.ceil(((snippets.chain().find(query).data()).length) / pagination),
-		user: req.session.user,
-		currentUrl: req.path,
-		message: message,
-	});
+
+	var s = snippets.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	if ( s.length == 0 ) {
+		res.redirect('/snippets/add');
+	} else {
+		res.render('snippets', {
+			title : 'My Snippets',
+			snippets: s,
+			page: req.query.page,
+			pagenb: Math.ceil(((snippets.chain().find(query).data()).length) / pagination),
+			user: req.session.user,
+			currentUrl: req.path,
+			message: message,
+		});
+	}
 });
 
 router.get('/snippets/add', Auth, function(req, res) {
