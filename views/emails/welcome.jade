@@ -928,19 +928,49 @@ html(xmlns='http://www.w3.org/1999/xhtml')
                         tbody
                           tr
                             td.padded(style='padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word')
-                              h1(style='Margin-top: 0;color: #565656;font-weight: 700;font-size: 36px;Margin-bottom: 18px;font-family: sans-serif;line-height: 42px') Welcome to t6
+                              h1(style='Margin-top: 0;color: #565656;font-weight: 700;font-size: 36px;Margin-bottom: 18px;font-family: sans-serif;line-height: 42px') Your t6 account is ready.
                               p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px')
-                                span Welcome Message #{user.firstName} #{user.lastName}
+                                span Hey #{user.firstName} #{user.lastName}, welcome to t6, the IoT platform to manage your Objects and Data.
+                              p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px')
+                                span Your account have successfully been created on t6 IoT platform. The next step is to create Flows (and optionally Objects) so that you can start to store your Data.
+                              p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 25px')
+                                span Additionally, you can customize your own Snippets and Dashboards to see your Data live.
                               p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 24px;Margin-bottom: 12px')
-                                b Login: 
+                                span Here are your credentials to connect t6 platform:
+                                br/
+                                b - Login: 
                                 span #{token.key}
                               p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 24px;Margin-bottom: 24px')
-                                b Password: 
+                                b - Password: 
                                 span #{token.secret}
                               p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 24px')
-                                a(style='font-weight: bold;text-decoration: none;transition: all .2s;color: #999', href='#{baseUrl}/profile', lang='en') My account
+                                a(style='font-weight: bold;text-decoration: none;transition: all .2s;color: #999', href='#{baseUrl}/profile', lang='en') Connect to your t6 account
                               p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 24px')
-                                span Merci pour votre prochaine visite et à bientôt
+                              p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 12px') How does t6 works?
+                                table.border(style='border-collapse: collapse;font-size: 14px;line-height: 14px;background-color: #e9e9e9;Margin-left: auto;Margin-right: auto', width='100%')
+                                  thead
+                                    th(style='color: #565656; width:25%; padding: 10px; font-weight:bold;') Objects
+                                    th(style='color: #565656; width:25%; padding: 10px; font-weight:bold;') Flows & Data
+                                    th(style='color: #565656; width:25%; padding: 10px; font-weight:bold;') Snippets
+                                    th(style='color: #565656; width:25%; padding: 10px; font-weight:bold;') Dahboards
+                                  tbody
+                                    tr
+                                      td(style='padding: 10px;') Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
+                                      td(style='padding: 10px;') Flows are datastore to save time/value. Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
+                                      td(style='padding: 10px;') Snippets for re-usable and embeddable containers.
+                                      td(style='padding: 10px;') Dashboards contains your Snippets to graph Data & Flows.
+                                    tr
+                                      td(style='padding: 15px;')
+                                        a(href="#{baseUrl}/features/api") More Details
+                                      td(style='padding: 15px;')
+                                        a(href="#{baseUrl}/features/api") More Details
+                                      td(style='padding: 15px;')
+                                        a(href="#{baseUrl}/features/api") More Details
+                                      td(style='padding: 15px;')
+                                        a(href="#{baseUrl}/features/api") More Details
+ 
+                              p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 24px')
+                                span Thank you, and see you soon on t6.
                       .column-bottom(style='font-size: 8px;line-height: 8px')  
             td.border(style='padding: 0;vertical-align: top;font-size: 1px;line-height: 1px;background-color: #e9e9e9;width: 1px') ​
       table.border(style='border-collapse: collapse;border-spacing: 0;font-size: 1px;line-height: 1px;background-color: #e9e9e9;Margin-left: auto;Margin-right: auto', width='602')
@@ -965,8 +995,11 @@ html(xmlns='http://www.w3.org/1999/xhtml')
                           tr
                             td.padded(style='padding: 0;vertical-align: top;padding-left: 32px;padding-right: 32px;word-break: break-word;word-wrap: break-word')
                               blockquote(style='Margin-top: 0;Margin-right: 0;Margin-bottom: 0;padding-right: 0;font-style: italic;font-size: 14px;border-left: 2px solid #e9e9e9;Margin-left: 0;padding-left: 16px;border-left-color: #dddddd')
-                                p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 16px;line-height: 25px;Margin-bottom: 24px')
-                                  span app.user.welcomeMail.quote
+                                p(style='Margin-top: 0;color: #565656;font-family: Georgia,serif;font-size: 12px;line-height: 25px;Margin-bottom: 24px')
+                                  span(style="font-size:22px;") &laquo; 
+                                  span With t6, Objects and their Data are on the same platform, they are easy to store, manage, and display!
+                                  span(style="font-size:22px;")  &raquo;
+                                  i  &mdash; Marty B.
                       .column-bottom(style='font-size: 8px;line-height: 8px')  
             td.border(style='padding: 0;vertical-align: top;font-size: 1px;line-height: 1px;background-color: #e9e9e9;width: 1px') ​
       table.border(style='border-collapse: collapse;border-spacing: 0;font-size: 1px;line-height: 1px;background-color: #e9e9e9;Margin-left: auto;Margin-right: auto', width='602')
