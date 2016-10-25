@@ -5,13 +5,13 @@ a.clearfix.list-group-item(name='#{objects[object].id}', href='/objects/#{object
       | &nbsp;#{objects[object].name}&nbsp;
 
   div.col-sm-4
-    span.label.label-default.ellipis(data-toggle='tooltip' data-placement='top' title='Object Id')  #{objects[object].id}
+    span.label.label-default.ellipse(data-toggle='tooltip' data-placement='top' title='Object Id')  #{objects[object].id}
 
   div.col-sm-4
     - if(objects[object].latitude && objects[object].longitude)
-      span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{objects[object].latitude}
+      span.fa.fa-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{objects[object].latitude}
       | &nbsp;&nbsp;
-      span.glyphicon.glyphicon-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{objects[object].longitude}
+      span.fa.fa-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{objects[object].longitude}
     - else
     - end
 
