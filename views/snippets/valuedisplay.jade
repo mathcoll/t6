@@ -7,9 +7,9 @@
   html(lang='en')
     include ../includes/head.jade
 - }
-- if( !snippet.color )
+- if( !snippet.color ) {
   snippet.color = '#fff'
-- end
+- }
     style.
       body { margin: 0; color: #{snippet.color} }
       #body#{rnd} { margin: 0; padding: 0; border-radius: 0.5em; margin: .5em; }
@@ -30,13 +30,15 @@
       .text-center
         #snippetCaroussel
           .carousel-inner
-            h1(id="title#{rnd}")
+            h1(id="title#{rnd}") #{snippet.name}
             div.icon(id="iconBck#{rnd}")
             div.icon(id="icon#{rnd}")
             div.value(id="value#{rnd}")
+              i loading... (#{snippet.p.unit})
             div.date(id="date#{rnd}")
+              i ../../....
             div.pull-right(id="spark#{rnd}")
-            button.btn.btn-default.fa.fa-refresh(href="#", style="width:100%;margin:0", id="refresh#{rnd}")  Refresh
+            button.btn.btn-default.fa.fa-refresh(href="#", style="width:100%;margin:0", id="refresh#{rnd}", disabled)  Refresh
 
             a.left.carousel-control(href='#')
               span.fa.fa-chevron-left(aria-hidden='true')
@@ -80,12 +82,15 @@
           minSpotColor: undefined,
           maxSpotColor: undefined,
         });
+        $('#refresh#{rnd}').prop("disabled", false);
       }
 
       getDataSparkline#{rnd} = function (base, flow_id, type, CType, callback, container) {
+        $('#refresh#{rnd}').prop("disabled", true);
         var limit = 10;
         var page = 1;
         var sort = 'desc';
+        $("#"+container).prepend("<div class='fa fa-3x fa-spin fa-refresh'></div>");
         $.ajax({
           url: base+flow_id,
           type: type,
@@ -101,6 +106,7 @@
           error: function(d) {
             //console.log('ERROR (d)'+base);
             //console.log(d);
+            $("#"+container).html("<div class='alert alert-danger'>Error "+d.status+": "+d.statusText+"</div>");
           }
         });
       } // end getDataSparkline#{rnd}

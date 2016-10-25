@@ -241,6 +241,7 @@
           var start = f[6];
           var end = f[7];
           var color = f[8];
+          $("#"+container).append("<div class='fa fa-3x fa-spin fa-refresh'></div>");
           return getData#{rnd}(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page, sort, start, end, color);
         }); // end
       }
