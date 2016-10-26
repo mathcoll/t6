@@ -5,24 +5,33 @@ footer.footer.navbar-fixed-bottom
         -if ( currentUrl === '/objects' || currentUrl === '/objects/' )
           a.btn-group.btn(href='/objects/add')
             i.fa.fa-2x.fa-plus-square(title='Add an Object to my library')
-              span.center-block Add Object
         -else
           a.btn-group.btn(href='/objects')
             i.fa.fa-2x.fa-cubes(data-toggle='tooltip', data-placement='top', title='My Objects in library')  
-              span.center-block Objects
         
         -if ( currentUrl === '/flows' || currentUrl === '/flows/' )
           a.btn-group.btn(href='/flows/add')
             i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Flow to my library')
-              span.center-block Add Flow
         -else
           a.btn-group.btn(href='/flows')
             i.fa.fa-2x.fa-random(data-toggle='tooltip', data-placement='top', title='My Flows in library')  
-              span.center-block Flows
-        
+
+        -if ( currentUrl === '/snippets' || currentUrl === '/snippets/' )
+          a.btn-group.btn(href='/snippets/add')
+            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Snippet to my library')
+        -else
+          a.btn-group.btn(href='/snippets')
+            i.fa.fa-2x.fa-puzzle-piece(data-toggle='tooltip', data-placement='top', title='My Snippets in library')  
+
+        -if ( currentUrl === '/dashboards' || currentUrl === '/dashboards/' )
+          a.btn-group.btn(href='/dashboards/add')
+            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Dashboard to my library')
+        -else
+          a.btn-group.btn(href='/dashboards')
+            i.fa.fa-2x.fa-area-chart(data-toggle='tooltip', data-placement='top', title='My Dashboards in library')  
+
         a.btn-group.btn(href='/profile')
           i.fa.fa-2x.fa-user(data-toggle='tooltip', data-placement='top', title='My Profile and Account')  
-            span.center-block Profile
             
       - else
         a.btn-group.btn(href='/login')
