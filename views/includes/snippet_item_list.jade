@@ -1,4 +1,4 @@
-a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{snippets[snippet].id}', data-toggle='tooltip', data-placement='right', title='Name: #{snippets[snippet].name}\nType: #{snippets[snippet].type}\nColor: #{snippets[snippet].color}\nId: #{snippets[snippet].id}')
+a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{snippets[snippet].id}', data-toggle='tooltip', data-placement='top', title='Name: #{snippets[snippet].name}\nType: #{snippets[snippet].type}\nColor: #{snippets[snippet].color}\nId: #{snippets[snippet].id}')
   div.col-sm-8(class="#{snippets[snippet].icon}")  #{snippets[snippet].name}
   div.col-sm-2
     img.img-responsive(src="/img/snippet-#{snippets[snippet].type}.jpg", height="100")
