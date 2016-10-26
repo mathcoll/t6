@@ -22,8 +22,25 @@ html(lang='en')
                   span.mandatory *
                 span.input-group
                   span.input-group-addon
-                    span.fa.fa-random
+                    span.fa.fa-area-chart
                   input.form-control(type="text", name="name", placeholder="Dashboard Name", id="name")
+
+              .form-group
+                label.control-label(for="snippets") Snippets:
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-puzzle-piece
+                  select.form-control(multiple, name="snippets[]", id="snippets")
+                    - for(snippet in snippets) {
+                      option(value="#{snippets[snippet].id}") #{snippets[snippet].name}
+                    - }
+
+              .form-group
+                label.control-label(for="description") Description:
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-pencil-square-o
+                  textarea.form-control.vresize(name="description", placeholder="Dashboard Description", id="description")
 
               .form-group
                 label.control-label(for="layout") Layout:
@@ -31,14 +48,6 @@ html(lang='en')
                 span.input-group
                   span.input-group-addon
                     span.fa.fa-random
-
-              .form-group
-                label.control-label(for="description") Description:
-                  span.mandatory 
-                span.input-group
-                  span.input-group-addon
-                    span.fa.fa-random
-                  textarea.form-control.vresize(name="description", placeholder="Dashboard Description", id="description")
 
               .form-group
                 button.btn.btn-primary.m-t.pull-right
