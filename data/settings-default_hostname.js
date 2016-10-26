@@ -10,7 +10,7 @@ mqtt_info			= 't6/'+os.hostname()+'/api'; // Mqtt topic for t6 api basic logs
 /* Session settings */
 session				= require('express-session');
 FileStore			= require('session-file-store')(session);
-secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz"; // Keyboard-cat
+secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz"; // Keyboard-cat
 sessionDuration		= 3600*24*10; // 10 days cookie session
 store				= new FileStore({ttl: sessionDuration});
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
@@ -46,8 +46,8 @@ dbRules.loadDatabase(path.join(__dirname, 'rules-'+os.hostname()+'.json'));
 
 /* Quota settings */
 quota = {
-	'admin': {objects: 99, flows: 99, rules: 99, tokens: 99, snippets: 99, calls: 9999999},
-	'user': {objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, calls: 999}
+	'admin': {objects: 99, flows: 99, rules: 99, tokens: 99, snippets: 99, dashboards: 99, calls: 9999999},
+	'user': {objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 1, calls: 999}
 };
 dbQuota	= new loki(path.join(__dirname, 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbQuota.loadDatabase(path.join(__dirname, 'quota-'+os.hostname()+'.json'));
@@ -55,3 +55,7 @@ dbQuota.loadDatabase(path.join(__dirname, 'quota-'+os.hostname()+'.json'));
 /* Snippets settings */
 dbSnippets	= new loki(path.join(__dirname, 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbSnippets.loadDatabase(path.join(__dirname, 'snippets-'+os.hostname()+'.json'));
+
+/* Dashboards settings */
+dbDashboards	= new loki(path.join(__dirname, 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbDashboards.loadDatabase(path.join(__dirname, 'dashboards-'+os.hostname()+'.json'));

@@ -102,8 +102,9 @@ app.use(function(req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
 	res.status(err.status || 500).render(err.status, {
-		title : 't6',
-		user: req.session.user
+		title : 'Not Found',
+		user: req.session.user,
+		err: app.get('env')==='development'?err:null
 	});
 	//next(err);
 });

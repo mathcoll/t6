@@ -43,22 +43,10 @@
               a(href='/snippets')
                 span.fa.fa-puzzle-piece.pull-right
                 |  My Snippets
-            li#dropdown.panel.panel-default
-              a(data-toggle='collapse', href='#dropdown-dashboards')
-                span.fa.fa-area-chart.caret.pull-right
+            li
+              a(href='/dashboards')
+                span.fa.fa-area-chart.pull-right
                 |  My Dashboards
-              // Dropdown dashboards
-              #dropdown-dashboards.panel-collapse.collapse
-                .panel-body
-                  ul.nav.navbar-nav
-                    li
-                      a(href='/dashboards/1')
-                        span.fa.fa-line-chart.pull-right
-                        | &nbsp;Dashboard 1
-                    li
-                      a(href='/dashboards/2')
-                        span.fa.fa-line-chart.pull-right
-                        | &nbsp;Dashboard 2
 
             li#dropdown.panel.panel-default
               a(data-toggle='collapse', href='#dropdown-account')

@@ -1,0 +1,38 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+
+    .container-fluid
+      .row.side-body
+        .col-sm-12
+          h3.fa.fa-2x.fa-area-chart &nbsp;My Dashboards&nbsp;
+        
+      .row.side-body
+        if (message && message.type && message.value)
+          div.alert(class='alert-#{message.type}', role='alert') !{message.value}
+
+      .row.side-body
+        if (dashboards.length)
+          ul.list-group.list-unstyled.col-sm-12.col-md-12.col-md-offset-0
+            include ./includes/pagination.jade
+            .row.hidden-xs.table-header
+              span.col-sm-8
+                strong Name
+              span.col-sm-2
+                strong Id
+
+            - for(dashboard in dashboards) {
+              include ./includes/dashboard_item_list.jade
+            - }
+            include ./includes/pagination.jade
+        else
+          p &nbsp;
+          div.alert.alert-warning You don't have any Dashboards yet in your library. You can add a <a href="/dashboards/add">Dashboard</a> to graph your Flows
+        p &nbsp;
+
+        div.col-sm-12
+          p 
+
+    include ./includes/foot.jade

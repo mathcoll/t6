@@ -1,0 +1,49 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+
+    .container-fluid
+      .row.side-body
+        .col-sm-12
+          h2.fa.fa-2x.fa-area-chart &nbsp;Add a Dashboard to your library
+        
+        if (message && message.type == 'danger' && message.value)
+        .col-sm-12(class='alert alert-#{message.type}')#add
+        
+          div.sidebar-module-inset
+            if (message && message.type && message.value)
+              div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+
+            form(action="/dashboards/add#add", method="post")
+              .form-group
+                label.control-label(for="name") Dashboard Name:
+                  span.mandatory *
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-random
+                  input.form-control(type="text", name="name", placeholder="Dashboard Name", id="name")
+
+              .form-group
+                label.control-label(for="layout") Layout:
+                  span.mandatory *
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-random
+
+              .form-group
+                label.control-label(for="description") Description:
+                  span.mandatory 
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-random
+                  textarea.form-control.vresize(name="description", placeholder="Dashboard Description", id="description")
+
+              .form-group
+                button.btn.btn-primary.m-t.pull-right
+                  span.fa.fa-plus  Add Dashboard
+              
+              p &nbsp;
+
+    include ./includes/foot.jade

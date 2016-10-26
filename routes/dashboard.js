@@ -11,6 +11,7 @@ var snippets;
 var datatypes;
 var tokens;
 var rules;
+var dashboards;
 var qt;
 var objectTypes = ['rooter', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'nodemcu', 'tablet', 'server', 'printer'];
 
@@ -108,7 +109,8 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
-				user: req.session.user
+				user: req.session.user,
+				err: err
 			});
 		}
 	}
@@ -144,7 +146,8 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
-			user: req.session.user
+			user: req.session.user,
+			err: err
 		});
 	}
 });
@@ -183,7 +186,8 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
-			user: req.session.user
+			user: req.session.user,
+			err: err
 		});
 	}
 });
@@ -214,7 +218,8 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
-			user: req.session.user
+			user: req.session.user,
+			err: err
 		});
 	}
 });
@@ -252,7 +257,8 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
-				user: req.session.user
+				user: req.session.user,
+				err: err
 			});
 		}
 	} else {
@@ -260,7 +266,8 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
-			user: req.session.user
+			user: req.session.user,
+			err: err
 		});
 	}
 });
@@ -285,7 +292,8 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
-			user: req.session.user
+			user: req.session.user,
+			err: err
 		});
 	}
 });
@@ -428,7 +436,8 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
-				user: req.session.user
+				user: req.session.user,
+				err: err
 			});
 		}
 	}
@@ -474,7 +483,8 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
-				user: req.session.user
+				user: req.session.user,
+				err: err
 			});
 		}
 	}
@@ -521,7 +531,8 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
-				user: req.session.user
+				user: req.session.user,
+				err: err
 			});
 		}
 	} else {
@@ -529,7 +540,8 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
-			user: req.session.user
+			user: req.session.user,
+			err: err
 		});
 	}
 });
@@ -796,6 +808,99 @@ router.get('/about', function(req, res) {
 	});
 });
 
+router.get('/dashboards', Auth, function(req, res) {
+	dashboards	= dbDashboards.getCollection('dashboards');
+	var query = { 'user_id': req.session.user.id };
+	var pagination=12;
+	req.query.page=req.query.page!==undefined?req.query.page:1;
+	var offset = (req.query.page -1) * pagination;
+	var message = req.session.message!==null?req.session.message:null;
+	req.session.message = null; // Force to unset
+
+	var d = dashboards.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	if ( d.length == 0 ) {
+		res.redirect('/dashboards/add');
+	} else {
+		res.render('dashboards', {
+			title : 'My Dashboards',
+			dashboards: d,
+			page: req.query.page,
+			pagenb: Math.ceil(((dashboards.chain().find(query).data()).length) / pagination),
+			user: req.session.user,
+			currentUrl: req.path,
+			message: message,
+		});
+	}
+});
+
+router.get('/dashboards/add', Auth, function(req, res) {
+	dashboards	= dbDashboards.getCollection('dashboards');
+	var query = { 'user_id': req.session.user.id };
+	var d = dashboards.chain().find(query).sort(alphaSort).data();
+	res.render('dashboards_add', {
+		title : 'Add a Dashboard',
+		message: {},
+		dashboards: d,
+		user: req.session.user,
+		new_snippet: {},
+		nl2br: nl2br,
+		currentUrl: req.path,
+		striptags: striptags
+	});
+});
+
+router.post('/dashboards/add', Auth, function(req, res) {
+	dashboards	= dbDashboards.getCollection('dashboards');
+	var error = undefined;
+	var user_id = req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null;
+	var message = '';
+	var queryQ = { '$and': [  {'user_id' : user_id} ]};
+	
+	var dashboard_id = uuid.v4();
+	
+	var new_dashboard = {
+		id:			dashboard_id,
+		user_id:		user_id,
+		name:			req.body.name!==undefined?req.body.name:null,
+		description:		req.body.description!==undefined?req.body.description:null,
+	};
+	//console.log(new_dashboard);
+	var i = (dashboards.find(queryQ)).length;
+	if( i >= (quota[req.session.user.role]).dashboards ) {
+		message = {type: 'danger', value: 'Over Quota!'};
+		error = true;
+	} else {
+		if ( new_dashboard.name && new_dashboard.user_id ) {
+			dashboards.insert(new_dashboard);
+			db.save();
+			message = {type: 'success', value: 'Successfully added.'};
+			req.session.message = message;
+		} else {
+			message = {type: 'danger', value: 'Please give a name to your Dashboard!'};
+			error = true;
+		}
+	}
+	var query = { 'user_id': req.session.user.id };
+	var pagination=12;
+	req.query.page=req.query.page!==undefined?req.query.page:1;
+	var offset = (req.query.page -1) * pagination;
+	var d = dashboards.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	
+	if ( error ) {
+		res.render('dashboards_add', {
+			title : 't6 Dashboards',
+			dashboards: d,
+			page: req.query.page,
+			pagenb: Math.ceil(((dashboards.chain().find(query).data()).length) / pagination),
+			user: req.session.user,
+			message: message,
+			currentUrl: req.path,
+		});
+	} else {
+		res.redirect('/dashboards/'); //+new_dashboard.id
+	}
+});
+
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
 	res.render('dashboard'+dashboard_id, {
@@ -848,19 +953,20 @@ router.post('/register', function(req, res) {
 			};
 			transporter.sendMail(mailOptions, function(err, info){
 			    if( err ){
-					var err = new Error('Not Found');
-					err.status = 404;
+					var err = new Error('Internal Error');
+					err.status = 500;
 					res.status(err.status || 500).render(err.status, {
-						title : 'Not Found',
-						user: req.session.user
+						title : 'Internal Error'+app.get('env'),
+						user: req.session.user,
+						err: err
 					});
 			    } else {
 			    	res.render('login', {
-						title : 'Login to t6',
-						user: req.session.user,
-						currentUrl: req.path,
-						message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
-					});
+					title : 'Login to t6',
+					user: req.session.user,
+					currentUrl: req.path,
+					message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
+				});
 			    }
 			});
 		});
@@ -886,7 +992,7 @@ router.get('/mail/welcome', function(req, res) {
         expiration:			'',
 	};
 	res.render('emails/welcome', {
-		title : 'Log-in',
+		title : '',
 		baseUrl: baseUrl,
 		user: fake_user,
 		currentUrl: req.path,
@@ -1100,7 +1206,8 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 			err.status = 404;
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
-				user: req.session.user
+				user: req.session.user,
+				err: err
 			});
 		}
 		
@@ -1109,7 +1216,8 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 		err.status = 404;
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
-			user: req.session.user
+			user: req.session.user,
+			err: err
 		});
 	}
 });

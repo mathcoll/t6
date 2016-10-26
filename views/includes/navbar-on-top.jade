@@ -33,22 +33,10 @@ nav.navbar.navbar-default.navbar-fixed-top
               i.fa.fa-puzzle-piece
                 |  Snippets
 
-          li.dropdown
-            a.dropdown-toggle(aria-expanded='false', aria-haspopup='true', role='button', data-toggle='dropdown', href='#')
+          li
+            a(href='/dashboards')
               i.fa.fa-area-chart
-              |  Dashboards 
-              span.caret
-            ul.dropdown-menu
-              li
-                a(href='#')
-                  span.fa.fa-area-chart &nbsp;My Dashboards
-              li.divider(role='separator')
-              li
-                a(href='/dashboards/1')
-                  span.glyphicon.glyphicon-th-large &nbsp;Dashboard 1
-              li
-                a(href='/dashboards/2')
-                  span.glyphicon.glyphicon-th-large &nbsp;Dashboard 2
+                |  Dashboards
 
       ul.nav.navbar-nav.navbar-right
         - if (user)

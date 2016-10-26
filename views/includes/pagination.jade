@@ -16,6 +16,12 @@ nav
         - else if ( currentUrl === '/flows/add' )
           a(href='/flows?page=#{prevPage}', aria-label='Previous')
             span(aria-hidden='true') ← Previous
+        - else if ( currentUrl === '/snippets/add' )
+          a(href='/snippets?page=#{prevPage}', aria-label='Previous')
+            span(aria-hidden='true') ← Previous
+        - else if ( currentUrl === '/dashboards/add' )
+          a(href='/dashboards?page=#{prevPage}', aria-label='Previous')
+            span(aria-hidden='true') ← Previous
         - else
           a(href='?page=#{prevPage}', aria-label='Previous')
             span(aria-hidden='true') ← Previous
@@ -31,6 +37,8 @@ nav
             a(href="/flows?page=#{p}") #{p}
           - else if ( currentUrl === '/snippets/add' )
             a(href="/snippets?page=#{p}") #{p}
+          - else if ( currentUrl === '/dashboards/add' )
+            a(href="/dashboards?page=#{p}") #{p}
           - else
             a(href="?page=#{p}") #{p}
       - var p=(p+1)
@@ -44,6 +52,9 @@ nav
             span(aria-hidden='true') Next →
         - else if ( currentUrl === '/snippets/add' )
           a(href='/snippets?page=#{nextPage}', aria-label='Next')
+            span(aria-hidden='true') Next →
+        - else if ( currentUrl === '/dashboards/add' )
+          a(href='/dashboards?page=#{nextPage}', aria-label='Next')
             span(aria-hidden='true') Next →
         - else
           a(href='?page=#{nextPage}', aria-label='Next')
@@ -59,5 +70,8 @@ nav
       - else if ( currentUrl === '/snippets' || currentUrl === '/snippets/' )
         a.btn.btn-primary.m-t(href="/snippets/add")
           span.fa.fa-plus  Add Snippet
+      - else if ( currentUrl === '/dashboards' || currentUrl === '/dashboards/' )
+        a.btn.btn-primary.m-t(href="/dashboards/add")
+          span.fa.fa-plus  Add Dashboard
 
 div &nbsp;
