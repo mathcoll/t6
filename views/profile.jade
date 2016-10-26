@@ -10,7 +10,7 @@ html(lang='en')
           h2.fa.fa-2x.fa-user  Profile of #{user.firstName} #{user.lastName}
 
       .row.side-body
-        .col-sm-4
+        .col-lg-4.col-sm-6
           .panel.panel-default
             .panel-body
               img.img-responsive.img-thumbnail.center-block(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g', alt='Profile Image')
@@ -140,7 +140,7 @@ html(lang='en')
                 span.fa.fa-pencil-square-o  Edit
               p &nbsp;
 
-        .col-sm-8
+        .col-lg-8.col-sm-6
           .panel.panel-default
             .panel-body
               h3#objects.list-group User Statistics
@@ -283,7 +283,7 @@ html(lang='en')
                           - end
                           div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
 
-        .col-sm-8
+        .col-lg-4.col-sm-12
           .panel.panel-default
             .panel-body
               h3#objects.list-group Last Data inserted
@@ -294,4 +294,3 @@ html(lang='en')
               include ./includes/data_item_list.jade
 
     include ./includes/foot.jade
-
