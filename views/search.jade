@@ -23,6 +23,8 @@ html(lang='en')
               a(href="#flows") #{flows.length} Flows
             li
               a(href="#snippets") #{snippets.length} Snippets
+            li
+              a(href="#dashboards") #{dashboards.length} Dashboards
 
     .container-fluid#objects
       .row.side-body
@@ -98,7 +100,28 @@ html(lang='en')
                   a(href="/snippets") Snippet
                   | .
 
-      
+    .container-fluid#dashboards
+      .row.side-body
+        h3.fa.fa-area-chart  #{dashboards.length} Dashboards found
+      .row.side-body.hidden-xs.table-header
+        span.col-sm-8
+          strong Name
+        span.col-sm-2
+          strong Id
+    
+      .row.side-body
+        .list-group
+        - if (dashboards.length)
+          - for(dashboard in dashboards) {
+            include ./includes/dashboard_item_list.jade
+          - }
+        - else
+            .list-group-item
+              .alert.alert-danger.alert-dismissible(role='alert')
+                p No Result in Dashboards, perhaps you would like to create a 
+                  a(href="/dashboards") Dashboards
+                  | .
+
     .container &nbsp;
 
     include ./includes/foot.jade

@@ -205,7 +205,7 @@ html(lang='en')
                           a(href='/snippets') Snippets
                           | .
                         div.progress
-                          - var percent = Math.round((snippets*100/snippets.snippets)*100) /100
+                          - var percent = Math.round((snippets*100/quota.snippets)*100) /100
                           - var style = "success"
                           - if (percent > 60)
                             - style = "warning"
@@ -214,6 +214,29 @@ html(lang='en')
                             - style = "danger"
                           - end
                           div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%")
+ 
+                    #headingDashboards.panel-heading(role='tab')
+                      h4.panel-title
+                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
+                          span.fa.fa-area-chart
+                          |  #{dashboards} Dashboards
+                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
+                    #collapseDashboards.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingDashboards')
+                      .panel-body
+                        |  &ndash;
+                        small  Your library is containing #{dashboards}/#{quota.dashboards} 
+                          a(href='/dashboards') Dashboards
+                          | .
+                        div.progress
+                          - var percent = Math.round((dashboards*100/quota.dashboards)*100) /100
+                          - var style = "success"
+                          - if (percent > 60)
+                            - style = "warning"
+                          - end
+                          - if (percent > 85)
+                            - style = "danger"
+                          - end
+                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%")
                                             
                     #headingRules.panel-heading(role='tab')
                       h4.panel-title

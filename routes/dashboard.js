@@ -647,6 +647,7 @@ router.get('/profile', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	tokens	= db.getCollection('tokens');
 	rules	= dbRules.getCollection('rules');
+	dashboards= dbDashboards.getCollection('dashboards');
 	qt		= dbQuota.getCollection('quota');
 	snippets= dbSnippets.getCollection('snippets');
 
@@ -655,6 +656,7 @@ router.get('/profile', Auth, function(req, res) {
 	var queryT = { 'user_id' : req.session.user.id };
 	var queryR = { 'user_id' : req.session.user.id };
 	var queryS = { 'user_id' : req.session.user.id };
+	var queryD = { 'user_id' : req.session.user.id };
 	var queryQ = { '$and': [
      	           {'user_id' : req.session.user.id},
     	           {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
@@ -674,6 +676,7 @@ router.get('/profile', Auth, function(req, res) {
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
 				snippets : (snippets.chain().find(queryS).data().length),
+				dashboards : (dashboards.chain().find(queryD).data().length),
 				tokens : (tokens.chain().find(queryT).data()),
 				calls : (qt.chain().find(queryQ).data().length),
 				quota : (quota[req.session.user.role]),
@@ -687,6 +690,8 @@ router.get('/profile', Auth, function(req, res) {
 				objects : ((objects.chain().find(queryO).data()).length),
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
+				snippets : (snippets.chain().find(queryS).data().length),
+				dashboards : (dashboards.chain().find(queryD).data().length),
 				tokens : (tokens.chain().find(queryT).data()),
 				calls : (qt.chain().find(queryQ).data().length),
 				quota : (quota[req.session.user.role]),
@@ -712,6 +717,7 @@ router.post('/search', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	flows	= db.getCollection('flows');
 	snippets	= dbSnippets.getCollection('snippets');
+	dashboards	= dbDashboards.getCollection('dashboards');
 	if (!req.body.q) {
 		res.render('search', {
 			title : 'Search results',
@@ -739,11 +745,18 @@ router.post('/search', Auth, function(req, res) {
 							{ 'name': {'$regex': [req.body.q, 'i'] } }
 						]
 					};
+		var queryD = {
+				'$and': [
+							{ 'user_id': req.session.user.id },
+							{ 'name': {'$regex': [req.body.q, 'i'] } }
+						]
+					};
 		res.render('search', {
 			title : 'Search results',
 			objects: objects.find(queryO),
 			flows: flows.find(queryF),
 			snippets: snippets.find(queryS),
+			dashboards: dashboards.find(queryD),
 			q:req.body.q,
 			user: req.session.user,
 			currentUrl: req.path,
@@ -835,6 +848,7 @@ router.get('/dashboards', Auth, function(req, res) {
 
 router.get('/dashboards/add', Auth, function(req, res) {
 	dashboards	= dbDashboards.getCollection('dashboards');
+	snippets	= dbSnippets.getCollection('snippets');
 	var query = { 'user_id': req.session.user.id };
 	var d = dashboards.chain().find(query).sort(alphaSort).data();
 	res.render('dashboards_add', {
@@ -842,7 +856,7 @@ router.get('/dashboards/add', Auth, function(req, res) {
 		message: {},
 		dashboards: d,
 		user: req.session.user,
-		new_snippet: {},
+		snippets: snippets.chain().find(query).sort(alphaSort).data(),
 		nl2br: nl2br,
 		currentUrl: req.path,
 		striptags: striptags
