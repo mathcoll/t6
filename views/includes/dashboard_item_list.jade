@@ -1,4 +1,5 @@
 a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards/#{dashboards[dashboard].id}')
-  div.col-sm-8.fa.fa-area-chart  #{dashboards[dashboard].name}
+  div.col-sm-6.fa.fa-area-chart  #{dashboards[dashboard].name}
+  div.col-sm-2 #{dashboards[dashboard].layout}
   div.col-sm-4.ellipse.label.label-default #{dashboards[dashboard].id}
   div.col-sm-12 #{dashboards[dashboard].description}

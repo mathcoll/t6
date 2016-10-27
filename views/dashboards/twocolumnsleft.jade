@@ -1,0 +1,19 @@
+doctype html
+html(lang='en')
+  - title=dashboard.name
+  include ../includes/head.jade
+  body
+    include ../includes/navbar-on-top.jade
+
+    .container-fluid.starter-template
+      .row
+        h2.fa.fa-2x.fa-random  #{dashboard.name}
+        p !{dashboard.description}
+
+      .row
+        ul.col-md-8
+          !{snippetHtml}
+        ul.col-md-4
+          !{snippetHtml}
+
+    include ../includes/foot.jade

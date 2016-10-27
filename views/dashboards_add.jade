@@ -47,7 +47,11 @@ html(lang='en')
                   span.mandatory *
                 span.input-group
                   span.input-group-addon
-                    span.fa.fa-random
+                    span.glyphicon.glyphicon-bookmark
+                  select.form-control(type="text", name="layout", placeholder="Dashboard Layout", id="layout")
+                    option(value="onecolumn") onecolumn
+                    option(value="twocolumnsright") twocolumnsright
+                    option(value="twocolumnsleft") twocolumnsleft
 
               .form-group
                 button.btn.btn-primary.m-t.pull-right

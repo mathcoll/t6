@@ -868,13 +868,16 @@ router.post('/dashboards/add', Auth, function(req, res) {
 	var error = undefined;
 	var user_id = req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null;
 	var message = '';
+	var linked_snippets = req.body['snippets[]']!==undefined?req.body['snippets[]']:new Array();
+	if ( typeof linked_snippets !== 'object' ) linked_snippets = new Array(linked_snippets);
+
 	var queryQ = { '$and': [  {'user_id' : user_id} ]};
-	
 	var dashboard_id = uuid.v4();
-	
 	var new_dashboard = {
 		id:			dashboard_id,
 		user_id:		user_id,
+		snippets:		linked_snippets,
+		layout: 		req.body.layout!==undefined?req.body.layout:null,
 		name:			req.body.name!==undefined?req.body.name:null,
 		description:		req.body.description!==undefined?req.body.description:null,
 	};
@@ -917,12 +920,58 @@ router.post('/dashboards/add', Auth, function(req, res) {
 
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
-	res.render('dashboard'+dashboard_id, {
-		title : 'Dashboard t6',
-		user: req.session.user,
-		currentUrl: req.path,
-		version: version,
-	});
+	dashboards	= dbDashboards.getCollection('dashboards');
+	if ( dashboard_id !== undefined ) {
+		var queryD = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : dashboard_id },
+			]
+		};
+		var json = {
+			dashboard: dashboards.findOne(queryD)
+		}
+		if ( json.dashboard ) {
+			//var s = (json.eqJoin(snippets.chain(), 'user_id', 'id').data())[0];
+			// TODO, but let's do it simple for now:
+			var snippetHtml = '';
+			snippets = dbSnippets.getCollection('snippets');
+			for( var i=0; i<(json.dashboard.snippets).length; i++ ) {
+				var s = snippets.findOne({id: json.dashboard.snippets[i]});
+				var snippet = {
+					title		: s.name,
+					currentUrl	: req.path,
+					user		: req.session.user,
+					graph_layout	: 12,
+					snippet		: s,
+				}
+				snippet.type = snippet.type!==undefined?snippet.type:'valuedisplay';
+				res.render('./snippets/'+snippet.type, snippet, function(err, html) {
+					if( !err ) snippetHtml += html;
+				});
+			};
+			var message = req.session.message!==null?req.session.message:null;
+			req.session.message = null; // Force to unset
+			var layout = json.dashboard.layout!==undefined?json.dashboard.layout:'onecolumn';
+			// TODO Add more secure ay to check layout value
+			res.render('dashboards/'+layout, {
+				title : 'Dashboard',
+				user: req.session.user,
+				dashboard: json.dashboard,
+				snippetHtml: snippetHtml,
+				currentUrl: req.path,
+				version: version,
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				err: err
+			});
+		}
+	}
 });
 
 router.get('/register', function(req, res) {
@@ -936,6 +985,7 @@ router.get('/register', function(req, res) {
 router.post('/register', function(req, res) {
 	users	= db.getCollection('users');
 	var my_id = uuid.v4();
+
 	var new_user = {
 		id:					my_id,
 		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
