@@ -940,6 +940,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 				var s = snippets.findOne({id: json.dashboard.snippets[i]});
 				var snippet = {
 					title		: s.name,
+					type		: s.type,
 					currentUrl	: req.path,
 					user		: req.session.user,
 					graph_layout	: 12,
