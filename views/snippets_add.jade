@@ -41,6 +41,12 @@ html(lang='en')
             a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="weather")
               img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-weather.jpg')
               span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+  
+          li.col-sm-2.btn-radio
+            strong.fa.fa-puzzle-piece.center-text &nbsp;Clock
+            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="clock")
+              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-clock.jpg')
+              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
 
       .row.side-body
         div.sidebar-module-inset
@@ -127,6 +133,9 @@ html(lang='en')
           ]
         },
         "weather": {
+          "parameters":[]
+        },
+        "clock": {
           "parameters":[]
         }
       };

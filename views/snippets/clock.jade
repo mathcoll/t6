@@ -1,0 +1,28 @@
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+  doctype html
+  html(lang='en')
+    include ../includes/head.jade
+  body
+- }
+  
+  .row
+    .col-sm-12
+      .panel.panel-default
+        .panel-heading.handle
+           h3.panel-title
+             span(class="#{snippet.icon}")  
+             |  #{snippet.name}
+
+        .panel-body
+          #clock
+
+        .panel-footer &nbsp;
+
+  script.
+    var clock = function() {
+      var d = new Date();
+      $('#clock').html(d.toString());
+    };
+    $(function(){
+      setInterval(clock, 1000);
+    });
