@@ -6,14 +6,17 @@ html(lang='en')
     include ../includes/navbar-on-top.jade
 
     .container-fluid.starter-template
-      .row
+      .row.col-md-12
         h2.fa.fa-2x.fa-random  #{dashboard.name}
         p !{dashboard.description}
 
-      .row
-        ul.col-md-8
-          !{snippetHtml}
-        ul.col-md-4
-          !{snippetHtml}
+      .row.col-md-12
+        .col-xs-10.col-md-8
+          ul
+            !{snippetHtml}
 
-    include ../includes/foot.jade
+        .col-xs-2.col-md-4
+          ul
+            p Right
+
+    //include ../includes/foot.jade

@@ -5,13 +5,13 @@ html(lang='en')
     include ./includes/navbar.jade
 
     .container-fluid
-      .row.side-body
+      .row.side-body.hidden-xs
         .col-sm-12
-          h3.fa.fa-2x.fa-puzzle-piece &nbsp;My Snippets&nbsp;
+          h2.fa.fa-2x.fa-puzzle-piece &nbsp;My Snippets&nbsp;
         blockquote.fa.fa-comment  Snippets are used to graph data from Flows.
         
-      .row.side-body
-        if (message && message.type && message.value)
+      -if (message && message.type && message.value)
+        .row.side-body
           div.alert(class='alert-#{message.type}', role='alert') !{message.value}
 
       .row.side-body

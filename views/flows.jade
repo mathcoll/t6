@@ -5,13 +5,14 @@ html(lang='en')
     include ./includes/navbar.jade
     
     .container-fluid
-      .row.side-body
+      .row.side-body.hidden-xs
         .col-sm-12
           h2.fa.fa-2x.fa-random &nbsp;Flows from your library
           if (message && message.type && message.value)
             div.alert(class='alert-#{message.type}', role='alert') #{message.value}
         blockquote.fa.fa-comment  Flows contains data collections. Flows are datastore to save time/value. Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
         
+      .row.side-body
         .col-sm-12
           if (flows.length)
             include ./includes/pagination.jade

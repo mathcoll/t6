@@ -5,12 +5,12 @@ html(lang='en')
     include ./includes/navbar.jade
 
     .container-fluid
-      .row.side-body
+      .row.side-body.hidden-xs
         .col-sm-12
           h3.fa.fa-2x.fa-area-chart &nbsp;My Dashboards&nbsp;
         
-      .row.side-body
-        if (message && message.type && message.value)
+      -if (message && message.type && message.value)
+        .row.side-body
           div.alert(class='alert-#{message.type}', role='alert') !{message.value}
 
       .row.side-body
@@ -21,8 +21,10 @@ html(lang='en')
               span.col-sm-6
                 strong Name
               span.col-sm-2
+                strong Snippets
+              span.col-sm-2
                 strong Layout
-              span.col-sm-4
+              span.col-sm-2
                 strong Id
 
             - for(dashboard in dashboards) {

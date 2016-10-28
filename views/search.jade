@@ -5,7 +5,7 @@ html(lang='en')
     include ./includes/navbar.jade
     
     .container-fluid
-      .row.side-body
+      .row.side-body.hidden-xs
         .col-sm-12
         - if (q)
             h2.fa.fa-2x.fa-search  Search Results for "#{q}"
@@ -106,6 +106,8 @@ html(lang='en')
       .row.side-body.hidden-xs.table-header
         span.col-sm-6
           strong Name
+        span.col-sm-2
+  	  strong Snippets
         span.col-sm-2
           strong Layout
         span.col-sm-4
