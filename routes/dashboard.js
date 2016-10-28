@@ -34,6 +34,7 @@ router.get('/', function(req, res) {
 
 router.get('/objects', Auth,  function(req, res) {
 	objects	= db.getCollection('objects');
+	qt	= dbQuota.getCollection('quota');
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -46,6 +47,7 @@ router.get('/objects', Auth,  function(req, res) {
 		res.render('objects', {
 			title : 'My Objects',
 			objects: o,
+			objects_length: (objects.chain().find(query).data()).length,
 			new_object: {},
 			page: req.query.page,
 			pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
@@ -54,7 +56,8 @@ router.get('/objects', Auth,  function(req, res) {
 			user: req.session.user,
 			nl2br: nl2br,
 			currentUrl: req.path,
-			striptags: striptags
+			striptags: striptags,
+			quota : (quota[req.session.user.role])
 		});
 	}
 });
@@ -359,6 +362,7 @@ router.post('/objects/add', Auth, function(req, res) {
 
 router.get('/flows', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
+	qt	= dbQuota.getCollection('quota');
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -373,11 +377,13 @@ router.get('/flows', Auth, function(req, res) {
 		res.render('flows', {
 			title : 'My Flows',
 			flows: f,
+			flows_length: (flows.chain().find(query).data()).length,
 			page: req.query.page,
 			pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
 			user: req.session.user,
 			currentUrl: req.path,
 			message: message,
+			quota : (quota[req.session.user.role])
 		});
 	}
 });
@@ -823,6 +829,7 @@ router.get('/about', function(req, res) {
 
 router.get('/dashboards', Auth, function(req, res) {
 	dashboards	= dbDashboards.getCollection('dashboards');
+	qt		= dbQuota.getCollection('quota');
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -837,11 +844,13 @@ router.get('/dashboards', Auth, function(req, res) {
 		res.render('dashboards', {
 			title : 'My Dashboards',
 			dashboards: d,
+			dashboards_length: (dashboards.chain().find(query).data()).length,
 			page: req.query.page,
 			pagenb: Math.ceil(((dashboards.chain().find(query).data()).length) / pagination),
 			user: req.session.user,
 			currentUrl: req.path,
 			message: message,
+			quota : (quota[req.session.user.role])
 		});
 	}
 });
@@ -1118,6 +1127,7 @@ router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
 
 router.get('/snippets', Auth, function(req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
+	qt		= dbQuota.getCollection('quota');
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -1132,11 +1142,13 @@ router.get('/snippets', Auth, function(req, res) {
 		res.render('snippets', {
 			title : 'My Snippets',
 			snippets: s,
+			snippets_length: (snippets.chain().find(query).data()).length,
 			page: req.query.page,
 			pagenb: Math.ceil(((snippets.chain().find(query).data()).length) / pagination),
 			user: req.session.user,
 			currentUrl: req.path,
 			message: message,
+			quota : (quota[req.session.user.role])
 		});
 	}
 });
