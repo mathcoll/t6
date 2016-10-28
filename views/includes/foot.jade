@@ -4,38 +4,38 @@ footer.footer.navbar-fixed-bottom
       - if (user)
         -if ( currentUrl === '/objects' || currentUrl === '/objects/' )
           a.btn-group.btn(href='/objects/add')
-            i.fa.fa-2x.fa-plus-square(title='Add an Object to my library')
+            i.fa.fa-2x.fa-plus-square(title='Add an Object to my library')  
         -else
           a.btn-group.btn(href='/objects')
             i.fa.fa-2x.fa-cubes(data-toggle='tooltip', data-placement='top', title='My Objects in library')  
         
         -if ( currentUrl === '/flows' || currentUrl === '/flows/' )
           a.btn-group.btn(href='/flows/add')
-            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Flow to my library')
+            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Flow to my library')  
         -else
           a.btn-group.btn(href='/flows')
             i.fa.fa-2x.fa-random(data-toggle='tooltip', data-placement='top', title='My Flows in library')  
 
         -if ( currentUrl === '/snippets' || currentUrl === '/snippets/' )
           a.btn-group.btn(href='/snippets/add')
-            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Snippet to my library')
+            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Snippet to my library')  
         -else
           a.btn-group.btn(href='/snippets')
             i.fa.fa-2x.fa-puzzle-piece(data-toggle='tooltip', data-placement='top', title='My Snippets in library')  
 
         -if ( currentUrl === '/dashboards' || currentUrl === '/dashboards/' )
           a.btn-group.btn(href='/dashboards/add')
-            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Dashboard to my library')
+            i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Dashboard to my library')  
         -else
           a.btn-group.btn(href='/dashboards')
             i.fa.fa-2x.fa-area-chart(data-toggle='tooltip', data-placement='top', title='My Dashboards in library')  
 
         a.btn-group.btn(href='/profile')
           i.fa.fa-2x.fa-user(data-toggle='tooltip', data-placement='top', title='My Profile and Account')  
-            
+
       - else
         a.btn-group.btn(href='/login')
-          i.fa.fa-2x.fa-user(data-toggle='tooltip', data-placement='top', title='Sign In')    
+          i.fa.fa-2x.fa-user(data-toggle='tooltip', data-placement='top', title='Sign In')   
             span.center-block Sign In
             
         a.btn-group.btn(href='/register')
@@ -61,7 +61,6 @@ footer.footer.navbar-fixed-bottom
     a(href='https://github.com/mathcoll/t6')
       span.fa.fa-github
       |  GitHub
-
 
 link(href='/css/query-builder/query-builder.2.3.3.css', rel='stylesheet')
 link(href='/css/bootstrap-slider/bootstrap-slider-7.1.1.css', rel='stylesheet')
