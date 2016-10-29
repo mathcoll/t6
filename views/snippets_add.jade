@@ -8,8 +8,9 @@ html(lang='en')
       .row.side-body.hidden-xs
         .col-sm-12
           h2.fa.fa-2x.fa-random &nbsp;Add a Snippet to your library
+        
         if (message && message.type == 'danger' && message.value)
-        .col-sm-12(class='alert alert-#{message.type}')#add
+          div.alert.col-sm-12(class='alert-#{message.type}', role='alert') #{message.value}
 
     .container-fluid
       .row.side-body
@@ -49,9 +50,6 @@ html(lang='en')
 
       .row.side-body
         div.sidebar-module-inset
-          if (message && message.type && message.value)
-            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
-
           form(method="post", action="/snippets/add")
             input.hidden(type='hidden', name='type', id='type', value='')
             .form-group
@@ -66,11 +64,7 @@ html(lang='en')
                   span.fa.fa-random
                 select.form-control(multiple, name="flows[]", id="flows")
                   - for(f in flows) {
-                    - if( typeof(flow) !== 'undefined' && flows[f].id == flow.id )
-                      option(value="#{flows[f].id}", selected="selected") #{flows[f].name}
-                    - else
-                      option(value="#{flows[f].id}") #{flows[f].name}
-                    - end
+                    option(value="#{flows[f].id}", selected=((new_snippet.flows).indexOf(flows[f].id) > -1 ? "selected" : undefined)) #{flows[f].name}
                   - }
 
             .form-group

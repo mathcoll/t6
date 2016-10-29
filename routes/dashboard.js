@@ -640,6 +640,7 @@ router.post('/flows/add', Auth, function(req, res) {
 			page: req.query.page,
 			pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
 			user: req.session.user,
+			new_flow: new_flow,
 			message: message,
 			currentUrl: req.path,
 		});
@@ -874,6 +875,7 @@ router.get('/dashboards/add', Auth, function(req, res) {
 
 router.post('/dashboards/add', Auth, function(req, res) {
 	dashboards	= dbDashboards.getCollection('dashboards');
+	snippets	= dbSnippets.getCollection('snippets');
 	var error = undefined;
 	var user_id = req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null;
 	var message = '';
@@ -888,7 +890,7 @@ router.post('/dashboards/add', Auth, function(req, res) {
 		snippets:		linked_snippets,
 		layout: 		req.body.layout!==undefined?req.body.layout:null,
 		name:			req.body.name!==undefined?req.body.name:null,
-		description:		req.body.description!==undefined?req.body.description:null,
+		description:	req.body.description!==undefined?req.body.description:null,
 	};
 	//console.log(new_dashboard);
 	var i = (dashboards.find(queryQ)).length;
@@ -916,9 +918,11 @@ router.post('/dashboards/add', Auth, function(req, res) {
 		res.render('dashboards_add', {
 			title : 't6 Dashboards',
 			dashboards: d,
+			new_dashboard: new_dashboard,
 			page: req.query.page,
 			pagenb: Math.ceil(((dashboards.chain().find(query).data()).length) / pagination),
 			user: req.session.user,
+			snippets: snippets.chain().find(query).sort(alphaSort).data(),
 			message: message,
 			currentUrl: req.path,
 		});
@@ -1249,6 +1253,7 @@ router.post('/snippets/add', Auth, function(req, res) {
 				title : 't6 Snippets',
 				snippets: snippets.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 				flows: f,
+				new_snippet: new_snippet,
 				page: req.query.page,
 				pagenb: Math.ceil(((snippets.chain().find(query).data()).length) / pagination),
 				user: req.session.user,

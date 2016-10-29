@@ -32,7 +32,7 @@ html(lang='en')
                     span.glyphicon.glyphicon-bookmark
                   select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
                     - for(datatype in datatypes) {
-                      option(value="#{datatypes[datatype].id}") #{datatypes[datatype].name}
+                      option(value="#{datatypes[datatype].id}", selected=(new_flow.data_type==''+datatypes[datatype].id ? "selected" : undefined)) #{datatypes[datatype].name}
                     - }
 
               .form-group
@@ -43,7 +43,7 @@ html(lang='en')
                     span.glyphicon.glyphicon-magnet
                   select.form-control(type="text", name="unit", placeholder="Unit", id="unit")
                     - for(unit in units) {
-                      option(value="#{units[unit].id}") #{units[unit].type} - #{units[unit].name}
+                      option(value="#{units[unit].id}", selected=(new_flow.unit_id==''+units[unit].id ? "selected" : undefined)) #{units[unit].type} - #{units[unit].name}
                     - }
 
               .form-group
@@ -53,7 +53,7 @@ html(lang='en')
                     span.fa.fa-cubes
                   select.form-control(multiple, name="objects[]", placeholder="Objects", id="objects")
                     - for(object in objects) {
-                      option(value="#{objects[object].id}") #{objects[object].name} (#{objects[object].type})
+                      option(value="#{objects[object].id}", selected=((new_flow.objects).indexOf(objects[object].id) > -1 ? "selected" : undefined)) #{objects[object].name} (#{objects[object].type})
                     - }
 
               .form-group

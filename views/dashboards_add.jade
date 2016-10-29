@@ -23,7 +23,7 @@ html(lang='en')
                 span.input-group
                   span.input-group-addon
                     span.fa.fa-area-chart
-                  input.form-control(type="text", name="name", placeholder="Dashboard Name", id="name")
+                  input.form-control(type="text", name="name", placeholder="Dashboard Name", id="name", value=new_dashboard.name)
 
               .form-group
                 label.control-label(for="snippets") Snippets:
@@ -32,7 +32,7 @@ html(lang='en')
                     span.fa.fa-puzzle-piece
                   select.form-control(multiple, name="snippets[]", id="snippets")
                     - for(snippet in snippets) {
-                      option(value="#{snippets[snippet].id}") #{snippets[snippet].name}
+                      option(value="#{snippets[snippet].id}", selected=((new_dashboard.snippets).indexOf(snippets[snippet].id) > -1 ? "selected" : undefined)) #{snippets[snippet].name}
                     - }
 
               .form-group
@@ -40,7 +40,7 @@ html(lang='en')
                 span.input-group
                   span.input-group-addon
                     span.fa.fa-pencil-square-o
-                  textarea.form-control.vresize(name="description", placeholder="Dashboard Description", id="description")
+                  textarea.form-control.vresize(name="description", placeholder="Dashboard Description", id="description") #{new_dashboard.description}
 
               .form-group
                 label.control-label(for="layout") Layout:
@@ -49,9 +49,9 @@ html(lang='en')
                   span.input-group-addon
                     span.glyphicon.glyphicon-bookmark
                   select.form-control(type="text", name="layout", placeholder="Dashboard Layout", id="layout")
-                    option(value="onecolumn") onecolumn
-                    option(value="twocolumnsright") twocolumnsright
-                    option(value="twocolumnsleft") twocolumnsleft
+                    option(value="onecolumn", selected=(new_dashboard.layout=='onecolumn' ? "selected" : undefined)) onecolumn
+                    option(value="twocolumnsright", selected=(new_dashboard.layout=='twocolumnsright' ? "selected" : undefined)) twocolumnsright
+                    option(value="twocolumnsleft", selected=(new_dashboard.layout=='twocolumnsleft' ? "selected" : undefined)) twocolumnsleft
 
               .form-group
                 button.btn.btn-primary.m-t.pull-right
