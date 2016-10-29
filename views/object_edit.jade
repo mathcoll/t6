@@ -45,21 +45,21 @@ html(lang='en')
 
             hr/
             .form-group
-              label.control-label.glyphicon.glyphicon-map-marker(for="Position") Position/Location:
+              label.control-label.fa.fa-map-marker(for="Position") Position/Location:
               input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=(object.position!==undefined ? object.position : undefined))
 
             .form-group(is='null')
               label.control-label(for="Longitude") Longitude:
               span.input-group(is='null')
                 span.input-group-addon(is='null')
-                  span.glyphicon.glyphicon-map-marker(is='null')
+                  span.fa.fa-map(is='null')
                 input.form-control(type='text', is='null', name="longitude", placeholder="Longitude", id="Longitude", value=(object.longitude!==undefined ? object.longitude : undefined))
 
             .form-group(is='null')
               label.control-label(for="Latitude") Latitude:
               span.input-group(is='null')
                 span.input-group-addon(is='null')
-                  span.glyphicon.glyphicon-map-marker(is='null')
+                  span.fa.fa-map(is='null')
                 input.form-control(type='text', is='null', name="latitude", placeholder="Latitude", id="Latitude", value=(object.latitude!==undefined ? object.latitude : undefined))
 
             hr/

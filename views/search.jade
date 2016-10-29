@@ -31,11 +31,13 @@ html(lang='en')
         h3.fa.fa-cubes  #{objects.length} Objects found
       .row.side-body.hidden-xs.table-header
         span.col-sm-4
-          strong Name
+          strong Name/Description
         span.col-sm-4
           strong Id
         span.col-sm-4
           strong Position
+        span.col-sm-4
+          strong Localisation
         
       .row.side-body
         .list-group
@@ -80,12 +82,10 @@ html(lang='en')
       .row.side-body
         h3.fa.fa-puzzle-piece  #{snippets.length} Snippets found
       .row.side-body.hidden-xs.table-header
-        span.col-sm-8
-          strong Name
         span.col-sm-2
-          strong Type
-        span.col-sm-2
-          strong Color
+          strong Icon/Name/Type
+        span.col-sm-10
+          strong Color/Flows/Id
     
       .row.side-body
         .list-group
@@ -107,7 +107,7 @@ html(lang='en')
         span.col-sm-6
           strong Name
         span.col-sm-2
-  	  strong Snippets
+          strong Snippets
         span.col-sm-2
           strong Layout
         span.col-sm-4

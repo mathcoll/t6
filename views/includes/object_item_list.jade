@@ -1,19 +1,24 @@
 a.clearfix.list-group-item(name='#{objects[object].id}', href='/objects/#{objects[object].id}')
-  div.col-sm-4
+  div.col-sm-6
     h4.list-group-item-heading
       span.fa.fa-cube
       | &nbsp;#{objects[object].name}&nbsp;
 
-  div.col-sm-4
+  div.col-sm-2
     span.label.label-default.ellipse(data-toggle='tooltip' data-placement='top' title='Object Id')  #{objects[object].id}
 
-  div.col-sm-4
+  div.col-sm-2
     - if(objects[object].latitude && objects[object].longitude)
-      span.fa.fa-map-marker(data-toggle='tooltip' data-placement='top' title='Latitude') #{objects[object].latitude}
+      span.fa.fa-map(data-toggle='tooltip' data-placement='top' title='Latitude')  #{objects[object].latitude}
       | &nbsp;&nbsp;
-      span.fa.fa-map-marker(data-toggle='tooltip' data-placement='top' title='Longitude') #{objects[object].longitude}
+      span(data-toggle='tooltip' data-placement='top' title='Longitude') / #{objects[object].longitude}
     - else
     - end
+
+  - if(objects[object].position)
+    div.col-sm-2
+      span.fa.fa-map-marker(data-toggle='tooltip' data-placement='top' title='Position')  #{objects[object].position}
+      | &nbsp;&nbsp;
 
   div.col-sm-12
     div.fa.fa-chevron-right.pull-right 

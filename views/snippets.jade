@@ -19,12 +19,10 @@ html(lang='en')
           ul.list-group.list-unstyled.col-sm-12.col-md-12.col-md-offset-0
             include ./includes/pagination.jade
             .row.hidden-xs.table-header
-              span.col-sm-8
-                strong Icon/Name
               span.col-sm-2
-                strong Type
-              span.col-sm-2
-                strong Color
+                strong Icon/Name/Type
+              span.col-sm-10
+                strong Color/Flows/Id
 
             - for(snippet in snippets) {
               - if ( !snippets[snippet].icon )

@@ -1,6 +1,11 @@
-a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{snippets[snippet].id}', data-toggle='tooltip', data-placement='top', title='Name: #{snippets[snippet].name}\nType: #{snippets[snippet].type}\nColor: #{snippets[snippet].color}\nId: #{snippets[snippet].id}')
+a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{snippets[snippet].id}', target='_blank')
   div.col-sm-8(class="#{snippets[snippet].icon}")  #{snippets[snippet].name}
+  div.col-sm-12
+    div.fa.fa-external-link.pull-right 
+
   div.col-sm-2
-    img.img-responsive(src="/img/snippet-#{snippets[snippet].type}.jpg", width="100")
+    img.img-responsive(src="/img/snippet-#{snippets[snippet].type}.jpg", width="70")
   div.col-sm-2 #{snippets[snippet].color}
-  div.col-sm-8.ellipse.label.label-default #{snippets[snippet].id}
+  div.col-sm-4 #{snippets[snippet].flows.length} Flow(s) linked
+
+  div.col-sm-10.ellipse.label.label-default #{snippets[snippet].id}
