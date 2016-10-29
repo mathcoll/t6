@@ -1,21 +1,35 @@
+- var rnd = Math.floor(Math.random()*1000)
+- if ( !graph_layout ) {
+  - graph_layout = "12"
+- }
+- if( !snippet.color ) {
+  - snippet.color = '#fff'
+- }
 - if ( currentUrl.indexOf("snippets") > -1 ) {
   doctype html
   html(lang='en')
     include ../includes/head.jade
-  body
 - }
-  
-  .row
-    .col-sm-12
+    style.
+      body { margin: 0; color: #{snippet.color} }
+      #body#{rnd} .panel-default > .panel-heading { background-color: #{snippet.p.background}; }
+      #body#{rnd} .panel-default > .panel-body { font-size:2em;color:#{snippet.p.background}; }
+      #body#{rnd} .panel-default > .panel-footer { background-color: #{snippet.p.background}; }
+    link(href='/css/font-awesome/4.5.0/font-awesome.min.css', rel='stylesheet')
+
+- if ( currentUrl.indexOf("snippets") > -1) {
+  body
+    //include ../includes/navbar-minimal.jade
+- }
+ 
+    li(id="body#{rnd}").list-unstyled.container-fluid.col-sm-12
       .panel.panel-default
         .panel-heading.handle
            h3.panel-title
              span(class="#{snippet.icon}")  
              |  #{snippet.name}
-
         .panel-body
           #clock
-
         .panel-footer &nbsp;
 
   script.
