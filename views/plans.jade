@@ -1,0 +1,89 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+
+    .container-fluid
+      .row.side-body.hidden-xs
+        .col-sm-12
+          h2.fa.fa-2x.fa-money &nbsp;t6 Plans
+          
+    .container-fluid
+      .row.side-body
+        .table-responsive
+          .membership-pricing-table.center-block
+            table.account-wall
+                tbody
+                  tr
+                    th
+                    th.plan-header.plan-header-free
+                        .header-plan-inner
+                          span.recommended-plan-ribbon RECOMMENDED
+                        .pricing-plan-name FREE
+                        .pricing-plan-price
+                          sup #{quota.user.currency}
+                          -p=(quota.user.price).toString().split(".")
+                          | #{p[0]}
+                          span .#{p[1]}
+                        .pricing-plan-period month
+                    th.plan-header.plan-header-blue
+                        .pricing-plan-name PREMIUM
+                        .pricing-plan-price
+                          sup #{quota.admin.currency}
+                          -p=(quota.admin.price).toString().split(".")
+                          | #{p[0]}
+                          span .#{p[1]}
+                        .pricing-plan-period month
+                  tr
+                    td Objects to organize:
+                    td #{quota.user.objects}
+                    td #{quota.admin.objects}
+                  tr
+                    td Flows to classify:
+                    td #{quota.user.flows}
+                    td #{quota.admin.flows}
+                  tr
+                    td Rules for decision-tree:
+                    td #{quota.user.rules}
+                    td #{quota.admin.rules}
+                  tr
+                    td Snippets to graph your Data:
+                    td #{quota.user.snippets}
+                    td #{quota.admin.snippets}
+                  tr
+                    td Dashboards to monitor:
+                    td #{quota.user.dashboards}
+                    td #{quota.admin.dashboards}
+                  tr
+                    td API Tokens:
+                    td #{quota.user.tokens}
+                    td #{quota.admin.tokens}
+                  tr
+                    td API calls:
+                    td #{quota.user.calls}
+                    td #{quota.admin.calls}
+                  tr
+                    td Online Documentation:
+                    td
+                        span.icon-yes.glyphicon.glyphicon-ok-circle
+                    td
+                        span.icon-yes.glyphicon.glyphicon-ok-circle
+                  tr
+                    td Dedicated Support:
+                    td
+                        span.icon-no.glyphicon.glyphicon-remove-circle
+                    td
+                        span.icon-yes.glyphicon.glyphicon-ok-circle
+                  tr
+                    td
+                    td.action-header
+                        a.btn.btn-info
+                          | Sign Up
+                    td.action-header
+                        a.btn.btn-info
+                          | Sign Up
+
+
+  
+    include ./includes/foot.jade
