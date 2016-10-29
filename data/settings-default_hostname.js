@@ -21,8 +21,8 @@ timeoutDuration		= '10s';
 
 /* Logs settings */
 logFormat			= 'combined'; // common|dev|combined|tiny|short
-logAccessFile		= '/var/log/node/EasyIOT-access.log';
-logErrorFile		= '/var/log/node/EasyIOT-error.log';
+logAccessFile		= '/var/log/node/t6-access.log';
+logErrorFile		= '/var/log/node/t6-error.log';
 
 /* Email settings */
 nodemailer			= require('nodemailer');
@@ -46,8 +46,8 @@ dbRules.loadDatabase(path.join(__dirname, 'rules-'+os.hostname()+'.json'));
 
 /* Quota settings */
 quota = {
-	'admin': {objects: 99, flows: 99, rules: 99, tokens: 99, snippets: 99, dashboards: 99, calls: 9999999},
-	'user': {objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 1, calls: 999}
+	'admin': {price: '99.99', currency:'€', objects: 999, flows: 999, rules: 999, tokens: 999, snippets: 999, dashboards: 999, calls: 9999999},
+	'user': {price: '0.00', currency:'€', objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 9, calls: 99}
 };
 dbQuota	= new loki(path.join(__dirname, 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbQuota.loadDatabase(path.join(__dirname, 'quota-'+os.hostname()+'.json'));
