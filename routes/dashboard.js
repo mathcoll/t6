@@ -939,7 +939,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 		};
 		var json = {
 			dashboard: dashboards.findOne(queryD)
-		}
+		};
 		if ( json.dashboard ) {
 			//var s = (json.eqJoin(snippets.chain(), 'user_id', 'id').data())[0];
 			// TODO, but let's do it simple for now:
@@ -947,18 +947,20 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 			snippets = dbSnippets.getCollection('snippets');
 			for( var i=0; i<(json.dashboard.snippets).length; i++ ) {
 				var s = snippets.findOne({id: json.dashboard.snippets[i]});
-				var snippet = {
-					title		: s.name,
-					type		: s.type,
-					currentUrl	: req.path,
-					user		: req.session.user,
-					graph_layout	: 12,
-					snippet		: s,
-				}
-				snippet.type = snippet.type!==undefined?snippet.type:'valuedisplay';
-				res.render('./snippets/'+snippet.type, snippet, function(err, html) {
-					if( !err ) snippetHtml += html;
-				});
+				if ( s ) {
+	 				var snippet = {
+						title		: s.name!==undefined?s.name:'',
+						type		: s.type,
+						currentUrl	: req.path,
+						user		: req.session.user,
+						graph_layout	: 12,
+						snippet		: s,
+					};
+					snippet.type = snippet.type!==undefined?snippet.type:'valuedisplay';
+					res.render('./snippets/'+snippet.type, snippet, function(err, html) {
+						if( !err ) snippetHtml += html;
+					});
+				} // Snippet not Found
 			};
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
@@ -1121,6 +1123,16 @@ router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
 	res.render('features/'+feature, {
 		title : 't6 Feature',
 		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
+router.get('/plans', function(req, res) {
+	qt		= dbQuota.getCollection('quota');
+	res.render('plans', {
+		title : 't6 Plans',
+		currentUrl: req.path,
+		quota: quota,
 		user: req.session.user
 	});
 });
