@@ -10,136 +10,103 @@ html(lang='en')
           h2.fa.fa-2x.fa-user  Profile of #{user.firstName} #{user.lastName}
 
       .row.side-body
-        .col-lg-4.col-sm-6
-          .panel.panel-default
-            .panel-body
-              img.img-responsive.img-thumbnail.center-block(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g', alt='Profile Image')
-              a.center-block.btn.btn-primary.btn-xm(href="http://www.gravatar.com", role="button") 
-                span.glyphicon.glyphicon-picture  Modify On Gravatar
-              h3 General Information
-              ul.profile-details
-                li.media
-                  span
-                    i.fa.fa-user 
-                    |  First-Name:
-                  i(style='font-size: 18px;')  #{user.firstName}
+        .col-xs-12
+          ul.accordion#accordion
+            li.list-unstyled
+              .iamgurdeep-pic
+                img.img-responsive.center-block(alt='#{user.firstName} #{user.lastName}', src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g')
+                .edit-pic
+                  - if ( gravatar.entry[0].ims )
+                    - for ( i in gravatar.entry[0].ims )
+                      - var im = gravatar.entry[0].ims[i]
+                      - var icon = ''
+                      - var href = ''
+                      - if ( im.type == 'skype' )
+                        - icon = 'fa-skype'
+                        - href = 'skype:'+im.value+'?call'
+                      - end
+                      - if ( im.type == 'yahoo' )
+                        - icon = 'fa-yahoo'
+                        - href = 'yahoo:'+im.value
+                      - end
+                      - if ( im.type == 'gtalk' )
+                        - icon = 'fa-google'
+                        - href = 'xmpp:'+im.value
+                      - end
+                      - if ( im.type == 'icq' )
+                        - icon = 'fa-icq'
+                        - href = 'http://'+im.value
+                      - end
+                    a.fa(href='#{href}', target='_blank', class="#{icon}")
+                  - end
 
-                li.media
-                  span
-                    i.fa.fa-user 
-                    |  Last-Name:
-                  i(style='font-size: 18px;')  #{user.lastName}
+                  - if ( gravatar.entry[0].accounts )
+                    - for ( i in gravatar.entry[0].accounts )
+                      - var account = gravatar.entry[0].accounts[i]
+                      - var icon = ''
+                      - if ( account.shortname == 'facebook' )
+                        - icon = 'fa-facebook-square'
+                      - end
+                      - if ( account.shortname == 'twitter' )
+                        - icon = 'fa-twitter-square'
+                      - end
+                      - if ( account.shortname == 'linkedin' )
+                        - icon = 'fa-linkedin-square'
+                      - end
+                      - if ( account.shortname == 'google' )
+                        - icon = 'fa-google-plus-square'
+                      - end
+                      - if ( account.shortname == 'facebook' )
+                        - icon = 'fa-facebook-square'
+                      - end
+                      - if ( account.shortname == 'youtube' )
+                        - icon = 'fa-youtube-square'
+                      - end
+                      - if ( account.shortname == 'pinterest' )
+                        - icon = 'fa-pinterest-square'
+                      - end
+                     a.fa(href='#{account.url}', target='_blank', class="#{icon}")
+                    - end
+                  - end
 
-                li.media
-                  span
+                .username
+                  h2
+                    | #{user.firstName} #{user.lastName}
+                    small
+                      i.fa.fa-map-marker
+                      |  #{gravatar.entry[0].currentLocation}
+                  p
                     i.fa.fa-briefcase
-                    |  Plan Type:
-                  i.caps(style='font-size: 18px;')  #{user.role}
+                    |  #{user.role}
+                  a.btn-o(href='http://www.gravatar.com', target='_blank')
+                    span.glyphicon.glyphicon-picture  Modify On Gravatar
 
-                - if ( gravatar.entry[0].currentLocation )
-                  li.media
-                    span
-                      i.glyphicon.glyphicon-map-marker
-                      |  Location:
-                    i(style='font-size: 18px;')  #{gravatar.entry[0].currentLocation}
-                - end
-
-              h3 Contact Information
-              ul.profile-details
-                li.media
-                  span
-                    i.fa.fa-envelope
-                    |  E-mail:
-                  i(style='font-size: 18px;')  #{user.email}
-
-                - if ( gravatar.entry[0].ims )
-                  - for ( i in gravatar.entry[0].ims )
-                    - var im = gravatar.entry[0].ims[i]
-                    - var icon = ''
-                    - var href = ''
-                    - if ( im.type == 'skype' )
-                      - icon = 'fa-skype'
-                      - href = 'skype:'+im.value+'?call'
-                    - end
-                    - if ( im.type == 'yahoo' )
-                      - icon = 'fa-yahoo'
-                      - href = 'yahoo:'+im.value
-                    - end
-                    - if ( im.type == 'gtalk' )
-                      - icon = 'fa-google'
-                      - href = 'xmpp:'+im.value
-                    - end
-                    - if ( im.type == 'icq' )
-                      - icon = 'fa-icq'
-                      - href = 'http://'+im.value
-                    - end
-
-                    li.media
-                      span
-                        i.fa(class="#{icon}")
-                        |  #{im.type}:&nbsp;
-                      a.btn.btn-default.btn-sm(style='font-size: 18px;', href="#{href}") #{im.value}
-                  - end
-                - end
-                
+            li.list-unstyled
+              .link
+                i.fa.fa-globe
+                | About
+              ul.submenu.list-unstyled
+                li
+                  a(href='mailto:#{user.email}') Email:  #{user.email}
                 - if ( gravatar.entry[0].urls )
-                  li.media
-                    span
-                    - for ( i in gravatar.entry[0].urls )
-                      - var url = gravatar.entry[0].urls[i]
-                      a.btn.btn-default.btn-sm(href="#{url.value}")
-                        span.fa.fa-link  #{url.title}
-                      | &nbsp;
-                    - end
+                  - for ( i in gravatar.entry[0].urls )
+                    - var url = gravatar.entry[0].urls[i]
+                    li
+                      a(href='#{url.value}', target='_blank') #{url.title}
+                  - end
+                - end
+                - if ( gravatar.entry[0].currency )
+                  - for ( i in gravatar.entry[0].currency )
+                    - var curr = gravatar.entry[0].currency[i]
+                    li
+                      a(href='#', target='_blank', title="#{curr.type}") #{curr.value}
+                  - end
                 - end
 
-              - if ( gravatar.entry[0].currency )
-                h3 Crypto-currencies
-                - for ( i in gravatar.entry[0].currency )
-                  - var curr = gravatar.entry[0].currency[i]
-                  a.btn.btn-simple.fa.fa-bitcoin(title="#{curr.type}")
-                  |  #{curr.value}
-                - end
-              - end
+      .row.side-body
+        p  
 
-              - if ( gravatar.entry[0].accounts )
-                h3 Social links
-                - for ( i in gravatar.entry[0].accounts )
-                  - var account = gravatar.entry[0].accounts[i]
-                  - var icon = ''
-                  - if ( account.shortname == 'facebook' )
-                    - icon = 'fa-facebook-square'
-                  - end
-                  - if ( account.shortname == 'twitter' )
-                    - icon = 'fa-twitter-square'
-                - end
-                  - if ( account.shortname == 'linkedin' )
-                    - icon = 'fa-linkedin-square'
-                  - end
-                  - if ( account.shortname == 'google' )
-                    - icon = 'fa-google-plus-square'
-                  - end
-                  - if ( account.shortname == 'facebook' )
-                    - icon = 'fa-facebook-square'
-                  - end
-                  - if ( account.shortname == 'youtube' )
-                    - icon = 'fa-youtube-square'
-                  - end
-                  - if ( account.shortname == 'pinterest' )
-                    - icon = 'fa-pinterest-square'
-                  - end
-
-                  a.btn.btn-default.btn-sm(href="#{account.url}")
-                    span.btn.btn-simple.fa(class="#{icon}") &nbsp;
-                  | &nbsp;
-                - end
-              - end
-
-            .panel-footer
-              button.btn.btn-primary.m-t.pull-right
-                span.fa.fa-pencil-square-o  Edit
-              p &nbsp;
-
+      .row.side-body
         .col-lg-8.col-sm-6
           .panel.panel-default
             .panel-body

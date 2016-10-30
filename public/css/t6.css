@@ -145,6 +145,263 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
 }
 /* End Sticky footer styles */
 
+/* Profile */
+.iamgurdeep-pic {
+    position: relative;
+    min-height: 320px;
+}
+.username {
+    bottom: 0;
+    color: #ffffff;
+    padding: 30px 15px 4px;
+    position: absolute;
+    width: 100%;
+    text-shadow: 1px 1px 2px #000000;
+    
+	background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* FF3.6-15 */
+	background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* Chrome10-25,Safari5.1-6 */
+	background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #337ab7 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#a64d4d4d',GradientType=0 ); /* IE6-9 */
+}
+.iamgurdeeposahan {
+    border-radius: 4px 4px 0 0;
+}
+.username > h2 {
+    font-family: oswald;
+    font-size: 27px;
+    font-weight: lighter;
+    margin: 31px 0 4px;
+    position: relative;
+    text-shadow: 1px 1px 2px #000000;
+    text-transform: uppercase;
+}
+.username > h2 small {
+    color: #ffffff;
+    font-family: open sans;
+    font-size: 13px;
+    font-weight: 400;
+    position: relative;
+}
+.username .fa{
+    color: #ffffff;
+    font-size: 14px;
+    margin: 0 0 0 4px;
+    position: static;
+}
+.edit-pic a {
+   background: rgba(0, 0, 0, 0) none repeat scroll 0 0;
+   border: 1px solid #135a97;
+   border-radius: 50%;
+   color: #135a97;
+   font-size: 21px;
+   height: 39px;
+   line-height: 38px;
+   margin: 8px;
+   text-align: center;
+   width: 39px;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+   text-decoration: none !important;
+   display: list-item;
+   background-color: rgba(255, 255, 255, 0.1);
+   opacity: 0.9;
+}
+.edit-pic a:hover {
+   font-size: 17px;
+   opacity: 0.9;
+  }
+.edit-pic a:focus {
+   background:#135a97;
+   color: #fff;
+   border: 1px solid #135a97;
+}
+a:focus {
+    outline: none;
+    outline-offset: 0px;
+}
+.edit-pic {
+    position: absolute;
+    right: 0;
+    top: 0;
+    opacity: 100;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.tags {
+    background: rgba(255, 255, 255, 0.1) none repeat scroll 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    display: inline-block;
+    font-size: 13px;
+    margin: 4px 0 0;
+    padding: 2px 5px;
+     -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.btn-o {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    color: #ffffff !important;
+    display: inline-block;
+    font-family: open sans;
+    font-size: 15px !important;
+    font-weight: normal !important;
+    margin: 0 0 10px;
+    padding: 5px 11px;
+    text-decoration: none !important;
+    text-transform: uppercase;
+    
+   background-color: rgba(255, 255, 255, 0.1);
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.btn-o:hover {
+    background-color: rgba(255, 255, 255, 0.4);
+    color: #fff !important;
+  }
+.btn-o:focus {
+    background-color: #135a97;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+.submenu .iamgurdeeposahan {
+    background: rgba(255, 255, 255, 0.1) none repeat scroll 0 0 !important;
+    border-radius: 50%;
+    height: 60px;
+    padding: 2px;
+    width: 60px;
+}
+.photosgurdeep > a {
+    background: #ffffff none repeat scroll 0 0;
+    border-radius: 50%;
+    display: inline-block !important;
+    padding: 0 !important;
+}
+.view-all {
+    background: rgba(255, 255, 255, 0.1) none repeat scroll 0 0 !important;
+    border: 1px solid;
+    float: right;
+    font-family: oswald;
+    font-size: 26px;
+    height: 60px;
+    line-height: 61px;
+    text-align: center;
+    width: 60px;
+}
+.photosgurdeep {
+    padding: 10px 9px 4px 35px;
+}
+#accordion {
+    margin:0;
+    padding:0;
+}
+#accordion .edit-pic {
+    opacity: unset !important;
+    //background-color: #23527c;
+
+}
+.iamgurdeep-pic:hover .edit-pic {
+    opacity: unset !important;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.accordion .link {
+	display: block;
+	padding: 15px 15px 15px 42px;
+	color: #4D4D4D;
+	font-size: 14px;
+	font-weight: 700;
+	border-bottom: 1px solid #CCC;
+	position: relative;
+	-webkit-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+.accordion li:last-child .link {
+	border-bottom: 0;
+}
+.accordion li i {
+	position: absolute;
+	top: 16px;
+	left: 12px;
+	font-size: 18px;
+	color: #595959;
+	-webkit-transition: all 0.4s ease;
+	-o-transition: all 0.4s ease;
+	transition: all 0.4s ease;
+}
+.accordion li i.fa-chevron-down {
+	right: 12px;
+	left: auto;
+	font-size: 16px;
+}
+.accordion li.open .link {
+	color: #b63b4d;
+}
+.accordion li.open i {
+	color: #b63b4d;
+}
+.accordion li.open i.fa-chevron-down {
+	-webkit-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+.accordion li.default .submenu {display: block;}
+.submenu {
+ 	background: #444359;
+ 	font-size: 14px;
+}
+.submenu li {
+ 	border-bottom: 1px solid #4b4a5e;
+}
+.submenu a {
+ 	display: block;
+ 	text-decoration: none;
+ 	color: #d9d9d9;
+ 	padding: 12px;
+ 	padding-left: 42px;
+ 	-webkit-transition: all 0.25s ease;
+ 	-o-transition: all 0.25s ease;
+ 	transition: all 0.25s ease;
+}
+.submenu a:hover {
+ 	background: #337ab7;
+ 	color: #FFF;
+}
+.dropdown {
+  -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.dropdown-menu>li>a {
+    color:#428bca;
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+}
+.dropdown ul.dropdown-menu {
+    border-radius:4px;
+    box-shadow:none;
+}
+.dropdown ul.dropdown-menu:before {
+    content: "";
+    border-bottom: 10px solid #fff;
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+    position: absolute;
+    top: -8px;
+    right: 8px;
+    z-index: 10;
+}
+/* End Profile */
+
 
 /* Ellipsis */
 .ellipis {
