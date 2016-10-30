@@ -8,9 +8,6 @@ html(lang='en')
       .row.side-body.hidden-xs
         .col-sm-12
           h2.fa.fa-2x.fa-random &nbsp;Add a Snippet to your library
-        
-        if (message && message.type == 'danger' && message.value)
-          div.alert.col-sm-12(class='alert-#{message.type}', role='alert') #{message.value}
 
     .container-fluid
       .row.side-body
@@ -48,50 +45,57 @@ html(lang='en')
               img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-clock.jpg')
               span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
 
-      .row.side-body
-        div.sidebar-module-inset
-          form(method="post", action="/snippets/add")
-            input.hidden(type='hidden', name='type', id='type', value='')
-            .form-group
-              label.control-label(for="name") Snippet Name:
-                span.mandatory *
-              input.form-control(type="text", name="name", placeholder="Snippet Name", id="name", value="")
+        -if (message && message.type == 'danger' && message.value)
+        .col-sm-12(class='alert alert-#{message.type}')#add
+          div.sidebar-module-inset
+            if (message && message.type && message.value)
+              div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
-            .form-group
-              label.control-label(for="flows") Flows:
-              span.input-group
-                span.input-group-addon
-                  span.fa.fa-random
-                select.form-control(multiple, name="flows[]", id="flows")
-                  - for(f in flows) {
-                    option(value="#{flows[f].id}", selected=((new_snippet.flows).indexOf(flows[f].id) > -1 ? "selected" : undefined)) #{flows[f].name}
-                  - }
+            form(method="post", action="/snippets/add")
+              input.hidden(type='hidden', name='type', id='type', value='')
+              .form-group
+                label.control-label(for="name") Snippet Name:
+                  span.mandatory *
+                input.form-control(type="text", name="name", placeholder="Snippet Name", id="name", value="")
 
-            .form-group
-              label.control-label(for="Color") Text Color
-              .colorpicker.input-group.colorpicker-component
-                span.input-group-addon
-                  i
-                input.form-control(type='text', name='color', value='#000000')
+              .form-group
+                label.control-label(for="flows") Flows:
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-random
+                  select.form-control(multiple, name="flows[]", id="flows")
+                    - for(f in flows) {
+                      - if( new_snippet.flows !== undefined )
+                        option(value="#{flows[f].id}", selected=((new_snippet.flows).indexOf(flows[f].id) > -1 ? "selected" : undefined)) #{flows[f].name}
+                      - else
+                        option(value="#{flows[f].id}") #{flows[f].name}
+                    - }
 
-            .form-group
-              label.control-label(for="icon") Snippet Icon:
-              ul.list-unstyled.list-inline.iconpicker(data-toggle="buttons")
-                - var icons = ['fa fa-battery-0', 'fa fa-battery-1 ', 'fa fa-battery-2', 'fa fa-battery-3', 'fa fa-wifi', 'fa fa-bell-slash-o', 'fa fa-bell', 'fa fa-bullhorn', 'fa fa-bug', 'fa fa-bolt', 'fa fa-eye', 'fa fa-heart-o', 'fa fa-star-o', 'fa fa-rocket']
-                - for (icon in icons)
-                  li
-                    .form-group.btn.btn-default
-                      i.input-group(class="#{icons[icon]}") 
-                      | &nbsp;
-                      input.input-group(class="#{icons[icon]}", type='radio', name='icon', value='#{icons[icon]}')
-                - end
-            .form-group#specific
+              .form-group
+                label.control-label(for="Color") Text Color
+                .colorpicker.input-group.colorpicker-component
+                  span.input-group-addon
+                    i
+                  input.form-control(type='text', name='color', value='#000000')
 
-            .form-group
-              button.btn.btn-primary.m-t.pull-right(type='submit')
-                span.fa.fa-plus  Save Snippet
+              .form-group
+                label.control-label(for="icon") Snippet Icon:
+                ul.list-unstyled.list-inline.iconpicker(data-toggle="buttons")
+                  - var icons = ['fa fa-battery-0', 'fa fa-battery-1 ', 'fa fa-battery-2', 'fa fa-battery-3', 'fa fa-wifi', 'fa fa-bell-slash-o', 'fa fa-bell', 'fa fa-bullhorn', 'fa fa-bug', 'fa fa-bolt', 'fa fa-eye', 'fa fa-heart-o', 'fa fa-star-o', 'fa fa-rocket']
+                  - for (icon in icons)
+                    li
+                      .form-group.btn.btn-default
+                        i.input-group(class="#{icons[icon]}") 
+                        | &nbsp;
+                        input.input-group(class="#{icons[icon]}", type='radio', name='icon', value='#{icons[icon]}')
+                  - end
+              .form-group#specific
+
+              .form-group
+                button.btn.btn-primary.m-t.pull-right(type='submit')
+                  span.fa.fa-plus  Save Snippet
               
-          p &nbsp;
+            p &nbsp;
 
     include ./includes/foot.jade
 

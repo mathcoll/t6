@@ -12,7 +12,7 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        .col-sm-8
+        .col-sm-12
           h3 Update an Object to your library
           form(action="/objects/#{object.id}/edit", method="post")
             .form-group
@@ -45,31 +45,40 @@ html(lang='en')
 
             hr/
             .form-group
-              label.control-label.fa.fa-map-marker(for="Position") Position/Location:
-              input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="Position", value=(object.position!==undefined ? object.position : undefined))
+              label.control-label(for="position") Position/Location:
+              span.input-group
+                span.input-group-addon
+                  span.fa.fa-map-marker
+                input.form-control(type="text", name="position", placeholder="Object position (living, dressing, etc)", id="position", value=(object.position!==undefined ? object.position : undefined))
 
-            .form-group(is='null')
+            .form-group
               label.control-label(for="Longitude") Longitude:
-              span.input-group(is='null')
-                span.input-group-addon(is='null')
-                  span.fa.fa-map(is='null')
-                input.form-control(type='text', is='null', name="longitude", placeholder="Longitude", id="Longitude", value=(object.longitude!==undefined ? object.longitude : undefined))
+              span.input-group
+                span.input-group-addon
+                  span.fa.fa-map
+                input.form-control(type='text', name="longitude", placeholder="Longitude", id="Longitude", value=(object.longitude!==undefined ? object.longitude : undefined))
 
-            .form-group(is='null')
+            .form-group
               label.control-label(for="Latitude") Latitude:
-              span.input-group(is='null')
-                span.input-group-addon(is='null')
-                  span.fa.fa-map(is='null')
-                input.form-control(type='text', is='null', name="latitude", placeholder="Latitude", id="Latitude", value=(object.latitude!==undefined ? object.latitude : undefined))
+              span.input-group
+                span.input-group-addon
+                  span.fa.fa-map
+                input.form-control(type='text', name="latitude", placeholder="Latitude", id="Latitude", value=(object.latitude!==undefined ? object.latitude : undefined))
 
             hr/
             .form-group
               label.control-label(for="ipv4") Ip v4:
-              input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="ipv4", value=(object.ipv4!==undefined ? object.ipv4 : undefined))
+              span.input-group
+                span.input-group-addon
+                  span IP
+                input.form-control(type="text", name="ipv4", placeholder="Ip v4: 192.168.0.1", id="ipv4", value=(object.ipv4!==undefined ? object.ipv4 : undefined))
 
             .form-group
               label.control-label(for="ipv6") Ip v6:
-              input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value=(object.ipv6!==undefined ? object.ipv6 : undefined))
+              span.input-group
+                span.input-group-addon
+                  span IP
+                input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value=(object.ipv6!==undefined ? object.ipv6 : undefined))
 
             .form-group
               a.btn.btn-default.btn-sm(href="/objects/#{object.id}")
@@ -79,14 +88,6 @@ html(lang='en')
               | &nbsp;
 
           p &nbsp; 
-
-        .col-sm-4
-          blockquote.fa.fa-comment  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
-          blockquote.glyphicon.glyphicon-hand-right  Object 'type' allow to classify your library.
-          blockquote.glyphicon.glyphicon-hand-right  Public Objects can be visible to everybody.
-          blockquote.glyphicon.glyphicon-hand-right  Position is a free field to let you remind where your object is.
-          blockquote.glyphicon.glyphicon-hand-right  Longitude and Latitude allow to locate your object.
-          blockquote.glyphicon.glyphicon-hand-right  IPs (v4, v6), to connect your Objects to internet.
 
     include ./includes/foot.jade
 

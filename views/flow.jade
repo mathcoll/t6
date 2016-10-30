@@ -46,10 +46,6 @@ html(lang='en')
           .form-group.col-md-12
             ul.list-inline
               li
-                a.btn.btn-default.btn-sm(href="/flows/")
-                  span.fa.fa-random  Back to Flows
-              
-              li
                 a.btn.btn-primary.btn-sm(href='/flows/#{flow.id}/edit')
                   span.fa.fa-pencil-square-o  Edit
               
@@ -61,6 +57,12 @@ html(lang='en')
                 a.btn.btn-danger.btn-sm(href='/flows/#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")
                   span.fa.fa-trash-o   Remove
 
+    .container-fluid
+      .row.side-body
+        .col-sm-6
+          //include snippets/flowgraph.jade
+
+  //-
     .container-fluid
       .row.side-body
         .col-sm-6

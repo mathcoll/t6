@@ -18,25 +18,23 @@ html(lang='en')
           h3 Search Results
           ul
             li
-              a(href="#objects") #{objects.length} Objects
+              a(href="#objects") #{objects.length} Object(s)
             li
-              a(href="#flows") #{flows.length} Flows
+              a(href="#flows") #{flows.length} Flow(s)
             li
-              a(href="#snippets") #{snippets.length} Snippets
+              a(href="#snippets") #{snippets.length} Snippet(s)
             li
-              a(href="#dashboards") #{dashboards.length} Dashboards
+              a(href="#dashboards") #{dashboards.length} Dashboard(s)
 
     .container-fluid#objects
       .row.side-body
-        h3.fa.fa-cubes  #{objects.length} Objects found
-      .row.side-body.hidden-xs.table-header
-        span.col-sm-4
-          strong Name/Description
-        span.col-sm-4
-          strong Id
-        span.col-sm-4
+        h3.fa-2x.fa.fa-cubes  #{objects.length} Object(s) found
+      .side-body.hidden-xs.table-header
+        span.col-sm-6
+          strong Name/Description/Id
+        span.col-sm-2
           strong Position
-        span.col-sm-4
+        span.col-sm-2
           strong Localisation
         
       .row.side-body
@@ -52,10 +50,14 @@ html(lang='en')
                   a(href="/objects/add") Object
                   | .
 
+    .container-fluid
+      .row.side-body
+        .col-sm-12 &nbsp;
+
     .container-fluid#flows
       .row.side-body
-        h3.fa.fa-random  #{flows.length} Flows found
-      .row.side-body.hidden-xs.table-header
+        h3.fa-2x.fa.fa-random  #{flows.length} Flow(s) found
+      .side-body.hidden-xs.table-header
         span.col-sm-4
           strong Name
         span.col-sm-2
@@ -78,10 +80,14 @@ html(lang='en')
                   a(href="/flows/add") Flow
                   | .
 
+    .container-fluid
+      .row.side-body
+        .col-sm-12 &nbsp;
+
     .container-fluid#snippets
       .row.side-body
-        h3.fa.fa-puzzle-piece  #{snippets.length} Snippets found
-      .row.side-body.hidden-xs.table-header
+        h3.fa-2x.fa.fa-puzzle-piece  #{snippets.length} Snippet(s) found
+      .side-body.hidden-xs.table-header
         span.col-sm-2
           strong Icon/Name/Type
         span.col-sm-10
@@ -100,18 +106,20 @@ html(lang='en')
                   a(href="/snippets") Snippet
                   | .
 
+    .container-fluid
+      .row.side-body
+        .col-sm-12 &nbsp;
+
     .container-fluid#dashboards
       .row.side-body
-        h3.fa.fa-area-chart  #{dashboards.length} Dashboards found
-      .row.side-body.hidden-xs.table-header
-        span.col-sm-6
-          strong Name
+        h3.fa-2x.fa.fa-area-chart  #{dashboards.length} Dashboard(s) found
+      .side-body.hidden-xs.table-header
+        span.col-sm-8
+          strong Name/Description/Id
         span.col-sm-2
           strong Snippets
         span.col-sm-2
           strong Layout
-        span.col-sm-4
-          strong Id
     
       .row.side-body
         .list-group
@@ -125,6 +133,10 @@ html(lang='en')
                 p No Result in Dashboards, perhaps you would like to create a 
                   a(href="/dashboards") Dashboards
                   | .
+
+    .container-fluid
+      .row.side-body
+        .col-sm-12 &nbsp;
 
     .container &nbsp;
 

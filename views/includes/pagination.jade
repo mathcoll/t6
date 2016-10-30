@@ -12,19 +12,19 @@ nav.clearfix.pull-left.col-xs-8
       li
         - if ( currentUrl === '/objects/add' )
           a(href='/objects?page=#{prevPage}', aria-label='Previous')
-            span(aria-hidden='true') ← Previous
+            span(aria-hidden='true', title='Previous') ←
         - else if ( currentUrl === '/flows/add' )
           a(href='/flows?page=#{prevPage}', aria-label='Previous')
-            span(aria-hidden='true') ← Previous
+            span(aria-hidden='true', title='Previous') ←
         - else if ( currentUrl === '/snippets/add' )
           a(href='/snippets?page=#{prevPage}', aria-label='Previous')
-            span(aria-hidden='true') ← Previous
+            span(aria-hidden='true', title='Previous') ←
         - else if ( currentUrl === '/dashboards/add' )
           a(href='/dashboards?page=#{prevPage}', aria-label='Previous')
-            span(aria-hidden='true') ← Previous
+            span(aria-hidden='true', title='Previous') ←
         - else
           a(href='?page=#{prevPage}', aria-label='Previous')
-            span(aria-hidden='true') ← Previous
+            span(aria-hidden='true', title='Previous') ←
     - while (p <= pagenb)
       - if (p == page)
         li.active
@@ -46,19 +46,19 @@ nav.clearfix.pull-left.col-xs-8
       li
         - if ( currentUrl === '/objects/add' )
           a(href='/objects?page=#{nextPage}', aria-label='Next')
-            span(aria-hidden='true') Next →
+            span(aria-hidden='true', title='Next') →
         - else if ( currentUrl === '/flows/add' )
           a(href='/flows?page=#{nextPage}', aria-label='Next')
-            span(aria-hidden='true') Next →
+            span(aria-hidden='true', title='Next') →
         - else if ( currentUrl === '/snippets/add' )
           a(href='/snippets?page=#{nextPage}', aria-label='Next')
-            span(aria-hidden='true') Next →
+            span(aria-hidden='true', title='Next') →
         - else if ( currentUrl === '/dashboards/add' )
           a(href='/dashboards?page=#{nextPage}', aria-label='Next')
-            span(aria-hidden='true') Next →
+            span(aria-hidden='true', title='Next') →
         - else
           a(href='?page=#{nextPage}', aria-label='Next')
-            span(aria-hidden='true') Next →
+            span(aria-hidden='true', title='Next') →
     li.separator &nbsp;
 
 nav.clearfix.pull-right.col-xs-4

@@ -9,9 +9,8 @@ html(lang='en')
         .col-sm-12
           h2.fa.fa-2x.fa-area-chart &nbsp;Add a Dashboard to your library
         
-        if (message && message.type == 'danger' && message.value)
+        -if (message && message.type == 'danger' && message.value)
         .col-sm-12(class='alert alert-#{message.type}')#add
-        
           div.sidebar-module-inset
             if (message && message.type && message.value)
               div.alert(class='alert-#{message.type}', role='alert') #{message.value}

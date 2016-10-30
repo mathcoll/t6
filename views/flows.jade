@@ -16,7 +16,7 @@ html(lang='en')
         .col-sm-12
           if (flows.length)
             include ./includes/pagination.jade
-            .row.hidden-xs.table-header
+            .hidden-xs.table-header
               span.col-sm-4
                 strong Name
               span.col-sm-2
@@ -26,6 +26,7 @@ html(lang='en')
               span.col-sm-2
                 strong Permissions
 
+            .list-group
             - for(flow in flows) {
               include ./includes/flow_item_list.jade
             - }
