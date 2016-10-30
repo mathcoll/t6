@@ -301,8 +301,7 @@ a:focus {
     padding:0;
 }
 #accordion .edit-pic {
-    opacity: unset !important;
-    //background-color: #23527c;
+    z-index:100;
 
 }
 .iamgurdeep-pic:hover .edit-pic {

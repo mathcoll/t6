@@ -17,8 +17,8 @@ html(lang='en')
                 img.img-responsive.center-block(alt='#{user.firstName} #{user.lastName}', src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g')
                 .edit-pic
                   - if ( gravatar.entry[0].ims )
-                    - for ( i in gravatar.entry[0].ims )
-                      - var im = gravatar.entry[0].ims[i]
+                    - for ( i in (gravatar.entry[0].ims) )
+                      - var im = (gravatar.entry[0].ims)[i]
                       - var icon = ''
                       - var href = ''
                       - if ( im.type == 'skype' )
@@ -37,12 +37,13 @@ html(lang='en')
                         - icon = 'fa-icq'
                         - href = 'http://'+im.value
                       - end
-                    a.fa(href='#{href}', target='_blank', class="#{icon}")
+                      a.fa(href='#{href}', target='_blank', class="#{icon}")
+                    - end
                   - end
 
                   - if ( gravatar.entry[0].accounts )
-                    - for ( i in gravatar.entry[0].accounts )
-                      - var account = gravatar.entry[0].accounts[i]
+                    - for ( i in (gravatar.entry[0].accounts) )
+                      - var account = (gravatar.entry[0].accounts)[i]
                       - var icon = ''
                       - if ( account.shortname == 'facebook' )
                         - icon = 'fa-facebook-square'
@@ -65,7 +66,7 @@ html(lang='en')
                       - if ( account.shortname == 'pinterest' )
                         - icon = 'fa-pinterest-square'
                       - end
-                     a.fa(href='#{account.url}', target='_blank', class="#{icon}")
+                      a.fa(href='#{account.url}', target='_blank', class="#{icon}")
                     - end
                   - end
 
@@ -88,6 +89,13 @@ html(lang='en')
               ul.submenu.list-unstyled
                 li
                   a(href='mailto:#{user.email}') Email:  #{user.email}
+                - if ( gravatar.entry[0].phoneNumbers )
+                  - for ( i in (gravatar.entry[0].phoneNumbers) )
+                    - var phone = (gravatar.entry[0].phoneNumbers)[i]
+                    li
+                      a(href='#', title="#{phone.type}") #{phone.type}: #{phone.value}
+                  - end
+                - end
                 - if ( gravatar.entry[0].urls )
                   - for ( i in gravatar.entry[0].urls )
                     - var url = gravatar.entry[0].urls[i]
@@ -99,7 +107,7 @@ html(lang='en')
                   - for ( i in gravatar.entry[0].currency )
                     - var curr = gravatar.entry[0].currency[i]
                     li
-                      a(href='#', target='_blank', title="#{curr.type}") #{curr.value}
+                      a(href='#', title="#{curr.type}") #{curr.value}
                   - end
                 - end
 
