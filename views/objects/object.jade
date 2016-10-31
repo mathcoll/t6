@@ -10,7 +10,7 @@ html(lang='en')
           h2.fa.fa-2x.fa-cube &nbsp;Object&nbsp;
             strong #{object.name}
           if (message && message.type && message.value)
-            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+            div.alert(class='alert-#{message.type}', role='alert') !{message.value}
 
       .row.side-body
         .col-sm-6.col-md-8.col-md-offset-0

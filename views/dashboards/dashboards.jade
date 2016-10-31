@@ -9,7 +9,7 @@ html(lang='en')
         .col-sm-12
           h2.fa.fa-2x.fa-area-chart &nbsp;My Dashboards&nbsp;
           if (message && message.type && message.value)
-            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+            div.alert(class='alert-#{message.type}', role='alert') !{message.value}
         blockquote.fa.fa-comment  
 
       .row.side-body

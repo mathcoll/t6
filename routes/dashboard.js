@@ -334,7 +334,7 @@ router.post('/objects/add', Auth, function(req, res) {
 		if ( new_object.name && new_object.type && new_object.user_id ) {
 			objects.insert(new_object);
 			db.save();
-			message = {type: 'success', value: 'Successfully added.'};
+			message = {type: 'success', value: 'Object <a href="/objects/'+new_object.id+'">'+new_object.name+'</a> successfuly added.'};
 			req.session.message = message;
 		} else {
 			message = {type: 'danger', value: 'Please give a name and a type to your Object!'};
@@ -628,7 +628,7 @@ router.post('/flows/add', Auth, function(req, res) {
 		if ( new_flow.name && new_flow.data_type && new_flow.user_id && new_flow.unit_id ) {
 			flows.insert(new_flow);
 			db.save();
-			message = {type: 'success', value: 'Successfully added.'};
+			message = {type: 'success', value: 'Flow <a href="/flows/'+new_flow.id+'">'+new_flow.name+'</a> successfully added.'};
 			req.session.message = message;
 		} else {
 			message = {type: 'danger', value: 'Please give a name, a type and a unit to your Flow!'};
@@ -659,7 +659,7 @@ router.post('/flows/add', Auth, function(req, res) {
 			currentUrl: req.path,
 		});
 	} else {
-		res.redirect('/flows/'); //+new_flow.id
+		res.redirect('/flows/'+new_flow.id); //
 	}
 });
 
@@ -916,7 +916,7 @@ router.post('/dashboards/add', Auth, function(req, res) {
 		if ( new_dashboard.name && new_dashboard.user_id ) {
 			dashboards.insert(new_dashboard);
 			db.save();
-			message = {type: 'success', value: 'Successfully added.'};
+			message = {type: 'success', value: 'Dashboard <a href="/dashboards/'+new_dashboard.id+'">'+new_dashboard.name+'</a> successfully added.'};
 			req.session.message = message;
 		} else {
 			message = {type: 'danger', value: 'Please give a name to your Dashboard!'};
