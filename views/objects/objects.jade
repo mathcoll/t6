@@ -1,8 +1,8 @@
 doctype html
 html(lang='en')
-  include ./includes/head.jade
+  include ../includes/head.jade
   body
-    include ./includes/navbar.jade
+    include ../includes/navbar.jade
 
     .container-fluid
       .row.side-body.hidden-xs
@@ -13,7 +13,7 @@ html(lang='en')
       .row.side-body
         .col-sm-12
           if (objects.length)
-            include ./includes/pagination.jade
+            include ../includes/pagination.jade
             .hidden-xs.table-header
               span.col-sm-6
                 strong Name/Description/Id
@@ -26,12 +26,12 @@ html(lang='en')
             
             .list-group
             - for(object in objects) {
-              include ./includes/object_item_list.jade
+              include ./item_list.jade
             - }
-            include ./includes/pagination.jade
+            include ../includes/pagination.jade
           else
             p &nbsp;
             div.alert.alert-warning You don't have any Object yet in your library. You can <a href="/objects/add">add an Object</a>.
           p &nbsp;
 
-    include ./includes/foot.jade
+    include ../includes/foot.jade

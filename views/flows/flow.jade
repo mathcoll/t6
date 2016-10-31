@@ -1,8 +1,8 @@
 doctype html
 html(lang='en')
-  include ./includes/head.jade
+  include ../includes/head.jade
   body
-    include ./includes/navbar.jade
+    include ../includes/navbar.jade
 
     .container-fluid
       .row.side-body.hidden-xs
@@ -59,9 +59,9 @@ html(lang='en')
       .row.side-body
         .col-sm-12
           h3.fa.fa-line-chart Data graph
-        include snippets/flowgraph.jade
+        include ../snippets/flowgraph.jade
 
-    include ./includes/foot.jade
+    include ../includes/foot.jade
     p &nbsp;
     p &nbsp;
     p &nbsp;
@@ -164,7 +164,7 @@ html(lang='en')
                     .btn-group(role='group')
                       button.btn.btn-default.btn-hover-green.glyphicon.glyphicon-ok(type='submit')  Save Snippet
 
-    include ./includes/foot.jade
+    include ../includes/foot.jade
     
     link(href='/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
     script(type='text/javascript', src='/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')

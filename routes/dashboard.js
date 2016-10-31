@@ -44,7 +44,7 @@ router.get('/objects', Auth,  function(req, res) {
 	if ( o.length == 0 ) {
 		res.redirect('/objects/add');
 	} else {
-		res.render('objects', {
+		res.render('objects/objects', {
 			title : 'My Objects',
 			objects: o,
 			objects_length: (objects.chain().find(query).data()).length,
@@ -63,7 +63,7 @@ router.get('/objects', Auth,  function(req, res) {
 });
 
 router.get('/objects/add', Auth, function(req, res) {
-	res.render('objects_add', {
+	res.render('objects/add', {
 		title : 'Add an Object',
 		message: {},
 		user: req.session.user,
@@ -96,7 +96,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			qr.make();
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
-			res.render('object', {
+			res.render('objects/object', {
 				title : 'Object '+json.object.name,
 				object: json.object,
 				flows: json.flows,
@@ -135,7 +135,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 	if ( r ) {
 		r.left.created = moment(meta.created).format('dddd, MMMM Do YYYY, H:mm:ss');
 		r.left.updated = moment(meta.updated).format('dddd, MMMM Do YYYY, H:mm:ss');
-		res.render('object_public', {
+		res.render('objects/public', {
 			title : 'Object '+r.left.name,
 			object: r.left,
 			owner: r.right,
@@ -172,7 +172,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 		var url = baseUrl+'/objects/'+object_id+'/public';
 		qr.addData(url);
 		qr.make();
-		res.render('object_qrprint', {
+		res.render('objects/qrprint', {
 			title : 'Object '+json.name,
 			url: url,
 			qr_img1: qr.createImgTag(1),
@@ -209,7 +209,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 	var json = objects.findOne(queryO);
 	//console.log(json);
 	if ( json ) {
-		res.render('object_edit', {
+		res.render('objects/edit', {
 			title : 'Edit Object '+json.name,
 			object: json,
 			types: objectTypes,
@@ -343,7 +343,7 @@ router.post('/objects/add', Auth, function(req, res) {
 	}
 	
 	if ( error ) {
-		res.render('objects_add', {
+		res.render('objects/add', {
 			title : 'Add an Objects',
 			objects: objects.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 			new_object: new_object,
@@ -374,7 +374,7 @@ router.get('/flows', Auth, function(req, res) {
 	if ( f.length == 0 ) {
 		res.redirect('/flows/add');
 	} else {
-		res.render('flows', {
+		res.render('flows/flows', {
 			title : 'My Flows',
 			flows: f,
 			flows_length: (flows.chain().find(query).data()).length,
@@ -396,7 +396,7 @@ router.get('/flows/add', Auth, function(req, res) {
 	var o = objects.chain().find(query).sort(alphaSort).data();
 	var dt = datatypes.chain().find().sort(alphaSort).data();
 	var u = units.chain().find().sort(alphaSort).data();
-	res.render('flows_add', {
+	res.render('flows/add', {
 		title : 'Add a Flow',
 		message: {},
 		objects: o,
@@ -427,7 +427,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 		if ( json.flow ) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
-			res.render('flow', {
+			res.render('flows/flow', {
 				title :		'Flow '+json.flow.name,
 				user:		req.session.user,
 				nl2br:		nl2br,
@@ -486,7 +486,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		if ( json.flow ) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
-			res.render('flow_edit', {
+			res.render('flows/edit', {
 				title : 'Edit Flow '+json.flow.name,
 				user: req.session.user,
 				nl2br: nl2br,
@@ -568,7 +568,7 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 
 router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 	var flow_id = req.params.flow_id;
-	res.render('flow_graph', {
+	res.render('flows/graph', {
 		title : 'Graph a Flow',
 		flow_id: flow_id,
 		user: req.session.user,
@@ -645,7 +645,7 @@ router.post('/flows/add', Auth, function(req, res) {
 	var u = units.chain().find().sort(alphaSort).data();
 	
 	if ( error ) {
-		res.render('flows_add', {
+		res.render('flows/add', {
 			title : 't6 Flows',
 			flows: f,
 			objects: o,
@@ -856,7 +856,7 @@ router.get('/dashboards', Auth, function(req, res) {
 	if ( d.length == 0 ) {
 		res.redirect('/dashboards/add');
 	} else {
-		res.render('dashboards', {
+		res.render('dashboards/dashboards', {
 			title : 'My Dashboards',
 			dashboards: d,
 			dashboards_length: (dashboards.chain().find(query).data()).length,
@@ -875,7 +875,7 @@ router.get('/dashboards/add', Auth, function(req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
 	var query = { 'user_id': req.session.user.id };
 	var d = dashboards.chain().find(query).sort(alphaSort).data();
-	res.render('dashboards_add', {
+	res.render('dashboards/add', {
 		title : 'Add a Dashboard',
 		message: {},
 		dashboards: d,
@@ -930,7 +930,7 @@ router.post('/dashboards/add', Auth, function(req, res) {
 	var d = dashboards.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
 	
 	if ( error ) {
-		res.render('dashboards_add', {
+		res.render('dashboards/add', {
 			title : 't6 Dashboards',
 			dashboards: d,
 			new_dashboard: new_dashboard,
@@ -1182,7 +1182,7 @@ router.get('/snippets', Auth, function(req, res) {
 	if ( s.length == 0 ) {
 		res.redirect('/snippets/add');
 	} else {
-		res.render('snippets', {
+		res.render('snippets/snippets', {
 			title : 'My Snippets',
 			snippets: s,
 			snippets_length: (snippets.chain().find(query).data()).length,
@@ -1201,7 +1201,7 @@ router.get('/snippets/add', Auth, function(req, res) {
 	flows		= db.getCollection('flows');
 	var query = { 'user_id': req.session.user.id };
 	var f = flows.chain().find(query).sort(alphaSort).data();
-	res.render('snippets_add', {
+	res.render('snippets/add', {
 		title : 'Add a Snippet',
 		message: {},
 		flows: f,
@@ -1276,7 +1276,7 @@ router.post('/snippets/add', Auth, function(req, res) {
 			var pagination=12;
 			req.query.page=req.query.page!==undefined?req.query.page:1;
 			var offset = (req.query.page -1) * pagination;
-			res.render('snippets_add', {
+			res.render('snippets/add', {
 				title : 't6 Snippets',
 				snippets: snippets.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data(),
 				flows: f,

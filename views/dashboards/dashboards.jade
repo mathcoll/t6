@@ -1,8 +1,8 @@
 doctype html
 html(lang='en')
-  include ./includes/head.jade
+  include ../includes/head.jade
   body
-    include ./includes/navbar.jade
+    include ../includes/navbar.jade
 
     .container-fluid
       .row.side-body.hidden-xs
@@ -16,7 +16,7 @@ html(lang='en')
         .col-sm-12
           if (dashboards.length)
             ul.list-group.list-unstyled.col-sm-12.col-md-12.col-md-offset-0
-              include ./includes/pagination.jade
+              include ../includes/pagination.jade
               .hidden-xs.table-header
                 span.col-sm-6
                   strong Name/Description/Id
@@ -27,12 +27,12 @@ html(lang='en')
 
               .list-group
               - for(dashboard in dashboards) {
-                include ./includes/dashboard_item_list.jade
+                include ./item_list.jade
               - }
-              include ./includes/pagination.jade
+              include ../includes/pagination.jade
           else
             p &nbsp;
-            div.alert.alert-warning You don't have any Dashboards yet in your library. You can add a <a href="/dashboards/add">Dashboard</a> to graph your Flows
+            div.alert.alert-warning You don't have any Dashboard yet in your library. You can add a <a href="/dashboards/add">Dashboard</a> to graph your Flows
           p &nbsp;
 
-    include ./includes/foot.jade
+    include ../includes/foot.jade

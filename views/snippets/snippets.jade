@@ -1,8 +1,8 @@
 doctype html
 html(lang='en')
-  include ./includes/head.jade
+  include ../includes/head.jade
   body
-    include ./includes/navbar.jade
+    include ../includes/navbar.jade
 
     .container-fluid
       .row.side-body.hidden-xs
@@ -15,7 +15,7 @@ html(lang='en')
       .row.side-body
         .col-sm-12
           if (snippets.length)
-            include ./includes/pagination.jade
+            include ../includes/pagination.jade
             .hidden-xs.table-header
               span.col-sm-6
                 strong Icon/Name/Type
@@ -29,12 +29,12 @@ html(lang='en')
               - if ( !snippets[snippet].icon )
                 - snippets[snippet].icon = "fa fa-puzzle-piece"
               - end
-              include ./includes/snippet_item_list.jade
+              include ./item_list.jade
             - }
-            include ./includes/pagination.jade
+            include ../includes/pagination.jade
           else
             p &nbsp;
             div.alert.alert-warning You don't have any Snippet yet in your library. You can add a <a href="/snippets/add">Snippet</a> to graph your Flows
           p &nbsp;
 
-    include ./includes/foot.jade
+    include ../includes/foot.jade

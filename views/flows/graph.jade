@@ -1,8 +1,8 @@
 doctype html
 html(lang='en')
-  include ./includes/head.jade
+  include ../includes/head.jade
   body
-    include ./includes/navbar.jade
+    include ../includes/navbar.jade
 
     .container-fluid
       .row.side-body.hidden-xs
@@ -10,7 +10,7 @@ html(lang='en')
           h2.fa.fa-2x.fa-random &nbsp;Graph a Flow
 
         div(class='col-sm-12')
-          include ./snippets/flowgraph.jade
+          include ../snippets/flowgraph.jade
           a.btn.btn-default.btn-sm(href="/flows/#{flow_id}")
             span.fa.fa-random Back to Flow
           | &nbsp;
@@ -18,14 +18,5 @@ html(lang='en')
             span.fa.fa-random Back to Flows
           | &nbsp;
 
-        //.col-sm-4
-          //div.affix-top
-            //blockquote.fa.fa-comment  Configure your Flow and add graph it to your Dashboard.
 
-        //.col-sm-4
-          //.sidebar-module-inset
-            //h3 Setup a Flow to graph
-            //include ./includes/graph_form.jade
-
-
-    include ./includes/foot.jade
+    include ../includes/foot.jade
