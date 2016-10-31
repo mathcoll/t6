@@ -11,39 +11,6 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        .col-sm-12
-          h3 Select your Snippets&nbsp;
-      .row.side-body
-        ol.list-unstyled.col-sm-12.col-md-10.col-md-offset-0
-          li.col-sm-2.btn-radio
-            strong.fa.fa-puzzle-piece.center-text &nbsp;Value Display
-            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="valuedisplay")
-              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-valuedisplay.jpg')
-              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
-            
-          li.col-sm-2.btn-radio
-            strong.fa.fa-puzzle-piece.center-text &nbsp;Boolean value
-            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="boolean")
-              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-boolean.jpg')
-              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
-            
-          li.col-sm-2.btn-radio
-            strong.fa.fa-puzzle-piece.center-text &nbsp;Flow Graph
-            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="flowgraph")
-              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-flowgraph.jpg')
-              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
-            
-          li.col-sm-2.btn-radio
-            strong.fa.fa-puzzle-piece.center-text &nbsp;Weather
-            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="weather")
-              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-weather.jpg')
-              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
-  
-          li.col-sm-2.btn-radio
-            strong.fa.fa-puzzle-piece.center-text &nbsp;Clock
-            a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="clock")
-              img.img-responsive.img-thumbnail.img-radio.center-block(src='/img/snippet-clock.jpg')
-              span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
 
         -if (message && message.type == 'danger' && message.value)
         .col-sm-12(class='alert alert-#{message.type}')#add
@@ -89,6 +56,40 @@ html(lang='en')
                         | &nbsp;
                         input.input-group(class="#{icons[icon]}", type='radio', name='icon', value='#{icons[icon]}')
                   - end
+
+              .row.form-group
+                label.control-label Select & Customize your Snippet
+                ol.list-unstyled
+                  li.col-sm-2.btn-radio
+                    strong.fa.fa-puzzle-piece.center-text &nbsp;Value Display
+                    a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="valuedisplay")
+                      img.img-responsive.img-thumbnail.img-radio(src='/img/snippet-valuedisplay.jpg', width='100', style='display:block;')
+                      span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+                    
+                  li.col-sm-2.btn-radio
+                    strong.fa.fa-puzzle-piece.center-text &nbsp;Boolean value
+                    a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="boolean")
+                      img.img-responsive.img-thumbnail.img-radio(src='/img/snippet-boolean.jpg', width='100', style='display:block;')
+                      span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+                    
+                  li.col-sm-2.btn-radio
+                    strong.fa.fa-puzzle-piece.center-text &nbsp;Flow Graph
+                    a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="flowgraph")
+                      img.img-responsive.img-thumbnail.img-radio(src='/img/snippet-flowgraph.jpg', width='100', style='display:block;')
+                      span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+                    
+                  li.col-sm-2.btn-radio
+                    strong.fa.fa-puzzle-piece.center-text &nbsp;Weather
+                    a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="weather")
+                      img.img-responsive.img-thumbnail.img-radio(src='/img/snippet-weather.jpg', width='100', style='display:block;')
+                      span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+                
+                  li.col-sm-2.btn-radio
+                    strong.fa.fa-puzzle-piece.center-text &nbsp;Clock
+                    a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="clock")
+                      img.img-responsive.img-thumbnail.img-radio(src='/img/snippet-clock.jpg', width='100', style='display:block;')
+                      span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+                
               .form-group#specific
 
               .form-group
