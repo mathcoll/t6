@@ -30,20 +30,13 @@ html(lang='en')
       .row.side-body
         h3.fa-2x.fa.fa-cubes  #{objects.length} Object(s) found
       .side-body.hidden-xs.table-header
-        span.col-sm-6
-          strong Name/Description/Id
-        span.col-sm-2
-          strong Position
-        span.col-sm-2
-          strong Localisation/Visibility
-        span.col-sm-2
-          strong Updated
+        include ./objects/item_header.jade
         
       .row.side-body
         .list-group
         - if (objects.length)
           - for(object in objects) {
-            include ./includes/object_item_list.jade
+            include ./objects/item_list.jade
           - }
         - else
             .list-group-item
@@ -73,7 +66,7 @@ html(lang='en')
         .list-group
         - if (flows.length)
           - for(flow in flows) {
-            include ./includes/flow_item_list.jade
+            include ./flows/item_list.jade
           - }
         - else
             .list-group-item
@@ -99,7 +92,7 @@ html(lang='en')
         .list-group
         - if (snippets.length)
           - for(snippet in snippets) {
-            include ./includes/snippet_item_list.jade
+            include ./snippets/item_list.jade
           - }
         - else
             .list-group-item
@@ -127,7 +120,7 @@ html(lang='en')
         .list-group
         - if (dashboards.length)
           - for(dashboard in dashboards) {
-            include ./includes/dashboard_item_list.jade
+            include ./dashboards/item_list.jade
           - }
         - else
             .list-group-item

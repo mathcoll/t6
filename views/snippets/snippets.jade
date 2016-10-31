@@ -16,14 +16,7 @@ html(lang='en')
         .col-sm-12
           if (snippets.length)
             include ../includes/pagination.jade
-            .hidden-xs.table-header
-              span.col-sm-6
-                strong Icon/Name/Type
-              span.col-sm-2
-                strong Color/Id
-              span.col-sm-2
-                strong Flows
-
+            include ./item_header.jade
             .list-group
             - for(snippet in snippets) {
               - if ( !snippets[snippet].icon )

@@ -17,14 +17,7 @@ html(lang='en')
           if (dashboards.length)
             ul.list-group.list-unstyled.col-sm-12.col-md-12.col-md-offset-0
               include ../includes/pagination.jade
-              .hidden-xs.table-header
-                span.col-sm-6
-                  strong Name/Description/Id
-                span.col-sm-2
-                  strong Snippets
-                span.col-sm-2
-                  strong Layout
-
+              include ./item_header.jade
               .list-group
               - for(dashboard in dashboards) {
                 include ./item_list.jade

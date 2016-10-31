@@ -16,16 +16,7 @@ html(lang='en')
         .col-sm-12
           if (flows.length)
             include ../includes/pagination.jade
-            .hidden-xs.table-header
-              span.col-sm-4
-                strong Name
-              span.col-sm-2
-                strong ID
-              span.col-sm-4
-                strong Unit
-              span.col-sm-2
-                strong Permissions
-
+            include ./item_header.jade
             .list-group
             - for(flow in flows) {
               include ./item_list.jade
