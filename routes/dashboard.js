@@ -428,14 +428,28 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
 			res.render('flow', {
-				title : 'Flow '+json.flow.name,
-				user: req.session.user,
-				nl2br: nl2br,
-				flow: json.flow,
-				flows: flows.chain().find({ 'user_id': req.session.user.id }).sort(alphaSort).data(),
-				message: message,
-				striptags: striptags,
-				currentUrl: req.path,
+				title :		'Flow '+json.flow.name,
+				user:		req.session.user,
+				nl2br:		nl2br,
+				flow:		json.flow,
+				snippet:	{p:{}, icon: 'fa fa-line-chart', name: req.query.title!==undefined?req.query.title:json.flow.name, flows: [flow_id]},
+				flows:		flows.chain().find({ 'user_id': req.session.user.id }).sort(alphaSort).data(),
+				message:	message,
+				striptags:	striptags,
+				currentUrl:	req.path,
+				graph_title:		req.query.title!==undefined?req.query.title:json.flow.name,
+				graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
+				graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd').format('x'),
+				graph_enddate:		moment(req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd'), 'x').format('DD/MM/YYYY'),
+				graph_enddate2:		req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd').format('x'),
+				graph_max:			req.query.max!==undefined?req.query.max:'50',
+				graph_ttl:			req.query.graph_ttl!==undefined?req.query.graph_ttl:'',
+				graph_weekendAreas:	req.query.weekendAreas!==undefined?req.query.weekendAreas:'',
+				graph_color:		req.query.color!==undefined?req.query.color:'#edc240',
+				graph_fill:			req.query.fill!==undefined?req.query.fill:'false',
+				graph_autorefresh:	req.query.autorefresh!==undefined?req.query.autorefresh:'false',
+				graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bars',
+				graph_layout:		req.query.layout!==undefined?req.query.layout:12,
 			});
 		} else {
 			var err = new Error('Not Found');
@@ -554,13 +568,13 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 
 router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 	var flow_id = req.params.flow_id;
-	//console.log(moment(req.query.startdate!==undefined?req.query.startdate:'', 'x').format('DD/MM/YYYY'));
 	res.render('flow_graph', {
 		title : 'Graph a Flow',
 		flow_id: flow_id,
 		user: req.session.user,
 		moment: moment,
 		currentUrl: req.path,
+		snippet:			{p:{}, icon: 'fa fa-line-chart', name: req.query.title!==undefined?req.query.title:'Default Title', flows: [flow_id]},
 		graph_title:		req.query.title!==undefined?req.query.title:'Default Title',
 		graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
 		graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd').format('x'),
@@ -573,7 +587,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 		graph_fill:			req.query.fill!==undefined?req.query.fill:'false',
 		graph_autorefresh:	req.query.autorefresh!==undefined?req.query.autorefresh:'false',
 		graph_chart_type:	req.query.chart_type!==undefined?req.query.chart_type:'bars',
-		graph_layout:		req.query.layout!==undefined?req.query.layout:8,
+		graph_layout:		req.query.layout!==undefined?req.query.layout:12,
 	});
 });
 
@@ -1286,8 +1300,6 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 	if ( snippet_id !== undefined ) {
 		var queryS = { '$and': [ { 'user_id': req.session.user.id }, { 'id' : snippet_id }, ] };
 		var json = (snippets.chain().find(queryS).limit(1).data())[0];
-
-		console.log(json);
 		if ( json ) {
 			res.render('snippets/'+json.type, {
 				title :				json.name,

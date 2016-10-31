@@ -1,11 +1,7 @@
 - var rnd = Math.floor(Math.random()*1000)
 - if ( !graph_layout ) {
-  graph_layout = "12"
+  - graph_layout = "12"
 - }
-//- if ( snippet == undefined ) {
-  //- var snippet = {}
-  //- snippet.p = {}
-//- }
 - if ( currentUrl.indexOf("snippets") > -1 ) {
   doctype html
   html(lang='en')
@@ -29,7 +25,7 @@
       //include ../includes/navbar-minimal.jade
 - }
 
-    li.list-unstyled.container-fluid.col-sm-12.ui-sortable-handle(id="body#{rnd}")
+    li.list-unstyled.container-fluid.ui-sortable-handle(class="col-sm-#{graph_layout}", id="body#{rnd}")
       .panel.panel-default
         .panel-heading.handle
            h3.panel-title.pull-left
@@ -51,8 +47,8 @@
 
         .panel-body.collapse.in#collapseGraph
           div(id="graph#{rnd}", style='height:300px;')
-          #tooltip(style='position: absolute; border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
         .panel-footer 
+          #tooltip(style='/*position:absolute;*/ border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
 
   #editSnippet.modal.fade(tabindex='-1', role='dialog', aria-labelledby='modalLabel', aria-hidden='true')
     .modal-dialog
@@ -69,29 +65,20 @@
           .modal-footer
             .btn-group.btn-group-justified(role='group', aria-label='group button')
               .btn-group(role='group')
-                button.btn.btn-default(type='button', data-dismiss='modal', role='button') Close
-              .btn-group.dropup.btn-group-justified(role='group')
-                button#dropdownMenu.btn.btn-default.dropdown-toggle.m-t(type='button', data-toggle='dropdown', aria-expanded='true')
-                  | Add to Dashboard&nbsp;
-                  span.caret
-                ul.dropdown-menu(aria-labelledby='dropdownMenu')
-                  li
-                    a(href='#')
-                      span.glyphicon.glyphicon-th-large  Dashboard 1
-                  li
-                    a(href='#')
-                      span.glyphicon.glyphicon-th-large  Dashboard 2
+                button.btn.btn-danger(type='button', data-dismiss='modal', role='button') Close
               .btn-group(role='group')
-                button.btn.btn-default.btn-hover-green.glyphicon.glyphicon-ok(type='submit')  Update
+                span &nbsp;
+              .btn-group(role='group')
+                button.btn.btn-success.btn-hover-green.glyphicon.glyphicon-ok(type='submit')  Update
 
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     script(src='/js/jquery-ui/jquery-ui-1.11.4.min.js')
     script(type='text/javascript', src='/js/bootstrap.min.js')
 - }
   script(type='text/javascript', src='/js/chartjs/chart.min.js')
-  script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
+  //script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
   script(type='text/javascript', src='/js/flot/jquery.flot.js')
-  script(type='text/javascript', src='/js/flot/jquery.flot.pie.js')
+  //script(type='text/javascript', src='/js/flot/jquery.flot.pie.js')
   script(type='text/javascript', src='/js/flot/jquery.flot.orderBars.js')
   script(type='text/javascript', src='/js/flot/jquery.flot.time.min.js')
   script(type='text/javascript', src='/js/flot/date.js')
@@ -136,7 +123,7 @@
         options.colors = [color];
         //console.log(container);
         $.plot($('#'+container), data, options);
-        $('#'+container).parent().parent().find('div.panel-footer').html('<span class="fa fa-clock-o"></span> Last value at '+lastValue);
+        $('#'+container).parent().parent().find('div.panel-footer').prepend('<span class="fa fa-clock-o"></span> Last value at '+lastValue);
         //$('#'+container).parent().parent().parent().find('div.panel-heading h3.panel-title').html('<span class="#{snippet.icon}"></span> '+title);
         $('#'+container).bind("plothover", function (event, pos, item) {
           if (item) {
@@ -246,7 +233,7 @@
           var start = f[6];
           var end = f[7];
           var color = f[8];
-          $("#"+container).append("<div class='fa fa-3x fa-spin fa-refresh'></div>");
+          $("#"+container).append("<div class='fa fa-3x fa-spin fa-refresh' style='margin: 150px 50%'></div>");
           return getData#{rnd}(location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '')+'/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page, sort, start, end, color);
         }); // end
       }

@@ -403,7 +403,7 @@ a:focus {
 
 
 /* Ellipsis */
-.ellipis {
+.ellipsis {
     overflow: hidden;
     -ms-text-overflow: ellipsis;
     -o-text-overflow: ellipsis;

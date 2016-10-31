@@ -18,11 +18,13 @@ html(lang='en')
             dl.dl-horizontal
               dt Id:
               dd
-                span.label.label-warning #{object.id}
+                span.label.label-warning #{object.id} 
 
               dt Name:
               dd
                 strong #{object.name}
+                br/
+                i Created: #{moment(object.meta.created).format('DD/MM/YYYY, HH:mm')} - Updated: #{moment(object.meta.updated).format('DD/MM/YYYY, HH:mm')} - Revision: #{object.meta.revision}
             
               dt Type:
               - if (object.type == 'rooter')

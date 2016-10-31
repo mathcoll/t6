@@ -14,7 +14,7 @@ html(lang='en')
 
       .row.side-body
         .col-sm-12.col-md-12.col-md-offset-0
-          div.col-md-4
+          div
             dl.dl-horizontal
               dt Id:
               dd
@@ -22,6 +22,8 @@ html(lang='en')
 
               dt Name:
               dd #{flow.name}
+                br/
+                i Created: #{moment(flow.meta.created).format('DD/MM/YYYY, HH:mm')} - Updated: #{moment(flow.meta.updated).format('DD/MM/YYYY, HH:mm')} - Revision: #{flow.meta.revision}
 
               dt Datatype:
               dd #{flow.data_type}
@@ -50,26 +52,28 @@ html(lang='en')
                   span.fa.fa-pencil-square-o  Edit
               
               li
-                a.btn.btn-primary.btn-sm(href='/flows/#{flow.id}/graph')
-                  span.fa.fa-line-chart  Graph
-              
-              li
                 a.btn.btn-danger.btn-sm(href='/flows/#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")
                   span.fa.fa-trash-o   Remove
 
     .container-fluid
       .row.side-body
-        .col-sm-6
-          //include snippets/flowgraph.jade
+        .col-sm-12
+          h3.fa.fa-line-chart Data graph
+        include snippets/flowgraph.jade
+
+    include ./includes/foot.jade
+    p &nbsp;
+    p &nbsp;
+    p &nbsp;
 
   //-
     .container-fluid
       .row.side-body
-        .col-sm-6
+        .col-sm-12
           h3.fa.fa-2x.fa-puzzle-piece &nbsp;Draw your Flow as Snippets&nbsp;
 
       .row.side-body
-        ol.list-unstyled.col-sm-12.col-md-10.col-md-offset-0
+        ol.list-unstyled.col-sm-12
           li.col-sm-2.btn-radio
             strong.fa.fa-puzzle-piece.center-text &nbsp;Value Display
             a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="valuedisplay")

@@ -18,8 +18,6 @@ html(lang='en')
                   tr
                     th
                     th.plan-header.plan-header-free
-                        .header-plan-inner
-                          span.recommended-plan-ribbon RECOMMENDED
                         .pricing-plan-name FREE
                         .pricing-plan-price
                           sup #{quota.free.currency}
@@ -27,6 +25,10 @@ html(lang='en')
                           | #{p[0]}
                           span .#{p[1]}
                         .pricing-plan-period month
+                        .pricing-plan-inner
+                          br/ 
+                        .header-plan-inner
+                          span.recommended-plan-ribbon RECOMMENDED
                     th.plan-header.plan-header-blue
                         .pricing-plan-name BASIC
                         .pricing-plan-price
@@ -35,6 +37,8 @@ html(lang='en')
                           | #{p[0]}
                           span .#{p[1]}
                         .pricing-plan-period month
+                        .pricing-plan-inner
+                          br/ 
                     th.plan-header.plan-header-blue
                         .pricing-plan-name PREMIUM
                         .pricing-plan-price
@@ -43,43 +47,61 @@ html(lang='en')
                           | #{p[0]}
                           span .#{p[1]}
                         .pricing-plan-period month
+                        .pricing-plan-inner
+                          br/ 
                   tr
-                    td Objects to organize:
+                    td
+                      strong Objects 
+                      span to organize:
                     td #{quota.free.objects}
                     td #{quota.user.objects}
                     td #{quota.admin.objects}
                   tr
-                    td Flows to classify:
+                    td
+                      strong Flows 
+                      span to classify:
                     td #{quota.free.flows}
                     td #{quota.user.flows}
                     td #{quota.admin.flows}
                   tr
-                    td Rules for decision-tree:
+                    td
+                      strong Rules 
+                      span for decision-tree:
                     td #{quota.free.rules}
                     td #{quota.user.rules}
                     td #{quota.admin.rules}
                   tr
-                    td Snippets to graph your Data:
+                    td
+                      strong Snippets 
+                      span to graph your Data:
                     td #{quota.free.snippets}
                     td #{quota.user.snippets}
                     td #{quota.admin.snippets}
                   tr
-                    td Dashboards to monitor:
+                    td
+                      strong Dashboards 
+                      span to monitor:
                     td #{quota.free.dashboards}
                     td #{quota.user.dashboards}
                     td #{quota.admin.dashboards}
                   tr
-                    td API Tokens:
+                    td
+                      strong API Tokens
+                      span :
                     td #{quota.free.tokens}
                     td #{quota.user.tokens}
                     td #{quota.admin.tokens}
                   tr
-                    td API calls:
+                    td
+                      strong API calls
+                      span :
                     td #{quota.free.calls}
                     td #{quota.user.calls}
                     td #{quota.admin.calls}
                   tr
-                    td Online Documentation:
+                    td
+                      strong Online Documentation
+                      span :
                     td
                         span.icon-yes.glyphicon.glyphicon-ok-circle
                     td
@@ -87,7 +109,9 @@ html(lang='en')
                     td
                         span.icon-yes.glyphicon.glyphicon-ok-circle
                   tr
-                    td Dedicated Support:
+                    td
+                      strong Dedicated Support
+                      span :
                     td
                         span.icon-no.glyphicon.glyphicon-remove-circle
                     td

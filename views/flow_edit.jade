@@ -12,7 +12,7 @@ html(lang='en')
 
     .container-fluid
       .row.side-body
-        .col-sm-8
+        .col-sm-12
           h3 Update a Flow to your library
           form(action="/flows/#{flow.id}/edit", method="post")
             .form-group
@@ -68,6 +68,7 @@ html(lang='en')
                   label.control-label(for="OpermissionW") Write 
                     input#OpermissionW(name='owner_permission', type='radio', value='6', checked='checked') 
                   | &nbsp;&nbsp;
+
                   label.control-label(for="OpermissionR") Read 
                     input#OpermissionR(name='owner_permission', type='radio', value='4', disabled) 
                     
@@ -91,30 +92,23 @@ html(lang='en')
                   label.control-label(for="ApermissionW") Write 
                     input#ApermissionW(name='other_permission', type='radio', value='6', disabled) 
                   | &nbsp;&nbsp;
+
                   label.control-label(for="ApermissionR") Read 
                     input#ApermissionR(name='other_permission', type='radio', value='4', disabled) 
                   | &nbsp;&nbsp;
+
                   label.control-label(for="ApermissionN") None 
                     input#ApermissionN(name='other_permission', type='radio', value='0', checked='checked') 
 
             .form-group
-              a.btn.btn-default.btn-sm.m-t.pull-left(href="/flows/#{flow.id}")
-                span.fa.fa-random  Back to Flow
+              a.btn.btn-default.btn-sm(href='../#{flow.id}/graph')
+                span.fa.fa-area-chart  Graph
+              | &nbsp;
+
               button.btn.btn-primary.m-t.pull-right(type="submit", value="Update Flow")
                 span.fa.fa-pencil-square-o  Update Flow
               | &nbsp;
 
           p &nbsp;
-
-        .col-sm-6.col-md-4.col-md-offset-0
-          .sidebar-module-inset
-            p.text-center
-              a.btn.btn-primary.btn-sm(href='../#{flow.id}')
-                span.fa.fa-random  Flow
-              | &nbsp;
-              
-              a.btn.btn-primary.btn-sm(href='../#{flow.id}/graph')
-                span.fa.fa-area-chart  Graph
-              | &nbsp;
 
     include ./includes/foot.jade
