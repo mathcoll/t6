@@ -12,7 +12,7 @@ session				= require('express-session');
 FileStore			= require('session-file-store')(session);
 secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz"; // Keyboard-cat
 sessionDuration		= 3600*24*10; // 10 days cookie session
-store				= new FileStore({ttl: sessionDuration});
+store				= new FileStore({ttl: sessionDuration, path: '/sessions'}); // Force session folder as absolute path in settings
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
 
