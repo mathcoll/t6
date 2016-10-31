@@ -1,5 +1,7 @@
 a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards/#{dashboards[dashboard].id}')
-  div.col-sm-6.fa.fa-area-chart  #{dashboards[dashboard].name}
+  div.col-sm-6
+    h4.list-group-item-heading(style="margin:0; padding:0;")
+      span.fa.fa-area-chart  #{dashboards[dashboard].name}
   div.col-sm-2 #{dashboards[dashboard].snippets.length}
     span.xs-visible-inline  Snippet(s) linked
   div.col-sm-2

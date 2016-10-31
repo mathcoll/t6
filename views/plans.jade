@@ -13,10 +13,10 @@ html(lang='en')
       .row.side-body
         .table-responsive
           .membership-pricing-table.center-block
-            table.account-wall
+            table.account-wall.table.table-striped.table-hover
                 tbody
                   tr
-                    th
+                    th(style="background: #fff;")
                     th.plan-header.plan-header-free
                         .pricing-plan-name FREE
                         .pricing-plan-price
@@ -52,56 +52,53 @@ html(lang='en')
                   tr
                     td
                       strong Objects 
-                      span to organize:
+                      span to organize
                     td #{quota.free.objects}
                     td #{quota.user.objects}
                     td #{quota.admin.objects}
                   tr
                     td
                       strong Flows 
-                      span to classify:
+                      span to classify
                     td #{quota.free.flows}
                     td #{quota.user.flows}
                     td #{quota.admin.flows}
                   tr
                     td
                       strong Rules 
-                      span for decision-tree:
+                      span for decision-tree
                     td #{quota.free.rules}
                     td #{quota.user.rules}
                     td #{quota.admin.rules}
                   tr
                     td
                       strong Snippets 
-                      span to graph your Data:
+                      span to graph your Data
                     td #{quota.free.snippets}
                     td #{quota.user.snippets}
                     td #{quota.admin.snippets}
                   tr
                     td
                       strong Dashboards 
-                      span to monitor:
+                      span to monitor
                     td #{quota.free.dashboards}
                     td #{quota.user.dashboards}
                     td #{quota.admin.dashboards}
                   tr
                     td
                       strong API Tokens
-                      span :
                     td #{quota.free.tokens}
                     td #{quota.user.tokens}
                     td #{quota.admin.tokens}
                   tr
                     td
                       strong API calls
-                      span :
                     td #{quota.free.calls}
                     td #{quota.user.calls}
                     td #{quota.admin.calls}
                   tr
                     td
                       strong Online Documentation
-                      span :
                     td
                         span.icon-yes.glyphicon.glyphicon-ok-circle
                     td
@@ -111,7 +108,6 @@ html(lang='en')
                   tr
                     td
                       strong Dedicated Support
-                      span :
                     td
                         span.icon-no.glyphicon.glyphicon-remove-circle
                     td
@@ -122,14 +118,55 @@ html(lang='en')
                     td
                     td.action-header
                         a.btn.btn-info
+                          | Sign Up for Free
+                    td.action-header
+                        a.btn.btn-info(href="#", data-toggle="modal", data-target="#pay")
                           | Sign Up
                     td.action-header
-                        a.btn.btn-info
-                          | Sign Up
-                    td.action-header
-                        a.btn.btn-info
-                          | Sign Up
+                        a.btn.btn-info(href="mailto:contact@internetcollaboratif.info")
+                          | Get in Touch
 
-
+      #pay.modal.fade(tabindex='-1', role='dialog', aria-labelledby='pay', aria-hidden='true')
+        .modal-dialog
+          .modal-content
+            .panel.panel-default.credit-card-box
+              .panel-heading.display-table
+                .row.display-tr
+                  h4.panel-title.display-td Payment Details
+                  .display-td
+                    img.img-responsive.pull-right(src='/img/cc.png')
+              .panel-body
+                form#payment-form(role='form', method='post', action='')
+                  .row
+                    .col-xs-12
+                      .form-group
+                        label(for='Number') CARD NUMBER
+                        .input-group
+                          span.input-group-addon
+                            i.fa.fa-credit-card
+                          input.form-control(name='Number', placeholder='Card Number', autocomplete='cc-number', required='', autofocus='')
+                  .row
+                    .col-xs-7.col-md-7
+                      .form-group
+                        label(for='cExpiry')
+                          span.hidden-xs EXPIRATION
+                          span.visible-xs-inline EXP
+                          |  DATE
+                        input.form-control(name='Expiry', placeholder='MM/YY', autocomplete='cc-exp', required='')
+                    .col-xs-5.col-md-5.pull-right
+                      .form-group
+                        label(for='cCVC') CV CODE
+                        input.form-control(name='CVC', placeholder='CVC', autocomplete='cc-csc', required='')
+                  //.row
+                    //.col-xs-12
+                      //.form-group
+                        //label(for='couponCode') COUPON CODE
+                        //input.form-control(type='text', name='couponCode')
+                  .row
+                    .col-xs-12
+                      button.subscribe.btn.btn-success.btn-lg.btn-block(type='button') Start Subscription
+                  .row(style='display:none;')
+                    .col-xs-12
+                      p.payment-errors
   
     include ./includes/foot.jade

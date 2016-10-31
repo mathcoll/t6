@@ -17,10 +17,12 @@ html(lang='en')
           if (snippets.length)
             include ./includes/pagination.jade
             .hidden-xs.table-header
-              span.col-sm-2
+              span.col-sm-6
                 strong Icon/Name/Type
-              span.col-sm-10
-                strong Color/Flows/Id
+              span.col-sm-2
+                strong Color/Id
+              span.col-sm-2
+                strong Flows
 
             .list-group
             - for(snippet in snippets) {

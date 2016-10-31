@@ -658,20 +658,17 @@ a:focus {
     text-align: center;
     width: 15%;
     padding: 7px 10px;
-    background-color: #fafafa;
     font-size: 14px;
     -webkit-box-shadow: 0 1px 0 #fff inset;
     box-shadow: 0 1px 0 #fff inset
 }
 
 .membership-pricing-table table,.membership-pricing-table table td {
-    border: 1px solid #ebebeb
+    /*border: 1px solid #ebebeb*/
 }
 
 .membership-pricing-table table tr td:first-child {
     background-color: transparent;
-    text-align: right;
-    width: 24%
 }
 
 .membership-pricing-table table tr td:nth-child(5) {
