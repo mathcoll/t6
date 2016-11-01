@@ -90,6 +90,12 @@ html(lang='en')
                       img.img-responsive.img-thumbnail.img-radio(src='/img/snippet-clock.jpg', width='100', style='display:block;')
                       span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
                 
+                  li.col-sm-2.btn-radio
+                    strong.fa.fa-puzzle-piece.center-text &nbsp;Sparkline
+                    a(href="#", data-toggle="modal", data-target="#editSnippet", data-type="sparkline")
+                      img.img-responsive.img-thumbnail.img-radio(src='/img/snippet-sparkline.jpg', width='100', style='display:block;')
+                      span.btn.btn-primary.center-block.fa.fa-check &nbsp;Select
+                
               .form-group#specific
 
               .form-group
@@ -134,6 +140,11 @@ html(lang='en')
           "parameters":[]
         },
         "clock": {
+          "parameters":[
+            {"label":"Background Color", "id":"background", "type":"colorpicker", default:"#000", placeholder:"", isMandatory: false},
+          ]
+        },
+        "sparkline": {
           "parameters":[
             {"label":"Background Color", "id":"background", "type":"colorpicker", default:"#000", placeholder:"", isMandatory: false},
           ]
