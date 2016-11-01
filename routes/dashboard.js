@@ -44,13 +44,14 @@ router.get('/objects', Auth,  function(req, res) {
 	if ( o.length == 0 ) {
 		res.redirect('/objects/add');
 	} else {
+		var objects_length = (objects.chain().find(query).data()).length;
 		res.render('objects/objects', {
 			title : 'My Objects',
 			objects: o,
-			objects_length: (objects.chain().find(query).data()).length,
+			objects_length: objects_length,
 			new_object: {},
 			page: req.query.page,
-			pagenb: Math.ceil(((objects.chain().find(query).data()).length) / pagination),
+			pagenb: Math.ceil(objects_length/pagination),
 			types: objectTypes,
 			message: {},
 			user: req.session.user,
@@ -374,12 +375,13 @@ router.get('/flows', Auth, function(req, res) {
 	if ( f.length == 0 ) {
 		res.redirect('/flows/add');
 	} else {
+		var flows_length = (flows.chain().find(query).data()).length;
 		res.render('flows/flows', {
 			title : 'My Flows',
 			flows: f,
-			flows_length: (flows.chain().find(query).data()).length,
+			flows_length: flows_length,
 			page: req.query.page,
-			pagenb: Math.ceil(((flows.chain().find(query).data()).length) / pagination),
+			pagenb: Math.ceil(flows_length/pagination),
 			user: req.session.user,
 			currentUrl: req.path,
 			message: message,
@@ -729,6 +731,8 @@ router.get('/search', Auth, function(req, res) {
 		title : 'Search',
 		objects: [],
 		flows: [],
+		snippets: [],
+		dashboards: [],
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -744,6 +748,8 @@ router.post('/search', Auth, function(req, res) {
 			title : 'Search results',
 			objects: [],
 			flows: [],
+			snippets: [],
+			dashboards: [],
 			currentUrl: req.path,
 			user: req.session.user
 		});
@@ -856,12 +862,13 @@ router.get('/dashboards', Auth, function(req, res) {
 	if ( d.length == 0 ) {
 		res.redirect('/dashboards/add');
 	} else {
+		var dashboards_length = (dashboards.chain().find(query).data()).length;
 		res.render('dashboards/dashboards', {
 			title : 'My Dashboards',
 			dashboards: d,
-			dashboards_length: (dashboards.chain().find(query).data()).length,
+			dashboards_length: dashboards_length,
 			page: req.query.page,
-			pagenb: Math.ceil(((dashboards.chain().find(query).data()).length) / pagination),
+			pagenb: Math.ceil(dashboards_length/pagination),
 			user: req.session.user,
 			currentUrl: req.path,
 			message: message,
@@ -875,13 +882,14 @@ router.get('/dashboards/add', Auth, function(req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
 	var query = { 'user_id': req.session.user.id };
 	var d = dashboards.chain().find(query).sort(alphaSort).data();
+	var s = snippets.chain().find(query).sort(alphaSort).data();
 	res.render('dashboards/add', {
 		title : 'Add a Dashboard',
 		message: {},
 		dashboards: d,
 		new_dashboard: {snippets:[]},
 		user: req.session.user,
-		snippets: snippets.chain().find(query).sort(alphaSort).data(),
+		snippets: s,
 		nl2br: nl2br,
 		currentUrl: req.path,
 		striptags: striptags
@@ -928,6 +936,7 @@ router.post('/dashboards/add', Auth, function(req, res) {
 	req.query.page=req.query.page!==undefined?req.query.page:1;
 	var offset = (req.query.page -1) * pagination;
 	var d = dashboards.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	var s = snippets.chain().find(query).sort(alphaSort).data();
 	
 	if ( error ) {
 		res.render('dashboards/add', {
@@ -937,7 +946,7 @@ router.post('/dashboards/add', Auth, function(req, res) {
 			page: req.query.page,
 			pagenb: Math.ceil(((dashboards.chain().find(query).data()).length) / pagination),
 			user: req.session.user,
-			snippets: snippets.chain().find(query).sort(alphaSort).data(),
+			snippets: s,
 			message: message,
 			currentUrl: req.path,
 		});
@@ -1182,12 +1191,13 @@ router.get('/snippets', Auth, function(req, res) {
 	if ( s.length == 0 ) {
 		res.redirect('/snippets/add');
 	} else {
+		var snippets_length = (snippets.chain().find(query).data()).length;
 		res.render('snippets/snippets', {
 			title : 'My Snippets',
 			snippets: s,
-			snippets_length: (snippets.chain().find(query).data()).length,
+			snippets_length: snippets_length,
 			page: req.query.page,
-			pagenb: Math.ceil(((snippets.chain().find(query).data()).length) / pagination),
+			pagenb: Math.ceil(snippets_length/pagination),
 			user: req.session.user,
 			currentUrl: req.path,
 			message: message,
