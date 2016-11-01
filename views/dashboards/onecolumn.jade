@@ -7,8 +7,8 @@ html(lang='en')
 
     .container-fluid.starter-template
       .row
-        h2.fa.fa-2x.fa-random  #{dashboard.name}
-        p !{dashboard.description}
+        h2.fa.fa-2x.fa-random.editable-click#name(href='#', data-type='text', data-pk='1', data-url='./#{dashboard.id}/setName', data-title='Your dashboard name')  #{dashboard.name}
+        p.editable-click#description(href='#', data-type='textarea', data-pk='2', data-url='./#{dashboard.id}/setDescription', data-title='Your dashboard description') !{nl2br(dashboard.description)}
 
       .row
         ul.col-md-12.connectedSortable#sortable
@@ -21,3 +21,12 @@ html(lang='en')
         p &nbsp;
 
     include ../includes/foot.jade
+    
+    link(href='/css/bootstrap-editable/bootstrap-editable-1.5.0.css', rel='stylesheet')
+    script(src='/js/bootstrap-editable/bootstrap-editable-1.5.0.min.js')
+    script.
+      $.fn.editable.defaults.mode = 'inline';
+      $(document).ready(function() {
+        $('h2#name').editable();
+        $('p#description').editable();
+      });

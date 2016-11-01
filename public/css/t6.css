@@ -1115,8 +1115,7 @@ a:focus {
   }
 }
 
-
-/* Dragable UI*/
+/* Dragable UI */
 .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
     background: #fffa90 none repeat scroll 0 0;
     border: 1px solid #dad55e;
@@ -1125,3 +1124,14 @@ a:focus {
     line-height: 1.2em;
 }
 /* End Dragable UI */
+
+/* Inline Edit */
+.editable-click, a.editable-click, a.editable-click:hover {
+    border-bottom: 1px dashed #0088cc;
+    text-decoration: none;
+}
+.editable-click:hover {
+    background-color: #ffffc0;
+    cursor: text;
+}
+/* End Inline Edit */

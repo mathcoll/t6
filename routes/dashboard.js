@@ -955,6 +955,62 @@ router.post('/dashboards/add', Auth, function(req, res) {
 	}
 });
 
+router.post('/dashboards/(:dashboard_id)/setName', Auth, function(req, res) {
+	var dashboard_id = req.params.dashboard_id;
+	dashboards	= dbDashboards.getCollection('dashboards');
+	if ( dashboard_id !== undefined && req.body.name == "name" && req.body.value !== undefined ) {
+		var queryD = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : dashboard_id },
+			]
+		};
+		var upd_dashboard = (dashboards.chain().find(queryD).limit(1).data())[0];
+		upd_dashboard.name = req.body.value;
+
+		dashboards.update(upd_dashboard);
+		db.save();
+		res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: upd_dashboard.name });
+		
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			err: err
+		});
+	}
+});
+
+router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, res) {
+	var dashboard_id = req.params.dashboard_id;
+	dashboards	= dbDashboards.getCollection('dashboards');
+	if ( dashboard_id !== undefined && req.body.name == "description" && req.body.value !== undefined ) {
+		var queryD = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : dashboard_id },
+			]
+		};
+		var upd_dashboard = (dashboards.chain().find(queryD).limit(1).data())[0];
+		upd_dashboard.description = req.body.value;
+
+		dashboards.update(upd_dashboard);
+		db.save();
+		res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: upd_dashboard.description });
+		
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			err: err
+		});
+	}
+});
+
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
 	dashboards	= dbDashboards.getCollection('dashboards');
@@ -1012,6 +1068,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 				dashboard: json.dashboard,
 				snippetHtml: snippetHtml,
 				currentUrl: req.path,
+				nl2br: nl2br,
 				version: version,
 			});
 		} else {
