@@ -1,21 +1,34 @@
 a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].id}')
-  div.col-sm-4
+  div.col-sm-6
     h4.list-group-item-heading(style="margin:0; padding:0;")
       span.fa.fa-random
       | &nbsp;#{flows[flow].name}&nbsp;
 
   div.col-sm-2
-    span.label.label-warning.ellipsis(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
-
-  div.col-sm-4
-    - if (flows[flow].unit)
+    -if (flows[flow].unit)
       span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Unit') #{flows[flow].unit}
-      | &nbsp;
+    -else
+      span 
+    -end
 
   div.col-sm-2
-    - if (flows[flow].permission)
+    -if (flows[flow].permission)
       span.label.label-danger(data-toggle='tooltip' data-placement='top' title='Flow Permissions') #{flows[flow].permission}
-      | &nbsp;
+    -else
+      span 
+    -end
+
+  div.col-sm-2
+    span.fa.fa-clock-o  #{moment(flows[flow].meta.created).format('DD/MM/YYYY, HH:mm')}
+
+  div.col-sm-2
+    span.label.label-warning.ellipsis(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
+
+  div.col-sm-8
+
+
+  div.col-sm-2
+    span.fa.fa-clock-o  #{moment(flows[flow].meta.updated).format('DD/MM/YYYY, HH:mm')}
 
   div.col-sm-12
     div.fa.fa-chevron-right.pull-right 
@@ -23,10 +36,10 @@ a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].
 
   - if (flows[flow].objects.length)
     div.col-sm-12
-      ul
-      - for(object in flows[flow].objects) {
-        li.vcenter
-          span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
-            span.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
-          | &nbsp;
-      - }
+      ul.col-xs-1
+        - for(object in flows[flow].objects) {
+          li.ellipsis
+            span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
+              span.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
+            | &nbsp;
+        - }

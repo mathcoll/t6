@@ -542,7 +542,7 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			//json.user_id=		user_id; // Don't need to update
 			json.theme=			req.body.theme!==undefined?req.body.theme:null;
 			
-			//flows.update(json);
+			flows.update(json);
 			db.save();
 			
 			res.redirect('/flows/'+flow_id);

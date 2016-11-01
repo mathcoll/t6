@@ -2,12 +2,27 @@ a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards
   div.col-sm-6
     h4.list-group-item-heading(style="margin:0; padding:0;")
       span.fa.fa-area-chart  #{dashboards[dashboard].name}
+  div.col-sm-4
+  div.col-sm-2
+    span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.created).format('DD/MM/YYYY, HH:mm')}
+
+  div.col-sm-2
+   span.label.label-default.ellipsis(data-toggle='tooltip' data-placement='top' title='Dashboard Id')  #{dashboards[dashboard].id}
+
+  div.col-sm-4
+  
   div.col-sm-2 #{dashboards[dashboard].snippets.length}
     span.xs-visible-inline  Snippet(s) linked
+
   div.col-sm-2
     img.img.img-responsive(src='/img/layout_#{dashboards[dashboard].layout}.png', alt='#{dashboards[dashboard].layout}', width='30')
-  div.col-sm-12
+
+  div.col-sm-2
+    span.fa.fa-clock-o  <!--#{moment(dashboards[dashboard].meta.updated).format('DD/MM/YYYY, HH:mm')}-->
+
+  div.col-sm-2
     div.fa.fa-chevron-right.pull-right 
-  div.col-sm-12 #{dashboards[dashboard].description}
-  div.col-sm-12
-  div.col-sm-2.ellipsis.label.label-default #{dashboards[dashboard].id}
+
+  div.col-sm-8
+
+  div.col-sm-10 #{dashboards[dashboard].description}
