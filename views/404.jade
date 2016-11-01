@@ -11,7 +11,9 @@ html(lang='en')
             h3.center-text.capital.f1 Something went Wrong!
             h1#error.center-text 404
             p.center-text #{title}
-            p #{err.stack}
+            -if ( settings.env == 'development' )
+              p #{err.stack}
+            -end
             hr.featurette-divider
   
     include ./includes/foot.jade
