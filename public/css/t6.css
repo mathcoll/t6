@@ -1114,3 +1114,14 @@ a:focus {
     margin: 0;
   }
 }
+
+
+/* Dragable UI*/
+.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
+    background: #fffa90 none repeat scroll 0 0;
+    border: 1px solid #dad55e;
+    color: #777620;
+    height: 1.5em;
+    line-height: 1.2em;
+}
+/* End Dragable UI */

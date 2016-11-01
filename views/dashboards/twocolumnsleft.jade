@@ -12,12 +12,12 @@ html(lang='en')
 
       .row.col-md-12
         .col-xs-10.col-md-8
-          ul.list-unstyled
+          ul.list-unstyled.connectedSortable#sortable
             !{snippetHtml}
 
         .col-xs-2.col-md-4
           .sidebar-module-inset
-            ul.list-unstyled
-              p Right Sidebar Column
+            ul.list-unstyled.connectedSortable#sortable
+              li Right Sidebar Column
 
-    //include ../includes/foot.jade
+    include ../includes/foot.jade
