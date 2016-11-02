@@ -1,0 +1,102 @@
+- var rnd = Math.floor(Math.random()*1000)
+- if ( !graph_layout ) {
+  - graph_layout = "12"
+- }
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+  doctype html
+  html(lang='en')
+    include ../includes/head.jade
+- }
+
+    style.
+      body { margin: 0; }
+      h4#title#{rnd} { color: #{snippet.color}; margin:0; padding:0; }
+    link(href='/css/font-awesome/4.5.0/font-awesome.min.css', rel='stylesheet')
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+    body
+      //include ../includes/navbar-minimal.jade
+- }
+  
+    .row.simplerow.container-fluid.col-sm-12
+      .list-group
+        mixin row(flow_id, name, icon)
+          a.list-group-item.list-unstyled.container-fluid(class="col-sm-#{graph_layout}", id="body#{rnd}_#{flow_id}", href='/flows/#{flow_id}')
+            span.col-xs-12.col-sm-12
+              h4.list-group-item-heading(id="title#{rnd}_#{flow_id}")
+                span.icon.fa(id="icon#{rnd}_#{flow_id}", class="#{icon}")
+          
+            span.col-xs-8.col-sm-8
+              span &nbsp;
+          
+            span.col-xs-3.col-sm-3
+              span.col-xs-12.col-sm-12.label.label-default.value.ellipsis.pull-right(id="value#{rnd}_#{flow_id}", data-toggle='tooltip', data-placement='bottom', title='')
+
+            span.col-xs-1.col-sm-1.btn-group-vertical.pull-right(role="group")
+              div.fa.fa-chevron-right.pull-right 
+          
+            span.col-xs-12.col-sm-12
+              span(id="row#{rnd}_#{flow_id}") &nbsp;
+              
+            span.col-xs-12.col-sm-12
+              span.fa.fa-clock-o(id="lastDate#{rnd}_#{flow_id}") &nbsp;
+      
+        -for(i in snippet.flows) {
+          - var flow_id = (snippet.flows[i])
+          - var name = (snippet.flows[i]).name
+          - var icon = (snippet.flows[i]).icon
+          +row(flow_id, name, icon)
+        - }
+
+- if ( currentUrl.indexOf("snippets") > -1 ) {
+    script(src='/js/jquery-ui/jquery-ui-1.11.4.min.js')
+    script(type='text/javascript', src='/js/bootstrap.min.js')
+- }
+  script.
+    var data = new Array();
+
+    drawRow#{rnd} = function(data, container, flow_id, lastValue, lastDate, meta) {
+      $("#body#{rnd}_"+flow_id).show();
+      $("#title#{rnd}_"+flow_id+" span").html('&nbsp;'+meta.title);
+      $("#icon#{rnd}_"+flow_id).addClass('fa-random');
+      $("#value#{rnd}_"+flow_id).html(lastValue+meta.unit);
+      $("#value#{rnd}_"+flow_id).attr('title', lastValue+meta.unit);
+      $("#lastDate#{rnd}_"+flow_id).html('&nbsp;'+lastDate);
+      $('#refresh#{rnd}').prop("disabled", false);
+      $("#"+container).parent().remove();
+    }
+
+    getDataRow#{rnd} = function (base, flow_id, type, CType, callback, container) {
+      $('#refresh#{rnd}').prop("disabled", true);
+      var limit = 10;
+      var page = 1;
+      var sort = 'desc';
+      $("#"+container).prepend("<div class='fa fa-3x fa-spin fa-refresh center-block'></div>");
+      $.ajax({
+        url: base+flow_id,
+        type: type,
+        data: {limit: limit, page: page , sort: sort},
+        success: function(d) {
+          data[flow_id] = (d.data).map(function(i) {
+            return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)]
+          });
+          var lastValue = ((d.data)[0].attributes.value);
+          var lastDate = ((d.data)[0].attributes.timestamp);
+          callback(data[flow_id], container, flow_id, lastValue, new Date(lastDate), d.links);
+        },
+        error: function(d) {
+          //console.log('ERROR (d)'+base);
+          //console.log(d);
+          $("#"+container).html("<div class='alert alert-danger'>Error "+d.status+": "+d.statusText+"</div>");
+          $('#refresh#{rnd}').prop("disabled", false);
+          $("#body#{rnd}_"+flow_id).hide();
+        }
+      });
+    } // end getDataRow#{rnd}
+    
+  -for(i in snippet.flows) {
+    - var flow_id = (snippet.flows[i])
+    - var name = (snippet.flows[i]).name
+    - var icon = (snippet.flows[i]).icon
+    script.
+      getDataRow#{rnd}('/v#{version}/data/', '#{snippet.flows[i]}', 'GET', 'application/json', drawRow#{rnd}, 'row#{rnd}_#{snippet.flows[i]}');
+  - }
