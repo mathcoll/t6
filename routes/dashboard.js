@@ -965,13 +965,21 @@ router.post('/dashboards/(:dashboard_id)/setName', Auth, function(req, res) {
 				{ 'id' : dashboard_id },
 			]
 		};
-		var upd_dashboard = (dashboards.chain().find(queryD).limit(1).data())[0];
-		upd_dashboard.name = req.body.value;
-
-		dashboards.update(upd_dashboard);
-		db.save();
-		res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: upd_dashboard.name });
-		
+		var upd_dashboard = dashboards.findOne(queryD);
+		if ( upd_dashboard ) {
+			upd_dashboard.name = req.body.value;
+			dashboards.update(upd_dashboard);
+			db.save();
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: (upd_dashboard).name });
+		} else {
+			var err = new Error('Not Found');
+			err.status = 400;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Error on upd_dashboard',
+				user: req.session.user,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
@@ -993,13 +1001,21 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 				{ 'id' : dashboard_id },
 			]
 		};
-		var upd_dashboard = (dashboards.chain().find(queryD).limit(1).data())[0];
-		upd_dashboard.description = req.body.value;
-
-		dashboards.update(upd_dashboard);
-		db.save();
-		res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: upd_dashboard.description });
-		
+		var upd_dashboard = dashboards.findOne(queryD);
+		if ( upd_dashboard ) {
+			upd_dashboard.description = req.body.value;
+			dashboards.update(upd_dashboard);
+			db.save();
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: (upd_dashboard).description });
+		} else {
+			var err = new Error('Not Found');
+			err.status = 400;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Error on upd_dashboard',
+				user: req.session.user,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
