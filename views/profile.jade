@@ -252,7 +252,7 @@ html(lang='en')
                           else
                             li Bearer #{tokens[token].token}
                           if tokens[token].expiration
-                            div (Exp.: #{tokens[token].expiration})
+                            div (Exp.: #{moment( parseInt(tokens[token].expiration) ).format('DD/MM/YYYY, HH:mm')})
                             if tokens[token].permissions
                               div Permissions:
                             - for(p in tokens[token].permissions) {
