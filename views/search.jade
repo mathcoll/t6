@@ -4,7 +4,7 @@ html(lang='en')
   body
     include ./includes/navbar.jade
     
-    .container-fluid
+    .-o-container-fluid
       .row.side-body.hidden-xs
         .col-sm-12
         - if (q)
@@ -12,7 +12,7 @@ html(lang='en')
         - else
             h2.fa.fa-2x.fa-search  Search Results
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body
         div
           h3 Search Results
@@ -26,7 +26,7 @@ html(lang='en')
             li
               a(href="#dashboards") #{dashboards.length} Dashboard(s)
 
-    .container-fluid#objects
+    .-o-container-fluid#objects
       .row.side-body
         h3.fa-2x.fa.fa-cubes  #{objects.length} Object(s) found
       .side-body.hidden-xs.table-header
@@ -45,11 +45,11 @@ html(lang='en')
                   a(href="/objects/add") Object
                   | .
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body
         .col-sm-12 &nbsp;
 
-    .container-fluid#flows
+    .-o-container-fluid#flows
       .row.side-body
         h3.fa-2x.fa.fa-random  #{flows.length} Flow(s) found
       .side-body.hidden-xs.table-header
@@ -75,11 +75,11 @@ html(lang='en')
                   a(href="/flows/add") Flow
                   | .
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body
         .col-sm-12 &nbsp;
 
-    .container-fluid#snippets
+    .-o-container-fluid#snippets
       .row.side-body
         h3.fa-2x.fa.fa-puzzle-piece  #{snippets.length} Snippet(s) found
       .side-body.hidden-xs.table-header
@@ -101,11 +101,11 @@ html(lang='en')
                   a(href="/snippets") Snippet
                   | .
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body
         .col-sm-12 &nbsp;
 
-    .container-fluid#dashboards
+    .-o-container-fluid#dashboards
       .row.side-body
         h3.fa-2x.fa.fa-area-chart  #{dashboards.length} Dashboard(s) found
       .side-body.hidden-xs.table-header
@@ -129,7 +129,7 @@ html(lang='en')
                   a(href="/dashboards") Dashboards
                   | .
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body
         .col-sm-12 &nbsp;
 

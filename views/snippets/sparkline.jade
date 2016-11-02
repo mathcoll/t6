@@ -17,10 +17,10 @@
       //include ../includes/navbar-minimal.jade
 - }
   
-    .row.col-xs-12
+    .row
       .list-group
         mixin row(flow_id, name, icon)
-          a.list-group-item.list-unstyled.container-fluid(class="col-sm-#{graph_layout}", id="body#{rnd}_#{flow_id}")
+          a.list-group-item.list-unstyled.-o-container-fluid(class="col-sm-#{graph_layout}", id="body#{rnd}_#{flow_id}")
             div.col-xs-6.col-sm-6
               h4.list-group-item-heading(id="title#{rnd}_#{flow_id}")
                 span.icon.fa(id="icon#{rnd}_#{flow_id}", class="#{icon}")

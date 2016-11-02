@@ -27,7 +27,8 @@
   body
     //include ../includes/navbar-minimal.jade
 - }
-    li.list-unstyled.container-fluid(id="body#{rnd}", class="col-sm-#{graph_layout}")
+    li.list-unstyled.-o-container-fluid(id="body#{rnd}", style="width:100%;")
+      //, class="col-sm-#{graph_layout}"
       .text-center
         #snippetCaroussel
           .carousel-inner

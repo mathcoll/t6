@@ -1,25 +1,30 @@
-a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{snippets[snippet].id}', target='_blank')
-  div.col-sm-6
+.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{snippets[snippet].id}', target='_blank')
+  div.col-sm-8
     h4.list-group-item-heading(style="margin:0; padding:0;")
       span.fa(class="#{snippets[snippet].icon}")  #{snippets[snippet].name}
-      
-  div.col-sm-4
 
-  div.col-sm-2
-    span.fa.fa-clock-o  #{moment(snippets[snippet].meta.created).format('DD/MM/YYYY, HH:mm')}
-
+  div.col-sm-3
+    span &nbsp;
+  
   div.col-sm-2
     span.label.label-default.ellipsis(data-toggle='tooltip' data-placement='top' title='Snippet Id')  #{snippets[snippet].id}
 
-  div.col-sm-8
+  div.col-sm-1
+    span &nbsp;
 
-  div.col-sm-2
-    span.fa.fa-clock-o  <!--#{moment(snippets[snippet].meta.updated).format('DD/MM/YYYY, HH:mm')}-->
-
-  div.col-sm-6
+  div.col-sm-1
     img.img-responsive(src="/img/snippet-#{snippets[snippet].type}.jpg", width="70")
-  div.col-sm-2 #{snippets[snippet].color}
-  div.col-sm-2 #{snippets[snippet].flows.length} Flow(s) linked
 
   div.col-sm-2
-    div.fa.fa-external-link.pull-right 
+    span #{snippets[snippet].color}
+
+  div.col-sm-2
+    span #{snippets[snippet].flows.length} Flow(s) linked
+
+  div.col-sm-2
+    span.fa.fa-clock-o  #{moment(snippets[snippet].meta.created).format('DD/MM/YYYY, HH:mm')}
+    span.fa.fa-clock-o  #{moment(snippets[snippet].meta.updated).format('DD/MM/YYYY, HH:mm')}
+
+  div.col-sm-1.btn-group-vertical.pull-right(role="group")
+    a.btn.btn-warning.fa.fa-external-link(href='/snippets/#{snippets[snippet].id}', target='_blank')  Open
+    a.btn.btn-primary.fa.fa-pencil-square-o(href='/snippets/#{snippets[snippet].id}/edit')  Edit

@@ -4,7 +4,7 @@ html(lang='en')
   body
     include ./includes/navbar.jade
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body.hidden-xs
         .col-sm-12
           h2.fa.fa-2x.fa-user  Profile of #{user.firstName} #{user.lastName}
@@ -116,179 +116,179 @@ html(lang='en')
 
       .row.side-body
         .col-lg-8.col-sm-6
-          .panel.panel-default
-            .panel-body
-              h3#objects.list-group User Statistics
-                #accordion.panel-group(role='tablist', aria-multiselectable='true')
-                  .panel.panel-default
-                    #headingObjects.panel-heading(role='tab')
-                      h4.panel-title
-                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
-                          span.fa.fa-cubes
-                          |  #{objects} Objects
-                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
-                    #collapseObjects.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingObjects')
-                      .panel-body
-                        |  &ndash;
-                        small  Your library is containing #{objects}/#{quota.objects} 
-                          a(href='/objects') Objects
-                          | .
-                        div.progress
-                          - var percent = Math.round((objects*100/quota.objects)*100) /100
-                          - var style = "success"
-                          - if (percent > 60)
-                            - style = "warning"
-                          - end
-                          - if (percent > 85)
-                            - style = "danger"
-                          - end
-                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%")
+          //.panel.panel-default
+            //.panel-body
+          h3#objects.list-group User Statistics
+            #accordion.panel-group(role='tablist', aria-multiselectable='true')
+              .panel.panel-default
+                #headingObjects.panel-heading(role='tab')
+                  h4.panel-title
+                    a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+                      span.fa.fa-cubes
+                      |  #{objects} Objects
+                    a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+                #collapseObjects.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingObjects')
+                  .panel-body
+                    |  &ndash;
+                    small  Your library is containing #{objects}/#{quota.objects} 
+                      a(href='/objects') Objects
+                      | .
+                    div.progress
+                      - var percent = Math.round((objects*100/quota.objects)*100) /100
+                      - var style = "success"
+                      - if (percent > 60)
+                        - style = "warning"
+                      - end
+                      - if (percent > 85)
+                        - style = "danger"
+                      - end
+                      div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%")
 
-                    #headingFlows.panel-heading(role='tab')
-                      h4.panel-title
-                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
-                          span.fa.fa-random
-                          |  #{flows} Flows
-                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
-                    #collapseFlows.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFlows')
-                      .panel-body
-                        |  &ndash;
-                        small  Your library is containing #{flows}/#{quota.flows} 
-                          a(href='/flows') Flows
-                          | .
-                        div.progress
-                          - var percent = Math.round((flows*100/quota.flows)*100) /100
-                          - var style = "success"
-                          - if (percent > 60)
-                            - style = "warning"
-                          - end
-                          - if (percent > 85)
-                            - style = "danger"
-                          - end
-                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{flows}", aria-valuemin="0", aria-valuemax="#{quota.flows}", style="width: #{percent}%")
+                #headingFlows.panel-heading(role='tab')
+                  h4.panel-title
+                    a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+                      span.fa.fa-random
+                      |  #{flows} Flows
+                    a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+                #collapseFlows.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFlows')
+                  .panel-body
+                    |  &ndash;
+                    small  Your library is containing #{flows}/#{quota.flows} 
+                      a(href='/flows') Flows
+                      | .
+                    div.progress
+                      - var percent = Math.round((flows*100/quota.flows)*100) /100
+                      - var style = "success"
+                      - if (percent > 60)
+                        - style = "warning"
+                      - end
+                      - if (percent > 85)
+                        - style = "danger"
+                      - end
+                      div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{flows}", aria-valuemin="0", aria-valuemax="#{quota.flows}", style="width: #{percent}%")
 
-                    #headingSnippets.panel-heading(role='tab')
-                      h4.panel-title
-                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
-                          span.fa.fa-puzzle-piece
-                          |  #{snippets} Snippets
-                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
-                    #collapseSnippets.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingSnippets')
-                      .panel-body
-                        |  &ndash;
-                        small  Your library is containing #{snippets}/#{quota.snippets} 
-                          a(href='/snippets') Snippets
-                          | .
-                        div.progress
-                          - var percent = Math.round((snippets*100/quota.snippets)*100) /100
-                          - var style = "success"
-                          - if (percent > 60)
-                            - style = "warning"
-                          - end
-                          - if (percent > 85)
-                            - style = "danger"
-                          - end
-                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%")
+                #headingSnippets.panel-heading(role='tab')
+                  h4.panel-title
+                    a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
+                      span.fa.fa-puzzle-piece
+                      |  #{snippets} Snippets
+                    a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
+                #collapseSnippets.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingSnippets')
+                  .panel-body
+                    |  &ndash;
+                    small  Your library is containing #{snippets}/#{quota.snippets} 
+                      a(href='/snippets') Snippets
+                      | .
+                    div.progress
+                      - var percent = Math.round((snippets*100/quota.snippets)*100) /100
+                      - var style = "success"
+                      - if (percent > 60)
+                        - style = "warning"
+                      - end
+                      - if (percent > 85)
+                        - style = "danger"
+                      - end
+                      div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%")
  
-                    #headingDashboards.panel-heading(role='tab')
-                      h4.panel-title
-                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
-                          span.fa.fa-area-chart
-                          |  #{dashboards} Dashboards
-                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
-                    #collapseDashboards.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingDashboards')
-                      .panel-body
-                        |  &ndash;
-                        small  Your library is containing #{dashboards}/#{quota.dashboards} 
-                          a(href='/dashboards') Dashboards
-                          | .
-                        div.progress
-                          - var percent = Math.round((dashboards*100/quota.dashboards)*100) /100
-                          - var style = "success"
-                          - if (percent > 60)
-                            - style = "warning"
-                          - end
-                          - if (percent > 85)
-                            - style = "danger"
-                          - end
-                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%")
-                                            
-                    #headingRules.panel-heading(role='tab')
-                      h4.panel-title
-                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
-                          span.fa.fa-filter
-                          |  #{rules} Rules
-                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
-                    #collapseRules.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingRules')
-                      .panel-body
-                        |  &ndash;
-                        small  Your library is containing #{rules}/#{quota.rules} 
-                          a(href='/decision-rules') Rules
-                          | .
-                        div.progress
-                          - var percent = Math.round((rules*100/quota.rules)*100) /100
-                          - var style = "success"
-                          - if (percent > 60)
-                            - style = "warning"
-                          - end
-                          - if (percent > 85)
-                            - style = "danger"
-                          - end
-                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%")
+                #headingDashboards.panel-heading(role='tab')
+                  h4.panel-title
+                    a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
+                      span.fa.fa-area-chart
+                      |  #{dashboards} Dashboards
+                    a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
+                #collapseDashboards.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingDashboards')
+                  .panel-body
+                    |  &ndash;
+                    small  Your library is containing #{dashboards}/#{quota.dashboards} 
+                      a(href='/dashboards') Dashboards
+                      | .
+                    div.progress
+                      - var percent = Math.round((dashboards*100/quota.dashboards)*100) /100
+                      - var style = "success"
+                      - if (percent > 60)
+                        - style = "warning"
+                      - end
+                      - if (percent > 85)
+                        - style = "danger"
+                      - end
+                      div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%")
+                                        
+                #headingRules.panel-heading(role='tab')
+                  h4.panel-title
+                    a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                      span.fa.fa-filter
+                      |  #{rules} Rules
+                    a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                #collapseRules.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingRules')
+                  .panel-body
+                    |  &ndash;
+                    small  Your library is containing #{rules}/#{quota.rules} 
+                      a(href='/decision-rules') Rules
+                      | .
+                    div.progress
+                      - var percent = Math.round((rules*100/quota.rules)*100) /100
+                      - var style = "success"
+                      - if (percent > 60)
+                        - style = "warning"
+                      - end
+                      - if (percent > 85)
+                        - style = "danger"
+                      - end
+                      div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%")
 
-                    #headingKeys.panel-heading(role='tab')
-                      h4.panel-title
-                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
-                          span.fa.fa-flash
-                          |  #{tokens.length}  API Keys
-                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
-                    #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
-                      .panel-body
-                        small
-                          ul
-                            - for(token in tokens) {
-                              if (tokens[token].key && tokens[token].key)
-                                li K/S #{tokens[token].secret}/#{tokens[token].secret}
-                              else
-                                li Bearer #{tokens[token].token}
-                              if tokens[token].expiration
-                                div (Exp.: #{tokens[token].expiration})
-                                if tokens[token].permissions
-                                  div Permissions:
-                                - for(p in tokens[token].permissions) {
-                                  a(title='/flows/#{(tokens[token].permissions)[p].flow_id}') #{(tokens[token].permissions)[p].permission}, 
-                                - }
+                #headingKeys.panel-heading(role='tab')
+                  h4.panel-title
+                    a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                      span.fa.fa-flash
+                      |  #{tokens.length}  API Keys
+                    a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
+                  .panel-body
+                    small
+                      ul
+                        - for(token in tokens) {
+                          if (tokens[token].key && tokens[token].key)
+                            li K/S #{tokens[token].secret}/#{tokens[token].secret}
+                          else
+                            li Bearer #{tokens[token].token}
+                          if tokens[token].expiration
+                            div (Exp.: #{tokens[token].expiration})
+                            if tokens[token].permissions
+                              div Permissions:
+                            - for(p in tokens[token].permissions) {
+                              a(title='/flows/#{(tokens[token].permissions)[p].flow_id}') #{(tokens[token].permissions)[p].permission}, 
                             - }
-                      
-                    #headingCalls.panel-heading(role='tab')
-                      h4.panel-title
-                        a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
-                          span.fa.fa-flash
-                          |  #{calls} API calls
-                        a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
-                    #collapseCalls.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingCalls')
-                      .panel-body
-                        |  &ndash;
-                        small  You have consumed #{calls}/#{quota.calls} API calls in the past 7 days.
-                        div.progress
-                          - var percent = Math.round((calls*100/quota.calls)*100) /100
-                          - var style = "success"
-                          - if (percent > 60)
-                            - style = "warning"
-                          - end
-                          - if (percent > 85)
-                            - style = "danger"
-                          - end
-                          div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
+                        - }
+                  
+                #headingCalls.panel-heading(role='tab')
+                  h4.panel-title
+                    a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+                      span.fa.fa-flash
+                      |  #{calls} API calls
+                    a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+                #collapseCalls.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingCalls')
+                  .panel-body
+                    |  &ndash;
+                    small  You have consumed #{calls}/#{quota.calls} API calls in the past 7 days.
+                    div.progress
+                      - var percent = Math.round((calls*100/quota.calls)*100) /100
+                      - var style = "success"
+                      - if (percent > 60)
+                        - style = "warning"
+                      - end
+                      - if (percent > 85)
+                        - style = "danger"
+                      - end
+                      div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
 
         .col-lg-4.col-sm-12
-          .panel.panel-default
-            .panel-body
-              h3#objects.list-group Last Data inserted
-              include ./includes/data_item_list.jade
-              include ./includes/data_item_list.jade
-              include ./includes/data_item_list.jade
-              include ./includes/data_item_list.jade
-              include ./includes/data_item_list.jade
+          //.panel.panel-default
+            //.panel-body
+          h3#objects.list-group Last Data inserted
+          include ./includes/data_item_list.jade
+          include ./includes/data_item_list.jade
+          include ./includes/data_item_list.jade
+          include ./includes/data_item_list.jade
+          include ./includes/data_item_list.jade
 
     include ./includes/foot.jade

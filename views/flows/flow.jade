@@ -4,7 +4,7 @@ html(lang='en')
   body
     include ../includes/navbar.jade
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body.hidden-xs
         .col-sm-12
           h2.fa.fa-2x.fa-random &nbsp;Flow&nbsp;
@@ -55,10 +55,9 @@ html(lang='en')
                 a.btn.btn-danger.btn-sm(href='/flows/#{flow.id}/remove', onclick="if(confirm('Are you sure to remove #{flow.name} ?')) {return true;}; return false;")
                   span.fa.fa-trash-o   Remove
 
-    .container-fluid
+    .-o-container-fluid
       .row.side-body
         .col-sm-12
-          h3.fa.fa-line-chart Data graph
         include ../snippets/flowgraph.jade
 
     include ../includes/foot.jade
@@ -67,7 +66,7 @@ html(lang='en')
     p &nbsp;
 
   //-
-    .container-fluid
+    .-o-container-fluid
       .row.side-body
         .col-sm-12
           h3.fa.fa-2x.fa-puzzle-piece &nbsp;Draw your Flow as Snippets&nbsp;

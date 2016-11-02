@@ -1,0 +1,179 @@
+doctype html
+html(lang='en')
+  include ./includes/head.jade
+  body
+    include ./includes/navbar.jade
+
+    .container
+      .starter-template
+        h2 YoctoPuce
+      .col-sm-12
+        #contentYVOC.list-group
+
+    .container
+      .starter-template
+        h2 Plants
+      .col-sm-12
+        #contentPlants.list-group
+
+    .container
+      .starter-template
+        h2 Weather
+      .col-sm-12
+        #contentWeather.list-group
+
+    .container
+      .starter-template
+        h2 Server GuruPlug
+      .col-sm-12
+        #contentServer.list-group
+          .list-group-item(href='#')
+            h4.list-group-item-heading
+              span.glyphicon.glyphicon-hdd
+              | &nbsp;Memory usage
+            #memory
+          .list-group-item(href='#')
+            h4.list-group-item-heading
+              span.glyphicon.glyphicon-scale
+              | &nbsp;CPU usage
+            #cpu
+
+    include ./includes/foot.jade
+
+    script(type='text/javascript', src='/js/chartjs/chart.min.js')
+    script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.pie.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.orderBars.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.time.min.js')
+    script(type='text/javascript', src='/js/flot/date.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.spline.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.stack.js')
+    script(type='text/javascript', src='/js/flot/curvedLines.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
+    script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
+    script.
+      getData = function(flow_id, id, sort, icon) {
+        $.ajax({
+          url: '/v#{version}/data/'+flow_id+'?limit=1&sort='+sort,
+          type: 'GET',
+          success: function(data) { 
+            data.icon = data.links.icon!==undefined?data.links.icon:icon;
+            data.name = data.links.title!==undefined?data.links.title:'Flow '+flow_id;
+            var date = new Date(data.data[0].attributes.timestamp);
+            lastValue = date.getDate()+'/'+(date.getMonth()+1)+'/'+date.getFullYear()+' '+date.getHours()+':'+date.getMinutes();
+            data.description = 'Last updated at '+lastValue;
+            data.unit = data.links.unit!==undefined?data.links.unit:'';
+            data.value = data.data[0].attributes.value;
+            if( data.value ) { $(id).append(displayModule(data)); }
+            else { $(id).append(displayError(flow_id, data.status)); }
+          },
+          error: function(data) {
+            $(id).append(displayError(flow_id, data.status));
+          }
+        });
+      } // end getData
+      
+      getRealTimeData = function(url, type, CType, id) {
+        $.ajax({
+          url: url,
+          type: type,
+          success: function(data) { 
+            if(CType == 'text/html') { $(id).append(data); }
+            else if(CType == 'application/json' && data.value ) { $(id).append(displayModule(data)); }
+            else { console.log('ERROR (a) '+data); $(id).append(displayError(url, data.status)); }
+          },
+          error: function(data) {
+            $(id).append(displayError(url, data.status));
+          }
+        });
+      } // end getRealTimeData
+
+      getDataSparkline = function (base, flow_id, type, CType, callback, container, limit, page, sort) {
+        $.ajax({
+          url: base+flow_id,
+          type: type,
+          data: {limit: limit, page: page , sort: sort},
+          success: function(d) {
+            data[flow_id] = (d.data).map(function(i) {
+              return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)]
+            });
+            var lastValue = ((d.data)[0].attributes.timestamp);
+            var title = d.links.title;
+            var unit = d.links.unit;
+            callback(data[flow_id], container, flow_id, lastValue, title, unit);
+          },
+          error: function(d) {
+            //console.log('ERROR (d)'+base);
+            //console.log(d);
+          }
+        });
+      } // end getDataSparkline
+
+      displayError = function(url, status=null) {
+        if ( status == 404 ) { message = "Ooooops, Not Found."; }
+        else if ( status == 429 ) { message = "Ooooops, Too Many Requests."; }
+        else if ( status == 500 ) { message = "Ooooops, Internal Server Error."; }
+        else { message = "Ooooops, Something went wrong."; }
+        
+        return "<div class='alert alert-danger alert-dismissible fade in' role='alert'>"
+        + "<button class='close' aria-label='Close' data-dismiss='alert' type='button'><span aria-hidden='true'>&times;</span></button>"
+        + "<h4 class='list-group-item-heading'> <span aria-hidden='true' class='glyphicon glyphicon-alert'></span> "+message+"</h4>"
+        + "Trying to load data from module \""+url+"\".</div>";
+      } // end displayError
+ 
+      displayModule = function(data) {
+        return "<a name='#' class='list-group-item'><h4 class='list-group-item-heading'> "
+        + "<span class='glyphicon "+data.icon+"' aria-hidden='true'></span> "+data.name+"</h4>"
+        + data.description+"<span class='badge'>"+data.value+""+data.unit+"</span></a>";
+      } // end displayModule
+
+      $( window ).load(function() {
+        getRealTimeData('/modules/16/temp.json', 'GET', 'application/json', '#contentWeather');
+        getRealTimeData('/modules/16/humi.json', 'GET', 'application/json', '#contentWeather');
+        getRealTimeData('/modules/17/temp.json', 'GET', 'application/json', '#contentWeather');
+        getRealTimeData('/modules/yoctopuce/cov-5', 'GET', 'text/html', '#contentYVOC');
+        getData('1', '#contentServer', 'desc', 'glyphicon-ban-circle');
+        getData('2', '#contentServer', 'desc', 'glyphicon-cloud');
+        getData('4', '#contentServer', 'desc', 'glyphicon-hdd');
+        getData('24', '#contentServer', 'desc', 'glyphicon-scale');
+        
+        //getRealTimeData('/modules/17/plan.json', 'GET', 'application/json', '#contentPlants');
+      });
+      
+      var d = new Array();
+      var data = new Array();
+      var flows = new Array(
+        // flow_id, callback, container, limit, page , sort
+        ["4", function(){$("#memory").sparkline(data[4], {
+          type: 'line',
+          tooltipSuffix: '%',
+          lineWidth: 3,
+          width: '100%',
+          height: '100',
+          spotRadius: 2,
+          valueSpots: {'0:': '#fff'},
+          highlightLineColor: false,
+        })}, "graph5", 30, 1, 'desc'],
+      
+        ["24", function(){$("#cpu").sparkline(data[24], {
+          type: 'line',
+          tooltipSuffix: '%',
+          lineWidth: 3,
+          width: '100%',
+          height: '100',
+          spotRadius: 2,
+          valueSpots: {'0:': '#fff'},
+          highlightLineColor: false,
+        })}, "graph6", 30, 1, 'desc']
+      );
+        
+      flows.map(function(f) {
+        var flow_id = f[0];
+        var callback = f[1];
+        var container = f[2];
+        var limit = f[3];
+        var page = f[4];
+        var sort = f[5];
+        return getDataSparkline('/v#{version}/data/', flow_id, 'GET', 'application/json', callback, container, limit, page , sort);
+      });
