@@ -1004,13 +1004,23 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 		var upd_dashboard = dashboards.findOne(queryD);
 		if ( upd_dashboard ) {
 			upd_dashboard.description = req.body.value;
-			dashboards.update(upd_dashboard);
-			db.save();
-			res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: (upd_dashboard).description });
+			if ( dashboards.update(upd_dashboard) ) {
+				db.save();
+				res.status(200).send({ 'code': 200, message: 'Successfully updated', dashboard: (upd_dashboard).description });
+			} else {
+				var err = new Error('1 Internal Server Error');
+				err.status = 500;
+				res.status(err.status || 500).send(err.status, {
+					title : 'Error on update/save',
+					user: req.session.user,
+					err: err
+				});
+			}
 		} else {
-			var err = new Error('Not Found');
-			err.status = 400;
-			res.status(err.status || 500).render(err.status, {
+			var err = new Error('2 Internal Server Error');
+			console.log(err);
+			err.status = 500;
+			res.status(err.status || 500).send(err.status, {
 				title : 'Error on upd_dashboard',
 				user: req.session.user,
 				err: err
