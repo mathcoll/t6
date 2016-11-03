@@ -80,7 +80,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 				// Check if Token is allowed (write permission) to modify the Flow
 				// Token can be from the Owner, the Group, or Other
 				var permissions = (req.bearer.permissions);
-				var p = permissions.filter(function(p) { 
+				var p = permissions.filter(function(p) { // TODO /var/log/node/t6-error.log => TypeError: permissions.filter is not a function
 				    return p.flow_id == flow_id; 
 				})[0];
 				var OwnerPerm = ((p.permission).split(''))[0];
