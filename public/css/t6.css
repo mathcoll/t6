@@ -1115,6 +1115,11 @@ a:focus {
   }
 }
 
+.no-padding {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
 /* Dragable UI */
 .ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight {
     background: #fffa90 none repeat scroll 0 0;

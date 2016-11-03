@@ -11,7 +11,7 @@ html(lang='en')
         p.editable-click#description(href='#', data-type='textarea', data-pk='2', data-url='./#{dashboard.id}/setDescription', data-title='Your dashboard description') !{nl2br(dashboard.description)}
 
       .row
-        ul.col-md-12.connectedSortable#sortable
+        ul.col-md-12.no-padding.connectedSortable#sortable
           !{snippetHtml}
 
       .row.col-sm-12
