@@ -618,15 +618,15 @@ a:focus {
 
 /* Plans */
 
-.membership-pricing-table table .icon-no,.membership-pricing-table table .icon-yes {
+.icon-no,.icon-yes {
     font-size: 22px
 }
 
-.membership-pricing-table table .icon-no {
+.icon-no {
     color: #a93717
 }
 
-.membership-pricing-table table .icon-yes {
+.icon-yes {
     color: #209e61
 }
 

@@ -1260,6 +1260,16 @@ router.get('/plans', function(req, res) {
 	});
 });
 
+router.get('/status', function(req, res) {
+	qt		= dbQuota.getCollection('quota');
+	res.render('status', {
+		title : 't6 API Status',
+		currentUrl: req.path,
+		quota: quota,
+		user: req.session.user
+	});
+});
+
 router.get('/snippets', Auth, function(req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
 	qt		= dbQuota.getCollection('quota');
