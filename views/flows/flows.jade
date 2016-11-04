@@ -18,9 +18,9 @@ html(lang='en')
             include ../includes/pagination.jade
             include ./item_header.jade
             .list-group
-            - for(flow in flows) {
-              include ./item_list.jade
-            - }
+              - for(flow in flows) {
+                include ./item_list.jade
+              - }
             include ../includes/pagination.jade
           else
             p &nbsp;

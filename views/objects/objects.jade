@@ -16,9 +16,9 @@ html(lang='en')
             include ../includes/pagination.jade
             include ./item_header.jade            
             .list-group
-            - for(object in objects) {
-              include ./item_list.jade
-            - }
+              - for(object in objects) {
+                include ./item_list.jade
+              - }
             include ../includes/pagination.jade
           else
             p &nbsp;

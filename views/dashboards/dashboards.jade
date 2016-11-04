@@ -19,9 +19,9 @@ html(lang='en')
               include ../includes/pagination.jade
               include ./item_header.jade
               .list-group
-              - for(dashboard in dashboards) {
-                include ./item_list.jade
-              - }
+                - for(dashboard in dashboards) {
+                  include ./item_list.jade
+                - }
               include ../includes/pagination.jade
           else
             p &nbsp;

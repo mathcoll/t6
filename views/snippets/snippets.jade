@@ -18,12 +18,12 @@ html(lang='en')
             include ../includes/pagination.jade
             include ./item_header.jade
             .list-group
-            - for(snippet in snippets) {
-              - if ( !snippets[snippet].icon )
-                - snippets[snippet].icon = "fa fa-puzzle-piece"
-              - end
-              include ./item_list.jade
-            - }
+              - for(snippet in snippets) {
+                - if ( !snippets[snippet].icon )
+                  - snippets[snippet].icon = "fa fa-puzzle-piece"
+                - end
+                include ./item_list.jade
+              - }
             include ../includes/pagination.jade
           else
             p &nbsp;

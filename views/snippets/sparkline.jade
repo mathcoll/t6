@@ -21,24 +21,18 @@
       .list-group
         mixin row(flow_id, name, icon)
           a.list-group-item.list-unstyled.container(class="col-sm-#{graph_layout}", id="body#{rnd}_#{flow_id}")
-            div.col-xs-6.col-sm-6
+            div.col-xs-12.col-sm-12
               h4.list-group-item-heading(id="title#{rnd}_#{flow_id}")
                 span.icon.fa(id="icon#{rnd}_#{flow_id}", class="#{icon}")
-          
-            div.col-xs-4.col-sm-4
-              span &nbsp;
-          
-            div.col-xs-1.col-sm-2
-              span.label.label-default.value(id="value#{rnd}_#{flow_id}")
-          
-            div.col-sm-12
-              span &nbsp;
-            
-            div.col-xs-12.col-sm-4
+                      
+            div.col-xs-11.col-sm-4
               span(id="spark#{rnd}_#{flow_id}") &nbsp;
               
-            div.col-xs-12.col-sm-4
+            div.col-xs-12.col-sm-6
               span.fa.fa-clock-o(id="lastDate#{rnd}_#{flow_id}") &nbsp;
+          
+            div.col-xs-1.col-sm-2
+              span.label.label-default.value.pull-right(id="value#{rnd}_#{flow_id}")
       
         -for(i in snippet.flows) {
           - var flow_id = (snippet.flows[i])
