@@ -58,7 +58,7 @@ nav.navbar.navbar-default.navbar-fixed-top
               span.caret
             ul.dropdown-menu
               li
-                a(href='/profile')
+                a(href='/account/profile')
                   i.fa.fa-user 
                   |  My Profile 
               li.divider(role='separator')
@@ -73,14 +73,14 @@ nav.navbar.navbar-default.navbar-fixed-top
                   span.fa.fa-github  GitHub
               li.divider(role='separator')
               li
-                a(href='/logout')
+                a(href='/account/logout')
                   span.fa.fa-sign-out  Logout
         - else
               li
-                a(href='/login')
+                a(href='/account/login')
                   span.fa.fa-user &nbsp;Sign In
               li
-                a(href='/register')
+                a(href='/account/register')
                   span.fa.fa-plus-sign &nbsp;Sign Up
               li
                 a(href='/v#{version}/status')

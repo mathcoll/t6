@@ -665,7 +665,7 @@ router.post('/flows/add', Auth, function(req, res) {
 	}
 });
 
-router.get('/profile', Auth, function(req, res) {
+router.get('/account/profile', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	flows	= db.getCollection('flows');
 	tokens	= db.getCollection('tokens');
@@ -1109,7 +1109,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	}
 });
 
-router.get('/register', function(req, res) {
+router.get('/account/register', function(req, res) {
 	res.render('register', {
 		title : 'Register',
 		currentUrl: req.path,
@@ -1117,7 +1117,7 @@ router.get('/register', function(req, res) {
 	});
 });
 
-router.post('/register', function(req, res) {
+router.post('/account/register', function(req, res) {
 	users	= db.getCollection('users');
 	var my_id = uuid.v4();
 
@@ -1199,7 +1199,7 @@ router.get('/mail/welcome', function(req, res) {
 	});
 });
 
-router.get('/login', function(req, res) {
+router.get('/account/login', function(req, res) {
 	res.render('login', {
 		title : 'Log-in',
 		currentUrl: req.path,
@@ -1215,14 +1215,14 @@ router.get('/unauthorized', function(req, res) {
 	});
 });
 
-router.get('/logout', function(req, res) {
+router.get('/account/logout', function(req, res) {
 	req.session.destroy();
 	req.session = undefined;
 	delete req.session;
 	res.redirect('back');
 });
 
-router.post('/login', Auth, function(req, res) {
+router.post('/account/login', Auth, function(req, res) {
 	if ( !req.session.user ) {
 		console.log("Error! invalid credentials, user not found");
 		res.render('login', {

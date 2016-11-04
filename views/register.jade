@@ -12,7 +12,7 @@ html(lang='en')
           .account-wall
             img.profile-img(src='/img/defaultuser.png', alt='')
             
-            form.form-signin(method="post", action="/register")
+            form.form-signin(method="post", action="/account/register")
               if (message && message.type && message.value)
                 div.alert(class='alert-#{message.type}', role='alert') #{message.value}
 
@@ -27,7 +27,7 @@ html(lang='en')
               a.need-help(href='#') Need help? 
             
               span.clearfix
-            a.text-center.new-account(href='/login') Sign-in
+            a.text-center.new-account(href='/account/login') Sign-in
 
     .container &nbsp;
     .container &nbsp;

@@ -31,24 +31,24 @@
       .side-menu-container
         ul.nav.navbar-nav
           - if (user)
-            li
+            li(class=(currentUrl.indexOf("/objects")>-1)?'active':undefined)
               a(href='/objects')
                 span.fa.fa-cubes.pull-right
                 |  My Objects
-            li
+            li(class=(currentUrl.indexOf("/flows")>-1)?'active':undefined)
               a(href='/flows')
                 span.fa.fa-random.pull-right
                 |  My Flows
-            li
+            li(class=(currentUrl.indexOf("/snippets")>-1)?'active':undefined)
               a(href='/snippets')
                 span.fa.fa-puzzle-piece.pull-right
                 |  My Snippets
-            li
+            li(class=(currentUrl.indexOf("/dashboards")>-1)?'active':undefined)
               a(href='/dashboards')
                 span.fa.fa-area-chart.pull-right
                 |  My Dashboards
 
-            li#dropdown.panel.panel-default
+            li#dropdown.panel.panel-default(class=(currentUrl.indexOf("/account")>-1)?'active':undefined)
               a(data-toggle='collapse', href='#dropdown-account')
                 span.fa.fa-users.caret.pull-right
                 img.img-responsive.img-circle.pull-left(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=30&d=mm&r=g', width='30', align='left')
@@ -60,16 +60,16 @@
               #dropdown-account.panel-collapse.collapse
                 .panel-body
                   ul.nav.navbar-nav
-                    li
-                      a(href='/profile')
+                    li(class=(currentUrl.indexOf("/account/profile")>-1)?'active':undefined)
+                      a(href='/account/profile')
                         span.fa.fa-user.pull-right
                         |  Profile
-                    li
+                    li(class=(currentUrl.indexOf("/decision-rules")>-1)?'active':undefined)
                       a(href='/decision-rules')
                         span.fa.fa-filter.pull-right
                         |  Decision Rules
-                    li
-                      a(href='/v#{version}/status')
+                    li(class=(currentUrl.indexOf("/status")>-1)?'active':undefined)
+                      a(href='/status')
                         span.fa.fa-heart-o.pull-right
                         |  API Status
                     li
@@ -78,20 +78,20 @@
                         |  GitHub
                     li.divider(role='separator')
                     li
-                      a(href='/logout')
+                      a(href='/account/logout')
                         span.fa.fa-sign-out.pull-right
                         |  Logout
           - else
-            li
-              a(href='/login')
+            li(class=(currentUrl.indexOf("/account/login")>-1)?'active':undefined)
+              a(href='/account/login')
                 span.fa.fa-user.pull-right 
                 |  Sign In
-            li
-              a(href='/register')
+            li(class=(currentUrl.indexOf("/account/register")>-1)?'active':undefined)
+              a(href='/account/register')
                 span.fa.fa-user-plus.pull-right
                 |  Sign Up
-            li
-              a(href='/v#{version}/status')
+            li(class=(currentUrl.indexOf("/status")>-1)?'active':undefined)
+              a(href='/status')
                 span.fa.fa-heart-o.pull-right
                 |  API Status
             li
