@@ -811,7 +811,7 @@ a:focus {
 .side-menu .navbar-nav .active a {
   background-color: transparent;
   margin-right: -1px;
-  border-right: 5px solid #e7e7e7;
+  border-right: 5px solid #337ab7;
 }
 .side-menu .navbar-nav li {
   display: block;

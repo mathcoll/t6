@@ -15,7 +15,6 @@ html(lang='en')
     .-o-container-fluid
       .row.side-body
         div
-          h3 Search Results
           ul
             li
               a(href="#objects") #{objects.length} Object(s)
@@ -29,106 +28,70 @@ html(lang='en')
     .-o-container-fluid#objects
       .row.side-body
         h3.fa-2x.fa.fa-cubes  #{objects.length} Object(s) found
-      .side-body.hidden-xs.table-header
-        include ./objects/item_header.jade
         
-      .row.side-body
-        .list-group
-        - if (objects.length)
-          - for(object in objects) {
-            include ./objects/item_list.jade
-          - }
-        - else
-            .list-group-item
-              .alert.alert-danger.alert-dismissible(role='alert')
-                p No Result in Objects, perhaps you would like to create an 
-                  a(href="/objects/add") Object
-                  | .
-
-    .-o-container-fluid
-      .row.side-body
-        .col-sm-12 &nbsp;
-
+        include ./objects/item_header.jade
+        .list-group.col-xs-12
+          - if (objects.length)
+            - for(object in objects) {
+              include ./objects/item_list.jade
+            - }
+          - else
+            .alert.alert-danger.alert-dismissible(role='alert')
+              p No Result in Objects, perhaps you would like to create an 
+                a(href="/objects/add") Object
+                | .
+          
     .-o-container-fluid#flows
       .row.side-body
-        h3.fa-2x.fa.fa-random  #{flows.length} Flow(s) found
-      .side-body.hidden-xs.table-header
-        span.col-sm-4
-          strong Name
-        span.col-sm-2
-          strong ID
-        span.col-sm-4
-          strong Unit
-        span.col-sm-2
-          strong Permissions
-    
-      .row.side-body
-        .list-group
-        - if (flows.length)
-          - for(flow in flows) {
-            include ./flows/item_list.jade
-          - }
-        - else
-            .list-group-item
-              .alert.alert-danger.alert-dismissible(role='alert')
-                p No Result in Flows, perhaps you would like to create a 
-                  a(href="/flows/add") Flow
-                  | .
-
-    .-o-container-fluid
-      .row.side-body
         .col-sm-12 &nbsp;
+        h3.fa-2x.fa.fa-random  #{flows.length} Flows(s) found
 
+        include ./flows/item_header.jade
+        .list-group.col-xs-12
+          - if (flows.length)
+            - for(flow in flows) {
+              include ./flows/item_list.jade
+            - }
+          - else
+            .alert.alert-danger.alert-dismissible(role='alert')
+              p No Result in Flows, perhaps you would like to create a 
+                a(href="/flows/add") Flow
+                | .
+          
     .-o-container-fluid#snippets
       .row.side-body
-        h3.fa-2x.fa.fa-puzzle-piece  #{snippets.length} Snippet(s) found
-      .side-body.hidden-xs.table-header
-        span.col-sm-2
-          strong Icon/Name/Type
-        span.col-sm-10
-          strong Color/Flows/Id
-    
-      .row.side-body
-        .list-group
-        - if (snippets.length)
-          - for(snippet in snippets) {
-            include ./snippets/item_list.jade
-          - }
-        - else
-            .list-group-item
-              .alert.alert-danger.alert-dismissible(role='alert')
-                p No Result in Snippets, perhaps you would like to create a 
-                  a(href="/snippets") Snippet
-                  | .
-
-    .-o-container-fluid
-      .row.side-body
         .col-sm-12 &nbsp;
+        h3.fa-2x.fa.fa-puzzle-piece  #{snippets.length} Snippets(s) found
 
+        include ./snippets/item_header.jade
+        .list-group.col-xs-12
+          - if (snippets.length)
+            - for(snippet in snippets) {
+              include ./snippets/item_list.jade
+            - }
+          - else
+            .alert.alert-danger.alert-dismissible(role='alert')
+              p No Result in Snippets, perhaps you would like to create a 
+                a(href="/snippets") Snippet
+                | .
+          
     .-o-container-fluid#dashboards
       .row.side-body
+        .col-sm-12 &nbsp;
         h3.fa-2x.fa.fa-area-chart  #{dashboards.length} Dashboard(s) found
-      .side-body.hidden-xs.table-header
-        span.col-sm-8
-          strong Name/Description/Id
-        span.col-sm-2
-          strong Snippets
-        span.col-sm-2
-          strong Layout
-    
-      .row.side-body
-        .list-group
-        - if (dashboards.length)
-          - for(dashboard in dashboards) {
-            include ./dashboards/item_list.jade
-          - }
-        - else
-            .list-group-item
-              .alert.alert-danger.alert-dismissible(role='alert')
-                p No Result in Dashboards, perhaps you would like to create a 
-                  a(href="/dashboards") Dashboards
-                  | .
-
+        
+        include ./dashboards/item_header.jade
+        .list-group.col-xs-12
+          - if (dashboards.length)
+            - for(dashboard in dashboards) {
+              include ./dashboards/item_list.jade
+            - }
+          - else
+            .alert.alert-danger.alert-dismissible(role='alert')
+              p No Result in Dashboards, perhaps you would like to create a 
+                a(href="/dashboards") Dashboards
+                | .
+          
     .-o-container-fluid
       .row.side-body
         .col-sm-12 &nbsp;
