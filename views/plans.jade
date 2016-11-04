@@ -9,7 +9,7 @@ html(lang='en')
         .col-sm-12
           h2.fa.fa-2x.fa-money &nbsp;t6 Plans
           
-    .-o-container-fluid
+    .col-sm-12
       .row.side-body
         .table-responsive
           .membership-pricing-table.center-block
@@ -49,6 +49,12 @@ html(lang='en')
                         .pricing-plan-period month
                         .pricing-plan-inner
                           br/ 
+                  tr
+                    td
+                      strong Description
+                    td Free version allows you to try the platform and Api.
+                    td Your project is getting wingspan, take advantage on the Basic version. 
+                    td For really big project, or to setup a custom platform, contact us and explain your needs.
                   tr
                     td
                       strong Objects 
@@ -126,47 +132,8 @@ html(lang='en')
                         a.btn.btn-info(href="mailto:contact@internetcollaboratif.info")
                           | Get in Touch
 
-      #pay.modal.fade(tabindex='-1', role='dialog', aria-labelledby='pay', aria-hidden='true')
-        .modal-dialog
-          .modal-content
-            .panel.panel-default.credit-card-box
-              .panel-heading.display-table
-                .row.display-tr
-                  h4.panel-title.display-td Payment Details
-                  .display-td
-                    img.img-responsive.pull-right(src='/img/cc.png')
-              .panel-body
-                form#payment-form(role='form', method='post', action='')
-                  .row
-                    .col-xs-12
-                      .form-group
-                        label(for='Number') CARD NUMBER
-                        .input-group
-                          span.input-group-addon
-                            i.fa.fa-credit-card
-                          input.form-control(name='Number', placeholder='Card Number', autocomplete='cc-number', required='', autofocus='')
-                  .row
-                    .col-xs-7.col-md-7
-                      .form-group
-                        label(for='cExpiry')
-                          span.hidden-xs EXPIRATION
-                          span.visible-xs-inline EXP
-                          |  DATE
-                        input.form-control(name='Expiry', placeholder='MM/YY', autocomplete='cc-exp', required='')
-                    .col-xs-5.col-md-5.pull-right
-                      .form-group
-                        label(for='cCVC') CV CODE
-                        input.form-control(name='CVC', placeholder='CVC', autocomplete='cc-csc', required='')
-                  //.row
-                    //.col-xs-12
-                      //.form-group
-                        //label(for='couponCode') COUPON CODE
-                        //input.form-control(type='text', name='couponCode')
-                  .row
-                    .col-xs-12
-                      button.subscribe.btn.btn-success.btn-lg.btn-block(type='button') Start Subscription
-                  .row(style='display:none;')
-                    .col-xs-12
-                      p.payment-errors
-  
+        p &nbsp;
+        p &nbsp;
+        p &nbsp;
+
     include ./includes/foot.jade
