@@ -5,8 +5,8 @@ html(lang='en')
     include ../includes/navbar.jade
 
     .-o-container-fluid
-      .row.side-body.hidden-xs
-        .col-sm-12
+      .row.side-body
+        .col-sm-12.hidden-xs
           h2.fa.fa-2x.fa-random &nbsp;Add a Flow to your library
    
         -if (message && message.type == 'danger' && message.value)
