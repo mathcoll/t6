@@ -414,6 +414,7 @@ a:focus {
 .table-header {
 	padding: 8px;
 	line-height: 1.4;
+	color:#337ab7;
 }
 /* End Ellipsis */
 
@@ -816,8 +817,8 @@ a:focus {
 .side-menu .navbar-nav a {
     border-right: 4px solid transparent;
 }
-.navbar-nav > li > a {border-bottom: 4px solid transparent;}
-.nav > li > a:focus, .nav > li > a:hover {border-bottom: 5px solid #337ab7;}
+.navbar-fixed-top .navbar-nav > li > a {border-bottom: 4px solid transparent;}
+.navbar-fixed-top .navbar-nav > li > a:hover {border-bottom: 5px solid #337ab7;}
 .side-menu .navbar-nav li {
   display: block;
   width: 100%;
