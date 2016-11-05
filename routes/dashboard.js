@@ -1232,9 +1232,9 @@ router.post('/account/login', Auth, function(req, res) {
 		});
 	} else {
 		//console.log(req.session.user);
-		if ( req.url == "/login" ) {
+		if ( req.url == "/account/login" ) {
 		//res.redirect('/dashboards');
-			res.redirect('/profile');
+			res.redirect('/account/profile');
 		} else {
 			res.redirect('back');
 		}

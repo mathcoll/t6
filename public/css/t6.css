@@ -813,6 +813,9 @@ a:focus {
   margin-right: -1px;
   border-right: 5px solid #337ab7;
 }
+.side-menu .navbar-nav a {
+    border-right: 4px solid transparent;
+}
 .side-menu .navbar-nav li {
   display: block;
   width: 100%;
