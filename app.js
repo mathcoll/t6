@@ -70,7 +70,7 @@ app.disable('x-powered-by');
 
 var staticOptions = {
     etag: true,
-    maxAge: 86400000, //oneDay
+    maxAge: 864000000, //10 Days
 };
 
 app.set('views', path.join(__dirname, '/views'));
