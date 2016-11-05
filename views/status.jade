@@ -7,7 +7,7 @@ html(lang='en')
     .container-fluid
       .row.side-body.hidden-xs
         .col-sm-12
-          h2.fa.fa-2x.fa-money &nbsp;t6 API Status
+          h2.fa.fa-2x.fa-heart-o &nbsp;t6 API Status
           
     .side-body
       .row.membership-pricing-table.table
@@ -24,9 +24,9 @@ html(lang='en')
         success: function(status) {
           //console.log(status);
           if ( status.status == 'running' ) {
-            $('#status').append('<a class="list-group-item clearfix active"><div class="col-sm-8">Service Status:</div><div class="col-sm-4 icon-yes fa-2x fa fa-check-circle-o"><b> '+status.status+'</b></div></a>');
+            $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Service Status:</div><div class="col-sm-4 icon-yes fa-2x fa fa-check-circle-o"><b> '+status.status+'</b></div></a>');
           } else {
-            $('#status').append('<a class="list-group-item clearfix active"><div class="col-sm-8">Service Status:</div><div class="col-sm-4 icon-no fa fa-2x fa-times-circle-o"><b> '+status.status+'</b></div></a>');
+            $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Service Status:</div><div class="col-sm-4 icon-no fa fa-2x fa-times-circle-o"><b> '+status.status+'</b></div></a>');
           }
           $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Service Start Date:</div><div class="col-sm-4"><b>'+status.started_at+'</b></div></a>');
           $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Service '+status.appName+' version:</div><div class="col-sm-4"><b>'+status.version+'</b></div></a>');
