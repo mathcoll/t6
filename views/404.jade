@@ -4,15 +4,16 @@ html(lang='en')
   body
     include ./includes/navbar.jade
 
-    .-o-container-fluid
+    .container-fluid
       .row.side-body
-        .row.row1
-          .col-md-12
+        .col-sm-12
+          .account-wall
             h3.center-text.capital.f1 Something went Wrong!
-            h1#error.center-text 404
-            p.center-text #{title}
+            h1#error.center-text #{err.status}
+              span.center-text.small #{title}
+              span.pull-left.fa.fa-5x.fa-code(style='margin:0 20px;') &nbsp;
             -if ( settings.env == 'development' )
-              p #{err.stack}
+              div.clearfix #{err.stack}
             -end
             hr.featurette-divider
   

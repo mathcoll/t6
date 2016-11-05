@@ -104,6 +104,7 @@ app.use(function(req, res, next) {
 	res.status(err.status || 500).render(err.status, {
 		title : 'Not Found',
 		user: req.session.user,
+		currentUrl: req.path,
 		err: app.get('env')==='development'?err:null
 	});
 	//next(err);

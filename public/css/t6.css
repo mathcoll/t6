@@ -816,6 +816,8 @@ a:focus {
 .side-menu .navbar-nav a {
     border-right: 4px solid transparent;
 }
+.navbar-nav > li > a {border-bottom: 4px solid transparent;}
+.nav > li > a:focus, .nav > li > a:hover {border-bottom: 5px solid #337ab7;}
 .side-menu .navbar-nav li {
   display: block;
   width: 100%;
