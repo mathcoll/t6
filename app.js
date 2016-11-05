@@ -48,7 +48,7 @@ var flows			= require('./routes/flows');
 var units			= require('./routes/units');
 var datatypes		= require('./routes/datatypes');
 var modules			= require('./routes/modules');
-var dashboard		= require('./routes/dashboard');
+var www				= require('./routes/www');
 var app				= express();
 
 /* Logging */
@@ -85,7 +85,7 @@ app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
 app.use('/modules', modules);
-app.use('/', dashboard);
+app.use('/', www);
 
 app.use(function(req, res, next) {
 	res.setHeader('X-Powered-By', appName+'@'+version);
