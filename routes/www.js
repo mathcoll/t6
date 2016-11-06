@@ -151,6 +151,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/public', function(req, res) {
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
