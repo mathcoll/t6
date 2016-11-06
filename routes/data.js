@@ -9,6 +9,7 @@ var flows;
 
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
+	var output = req.query.output!==undefined?req.query.output:'json';
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({'id': 56, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
@@ -74,7 +75,9 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					data[0].theme = flow.theme;
 					data[0].order = req.query.order!==undefined?req.query.order:'asc';
 					
-					res.status(200).send(new DataSerializer(data[0]).serialize());
+					if (output == 'json') {
+						res.status(200).send(new DataSerializer(data[0]).serialize());
+					} else if(output == 'svg') {}
 				});
 			} else if ( db_type == 'sqlite3' ) {
 				/* sqlite3 database */
@@ -122,7 +125,95 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						data.theme = flow.theme;
 						data.order = req.query.order!==undefined?req.query.order:'asc';
 						
-						res.status(200).send(new DataSerializer(data).serialize());
+						if (output == 'json') {
+							res.status(200).send(new DataSerializer(data).serialize());
+						} else if(output == 'svg') {
+							var D3Node = require('d3-node');
+							var d3 = require('d3');
+							data.reverse();
+							var svgStyles = '.text {color: #fff;} .bar { fill: steelblue; } .bar:hover { fill: brown; } .axis {font: 10px sans-serif;} .axis path, .axis line { fill: none; shape-rendering: crispedges; stroke: #000000; }';
+							var d3n = new D3Node({svgStyles:svgStyles});
+							
+							var chartWidth = 800, chartHeight = 400;
+							var margin = {top: 10, right: 10, bottom: 10, left: 100},
+							    width = chartWidth - margin.left - margin.right,
+							    height = chartHeight - margin.top - margin.bottom;
+
+							var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+							var y = d3.scale.linear().range([height, 0]);
+							var xAxis = d3.svg.axis()
+							    .scale(x)
+							    .orient("bottom")
+							    .ticks(data.limit)
+							    //.tickFormat(d3.time.format("%d/%m/%Y %H:%M"));
+								.tickFormat(d3.time.format("%H:%M"));
+
+							var yAxis = d3.svg.axis()
+							    .scale(y)
+							    .orient("left")
+							    .ticks(10);
+							var svg = d3n.createSVG()
+							    .attr("width", chartWidth)
+							    .attr("height", chartHeight)
+							    .append("g")
+							    .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+							
+							data.forEach(function(d) {
+								x.domain(data.map(function (d) {
+									return new Date(d.timestamp);
+								}));
+								y.domain([0, d3.max(data, function (d) {
+									return d.value;
+								})]);
+								
+								svg.append("g")
+								    .attr("class", "x axis")
+								    .attr("transform", "translate(0," + (height-margin.top-margin.bottom) + ")")
+								    .call(xAxis)
+								    .selectAll("text")
+								    .style("text-anchor", "middle")
+								    .attr("x", function(d, i) { return ((i * ((width-margin.left-margin.right) / data.length))+(x.rangeBand()/2)); })
+								    .attr("y", "20")
+								    ;
+	
+								svg.append("g")
+								    .attr("class", "y axis")
+								    .attr("transform", "rotate(0)")
+								    .call(yAxis)
+								    .append("text")
+								    .attr("y", "")
+								    .attr("dy", "")
+								    .style("text-anchor", "middle")
+								    .text(data.unit)
+								    ;
+								
+								svg.selectAll("bar")
+								    .data(data)
+								    .enter().append("rect")
+									    .attr("class", "bar")
+									    .attr("x", function(d) { return x(new Date(d.timestamp)); })
+									    .attr("y", function(d) { return y(d.value); })
+									    .attr("width", x.rangeBand())
+									    .attr("height", function(d) { return (height-margin.top-margin.bottom) - y(d.value); })
+									    ;
+								
+								svg.selectAll("bar")
+							    	.data(data)
+								    .enter().append("text")
+								    	.attr("class", "text")
+									    .text(function(d, i) { return (d.value); })
+									    .attr("x", function(d, i) { return ((i * (width / data.length))+(x.rangeBand()/2)); })
+									    .attr("y", function(d, i) { return y(d.value)-margin.top+30; })
+									    .attr("dx", "0em")
+									    .attr("dy", "0em")
+									    .attr("fill", "white")
+									    .style("text-anchor", "middle")
+									    ;
+										
+								res.setHeader('Content-Type', 'image/svg+xml');
+								res.status(200).send( d3n.svgString() );
+							});
+						}
 					} else {
 						res.status(404).send(new ErrorSerializer({'id': 598, 'code': 404, 'message': 'Not Found'}).serialize());
 					}
