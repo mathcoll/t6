@@ -32,7 +32,7 @@
         ul.nav.navbar-nav
           - if (user)
             li#dropdown.panel.panel-default(class=(currentUrl.indexOf("/account")>-1)?'active':undefined)
-              a(data-toggle='collapse', href='#dropdown-account')
+              a(data-toggle='collapse', href='#dropdown-account', style='padding: 5px 20px 5px 10px !important;')
                 span.fa.fa-users.caret.pull-right
                 img.img-responsive.img-circle.pull-left(src='http://www.gravatar.com/avatar/#{user.mail_hash}?s=30&d=mm&r=g', width='30', align='left')
                 | #{user.firstName} #{user.lastName}
