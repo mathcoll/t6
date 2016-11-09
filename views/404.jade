@@ -12,8 +12,10 @@ html(lang='en')
             h1#error.center-text #{err.status}
               span.center-text.small #{title}
               span.pull-left.fa.fa-5x.fa-code(style='margin:0 20px;') &nbsp;
-            -if ( settings.env == 'development' )
+            -if ( settings.env == 'development' && err.stack )
               div.clearfix #{err.stack}
+            -else
+              div.clearfix &nbsp;
             -end
             hr.featurette-divider
   

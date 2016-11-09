@@ -105,7 +105,7 @@ app.use(function(req, res, next) {
 		title : 'Not Found',
 		user: req.session.user,
 		currentUrl: req.path,
-		err: app.get('env')==='development'?err:null
+		err: app.get('env')==='development'?err:{status: err.status, stack: null}
 	});
 	//next(err);
 });
