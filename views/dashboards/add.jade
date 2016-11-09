@@ -46,11 +46,11 @@ html(lang='en')
                   span.mandatory *
                 span.input-group
                   span.input-group-addon
-                    span.glyphicon.glyphicon-bookmark
+                    span.fa.fa-table
                   select.form-control(type="text", name="layout", placeholder="Dashboard Layout", id="layout")
-                    option(value="onecolumn", selected=(new_dashboard.layout=='onecolumn' ? "selected" : undefined)) onecolumn
-                    option(value="twocolumnsright", selected=(new_dashboard.layout=='twocolumnsright' ? "selected" : undefined)) twocolumnsright
-                    option(value="twocolumnsleft", selected=(new_dashboard.layout=='twocolumnsleft' ? "selected" : undefined)) twocolumnsleft
+                    option(value="onecolumn", selected=(new_dashboard.layout=='onecolumn' ? "selected" : undefined)) One Column Layout
+                    option(value="twocolumnsright", selected=(new_dashboard.layout=='twocolumnsright' ? "selected" : undefined)) 2 Columns Layout (right sidebar)
+                    option(value="twocolumnsleft", selected=(new_dashboard.layout=='twocolumnsleft' ? "selected" : undefined)) 2 Columns Layout (left sidebar)
 
               .form-group
                 button.btn.btn-primary.m-t.pull-right

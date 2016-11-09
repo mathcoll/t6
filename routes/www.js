@@ -1040,6 +1040,7 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
+	var layout = req.query.layout;
 	dashboards	= dbDashboards.getCollection('dashboards');
 	if ( dashboard_id !== undefined ) {
 		var queryD = {
@@ -1052,6 +1053,19 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 			dashboard: dashboards.findOne(queryD)
 		};
 		if ( json.dashboard ) {
+			if ( (layout != json.dashboard.layout) && ( layout === 'onecolumn' || layout === 'twocolumnsright' || layout === 'twocolumnsleft') ) { //TODO: Add better sanity-check here !!!!
+				/* Update layout if necessary */
+				json.dashboard.layout = layout;
+				if ( dashboards.update(json.dashboard) ) {
+					db.save();
+					req.session.message = {type: 'success', value: 'Successfully switched layout'};
+				} else {
+					req.session.message = {type: 'danger', value: 'Error on update/save'};
+				}
+			} else if ( layout !== undefined ) {
+				req.session.message = {type: 'danger', value: 'Error please check your data'};
+			}
+			
 			//var s = (json.eqJoin(snippets.chain(), 'user_id', 'id').data())[0];
 			// TODO, but let's do it simple for now:
 			var snippetHtml = '';
@@ -1085,10 +1099,10 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 					});
 				} // Snippet not Found
 			};
+			// TODO Add more secure way to check layout value
+			var layout = json.dashboard.layout!==undefined?json.dashboard.layout:'onecolumn';
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
-			var layout = json.dashboard.layout!==undefined?json.dashboard.layout:'onecolumn';
-			// TODO Add more secure ay to check layout value
 			res.render('dashboards/'+layout, {
 				title : 'Dashboard',
 				user: req.session.user,
@@ -1097,6 +1111,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 				currentUrl: req.path,
 				nl2br: nl2br,
 				version: version,
+				message: message
 			});
 		} else {
 			var err = new Error('Not Found');

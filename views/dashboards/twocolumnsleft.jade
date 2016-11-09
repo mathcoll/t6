@@ -7,7 +7,24 @@ html(lang='en')
 
     .-o-container-fluid.starter-template
       .row.col-md-12
+        - if (message && message.type && message.value)
+          div.alert.alert-dismissible(class='alert-#{message.type}', role='alert') #{message.value}
+            button.close(type='button', data-dismiss='alert', aria-label='Close')
+              span(aria-hidden='true') &times;
+        - end
         h2.fa.fa-2x.fa-random.editable-click#name(href='#', data-type='text', data-pk='1', data-url='./#{dashboard.id}/setName', data-title='Your dashboard name')  #{dashboard.name}
+        span.editable.pull-right(style="margin-top: 20px;")
+          .dropdown
+            button#dropdownLayout.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='true')
+              i.fa.fa-table Layouts switch
+              span.caret
+            ul.dropdown-menu.dropdown-menu-right(aria-labelledby='dropdownLayout')
+              li
+                a(href='./#{dashboard.id}?layout=onecolumn') One Column Layout
+              li
+                a(href='./#{dashboard.id}?layout=twocolumnsright') 2 Columns Layout (left sidebar)
+              li
+                a(href='./#{dashboard.id}?layout=twocolumnsleft') 2 Columns Layout (right sidebar)
         p.editable-click#description(href='#', data-type='textarea', data-pk='2', data-url='./#{dashboard.id}/setDescription', data-title='Your dashboard description') !{nl2br(dashboard.description)}
 
       .row.col-md-12
