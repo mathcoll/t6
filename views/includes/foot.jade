@@ -53,23 +53,23 @@ footer.footer.navbar-fixed-bottom
     span &nbsp;&ndash;&nbsp;
     a(href='/plans') Plans & Prices
 
-script(src='/js/jquery-ui/jquery-ui-1.11.4.min.js')
-script( src='/js/bootstrap.min.js')
-
-//- IE10 viewport hack for Surface/desktop Windows 8 bug
-script(type='text/javascript', src='/js/ie10-viewport-bug-workaround.min.js')
+script(src='/js/sortable/sortable.min-1.4.2.js')
+script(src='/js/bootstrap.min.js')
 script(type='text/javascript').
   $(function () {
-    $('#sortable, .sortable').sortable({
-      axis: "xy",
-      cursor: "move",
-      opacity: 0.5,
-      connectWith: "ul.connectedSortable",
-      placeholder: "ui-state-highlight"
-    }).disableSelection();
-    
+    var container = $('#sortable, .sortable');
+    if (container.length) {
+      var sort = Sortable.create(container, {
+        animation: 150,
+        handle: ".handle",
+        //draggable: ".ui-sortable-handle",
+        group: "ul.connectedSortable",
+        onUpdate: function (evt) {
+           var item = evt.item;
+        }
+      });
+    }
     $('[data-toggle="tooltip"]').tooltip();
-
     $('.navbar-toggle').click(function () { $('.navbar-nav form.header-search input[name="q"]').attr('style', 'width:100%;'); $('.navbar-nav:first-child').attr('style', 'padding-top:50px;'); $('.navbar-nav').toggleClass('slide-in'); $('.side-body').toggleClass('body-slide-in'); $('#search').removeClass('in').addClass('collapse').slideUp(300); });
     $('#search-trigger').click(function () { $('.navbar-nav').removeClass('slide-in'); $('.side-body').removeClass('body-slide-in'); });
   });

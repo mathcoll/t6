@@ -32,6 +32,15 @@ script(src='/js/bootstrap-slider/bootstrap-slider-7.1.1.min.js')
 script(src='/js/selectize.js/selectize-0.12.1.min.js')
 script(src='/js/query-builder/query-builder-2.3.3.min.js')
 script(type='text/javascript').
+  var container = $('#sortable');
+  if (container.length) {
+    var sort = Sortable.create(container, {
+      animation: 150,
+      onUpdate: function (evt) {
+         var item = evt.item;
+      }
+    });
+  }
   var filters = [{
     id: 'mqtt_topic',
     label: 'MQTT Topic',
