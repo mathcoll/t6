@@ -460,6 +460,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
 				user: req.session.user,
+				currentUrl:	req.path,
 				err: err
 			});
 		}
@@ -535,7 +536,7 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		}
 		//console.log(json);
 		if ( json ) {
-			json.id=			flow_id;
+			json.id=			""+flow_id;
 			json.data_type=		req.body.datatype!==undefined?req.body.datatype:null;
 			json.name=			req.body.name!==undefined?req.body.name:null;
 			json.permission=	owner_permission+group_permission+other_permission;
@@ -612,7 +613,7 @@ router.post('/flows/add', Auth, function(req, res) {
 	if ( typeof linked_objects !== 'object' ) linked_objects = new Array(linked_objects);
 	
 	var new_flow = {
-		id:				flow_id,
+		id:				""+flow_id,
 		data_type:		req.body.datatype!==undefined?req.body.datatype:null,
 		name:			req.body.name!==undefined?req.body.name:null,
 		permission:		owner_permission+group_permission+other_permission,
