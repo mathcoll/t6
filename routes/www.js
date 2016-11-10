@@ -114,6 +114,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -192,6 +193,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
@@ -224,6 +226,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
@@ -263,6 +266,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -272,6 +276,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
@@ -298,6 +303,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
@@ -508,6 +514,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -556,6 +563,7 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -565,6 +573,7 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
@@ -979,6 +988,7 @@ router.post('/dashboards/(:dashboard_id)/setName', Auth, function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Error on upd_dashboard',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -988,6 +998,7 @@ router.post('/dashboards/(:dashboard_id)/setName', Auth, function(req, res) {
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
@@ -1015,6 +1026,7 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 				res.status(err.status || 500).send(err.status, {
 					title : 'Error on update/save',
 					user: req.session.user,
+					currentUrl: req.path,
 					err: err
 				});
 			}
@@ -1025,6 +1037,7 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 			res.status(err.status || 500).send(err.status, {
 				title : 'Error on upd_dashboard',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -1034,6 +1047,7 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
@@ -1120,6 +1134,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -1174,6 +1189,7 @@ router.post('/account/register', function(req, res) {
 					res.status(err.status || 500).render(err.status, {
 						title : 'Internal Error'+app.get('env'),
 						user: req.session.user,
+						currentUrl: req.path,
 						err: err
 					});
 			    } else {
@@ -1446,6 +1462,7 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 			res.status(err.status || 500).render(err.status, {
 				title : 'Not Found',
 				user: req.session.user,
+				currentUrl: req.path,
 				err: err
 			});
 		}
@@ -1456,6 +1473,7 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 		res.status(err.status || 500).render(err.status, {
 			title : 'Not Found',
 			user: req.session.user,
+			currentUrl: req.path,
 			err: err
 		});
 	}
