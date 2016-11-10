@@ -15,6 +15,7 @@ sessionDuration		= 3600*24*10; // 10 days cookie session
 store				= new FileStore({ttl: sessionDuration, path: '/sessions'}); // Force session folder as absolute path in settings
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
+staticOptions		= { etag: true, maxAge: 864000000 };//10 Days
 
 /* Http settings */
 timeoutDuration		= '10s';
@@ -37,26 +38,9 @@ db_type				= 'sqlite3'; // sqlite3 | influxdb
 SQLite3Settings = path.join(__dirname, 'data.db');
 influxSettings = { host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' }
 
-/* Database settings -  */
-db	= new loki(path.join(__dirname, 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-db.loadDatabase(path.join(__dirname, 'db-'+os.hostname()+'.json'));
-
-dbRules	= new loki(path.join(__dirname, 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbRules.loadDatabase(path.join(__dirname, 'rules-'+os.hostname()+'.json'));
-
 /* Quota settings */
 quota = {
 	'admin': {price: '99.99', currency:'€', objects: 999, flows: 999, rules: 999, tokens: 999, snippets: 999, dashboards: 999, calls: 9999999},
 	'user': {price: '2.99', currency:'€', objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 9, calls: 99},
 	'free': {price: '0.00', currency:'€', objects: 1, flows: 1, rules: 1, tokens: 1, snippets: 2, dashboards: 1, calls: 49}
 };
-dbQuota	= new loki(path.join(__dirname, 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbQuota.loadDatabase(path.join(__dirname, 'quota-'+os.hostname()+'.json'));
-
-/* Snippets settings */
-dbSnippets	= new loki(path.join(__dirname, 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbSnippets.loadDatabase(path.join(__dirname, 'snippets-'+os.hostname()+'.json'));
-
-/* Dashboards settings */
-dbDashboards	= new loki(path.join(__dirname, 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbDashboards.loadDatabase(path.join(__dirname, 'dashboards-'+os.hostname()+'.json'));

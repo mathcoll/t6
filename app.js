@@ -36,6 +36,34 @@ if ( db_type === "sqlite3" ) {
 	dbInfluxDB	= influx(influxSettings);
 }
 
+/* Main Database settings */
+db	= new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+db.loadDatabase(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'));
+
+/* Rules settings */
+dbRules	= new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbRules.loadDatabase(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'));
+
+/* Quota settings */
+dbQuota	= new loki(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbQuota.loadDatabase(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'));
+
+/* Snippets settings */
+dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
+
+/* Dashboards settings */
+dbDashboards	= new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbDashboards.loadDatabase(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'));
+
+if ( !db.getCollection('objects') ) console.log('db Objects is failing');
+if ( !db.getCollection('flows') ) console.log('db Flows is failing');
+if ( !db.getCollection('tokens') ) console.log('db Tokens is failing');
+if ( !dbRules.getCollection('rules') ) console.log('db Rules is failing');
+if ( !dbQuota.getCollection('quota') ) console.log('db Quota is failing');
+if ( !dbSnippets.getCollection('snippets') ) console.log('db Snippets is failing');
+if ( !dbDashboards.getCollection('dashboards') ) console.log('db Dashboards is failing');
+
 client.on("connect", function () {
 	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)"}), {retain: false});
 });
@@ -67,12 +95,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(timeout(timeoutDuration));
 app.disable('x-powered-by');
-
-var staticOptions = {
-    etag: true,
-    maxAge: 864000000, //10 Days
-};
-
 app.set('views', path.join(__dirname, '/views'));
 app.set('view engine', 'jade');
 app.use(session(sessionSettings));
