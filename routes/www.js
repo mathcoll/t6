@@ -32,6 +32,7 @@ router.get('/', function(req, res) {
 	});
 });
 
+/* OBJECTS */
 router.get('/objects', Auth,  function(req, res) {
 	objects	= db.getCollection('objects');
 	qt	= dbQuota.getCollection('quota');
@@ -368,6 +369,7 @@ router.post('/objects/add', Auth, function(req, res) {
 	}
 });
 
+/* FLOWS */
 router.get('/flows', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	qt	= dbQuota.getCollection('quota');
@@ -676,6 +678,7 @@ router.post('/flows/add', Auth, function(req, res) {
 	}
 });
 
+/* ACCOUNT */
 router.get('/account/profile', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
 	flows	= db.getCollection('flows');
@@ -687,7 +690,12 @@ router.get('/account/profile', Auth, function(req, res) {
 
 	var queryO = { 'user_id' : req.session.user.id };
 	var queryF = { 'user_id' : req.session.user.id };
-	var queryT = { 'user_id' : req.session.user.id };
+	var queryT = { '$and': [
+      	           {'user_id' : req.session.user.id},
+      	           {'token': { '$ne': '' }},
+    	           //{'key': { '$ne': undefined }},
+    	           //{'secret': { '$ne': undefined }},
+    			]};
 	var queryR = { 'user_id' : req.session.user.id };
 	var queryS = { 'user_id' : req.session.user.id };
 	var queryD = { 'user_id' : req.session.user.id };
@@ -736,7 +744,163 @@ router.get('/account/profile', Auth, function(req, res) {
 		}
 	});
 });
+router.get('/account/register', function(req, res) {
+	res.render('register', {
+		title : 'Register',
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
 
+router.post('/account/register', function(req, res) {
+	users	= db.getCollection('users');
+	var my_id = uuid.v4();
+
+	var new_user = {
+		id:					my_id,
+		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
+		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
+		email:				req.body.email!==undefined?req.body.email:'',
+		role:				'free', // no admin creation from the Front-End dashboard
+		subscription_date:  moment().format('x'),
+	};
+	if ( new_user.email && new_user.id ) {
+		users.insert(new_user);
+		var new_token = {
+				user_id:			new_user.id,
+				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+		        expiration:			'',
+		};
+		var tokens	= db.getCollection('tokens');
+		tokens.insert(new_token);
+		
+		res.render('emails/welcome', {user: new_user, token: new_token}, function(err, html) {
+			var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
+			var mailOptions = {
+				from: from,
+				bcc: bcc,
+				to: to,
+				subject: 'Welcome to t6',
+				text: 'Html email client is required',
+				html: html
+			};
+			transporter.sendMail(mailOptions, function(err, info){
+			    if( err ){
+					var err = new Error('Internal Error');
+					err.status = 500;
+					res.status(err.status || 500).render(err.status, {
+						title : 'Internal Error'+app.get('env'),
+						user: req.session.user,
+						currentUrl: req.path,
+						err: err
+					});
+			    } else {
+			    	res.render('login', {
+					title : 'Login to t6',
+					user: req.session.user,
+					currentUrl: req.path,
+					message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
+				});
+			    }
+			});
+		});
+		
+		//res.redirect('/profile');
+	} else {
+		res.render('register', {
+			title : 'Register',
+			user: req.session.user,
+			currentUrl: req.path,
+			message: {type: 'danger', value: 'Please, give me your name!'}
+		});
+	}
+});
+
+router.get('/account/login', function(req, res) {
+	res.render('login', {
+		title : 'Log-in',
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
+router.get('/account/logout', function(req, res) {
+	req.session.destroy();
+	req.session = undefined;
+	delete req.session;
+	res.redirect('back');
+});
+
+router.post('/account/login', Auth, function(req, res) {
+	if ( !req.session.user ) {
+		console.log("Error! invalid credentials, user not found");
+		res.render('login', {
+			title : 'Log-in Failed',
+			currentUrl: req.path,
+			user: req.session.user
+		});
+	} else {
+		//console.log(req.session.user);
+		if ( req.url == "/account/login" ) {
+		//res.redirect('/dashboards');
+			res.redirect('/account/profile');
+		} else {
+			res.redirect('back');
+		}
+	}
+});
+
+/* RULES */
+router.get('/decision-rules', Auth, function(req, res) {
+	rules = dbRules.getCollection("rules");
+	var queryR = { 'user_id': req.session.user.id };
+	/*queryR = {
+		'$and': [
+					{ 'user_id': req.session.user.id },
+					{ 'id': 'ceda166a-df25-4bc4-ae77-3823f63193f9' }
+				]
+			};
+	*/
+	var r = rules.chain().find(queryR).simplesort('on', 'priority', 'name').data();
+	res.render('decision-rules', {
+		title : 'Decision Rules',
+		user: req.session.user,
+		currentUrl: req.path,
+		rules: r,
+	});
+});
+
+router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(req, res) {
+	/* no put? */
+	var rule_id = req.params.rule_id;
+	if ( !rule_id || !req.body.name ) {
+		res.status(412).send(new ErrorSerializer({'id': 1009,'code': 412, 'message': 'Precondition Failed'}).serialize());
+	} else {
+		rules = dbRules.getCollection("rules");
+		var queryR = {
+			'$and': [
+						{ 'user_id': req.session.user.id },
+						{ 'id': rule_id }
+					]
+				};
+		var rule = rules.findOne(queryR);
+		if ( !rule ) {
+			res.status(404).send(new ErrorSerializer({'id': 1006,'code': 404, 'message': 'Not Found'}).serialize());
+		} else {
+			rule.name			= req.body.name;
+			rule.on				= req.body.on;
+			rule.priority		= req.body.priority;
+			rule.consequence	= req.body.consequence;
+			rule.condition		= req.body.condition;
+			rule.flow_control	= req.body.flow_control;
+			rules.update(rule);
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', rule: rule });
+		}
+	}
+});
+
+/* GENERIC */
 router.get('/search', Auth, function(req, res) {
 	res.render('search', {
 		title : 'Search',
@@ -803,54 +967,6 @@ router.post('/search', Auth, function(req, res) {
 	}
 });
 
-router.get('/decision-rules', Auth, function(req, res) {
-	rules = dbRules.getCollection("rules");
-	var queryR = { 'user_id': req.session.user.id };
-	/*queryR = {
-		'$and': [
-					{ 'user_id': req.session.user.id },
-					{ 'id': 'ceda166a-df25-4bc4-ae77-3823f63193f9' }
-				]
-			};
-	*/
-	var r = rules.chain().find(queryR).simplesort('on', 'priority', 'name').data();
-	res.render('decision-rules', {
-		title : 'Decision Rules',
-		user: req.session.user,
-		currentUrl: req.path,
-		rules: r,
-	});
-});
-
-router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(req, res) {
-	/* no put? */
-	var rule_id = req.params.rule_id;
-	if ( !rule_id || !req.body.name ) {
-		res.status(412).send(new ErrorSerializer({'id': 1009,'code': 412, 'message': 'Precondition Failed'}).serialize());
-	} else {
-		rules = dbRules.getCollection("rules");
-		var queryR = {
-			'$and': [
-						{ 'user_id': req.session.user.id },
-						{ 'id': rule_id }
-					]
-				};
-		var rule = rules.findOne(queryR);
-		if ( !rule ) {
-			res.status(404).send(new ErrorSerializer({'id': 1006,'code': 404, 'message': 'Not Found'}).serialize());
-		} else {
-			rule.name			= req.body.name;
-			rule.on				= req.body.on;
-			rule.priority		= req.body.priority;
-			rule.consequence	= req.body.consequence;
-			rule.condition		= req.body.condition;
-			rule.flow_control	= req.body.flow_control;
-			rules.update(rule);
-			res.status(200).send({ 'code': 200, message: 'Successfully updated', rule: rule });
-		}
-	}
-});
-
 router.get('/about', function(req, res) {
 	res.render('about', {
 		title : 'About t6',
@@ -859,6 +975,61 @@ router.get('/about', function(req, res) {
 	});
 });
 
+router.get('/mail/welcome', function(req, res) {
+	var fake_user = req.session.user;
+	var fake_token = {
+		user_id:			fake_user.id,
+		key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+        expiration:			'',
+	};
+	res.render('emails/welcome', {
+		title : '',
+		baseUrl: baseUrl,
+		user: fake_user,
+		currentUrl: req.path,
+		token: fake_token
+	});
+});
+
+router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
+	var feature = req.params.feature;
+	res.render('features/'+feature, {
+		title : 't6 Feature',
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
+router.get('/plans', function(req, res) {
+	qt		= dbQuota.getCollection('quota');
+	res.render('plans', {
+		title : 't6 Plans',
+		currentUrl: req.path,
+		quota: quota,
+		user: req.session.user
+	});
+});
+
+router.get('/status', function(req, res) {
+	qt		= dbQuota.getCollection('quota');
+	res.render('status', {
+		title : 't6 API Status',
+		currentUrl: req.path,
+		quota: quota,
+		user: req.session.user
+	});
+});
+
+router.get('/unauthorized', function(req, res) {
+	res.render('unauthorized', {
+		title : 'Unauthorized, Please log-in again to t6',
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
+/* DASHBOARDS */
 router.get('/dashboards', Auth, function(req, res) {
 	dashboards	= dbDashboards.getCollection('dashboards');
 	qt		= dbQuota.getCollection('quota');
@@ -1141,168 +1312,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	}
 });
 
-router.get('/account/register', function(req, res) {
-	res.render('register', {
-		title : 'Register',
-		currentUrl: req.path,
-		user: req.session.user
-	});
-});
-
-router.post('/account/register', function(req, res) {
-	users	= db.getCollection('users');
-	var my_id = uuid.v4();
-
-	var new_user = {
-		id:					my_id,
-		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
-		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
-		email:				req.body.email!==undefined?req.body.email:'',
-		role:				'user', // no admin creation from the Front-End dashboard
-		subscription_date:  moment().format('x'),
-	};
-	if ( new_user.email && new_user.id ) {
-		users.insert(new_user);
-		var new_token = {
-				user_id:			new_user.id,
-				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-		        expiration:			'',
-		};
-		var tokens	= db.getCollection('tokens');
-		tokens.insert(new_token);
-		
-		res.render('emails/welcome', {user: new_user, token: new_token}, function(err, html) {
-			var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
-			var mailOptions = {
-				from: from,
-				bcc: bcc,
-				to: to,
-				subject: 'Welcome to t6',
-				text: 'Html email client is required',
-				html: html
-			};
-			transporter.sendMail(mailOptions, function(err, info){
-			    if( err ){
-					var err = new Error('Internal Error');
-					err.status = 500;
-					res.status(err.status || 500).render(err.status, {
-						title : 'Internal Error'+app.get('env'),
-						user: req.session.user,
-						currentUrl: req.path,
-						err: err
-					});
-			    } else {
-			    	res.render('login', {
-					title : 'Login to t6',
-					user: req.session.user,
-					currentUrl: req.path,
-					message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
-				});
-			    }
-			});
-		});
-		
-		//res.redirect('/profile');
-	} else {
-		res.render('register', {
-			title : 'Register',
-			user: req.session.user,
-			currentUrl: req.path,
-			message: {type: 'danger', value: 'Please, give me your name!'}
-		});
-	}
-	
-});
-
-router.get('/mail/welcome', function(req, res) {
-	var fake_user = req.session.user;
-	var fake_token = {
-		user_id:			fake_user.id,
-		key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-        expiration:			'',
-	};
-	res.render('emails/welcome', {
-		title : '',
-		baseUrl: baseUrl,
-		user: fake_user,
-		currentUrl: req.path,
-		token: fake_token
-	});
-});
-
-router.get('/account/login', function(req, res) {
-	res.render('login', {
-		title : 'Log-in',
-		currentUrl: req.path,
-		user: req.session.user
-	});
-});
-
-router.get('/unauthorized', function(req, res) {
-	res.render('unauthorized', {
-		title : 'Unauthorized, Please log-in again to t6',
-		currentUrl: req.path,
-		user: req.session.user
-	});
-});
-
-router.get('/account/logout', function(req, res) {
-	req.session.destroy();
-	req.session = undefined;
-	delete req.session;
-	res.redirect('back');
-});
-
-router.post('/account/login', Auth, function(req, res) {
-	if ( !req.session.user ) {
-		console.log("Error! invalid credentials, user not found");
-		res.render('login', {
-			title : 'Log-in Failed',
-			currentUrl: req.path,
-			user: req.session.user
-		});
-	} else {
-		//console.log(req.session.user);
-		if ( req.url == "/account/login" ) {
-		//res.redirect('/dashboards');
-			res.redirect('/account/profile');
-		} else {
-			res.redirect('back');
-		}
-	}
-});
-
-router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
-	var feature = req.params.feature;
-	res.render('features/'+feature, {
-		title : 't6 Feature',
-		currentUrl: req.path,
-		user: req.session.user
-	});
-});
-
-router.get('/plans', function(req, res) {
-	qt		= dbQuota.getCollection('quota');
-	res.render('plans', {
-		title : 't6 Plans',
-		currentUrl: req.path,
-		quota: quota,
-		user: req.session.user
-	});
-});
-
-router.get('/status', function(req, res) {
-	qt		= dbQuota.getCollection('quota');
-	res.render('status', {
-		title : 't6 API Status',
-		currentUrl: req.path,
-		quota: quota,
-		user: req.session.user
-	});
-});
-
+/* SNIPPETS */
 router.get('/snippets', Auth, function(req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
 	qt		= dbQuota.getCollection('quota');
@@ -1478,6 +1488,130 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 		});
 	}
 });
+
+/* API KEYS */
+router.get('/keys', Auth, function(req, res) {
+	tokens	= db.getCollection('tokens');
+	qt	= dbQuota.getCollection('quota');
+	var query = { '$and': [
+   	           {'user_id' : req.session.user.id},
+ 	           {'token': { '$ne': '' }},
+ 	           //{'key': { '$ne': undefined }},
+ 	           //{'secret': { '$ne': undefined }},
+ 			]};
+	var pagination=12;
+	req.query.page=req.query.page!==undefined?req.query.page:1;
+	var offset = (req.query.page -1) * pagination;
+	var message = req.session.message!==null?req.session.message:null;
+	req.session.message = null; // Force to unset
+
+	var t = tokens.chain().find(query).simplesort('expiration').offset(offset).limit(pagination).data();
+	if ( t.length == 0 ) {
+		res.redirect('/keys/add');
+	} else {
+		var tokens_length = (tokens.chain().find(query).data()).length;
+		res.render('keys/keys', {
+			title : 'My Keys',
+			tokens: t,
+			tokens_length: tokens_length,
+			page: req.query.page,
+			pagenb: Math.ceil(tokens_length/pagination),
+			user: req.session.user,
+			currentUrl: req.path,
+			message: message,
+			quota : (quota[req.session.user.role])
+		});
+
+		// Find and remove expired tokens from Db
+		var expired = tokens.chain().find(
+			{ '$and': [
+		           { 'expiration' : { '$lt': moment().format('x') } },
+		           { 'expiration' : { '$ne': '' } },
+			]}
+		).remove();
+		if ( expired ) db.save();
+	}
+});
+
+router.get('/keys/add', function(req, res) {
+	tokens	= db.getCollection('tokens');
+	flows		= db.getCollection('flows');
+	var query = { 'user_id': req.session.user.id };
+	var t = tokens.chain().find(query).data();
+	var f = flows.chain().find(query).sort(alphaSort).data();
+	res.render('keys/add', {
+		title : 'Add an API Key',
+		message: {},
+		tokens: t,
+		flows: f,
+		user: req.session.user,
+		new_snippet: {},
+		nl2br: nl2br,
+		currentUrl: req.path,
+		striptags: striptags
+	});
+});
+
+router.post('/keys/add', function(req, res) {
+	tokens	= db.getCollection('tokens');
+	flows		= db.getCollection('flows');
+	var query = { 'user_id': req.session.user.id };
+	var t = tokens.chain().find(query).data();
+	var f = flows.chain().find(query).sort(alphaSort).data();
+
+	var owner_permission = req.body.owner_permission!==undefined?req.body.owner_permission:'6';
+	var group_permission = req.body.group_permission!==undefined?req.body.group_permission:'0';
+	var other_permission = req.body.other_permission!==undefined?req.body.other_permission:'0';
+	var linked_flows = req.body['flows[]']!==undefined?req.body['flows[]']:new Array();
+	if( req.body['flows[]'] instanceof Array ) {
+		//
+	} else {
+		linked_flows = [linked_flows];
+	}
+	var expiration = req.body.expiration;
+	if ( expiration == '1 hours' ) {
+		expiration = moment().add(1, 'hours').format('x');
+	} else if ( expiration == '7 days' ) {
+		expiration = moment().add(7, 'days').format('x');
+	} else if ( expiration == '1 months' ) {
+		expiration = moment().add(1, 'months').format('x');
+	} else {
+		expiration = moment().add(1, 'hours').format('x');
+	}
+	var permission = owner_permission+group_permission+other_permission;
+	var permissions = new Array();
+	linked_flows.forEach(function(flow_id) {
+		permissions.push({flow_id: flow_id, permission: permission});
+	});
+	var new_token = {
+		user_id: req.session.user.id,
+		expiration: expiration,
+		permissions: permissions,
+		token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+	};
+	
+	if ( tokens.insert(new_token) ) {
+		res.redirect('/keys/');
+		//res.redirect('/keys/'+new_token.token);
+	} else {
+		res.render('keys/add', {
+			title : 'Add an API Key',
+			message: {},
+			tokens: t,
+			flows: f,
+			user: req.session.user,
+			new_snippet: {},
+			nl2br: nl2br,
+			currentUrl: req.path,
+			striptags: striptags
+		});
+	}
+});
+
+router.get('/keys/:token([0-9a-z\-]+)', function(req, res) {
+	
+});
+
 
 function Auth(req, res, next) {
 	users	= db.getCollection('users');
