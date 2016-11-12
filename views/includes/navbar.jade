@@ -71,6 +71,11 @@
               a(href='/decision-rules')
                 span.fa.fa-filter.pull-right
                 |  Decision Rules (beta)
+            li(class=(currentUrl.indexOf("/keys")>-1)?'active':undefined)
+              a(href='/keys')
+                span.fa.fa-flash.pull-right
+                |  API Keys
+
           - else
             li(class=(currentUrl.indexOf("/account/login")>-1)?'active':undefined)
               a(href='/account/login')
@@ -86,7 +91,7 @@
                 | GitHub
           - end
 
-          li.separator
+          li.separator &nbsp;
 
           li(class=(currentUrl.indexOf("/features/api")>-1)?'active':undefined)
             a(href='/features/api')

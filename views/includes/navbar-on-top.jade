@@ -38,6 +38,16 @@ nav.navbar.navbar-default.navbar-fixed-top
               i.fa.fa-area-chart
                 |  Dashboards
 
+          li(class=(currentUrl.indexOf("/decision-rules")>-1)?'active':undefined)
+            a(href='/decision-rules')
+              i.fa.fa-filter
+              |  Decision Rules (beta)
+
+          li(class=(currentUrl.indexOf("/keys")>-1)?'active':undefined)
+            a(href='/keys')
+              i.fa.fa-flash
+              |  API Keys
+
       ul.nav.navbar-nav.navbar-right
         - if (user)
           li(class=(currentUrl.indexOf("/account")>-1)?'active':undefined)
@@ -62,9 +72,6 @@ nav.navbar.navbar-default.navbar-fixed-top
                   i.fa.fa-user 
                   |  My Profile 
               li.divider(role='separator')
-              li(class=(currentUrl.indexOf("/decision-rules")>-1)?'active':undefined)
-                a(href='/decision-rules')
-                  span.fa.fa-filter  Decision Rules
               li(class=(currentUrl.indexOf("/status")>-1)?'active':undefined)
                 a(href='/status')
                   span.fa.fa-heart-o  API Status

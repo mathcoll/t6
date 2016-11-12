@@ -244,21 +244,20 @@ html(lang='en')
                     a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
                 #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
                   .panel-body
-                    small
-                      ul
-                        - for(token in tokens) {
-                          if (tokens[token].key && tokens[token].key)
-                            li K/S #{tokens[token].secret}/#{tokens[token].secret}
-                          else
-                            li Bearer #{tokens[token].token}
-                          if tokens[token].expiration
-                            div (Exp.: #{moment( parseInt(tokens[token].expiration) ).format('DD/MM/YYYY, HH:mm')})
-                            if tokens[token].permissions
-                              div Permissions:
-                            - for(p in tokens[token].permissions) {
-                              a(title='/flows/#{(tokens[token].permissions)[p].flow_id}') #{(tokens[token].permissions)[p].permission}, 
-                            - }
-                        - }
+                    |  &ndash;
+                    small  You have set up #{tokens.length} 
+                      a(href='/keys') Keys
+                      |  out of #{quota.tokens}.
+                    div.progress
+                      - var percent = Math.round((tokens.length*100/quota.tokens)*100) /100
+                      - var style = "success"
+                      - if (percent > 60)
+                        - style = "warning"
+                      - end
+                      - if (percent > 85)
+                        - style = "danger"
+                      - end
+                      div.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{tokens}", aria-valuemin="0", aria-valuemax="#{quota.tokens}", style="width: #{percent}%")
                   
                 #headingCalls.panel-heading(role='tab')
                   h4.panel-title
