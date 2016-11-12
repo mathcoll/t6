@@ -99,6 +99,7 @@ html(lang='en')
                   tr
                     td
                       strong API calls
+                      span  (7 days period)
                     td #{quota.free.calls}
                     td #{quota.user.calls}
                     td #{quota.admin.calls}
@@ -123,7 +124,7 @@ html(lang='en')
                   tr
                     td
                     td.action-header
-                        a.btn.btn-info
+                        a.btn.btn-info(href="/account/register")
                           | Sign Up for Free
                     td.action-header
                         a.btn.btn-info(href="#", data-toggle="modal", data-target="#pay")
