@@ -1528,8 +1528,11 @@ router.get('/keys', Auth, function(req, res) {
 		           { 'expiration' : { '$lt': moment().format('x') } },
 		           { 'expiration' : { '$ne': '' } },
 			]}
-		).remove();
-		if ( expired ) db.save();
+		);
+		if ( expired.data() ) {
+			expired.remove();
+			db.save();
+		}
 	}
 });
 
