@@ -817,12 +817,15 @@ a:focus {
 .side-menu .navbar-nav a {
     border-right: 4px solid transparent;
 }
-.navbar-fixed-top .navbar-nav > li > a {border-bottom: 4px solid transparent;}
-.navbar-fixed-top .navbar-nav > li > a:hover {border-bottom: 5px solid #337ab7;}
+.navbar-fixed-top .navbar-nav > li > a {/*border-bottom: 4px solid transparent;*/}
+.navbar-fixed-top .navbar-nav > li > a:hover {/*border-bottom: 5px solid #337ab7;*/}
 .side-menu .navbar-nav li {
   display: block;
   width: 100%;
   border-bottom: 1px solid #e7e7e7;
+}
+#navbar {
+	border-bottom: 5px solid #337ab7;
 }
 .side-menu .navbar-nav li a {
   padding: 15px;
