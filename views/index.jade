@@ -4,32 +4,33 @@ html(lang='en')
   body
     include ./includes/navbar-on-top.jade
 
-    .-o-container-fluid.marketing
+    .marketing
       .row
         include ./includes/carousel.jade
       
-    .-o-container-fluid.marketing
+    .container-fluid.marketing
       .row
         hr.featurette-divider
-        h2 Features
+        h2 Internet of Things tools and features:
         - var featurette = {class: "fa fa-flask", title: "Sense", subtitle: "events.", description: "Whether it's your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.", link: "#"}
         include ./includes/featurette.jade
         
-        - var featurette = {class: "fa fa-database", title: "Store", subtitle: "values.", description: "Data Storage as time-series. SQLite Database for storage and planning to support additional DB in future releases.", link: "#"}
+        - var featurette = {class: "fa fa-database", title: "Store", subtitle: "values.", description: "Data Storage as time-series. SQLite Database for storage and planning to support additional DB in future releases.", link: "/features/architecture#database"}
         include ./includes/featurette.jade
         
         - var featurette = {class: "fa fa-eye", title: "Monitor", subtitle: "information.", description: "Real-time dashboards provides control on data captured by the sensors. You can easily monitor and track your data.", link: "#"}
         include ./includes/featurette.jade
         
-        - var featurette = {class: "fa fa-area-chart", title: "Customize", subtitle: "your Dashboards.", description: "Snippets displays your date to graph for monitoring and reporting purposes.", link: "#"}
+        - var featurette = {class: "fa fa-area-chart", title: "Customize", subtitle: "your Dashboards.", description: "Snippets displays your data for monitoring and reporting purposes.", link: "/features/customize-dashboards"}
         include ./includes/featurette.jade
         
-        - var featurette = {class: "fa fa-bell", title: "Alert", subtitle: "through email, sms, twitter, Mqtt...", description: "According to your own rules and data values, send alerts via email, SMS, Twitter... Decision-Rule allows you to control your alerts.", link: "#"}
+        - var featurette = {class: "fa fa-bell", title: "Alert", subtitle: "through email, sms, twitter, Mqtt...", description: "According to your own rules and data values, send alerts via email, SMS, Twitter... Decision-Rule allows you to control your alerts.", link: "/features/architecture#rules"}
         include ./includes/featurette.jade
 
         - var featurette = {class: "fa fa-clock-o", title: "API", subtitle: " for developers", description: "Update events Flows using the Time-series API and remotely manage you data.", link: "/features/api"}
         include ./includes/featurette.jade
 
+    .container-fluid.marketing
       .row.featurette
         hr.featurette-divider
         #section3.container
@@ -37,16 +38,17 @@ html(lang='en')
             include ./includes/carousel2.jade
             hr/
 
+    .container-fluid.marketing
       .row.featurette
         hr.featurette-divider
-        h2 How does it works
-        - var featurette = {class: "fa fa-cubes", title: "Objects", subtitle: "Connected.", description: "Embedded, Automatisation, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.", link: "#"}
+        h2 How does it works?
+        - var featurette = {class: "fa fa-cubes", title: "Objects", subtitle: "Connected.", description: "Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.", link: "/features/architecture#objects"}
         include ./includes/featurette.jade
         
-        - var featurette = {class: "fa fa-random", title: "Data Flows", subtitle: "as Time-series.", description: "Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.", link: "#"}
+        - var featurette = {class: "fa fa-random", title: "Data Flows", subtitle: "as Time-series.", description: "Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.", link: "/features/architecture#flows"}
         include ./includes/featurette.jade
         
-        - var featurette = {class: "fa fa-area-chart", title: "Snippets", subtitle: "& Dashboards.", description: "Graphics, data-management, Monitoring, Reporting.", link: "#"}
+        - var featurette = {class: "fa fa-area-chart", title: "Snippets", subtitle: "& Dashboards.", description: "Graphics, data-management, Monitoring, Reporting.", link: "/features/customize-dashboards"}
         include ./includes/featurette.jade
 
     include ./includes/foot.jade

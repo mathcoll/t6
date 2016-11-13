@@ -23,6 +23,7 @@ nav.navbar.navbar-default.navbar-fixed-top
             a(href='/objects') 
               i.fa.fa-cubes
                 |  Objects
+
           li(class=(currentUrl.indexOf("/flows")>-1)?'active':undefined)
             a(href='/flows')
               i.fa.fa-random
@@ -47,6 +48,23 @@ nav.navbar.navbar-default.navbar-fixed-top
             a(href='/keys')
               i.fa.fa-flash
               |  API Keys
+
+        - else
+          li(class=(currentUrl.indexOf("/features/architecture")>-1)?'active':undefined)
+            a(href='/features/architecture')
+              i.fa.fa-square
+              |  Architecture
+
+          li(class=(currentUrl.indexOf("/features/customize-dashboards")>-1)?'active':undefined)
+            a(href='/features/customize-dashboards')
+              i.fa.fa-area-chart
+              |  Dashboards & Snippets
+
+          li(class=(currentUrl.indexOf("/features/api")>-1)?'active':undefined)
+            a(href='/features/api')
+              i.fa.fa-wrench
+              |  Developers
+        - end
 
       ul.nav.navbar-nav.navbar-right
         - if (user)
@@ -97,3 +115,4 @@ nav.navbar.navbar-default.navbar-fixed-top
                 a(href='https://github.com/mathcoll/t6')
                   span.fa.fa-github
                   | GitHub
+        - end

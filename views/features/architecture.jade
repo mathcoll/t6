@@ -1,0 +1,41 @@
+doctype html
+html(lang='en')
+  include ../includes/head.jade
+  body
+    include ../includes/navbar-on-top.jade
+
+    .container.starter-template
+      .row
+        .col-sm-12
+          h2.fa.fa-2x.fa-square &nbsp;Architecture of t6
+          p
+            img.img-responsive(src="https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png")
+
+      .row
+        .col-sm-12
+          h3.fa.fa-1x.fa-database(name="database") Database
+          p 
+
+        .col-sm-12
+          h3.fa.fa-1x.fa-cubes(name="objects") Objects
+          p Objects in t6 are the virtual nodes of your physical devices. Objects are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
+
+        .col-sm-12
+          h3.fa.fa-1x.fa-random(name="flows") Flows
+          p 
+
+        .col-sm-12
+          h3.fa.fa-1x.fa-filter(name="rules") Rules
+          p 
+
+        .col-sm-12
+          h3.fa.fa-1x.fa-area-chart(name="dashboards") Dashboards & Snippets
+          p Snippets and Dashboard 
+          p
+            a(href="./customize-dashboards") More details
+
+        .col-sm-12
+          h3.fa.fa-1x.fa-coffee(name="coffee") Coffee
+          p Yes, t6 is made of coffee..
+
+    include ../includes/foot.jade
