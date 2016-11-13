@@ -4,7 +4,7 @@
       div.col-sm-2
         h4.list-group-item-heading(style="margin:0; padding:0;")
           span.fa.fa-flash  
-          |  Key/Secret
+          |  Key/Secret 
       
       div.col-sm-4
         div(style="margin:0; padding:0;")
@@ -39,7 +39,7 @@
       div.col-sm-2  
 
 -else
-  a.clearfix.list-group-item(href="/keys/#{tokens[token].token}")
+  a.clearfix.list-group-item(name="/keys/#{tokens[token].token}")
     div.col-sm-2
       h4.list-group-item-heading(style="margin:0; padding:0;")
         span.fa.fa-flash  
@@ -71,5 +71,5 @@
         - }
     -end
     div.col-sm-2 
-      div.fa.fa-chevron-right.pull-right
+      //-div.fa.fa-chevron-right.pull-right
 -end 

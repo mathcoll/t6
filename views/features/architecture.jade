@@ -1,5 +1,6 @@
 doctype html
 html(lang='en')
+  - title='t6 Architecture'
   include ../includes/head.jade
   body
     include ../includes/navbar-on-top.jade
@@ -7,35 +8,73 @@ html(lang='en')
     .container.starter-template
       .row
         .col-sm-12
-          h2.fa.fa-2x.fa-square &nbsp;Architecture of t6
+          h2.fa.fa-2x.fa-square &nbsp;t6 Architecture
           p
-            img.img-responsive(src="https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png")
-
+            img.img-responsive(src="https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="General t6 Architecture")
+          hr/
+          
       .row
-        .col-sm-12
-          h3.fa.fa-1x.fa-database(name="database") Database
-          p 
+        mixin container(id, heading, subtitle, image, imgClass, descriptionP1, descriptionP2)
+          div(id=id).featurette.clearfix(name="#{heading}")
+            h2.featurette-heading
+              span.featurette-image.img-circle.img-responsive(src='#{image}', width='300', class='#{imgClass}')
+              | !{heading}
+              -if(subtitle)
+                span.text-muted  !{subtitle}
+              -end  
+            -if(descriptionP1)
+              p.lead
+                | !{descriptionP1}
+            -end  
+            -if(descriptionP2)
+              p.lead
+                | !{descriptionP2}
+            -end
+          hr/
 
-        .col-sm-12
-          h3.fa.fa-1x.fa-cubes(name="objects") Objects
-          p Objects in t6 are the virtual nodes of your physical devices. Objects are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
+       -var id = 'objects'
+       -var heading = 'Objects'
+       -var subtitle = 'sensors and actuators'
+       -var image = ''
+       -var imgClass = 'pull-left fa fa-4x fa-cube'
+       -var descriptionP1 = "Physical World is composed on your sensors and actuators. Physical Objects require a virtual Object in t6."
+       -var descriptionP2 = "Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects."
+       +container(id, heading, subtitle, image, imgClass, descriptionP1, descriptionP2)
 
-        .col-sm-12
-          h3.fa.fa-1x.fa-random(name="flows") Flows
-          p 
+       -var id = 'flows'
+       -var heading = 'Flows'
+       -var subtitle = ' to classify data.'
+       -var image = 'http://placehold.it/300x300'
+       -var imgClass = 'pull-left fa fa-4x fa-random'
+       -var descriptionP1 = "Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data."
+       -var descriptionP2 = "Objects are sending their Data to Flow-containers using the API."
+       +container(id, heading, subtitle, image, imgClass, descriptionP1, descriptionP2)
 
-        .col-sm-12
-          h3.fa.fa-1x.fa-filter(name="rules") Rules
-          p 
+       -var id = 'dashboards'
+       -var heading = 'Dashboards & Snippets'
+       -var subtitle = ' to graph, draw, and monitor.'
+       -var image = 'http://placehold.it/300x300'
+       -var imgClass = 'pull-left fa fa-4x fa-area-chart'
+       -var descriptionP1 = "Dashboard is a instance of one or multiple Snippets."
+       -var descriptionP2 = "<a href='./customize-dashboards'>More details about customization</a>"
+       +container(id, heading, subtitle, image, imgClass, descriptionP1, descriptionP2)
 
-        .col-sm-12
-          h3.fa.fa-1x.fa-area-chart(name="dashboards") Dashboards & Snippets
-          p Snippets and Dashboard 
-          p
-            a(href="./customize-dashboards") More details
+       -var id = 'rules'
+       -var heading = 'Rules'
+       -var subtitle = ' to Alert and Notify.'
+       -var image = 'http://placehold.it/300x300'
+       -var imgClass = 'pull-left fa fa-4x fa-filter'
+       -var descriptionP1 = ""
+       -var descriptionP2 = ""
+       +container(id, heading, subtitle, image, imgClass, descriptionP1, descriptionP2)
 
-        .col-sm-12
-          h3.fa.fa-1x.fa-coffee(name="coffee") Coffee
-          p Yes, t6 is made of coffee..
+       -var id = 'coffee'
+       -var heading = 'Coffee'
+       -var subtitle = ' ...to drink. :-)'
+       -var image = 'http://placehold.it/300x300'
+       -var imgClass = 'pull-left fa fa-4x fa-coffee'
+       -var descriptionP1 = "Yes, t6 is made of coffee.."
+       -var descriptionP2 = ""
+       +container(id, heading, subtitle, image, imgClass, descriptionP1, descriptionP2)
 
     include ../includes/foot.jade
