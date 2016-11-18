@@ -202,4 +202,10 @@ sudo update-rc.d t6 defaults
 
 ## t6 Troobleshooting after installation
 Q: ```sudo /etc/init.d/t6 start``` does not return any output
+
 A: Try to set chmod +x to file /var/www/t6/bin/www
+
+
+Q: I got an error trying to install sqlite3
+
+A: Ubuntu and Debian usually have a dedicated nodejs version, try removing "node" and install ```sudo apt-get install nodejs-legacy``` instead, then ```sudo npm install sqlite3@3.0.5```.
