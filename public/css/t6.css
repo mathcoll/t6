@@ -36,6 +36,12 @@ a.white {
 	float: left;
 	margin-left: 10px;
 }
+ul.nav li.separator {
+	background: rgba(0, 0, 0, 0) url("/img/world-map.jpg") no-repeat scroll 0 0 / 100% 100%;
+	height: 190px;
+	opacity: 0.1;
+	border-bottom: 1px solid #e7e7e7;
+}
 .form-signin .form-control {
 	box-sizing: border-box;
 	font-size: 16px;

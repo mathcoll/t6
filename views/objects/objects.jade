@@ -11,6 +11,21 @@ html(lang='en')
         blockquote.fa.fa-comment  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
 
       .row.side-body
+        .col-xs-12.col-sm-12.col-md-12
+          ul.clearfix.pagination
+            li.active
+              span.fa.fa-3x.fa-cubes  #{objects_length} Objects
+                - var percent = Math.round((objects_length*100/quota.objects)*100) /100
+                - var style = "success"
+                - if (percent > 60)
+                  - style = "warning"
+                - end
+                - if (percent > 85)
+                  - style = "danger"
+                - end
+                span.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects_length}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%; height: 5px;") &nbsp;
+
+      .row.side-body
         .col-sm-12
           if (objects.length)
             include ../includes/pagination.jade
