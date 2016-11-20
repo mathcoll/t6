@@ -64,7 +64,7 @@
       -end
     
     -if(tokens[token].permissions)
-      div.col-sm-10
+      div.col-sm-10.fa.fa-random
         - for(p in tokens[token].permissions) {
           span(title='Permission: #{(tokens[token].permissions)[p].permission}') #{(tokens[token].permissions)[p].flow_id}
           | , 

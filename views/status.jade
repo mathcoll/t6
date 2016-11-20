@@ -31,6 +31,7 @@ html(lang='en')
           $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Service Start Date:</div><div class="col-sm-4"><b>'+status.started_at+'</b></div></a>');
           $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Service '+status.appName+' version:</div><div class="col-sm-4"><b>'+status.version+'</b></div></a>');
           $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Mqtt Info Topic:</div><div class="col-sm-4"><b>'+status.mqtt_info+'</b></div></a>');
+          $('#status').append('<a class="list-group-item clearfix"><div class="col-sm-8">Base Url:</div><div class="col-sm-4"><b>#{baseUrl}</b></div></a>');
         },
         error: function(d) {
           //console.log('ERROR ');

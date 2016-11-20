@@ -10,9 +10,10 @@ a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards
    span.label.label-default.ellipsis(data-toggle='tooltip' data-placement='top' title='Dashboard Id')  #{dashboards[dashboard].id}
 
   div.col-sm-4
+    span
   
-  div.col-sm-2 #{dashboards[dashboard].snippets.length}
-    span.xs-visible-inline  Snippet(s) linked
+  div.col-sm-2
+    span.xs-visible-inline.fa.fa-puzzle-piece  #{dashboards[dashboard].snippets.length} Snippet(s) linked
 
   div.col-sm-2
     img.img.img-responsive(src='/img/layout_#{dashboards[dashboard].layout}.png', alt='#{dashboards[dashboard].layout}', width='30')
@@ -21,8 +22,9 @@ a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards
     span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.updated).format('DD/MM/YYYY, HH:mm')}
 
   div.col-sm-2
-    div.fa.fa-chevron-right.pull-right 
+    span.fa.fa-chevron-right.pull-right 
 
   div.col-sm-8
+    span
 
   div.col-sm-10 #{dashboards[dashboard].description}
