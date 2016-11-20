@@ -22,23 +22,22 @@ a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].
     span.fa.fa-clock-o  #{moment(flows[flow].meta.created).format('DD/MM/YYYY, HH:mm')}
 
   div.col-sm-2
-    span.label.label-warning.ellipsis(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
+    span.label.label-default.ellipsis(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
 
   div.col-sm-8  
 
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(flows[flow].meta.updated).format('DD/MM/YYYY, HH:mm')}
 
-  div.col-sm-12
+  div.col-sm-6.ellipsis
+    span.label.label-warning #{flows[flow].mqtt_topic}
+
+  div.col-sm-2
+    span.fa.fa-cube  #{flows[flow].objects.length} Objects
+
+  div.col-sm-2
+    span
+
+  div.col-sm-2
     div.fa.fa-chevron-right.pull-right 
     div #{flows[flow].description}
-
-  - if (flows[flow].objects.length)
-    div.col-sm-12
-      ul.col-xs-1
-        - for(object in flows[flow].objects) {
-          li.ellipsis
-            span.label.label-default(data-toggle='tooltip' data-placement='top' title='Flow Objects')
-              span.white(href="/objects/#{flows[flow].objects[object]}") #{flows[flow].objects[object]}
-            | &nbsp;
-        - }

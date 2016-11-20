@@ -554,6 +554,7 @@ router.post('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			json.unit_id=		req.body.unit!==undefined?req.body.unit:null;
 			//json.user_id=		user_id; // Don't need to update
 			json.theme=			req.body.theme!==undefined?req.body.theme:null;
+			json.mqtt_topic=	req.body.mqtt_topic!==undefined?req.body.mqtt_topic:null;
 			
 			flows.update(json);
 			db.save();
@@ -632,7 +633,8 @@ router.post('/flows/add', Auth, function(req, res) {
 		unit:			'', // TODO
 		unit_id:		req.body.unit!==undefined?req.body.unit:null,
 		user_id:		user_id,
-		theme:			req.body.theme!==undefined?req.body.theme:null
+		theme:			req.body.theme!==undefined?req.body.theme:null,
+		mqtt_topic:		req.body.mqtt_topic!==undefined?req.body.mqtt_topic:null
 	};
 	//console.log(new_flow);
 	var i = (flows.find(queryQ)).length;

@@ -315,7 +315,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	var publish		= req.body.publish!==undefined?JSON.parse(req.body.publish):false;
 	var save		= req.body.save!==undefined?JSON.parse(req.body.save):true;
 	var unit		= req.body.unit!==undefined?req.body.unit:"";
-	var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"";
+	var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:""; // TODO, if unset, we should try to get the topic from the flow itself
 	var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
 
 	if ( !flow_id ) {

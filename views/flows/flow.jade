@@ -25,6 +25,11 @@ html(lang='en')
                 br/
                 i Created: #{moment(flow.meta.created).format('DD/MM/YYYY, HH:mm')} - Updated: #{moment(flow.meta.updated).format('DD/MM/YYYY, HH:mm')} - Revision: #{flow.meta.revision}
 
+              -if (flow.mqtt_topic)
+                dt MQTT Topic:
+                dd #{flow.mqtt_topic}
+              -end
+              
               dt Datatype:
               dd #{flow.data_type}
 

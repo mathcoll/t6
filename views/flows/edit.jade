@@ -13,12 +13,22 @@ html(lang='en')
     .-o-container-fluid
       .row.side-body
         .col-sm-12
-          h3 Update a Flow to your library
+          h3 Edit a Flow to your library
           form(action="/flows/#{flow.id}/edit", method="post")
             .form-group
               label.control-label(for="name") Flow Name:
                 span.mandatory *
-              input.form-control(type="text", name="name", placeholder="Flow Name", id="name", value="#{flow.name}")
+              span.input-group
+                span.input-group-addon
+                  span.fa.fa-random
+                input.form-control(type="text", name="name", placeholder="Flow Name", id="name", value="#{flow.name}")
+
+            .form-group
+              label.control-label(for="mqtt_topic") MQTT Topic:
+              span.input-group
+                span.input-group-addon
+                  span.fa.fa-comments
+                input.form-control(type="text", name="mqtt_topic", placeholder="MQTT Topic", id="mqtt_topic", value=(flow.mqtt_topic!='undefined' ? flow.mqtt_topic : ''))
 
             .form-group
               label.control-label(for="datatype") Data-Type:
