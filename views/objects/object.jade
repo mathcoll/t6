@@ -109,7 +109,7 @@ html(lang='en')
                   span.fa.fa-pencil-square-o  Edit
               
               li
-                a.btn.btn-danger.btn-sm(href='./#{object.id}/remove', onclick="if(confirm('Are you sure to remove #{object.name} ?')) {return true;}; return false;")
+                a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', onclick="return false;")
                   span.fa.fa-trash-o  Remove
               
         .col-sm-6.col-md-4.col-md-offset-0
@@ -118,4 +118,26 @@ html(lang='en')
             p.text-center.img-responsive.center-block !{qr_img}
 
     include ../includes/foot.jade
-
+  link(href='/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='/js/sweetalert/sweetalert.js')
+  script.
+    document.querySelector('.sweet-5').onclick = function(){
+      swal({
+        title: "Are you sure?",
+        text: "Are you sure to remove #{object.name} ?",
+        type: "error",
+        showCancelButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true
+      },
+      function(isConfirm) {
+        if (isConfirm) {
+          document.location.href='./#{object.id}/remove';
+        } else {
+          //
+        }
+      });
+    };
