@@ -977,6 +977,14 @@ router.get('/about', function(req, res) {
 	});
 });
 
+router.get('/contact', function(req, res) {
+	res.render('contact', {
+		title : 'Contact us',
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
 router.get('/mail/welcome', function(req, res) {
 	var fake_user = req.session.user;
 	var fake_token = {
@@ -1411,7 +1419,7 @@ router.post('/snippets/add', Auth, function(req, res) {
 			if ( new_snippet.name ) {
 				snippets.insert(new_snippet);
 				db.save();
-				message = {type: 'success', value: 'Snippet <a href="/snippets/'+new_snippet.id+'">'+new_snippet.name+'</a> successfully added to your library.'};
+				message = {type: 'success', value: 'Snippet <a href="/snippets/'+new_snippet.id+'">'+new_snippet.name+'</a> successfully added to your shelves.'};
 				req.session.message = message;
 			} else {
 				message = {type: 'danger', value: 'Please give a name to your Snippet!'};
@@ -1525,14 +1533,15 @@ router.get('/keys', Auth, function(req, res) {
 		});
 
 		// Find and remove expired tokens from Db
-		var expired = tokens.chain().find(
+		var expired = tokens.find(
 			{ '$and': [
+		           {'user_id' : req.session.user.id},
 		           { 'expiration' : { '$lt': moment().format('x') } },
 		           { 'expiration' : { '$ne': '' } },
 			]}
 		);
-		if ( expired.data() ) {
-			expired.remove();
+		if ( expired ) {
+			tokens.remove(expired);
 			db.save();
 		}
 	}
@@ -1613,8 +1622,43 @@ router.post('/keys/add', function(req, res) {
 	}
 });
 
-router.get('/keys/:token([0-9a-z\-]+)', function(req, res) {
-	
+router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
+	var err = new Error('Not yet implemented');
+	err.status = 500;
+	res.status(err.status || 500).render(err.status, {
+		title : 'Not yet implemented',
+		user: req.session.user,
+		currentUrl: req.path,
+		err: err
+	});
+});
+
+router.get('/keys/:token([0-9a-z\-.]+)/remove', Auth, function(req, res) {
+	var token = req.params.token;
+	tokens	= db.getCollection('tokens');
+	var message;
+	if ( token !== undefined ) {
+		var queryT = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'token' : token },
+			]
+		};
+	}
+	var json = tokens.chain().find(queryT).limit(1).remove().data();
+	if ( json ) {
+		req.session.message = {type: 'success', value: 'Token '+token+' has successfully been revoked.'};
+		res.redirect('/keys');
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			currentUrl: req.path,
+			err: err
+		});
+	}
 });
 
 

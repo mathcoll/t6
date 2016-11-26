@@ -39,6 +39,30 @@ html(lang='en')
             include ../includes/pagination.jade
           else
             p &nbsp;
-            div.alert.alert-warning You don't have any Key yet in your library. You can <a href="/keys/add">add a Key</a>.
+            div.alert.alert-warning You don't have any Key yet in your shelves. You can <a href="/keys/add">add a Key</a>.
 
     include ../includes/foot.jade
+  link(href='/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='/js/sweetalert/sweetalert.js')
+  script.
+    $('.sweet-5').on('click', function (e) {
+      var token = $(this).data("token");
+      swal({
+        title: "Are you sure?",
+        text: "Are you sure to remove "+token+" ?",
+        type: "error",
+        showCancelButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Yes, revoke it!",
+        cancelButtonText: "No, cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true
+      },
+      function(isConfirm) {
+        if (isConfirm) {
+          document.location.href='/keys/'+token+'/remove';
+        } else {
+          //
+        }
+      });
+    });

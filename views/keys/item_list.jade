@@ -39,7 +39,7 @@
       div.col-sm-2  
 
 -else
-  a.clearfix.list-group-item(name="/keys/#{tokens[token].token}")
+  .clearfix.list-group-item(name="/keys/#{tokens[token].token}")
     div.col-sm-2
       h4.list-group-item-heading(style="margin:0; padding:0;")
         span.fa.fa-flash  
@@ -72,4 +72,9 @@
     -end
     div.col-sm-2 
       //-div.fa.fa-chevron-right.pull-right
+
+    div.col-sm-1.btn-group-vertical.pull-right(role="group")
+      a.btn.btn-primary.fa.fa-pencil-square-o(href='/keys/#{tokens[token].token}/edit')  Edit
+      a.btn.btn-danger.fa.fa-trash-o.btn-sm.sweet-5#remove(href='#', data-token='#{tokens[token].token}' onclick="return false;")  Revoke
+
 -end 
