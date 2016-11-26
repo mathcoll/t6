@@ -36,23 +36,44 @@ html(lang='en')
               p
                 span.label.label-warning POST
                 |  Create a User to platform:
-              pre.language-markup curl -i \ -H "Accept: application/json" \ -H "Content-Type:application/json" \ -X POST http://127.0.0.1:3000/v#{version}/users/ \ --data '{"firstName": "My FirstName", "lastName": "My LastName", "email": "myemail@domain.tld"}'
+              pre.language-markup curl -i \
+                | -H "Accept: application/json" \
+                | -H "Content-Type:application/json" \
+                | -X POST http://127.0.0.1:3000/v#{version}/users/ \
+                | --data '{"firstName": "My FirstName", "lastName": "My LastName", "email": "myemail@domain.tld"}'
+              
+              span Response:
+              pre.language-markup HTTP/1.1 201 Created
+                | {"code":201,"message":"Created","user":{"links":{"parent":"http://127.0.0.1:3000/v2.0.1/users"},"data":{"type":"users","id":"98e2f250-c6d9-4cfd-97ae-8d7142bd6f97","attributes":{"first_name":"My FirstName","last_name":"My LastName","email":"myemail@domain.tld","subscription_date":"1479839898260"},"links":{"self":"http://127.0.0.1:3000/v2.0.1/users/98e2f250-c6d9-4cfd-97ae-8d7142bd6f97"}}},"token":{"user_id":"98e2f250-c6d9-4cfd-97ae-8d7142bd6f97","key":"rvdagYpPNPiarzBzsFoovqBwrNKkLntERFyqeYFnKxdskhQAYxJPuhMMSOIqAS.k","secret":"tOMACwIBJCnmYqIFFu.yreBGBRSVEGVRFWzMRebUBMbxgwttsclIHZSrO.CBXZwK","expiration":"","meta":{"revision":0,"created":1479839898260,"version":0},"$loki":25}}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update a User to platform:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete a User from platform:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p  Create the initial token (without any permission) so that we can then create a Flow:
-              pre.language-markup curl -i \ -H "Accept: application/json" \ -H "Content-Type:application/json" \ -X POST http://127.0.0.1:3000/v#{version}/users/me/token \ --data '{"key": ":key", "secret": ":secret"}'
+              pre.language-markup curl -i \
+                | -H "Accept: application/json" \
+                | -H "Content-Type:application/json" \
+                | -X POST http://127.0.0.1:3000/v#{version}/users/me/token \
+                | --data '{"key": ":key", "secret": ":secret"}'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
             #nodejs1.tab-pane
@@ -60,6 +81,9 @@ html(lang='en')
                 span.label.label-success GET
                 |  Get self details current User:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p Refresh token from current User:
@@ -70,18 +94,27 @@ html(lang='en')
                 span.label.label-warning POST
                 |  Create a User to platform:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update a User to platform:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete a User from platform:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
 
         .col-sm-12
@@ -99,31 +132,67 @@ html(lang='en')
               p
                 span.label.label-success GET
                 |  Get the list of Objects from the current User:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/objects/' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/objects/'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get details on the selected Object:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/objects/:object_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/objects/:object_id'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a new Object to current User:
-              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v#{version}/objects' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v#{version}/objects'
+                | --data '{}'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update an Object:
-              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v#{version}/objects/:object_id' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v#{version}/objects/:object_id'
+                | --data '{}' -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete an Object:
-              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v#{version}/objects/:object_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v#{version}/objects/:object_id'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
             #nodejs2.tab-pane
@@ -131,30 +200,45 @@ html(lang='en')
                 span.label.label-success GET
                 |  Get the list of Objects from the current User:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get details on the selected Object:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a new Object to current User:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update an Object:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete an Object:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
 
         .col-sm-12
@@ -172,31 +256,68 @@ html(lang='en')
               p
                 span.label.label-success GET
                 |  Get the list of Flows from the current User:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/flows/' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/flows/'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get details on the selected Flow:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/flows/:flow_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/flows/:flow_id'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a new Flow and get 'rw' permissions:
-              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v#{version}/flows' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v#{version}/flows'
+                | --data '{}'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update a Flow:
-              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v#{version}/flows/:flow_id' --data '{}' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v#{version}/flows/:flow_id'
+                | --data '{}'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete a Flow:
-              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v#{version}/flows/:flow_id' -H 'Authorization: Bearer :bearer' -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive'
+              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v#{version}/flows/:flow_id'
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json"
+                | -H "Content-Type: application/json"
+                | -H 'Connection: keep-alive'
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
             #nodejs3.tab-pane
@@ -204,30 +325,45 @@ html(lang='en')
                 span.label.label-success GET
                 |  Get the list of Flows from the current User:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get details on the selected Flow:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a new Flow and get 'rw' permissions:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update a Flow:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete a Flow:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
 
         .col-sm-12
@@ -246,18 +382,27 @@ html(lang='en')
                 span.label.label-success GET
                 |  Get data from a Flows where the current User is authorized ('rw' or 'r'):
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get 1 specific data from a Flows where the current User is authorized ('rw' or 'r'):
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a data to a Flows (User must have 'rw' permission):
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
             #nodejs4.tab-pane
@@ -265,18 +410,27 @@ html(lang='en')
                 span.label.label-success GET
                 |  Get data from a Flows where the current User is authorized ('rw' or 'r'):
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get 1 specific data from a Flows where the current User is authorized ('rw' or 'r'):
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a data to a Flows (User must have 'rw' permission):
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
 
         .col-sm-12
@@ -295,30 +449,45 @@ html(lang='en')
                 span.label.label-success GET
                 |  Get the Units list set on the t6 platform:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get a specific Units details:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a Unit to platform, require Admin permissions:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update a Unit to platform, require Admin permissions:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete a Unit from platform, require Admin permissions:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
             #nodejs5.tab-pane
@@ -326,30 +495,45 @@ html(lang='en')
                 span.label.label-success GET
                 |  Get the Units list set on the t6 platform:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 |  Get a specific Units details:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 |  Create a Unit to platform, require Admin permissions:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update a Unit to platform, require Admin permissions:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 |  Delete a Unit from platform, require Admin permissions:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
           
         .col-sm-12
@@ -368,30 +552,45 @@ html(lang='en')
                 span.label.label-success GET
                 | Get the Datatype list set on the t6 platform:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 | Get a specific Datatype details:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 | Create a Datatype to platform, require Admin permissions:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 | Update a Datatype to platform, require Admin permissions:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 | Delete a Datatype from platform, require Admin permissions:
               pre.language-markup 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
             #nodejs6.tab-pane
@@ -399,30 +598,45 @@ html(lang='en')
                 span.label.label-success GET
                 | Get the Datatype list set on the t6 platform:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-success GET
                 | Get a specific Datatype details:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-warning POST
                 | Create a Datatype to platform, require Admin permissions:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-primary PUT
                 | Update a Datatype to platform, require Admin permissions:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
               
               p
                 span.label.label-danger DELETE
                 | Delete a Datatype from platform, require Admin permissions:
               pre.language-javascript 
+              
+              span Response:
+              pre.language-markup {}
               hr/
 
     include ../includes/foot.jade

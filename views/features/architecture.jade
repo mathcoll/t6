@@ -15,7 +15,7 @@ html(lang='en')
           
       .row
         mixin container(id, heading, subtitle, image, imgClass, descriptionP1, descriptionP2)
-          div(id=id).featurette.clearfix(name="#{heading}")
+          div#id.featurette.clearfix(name="#{heading}")
             h2.featurette-heading
               span.featurette-image.img-circle.img-responsive(src='#{image}', width='300', class='#{imgClass}')
               | !{heading}

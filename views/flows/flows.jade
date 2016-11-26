@@ -7,7 +7,7 @@ html(lang='en')
     .-o-container-fluid
       .row.side-body.hidden-xs
         .col-sm-12
-          h2.fa.fa-2x.fa-random &nbsp;Flows from your library
+          h2.fa.fa-2x.fa-random &nbsp;Flows from your shelves
           if (message && message.type && message.value)
             div.alert(class='alert-#{message.type}', role='alert') #{message.value}
         blockquote.fa.fa-comment  Flows contains data collections. Flows are datastore to save time/value. Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
@@ -39,6 +39,6 @@ html(lang='en')
             include ../includes/pagination.jade
           else
             p &nbsp;
-            div.alert.alert-warning You don't have any Flow yet in your library. You can <a href="/flows/add">add a Flow</a>.
+            div.alert.alert-warning You don't have any Flow yet in your shelves. You can <a href="/flows/add">add a Flow</a>.
 
     include ../includes/foot.jade
