@@ -680,6 +680,29 @@ router.post('/flows/add', Auth, function(req, res) {
 	}
 });
 
+router.get('/flows/:flow_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
+	var flow_id = req.params.flow_id;
+	flows	= db.getCollection('flows');
+	if ( flow_id !== undefined ) {
+		var queryF = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : flow_id },
+			]
+		};
+	}
+	var json = flows.chain().find(queryF).limit(1).data();//.remove()
+	if ( json.length != 0 ) {
+		flows.chain().find(queryF).limit(1).remove().data();//
+		//TODO:  Remove also data from the flow?????
+		req.session.message = {type: 'success', value: 'Flow '+flow_id+' has successfully been removed.'};
+		res.redirect('/flows');
+	} else {
+		req.session.message = {type: 'danger', value: 'Flow '+flow_id+' has not been removed, it remain unfound.'};
+		res.redirect('/flows');
+	}
+});
+
 /* ACCOUNT */
 router.get('/account/profile', Auth, function(req, res) {
 	objects	= db.getCollection('objects');
