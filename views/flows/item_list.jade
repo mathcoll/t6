@@ -6,14 +6,14 @@ a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].
 
   div.col-sm-2
     -if (flows[flow].unit)
-      span.label.label-primary(data-toggle='tooltip' data-placement='top' title='Flow Unit') #{flows[flow].unit}
+      span.label.label-primary(data-toggle='tooltip', data-placement='top', title='Flow Unit') #{flows[flow].unit}
     -else
       span 
     -end
 
   div.col-sm-2
     -if (flows[flow].permission)
-      span.label.label-danger(data-toggle='tooltip' data-placement='top' title='Flow Permissions') #{flows[flow].permission}
+      span.label.label-danger(data-toggle='tooltip', data-placement='top', title='Flow Permissions') #{flows[flow].permission}
     -else
       span 
     -end
@@ -22,7 +22,7 @@ a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].
     span.fa.fa-clock-o  #{moment(flows[flow].meta.created).format('DD/MM/YYYY, HH:mm')}
 
   div.col-sm-2
-    span.label.label-default.ellipsis(data-toggle='tooltip' data-placement='top' title='Flow ID') #{flows[flow].id}
+    span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title='Flow ID') #{flows[flow].id}
 
   div.col-sm-8  
 

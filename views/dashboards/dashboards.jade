@@ -31,7 +31,7 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards_length}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%; height: 5px;") &nbsp;
+              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards_length}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%; height: 5px;") &nbsp;
 
       .row.side-body
         .col-sm-12

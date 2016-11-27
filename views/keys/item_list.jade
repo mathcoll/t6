@@ -74,7 +74,9 @@
       //-div.fa.fa-chevron-right.pull-right
 
     div.col-sm-1.btn-group-vertical.pull-right(role="group")
-      a.btn.btn-primary.fa.fa-pencil-square-o(href='/keys/#{tokens[token].token}/edit')  Edit
-      a.btn.btn-danger.fa.fa-trash-o.btn-sm.sweet-5#remove(href='#', data-token='#{tokens[token].token}' onclick="return false;")  Revoke
+      a.btn.btn-primary.btn-sm(href='/keys/#{tokens[token].token}/edit')
+        span.fa.fa-pencil-square-o  Edit
+      a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{tokens[token].token}' onclick="return false;")
+        span.fa.fa-trash-o  Revoke
 
 -end 

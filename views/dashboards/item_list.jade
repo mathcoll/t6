@@ -7,7 +7,7 @@ a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards
     span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.created).format('DD/MM/YYYY, HH:mm')}
 
   div.col-sm-2
-   span.label.label-default.ellipsis(data-toggle='tooltip' data-placement='top' title='Dashboard Id')  #{dashboards[dashboard].id}
+   span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title='Dashboard Id')  #{dashboards[dashboard].id}
 
   div.col-sm-4
     span

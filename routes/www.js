@@ -1524,6 +1524,29 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 	}
 });
 
+router.get('/snippets/:snippet_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
+	var snippet_id = req.params.snippet_id;
+	snippets	= dbSnippets.getCollection('snippets');
+	if ( snippet_id !== undefined ) {
+		var queryS = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : snippet_id },
+			]
+		};
+	}
+	var json = snippets.chain().find(queryS).limit(1).data();
+	if ( json.length != 0 ) {
+		snippets.chain().find(queryS).limit(1).remove().data();
+		//TODO: We should also remove Snippets instances on dashboards...
+		req.session.message = {type: 'success', value: 'Snippet '+snippet_id+' has successfully been removed.'};
+		res.redirect('/snippets');
+	} else {
+		req.session.message = {type: 'danger', value: 'Snippet '+snippet_id+' has not been removed, it remain unfound.'};
+		res.redirect('/snippets');
+	}
+});
+
 /* API KEYS */
 router.get('/keys', Auth, function(req, res) {
 	tokens	= db.getCollection('tokens');

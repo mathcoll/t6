@@ -31,7 +31,7 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets_length}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%; height: 5px;") &nbsp;
+              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets_length}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%; height: 5px;") &nbsp;
 
       .row.side-body
         .col-sm-12
@@ -51,3 +51,28 @@ html(lang='en')
             div.alert.alert-warning You don't have any Snippet yet in your shelves. You can add a <a href="/snippets/add">Snippet</a> to graph your Flows
 
     include ../includes/foot.jade
+  link(href='/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='/js/sweetalert/sweetalert.js')
+  script.
+    $('.sweet-5').on('click', function (e) {
+      var id = $(this).data("id");
+      var name = $(this).data("name");
+      swal({
+        title: "Are you sure?",
+        text: "Are you sure to remove "+name+" ?",
+        type: "error",
+        showCancelButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Yes, remove it!",
+        cancelButtonText: "No, cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true
+      },
+      function(isConfirm) {
+        if (isConfirm) {
+          document.location.href='/snippets/'+id+'/remove';
+        } else {
+          //
+        }
+      });
+    });

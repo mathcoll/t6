@@ -31,7 +31,7 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{tokens_length}", aria-valuemin="0", aria-valuemax="#{quota.tokens}", style="width: #{percent}%; height: 5px;") &nbsp;
+              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{tokens_length}", aria-valuemin="0", aria-valuemax="#{quota.tokens}", style="width: #{percent}%; height: 5px;") &nbsp;
        
       .row.side-body
         .col-sm-12
@@ -52,10 +52,10 @@ html(lang='en')
   script(src='/js/sweetalert/sweetalert.js')
   script.
     $('.sweet-5').on('click', function (e) {
-      var token = $(this).data("token");
+      var id = $(this).data("id");
       swal({
         title: "Are you sure?",
-        text: "Are you sure to remove "+token+" ?",
+        text: "Are you sure to remove "+id+" ?",
         type: "error",
         showCancelButton: true,
         confirmButtonClass: "btn-danger",
@@ -66,7 +66,7 @@ html(lang='en')
       },
       function(isConfirm) {
         if (isConfirm) {
-          document.location.href='/keys/'+token+'/remove';
+          document.location.href='/keys/'+id+'/remove';
         } else {
           //
         }
