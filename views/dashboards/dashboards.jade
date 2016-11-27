@@ -16,7 +16,7 @@ html(lang='en')
         .col-xs-12.col-sm-12.col-md-12
           ul.clearfix.pagination
             li.active
-              span.fa.fa-3x.fa-area-chart  #{dashboards_length} Dashboards        
+              span.fa.fa-3x.fa-area-chart(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{dashboards_length} Dashboards        
                 - var percent = Math.round((dashboards_length*100/quota.dashboards)*100) /100
                 - var style = "success"
                 - if (percent > 60)
@@ -25,7 +25,13 @@ html(lang='en')
                 - if (percent > 85)
                   - style = "danger"
                 - end
-                span.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards_length}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%; height: 5px;") &nbsp;
+                - if (percent < 1)
+                  - percent = 1
+                  - percent_txt = '<1'
+                - else
+                  - percent_txt = percent
+                - end
+              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards_length}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%; height: 5px;") &nbsp;
 
       .row.side-body
         .col-sm-12

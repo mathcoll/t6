@@ -869,7 +869,9 @@ router.get('/decision-rules', Auth, function(req, res) {
 		title : 'Decision Rules',
 		user: req.session.user,
 		currentUrl: req.path,
+		rules_length: r.length,
 		rules: r,
+		quota : (quota[req.session.user.role])
 	});
 });
 

@@ -16,7 +16,7 @@ html(lang='en')
         .col-xs-12.col-sm-12.col-md-12
           ul.clearfix.pagination
             li.active
-              span.fa.fa-3x.fa-puzzle-piece  #{snippets_length} Snippets        
+              span.fa.fa-3x.fa-puzzle-piece(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{snippets_length} Snippets        
                 - var percent = Math.round((snippets_length*100/quota.snippets)*100) /100
                 - var style = "success"
                 - if (percent > 60)
@@ -25,7 +25,13 @@ html(lang='en')
                 - if (percent > 85)
                   - style = "danger"
                 - end
-                span.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets_length}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%; height: 5px;") &nbsp;
+                - if (percent < 1)
+                  - percent = 1
+                  - percent_txt = '<1'
+                - else
+                  - percent_txt = percent
+                - end
+              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip' data-placement='top' title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets_length}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%; height: 5px;") &nbsp;
 
       .row.side-body
         .col-sm-12
