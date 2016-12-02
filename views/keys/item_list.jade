@@ -40,12 +40,12 @@
 
 -else
   .clearfix.list-group-item(name="/keys/#{tokens[token].token}")
-    div.col-sm-2
+    div.col-sm-1
       h4.list-group-item-heading(style="margin:0; padding:0;")
         span.fa.fa-flash  
         |  Bearer
     
-    div.col-sm-4
+    div.col-sm-3
       div(style="margin:0; padding:0;")
         span.label.label-primary.ellipsis #{tokens[token].token}
         |  
@@ -62,6 +62,15 @@
       -else
         span &nbsp;-&nbsp;
       -end
+
+    div.col-sm-1.btn-group-vertical.pull-right(role="group")
+      a.btn.btn-primary.btn-sm(href='/keys/#{tokens[token].token}/edit')
+        span.fa.fa-pencil-square-o  Edit
+      a.btn.btn-warning.btn-sm(href='/keys/#{tokens[token].token}/extend')
+        span.fa.fa-expand  Extend
+      a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{tokens[token].token}' onclick="return false;")
+        span.fa.fa-trash-o  Revoke
+
     
     -if(tokens[token].permissions)
       div.col-sm-10.fa.fa-random
@@ -70,13 +79,4 @@
           | , 
         - }
     -end
-    div.col-sm-2 
-      //-div.fa.fa-chevron-right.pull-right
-
-    div.col-sm-1.btn-group-vertical.pull-right(role="group")
-      a.btn.btn-primary.btn-sm(href='/keys/#{tokens[token].token}/edit')
-        span.fa.fa-pencil-square-o  Edit
-      a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{tokens[token].token}' onclick="return false;")
-        span.fa.fa-trash-o  Revoke
-
 -end 

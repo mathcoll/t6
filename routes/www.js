@@ -1709,6 +1709,49 @@ router.get('/keys/:token([0-9a-z\-.]+)/remove', Auth, function(req, res) {
 	}
 });
 
+router.get('/keys/:token([0-9a-z\-.]+)/extend', Auth, function(req, res) {
+	var token = req.params.token;
+	tokens	= db.getCollection('tokens');
+	if ( token !== undefined ) {
+		var queryT = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'token' : token },
+			]
+		};
+	}
+	var json = (tokens.chain().find(queryT).limit(1).data())[0];
+
+	if ( json ) {
+		var duration = parseInt(json.expiration - json.meta.created);
+		duration = duration<(1*60*60*24*1000*(365.25/12))?duration:(1*60*60*24*1000*(365.25/12)); // Max 1 month 
+		var exp = parseInt(json.expiration)+parseInt(duration);
+		/*console.log("Cur Exp.: "+ json.expiration );
+		console.log("Cur Exp.: "+ moment(json.expiration).format('MMMM Do YYYY, h:mm:ss a') );
+		console.log("Created: "+ json.meta.created );
+		console.log("Created: "+ moment(json.meta.created).format('MMMM Do YYYY, h:mm:ss a') );
+		console.log("Duration: "+ duration );
+		console.log("New Exp.: "+ exp );
+		console.log("New Exp.: "+ moment(exp).format('MMMM Do YYYY, h:mm:ss a') );
+		*/
+		json.expiration	=		exp;
+		tokens.update(json);
+		db.save();
+
+		req.session.message = {type: 'success', value: 'Token '+token+' has successfully been extended to '+moment(exp).format('MMMM Do YYYY, h:mm:ss a')};
+		res.redirect('/keys');
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			currentUrl: req.path,
+			err: err
+		});
+	}
+});
+
 
 function Auth(req, res, next) {
 	users	= db.getCollection('users');
