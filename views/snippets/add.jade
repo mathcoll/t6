@@ -47,15 +47,10 @@ html(lang='en')
 
               .form-group
                 label.control-label(for="icon") Snippet Icon:
-                ul.list-unstyled.list-inline.iconpicker(data-toggle="buttons")
-                  - var icons = ['fa fa-battery-0', 'fa fa-battery-1 ', 'fa fa-battery-2', 'fa fa-battery-3', 'fa fa-wifi', 'fa fa-bell-slash-o', 'fa fa-bell', 'fa fa-bullhorn', 'fa fa-bug', 'fa fa-bolt', 'fa fa-eye', 'fa fa-heart-o', 'fa fa-star-o', 'fa fa-rocket']
-                  - for (icon in icons)
-                    li
-                      .form-group.btn.btn-default
-                        i.input-group(class="#{icons[icon]}") 
-                        | &nbsp;
-                        input.input-group(class="#{icons[icon]}", type='radio', name='icon', value='#{icons[icon]}')
-                  - end
+                .input-group
+                  span.input-group-addon
+                    i
+                  input.form-control.icp.icp-auto(name='icon', id='icon', data-placement='bottomLeft', value='', type='text')
 
               .row.form-group
                 label.control-label Select & Customize your Snippet
@@ -113,9 +108,74 @@ html(lang='en')
     include ../includes/foot.jade
 
     link(href='/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
+    link(href='/css/fontawesome-iconpicker/fontawesome-iconpicker.min.css', rel='stylesheet')
     script(type='text/javascript', src='/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
+    script(type='text/javascript', src='/js/fontawesome-iconpicker/fontawesome-iconpicker.js')
 
     script(type='text/javascript').
+      $('.icp-auto').iconpicker({
+        fullClassFormatter: function(val){
+          if(val.match(/^fa-/)){ return 'fa '+val; }
+          else{ return 'glyphicon '+val; }
+        },
+        hideOnSelect: true,
+        icons: $.merge([//41 New Icons in 4.7
+        'fa-address-book',
+        'fa-address-book-o',
+        'fa-address-card',
+        'fa-address-card-o',
+        'fa-bandcamp',
+        'fa-bath',
+        'fa-bathtub',
+        'fa-drivers-license',
+        'fa-drivers-license-o',
+        'fa-eercast',
+        'fa-envelope-open',
+        'fa-envelope-open-o',
+        'fa-etsy',
+        'fa-free-code-camp',
+        'fa-grav',
+        'fa-handshake-o',
+        'fa-id-badge',
+        'fa-id-card',
+        'fa-id-card-o',
+        'fa-imdb',
+        'fa-linode',
+        'fa-meetup',
+        'fa-microchip',
+        'fa-podcast',
+        'fa-quora',
+        'fa-ravelry',
+        'fa-s15',
+        'fa-shower',
+        'fa-snowflake-o',
+        'fa-superpowers',
+        'fa-telegram',
+        'fa-thermometer',
+        'fa-thermometer-0',
+        'fa-thermometer-1',
+        'fa-thermometer-2',
+        'fa-thermometer-3',
+        'fa-thermometer-4',
+        'fa-thermometer-empty',
+        'fa-thermometer-full',
+        'fa-thermometer-half',
+        'fa-thermometer-quarter',
+        'fa-thermometer-three-quarters',
+        'fa-times-rectangle',
+        'fa-times-rectangle-o',
+        'fa-user-circle',
+        'fa-user-circle-o',
+        'fa-user-o',
+        'fa-vcard-o',
+        'fa-window-close',
+        'fa-window-close-o',
+        'fa-window-maximize',
+        'fa-window-minimize',
+        'fa-window-restore',
+        'fa-wpexplorer'],
+        $.iconpicker.defaultOptions.icons),
+      });
       // Types:
       // datatype, unit, startdate, enddate, background, lineColor, fillColor, normalRangeColor
       var snippetsTypes = {
