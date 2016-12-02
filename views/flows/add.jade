@@ -36,7 +36,7 @@ html(lang='en')
                   span.mandatory *
                 span.input-group
                   span.input-group-addon
-                    span.glyphicon.glyphicon-bookmark
+                    span.fa.fa-bookmark-o
                   select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
                     - for(datatype in datatypes) {
                       option(value="#{datatypes[datatype].id}", selected=(new_flow.data_type==''+datatypes[datatype].id ? "selected" : undefined)) #{datatypes[datatype].name}
@@ -47,7 +47,7 @@ html(lang='en')
                   span.mandatory *
                 span.input-group
                   span.input-group-addon
-                    span.glyphicon.glyphicon-magnet
+                    span.fa.fa-magnet
                   select.form-control(type="text", name="unit", placeholder="Unit", id="unit")
                     - for(unit in units) {
                       option(value="#{units[unit].id}", selected=(new_flow.unit_id==''+units[unit].id ? "selected" : undefined)) #{units[unit].type} - #{units[unit].name}

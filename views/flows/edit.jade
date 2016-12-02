@@ -35,7 +35,7 @@ html(lang='en')
                 span.mandatory *
               span.input-group
                 span.input-group-addon
-                  span.glyphicon.glyphicon-bookmark
+                  span.fa.fa-bookmark-o
                 select.form-control(type="text", name="datatype", placeholder="Data-Type", id="datatype")
                   - for(datatype in datatypes) {
                     -if (datatypes[datatype].id === flow.data_type)
@@ -49,7 +49,7 @@ html(lang='en')
                 span.mandatory *
               span.input-group
                 span.input-group-addon
-                  span.glyphicon.glyphicon-magnet
+                  span.fa.fa-magnet
                 select.form-control(type="text", name="unit", placeholder="Unit", id="unit")
                   - for(unit in units) {
                     -if (units[unit].id === flow.unit_id)
