@@ -54,11 +54,11 @@
       span 
 
     div.col-sm-2
-      span.fa.fa-clock-o #{moment(tokens[token].meta.created).format('DD/MM/YYYY, HH:mm')}
+      span.fa.fa-clock-o  #{moment(tokens[token].meta.created).format('DD/MM/YYYY, HH:mm')}
     
     div.col-sm-2
       -if(tokens[token].expiration)
-        span.fa.fa-clock-o #{moment( parseInt(tokens[token].expiration) ).format('DD/MM/YYYY, HH:mm')}
+        span.fa.fa-clock-o  #{moment( parseInt(tokens[token].expiration) ).format('DD/MM/YYYY, HH:mm')}
       -else
         span &nbsp;-&nbsp;
       -end
@@ -72,11 +72,7 @@
         span.fa.fa-trash-o  Revoke
 
     
-    -if(tokens[token].permissions)
-      div.col-sm-10.fa.fa-random
-        - for(p in tokens[token].permissions) {
-          span(title='Permission: #{(tokens[token].permissions)[p].permission}') #{(tokens[token].permissions)[p].flow_id}
-          | , 
-        - }
+    -if(tokens[token].permissions.length)
+      div.col-sm-10.fa.fa-random  #{(tokens[token].permissions).length} Flows
     -end
 -end 
