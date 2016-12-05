@@ -50,6 +50,14 @@ html(lang='en')
                 - }
               - }
 
+              dt API Flow endpoint:
+              dd
+                span.label.label-default.ellipis #{baseUrl}/v2.0.1/flows/#{flow.id}
+                
+              dt API Data endpoint:
+              dd
+                span.label.label-default.ellipis #{baseUrl}/v2.0.1/data/#{flow.id}
+
           .form-group.col-md-12
             ul.list-inline
               li

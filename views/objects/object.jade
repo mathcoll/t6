@@ -100,6 +100,10 @@ html(lang='en')
                   br/
                   a(href='geo:#{object.latitude},#{object.longitude}?z=18') Geo link
               - end
+                
+              dt API Object endpoint:
+              dd
+                span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}
 
           .form-group
             ul.list-inline
