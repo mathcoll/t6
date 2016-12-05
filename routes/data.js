@@ -46,8 +46,6 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			}
 
 			flows = db.getCollection('flows');
-			//if( flow_id.length < 3 )  flow_id = parseInt(flow_id, 0);
-			//var flow = flows.findOne({ 'id' : flow_id });
 			var flow = flows.findOne({ 'id' : { '$aeq' : flow_id } });
 	
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
@@ -72,7 +70,9 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					data[0].next = page+1;
 					data[0].prev = page-1;
 					data[0].limit = limit;
-					data[0].theme = flow.theme;
+					data[0].time = moment(data[0].time).format('x');
+					data[0].timestamp = moment(data[0].time).format('x');
+					data[0].mqtt_topic = flow.mqtt_topic;
 					data[0].order = req.query.order!==undefined?req.query.order:'asc';
 					
 					if (output == 'json') {
@@ -113,7 +113,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 				dbSQLite3.all(query, function(err, data) {
 					if (err) console.log(err);
 					if ( data.length > 0 ) {
-						data.id = moment(data.id).format('x');
+						data.id = moment(data.timestamp).format('x');
 						data.title = flow!==null?flow.name:'';
 						data.unit = flow!==null?flow.unit:'';
 						data.ttl = 3600;
@@ -122,7 +122,9 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						data.next = page+1;
 						data.prev = page-1;
 						data.limit = limit;
-						data.theme = flow.theme;
+						data.time = moment(data.timestamp).format('x');
+						data.timestamp = moment(data.timestamp).format('x');
+						data.mqtt_topic = flow.mqtt_topic;
 						data.order = req.query.order!==undefined?req.query.order:'asc';
 						
 						if (output == 'json') {
@@ -246,6 +248,10 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 			var limit = 1;
 			var page = 1;
 			var sorting = req.query.order=='asc'?true:false;
+			
+			flows	= db.getCollection('flows');
+			var f = flows.chain().find({id: flow_id}).limit(1).data();
+			mqtt_topic = f[0].mqtt_topic;
 
 			if ( db_type == 'influxdb' ) {
 				/* InfluxDB database */
@@ -266,6 +272,9 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					data[0].next = page+1;
 					data[0].prev = page-1;
 					data[0].limit = limit;
+					data[0].id = data[0].time;
+					data[0].timestamp = data[0].time;
+					data[0].mqtt_topic = mqtt_topic;
 					data[0].order = req.query.order!==undefined?req.query.order:'asc';
 					
 					res.status(200).send(new DataSerializer(data[0]).serialize());
@@ -289,6 +298,10 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					data.next = page+1;
 					data.prev = page-1;
 					data.limit = limit;
+					data.id = data[0].timestamp;
+					data.time = data[0].timestamp;
+					data.timestamp = data[0].timestamp;
+					data.mqtt_topic = mqtt_topic;
 					data.order = req.query.order!==undefined?req.query.order:'asc';
 					//console.log(data);
 					
@@ -308,14 +321,13 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 
 router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
-	var time		= req.body.timestamp!==''?parseInt(req.body.timestamp):moment().format('x');
+	var time		= (req.body.timestamp!==''&&req.body.timestamp!==undefined)?parseInt(req.body.timestamp):moment().format('x');
 	if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
-	
 	var value		= req.body.value!==undefined?req.body.value:"";
 	var publish		= req.body.publish!==undefined?JSON.parse(req.body.publish):false;
 	var save		= req.body.save!==undefined?JSON.parse(req.body.save):true;
 	var unit		= req.body.unit!==undefined?req.body.unit:"";
-	var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:""; // TODO, if unset, we should try to get the topic from the flow itself
+	var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"";
 	var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
 
 	if ( !flow_id ) {
@@ -326,6 +338,11 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		// Not Authorized because token is invalid
 		res.status(401).send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	} else {
+		flows	= db.getCollection('flows');
+		var f = flows.chain().find({id: flow_id}).limit(1).data();
+		if ( !mqtt_topic && f[0].mqtt_topic ) {
+			mqtt_topic = f[0].mqtt_topic;
+		}
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
 		    return p.flow_id == flow_id; 
@@ -378,6 +395,9 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 			data[0].prev;
 			data[0].next;
 			data[0].id = time;
+			data[0].time = time;
+			data[0].timestamp = time;
+			data[0].mqtt_topic = mqtt_topic;
 			res.status(200).send(new DataSerializer(data).serialize());
 			
 		} else {

@@ -120,7 +120,7 @@ var viewports = [{
 /* Display Home page */
 casper.test.begin('Display Home page', 1, function suite(test) {
 	casper.start(RootURL, function() {
-        test.assertTitle('Register to t6', 'Page Title is correct');
+        test.assertTitle('t6, IoT platform and API', 'Page Title is correct');
         test.assertExists('html body div.container div.col-sm-12 form.form-signin', "Register form is found");
     });
 
@@ -160,7 +160,7 @@ casper.test.begin('Display Register page', 1, function suite(test) {
 		this.then(function() {
 			this.viewport(viewport.viewport.width, viewport.viewport.height);
 		});
-		this.thenOpen(RootURL+'register', function() {
+		this.thenOpen(RootURL+'account/register', function() {
 			this.wait(100);
 		});
 		this.then(function() {//Display Register page
@@ -183,7 +183,7 @@ casper.test.begin('Display Register page', 1, function suite(test) {
 
 /* Register a User */
 casper.test.begin('Register a User', 1, function suite(test) {
-	casper.start(RootURL+'register', function() {
+	casper.start(RootURL+'account/register', function() {
 		this.fill('html body div.container div.col-sm-12 form.form-signin', {
 			email: '',
 			firstName: '',
@@ -197,7 +197,7 @@ casper.test.begin('Register a User', 1, function suite(test) {
 
 /* Display Login page */
 casper.test.begin('Display Login page', 1, function suite(test) {
-	casper.start(RootURL+'login', function() {
+	casper.start(RootURL+'account/login', function() {
         test.assertTitle('Log-in to t6', 'Page Title is correct');
         test.assertExists('html body div.container div.col-sm-12 form.form-signin', "Login form is found");
     });
@@ -208,7 +208,7 @@ casper.test.begin('Display Login page', 1, function suite(test) {
 
 /* Login a User */
 casper.test.begin('Login a User', 1, function suite(test) {
-	casper.start(RootURL+'login', function() {
+	casper.start(RootURL+'account/login', function() {
         this.fill('html body div.container div.col-sm-12 form.form-signin', {
         	key: 'wrong_key',
         	secret: 'wrong_password',
@@ -227,7 +227,7 @@ casper.test.begin('Login a User', 1, function suite(test) {
 
 /* Logout */
 casper.test.begin('Logout', 1, function suite(test) {
-	casper.start(RootURL+'logout', function() {
+	casper.start(RootURL+'account/logout', function() {
         test.assertTitle('Dashboard t6', 'Page Title is correct');
     });
     casper.run(function() {

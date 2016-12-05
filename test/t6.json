@@ -24,8 +24,8 @@
                         {
                         	"request": "POST /v2.0.1/users",
                             "params": {
-                                "email": "myemail+{{$run_id}}@domain.tld",
-                                "firstName": "My FirstName",
+                                "email": "m.lory@free.fr",
+                                "firstName": "My FirstName {{$run_id}}",
                                 "lastName": "My LastName"
                             },
                             "assert": [],
