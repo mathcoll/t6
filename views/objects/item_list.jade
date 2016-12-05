@@ -11,31 +11,32 @@ a.clearfix.list-group-item(name='#{objects[object].id}', href='/objects/#{object
       span(data-toggle='tooltip', data-placement='top', title='Longitude') / #{objects[object].longitude}
     - else
     - end
-
+  
   div.col-sm-2
-    -if(objects[object].position)
-      span.fa.fa-map-marker(data-toggle='tooltip', data-placement='top', title='Localization')  #{objects[object].position}
+    -if(objects[object].isPublic=='true')
+      div.fa.fa-eye  Public
     -else
-      span 
+      div.fa.fa-eye-slash  Hidden
     -end
 
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(objects[object].meta.created).format('DD/MM/YYYY, HH:mm')}
-  
+
   div.col-sm-2
     span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title='Object Id')  #{objects[object].id}
       
-  div.col-sm-6
-  
-  div.col-sm-2
-    -if(objects[object].isPublic=='true')
-      span.fa.fa-eye  Public
+  div.col-sm-4
+    div &nbsp;
+
+  div.col-sm-4
+    -if(objects[object].position)
+      div.fa.fa-map-marker(data-toggle='tooltip', data-placement='top', title='Localization')  #{objects[object].position}
     -else
-      span.fa.fa-eye-slash  Hidden
+      div &nbsp;
     -end
 
   div.col-sm-2
-    span.fa.fa-clock-o  #{moment(objects[object].meta.updated).format('DD/MM/YYYY, HH:mm')}
+    div.fa.fa-clock-o  #{moment(objects[object].meta.updated).format('DD/MM/YYYY, HH:mm')}
   
   div.col-sm-10
     div #{objects[object].description}
