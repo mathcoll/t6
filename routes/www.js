@@ -1564,7 +1564,7 @@ router.get('/keys', Auth, function(req, res) {
 	req.session.message = null; // Force to unset
 
 	var t = tokens.chain().find(query).simplesort('expiration').offset(offset).limit(pagination).data();
-	//console.log(t);
+	//console.log(t[2].permissions);
 	if ( t.length == 0 ) {
 		res.redirect('/keys/add');
 	} else {
@@ -1654,6 +1654,7 @@ router.post('/keys/add', function(req, res) {
 	};
 	
 	if ( tokens.insert(new_token) ) {
+		req.session.message = {type: 'success', value: 'Token '+token+' has successfully been created.'};
 		res.redirect('/keys/');
 		//res.redirect('/keys/'+new_token.token);
 	} else {
@@ -1751,7 +1752,7 @@ router.post('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 			}
 			db.save();
 			tokens.update(json);
-			req.session.message = {type: 'success', value: 'Token'+token+' has successfully been updated.'};
+			req.session.message = {type: 'success', value: 'Token '+token+' has successfully been updated.'};
 			
 			res.redirect('/keys/');
 		} else {
