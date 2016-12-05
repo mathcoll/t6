@@ -7,31 +7,31 @@ footer.footer.navbar-fixed-bottom
             i.fa.fa-2x.fa-plus-square(title='Add an Object to my shelves')  
         -else
           a.btn-group.btn(href='/objects')
-            i.fa.fa-2x.fa-cubes(data-toggle='tooltip', data-placement='top', title='My Objects in shelves')  
+            i.fa.fa-2x.fa-cubes(data-toggle='tooltip', data-placement='top', title='Objects on shelves')  
         
         -if ( currentUrl === '/flows' || currentUrl === '/flows/' )
           a.btn-group.btn(href='/flows/add')
             i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Flow to my shelves')  
         -else
           a.btn-group.btn(href='/flows')
-            i.fa.fa-2x.fa-random(data-toggle='tooltip', data-placement='top', title='My Flows in shelves')  
+            i.fa.fa-2x.fa-random(data-toggle='tooltip', data-placement='top', title='Flows on shelves')  
 
         -if ( currentUrl === '/snippets' || currentUrl === '/snippets/' )
           a.btn-group.btn(href='/snippets/add')
             i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Snippet to my shelves')  
         -else
           a.btn-group.btn(href='/snippets')
-            i.fa.fa-2x.fa-puzzle-piece(data-toggle='tooltip', data-placement='top', title='My Snippets in shelves')  
+            i.fa.fa-2x.fa-puzzle-piece(data-toggle='tooltip', data-placement='top', title='Snippets on shelves')  
 
         -if ( currentUrl === '/dashboards' || currentUrl === '/dashboards/' )
           a.btn-group.btn(href='/dashboards/add')
             i.fa.fa-2x.fa-plus-square(data-toggle='tooltip', data-placement='top', title='Add a Dashboard to my shelves')  
         -else
           a.btn-group.btn(href='/dashboards')
-            i.fa.fa-2x.fa-area-chart(data-toggle='tooltip', data-placement='top', title='My Dashboards in shelves')  
+            i.fa.fa-2x.fa-area-chart(data-toggle='tooltip', data-placement='top', title='Dashboards on shelves')  
 
         a.btn-group.btn(href='/account/profile')
-          i.fa.fa-2x.fa-user(data-toggle='tooltip', data-placement='top', title='My Profile and Account')  
+          i.fa.fa-2x.fa-user(data-toggle='tooltip', data-placement='top', title='Profile and Account')  
 
       - else
         a.btn-group.btn(href='/account/login')

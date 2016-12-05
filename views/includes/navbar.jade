@@ -25,9 +25,9 @@
             .panel-body
               form.navbar-form(role='search', method='post', action='/search')
                 .form-group
-                  input.form-control(name='q', type='text', placeholder='Search for Objects, Flows...')
+                  input.form-control(name='q', type='text', placeholder='Search for Objects, Flows, Snippets, Dashboards...')
                 button.btn.btn-default(type='submit')
-                  span.glyphicon.glyphicon-ok
+                  span.fa.fa-check
       // Main Menu
       .side-menu-container
         ul.nav.navbar-nav
@@ -55,19 +55,19 @@
             li(class=(currentUrl.indexOf("/objects")>-1)?'active':undefined)
               a(href='/objects')
                 span.fa.fa-cubes.pull-right
-                |  My Objects
+                |  Objects
             li(class=(currentUrl.indexOf("/flows")>-1)?'active':undefined)
               a(href='/flows')
                 span.fa.fa-random.pull-right
-                |  My Flows
+                |  Flows
             li(class=(currentUrl.indexOf("/snippets")>-1)?'active':undefined)
               a(href='/snippets')
                 span.fa.fa-puzzle-piece.pull-right
-                |  My Snippets
+                |  Snippets
             li(class=(currentUrl.indexOf("/dashboards")>-1)?'active':undefined)
               a(href='/dashboards')
                 span.fa.fa-area-chart.pull-right
-                |  My Dashboards
+                |  Dashboards
             li(class=(currentUrl.indexOf("/decision-rules")>-1)?'active':undefined)
               a(href='/decision-rules')
                 span.fa.fa-filter.pull-right
