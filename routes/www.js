@@ -1564,6 +1564,7 @@ router.get('/keys', Auth, function(req, res) {
 	req.session.message = null; // Force to unset
 
 	var t = tokens.chain().find(query).simplesort('expiration').offset(offset).limit(pagination).data();
+	//console.log(t);
 	if ( t.length == 0 ) {
 		res.redirect('/keys/add');
 	} else {
@@ -1671,14 +1672,108 @@ router.post('/keys/add', function(req, res) {
 });
 
 router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
-	var err = new Error('Not yet implemented');
-	err.status = 500;
-	res.status(err.status || 500).render(err.status, {
-		title : 'Not yet implemented',
-		user: req.session.user,
-		currentUrl: req.path,
-		err: err
-	});
+	var token = req.params.token;
+	tokens	= db.getCollection('tokens');
+	flows		= db.getCollection('flows');
+	var query = { 'user_id': req.session.user.id };
+	if ( token !== undefined ) {
+		var queryT = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'token' : token },
+			]
+		};
+	}
+	var json = tokens.findOne(queryT);
+	var f = flows.chain().find(query).sort(alphaSort).data();
+	//console.log(json);
+	if ( json ) {
+		var message = req.session.message!==null?req.session.message:message = {type: '', value: ''};
+		req.session.message = null; // Force to unset
+		res.render('keys/edit', {
+			title : 'Edit Key '+json.token,
+			token: json,
+			flows: f,
+			message: message,
+			currentUrl: req.path,
+			user: req.session.user
+		});
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			currentUrl: req.path,
+			err: err
+		});
+	}
+});
+
+router.post('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
+	var token = req.params.token;
+	if ( token !== undefined ) {
+		tokens	= db.getCollection('tokens');
+		var queryT = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'token' : token },
+			]
+		};
+		var json = (tokens.chain().find(queryT).limit(1).data())[0];
+		//console.log(json);
+		if ( json ) {
+			var owner_permission = req.body.owner_permission!==undefined?req.body.owner_permission:'6';
+			var group_permission = req.body.group_permission!==undefined?req.body.group_permission:'0';
+			var other_permission = req.body.other_permission!==undefined?req.body.other_permission:'0';
+			var permission = owner_permission+group_permission+other_permission;
+			var linked_flows = req.body['flows[]']!==undefined?req.body['flows[]']:new Array();
+			json.permissions = new Array();
+			if( req.body['flows[]'] instanceof Array ) {
+				//
+			} else {
+				linked_flows = [linked_flows];
+			}
+			linked_flows.forEach(function(flow_id) {
+				json.permissions.push({flow_id: flow_id, permission: permission});
+			});
+			
+			if ( req.body.expiration == '1 hours' ) {
+				json.expiration = moment().add(1, 'hours').format('x');
+			} else if ( req.body.expiration == '7 days' ) {
+				json.expiration = moment().add(7, 'days').format('x');
+			} else if ( req.body.expiration == '1 months' ) {
+				json.expiration = moment().add(1, 'months').format('x');
+			} else if ( req.body.expiration == 'keep' ) {
+				//
+			} else {
+				json.expiration = moment().add(1, 'hours').format('x');
+			}
+			db.save();
+			tokens.update(json);
+			req.session.message = {type: 'success', value: 'Token'+token+' has successfully been updated.'};
+			
+			res.redirect('/keys/');
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			currentUrl: req.path,
+			err: err
+		});
+	}
 });
 
 router.get('/keys/:token([0-9a-z\-.]+)/remove', Auth, function(req, res) {
