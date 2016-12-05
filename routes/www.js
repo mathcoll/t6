@@ -369,6 +369,38 @@ router.post('/objects/add', Auth, function(req, res) {
 	}
 });
 
+/* MQTT TOPICS */
+router.get('/mqtt', Auth, function(req, res) {
+	flows	= db.getCollection('flows');
+	var query = { '$and': [
+		{ 'user_id' : { '$eq': req.session.user.id } },
+		//{ 'mqtt_topic' : { '$ne': null } }
+	]};
+
+	var pagination=12;
+	req.query.page=req.query.page!==undefined?req.query.page:1;
+	var offset = (req.query.page -1) * pagination;
+	var message = req.session.message!==null?req.session.message:null;
+	req.session.message = null; // Force to unset
+
+	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	//console.log(f);
+	if ( f.length == 0 ) {
+		//res.redirect('/flows/add');
+	} else {
+		var flows_length = (flows.chain().find(query).data()).length;
+		res.render('mqtt/mqtts', {
+			title : 'Mqtt Topics',
+			flows: f,
+			page: req.query.page,
+			pagenb: Math.ceil(flows_length/pagination),
+			user: req.session.user,
+			currentUrl: req.path,
+			message: message
+		});
+	}
+});
+
 /* FLOWS */
 router.get('/flows', Auth, function(req, res) {
 	flows	= db.getCollection('flows');

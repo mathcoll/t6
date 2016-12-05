@@ -1,0 +1,31 @@
+doctype html
+html(lang='en')
+  include ../includes/head.jade
+  body
+    include ../includes/navbar.jade
+    
+    .-o-container-fluid
+      .row.side-body.hidden-xs
+        .col-sm-12
+          h2.fa.fa-2x.fa-random &nbsp;Mqtt in your Flows
+          if (message && message.type && message.value)
+            div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+        blockquote.fa.fa-comment  
+
+      .row.side-body
+        .col-sm-12
+          if (flows.length)
+            include ../includes/pagination.jade
+            include ./item_header.jade
+            .list-group
+              - for(flow in flows) {
+                - if (flows[flow].mqtt_topic)
+                  include ./item_list.jade
+                - end
+              - }
+            include ../includes/pagination.jade
+          else
+            p &nbsp;
+            div.alert.alert-warning You don't have any Flow yet in your shelves. You can <a href="/flows/add">add a Flow</a>.
+
+    include ../includes/foot.jade
