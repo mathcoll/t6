@@ -694,8 +694,8 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 	var json = flows.chain().find(queryF).limit(1).data();//.remove()
 	if ( json.length != 0 ) {
 		flows.chain().find(queryF).limit(1).remove().data();//
-		//TODO:  Remove also data from the flow?????
-		req.session.message = {type: 'success', value: 'Flow '+flow_id+' has successfully been removed.'};
+		//TODO: Remove also data from the flow
+		req.session.message = {type: 'success', value: 'Flow '+flow_id+' and all its data has successfully been removed.'};
 		res.redirect('/flows');
 	} else {
 		req.session.message = {type: 'danger', value: 'Flow '+flow_id+' has not been removed, it remain unfound.'};

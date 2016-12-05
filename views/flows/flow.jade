@@ -183,7 +183,8 @@ html(lang='en')
     document.querySelector('.sweet-5').onclick = function(){
       swal({
         title: "Are you sure?",
-        text: "Are you sure to remove #{flow.name} ?",
+        text: "Are you sure to remove #{flow.name} ?<br /><small>This action will erase all the data from this Flow</small>.",
+        html: true,
         type: "error",
         showCancelButton: true,
         confirmButtonClass: "btn-danger",
