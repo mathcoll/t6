@@ -36,8 +36,8 @@ html(lang='en')
 
     include ../includes/foot.jade
     
-    link(href='/css/bootstrap-editable/bootstrap-editable-1.5.0.css', rel='stylesheet')
-    script(src='/js/bootstrap-editable/bootstrap-editable-1.5.0.min.js')
+    link(href='#{baseUrlCdn}/css/bootstrap-editable/bootstrap-editable-1.5.0.css', rel='stylesheet')
+    script(src='#{baseUrlCdn}/js/bootstrap-editable/bootstrap-editable-1.5.0.min.js')
     script.
       $(document).ready(function() {
         $.fn.editable.defaults.mode = 'inline';

@@ -16,7 +16,7 @@ a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards
     span.xs-visible-inline.fa.fa-puzzle-piece  #{dashboards[dashboard].snippets.length} Snippet(s) linked
 
   div.col-sm-2
-    img.img.img-responsive(src='/img/layout_#{dashboards[dashboard].layout}.png', alt='#{dashboards[dashboard].layout}', width='30')
+    img.img.img-responsive(src='#{baseUrlCdn}/img/layout_#{dashboards[dashboard].layout}.png', alt='#{dashboards[dashboard].layout}', width='30')
 
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.updated).format('DD/MM/YYYY, HH:mm')}

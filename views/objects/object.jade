@@ -125,8 +125,8 @@ html(lang='en')
             p.text-center.img-responsive.center-block !{qr_img}
 
     include ../includes/foot.jade
-  link(href='/css/sweetalert/sweetalert.css', rel='stylesheet')
-  script(src='/js/sweetalert/sweetalert.js')
+  link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
   script.
     document.querySelector('.sweet-5').onclick = function(){
       swal({

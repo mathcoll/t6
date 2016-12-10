@@ -48,8 +48,8 @@ html(lang='en')
             div.alert.alert-warning You don't have any Key yet in your shelves. You can <a href="/keys/add">add a Key</a>.
 
     include ../includes/foot.jade
-  link(href='/css/sweetalert/sweetalert.css', rel='stylesheet')
-  script(src='/js/sweetalert/sweetalert.js')
+  link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
   script.
     $('.sweet-5').on('click', function (e) {
       var id = $(this).data("id");

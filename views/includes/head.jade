@@ -4,24 +4,26 @@ head
   meta(name='viewport', content='width=device-width, initial-scale=1')
   meta(name='description', content='')
   meta(name='author', content='')
-  link(rel='icon', href='/img/favicon.ico')
+  link(rel='icon', href='#{baseUrlCdn}/img/favicon.ico')
   title #{title}
-  link(href='/css/bootstrap.min.css', rel='stylesheet')
-  link(href='/css/t6.css', rel='stylesheet')
-  link(href='/css/font-awesome/font-awesome.min-4.7.0.css', rel='stylesheet')
+  link(href='#{baseUrlCdn}/css/bootstrap.min.css', rel='stylesheet')
+  link(href='#{baseUrlCdn}/css/t6.css', rel='stylesheet')
+  link(href='#{baseUrlCdn}/css/font-awesome/font-awesome.min-4.7.0.css', rel='stylesheet')
   | <!--[if IE 10]>
-  link(href='/css/ie10-viewport-bug-workaround.css', rel='stylesheet')
+  link(href='#{baseUrlCdn}/css/ie10-viewport-bug-workaround.css', rel='stylesheet')
   | <![endif]-->
   //- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries
   | <!--[if lt IE 9]>
-  script(src='/js/html5shiv/3.7.2/html5shiv.min.js')
-  script(src='/js/respond/1.4.2/respond.min.js')
+  script(src='#{baseUrlCdn}/js/html5shiv/3.7.2/html5shiv.min.js', async)
+  script(src='#{baseUrlCdn}/js/respond/1.4.2/respond.min.js', async)
   | <![endif]-->
   | <!--[if IE 10]>
   //- IE10 viewport hack for Surface/desktop Windows 8 bug
-  script(type='text/javascript', src='/js/ie10-viewport-bug-workaround.min.js')
+  script(type='text/javascript', src='#{baseUrlCdn}/js/ie10-viewport-bug-workaround.min.js', async)
   | <![endif]-->
   
-  script(type='text/javascript', src='/js/vendor/jquery.min.js')
+  script(type='text/javascript', src='#{baseUrlCdn}/js/vendor/jquery.min.js')
   script.
-    window.jQuery || document.write('<script src="//code.jquery.com/jquery-1.12.3.min.js"><\\/script>')
+    window.jQuery || document.write('<script src="//code.jquery.com/jquery-1.12.3.min.js" async><\\/script>')
+  script(type='application/ld+json').
+    { "@context" : "http://schema.org", "@type" : "WebSite", "name" : "t6", "image" : "#{baseUrlCdn}/img/t6.png", "isBasedOn" : "https://github.com/mathcoll/t6", "thumbnailUrl" : "#{baseUrlCdn}/img/phone.jpg", "version" : "v#{version}", "keywords": "IoT, Api", "offers": { "@type": "AggregateOffer", "lowPrice": "0€", "highPrice": "99.99€" } }

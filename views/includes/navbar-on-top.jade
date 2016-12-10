@@ -10,15 +10,15 @@ nav.navbar.navbar-default.navbar-fixed-top
       - if( title )
         .brand-name-wrapper
           a.navbar-brand.visible-md-inline.visible-lg-inline(href='/')
-            img(src='/img/t6.png', alt='t6, IoT platform and API', width='30', style='display: inline; vertical-align:middle; margin:0 5px 0 0;')
+            img(src='#{baseUrlCdn}/img/t6.png', alt='t6, IoT platform and API', width='30', style='display: inline; vertical-align:middle; margin:0 5px 0 0;')
             span !{title}
           a.navbar-brand.hidden-xs.hidden-md.hidden-lg(href='/')
-            img(src='/img/t6.png', alt='t6, IoT platform and API', width='30', style='display: inline; vertical-align:middle; margin:0 5px 0 0;')
+            img(src='#{baseUrlCdn}/img/t6.png', alt='t6, IoT platform and API', width='30', style='display: inline; vertical-align:middle; margin:0 5px 0 0;')
             span t6
       - else
         .brand-name-wrapper
           a.navbar-brand.visible-xs-inline(href='/')
-            img(src='/img/t6.png', alt='t6, IoT platform and API', width='30', style='display: inline; vertical-align:middle; margin:0 5px 0 0;')
+            img(src='#{baseUrlCdn}/img/t6.png', alt='t6, IoT platform and API', width='30', style='display: inline; vertical-align:middle; margin:0 5px 0 0;')
             span t6
       - end
 

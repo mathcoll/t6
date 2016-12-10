@@ -10,7 +10,7 @@ html(lang='en')
           h2.text-center.login-title Sign-in to t6
 
           .account-wall
-            img.profile-img(src='/img/defaultuser.png', alt='')
+            img.profile-img(src='#{baseUrlCdn}/img/defaultuser.png', alt='')
             
             form.form-signin(method="post", action="/account/login")
               div.alert(class='alert-danger', role='alert') Please Sign-in to see the page you are looking for.

@@ -40,18 +40,18 @@ html(lang='en')
 
     include ./includes/foot.jade
 
-    script(type='text/javascript', src='/js/chartjs/chart.min.js')
-    script(type='text/javascript', src='/js/sparkline/jquery.sparkline.min.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.pie.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.orderBars.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.time.min.js')
-    script(type='text/javascript', src='/js/flot/date.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.spline.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.stack.js')
-    script(type='text/javascript', src='/js/flot/curvedLines.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.resize.js')
-    script(type='text/javascript', src='/js/flot/jquery.flot.threshold.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/chartjs/chart.min.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/sparkline/jquery.sparkline.min.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.pie.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.orderBars.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.time.min.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/date.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.spline.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.stack.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/curvedLines.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.resize.js')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.threshold.js')
     script.
       getData = function(flow_id, id, sort, icon) {
         $.ajax({
