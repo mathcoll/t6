@@ -405,6 +405,7 @@ router.get('/mqtt', Auth, function(req, res) {
 router.get('/flows', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	qt	= dbQuota.getCollection('quota');
+
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -464,18 +465,24 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 				{ 'id' : flow_id },
 			]
 		};
+
+		units	= db.getCollection('units');
+		var f = flows.chain().find(queryF).limit(1);
+		var join = f.eqJoin(units.chain(), 'unit_id', 'id');
+		
 		var json = {
-			flow: flows.findOne(queryF)
+			flow: (join.data())[0].left
 		}
-		if ( json.flow ) {
+		if ( (join.data())[0].left ) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
 			res.render('flows/flow', {
-				title :		'Flow '+json.flow.name,
+				title :		'Flow '+((join.data())[0].left).name,
 				user:		req.session.user,
 				nl2br:		nl2br,
-				flow:		json.flow,
-				snippet:	{p:{}, icon: 'fa fa-line-chart', name: req.query.title!==undefined?req.query.title:json.flow.name, flows: [flow_id]},
+				flow:		(join.data())[0].left,
+				unit:		(join.data())[0].right,
+				snippet:	{p:{}, icon: 'fa fa-line-chart', name: req.query.title!==undefined?req.query.title:((join.data())[0].left).name, flows: [flow_id]},
 				flows:		flows.chain().find({ 'user_id': req.session.user.id }).sort(alphaSort).data(),
 				message:	message,
 				striptags:	striptags,

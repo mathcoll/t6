@@ -34,9 +34,9 @@ html(lang='en')
               dd #{flow.data_type}
 
               dt Unit:
-              dd #{flow.unit_id}
-                - if (flow.unit)
-                  | (#{flow.unit})
+              dd #{unit.format}
+                - if (unit.name)
+                  |  (Name: #{unit.name}, Type: #{unit.type})
 
               dt Permission:
               dd

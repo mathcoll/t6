@@ -46,7 +46,12 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			}
 
 			flows = db.getCollection('flows');
-			var flow = flows.findOne({ 'id' : { '$aeq' : flow_id } });
+			var units	= db.getCollection('units');
+			var flow = flows.chain().find({ 'id' : { '$aeq' : flow_id } }).limit(1);
+			//var flow = flows.findOne({ 'id' : { '$aeq' : flow_id } });
+			
+			units	= db.getCollection('units');
+			var join = flow.eqJoin(units.chain(), 'unit_id', 'id');
 	
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 			if ( db_type == 'influxdb' ) {
@@ -72,7 +77,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					data[0].limit = limit;
 					data[0].time = moment(data[0].time).format('x');
 					data[0].timestamp = moment(data[0].time).format('x');
-					data[0].mqtt_topic = flow.mqtt_topic;
+					data[0].mqtt_topic = ((join.data())[0].left).mqtt_topic;
 					data[0].order = req.query.order!==undefined?req.query.order:'asc';
 					
 					if (output == 'json') {
@@ -114,8 +119,8 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					if (err) console.log(err);
 					if ( data.length > 0 ) {
 						data.id = moment(data.timestamp).format('x');
-						data.title = flow!==null?flow.name:'';
-						data.unit = flow!==null?flow.unit:'';
+						data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
+						data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:'';
 						data.ttl = 3600;
 						data.flow_id = flow_id;
 						data.page = page;
@@ -124,7 +129,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						data.limit = limit;
 						data.time = moment(data.timestamp).format('x');
 						data.timestamp = moment(data.timestamp).format('x');
-						data.mqtt_topic = flow.mqtt_topic;
+						data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 						data.order = req.query.order!==undefined?req.query.order:'asc';
 						
 						if (output == 'json') {
