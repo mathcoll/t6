@@ -2,9 +2,9 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
   div.list-group-item.panel-heading(role='tab', id='Heading#{rules[rule].id}', class=(rules[rule].on==true ? "" : " progress-bar-striped"))
     h4.panel-title
       - if ( rules[rule].on == true ) {
-        a.glyphicon.glyphicon-expand(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}') #{rules[rule].name}
+        a.fa.fa-expand(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}') #{rules[rule].name}
       - } else {
-        a.glyphicon.glyphicon-unchecked(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}') #{rules[rule].name}
+        a.fa.fa-unchecked(role='button', data-toggle='collapse', data-parent='#accordion', href='##{rules[rule].id}', aria-expanded='false', aria-controls='#{rules[rule].id}') #{rules[rule].name}
       - }
       | &nbsp;
       span.label.label-info Priority: #{rules[rule].priority}&nbsp;
@@ -45,16 +45,16 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
 
     div.panel-footer 
       a.btn.btn-primary.btn-xs(href="#", id='Export#{rules[rule].id}')
-        span.glyphicon.glyphicon-share-alt  Export Rule
+        span.fa.fa-share-alt  Export Rule
       | &nbsp;
       a.btn.btn-info.btn-xs(href="#", id='Share#{rules[rule].id}')
-        span.glyphicon.glyphicon-retweet  Share Rule
+        span.fa.fa-retweet  Share Rule
       | &nbsp;
       a.btn.btn-danger.btn-xs(href="#", id='Delete#{rules[rule].id}')
         span.fa.fa-trash-o   Delete
       | &nbsp;
       a.btn.btn-success.btn-xs.pull-right(href="#", id='Save#{rules[rule].id}')
-        span.glyphicon.glyphicon-check  Save Rule
+        span.fa.fa-check  Save Rule
   
     script(type='text/javascript').
       if ( rules === undefined ) var rules = new Array(); rules['#{rules[rule].id}'] = !{JSON.stringify(rules[rule].condition)};
@@ -86,7 +86,7 @@ li.panel(class=(rules[rule].on==true ? "panel-success" : "panel-danger"))
             url: '/decision-rules/save-rule/#{rules[rule].id}',
             data: JSON.stringify(myRules, null, 0),
             success: function (saved) {
-              $.notify({ icon: 'glyphicon glyphicon-check', title: '<strong>Rule "#{rules[rule].name}"</strong><br />', message: 'Your rule (#{rules[rule].id}) have been successfully updated.' },{ type: 'success' });
+              $.notify({ icon: 'fa fa-check', title: '<strong>Rule "#{rules[rule].name}"</strong><br />', message: 'Your rule (#{rules[rule].id}) have been successfully updated.' },{ type: 'success' });
             }
           });
         }
