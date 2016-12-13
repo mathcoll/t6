@@ -28,9 +28,9 @@ html(lang='en')
             
               dt Type:
               - if (object.type == 'rooter')
-                - var style = "glyphicon glyphicon-inbox"
+                - var style = "fa fa-inbox"
               - else if (object.type == 'sensor')
-                - var style = "glyphicon glyphicon-tint"
+                - var style = "fa fa-tint"
               - else if (object.type == 'computer')
                 - var style = "fa fa-desktop"
               - else if (object.type == 'laptop')
@@ -38,17 +38,17 @@ html(lang='en')
               - else if (object.type == 'desktop')
                 - var style = "fa fa-desktop"
               - else if (object.type == 'phone')
-                - var style = "glyphicon glyphicon-earphone"
+                - var style = "fa fa-phone"
               - else if (object.type == 'smartphone')
-                - var style = "glyphicon glyphicon-phone"
+                - var style = "fa fa-phone"
               - else if (object.type == 'nodemcu')
                 - var style = "fa fa-shield"
               - else if (object.type == 'tablet')
                 - var style = "fa fa-tablet"
               - else if (object.type == 'server')
-                - var style = "glyphicon glyphicon-tasks"
+                - var style = "fa fa-tasks"
               - else if (object.type == 'printer')
-                - var style = "glyphicon glyphicon-print"
+                - var style = "fa fa-print"
               - end
               dd
                 a.label.label-default(href='#', class="#{style}")   #{object.type}
