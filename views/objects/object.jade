@@ -101,9 +101,21 @@ html(lang='en')
                   a(href='geo:#{object.latitude},#{object.longitude}?z=18') Geo link
               - end
                 
-              dt API Object endpoint:
+              dt Object endpoint:
               dd
                 span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}
+                
+              dt Object Parameters endpoint:
+              dd
+                span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}/:pName/
+                
+              dt Object Parameters:
+              dd
+                - for( p in object.parameters )
+                  span.label.label-primary.ellipis #{object.parameters[p].name}
+                  |  (#{object.parameters[p].type}): #{object.parameters[p].value}, 
+                  br/
+                -end
 
           .form-group
             ul.list-inline

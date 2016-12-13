@@ -256,6 +256,14 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			json.ipv4			= req.body.ipv4!==undefined?req.body.ipv4:json.ipv4;
 			json.ipv6			= req.body.ipv6!==undefined?req.body.ipv6:json.ipv6;
 			json.user_id		= req.session.user.id;
+			json.parameters		= new Array();
+			
+			(req.body['pnames[]']).map(function(p, i) {
+				if ( (req.body['pnames[]'])[i] !== undefined && (req.body['pnames[]'])[i] !== null && (req.body['pnames[]'])[i] !== '' ) {
+					// TODO: remove duplicates parameters
+					(json.parameters).push({name: (req.body['pnames[]'])[i], value: (req.body['pvalues[]'])[i], type: 'String'});
+				}
+			});
 			
 			objects.update(json);
 			db.save();
@@ -470,9 +478,6 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 		var f = flows.chain().find(queryF).limit(1);
 		var join = f.eqJoin(units.chain(), 'unit_id', 'id');
 		
-		var json = {
-			flow: (join.data())[0].left
-		}
 		if ( (join.data())[0].left ) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
@@ -487,7 +492,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 				message:	message,
 				striptags:	striptags,
 				currentUrl:	req.path,
-				graph_title:		req.query.title!==undefined?req.query.title:json.flow.name,
+				graph_title:		req.query.title!==undefined?req.query.title:((join.data())[0].left).name,
 				graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
 				graph_startdate2:	req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd').format('x'),
 				graph_enddate:		moment(req.query.enddate!==undefined?req.query.enddate:moment().add(1, 'd'), 'x').format('DD/MM/YYYY'),
@@ -1693,7 +1698,7 @@ router.post('/keys/add', function(req, res) {
 	};
 	
 	if ( tokens.insert(new_token) ) {
-		req.session.message = {type: 'success', value: 'Token '+token+' has successfully been created.'};
+		req.session.message = {type: 'success', value: 'Token '+new_token.token+' has successfully been created.'};
 		res.redirect('/keys/');
 		//res.redirect('/keys/'+new_token.token);
 	} else {

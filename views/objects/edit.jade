@@ -80,13 +80,65 @@ html(lang='en')
                   span IP
                 input.form-control(type="text", name="ipv6", placeholder="Ip v6", id="ipv6", value=(object.ipv6!==undefined ? object.ipv6 : undefined))
 
+            hr/
+            h3 Custom Parameters
+            .table-header
+              span.input-group
+                strong Type
+              span.input-group
+                strong Name
+              span.input-group
+                strong Value
+              span.input-group
+                strong 
+
+            ul.customParameter.list-unstyled
+              - for( p in object.parameters )
+                li.form-group(id="parameter#{p}")
+                   label.control-label(for="pnames[#{p}]") Parameter #{[p]}:
+                   span.input-group
+                     span.input-group-addon
+                       span #{object.parameters[p].type}
+                     span.input-group-addon(style="width: 50%;")
+                       input.form-control(type="text", name="pnames[]", placeholder="Parameter [#{p}] Name", id="pnames[#{p}]", value=(object.parameters[p].name!==undefined ? object.parameters[p].name : undefined))
+                     span.input-group-addon(style="width: 50%;")
+                       input.form-control(type="text", name="pvalues[]", placeholder="Parameter [#{p}] Value", id="pvalues[#{p}]", value=(object.parameters[p].value!==undefined ? object.parameters[p].value : undefined))
+                     span.input-group-addon
+                       button.input-group.btn.btn-danger(type="button", data-id="parameter#{p}")
+                         span.fa.fa-minus
+              -end
+
+            button.input-group.btn.btn-success(type="button")
+              span.fa.fa-plus
+
+            .form-group
+              p 
+
             .form-group
               a.btn.btn-default.btn-sm(href="/objects/#{object.id}")
                 span.fa.fa-cube Back to Object
               button.btn.btn-primary.m-t.pull-right(type="submit", value="Update Object")
                 span.fa.fa-pencil-square-o  Update Object
               | &nbsp;
-
+              
           p &nbsp; 
 
     include ../includes/foot.jade
+  script(type='text/javascript').
+    $(document).ready(function() {
+      $(".customParameter li button.btn-danger").click(function() {
+        var id = $(this).data('id');
+        $("#"+id).remove();
+      });
+      $(".btn-success").click(function() {
+        var id = $(".customParameter li").length;
+        var liste = $(".customParameter");
+        var li = $('<li id="parameter'+id+'" class="form-group"><label for="pnames['+id+']" class="control-label">Parameter '+id+':</label><span class="input-group"><span class="input-group-addon"><span>String</span></span><span class="input-group-addon" style="width: 50%;"><input name="pnames[]" placeholder="Parameter ['+id+'] Name" id="pnames['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon" style="width: 50%;"><input name="pvalues[]" placeholder="Parameter ['+id+'] Value" id="pvalues['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon"><button type="button" data-id="parameter'+id+'" class="input-group btn btn-danger"><span class="fa fa-minus"></span></button></span></span></li>');
+        liste.append(li);
+        $(".customParameter li button.btn-danger").click(function() {
+          var id = $(this).data('id');
+          console.log(id);
+          $("#"+id).remove();
+        });
+      });
+    });
