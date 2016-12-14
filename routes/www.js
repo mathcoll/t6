@@ -245,6 +245,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		};
 		var json = (objects.chain().find(queryO).limit(1).data())[0];
 		//console.log(json);
+		
 		if ( json ) {
 			json.name 			= req.body.name!==undefined?req.body.name:json.name;
 			json.type 			= req.body.type!==undefined?req.body.type:json.type;
@@ -258,10 +259,18 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			json.user_id		= req.session.user.id;
 			json.parameters		= new Array();
 			
-			(req.body['pnames[]']).map(function(p, i) {
-				if ( (req.body['pnames[]'])[i] !== undefined && (req.body['pnames[]'])[i] !== null && (req.body['pnames[]'])[i] !== '' ) {
+			var pnames = req.body['pnames[]'];
+			if( !(pnames instanceof Array) ) {
+				pnames = [pnames];
+			}
+			var pvalues = req.body['pvalues[]'];
+			if( !(pvalues instanceof Array) ) {
+				pvalues = [pvalues];
+			}
+			(pnames).map(function(p, i) {
+				if ( (pnames)[i] !== undefined && (pnames)[i] !== null && (pnames)[i] !== '' ) {
 					// TODO: remove duplicates parameters
-					(json.parameters).push({name: (req.body['pnames[]'])[i], value: (req.body['pvalues[]'])[i], type: 'String'});
+					(json.parameters).push({name: (pnames)[i], value: (pvalues)[i], type: 'String'});
 				}
 			});
 			
@@ -1643,14 +1652,17 @@ router.get('/keys', Auth, function(req, res) {
 router.get('/keys/add', function(req, res) {
 	tokens	= db.getCollection('tokens');
 	flows		= db.getCollection('flows');
+	objects		= db.getCollection('objects');
 	var query = { 'user_id': req.session.user.id };
 	var t = tokens.chain().find(query).data();
 	var f = flows.chain().find(query).sort(alphaSort).data();
+	var o = objects.chain().find(query).sort(alphaSort).data();
 	res.render('keys/add', {
 		title : 'Add an API Key',
 		message: {},
 		tokens: t,
 		flows: f,
+		objects: o,
 		user: req.session.user,
 		new_snippet: {},
 		nl2br: nl2br,
@@ -1675,6 +1687,12 @@ router.post('/keys/add', function(req, res) {
 	} else {
 		linked_flows = [linked_flows];
 	}
+	var linked_objects = req.body['objects[]']!==undefined?req.body['objects[]']:new Array();
+	if( req.body['objects[]'] instanceof Array ) {
+		//
+	} else {
+		linked_objects = [linked_objects];
+	}
 	var expiration = req.body.expiration;
 	if ( expiration == '1 hours' ) {
 		expiration = moment().add(1, 'hours').format('x');
@@ -1690,10 +1708,15 @@ router.post('/keys/add', function(req, res) {
 	linked_flows.forEach(function(flow_id) {
 		permissions.push({flow_id: flow_id, permission: permission});
 	});
+	var permissionsObjects = new Array();
+	linked_objects.forEach(function(object_id) {
+		permissionsObjects.push({object_id: object_id, permission: permission});
+	});
 	var new_token = {
 		user_id: req.session.user.id,
 		expiration: expiration,
 		permissions: permissions,
+		permissionsObjects: permissionsObjects,
 		token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 	};
 	
@@ -1720,6 +1743,7 @@ router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 	var token = req.params.token;
 	tokens	= db.getCollection('tokens');
 	flows		= db.getCollection('flows');
+	objects		= db.getCollection('objects');
 	var query = { 'user_id': req.session.user.id };
 	if ( token !== undefined ) {
 		var queryT = {
@@ -1731,6 +1755,7 @@ router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 	}
 	var json = tokens.findOne(queryT);
 	var f = flows.chain().find(query).sort(alphaSort).data();
+	var o = objects.chain().find(query).sort(alphaSort).data();
 	//console.log(json);
 	if ( json ) {
 		var message = req.session.message!==null?req.session.message:message = {type: '', value: ''};
@@ -1739,6 +1764,7 @@ router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 			title : 'Edit Key '+json.token,
 			token: json,
 			flows: f,
+			objects: o,
 			message: message,
 			currentUrl: req.path,
 			user: req.session.user
@@ -1781,6 +1807,16 @@ router.post('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 			}
 			linked_flows.forEach(function(flow_id) {
 				json.permissions.push({flow_id: flow_id, permission: permission});
+			});
+			var linked_objects = req.body['objects[]']!==undefined?req.body['objects[]']:new Array();
+			json.permissionsObjects = new Array();
+			if( req.body['objects[]'] instanceof Array ) {
+				//
+			} else {
+				linked_objects = [linked_objects];
+			}
+			linked_objects.forEach(function(object_id) {
+				json.permissionsObjects.push({object_id: object_id, permission: permission});
 			});
 			
 			if ( req.body.expiration == '1 hours' ) {

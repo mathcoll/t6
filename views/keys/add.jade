@@ -33,6 +33,19 @@ html(lang='en')
                     - }
 
               .form-group
+                label.control-label(for="flows") Api Key set permission on Objects:
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-cubes
+                  select.form-control(multiple, name="objects[]", id="objects")
+                    - for(o in objects) {
+                      - if( new_snippet.objects !== undefined )
+                        option(value="#{objects[o].id}", selected=((new_snippet.objects).indexOf(objects[o].id) > -1 ? "selected" : undefined)) #{objects[o].name}
+                      - else
+                        option(value="#{objects[o].id}") #{objects[o].name}
+                    - }
+
+              .form-group
                 label.fa.fa-user  Owner permission:&nbsp;&nbsp;
                   br/ 
                   span

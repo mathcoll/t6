@@ -107,7 +107,7 @@ html(lang='en')
               dd
                 span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}
               
-              -if ( object.parameters )
+              -if ( object.parameters.length )
                 dt Object Parameters endpoint:
                 dd
                   span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}/:pName/

@@ -72,7 +72,10 @@
         span.fa.fa-trash-o  Revoke
 
     
-    -if(tokens[token].permissions.length)
+    -if(tokens[token].permissions)
       div.col-sm-10.fa.fa-random  #{(tokens[token].permissions).length} Flows
+    -end
+    -if(tokens[token].permissionsObjects)
+      div.col-sm-10.fa.fa-cubes  #{(tokens[token].permissionsObjects).length} Objects
     -end
 -end 

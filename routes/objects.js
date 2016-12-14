@@ -133,70 +133,98 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 });
 
 router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, res) {
-	// Token must allow doing action to the Object
-	
-	/*
+	var object_id = req.params.object_id;
+	var pName = req.params.pName;
+	if ( !object_id ) {
+		res.status(405).send(new ErrorSerializer({'id': 33, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
+	}
+	if ( !req.bearer.user_id ){
+		// Not Authorized because token is invalid
+		res.status(401).send(new ErrorSerializer({'id': 34, 'code': 401, 'message': 'Not Authorized'}).serialize());
+	} else {
+		var permissionsObjects = (req.bearer.permissionsObjects);
+		var p = permissionsObjects.filter(function(p) {
+		    return p.object_id == object_id; 
+		})[0];
+	}
+	if ( p!== undefined && (p.permission == '644' || p.permission == '620' || p.permission == '600') ) { // TODO
+		/*
 		Sample Content:
 		http://127.0.0.1:3000/v2.0.1/objects/3e48c1e0-ea98-4987-b6af-92258117e964/pName/
 		{"value": "foobar"}
-	 */
-	var object_id = req.params.object_id;
-	var pName = req.params.pName;
-	
-	if ( object_id && req.token !== undefined && req.body.value !== undefined ) {
-		objects	= db.getCollection('objects');
-		var query = {
-			'$and': [
-					{ 'user_id' : req.user.id },
-					{ 'id' : object_id },
-				]
-			};
-		var object = objects.findOne(query);
-		
-		if ( object ) {
-			var p = object.parameters.filter(function(e, i) { if ( e.name == pName ) { object.parameters[i].value = req.body.value; return e; } });
-			if ( p !== null ) {
-				db.saveDatabase();
-				res.status(201).send({ 'code': 201, message: 'Success', name: pName, value: p[0].value });
+		*/
+		if ( object_id && req.token !== undefined && req.body.value !== undefined ) {
+			objects	= db.getCollection('objects');
+			var query = {
+				'$and': [
+						{ 'user_id' : req.user.id },
+						{ 'id' : object_id },
+					]
+				};
+			var object = objects.findOne(query);
+			
+			if ( object ) {
+				var p = object.parameters.filter(function(e, i) { if ( e.name == pName ) { object.parameters[i].value = req.body.value; return e; } });
+				if ( p !== null ) {
+					db.saveDatabase();
+					res.status(201).send({ 'code': 201, message: 'Success', name: pName, value: p[0].value });
+				} else {
+					res.status(404).send(new ErrorSerializer({'id': 320, 'code': 404, 'message': 'Not Found'}).serialize());
+				}
 			} else {
-				res.status(404).send(new ErrorSerializer({'id': 320, 'code': 404, 'message': 'Not Found'}).serialize());
+				res.status(404).send(new ErrorSerializer({'id': 321, 'code': 404, 'message': 'Not Found'}).serialize());
 			}
 		} else {
-			res.status(404).send(new ErrorSerializer({'id': 321, 'code': 404, 'message': 'Not Found'}).serialize());
+			res.status(403).send(new ErrorSerializer({'id': 322, 'code': 403, 'message': 'Forbidden'}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 322, 'code': 403, 'message': 'Forbidden'}).serialize());
+		// no permission
+		res.status(401).send(new ErrorSerializer({'id': 35, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	}
 });
 
 router.get('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, res) {
-	// Token must allow doing action to the Object
-	
 	var object_id = req.params.object_id;
 	var pName = req.params.pName;
-	
-	if ( object_id && req.token !== undefined ) {
-		objects	= db.getCollection('objects');
-		var query = {
-			'$and': [
-					{ 'user_id' : req.user.id },
-					{ 'id' : object_id },
-				]
-			};
-		var object = objects.findOne(query);
-		
-		if ( object ) {
-			var p = object.parameters.filter(function(e) { if ( e.name == pName ) { return e; } });
-			if ( p !== null ) {
-				res.status(200).send({ 'code': 200, message: 'Success', name: pName, value: p[0].value });
+	if ( !object_id ) {
+		res.status(405).send(new ErrorSerializer({'id': 36, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
+	}
+	if ( !req.bearer.user_id ){
+		// Not Authorized because token is invalid
+		res.status(401).send(new ErrorSerializer({'id': 37, 'code': 401, 'message': 'Not Authorized'}).serialize());
+	} else {
+		var permissionsObjects = (req.bearer.permissionsObjects);
+		var p = permissionsObjects.filter(function(p) {
+		    return p.object_id == object_id; 
+		})[0];
+	}
+	if ( p!== undefined && (p.permission == '644' || p.permission == '620' || p.permission == '600') ) { // TODO
+		if ( object_id && req.token !== undefined ) {
+			objects	= db.getCollection('objects');
+			var query = {
+				'$and': [
+						{ 'user_id' : req.user.id },
+						{ 'id' : object_id },
+					]
+				};
+			var object = objects.findOne(query);
+			
+			if ( object ) {
+				var p = object.parameters.filter(function(e) { if ( e.name == pName ) { return e; } });
+				if ( p !== null ) {
+					res.status(200).send({ 'code': 200, message: 'Success', name: pName, value: p[0].value });
+				} else {
+					res.status(404).send(new ErrorSerializer({'id': 38, 'code': 404, 'message': 'Not Found'}).serialize());
+				}
 			} else {
-				res.status(404).send(new ErrorSerializer({'id': 323, 'code': 404, 'message': 'Not Found'}).serialize());
+				res.status(404).send(new ErrorSerializer({'id': 39, 'code': 404, 'message': 'Not Found'}).serialize());
 			}
 		} else {
-			res.status(404).send(new ErrorSerializer({'id': 324, 'code': 404, 'message': 'Not Found'}).serialize());
+			res.status(403).send(new ErrorSerializer({'id': 40, 'code': 403, 'message': 'Forbidden'}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 325, 'code': 403, 'message': 'Forbidden'}).serialize());
+		// no permission
+		res.status(401).send(new ErrorSerializer({'id': 41, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	}
 });
 

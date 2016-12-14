@@ -26,7 +26,25 @@ html(lang='en')
                     span.fa.fa-random
                   select.form-control(multiple, name="flows[]", id="flows")
                     - for(f in flows) {
-                    option(value="#{flows[f].id}", selected=((token.permissions.map(function (e) {return e.flow_id;})).indexOf(flows[f].id) > -1 ? "selected" : undefined)) #{flows[f].name} (#{flows[f].id})
+                      -if(token.permissionsObjects)
+                        option(value="#{flows[f].id}", selected=((token.permissions.map(function (e) {return e.flow_id;})).indexOf(flows[f].id) > -1 ? "selected" : undefined)) #{flows[f].name} (#{flows[f].id})
+                      -else
+                        option(value="#{flows[f].id}") #{flows[f].name} (#{flows[f].id})
+                      -end
+                    - }
+
+              .form-group
+                label.control-label(for="objects") Api Key set permission on Objects:
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-random
+                  select.form-control(multiple, name="objects[]", id="objects")
+                    - for(o in objects) {
+                      -if(token.permissionsObjects)
+                        option(value="#{objects[o].id}", selected=((token.permissionsObjects.map(function (e) {return e.object_id;})).indexOf(objects[o].id) > -1 ? "selected" : undefined)) #{objects[o].name} (#{objects[o].id})
+                      -else
+                        option(value="#{objects[o].id}") #{objects[o].name} (#{objects[o].id})
+                      -end
                     - }
 
               .form-group
