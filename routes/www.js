@@ -269,8 +269,9 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			}
 			(pnames).map(function(p, i) {
 				if ( (pnames)[i] !== undefined && (pnames)[i] !== null && (pnames)[i] !== '' ) {
+					var name = ((pnames)[i]).replace(/[^a-zA-Z0-9-_ ]/g, '');
 					// TODO: remove duplicates parameters
-					(json.parameters).push({name: (pnames)[i], value: (pvalues)[i], type: 'String'});
+					(json.parameters).push({name: name, value: (pvalues)[i], type: 'String'});
 				}
 			});
 			
