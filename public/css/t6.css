@@ -1158,3 +1158,5 @@ a:focus {
     cursor: text;
 }
 /* End Inline Edit */
+
+.panel-heading { padding:0; }
