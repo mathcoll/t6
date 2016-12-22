@@ -97,17 +97,17 @@ html(lang='en')
                   span.fa.fa-map(data-toggle='tooltip', data-placement='top', title='Longitude')  #{object.longitude}
             
                 dt Map:
-                dd 
-                  iframe(width='100%', height='350', frameborder='0', scrolling='no', marginheight='0', marginwidth='0', src='http://www.openstreetmap.org/export/embed.html?bbox=#{object.longitude}%2C#{object.latitude}%2C#{object.longitude}%2C#{object.latitude}&amp;layer=mapnik&marker=#{object.latitude}%2C#{object.longitude}')
-                  br/
+                dd
                   a(href='geo:#{object.latitude},#{object.longitude}?z=18') Geo link
+                  br/
+                  #osm(style='height:350px;width:100%')
               - end
                 
               dt Object endpoint:
               dd
                 span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}
               
-              -if ( object.parameters.length )
+              -if ( object.parameters && object.parameters.length )
                 dt Object Parameters endpoint:
                 dd
                   span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}/:pName/
@@ -143,7 +143,22 @@ html(lang='en')
     include ../includes/foot.jade
   link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
   script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
+  script(src='http://www.openlayers.org/api/OpenLayers.js')
   script.
+    $(document).ready(function() {
+      map = new OpenLayers.Map("osm");
+      map.addLayer(new OpenLayers.Layer.OSM());
+      var lonLat = new OpenLayers.LonLat( #{object.longitude}, #{object.latitude} )
+      .transform(
+        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+          map.getProjectionObject() // to Spherical Mercator Projection
+      );
+      var markers = new OpenLayers.Layer.Markers( "Markers" );
+      map.addLayer(markers);
+      markers.addMarker(new OpenLayers.Marker(lonLat));
+      map.setCenter (lonLat, 18);
+    });
+
     document.querySelector('.sweet-5').onclick = function(){
       swal({
         title: "Are you sure?",
