@@ -267,11 +267,14 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			if( !(pvalues instanceof Array) ) {
 				pvalues = [pvalues];
 			}
+			var listed = Array();
 			(pnames).map(function(p, i) {
 				if ( (pnames)[i] !== undefined && (pnames)[i] !== null && (pnames)[i] !== '' ) {
 					var name = ((pnames)[i]).replace(/[^a-zA-Z0-9-_ ]/g, '');
-					// TODO: remove duplicates parameters
-					(json.parameters).push({name: name, value: (pvalues)[i], type: 'String'});
+					if ( listed.indexOf(name) == -1 ) {
+						(json.parameters).push({name: name, value: (pvalues)[i], type: 'String'});
+						listed.push(name);
+					}
 				}
 			});
 			
