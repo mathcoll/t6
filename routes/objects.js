@@ -143,9 +143,12 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
 		res.status(401).send(new ErrorSerializer({'id': 34, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	} else {
 		var permissionsObjects = (req.bearer.permissionsObjects);
-		var p = permissionsObjects.filter(function(p) {
-		    return p.object_id == object_id; 
-		})[0];
+		var p;
+		if ( permissionsObjects ) {
+			p = permissionsObjects.filter(function(p) {
+			    return p.object_id == object_id; 
+			})[0];
+		}
 	}
 	if ( p!== undefined && (p.permission == '644' || p.permission == '620' || p.permission == '600') ) { // TODO
 		/*
@@ -194,9 +197,12 @@ router.get('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
 		res.status(401).send(new ErrorSerializer({'id': 37, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	} else {
 		var permissionsObjects = (req.bearer.permissionsObjects);
-		var p = permissionsObjects.filter(function(p) {
-		    return p.object_id == object_id; 
-		})[0];
+		var p;
+		if ( permissionsObjects ) {
+			p = permissionsObjects.filter(function(p) {
+			    return p.object_id == object_id; 
+			})[0];
+		}
 	}
 	if ( p!== undefined && (p.permission == '644' || p.permission == '620' || p.permission == '600') ) { // TODO
 		if ( object_id && req.token !== undefined ) {
