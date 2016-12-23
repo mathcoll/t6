@@ -61,6 +61,10 @@ html(lang='en')
                   input.form-control(type="text", name="latitude", placeholder="Latitude", id="Latitude", value=new_object.latitude)
 
               .form-group
+                label.control-label(for="ipv6") Map:
+                #osm(style='height:350px;width:100%')
+
+              .form-group
                 label.control-label(for="Ipv4") Ip v4:
                 span.input-group
                   span.input-group-addon
@@ -82,7 +86,7 @@ html(lang='en')
                   textarea.form-control.vresize(name="description", placeholder="Object description", id="Description")= new_object.description
 
               .form-group
-                label.control-label is Public:
+                label.control-label Public Visibility:
                 br/
                 input(type='radio', name='isPublic', value='true', id='isPublic', checked=(new_object.isPublic=='true' ? "checked" : undefined))
                 label.control-label(for="isPublic") &nbsp;Yes
@@ -97,4 +101,66 @@ html(lang='en')
               p &nbsp;
 
     include ../includes/foot.jade
-
+  - if ( !new_object.longitude ) {
+    - new_object.longitude = 0
+  - }
+  - if ( !new_object.latitude ) {
+    - new_object.latitude = 0
+  - }
+  script(type='text/javascript', src='//www.openlayers.org/api/OpenLayers.js')
+  script(type='text/javascript').
+    var marker;
+    var map;
+    
+    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, { 
+      defaultHandlerOptions: {
+        'single': true,
+        'double': false,
+        'pixelTolerance': 0,
+        'stopSingle': false,
+        'stopDouble': false
+      },
+      initialize: function(options) {
+        this.handlerOptions = OpenLayers.Util.extend(
+          {}, this.defaultHandlerOptions
+        );
+        OpenLayers.Control.prototype.initialize.apply(
+          this, arguments
+        ); 
+        this.handler = new OpenLayers.Handler.Click(
+          this, {
+            'click': this.trigger
+          }, this.handlerOptions
+        );
+      }, 
+      trigger: function(e) {
+        var pixel = map.getLonLatFromViewPortPx(e.xy);
+        target = pixel.transform(
+          new OpenLayers.Projection("EPSG:900913"), 
+          new OpenLayers.Projection("EPSG:4326")
+        );
+        //marker.moveTo( target );
+        $('#Longitude').val(Math.round(target.lon*100000)/100000);
+        $('#Latitude').val(Math.round(target.lat*100000)/100000);
+      }
+    });
+    
+    $(document).ready(function() {
+      map = new OpenLayers.Map("osm");
+      layer = new OpenLayers.Layer.OSM();
+      map.addLayer(layer);
+      var lonLat = new OpenLayers.LonLat( #{new_object.longitude}, #{new_object.latitude} )
+      .transform(
+        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+          map.getProjectionObject() // to Spherical Mercator Projection
+      );
+      var markers = new OpenLayers.Layer.Markers( "Markers" );
+      map.addLayer(markers);
+      marker = new OpenLayers.Marker(lonLat);
+      //marker.icon.url = '';
+      markers.addMarker(marker);
+      map.setCenter (lonLat, 18);
+      var click = new OpenLayers.Control.Click();
+      map.addControl(click);
+      click.activate();
+    });

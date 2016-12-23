@@ -35,7 +35,7 @@ html(lang='en')
               textarea.form-control.vresize(name="description", placeholder="Object description", id="Description") #{object.description}
 
             .form-group
-              label.control-label is Public:
+              label.control-label Public Visibility:
               br/
               input(type='radio', name='isPublic', value='true', id='isPublic', checked=(object.isPublic=='true' ? "checked" : undefined))
               label.control-label(for="isPublic") &nbsp;Yes
@@ -128,24 +128,16 @@ html(lang='en')
           p &nbsp; 
 
     include ../includes/foot.jade
-  script(src='http://www.openlayers.org/api/OpenLayers.js')
-  script.
-    $(document).ready(function() {
-      map = new OpenLayers.Map("osm");
-      map.addLayer(new OpenLayers.Layer.OSM());
-      var lonLat = new OpenLayers.LonLat( #{object.longitude}, #{object.latitude} )
-      .transform(
-        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-          map.getProjectionObject() // to Spherical Mercator Projection
-      );
-      var markers = new OpenLayers.Layer.Markers( "Markers" );
-      map.addLayer(markers);
-      markers.addMarker(new OpenLayers.Marker(lonLat));
-      map.setCenter (lonLat, 18);
-      var click = new OpenLayers.Control.Click();
-      map.addControl(click);
-      click.activate();
-    });
+  - if ( !object.longitude ) {
+    - object.longitude = 0
+  - }
+  - if ( !object.latitude ) {
+    - object.latitude = 0
+  - }
+  script(type='text/javascript', src='//www.openlayers.org/api/OpenLayers.js')
+  script(type='text/javascript').
+    var marker;
+    var map;
     
     OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, { 
       defaultHandlerOptions: {
@@ -169,16 +161,37 @@ html(lang='en')
         );
       }, 
       trigger: function(e) {
-        var pixel = map.getLonLatFromViewPortPx(e.xy)
+        var pixel = map.getLonLatFromViewPortPx(e.xy);
         target = pixel.transform(
           new OpenLayers.Projection("EPSG:900913"), 
           new OpenLayers.Projection("EPSG:4326")
         );
+        //marker.moveTo( target );
         $('#Longitude').val(Math.round(target.lon*100000)/100000);
         $('#Latitude').val(Math.round(target.lat*100000)/100000);
       }
     });
-  script(type='text/javascript').
+    
+    $(document).ready(function() {
+      map = new OpenLayers.Map("osm");
+      layer = new OpenLayers.Layer.OSM();
+      map.addLayer(layer);
+      var lonLat = new OpenLayers.LonLat( #{object.longitude}, #{object.latitude} )
+      .transform(
+        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+          map.getProjectionObject() // to Spherical Mercator Projection
+      );
+      var markers = new OpenLayers.Layer.Markers( "Markers" );
+      map.addLayer(markers);
+      marker = new OpenLayers.Marker(lonLat);
+      //marker.icon.url = '';
+      markers.addMarker(marker);
+      map.setCenter (lonLat, 18);
+      var click = new OpenLayers.Control.Click();
+      map.addControl(click);
+      click.activate();
+    });
+    
     $(document).ready(function() {
       $(".customParameter li button.btn-danger").click(function() {
         var id = $(this).data('id');
