@@ -217,7 +217,7 @@ router.get('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
 			
 			if ( object ) {
 				var p = object.parameters.filter(function(e) { if ( e.name == pName ) { return e; } });
-				if ( p !== null ) {
+				if ( p !== null && p[0] ) {
 					res.status(200).send({ 'code': 200, message: 'Success', name: pName, value: p[0].value });
 				} else {
 					res.status(404).send(new ErrorSerializer({'id': 38, 'code': 404, 'message': 'Not Found'}).serialize());
