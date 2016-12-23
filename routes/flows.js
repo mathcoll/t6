@@ -16,7 +16,7 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 		
 		var permissions = (req.bearer.permissions);
 		permissions.map(function(permission) {
-			if ( permission.permission == '644' ) { // TODO: if Owner: then should be >= 4, etc ...
+			if ( permission.permission == '644' || permission.permission == '600' ) { // TODO: if Owner: then should be >= 4, etc ...
 				var flow = flows.findOne({'id': permission.flow_id });
 				if ( flow && flow_id && flow_id == permission.flow_id ) results.push(flow);
 				else if ( flow && !flow_id ) results.push(flow);
