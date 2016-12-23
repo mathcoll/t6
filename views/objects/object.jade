@@ -90,15 +90,17 @@ html(lang='en')
                   #osm(style='height:350px;width:100%')
               - end
                 
-          .form-group
-            ul.list-inline
-              li
-                a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
-                  span.fa.fa-pencil-square-o  Edit
-              
-              li
-                a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', onclick="return false;")
-                  span.fa.fa-trash-o  Remove
+              dt
+              dd
+                p 
+                ul.list-inline
+                  li
+                    a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
+                      span.fa.fa-pencil-square-o  Edit
+                  
+                  li
+                    a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', onclick="return false;")
+                      span.fa.fa-trash-o  Delete Object
               
         .col-sm-12.col-md-4.col-md-offset-0
           .panel.with-nav-tabs.panel-default
@@ -119,16 +121,17 @@ html(lang='en')
                     a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
                       span.fa.fa-print  Print
             
-                  h3 Status
+                  h3 Visibility
                   -if (object.isPublic)
-                    span Public: 
-                    span.label.label-default #{object.isPublic}
                     div
                       -if (object.isPublic == 'true')
-                        blockquote.fa.fa-comment  Public Object is visible to everybody.
+                        div.fa.fa-eye  Public
+                        br/
                         a.btn.btn-primary.fa.fa-share-alt(href='./#{object.id}/public', target='_blank')  Share
                       -else
-                        blockquote.fa.fa-comment  Private Object is only visible to you.
+                        div.fa.fa-eye-slash  Private
+                        br/
+                        blockquote.fa.fa-comment  Only visible to you.
                       -end
                   -end
 
@@ -147,16 +150,27 @@ html(lang='en')
 
                 .tab-pane.fade#api
                     h3 Object endpoint
-                    span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}
+                    span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}
+                    br/
+                    span e.g.: 
+                    pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id} -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
 
                     h3 Object Parameters endpoint
-                    span.label.label-default.ellipis #{baseUrl}/v2.0.1/objects/#{object.id}/:pName/
-                
+                    span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}/:pName/
+                    br/
+                    span e.g.: Get value from parameter name:
+                    pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
 
     include ../includes/foot.jade
   link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
   script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
-  script(src='http://www.openlayers.org/api/OpenLayers.js')
+  - if ( !object.longitude ) {
+    - object.longitude = 0
+  - }
+  - if ( !object.latitude ) {
+    - object.latitude = 0
+  - }
+  script(src='//www.openlayers.org/api/OpenLayers.js')
   script.
     $(document).ready(function() {
       map = new OpenLayers.Map("osm");
@@ -175,7 +189,7 @@ html(lang='en')
     document.querySelector('.sweet-5').onclick = function(){
       swal({
         title: "Are you sure?",
-        text: "Are you sure to remove #{object.name} ?",
+        text: "Are you sure to delete #{object.name} ?",
         type: "error",
         showCancelButton: true,
         confirmButtonClass: "btn-danger",

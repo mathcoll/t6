@@ -13,7 +13,7 @@ html(lang='en')
             div.alert(class='alert-#{message.type}', role='alert') !{message.value}
 
       .row.side-body
-        .col-sm-12.col-md-12.col-md-offset-0
+        .col-sm-12.col-md-8.col-md-offset-0
           div
             dl.dl-horizontal
               dt Id:
@@ -42,22 +42,6 @@ html(lang='en')
               dd
                 span.label.label-danger #{flow.permission}
               
-              - if (flow.objects) {
-                dt Objects:
-                - for(object in flow.objects) {
-                  dd
-                    span.label.label-default #{flow.objects[object]}
-                - }
-              - }
-
-              dt API Flow endpoint:
-              dd
-                span.label.label-default.ellipis #{baseUrl}/v2.0.1/flows/#{flow.id}
-                
-              dt API Data endpoint:
-              dd
-                span.label.label-default.ellipis #{baseUrl}/v2.0.1/data/#{flow.id}
-
           .form-group.col-md-12
             ul.list-inline
               li
@@ -67,6 +51,40 @@ html(lang='en')
               li
                 a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', onclick="return false;")
                   span.fa.fa-trash-o  Remove
+              
+        .col-sm-12.col-md-4.col-md-offset-0
+          .panel.with-nav-tabs.panel-default
+            .panel-heading
+              ul.nav.nav-tabs.nav-justified
+                li.active(role='presentation')
+                  a(href='#objects', data-toggle='tab') Objects
+                li
+                  a(href='#api', data-toggle='tab') API
+            .panel-body
+              .tab-content
+                .tab-pane.fade.in.active#objects
+                  h3 Objects
+                  - if (flow.objects) {
+                    ul.list-unstyled.list-group
+                    - for(object in flow.objects) {
+                      li.clearfix.list-group-item
+                        span.label.label-default #{flow.objects[object]}
+                    - }
+                  - }
+
+                .tab-pane.fade#api
+                    h3 Flow endpoint
+                    span.label.label-default.ellipis #{baseUrl}/v#{version}/flows/#{flow.id}
+                    br/
+                    span e.g.: 
+                    pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/flows/#{flow.id} -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
+
+                    h3 API Data endpoint
+                    span.label.label-default.ellipis #{baseUrl}/v#{version}/data/#{flow.id}
+                    br/
+                    span e.g.:
+                    pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/data/#{flow.id} -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
+
 
     .-o-container-fluid
       .row.side-body
