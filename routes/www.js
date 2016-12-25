@@ -837,6 +837,7 @@ router.get('/account/register', function(req, res) {
 router.post('/account/register', function(req, res) {
 	users	= db.getCollection('users');
 	var my_id = uuid.v4();
+	var token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
 
 	var new_user = {
 		id:					my_id,
@@ -844,20 +845,20 @@ router.post('/account/register', function(req, res) {
 		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
 		email:				req.body.email!==undefined?req.body.email:'',
 		role:				'free', // no admin creation from the Front-End dashboard
+		token:				token,
 		subscription_date:  moment().format('x'),
 	};
 	if ( new_user.email && new_user.id ) {
 		users.insert(new_user);
 		var new_token = {
 				user_id:			new_user.id,
-				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+				token:				token,
 		        expiration:			'',
 		};
-		var tokens	= db.getCollection('tokens');
-		tokens.insert(new_token);
+		//var tokens	= db.getCollection('tokens');
+		//tokens.insert(new_token);
 		
-		res.render('emails/welcome', {user: new_user, token: new_token}, function(err, html) {
+		res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
 			var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
 			var mailOptions = {
 				from: from,
@@ -900,11 +901,120 @@ router.post('/account/register', function(req, res) {
 });
 
 router.get('/account/login', function(req, res) {
+	var message = req.session.message!==null?req.session.message:null;
+	req.session.message = null; // Force to unset
 	res.render('login', {
 		title : 'Log-in',
 		currentUrl: req.path,
+		message: message,
 		user: req.session.user
 	});
+});
+
+router.get('/account/forgot-password', function(req, res) {
+	res.render('forgot-password', {
+		title : 'Forgot your password',
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
+router.get('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) {
+	users	= db.getCollection('users');
+	var token = req.params.token;
+	var query = { 'token': token };
+	var user = (users.chain().find(query).data())[0];
+	
+	if ( user ) {
+		res.render('reset-password', {
+			title : 'Reset your password',
+			currentUrl: req.path,
+			token: token,
+			user: user
+		});
+	} else {
+		req.session.message = {type: 'danger', value: 'Your token is invalid!'};
+		res.redirect('/account/forgot-password/');
+	}
+});
+
+router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) {
+	users	= db.getCollection('users');
+	var token = req.params.token;
+	var password = req.body.password;
+	var password2 = req.body.password2;
+	var query = { 'token': token };
+	var user = (users.chain().find(query).data())[0];
+	
+	if ( password == password2 ) {
+		user.password = md5(password);
+		user.passwordLastUpdated = moment().format('x');
+		user.token = null;
+		users.update(user);
+		db.save();
+
+		req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.'};
+		res.redirect('/account/login');
+	} else {
+		res.render('reset-password', {
+			title : 'Reset your password',
+			currentUrl: req.path,
+			message: {type: 'danger', value: 'Password does not match!'},
+			token: token,
+			user: user
+		});
+	}
+	
+});
+
+router.post('/account/forgot-password', function(req, res) {
+	users	= db.getCollection('users');
+	var query = { 'email': req.body.email };
+	var user = (users.chain().find(query).data())[0];
+	if ( user ) {
+		var token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
+		user.token = token;
+		users.update(user);
+		db.save();
+		
+		res.render('emails/forgot-password', {user: user, token: token}, function(err, html) {
+			var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
+			var mailOptions = {
+				from: from,
+				bcc: bcc,
+				to: to,
+				subject: 'Reset your password to t6',
+				text: 'Html email client is required',
+				html: html
+			};
+			transporter.sendMail(mailOptions, function(err, info){
+			    if( err ){
+					var err = new Error('Internal Error');
+					err.status = 500;
+					res.status(err.status || 500).render(err.status, {
+						title : 'Internal Error'+app.get('env'),
+						user: user,
+						currentUrl: req.path,
+						err: err
+					});
+			    } else {
+			    	res.render('login', {
+					title : 'Login to t6',
+					user: user,
+					currentUrl: req.path,
+					message: {type: 'success', value: 'Instructions has been sent to your email. Please, check your inbox!'}
+				});
+			    }
+			});
+		});
+	} else {
+    	res.render('forgot-password', {
+			title : 'Forgot your password',
+			user: req.session.user,
+			currentUrl: req.path,
+			message: {type: 'danger', value: 'No email has been found with that email address!'}
+		});
+	}
 });
 
 router.get('/account/logout', function(req, res) {
@@ -916,7 +1026,7 @@ router.get('/account/logout', function(req, res) {
 
 router.post('/account/login', Auth, function(req, res) {
 	if ( !req.session.user ) {
-		console.log("Error! invalid credentials, user not found");
+		//console.log("Error! invalid credentials, user not found");
 		res.render('login', {
 			title : 'Log-in Failed',
 			currentUrl: req.path,
@@ -1071,16 +1181,33 @@ router.get('/mail/welcome', function(req, res) {
 	var fake_user = req.session.user;
 	var fake_token = {
 		user_id:			fake_user.id,
-		key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-		secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+		token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
         expiration:			'',
 	};
 	res.render('emails/welcome', {
 		title : '',
 		baseUrl: baseUrl,
+		baseUrlCdn: baseUrlCdn,
 		user: fake_user,
 		currentUrl: req.path,
-		token: fake_token
+		token: fake_token.token
+	});
+});
+
+router.get('/mail/forgot-password', function(req, res) {
+	var fake_user = req.session.user;
+	var fake_token = {
+		user_id:			fake_user.id,
+		token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+        expiration:			'',
+	};
+	res.render('emails/forgot-password', {
+		title : '',
+		baseUrl: baseUrl,
+		baseUrlCdn: baseUrlCdn,
+		user: fake_user,
+		currentUrl: req.path,
+		token: fake_token.token
 	});
 });
 
@@ -1938,57 +2065,46 @@ function Auth(req, res, next) {
 	tokens	= db.getCollection('tokens');
 	flows	= db.getCollection('flows');
 
-	var key = req.body.key;
-	var secret = req.body.secret;
-	if ( key && secret ) {
-		//console.log("I have a Key and a Secret");
-		var queryT = {
+	var email = req.body.email;
+	var password = req.body.password;
+	if ( email && password ) {
+		console.log("I have an Email and a Password");
+		var queryU = {
 				'$and': [
-							{ 'key': key },
-							{ 'secret': secret },
+							{ 'email': email },
+							{ 'password': md5(password) },
 							// TODO: expiration !! {'expiration': { '$gte': moment().format('x') }},
 						]
 					};
-		var token = tokens.findOne(queryT);
-		if ( token ) {
-			// Connect Success
-			//console.log("I have found a valid Token");
-			var queryU = {
-					'$and': [
-								{ 'id': token.user_id },
-							]
-						};
-			var user = users.findOne(queryU);
-			if ( user ) {
-				//console.log("I have found a valid User");
-				var SESS_ID = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
-				//console.log("I have created a SESS_ID: "+SESS_ID);
+		var user = users.findOne(queryU);
+		console.log("User: ");
+		console.log(queryU);
+		console.log(user);
+		if ( user ) {
+			var SESS_ID = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
+			//console.log("I have created a SESS_ID: "+SESS_ID);
 
-				req.session.user = user;
-				req.session.token = '';
-				req.session.bearer = token;
-				// TODO: set permissions to 644 ; Should be 600 !!
-				var permissions = new Array();
-				(flows.find({'user_id':req.session.user.id})).map(function(p) {
-					permissions.push( { flow_id: p.id, permission: p.permission } );
-				}); // End permissions on all User Flows
-				//console.log(permissions);
-				
-				req.session.bearer.permissions = permissions;
-				req.session.user.permissions = req.session.bearer.permissions;
-				req.session.user.mail_hash = md5(req.session.user.email);
-				
-				req.session.session_id = SESS_ID;
-				//console.log(req.session);
-				res.cookie('session_id', SESS_ID);
-				next();
-			} else {
-				//console.log("I have not found a valid User");
-				res.redirect('/unauthorized');
-			}
+			req.session.user = user;
+			req.session.token = '';
+			req.session.bearer = {user_id: user.id};
+			// TODO: set permissions to 644 ; Should be 600 !!
+			var permissions = new Array();
+			(flows.find({'user_id':req.session.user.id})).map(function(p) {
+				permissions.push( { flow_id: p.id, permission: p.permission } );
+			}); // End permissions on all User Flows
+			//console.log(permissions);
+			
+			req.session.bearer.permissions = permissions;
+			req.session.user.permissions = req.session.bearer.permissions;
+			req.session.user.mail_hash = md5(req.session.user.email);
+			
+			req.session.session_id = SESS_ID;
+			//console.log(req.session);
+			res.cookie('session_id', SESS_ID);
+			next();
 		} else {
 			// Invalid Credentials
-			//console.log("I have not found a valid Token");
+			//console.log("I have not found a valid User");
 			res.redirect('/unauthorized');
 		}
 	} else {

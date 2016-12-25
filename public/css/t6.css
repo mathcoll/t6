@@ -578,7 +578,7 @@ a:focus {
 }
 .login-title
 {
-    color: #555;
+    color: #fff;
     font-size: 18px;
     font-weight: 400;
     display: block;
@@ -1159,4 +1159,4 @@ a:focus {
 }
 /* End Inline Edit */
 
-.panel-heading { padding:0; }
+.panel.with-nav-tabs .panel-heading { padding:0; }
