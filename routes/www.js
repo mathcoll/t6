@@ -91,7 +91,7 @@ router.get('/objects/:object_id([0-9a-z\-]+)', Auth, function(req, res) {
 		var json = {
 			object: objects.findOne(queryO),
 			flows: flows.findOne({ 'user_id': req.session.user.id })
-		}
+		};
 		if ( json.object ) {
 			var qr = qrCode.qrcode(9, 'M');
 			qr.addData(baseUrl+'/objects/'+object_id+'/public');
@@ -169,25 +169,34 @@ router.get('/objects/:object_id([0-9a-z\-]+)/qrprint', Auth, function(req, res) 
 				{ 'id' : object_id },
 			]
 		};
-	}
-	var json = objects.findOne(queryO);
-	if ( json ) {
-		var qr = qrCode.qrcode(9, 'M');
-		var url = baseUrl+'/objects/'+object_id+'/public';
-		qr.addData(url);
-		qr.make();
-		res.render('objects/qrprint', {
-			title : 'Object '+json.name,
-			url: url,
-			qr_img1: qr.createImgTag(1),
-			qr_img2: qr.createImgTag(2),
-			qr_img3: qr.createImgTag(3),
-			qr_img4: qr.createImgTag(4),
-			qr_img5: qr.createImgTag(5),
-			object_id: object_id,
-			currentUrl: req.path,
-			striptags: striptags
-		});
+		var json = objects.findOne(queryO);
+		if ( json ) {
+			var qr = qrCode.qrcode(9, 'M');
+			var url = baseUrl+'/objects/'+object_id+'/public';
+			qr.addData(url);
+			qr.make();
+			res.render('objects/qrprint', {
+				title : 'Object '+json.name,
+				url: url,
+				qr_img1: qr.createImgTag(1),
+				qr_img2: qr.createImgTag(2),
+				qr_img3: qr.createImgTag(3),
+				qr_img4: qr.createImgTag(4),
+				qr_img5: qr.createImgTag(5),
+				object_id: object_id,
+				currentUrl: req.path,
+				striptags: striptags
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
@@ -210,17 +219,26 @@ router.get('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 				{ 'id' : object_id },
 			]
 		};
-	}
-	var json = objects.findOne(queryO);
-	//console.log(json);
-	if ( json ) {
-		res.render('objects/edit', {
-			title : 'Edit Object '+json.name,
-			object: json,
-			types: objectTypes,
-			currentUrl: req.path,
-			user: req.session.user
-		});
+		var json = objects.findOne(queryO);
+		//console.log(json);
+		if ( json ) {
+			res.render('objects/edit', {
+				title : 'Edit Object '+json.name,
+				object: json,
+				types: objectTypes,
+				currentUrl: req.path,
+				user: req.session.user
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
@@ -314,11 +332,20 @@ router.get('/objects/:object_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 				{ 'id' : object_id },
 			]
 		};
-	}
-	var json = objects.chain().find(queryO).limit(1).remove().data();
-	//console.log(json);
-	if ( json ) {
-		res.redirect('/objects');
+		var json = objects.chain().find(queryO).limit(1).remove().data();
+		//console.log(json);
+		if ( json ) {
+			res.redirect('/objects');
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
@@ -352,11 +379,11 @@ router.post('/objects/add', Auth, function(req, res) {
 		user_id:		req.session.user.id,
 	};
 	var i = (objects.find(queryQ)).length;
+	var query = { 'user_id': req.session.user.id };
 	if( i >= (quota[req.session.user.role]).objects ) {
 		message = {type: 'danger', value: 'Over Quota!'};
 		error = true;
 	} else {
-		var query = { 'user_id': req.session.user.id };
 		var pagination=12;
 		req.query.page=req.query.page!==undefined?req.query.page:1;
 		var offset = (req.query.page -1) * pagination;
@@ -551,7 +578,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 		};
 		var json = {
 			flow: flows.findOne(queryF)
-		}
+		};
 		if ( json.flow ) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
@@ -747,13 +774,16 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/remove', Auth, function(req, res) {
 				{ 'id' : flow_id },
 			]
 		};
-	}
-	var json = flows.chain().find(queryF).limit(1).data();//.remove()
-	if ( json.length != 0 ) {
-		flows.chain().find(queryF).limit(1).remove().data();//
-		//TODO: Remove also data from the flow
-		req.session.message = {type: 'success', value: 'Flow '+flow_id+' and all its data has successfully been removed.'};
-		res.redirect('/flows');
+		var json = flows.chain().find(queryF).limit(1).data();//.remove()
+		if ( json.length != 0 ) {
+			flows.chain().find(queryF).limit(1).remove().data();//
+			//TODO: Remove also data from the flow
+			req.session.message = {type: 'success', value: 'Flow '+flow_id+' and all its data has successfully been removed.'};
+			res.redirect('/flows');
+		} else {
+			req.session.message = {type: 'danger', value: 'Flow '+flow_id+' has not been removed, it remain unfound.'};
+			res.redirect('/flows');
+		}
 	} else {
 		req.session.message = {type: 'danger', value: 'Flow '+flow_id+' has not been removed, it remain unfound.'};
 		res.redirect('/flows');
@@ -1718,13 +1748,16 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)/remove', Auth, function(req, res)
 				{ 'id' : snippet_id },
 			]
 		};
-	}
-	var json = snippets.chain().find(queryS).limit(1).data();
-	if ( json.length != 0 ) {
-		snippets.chain().find(queryS).limit(1).remove().data();
-		//TODO: We should also remove Snippets instances on dashboards...
-		req.session.message = {type: 'success', value: 'Snippet '+snippet_id+' has successfully been removed.'};
-		res.redirect('/snippets');
+		var json = snippets.chain().find(queryS).limit(1).data();
+		if ( json.length != 0 ) {
+			snippets.chain().find(queryS).limit(1).remove().data();
+			//TODO: We should also remove Snippets instances on dashboards...
+			req.session.message = {type: 'success', value: 'Snippet '+snippet_id+' has successfully been removed.'};
+			res.redirect('/snippets');
+		} else {
+			req.session.message = {type: 'danger', value: 'Snippet '+snippet_id+' has not been removed, it remain unfound.'};
+			res.redirect('/snippets');
+		}
 	} else {
 		req.session.message = {type: 'danger', value: 'Snippet '+snippet_id+' has not been removed, it remain unfound.'};
 		res.redirect('/snippets');
@@ -1883,23 +1916,32 @@ router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 				{ 'token' : token },
 			]
 		};
-	}
-	var json = tokens.findOne(queryT);
-	var f = flows.chain().find(query).sort(alphaSort).data();
-	var o = objects.chain().find(query).sort(alphaSort).data();
-	//console.log(json);
-	if ( json ) {
-		var message = req.session.message!==null?req.session.message:message = {type: '', value: ''};
-		req.session.message = null; // Force to unset
-		res.render('keys/edit', {
-			title : 'Edit Key '+json.token,
-			token: json,
-			flows: f,
-			objects: o,
-			message: message,
-			currentUrl: req.path,
-			user: req.session.user
-		});
+		var json = tokens.findOne(queryT);
+		var f = flows.chain().find(query).sort(alphaSort).data();
+		var o = objects.chain().find(query).sort(alphaSort).data();
+		//console.log(json);
+		if ( json ) {
+			var message = req.session.message!==null?req.session.message:message = {type: '', value: ''};
+			req.session.message = null; // Force to unset
+			res.render('keys/edit', {
+				title : 'Edit Key '+json.token,
+				token: json,
+				flows: f,
+				objects: o,
+				message: message,
+				currentUrl: req.path,
+				user: req.session.user
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
@@ -1991,7 +2033,6 @@ router.post('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 router.get('/keys/:token([0-9a-z\-.]+)/remove', Auth, function(req, res) {
 	var token = req.params.token;
 	tokens	= db.getCollection('tokens');
-	var message;
 	if ( token !== undefined ) {
 		var queryT = {
 		'$and': [
@@ -1999,11 +2040,20 @@ router.get('/keys/:token([0-9a-z\-.]+)/remove', Auth, function(req, res) {
 				{ 'token' : token },
 			]
 		};
-	}
-	var json = tokens.chain().find(queryT).limit(1).remove().data();
-	if ( json ) {
-		req.session.message = {type: 'success', value: 'Token '+token+' has successfully been revoked.'};
-		res.redirect('/keys');
+		var json = tokens.chain().find(queryT).limit(1).remove().data();
+		if ( json ) {
+			req.session.message = {type: 'success', value: 'Token '+token+' has successfully been revoked.'};
+			res.redirect('/keys');
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
@@ -2026,27 +2076,36 @@ router.get('/keys/:token([0-9a-z\-.]+)/extend', Auth, function(req, res) {
 				{ 'token' : token },
 			]
 		};
-	}
-	var json = (tokens.chain().find(queryT).limit(1).data())[0];
-
-	if ( json ) {
-		var duration = parseInt(json.expiration - json.meta.created);
-		duration = duration<(1*60*60*24*1000*(365.25/12))?duration:(1*60*60*24*1000*(365.25/12)); // Max 1 month 
-		var exp = parseInt(json.expiration)+parseInt(duration);
-		/*console.log("Cur Exp.: "+ json.expiration );
-		console.log("Cur Exp.: "+ moment(json.expiration).format('MMMM Do YYYY, h:mm:ss a') );
-		console.log("Created: "+ json.meta.created );
-		console.log("Created: "+ moment(json.meta.created).format('MMMM Do YYYY, h:mm:ss a') );
-		console.log("Duration: "+ duration );
-		console.log("New Exp.: "+ exp );
-		console.log("New Exp.: "+ moment(exp).format('MMMM Do YYYY, h:mm:ss a') );
-		*/
-		json.expiration	=		exp;
-		tokens.update(json);
-		db.save();
-
-		req.session.message = {type: 'success', value: 'Token '+token+' has successfully been extended to '+moment(exp).format('MMMM Do YYYY, h:mm:ss a')};
-		res.redirect('/keys');
+		var json = (tokens.chain().find(queryT).limit(1).data())[0];
+	
+		if ( json ) {
+			var duration = parseInt(json.expiration - json.meta.created);
+			duration = duration<(1*60*60*24*1000*(365.25/12))?duration:(1*60*60*24*1000*(365.25/12)); // Max 1 month 
+			var exp = parseInt(json.expiration)+parseInt(duration);
+			/*console.log("Cur Exp.: "+ json.expiration );
+			console.log("Cur Exp.: "+ moment(json.expiration).format('MMMM Do YYYY, h:mm:ss a') );
+			console.log("Created: "+ json.meta.created );
+			console.log("Created: "+ moment(json.meta.created).format('MMMM Do YYYY, h:mm:ss a') );
+			console.log("Duration: "+ duration );
+			console.log("New Exp.: "+ exp );
+			console.log("New Exp.: "+ moment(exp).format('MMMM Do YYYY, h:mm:ss a') );
+			*/
+			json.expiration	=		exp;
+			tokens.update(json);
+			db.save();
+	
+			req.session.message = {type: 'success', value: 'Token '+token+' has successfully been extended to '+moment(exp).format('MMMM Do YYYY, h:mm:ss a')};
+			res.redirect('/keys');
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
 	} else {
 		var err = new Error('Not Found');
 		err.status = 404;
