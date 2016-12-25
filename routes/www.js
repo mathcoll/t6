@@ -418,7 +418,7 @@ router.post('/objects/add', Auth, function(req, res) {
 });
 
 /* MQTT TOPICS */
-qttrouter.get('/mqtts?', Auth, function(req, res) {
+router.get('/mqtts?', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	var query = { '$and': [
 		{ 'user_id' : { '$eq': req.session.user.id } }
