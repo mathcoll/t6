@@ -13,6 +13,12 @@ html(lang='en')
         blockquote.fa.fa-comment  
 
       .row.side-body
+        .col-xs-12.col-sm-12.col-md-12
+          ul.clearfix.pagination
+            li.active
+              span.fa.fa-3x.fa-commenting-o(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{flows_length} Mqtt topics on Flows        
+
+      .row.side-body
         .col-sm-12
           if (flows.length)
             include ../includes/pagination.jade
@@ -21,9 +27,6 @@ html(lang='en')
               - for(flow in flows) {
                 - if (flows[flow].mqtt_topic)
                   include ./item_list.jade
-                - else
-                  p #{flows[flow].id} ->#{flows[flow].mqtt_topic}<-
-                - end
               - }
             include ../includes/pagination.jade
           else

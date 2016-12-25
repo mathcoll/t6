@@ -418,7 +418,7 @@ router.post('/objects/add', Auth, function(req, res) {
 });
 
 /* MQTT TOPICS */
-router.get('/mqtt', Auth, function(req, res) {
+qttrouter.get('/mqtts?', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	var query = { '$and': [
 		{ 'user_id' : { '$eq': req.session.user.id } }
@@ -435,10 +435,11 @@ router.get('/mqtt', Auth, function(req, res) {
 	if ( f.length == 0 ) {
 		//res.redirect('/flows/add');
 	} else {
-		var flows_length = (flows.chain().find(query).data()).length;
+		var flows_length = (flows.chain().find(query).where(function(f) { return (f.mqtt_topic !== null && f.mqtt_topic !== '' && f.mqtt_topic !== undefined); }).data()).length;
 		res.render('mqtt/mqtts', {
 			title : 'Mqtt Topics',
 			flows: f,
+			flows_length: flows_length,
 			page: req.query.page,
 			pagenb: Math.ceil(flows_length/pagination),
 			user: req.session.user,
