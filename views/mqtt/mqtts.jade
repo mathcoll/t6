@@ -21,6 +21,8 @@ html(lang='en')
               - for(flow in flows) {
                 - if (flows[flow].mqtt_topic)
                   include ./item_list.jade
+                - else
+                  p #{flows[flow].id} ->#{flows[flow].mqtt_topic}<-
                 - end
               - }
             include ../includes/pagination.jade

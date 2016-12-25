@@ -1,6 +1,7 @@
 a.clearfix.list-group-item(name='#{flows[flow].id}')
   div.col-sm-10.ellipsis
-    span #{flows[flow].mqtt_topic}
+    h4.list-group-item-heading(style="margin:0; padding:0;")
+      span.fa.fa-commenting-o  #{flows[flow].mqtt_topic}
 
   div.col-sm-2.ellipsis
-    span #{flows[flow].id}
+    span.label.label-default.ellipsis #{flows[flow].id}

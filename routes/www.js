@@ -421,8 +421,7 @@ router.post('/objects/add', Auth, function(req, res) {
 router.get('/mqtt', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
 	var query = { '$and': [
-		{ 'user_id' : { '$eq': req.session.user.id } },
-		//{ 'mqtt_topic' : { '$ne': null } }
+		{ 'user_id' : { '$eq': req.session.user.id } }
 	]};
 
 	var pagination=12;
@@ -431,7 +430,7 @@ router.get('/mqtt', Auth, function(req, res) {
 	var message = req.session.message!==null?req.session.message:null;
 	req.session.message = null; // Force to unset
 
-	var f = flows.chain().find(query).sort(alphaSort).offset(offset).limit(pagination).data();
+	var f = flows.chain().find(query).where(function(f) { return (f.mqtt_topic !== null && f.mqtt_topic !== '' && f.mqtt_topic !== undefined); }).sort(alphaSort).offset(offset).limit(pagination).data();
 	//console.log(f);
 	if ( f.length == 0 ) {
 		//res.redirect('/flows/add');
