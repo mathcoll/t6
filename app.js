@@ -89,6 +89,7 @@ process.on('uncaughtException', function(err) {
 	console.error((err && err.stack) ? err.stack : err);
 });
 
+app.enable('trust proxy');
 app.use(compression());
 app.use(morgan(logFormat, {stream: fs.createWriteStream(logAccessFile, {flags: 'a'})}));
 app.use(bodyParser.json());
