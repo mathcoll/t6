@@ -32,6 +32,7 @@
            h3.panel-title.pull-left
              span(class="#{snippet.icon}")  
              |  #{snippet.name}
+           span &nbsp;
            #tooltip(style='border: 1px solid transparent; padding: 5px; margin-left: 50px; background-color: transparent; display: inline;')
  
            span.btn.btn-xs.pull-right.fa.fa-chevron-up(data-toggle="collapse" data-target="#collapseGraph" aria-expanded="true" aria-controls="collapseGraph") 
@@ -53,17 +54,18 @@
               span(aria-hidden='true') ×
               span.sr-only Close
             h3#lineModalLabel.modal-title Customize Graph
-          .modal-body
+
+          .modal-body.clearfix
             include ../includes/graph_form.jade
             
           .modal-footer
             .btn-group.btn-group-justified(role='group', aria-label='group button')
               .btn-group(role='group')
-                button.btn.btn-danger(type='button', data-dismiss='modal', role='button') Close
+                button.btn.btn-danger.fa(type='button', data-dismiss='modal', role='button') Close
               .btn-group(role='group')
                 span &nbsp;
               .btn-group(role='group')
-                button.btn.btn-success.btn-hover-green.fa.fa-check(type='submit')  Update
+                button.btn.btn-success.fa.fa-check(type='submit')  Update
 
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     script(src='#{baseUrlCdn}/js/jquery-ui/jquery-ui-1.11.4.min.js')

@@ -24,7 +24,7 @@ html(lang='en')
             
               dt Id:
               dd
-                span.label.label-warning #{object.id} 
+                span.label.label-default #{object.id} 
  
               dt Type:
               - if (object.type == 'rooter')
@@ -107,33 +107,35 @@ html(lang='en')
             .panel-heading
               ul.nav.nav-tabs.nav-justified
                 li.active(role='presentation')
-                  a(href='#qrcode', data-toggle='tab') QR Code
+                  a(href='#qrcode', data-toggle='tab')
+                    strong QR Code
                 li
-                  a(href='#parameters', data-toggle='tab') Custom Parameters
+                  a(href='#parameters', data-toggle='tab')
+                    strong Custom Parameters
                 li
-                  a(href='#api', data-toggle='tab') API
+                  a(href='#api', data-toggle='tab')
+                    strong API
             .panel-body
               .tab-content
                 .tab-pane.fade.in.active#qrcode
                   h3 QR code
-                  p.text-center.img-responsive.center-block !{qr_img}
-                    br/
-                    a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
-                      span.fa.fa-print  Print
-            
-                  span
+                  div
                     -if (object.isPublic == 'true')
-                      h3.fa.fa-eye Visibility:
+                      span.fa.fa-eye Visibility:
                       strong
                         small  Public
-                      br/
-                      a.btn.btn-primary.fa.fa-share-alt(href='./#{object.id}/public', target='_blank')  Share
+                      p.text-center.img-responsive.center-block !{qr_img}
+                        br/
+                        a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
+                          span.fa.fa-print  Print
+                        | &nbsp;
+                        a.btn.btn-primary.fa.fa-share-alt(href='./#{object.id}/public', target='_blank')  Share
                     -else
-                      h3.fa.fa-eye-slash Visibility:
+                      span.fa.fa-eye-slash Visibility:
                       strong
                         small  Private
                       br/
-                      blockquote.fa.fa-comment  Only visible to you.
+                      blockquote.fa.fa-comment  Only visible to you, QRCode is not available for Private Objects.
                     -end
 
                 .tab-pane.fade#parameters
@@ -143,12 +145,16 @@ html(lang='en')
                       - for( p in object.parameters )
                         li.clearfix.list-group-item
                           div.label.label-primary.ellipis #{object.parameters[p].name}
-                          div.pull-right  #{object.parameters[p].value} (#{object.parameters[p].type})
+                          span &nbsp;
+                          div.label.label-danger  #{object.parameters[p].type}&nbsp;
+                          span &nbsp;:&nbsp;
+                          div.label.label-default.pull-right  #{object.parameters[p].value}
                       -end
                   -else
-                    div.alert.alert-warning That Object does not have any custom parameter.
-                      a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
-                        span.fa.fa-pencil-square-o  Add Custom Parameters
+                    div.alert.alert-warning.clearfix That Object does not have any custom parameter.
+                      div
+                        a.pull-right.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
+                          span.fa.fa-pencil-square-o  Add Custom Parameters
                   -end
 
                 .tab-pane.fade#api
@@ -189,7 +195,7 @@ html(lang='en')
   script(src='//www.openlayers.org/api/OpenLayers.js')
   script.
     $(document).ready(function() {
-      map = new OpenLayers.Map("osm");
+      map = new OpenLayers.Map("osm", { controls: [] });
       map.addLayer(new OpenLayers.Layer.OSM());
       var lonLat = new OpenLayers.LonLat( #{object.longitude}, #{object.latitude} )
       .transform(

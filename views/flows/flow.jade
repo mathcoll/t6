@@ -24,7 +24,7 @@ html(lang='en')
 
               dt Id:
               dd
-                span.label.label-warning.ellipis #{flow.id}
+                span.label.label-default.ellipis #{flow.id}
 
               -if (flow.mqtt_topic)
                 dt MQTT Topic:
@@ -60,9 +60,11 @@ html(lang='en')
             .panel-heading
               ul.nav.nav-tabs.nav-justified
                 li.active(role='presentation')
-                  a(href='#objects', data-toggle='tab') Objects
+                  a(href='#objects', data-toggle='tab')
+                    strong Objects
                 li
-                  a(href='#api', data-toggle='tab') API
+                  a(href='#api', data-toggle='tab')
+                    strong API
             .panel-body
               .tab-content
                 .tab-pane.fade.in.active#objects
