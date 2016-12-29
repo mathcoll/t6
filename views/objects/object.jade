@@ -97,7 +97,6 @@ html(lang='en')
                   li
                     a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
                       span.fa.fa-pencil-square-o  Edit
-                  
                   li
                     a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', onclick="return false;")
                       span.fa.fa-trash-o  Delete Object
@@ -107,13 +106,13 @@ html(lang='en')
             .panel-heading
               ul.nav.nav-tabs.nav-justified
                 li.active(role='presentation')
-                  a(href='#qrcode', data-toggle='tab')
+                  a.fa.fa-qrcode(href='#qrcode', data-toggle='tab') 
                     strong QR Code
                 li
-                  a(href='#parameters', data-toggle='tab')
+                  a.fa.fa-rocket(href='#parameters', data-toggle='tab') 
                     strong Custom Parameters
                 li
-                  a(href='#api', data-toggle='tab')
+                  a.fa.fa-terminal(href='#api', data-toggle='tab') 
                     strong API
             .panel-body
               .tab-content
@@ -140,7 +139,7 @@ html(lang='en')
                     -end
 
                 .tab-pane.fade#parameters
-                  h3 Object Custom Parameters
+                  h3 Custom Parameters
                   -if ( object.parameters && object.parameters.length )
                     ul.list-unstyled.list-group
                       - for( p in object.parameters )
