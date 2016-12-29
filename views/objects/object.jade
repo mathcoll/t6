@@ -121,47 +121,61 @@ html(lang='en')
                     a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
                       span.fa.fa-print  Print
             
-                  h3 Visibility
-                  -if (object.isPublic)
-                    div
-                      -if (object.isPublic == 'true')
-                        div.fa.fa-eye  Public
-                        br/
-                        a.btn.btn-primary.fa.fa-share-alt(href='./#{object.id}/public', target='_blank')  Share
-                      -else
-                        div.fa.fa-eye-slash  Private
-                        br/
-                        blockquote.fa.fa-comment  Only visible to you.
-                      -end
-                  -end
+                  span
+                    -if (object.isPublic == 'true')
+                      h3.fa.fa-eye Visibility:
+                      strong
+                        small  Public
+                      br/
+                      a.btn.btn-primary.fa.fa-share-alt(href='./#{object.id}/public', target='_blank')  Share
+                    -else
+                      h3.fa.fa-eye-slash Visibility:
+                      strong
+                        small  Private
+                      br/
+                      blockquote.fa.fa-comment  Only visible to you.
+                    -end
 
                 .tab-pane.fade#parameters
+                  h3 Object Custom Parameters
                   -if ( object.parameters && object.parameters.length )
-                    h3 Object Parameters
                     ul.list-unstyled.list-group
                       - for( p in object.parameters )
                         li.clearfix.list-group-item
-                          span.label.label-primary.ellipis #{object.parameters[p].name}
-                          span.pull-right  #{object.parameters[p].value} (#{object.parameters[p].type})
+                          div.label.label-primary.ellipis #{object.parameters[p].name}
+                          div.pull-right  #{object.parameters[p].value} (#{object.parameters[p].type})
                       -end
                   -else
-                    span That Object does not have any custom parameter.
+                    div.alert.alert-warning That Object does not have any custom parameter.
+                      a.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
+                        span.fa.fa-pencil-square-o  Add Custom Parameters
                   -end
 
                 .tab-pane.fade#api
-                    h3 Object endpoint
                     blockquote.fa.fa-comment  Be sure you grant access to this Object from 
                       a.btn.btn-primary.fa.fa-flash(href='/keys')  API Key 
+
+                    h3 Object endpoint
                     span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}
                     br/
                     span e.g.: 
                     pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id} -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
 
-                    h3 Object Parameters endpoint
+                    h3 Get Parameter value
                     span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}/:pName/
+                    br/
+                    i ':pName' stand for the parameter name you want to retrieve.
                     br/
                     span e.g.: Get value from parameter name:
                     pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
+
+                    h3 Edit Parameter value
+                    span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}/:pName/
+                    br/
+                    i ':pName' stand for the parameter name you want to edit.
+                    br/
+                    span e.g.: Edit value from parameter name:
+                    pre.language-markup curl -X PUT -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer' -d '{"value": "foobar"}'
 
     include ../includes/foot.jade
   link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')

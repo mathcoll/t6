@@ -16,14 +16,15 @@ html(lang='en')
         .col-sm-12.col-md-8.col-md-offset-0
           div
             dl.dl-horizontal
+              dt Name:
+              dd
+                strong #{flow.name}
+                br/
+                i Created: #{moment(flow.meta.created).format('DD/MM/YYYY, HH:mm')} - Updated: #{moment(flow.meta.updated).format('DD/MM/YYYY, HH:mm')} - Revision: #{flow.meta.revision}
+
               dt Id:
               dd
                 span.label.label-warning.ellipis #{flow.id}
-
-              dt Name:
-              dd #{flow.name}
-                br/
-                i Created: #{moment(flow.meta.created).format('DD/MM/YYYY, HH:mm')} - Updated: #{moment(flow.meta.updated).format('DD/MM/YYYY, HH:mm')} - Revision: #{flow.meta.revision}
 
               -if (flow.mqtt_topic)
                 dt MQTT Topic:
@@ -75,9 +76,10 @@ html(lang='en')
                   - }
 
                 .tab-pane.fade#api
-                    h3 Flow endpoint
                     blockquote.fa.fa-comment  Be sure you grant access to this Flow from 
                       a.btn.btn-primary.fa.fa-flash(href='/keys')  API Key 
+
+                    h3 Flow endpoint
                     span.label.label-default.ellipis #{baseUrl}/v#{version}/flows/#{flow.id}
                     br/
                     span e.g.: 

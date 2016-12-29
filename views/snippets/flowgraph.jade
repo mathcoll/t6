@@ -32,24 +32,17 @@
            h3.panel-title.pull-left
              span(class="#{snippet.icon}")  
              |  #{snippet.name}
+           #tooltip(style='border: 1px solid transparent; padding: 5px; margin-left: 50px; background-color: transparent; display: inline;')
+ 
            span.btn.btn-xs.pull-right.fa.fa-chevron-up(data-toggle="collapse" data-target="#collapseGraph" aria-expanded="true" aria-controls="collapseGraph") 
-           .dropdown.pull-right
-              a.dropdown-toggle#dropdownMenu(role="button", type='button', data-toggle='dropdown', aria-expanded='true', aria-haspopup='true')
-                span.fa.fa-cog &nbsp;
-                span.caret
-              ul.dropdown-menu(aria-labelledby='dropdownMenu')
-                li
-                  a(href="#", onclick="flowGraph#{rnd}(); return false;")
-                    span.fa.fa-refresh  Refresh Data
-                li
-                  a(href="#", data-toggle="modal", data-target="#editSnippet")
-                    span.fa.fa-pencil-square-o  Edit Snippet
+           span.btn.btn-xs.pull-right.fa.fa-pencil-square-o(href="#", data-toggle="modal", data-target="#editSnippet", title="Edit Snippet")
+           span.btn.btn-xs.pull-right.fa.fa-refresh(href="#", onclick="flowGraph#{rnd}(); return false;", title="Refresh Data")
+
            div.clearfix
 
         .panel-body.collapse.in#collapseGraph
           div(id="graph#{rnd}", style='height:300px;')
         .panel-footer 
-          #tooltip(style='/*position:absolute;*/ border: 1px solid rgb(255, 221, 221); padding: 2px; background-color: rgb(255, 238, 238); opacity: 0.8;display: none;')
 
   #editSnippet.modal.fade(tabindex='-1', role='dialog', aria-labelledby='modalLabel', aria-hidden='true')
     .modal-dialog
@@ -130,8 +123,8 @@
           if (item) {
             var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
             date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
-            y = date+'<br /><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
-            $("#tooltip").html(y).css({backgroundColor: color, top: item.pageY+15, left: item.pageX+15}).show();
+            y = date+': <b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
+            $("#tooltip").html(y).css({backgroundColor: color}).show();
           } else {
             $("#tooltip").hide();
           }
