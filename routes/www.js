@@ -288,7 +288,7 @@ router.post('/objects/:object_id([0-9a-z\-]+)/edit', Auth, function(req, res) {
 			var listed = Array();
 			(pnames).map(function(p, i) {
 				if ( (pnames)[i] !== undefined && (pnames)[i] !== null && (pnames)[i] !== '' ) {
-					var name = ((pnames)[i]).replace(/[^a-zA-Z0-9-_ ]/g, '');
+					var name = ((pnames)[i]).replace(/[^a-zA-Z0-9-_]+/g, '');
 					if ( listed.indexOf(name) == -1 ) {
 						(json.parameters).push({name: name, value: (pvalues)[i], type: 'String'});
 						listed.push(name);
@@ -1693,7 +1693,10 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)', function(req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
 
 	if ( snippet_id !== undefined ) {
-		var queryS = { '$and': [ { 'user_id': req.session.user.id }, { 'id' : snippet_id }, ] };
+		// TODO: If req.session && (req.session.user.id == snipper.user_id) ==> permission must be > 4xx
+		// TODO: If req.session && (req.session.user.id != snipper.user_id) ==> permission must be > xx4
+		//var queryS = { '$and': [ { 'user_id': req.session.user.id }, { 'id' : snippet_id }, ] };
+		var queryS = { 'id' : snippet_id };
 		var json = (snippets.chain().find(queryS).limit(1).data())[0];
 		if ( json ) {
 			res.render('snippets/'+json.type, {
