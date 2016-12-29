@@ -30,7 +30,10 @@ a.clearfix.list-group-item(name='#{flows[flow].id}', href='/flows/#{flows[flow].
     span.fa.fa-clock-o  #{moment(flows[flow].meta.updated).format('DD/MM/YYYY, HH:mm')}
 
   div.col-sm-6.ellipsis
-    span.label.label-warning #{flows[flow].mqtt_topic}
+    -if(flows[flow].mqtt_topic)
+      span.label.label-warning.fa.fa-commenting-o  #{flows[flow].mqtt_topic}
+    -else
+      span 
 
   div.col-sm-2
     span.fa.fa-cube  #{flows[flow].objects.length} Objects

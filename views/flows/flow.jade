@@ -24,11 +24,15 @@ html(lang='en')
 
               dt Id:
               dd
-                span.label.label-default.ellipis #{flow.id}
+                span.label.label-default.ellipis.fa.fa-random  #{flow.id}
 
               -if (flow.mqtt_topic)
                 dt MQTT Topic:
-                dd #{flow.mqtt_topic}
+                dd
+                  -if(flow.mqtt_topic)
+                    span.label.label-warning.fa.fa-commenting-o  #{flow.mqtt_topic}
+                  -else
+                    span  
               -end
               
               dt Datatype:
@@ -70,11 +74,17 @@ html(lang='en')
                 .tab-pane.fade.in.active#objects
                   h3 Objects
                   - if (flow.objects) {
-                    ul.list-unstyled.list-group
-                    - for(object in flow.objects) {
-                      li.clearfix.list-group-item
-                        span.label.label-default #{flow.objects[object]}
-                    - }
+                    .list-unstyled.list-group
+                      - for(object in objects) {
+                        //-li #{objects[object].name}
+                        - var o=objects[object].id
+                        - if( (flow.objects).indexOf(o) > -1 )
+                          a.clearfix.list-group-item(href='/objects/#{objects[object].id}')
+                            span
+                              strong  #{objects[object].name}
+                            div.col-xs-4.label.label-default.fa.fa-cube.ellipsis.pull-right(data-toggle='tooltip', data-placement='top', title='#{objects[object].id}')  #{objects[object].id}
+                        - end
+                      - }
                   - }
 
                 .tab-pane.fade#api

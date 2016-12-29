@@ -24,7 +24,7 @@ html(lang='en')
             
               dt Id:
               dd
-                span.label.label-default #{object.id} 
+                span.label.label-default.ellipis.fa.fa-cube  #{object.id} 
  
               dt Type:
               - if (object.type == 'rooter')
@@ -135,7 +135,8 @@ html(lang='en')
                       strong
                         small  Private
                       br/
-                      blockquote.fa.fa-comment  Only visible to you, QRCode is not available for Private Objects.
+                      .alert.alert-warning
+                        span.fa.fa-comment  That Object is only visible to you, QRCode is not available for Private Objects.
                     -end
 
                 .tab-pane.fade#parameters
