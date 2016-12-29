@@ -100,35 +100,34 @@ html(lang='en')
     p &nbsp;
     p &nbsp;
 
-    include ../includes/foot.jade
-  link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
-  script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
-  script.
-    document.querySelector('.sweet-5').onclick = function(){
-      swal({
-        title: "Are you sure?",
-        text: "Are you sure to delete #{flow.name} ?<br /><small>This action will erase all the data from this Flow</small>.",
-        html: true,
-        type: "error",
-        showCancelButton: true,
-        confirmButtonClass: "btn-danger",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel",
-        closeOnConfirm: false,
-        closeOnCancel: true
-      },
-      function(isConfirm) {
-        if (isConfirm) {
-          document.location.href='/flows/#{flow.id}/remove';
-        } else {
-          //
-        }
-      });
-    };
+    link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+    script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
+    script.
+      document.querySelector('.sweet-5').onclick = function(){
+        swal({
+          title: "Are you sure?",
+          text: "Are you sure to delete #{flow.name} ?<br /><small>This action will erase all the data from this Flow</small>.",
+          html: true,
+          type: "error",
+          showCancelButton: true,
+          confirmButtonClass: "btn-danger",
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "No, cancel",
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm) {
+          if (isConfirm) {
+            document.location.href='/flows/#{flow.id}/remove';
+          } else {
+            //
+          }
+        });
+      };
+      
+    link(href='#{baseUrlCdn}/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
+    script(type='text/javascript', src='#{baseUrlCdn}/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
     
-  link(href='#{baseUrlCdn}/css/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.css', rel='stylesheet')
-  script(type='text/javascript', src='#{baseUrlCdn}/js/bootstrap-colorpicker/bootstrap-colorpicker-2.3.3.min.js')
-
     script(type='text/javascript').
       // Types:
       // datatype, unit, startdate, enddate, background, lineColor, fillColor, normalRangeColor
@@ -183,22 +182,22 @@ html(lang='en')
                   output += "<span class='mandatory'>*</span>";
                 }
                 output += "</label><input name='p["+parameter.id+"]' placeholder='"+parameter.placeholder+"' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div>";
-
+    
               } else if( parameter.type === "radio" ) {
                 output += parameter.name+" RADIO "+parameter.default;
-
+    
               } else if( parameter.type === "colorpicker" ) {
                 output += "<div class='form-group'><label for='"+parameter.id+"' class='control-label'>"+parameter.label+":</label><div class='colorpicker input-group colorpicker-component colorpicker-element'><span class='input-group-addon'><i></i></span><input name='p["+parameter.id+"]' id='"+parameter.id+"' value='"+parameter.default+"' class='form-control' type='text'></div></div>";
-
+    
               } else if( parameter.type === "select" ) {
                 output += "";
-
+    
               } else if( parameter.type === "multiselect" ) {
                 output += "";
-
+    
               } else {
                 output += parameter.label+" "+parameter.default;
-
+    
               }
             })
             $('#specific').html(output);

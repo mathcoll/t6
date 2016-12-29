@@ -19,7 +19,7 @@
       .date#date#{rnd} { color: #fff; }
       .carousel-control { background: none !important; width: 3em; }
       .carousel-control span { margin: 100% 0; }
-    link(href='/css/font-awesome/font-awesome.min-4.7.0.css', rel='stylesheet')
+    link(href='#{baseUrlCdn}/css/font-awesome/font-awesome.min-4.7.0.css', rel='stylesheet')
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     body
       //include ../includes/navbar-minimal.jade
@@ -34,7 +34,7 @@
              |  #{snippet.name}
            span.btn.btn-xs.pull-right.fa.fa-chevron-up(data-toggle="collapse" data-target="#collapseGraph" aria-expanded="true" aria-controls="collapseGraph") 
            .dropdown.pull-right
-              a.dropdown-toggle#dropdownMenu(role="button", type='button', data-toggle='dropdown', aria-expanded='true', aria-haspopup="true")
+              a.dropdown-toggle#dropdownMenu(role="button", type='button', data-toggle='dropdown', aria-expanded='true', aria-haspopup='true')
                 span.fa.fa-cog &nbsp;
                 span.caret
               ul.dropdown-menu(aria-labelledby='dropdownMenu')
@@ -70,24 +70,24 @@
               .btn-group(role='group')
                 span &nbsp;
               .btn-group(role='group')
-                button.btn.btn-success.btn-hover-green.glyphicon.glyphicon-ok(type='submit')  Update
+                button.btn.btn-success.btn-hover-green.fa.fa-check(type='submit')  Update
 
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     script(src='#{baseUrlCdn}/js/jquery-ui/jquery-ui-1.11.4.min.js')
     script(type='text/javascript', src='#{baseUrlCdn}/js/bootstrap.min.js')
 - }
-  //-script(type='text/javascript', src='#{baseUrlCdn}/js/chartjs/chart.min.js')
-  //-script(type='text/javascript', src='#{baseUrlCdn}/js/sparkline/jquery.sparkline.min.js')
   script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.js')
+  script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.time.min.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.pie.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.orderBars.js')
-  script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.time.min.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/date.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.spline.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.stack.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/curvedLines.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.resize.js')
   //-script(type='text/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.threshold.js')
+  //-script(type='text/javascript', src='#{baseUrlCdn}/js/chartjs/chart.min.js')
+  //-script(type='text/javascript', src='#{baseUrlCdn}/js/sparkline/jquery.sparkline.min.js')
   script.
       getData#{rnd} = function(base, flow_id, type, CType, callback, container, limit, page, sort, start, end, color) {
         $.ajax({

@@ -8,7 +8,7 @@ h1, h2, h3, h4, h5, h6 {
 .starter-template {
   padding: 0px 15px 0px 15px;
   margin-top:60px;
-  //text-align: center;
+  /*text-align: center;*/
 }
 .sidebar-module-inset {
     background-color: #f5f5f5;
@@ -796,14 +796,6 @@ a:focus {
     If you want to make it really neat i suggest you look into an alternative like http://areaaperta.com/nicescroll/
     This will allow the menu to say fixed on body scoll and scoll on the side bar if it get to large
 */
-/*.absolute-wrapper{
-    position: fixed;
-    width: 300px;
-    height: 100%;
-    background-color: #f8f8f8;
-    border-right: 1px solid #e7e7e7;
-}*/
-
 .side-menu {
   position: fixed;
   width: 300px;
