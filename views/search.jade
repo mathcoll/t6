@@ -4,7 +4,7 @@ html(lang='en')
   body
     include ./includes/navbar.jade
     
-    .-o-container-fluid
+    .container-fluid
       .row.side-body.hidden-xs
         .col-sm-12
         - if (q)
@@ -12,7 +12,7 @@ html(lang='en')
         - else
             h2.fa.fa-2x.fa-search  Search Results
 
-    .-o-container-fluid
+    .container-fluid
       .row.side-body
         div
           ul
@@ -25,7 +25,7 @@ html(lang='en')
             li
               a(href="#dashboards") #{dashboards.length} Dashboard(s)
 
-    .-o-container-fluid#objects
+    .container-fluid#objects
       .row.side-body
         h3.fa-2x.fa.fa-cubes  #{objects.length} Object(s) found
         
@@ -41,7 +41,7 @@ html(lang='en')
                 a(href="/objects/add") Object
                 | .
           
-    .-o-container-fluid#flows
+    .container-fluid#flows
       .row.side-body
         .col-sm-12 &nbsp;
         h3.fa-2x.fa.fa-random  #{flows.length} Flows(s) found
@@ -58,7 +58,7 @@ html(lang='en')
                 a(href="/flows/add") Flow
                 | .
           
-    .-o-container-fluid#snippets
+    .container-fluid#snippets
       .row.side-body
         .col-sm-12 &nbsp;
         h3.fa-2x.fa.fa-puzzle-piece  #{snippets.length} Snippets(s) found
@@ -75,7 +75,7 @@ html(lang='en')
                 a(href="/snippets") Snippet
                 | .
           
-    .-o-container-fluid#dashboards
+    .container-fluid#dashboards
       .row.side-body
         .col-sm-12 &nbsp;
         h3.fa-2x.fa.fa-area-chart  #{dashboards.length} Dashboard(s) found
@@ -92,7 +92,7 @@ html(lang='en')
                 a(href="/dashboards") Dashboards
                 | .
           
-    .-o-container-fluid
+    .container-fluid
       .row.side-body
         .col-sm-12 &nbsp;
 

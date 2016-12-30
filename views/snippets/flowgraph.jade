@@ -25,14 +25,13 @@
       //include ../includes/navbar-minimal.jade
 - }
 
-    li.list-unstyled.-o-container-fluid.ui-sortable-handle(id="body#{rnd}", style="width:100%;")
-      //class="col-sm-#{graph_layout}"
+    li.list-unstyled.container-fluid.ui-sortable-handle(id="body#{rnd}", style="width:100%;", class="col-sm-#{graph_layout}")
+      //
       .panel.panel-default
         .panel-heading.handle
-           h3.panel-title.pull-left
-             span(class="#{snippet.icon}")  
+           h3.panel-title.pull-left(style="padding: 2px;")
+             span.fa(class="#{snippet.icon}")  
              |  #{snippet.name}
-           span &nbsp;
            #tooltip(style='border: 1px solid transparent; padding: 5px; margin-left: 50px; background-color: transparent; display: inline;')
  
            span.btn.btn-xs.pull-right.fa.fa-chevron-up(data-toggle="collapse" data-target="#collapseGraph" aria-expanded="true" aria-controls="collapseGraph") 
@@ -92,12 +91,13 @@
           success: function(d) {
             if ( options.series && options.series.pie !== undefined ) {
               data[flow_id] = (d.data).map(function(i) {
-                return parseInt(i.attributes.value)
+                //return parseInt(i.attributes.value);
+                return i.attributes.value;
               });
             } else {
               data[flow_id] = [(d.data).map(function(i) {
-                return [parseInt(i.attributes.timestamp),
-                parseInt(i.attributes.value)]
+                //return [parseInt(i.attributes.timestamp), parseInt(i.attributes.value)];
+                return [i.attributes.timestamp, i.attributes.value];
               })];
             }
             var lastValue = ((d.data)[0].attributes.timestamp);
@@ -125,7 +125,7 @@
           if (item) {
             var xdate = new Date((item.datapoint[0]).toFixed(0)/1);
             date = xdate.getDate()+'/'+(xdate.getMonth()+1)+'/'+xdate.getFullYear()+' '+xdate.getHours()+':'+xdate.getMinutes();
-            y = date+': <b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
+            y = date + ' <span class=\'fa fa-arrow-right\'>&nbsp;</span><b>'+item.datapoint[1].toFixed(2)+unit+'</b>';
             $("#tooltip").html(y).css({backgroundColor: color}).show();
           } else {
             $("#tooltip").hide();

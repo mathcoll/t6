@@ -4,7 +4,7 @@ html(lang='en')
   body
     include ../includes/navbar.jade
 
-    .-o-container-fluid
+    .container-fluid
       .row.side-body.hidden-xs
         .col-sm-12
           h2.fa.fa-2x.fa-cube &nbsp;Object&nbsp;
@@ -102,86 +102,84 @@ html(lang='en')
                       span.fa.fa-trash-o  Delete Object
               
         .col-sm-12.col-md-4.col-md-offset-0
-          .panel.with-nav-tabs.panel-default
-            .panel-heading
-              ul.nav.nav-tabs.nav-justified
-                li.active(role='presentation')
-                  a.fa.fa-qrcode(href='#qrcode', data-toggle='tab') 
-                    strong QR Code
-                li
-                  a.fa.fa-rocket(href='#parameters', data-toggle='tab') 
-                    strong Custom Parameters
-                li
-                  a.fa.fa-terminal(href='#api', data-toggle='tab') 
-                    strong API
-            .panel-body
-              .tab-content
-                .tab-pane.fade.in.active#qrcode
-                  h3 QR code
-                  div
-                    -if (object.isPublic == 'true')
-                      span.fa.fa-eye Visibility:
-                      strong
-                        small  Public
-                      p.text-center.img-responsive.center-block !{qr_img}
-                        br/
-                        a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
-                          span.fa.fa-print  Print
-                        | &nbsp;
-                        a.btn.btn-primary.fa.fa-share-alt(href='./#{object.id}/public', target='_blank')  Share
-                    -else
-                      span.fa.fa-eye-slash Visibility:
-                      strong
-                        small  Private
+          .with-nav-tabs
+            ul.nav.nav-tabs.nav-justified
+              li.active(role='presentation')
+                a.fa.fa-qrcode(href='#qrcode', data-toggle='tab')  QR Code
+              li
+                a.fa.fa-rocket(href='#parameters', data-toggle='tab')  Custom Parameters
+              li
+                a.fa.fa-terminal(href='#api', data-toggle='tab')  API
+
+            .tab-content
+              .tab-pane.fade.in.active#qrcode
+                h3 QR code
+                div
+                  -if (object.isPublic == 'true')
+                    span.fa.fa-eye Visibility:
+                    strong
+                      small  Public
+                    p.text-center.img-responsive.center-block !{qr_img}
                       br/
-                      .alert.alert-warning
-                        span.fa.fa-comment  That Object is only visible to you, QRCode is not available for Private Objects.
-                    -end
-
-                .tab-pane.fade#parameters
-                  h3 Custom Parameters
-                  -if ( object.parameters && object.parameters.length )
-                    ul.list-unstyled.list-group
-                      - for( p in object.parameters )
-                        li.clearfix.list-group-item
-                          div.label.label-primary.ellipis #{object.parameters[p].name}
-                          span &nbsp;
-                          div.label.label-danger  #{object.parameters[p].type}&nbsp;
-                          span &nbsp;:&nbsp;
-                          div.label.label-default.pull-right  #{object.parameters[p].value}
-                      -end
+                      a.btn.btn-default.btn-sm(href='./#{object.id}/qrprint', onclick='window.open(this.href, "qrprint", "width=800,height=300,scrollbars=yes");return false;')
+                        span.fa.fa-print  Print
+                      | &nbsp;
+                      a.btn.btn-primary.fa.fa-share-alt(href='./#{object.id}/public', target='_blank')  Share
                   -else
-                    div.alert.alert-warning.clearfix That Object does not have any custom parameter.
-                      div
-                        a.pull-right.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
-                          span.fa.fa-pencil-square-o  Add Custom Parameters
+                    span.fa.fa-eye-slash Visibility:
+                    strong
+                      small  Private
+                    br/
+                    .alert.alert-warning
+                      span.fa.fa-comment  That Object is only visible to you, QRCode is not available for Private Objects.
                   -end
+            
+              .tab-pane.fade#parameters
+                h3 Custom Parameters
+                -if ( object.parameters && object.parameters.length )
+                  ul.list-unstyled.list-group
+                    - for( p in object.parameters )
+                      li.clearfix.list-group-item
+                        div.label.label-primary.ellipis #{object.parameters[p].name}
+                        span &nbsp;
+                        div.label.label-danger  #{object.parameters[p].type}&nbsp;
+                        span &nbsp;:&nbsp;
+                        div.label.label-default.pull-right  #{object.parameters[p].value}
+                    -end
+                -else
+                  div.alert.alert-warning.clearfix That Object does not have any custom parameter.
+                    div
+                      a.pull-right.btn.btn-primary.btn-sm(href='./#{object.id}/edit')
+                        span.fa.fa-pencil-square-o  Add Custom Parameters
+                -end
 
-                .tab-pane.fade#api
-                    blockquote.fa.fa-comment  Be sure you grant access to this Object from 
+              .tab-pane.fade#api
+                  h3 Object endpoint
+
+                  div.alert.alert-warning
+                    div.fa.fa-comment  Be sure you grant access to this Object from 
                       a.btn.btn-primary.fa.fa-flash(href='/keys')  API Key 
 
-                    h3 Object endpoint
-                    span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}
-                    br/
-                    span e.g.: 
-                    pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id} -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
+                  span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}
+                  br/
+                  span e.g.: 
+                  pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id} -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
 
-                    h3 Get Parameter value
-                    span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}/:pName/
-                    br/
-                    i ':pName' stand for the parameter name you want to retrieve.
-                    br/
-                    span e.g.: Get value from parameter name:
-                    pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
+                  h3 Get Parameter value
+                  span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}/:pName/
+                  br/
+                  i ':pName' stand for the parameter name you want to retrieve.
+                  br/
+                  span e.g.: Get value from parameter name:
+                  pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
 
-                    h3 Edit Parameter value
-                    span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}/:pName/
-                    br/
-                    i ':pName' stand for the parameter name you want to edit.
-                    br/
-                    span e.g.: Edit value from parameter name:
-                    pre.language-markup curl -X PUT -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer' -d '{"value": "foobar"}'
+                  h3 Edit Parameter value
+                  span.label.label-default.ellipis #{baseUrl}/v#{version}/objects/#{object.id}/:pName/
+                  br/
+                  i ':pName' stand for the parameter name you want to edit.
+                  br/
+                  span e.g.: Edit value from parameter name:
+                  pre.language-markup curl -X PUT -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer' -d '{"value": "foobar"}'
 
     include ../includes/foot.jade
   link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')

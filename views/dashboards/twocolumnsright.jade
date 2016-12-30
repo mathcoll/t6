@@ -5,7 +5,7 @@ html(lang='en')
   body
     include ../includes/navbar-on-top.jade
 
-    .-o-container-fluid.starter-template
+    .container-fluid.starter-template
       .row.col-md-12
         - if (message && message.type && message.value)
           div.alert.alert-dismissible(class='alert-#{message.type}', role='alert') #{message.value}
