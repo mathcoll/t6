@@ -365,6 +365,27 @@ router.post('/objects/add', Auth, function(req, res) {
 	var queryQ = { '$and': [
         {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null}
  	]};
+	
+	var parameters = new Array();
+	var pnames = req.body['pnames[]'];
+	if( !(pnames instanceof Array) ) {
+		pnames = [pnames];
+	}
+	var pvalues = req.body['pvalues[]'];
+	if( !(pvalues instanceof Array) ) {
+		pvalues = [pvalues];
+	}
+	var listed = Array();
+	(pnames).map(function(p, i) {
+		if ( (pnames)[i] !== undefined && (pnames)[i] !== null && (pnames)[i] !== '' ) {
+			var name = ((pnames)[i]).replace(/[^a-zA-Z0-9-_]+/g, '');
+			if ( listed.indexOf(name) == -1 ) {
+				parameters.push({name: name, value: (pvalues)[i], type: 'String'});
+				listed.push(name);
+			}
+		}
+	});
+	
 	var new_object = {
 		id:				uuid.v4(),
 		name:			req.body.name!==undefined?req.body.name:'unamed',
@@ -377,6 +398,7 @@ router.post('/objects/add', Auth, function(req, res) {
 		ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
 		ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 		user_id:		req.session.user.id,
+		parameters:		parameters,
 	};
 	var i = (objects.find(queryQ)).length;
 	var query = { 'user_id': req.session.user.id };

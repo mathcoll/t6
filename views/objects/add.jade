@@ -94,6 +94,25 @@ html(lang='en')
                 input(type='radio', name='isPublic', value='false', id='isNotPublic', checked=(new_object.isPublic=='false' ? "checked" : undefined))
                 label.control-label(for="isNotPublic") &nbsp;No
 
+              
+              .form-group
+                hr/
+                h3 Custom Parameters
+                .table-header
+                  span.input-group
+                    strong Type
+                  span.input-group
+                    strong Name
+                  span.input-group
+                    strong Value
+                  span.input-group
+                    strong 
+
+                ul.customParameter.list-unstyled
+
+                button.input-group.btn.btn-success(type="button")
+                  span.fa.fa-plus
+                
               .form-group
                 button.btn.btn-primary.m-t.pull-right
                   span.fa.fa-plus  Add Object
@@ -163,4 +182,20 @@ html(lang='en')
       var click = new OpenLayers.Control.Click();
       map.addControl(click);
       click.activate();
+    
+      $(".customParameter li button.btn-danger").click(function() {
+        var id = $(this).data('id');
+        $("#"+id).remove();
+      });
+      $(".btn-success").click(function() {
+        var id = $(".customParameter li").length;
+        var liste = $(".customParameter");
+        var li = $('<li id="parameter'+id+'" class="form-group"><label for="pnames['+id+']" class="control-label">Parameter '+id+':</label><span class="input-group"><span class="input-group-addon"><span>String</span></span><span class="input-group-addon" style="width: 50%;"><input name="pnames[]" placeholder="Parameter ['+id+'] Name" id="pnames['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon" style="width: 50%;"><input name="pvalues[]" placeholder="Parameter ['+id+'] Value" id="pvalues['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon"><button type="button" data-id="parameter'+id+'" class="input-group btn btn-danger"><span class="fa fa-minus"></span></button></span></span></li>');
+        liste.append(li);
+        $(".customParameter li button.btn-danger").click(function() {
+          var id = $(this).data('id');
+          console.log(id);
+          $("#"+id).remove();
+        });
+      });
     });
