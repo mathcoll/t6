@@ -549,7 +549,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 				user:		req.session.user,
 				nl2br:		nl2br,
 				flow:		(join.data())[0].left,
-				unit:		(join.data())[0].left,
+				unit:		(join.data())[0].right,
 				datatypes:	datatypes.data,
 				snippet:	{p:{}, icon: 'fa fa-line-chart', name: req.query.title!==undefined?req.query.title:((join.data())[0].left).name, flows: [flow_id]},
 				flows:		flows.chain().find({ 'user_id': req.session.user.id }).sort(alphaSort).data(),
