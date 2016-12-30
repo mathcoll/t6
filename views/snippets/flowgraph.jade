@@ -34,9 +34,12 @@
              |  #{snippet.name}
            #tooltip(style='border: 1px solid transparent; padding: 5px; margin-left: 50px; background-color: transparent; display: inline;')
  
-           span.btn.btn-xs.pull-right.fa.fa-chevron-up(data-toggle="collapse" data-target="#collapseGraph" aria-expanded="true" aria-controls="collapseGraph") 
+           span.btn.btn-xs.pull-right.fa.fa-chevron-up(data-toggle="collapse", data-target="#collapseGraph", aria-expanded="true", aria-controls="collapseGraph") 
            span.btn.btn-xs.pull-right.fa.fa-pencil-square-o(href="#", data-toggle="modal", data-target="#editSnippet", title="Edit Snippet")
            span.btn.btn-xs.pull-right.fa.fa-refresh(href="#", onclick="flowGraph#{rnd}(); return false;", title="Refresh Data")
+           - if ( currentUrl.indexOf("snippets") < 0 ) {
+             a.btn.btn-xs.pull-right.fa.fa-expand(href="./#{flow.id}/graph", title="Expand")
+           - }
 
            div.clearfix
 
