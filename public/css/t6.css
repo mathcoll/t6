@@ -158,6 +158,7 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
 .iamgurdeep-pic {
     position: relative;
     min-height: 320px;
+    background: transparent url(/img/opl_img3.jpg) no-repeat scroll 50% 50%;
 }
 .username {
     bottom: 0;
@@ -166,10 +167,9 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
     position: absolute;
     width: 100%;
     text-shadow: 1px 1px 2px #000000;
-    
-	background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* FF3.6-15 */
-	background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* Chrome10-25,Safari5.1-6 */
-	background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #337ab7 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* FF3.6-15 */
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* Chrome10-25,Safari5.1-6 */
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #337ab7 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#a64d4d4d',GradientType=0 ); /* IE6-9 */
 }
 .iamgurdeeposahan {
