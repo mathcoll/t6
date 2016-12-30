@@ -249,14 +249,14 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 		    return p.flow_id == flow_id; 
 		})[0];
 	
-		if ( p!== undefined && p.permission == '644' ) { // TODO
+		if ( p!== undefined && ( p.permission == '644' || p.permission == '600' ) ) { // TODO
 			var limit = 1;
 			var page = 1;
 			var sorting = req.query.order=='asc'?true:false;
 			
 			flows	= db.getCollection('flows');
 			var f = flows.chain().find({id: flow_id}).limit(1).data();
-			mqtt_topic = f[0].mqtt_topic;
+			var mqtt_topic = (f[0].mqtt_topic!==undefined)?f[0].mqtt_topic:null;
 
 			if ( db_type == 'influxdb' ) {
 				/* InfluxDB database */
