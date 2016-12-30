@@ -36,7 +36,12 @@ html(lang='en')
               -end
               
               dt Datatype:
-              dd #{flow.data_type}
+              - if ( flow.data_type )
+                - for (d in datatypes) {
+                  - if ( datatypes[d].id == flow.data_type )
+                    dd #{datatypes[d].name}
+                - }
+              - else
 
               dt Unit:
               dd #{unit.format}
@@ -67,7 +72,7 @@ html(lang='en')
               li
                 a.fa.fa-terminal(href='#api', data-toggle='tab')  API
 
-            .tab-content
+            .tab-content.col-sm-12
               .tab-pane.fade.in.active#objects
                 h3 Objects
                 - if (flow.objects) {
