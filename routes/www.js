@@ -433,7 +433,7 @@ router.get('/mqtts?', Auth, function(req, res) {
 	var f = flows.chain().find(query).where(function(f) { return (f.mqtt_topic !== null && f.mqtt_topic !== '' && f.mqtt_topic !== undefined); }).sort(alphaSort).offset(offset).limit(pagination).data();
 	//console.log(f);
 	if ( f.length == 0 ) {
-		//res.redirect('/flows/add');
+		res.redirect('/flows/add');
 	} else {
 		var flows_length = (flows.chain().find(query).where(function(f) { return (f.mqtt_topic !== null && f.mqtt_topic !== '' && f.mqtt_topic !== undefined); }).data()).length;
 		res.render('mqtt/mqtts', {
@@ -514,10 +514,11 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 			]
 		};
 
-		units	= db.getCollection('units');
+		units		= db.getCollection('units');
+		datatypes	= db.getCollection('datatypes');
 		var f = flows.chain().find(queryF).limit(1);
 		var join = f.eqJoin(units.chain(), 'unit_id', 'id');
-		
+
 		if ( (join.data())[0].left ) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
@@ -526,11 +527,13 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 				user:		req.session.user,
 				nl2br:		nl2br,
 				flow:		(join.data())[0].left,
-				unit:		(join.data())[0].right,
+				unit:		(join.data())[0].left,
+				datatypes:	datatypes.data,
 				snippet:	{p:{}, icon: 'fa fa-line-chart', name: req.query.title!==undefined?req.query.title:((join.data())[0].left).name, flows: [flow_id]},
 				flows:		flows.chain().find({ 'user_id': req.session.user.id }).sort(alphaSort).data(),
 				message:	message,
 				striptags:	striptags,
+				objects: 	objects.chain().find({ 'user_id': req.session.user.id }).data(),
 				currentUrl:	req.path,
 				graph_title:		req.query.title!==undefined?req.query.title:((join.data())[0].left).name,
 				graph_startdate:	moment(req.query.startdate!==undefined?req.query.startdate:moment().subtract(1, 'd'), 'x').format('DD/MM/YYYY'),
@@ -671,6 +674,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)/graph', Auth, function(req, res) {
 	res.render('flows/graph', {
 		title : 'Graph a Flow',
 		flow_id: flow_id,
+		flow: 	{id: flow_id},
 		user: req.session.user,
 		moment: moment,
 		currentUrl: req.path,
@@ -1192,8 +1196,12 @@ router.post('/search', Auth, function(req, res) {
 });
 
 router.get('/about', function(req, res) {
-	res.render('about', {
-		title : 'About t6',
+	res.redirect('/privacy-policies');
+});
+
+router.get('/privacy-policies', function(req, res) {
+	res.render('privacy-policies', {
+		title : 'Privacy Policies',
 		currentUrl: req.path,
 		user: req.session.user
 	});
