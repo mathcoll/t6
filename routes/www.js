@@ -1357,6 +1357,102 @@ router.get('/dashboards/add', Auth, function(req, res) {
 	});
 });
 
+router.get('/dashboards/(:dashboard_id)/edit', Auth, function(req, res) {
+	var dashboard_id = req.params.dashboard_id;
+	dashboards	= dbDashboards.getCollection('dashboards');
+
+	if ( dashboard_id !== undefined ) {
+		snippets	= dbSnippets.getCollection('snippets');
+		var s = snippets.chain().find({ 'user_id': req.session.user.id }).sort(alphaSort).data();
+		var queryD = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : dashboard_id },
+			]
+		};
+		var json = dashboards.findOne(queryD);
+		//console.log(json);
+		if ( json ) {
+			res.render('dashboards/edit', {
+				title : 'Edit Dashboard '+json.name,
+				message: {},
+				new_dashboard: json,
+				user: req.session.user,
+				snippets: s,
+				nl2br: nl2br,
+				currentUrl: req.path,
+				striptags: striptags
+			});
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			currentUrl: req.path,
+			err: err
+		});
+	}
+});
+
+router.post('/dashboards/(:dashboard_id)/edit', Auth, function(req, res) {
+	var dashboard_id = req.params.dashboard_id;
+	dashboards	= dbDashboards.getCollection('dashboards');
+	if ( dashboard_id !== undefined ) {
+		var queryD = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : dashboard_id },
+			]
+		};
+		var json = (dashboards.chain().find(queryD).limit(1).data())[0];
+		//console.log(json);
+		
+		if ( json ) {
+			var linked_snippets = req.body['snippets[]']!==undefined?req.body['snippets[]']:new Array();
+			if ( typeof linked_snippets !== 'object' ) linked_snippets = new Array(linked_snippets);
+			json.name 			= req.body.name!==undefined?req.body.name:json.name;
+			json.description	= req.body.description!==undefined?req.body.description:json.description;
+			json.layout			= req.body.layout!==undefined?req.body.layout:null;
+			json.snippets		= linked_snippets;
+			json.user_id		= req.session.user.id;
+			
+			dashboards.update(json);
+			db.save();
+			
+			res.redirect('/dashboards/'+dashboard_id);
+		} else {
+			var err = new Error('Not Found');
+			err.status = 404;
+			res.status(err.status || 500).render(err.status, {
+				title : 'Not Found',
+				user: req.session.user,
+				currentUrl: req.path,
+				err: err
+			});
+		}
+	} else {
+		var err = new Error('Not Found');
+		err.status = 404;
+		res.status(err.status || 500).render(err.status, {
+			title : 'Not Found',
+			user: req.session.user,
+			currentUrl: req.path,
+			err: err
+		});
+	}
+});
+
 router.post('/dashboards/add', Auth, function(req, res) {
 	dashboards	= dbDashboards.getCollection('dashboards');
 	snippets	= dbSnippets.getCollection('snippets');
@@ -1505,17 +1601,18 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 
 router.get('/dashboards/(:dashboard_id)/remove', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
-	dashboards	= dbDashboards.getCollection('dashboards');
 	if ( dashboard_id !== undefined ) {
 		var queryD = {
-		'$and': [
-				{ 'user_id': req.session.user.id },
-				{ 'id' : dashboard_id },
+			'$and': [
+					{ 'user_id': req.session.user.id },
+					{ 'id' : dashboard_id },
 			]
 		};
+		dashboards	= dbDashboards.getCollection('dashboards');
 		var json = dashboards.chain().find(queryD).limit(1).data();
 		if ( json.length != 0 ) {
-			dashboards.chain().find(queryD).limit(1).remove().data();
+			dashboards.chain().find(queryD).limit(1).remove();
+			dbDashboards.save();
 			req.session.message = {type: 'success', value: 'Dashboard '+dashboard_id+' has successfully been removed.'};
 			res.redirect('/dashboards');
 		} else {

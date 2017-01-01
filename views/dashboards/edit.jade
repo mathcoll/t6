@@ -1,0 +1,66 @@
+doctype html
+html(lang='en')
+  include ../includes/head.jade
+  body
+    include ../includes/navbar.jade
+
+    .container-fluid
+      .row.side-body
+        .col-sm-12.hidden-xs
+          h2.fa.fa-2x.fa-area-chart &nbsp;Edit Dashboard 
+            strong #{new_dashboard.name}
+        
+        -if (message && message.type == 'danger' && message.value)
+        .col-sm-12(class='alert alert-#{message.type}')#add
+          div.sidebar-module-inset
+            if (message && message.type && message.value)
+              div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+
+            form(action="/dashboards/#{new_dashboard.id}/edit#edit", method="post")
+              .form-group
+                label.control-label(for="name") Dashboard Name:
+                  span.mandatory *
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-area-chart
+                  input.form-control(type="text", name="name", placeholder="Dashboard Name", id="name", value=new_dashboard.name)
+
+              .form-group
+                label.control-label(for="snippets") Snippets:
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-puzzle-piece
+                  select.form-control(multiple, name="snippets[]", id="snippets")
+                    - for(snippet in snippets) {
+                      //--if (datatypes[datatype].id === flow.data_type)
+                      option(value="#{snippets[snippet].id}", selected=((new_dashboard.snippets).indexOf(snippets[snippet].id) > -1 ? "selected" : undefined)) #{snippets[snippet].name}
+                      //--else
+                      //-  option(value="#{snippets[snippet].id}", selected=((new_dashboard.snippets).indexOf(snippets[snippet].id) > -1 ? "selected" : undefined)) #{snippets[snippet].name}
+                      //--end
+                    - }
+
+              .form-group
+                label.control-label(for="description") Description:
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-pencil-square-o
+                  textarea.form-control.vresize(name="description", placeholder="Dashboard Description", id="description") #{new_dashboard.description}
+
+              .form-group
+                label.control-label(for="layout") Layout:
+                  span.mandatory *
+                span.input-group
+                  span.input-group-addon
+                    span.fa.fa-table
+                  select.form-control(type="text", name="layout", placeholder="Dashboard Layout", id="layout")
+                    option(value="onecolumn", selected=(new_dashboard.layout=='onecolumn' ? "selected" : undefined)) One Column Layout
+                    option(value="twocolumnsright", selected=(new_dashboard.layout=='twocolumnsright' ? "selected" : undefined)) 2 Columns Layout (right sidebar)
+                    option(value="twocolumnsleft", selected=(new_dashboard.layout=='twocolumnsleft' ? "selected" : undefined)) 2 Columns Layout (left sidebar)
+
+              .form-group
+                button.btn.btn-primary.m-t.pull-right
+                  span.fa.fa-edit  Edit Dashboard
+              
+              p &nbsp;
+
+    include ../includes/foot.jade
