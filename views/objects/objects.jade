@@ -12,7 +12,7 @@ html(lang='en')
 
       .row.side-body
         .col-xs-12.col-sm-12.col-md-12
-          ul.clearfix.pagination
+          ul.clearfix.pagination.btn-group
             li.active
               span.fa.fa-3x.fa-cubes(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{objects_length} Objects
                 - var percent = Math.round((objects_length*100/quota.objects)*100) /100
@@ -29,7 +29,15 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects_length}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%; height: 5px;") &nbsp;
+            li
+              - if( objects_length < quota.objects )
+                a.fa-3x.btn.btn-success(href="/objects/add", data-toggle='tooltip', data-placement='right	', title='Add an Object')
+                  span.fa.fa-plus
+              - else
+                a.fa-3x.btn.btn-danger(href="/plans", data-toggle='tooltip', data-placement='right', title='Upgrade your plan')
+                  span.fa.fa-level-up
+              - end
+            p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='right', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects_length}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%; height: 5px;") &nbsp;
 
       .row.side-body
         .col-sm-12
