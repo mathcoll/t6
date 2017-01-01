@@ -49,3 +49,28 @@ html(lang='en')
             div.alert.alert-warning You don't have any Dashboard yet in your shelves. You can add a <a href="/dashboards/add">Dashboard</a> to graph your Flows
 
     include ../includes/foot.jade
+  link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
+  script.
+    $('.sweet-5').on('click', function (e) {
+      var id = $(this).data("id");
+      var name = $(this).data("name");
+      swal({
+        title: "Are you sure?",
+        text: "Are you sure to remove "+name+" ?",
+        type: "error",
+        showCancelButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Yes, remove it!",
+        cancelButtonText: "No, cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true
+      },
+      function(isConfirm) {
+        if (isConfirm) {
+          document.location.href='/dashboards/'+id+'/remove';
+        } else {
+          //
+        }
+      });
+    });

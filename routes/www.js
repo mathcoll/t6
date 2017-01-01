@@ -1503,6 +1503,31 @@ router.post('/dashboards/(:dashboard_id)/setDescription', Auth, function(req, re
 	}
 });
 
+router.get('/dashboards/(:dashboard_id)/remove', Auth, function(req, res) {
+	var dashboard_id = req.params.dashboard_id;
+	dashboards	= dbDashboards.getCollection('dashboards');
+	if ( dashboard_id !== undefined ) {
+		var queryD = {
+		'$and': [
+				{ 'user_id': req.session.user.id },
+				{ 'id' : dashboard_id },
+			]
+		};
+		var json = dashboards.chain().find(queryD).limit(1).data();
+		if ( json.length != 0 ) {
+			dashboards.chain().find(queryD).limit(1).remove().data();
+			req.session.message = {type: 'success', value: 'Dashboard '+dashboard_id+' has successfully been removed.'};
+			res.redirect('/dashboards');
+		} else {
+			req.session.message = {type: 'danger', value: 'Dashboard '+dashboard_id+' has not been removed, it remain unfound.'};
+			res.redirect('/dashboards');
+		}
+	} else {
+		req.session.message = {type: 'danger', value: 'Dashboard '+dashboard_id+' has not been removed, it remain unfound.'};
+		res.redirect('/dashboards');
+	}
+});
+
 router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 	var dashboard_id = req.params.dashboard_id;
 	var layout = req.query.layout;
@@ -2169,9 +2194,9 @@ function Auth(req, res, next) {
 						]
 					};
 		var user = users.findOne(queryU);
-		console.log("User: ");
-		console.log(queryU);
-		console.log(user);
+		//console.log("User: ");
+		//console.log(queryU);
+		//console.log(user);
 		if ( user ) {
 			var SESS_ID = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
 			//console.log("I have created a SESS_ID: "+SESS_ID);
