@@ -2,7 +2,7 @@
 version				= '2.0.1';
 appName				= process.env.NAME;
 baseUrl				= process.env.BASE_URL;
-baseUrlCdn			= "http://cdn.domain.tld";
+baseUrlCdn			= "//cdn.domain.tld";
 
 /* Mqtt settings */
 client				= mqtt.connect('mqtt://localhost:1883'); // Your Mqtt server to connect to
