@@ -126,86 +126,104 @@ html(lang='en')
               | &nbsp;
               
           p &nbsp; 
+          #popup(title='#{object.name}')  
 
     include ../includes/foot.jade
-  - if ( !object.longitude ) {
-    - object.longitude = 0
-  - }
-  - if ( !object.latitude ) {
-    - object.latitude = 0
-  - }
-  script(type='text/javascript', src='//www.openlayers.org/api/OpenLayers.js')
-  script(type='text/javascript').
-    var marker;
-    var map;
-    
-    OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, { 
-      defaultHandlerOptions: {
-        'single': true,
-        'double': false,
-        'pixelTolerance': 0,
-        'stopSingle': false,
-        'stopDouble': false
-      },
-      initialize: function(options) {
-        this.handlerOptions = OpenLayers.Util.extend(
-          {}, this.defaultHandlerOptions
-        );
-        OpenLayers.Control.prototype.initialize.apply(
-          this, arguments
-        ); 
-        this.handler = new OpenLayers.Handler.Click(
-          this, {
-            'click': this.trigger
-          }, this.handlerOptions
-        );
-      }, 
-      trigger: function(e) {
-        var pixel = map.getLonLatFromViewPortPx(e.xy);
-        target = pixel.transform(
-          new OpenLayers.Projection("EPSG:900913"), 
-          new OpenLayers.Projection("EPSG:4326")
-        );
-        //marker.moveTo( target );
-        $('#Longitude').val(Math.round(target.lon*100000)/100000);
-        $('#Latitude').val(Math.round(target.lat*100000)/100000);
-      }
-    });
-    
-    $(document).ready(function() {
-      map = new OpenLayers.Map("osm");
-      layer = new OpenLayers.Layer.OSM();
-      map.addLayer(layer);
-      var lonLat = new OpenLayers.LonLat( #{object.longitude}, #{object.latitude} )
-      .transform(
-        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-          map.getProjectionObject() // to Spherical Mercator Projection
-      );
-      var markers = new OpenLayers.Layer.Markers( "Markers" );
-      map.addLayer(markers);
-      marker = new OpenLayers.Marker(lonLat);
-      //marker.icon.url = '';
-      markers.addMarker(marker);
-      map.setCenter (lonLat, 18);
-      var click = new OpenLayers.Control.Click();
-      map.addControl(click);
-      click.activate();
-    });
-    
-    $(document).ready(function() {
-      $(".customParameter li button.btn-danger").click(function() {
-        var id = $(this).data('id');
-        $("#"+id).remove();
-      });
-      $(".btn-success").click(function() {
-        var id = $(".customParameter li").length;
-        var liste = $(".customParameter");
-        var li = $('<li id="parameter'+id+'" class="form-group"><label for="pnames['+id+']" class="control-label">Parameter '+id+':</label><span class="input-group"><span class="input-group-addon"><span>String</span></span><span class="input-group-addon" style="width: 50%;"><input name="pnames[]" placeholder="Parameter ['+id+'] Name" id="pnames['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon" style="width: 50%;"><input name="pvalues[]" placeholder="Parameter ['+id+'] Value" id="pvalues['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon"><button type="button" data-id="parameter'+id+'" class="input-group btn btn-danger"><span class="fa fa-minus"></span></button></span></span></li>');
-        liste.append(li);
-        $(".customParameter li button.btn-danger").click(function() {
-          var id = $(this).data('id');
-          console.log(id);
-          $("#"+id).remove();
+      - if ( !object.longitude ) {
+        - object.longitude = 0
+      - }
+      - if ( !object.latitude ) {
+        - object.latitude = 0
+      - }
+      link(rel="stylesheet", href="#{baseUrlCdn}/css/OpenLayers/ol.css")
+      script(type='text/javascript', src='#{baseUrlCdn}/js/OpenLayers/OpenLayers-3.20.1.min.js')
+      script(type='text/javascript').
+        $(document).ready(function() {
+          
+          var iconFeature = new ol.Feature({
+            geometry: new ol.geom.Point(new ol.proj.transform([#{object.longitude}, #{object.latitude}], 'EPSG:4326', 'EPSG:3857')),
+            name: '#{object.name}',
+            position: '#{object.position}',
+          });
+          var iconStyle = new ol.style.Style({
+              image: new ol.style.Icon(({
+                anchor: [12, 12],
+                anchorXUnits: 'pixels',
+                anchorYUnits: 'pixels',
+                opacity: .8,
+                size: [24, 24],
+                src: '#{baseUrlCdn}/js/OpenLayers/img/marker.png'
+             }))
+          });
+          iconFeature.setStyle(iconStyle);
+          var vectorSource = new ol.source.Vector({});
+          vectorSource.addFeature(iconFeature);
+          var vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+          });
+          var popup = new ol.Overlay({
+            element: document.getElementById('popup'),
+            //positioning: 'top',
+            stopEvent: false
+          });
+          
+          var map = new ol.Map({
+            layers: [
+              new ol.layer.Tile({ source: new ol.source.OSM() }),
+              vectorLayer,
+            ],
+            target: 'osm',
+            view: new ol.View({
+              center: ol.proj.fromLonLat([#{object.longitude}, #{object.latitude}]),
+              zoom: 19
+            })
+          });
+          map.addOverlay(popup);
+                    
+          map.on('click', function(evt) {
+            var lonLat = new ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+            $('#Longitude').val(Math.round(lonLat[0]*100000)/100000);
+            $('#Latitude').val(Math.round(lonLat[1]*100000)/100000);
+
+            var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) { return feature; });
+            if (feature) {
+              var coordinates = feature.getGeometry().getCoordinates();
+              popup.setPosition(coordinates);
+              $('#popup').popover({
+                'placement': 'top',
+                'html': false,
+                'content': feature.get('position')
+              });
+              $('#popup').popover('show');
+            } else {
+              $('#popup').popover('destroy');
+            }
+          });
+          map.on('pointermove', function(e) {
+            if (e.dragging) {
+              $('#popup').popover('destroy');
+              return;
+            }
+            var pixel = map.getEventPixel(e.originalEvent);
+            var hit = map.hasFeatureAtPixel(pixel);
+            //map.getTarget().style.cursor = hit ? 'pointer' : '';
+          });
         });
-      });
-    });
+        
+        $(document).ready(function() {
+          $(".customParameter li button.btn-danger").click(function() {
+            var id = $(this).data('id');
+            $("#"+id).remove();
+          });
+          $(".btn-success").click(function() {
+            var id = $(".customParameter li").length;
+            var liste = $(".customParameter");
+            var li = $('<li id="parameter'+id+'" class="form-group"><label for="pnames['+id+']" class="control-label">Parameter '+id+':</label><span class="input-group"><span class="input-group-addon"><span>String</span></span><span class="input-group-addon" style="width: 50%;"><input name="pnames[]" placeholder="Parameter ['+id+'] Name" id="pnames['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon" style="width: 50%;"><input name="pvalues[]" placeholder="Parameter ['+id+'] Value" id="pvalues['+id+']" value="" class="form-control" type="text"></span><span class="input-group-addon"><button type="button" data-id="parameter'+id+'" class="input-group btn btn-danger"><span class="fa fa-minus"></span></button></span></span></li>');
+            liste.append(li);
+            $(".customParameter li button.btn-danger").click(function() {
+              var id = $(this).data('id');
+              console.log(id);
+              $("#"+id).remove();
+            });
+          });
+        });

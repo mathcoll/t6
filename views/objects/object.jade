@@ -181,48 +181,99 @@ html(lang='en')
                   span e.g.: Edit value from parameter name:
                   pre.language-markup curl -X PUT -i #{baseUrl}/v#{version}/objects/#{object.id}/:pName/ -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer' -d '{"value": "foobar"}'
 
-    include ../includes/foot.jade
-  link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
-  script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
-  - if ( !object.longitude ) {
-    - object.longitude = 0
-  - }
-  - if ( !object.latitude ) {
-    - object.latitude = 0
-  - }
-  script(src='//www.openlayers.org/api/OpenLayers.js')
-  script.
-    $(document).ready(function() {
-      map = new OpenLayers.Map("osm", { controls: [] });
-      map.addLayer(new OpenLayers.Layer.OSM());
-      var lonLat = new OpenLayers.LonLat( #{object.longitude}, #{object.latitude} )
-      .transform(
-        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
-          map.getProjectionObject() // to Spherical Mercator Projection
-      );
-      var markers = new OpenLayers.Layer.Markers( "Markers" );
-      map.addLayer(markers);
-      markers.addMarker(new OpenLayers.Marker(lonLat));
-      map.setCenter (lonLat, 18);
-    });
+          #popup(title='#{object.name}')  
 
-    document.querySelector('.sweet-5').onclick = function(){
-      swal({
-        title: "Are you sure?",
-        text: "Are you sure to delete #{object.name} ?",
-        type: "error",
-        showCancelButton: true,
-        confirmButtonClass: "btn-danger",
-        confirmButtonText: "Yes, delete it!",
-        cancelButtonText: "No, cancel",
-        closeOnConfirm: false,
-        closeOnCancel: true
-      },
-      function(isConfirm) {
-        if (isConfirm) {
-          document.location.href='./#{object.id}/remove';
-        } else {
-          //
-        }
-      });
-    };
+    include ../includes/foot.jade
+      link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+      script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
+      - if ( !object.longitude ) {
+        - object.longitude = 0
+      - }
+      - if ( !object.latitude ) {
+        - object.latitude = 0
+      - }
+      link(rel="stylesheet", href="#{baseUrlCdn}/css/OpenLayers/ol.css")
+      script(type='text/javascript', src='#{baseUrlCdn}/js/OpenLayers/OpenLayers-3.20.1.min.js')
+      script(type='text/javascript').
+        $(document).ready(function() {
+          var iconFeature = new ol.Feature({
+            geometry: new ol.geom.Point(new ol.proj.transform([#{object.longitude}, #{object.latitude}], 'EPSG:4326', 'EPSG:3857')),
+            name: '#{object.name}',
+            position: '#{object.position}',
+          });
+          var iconStyle = new ol.style.Style({
+              image: new ol.style.Icon(({
+                anchor: [12, 12],
+                anchorXUnits: 'pixels',
+                anchorYUnits: 'pixels',
+                opacity: .8,
+                size: [24, 24],
+                src: '#{baseUrlCdn}/js/OpenLayers/img/marker.png'
+             }))
+          });
+          iconFeature.setStyle(iconStyle);
+          var vectorSource = new ol.source.Vector({});
+          vectorSource.addFeature(iconFeature);
+          var vectorLayer = new ol.layer.Vector({
+            source: vectorSource
+          });
+          var popup = new ol.Overlay({
+            element: document.getElementById('popup'),
+            //positioning: 'top',
+            stopEvent: false
+          });
+          
+          var map = new ol.Map({
+            layers: [
+              new ol.layer.Tile({ source: new ol.source.OSM() }),
+              vectorLayer,
+            ],
+            target: 'osm',
+            view: new ol.View({
+              center: ol.proj.fromLonLat([#{object.longitude}, #{object.latitude}]),
+              zoom: 19
+            })
+          });
+          map.addOverlay(popup);
+                    
+          map.on('click', function(evt) {
+            var lonLat = new ol.proj.transform(evt.coordinate, 'EPSG:3857', 'EPSG:4326');
+
+            var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature) { return feature; });
+            if (feature) {
+              var coordinates = feature.getGeometry().getCoordinates();
+              popup.setPosition(coordinates);
+              $('#popup').popover({
+                'placement': 'top',
+                'html': false,
+                'content': feature.get('position')
+              });
+              $('#popup').popover('show');
+            } else {
+              $('#popup').popover('destroy');
+            }
+          });
+        });
+      script.
+        $(document).ready(function() {
+          document.querySelector('.sweet-5').onclick = function(){
+            swal({
+              title: "Are you sure?",
+              text: "Are you sure to delete #{object.name} ?",
+              type: "error",
+              showCancelButton: true,
+              confirmButtonClass: "btn-danger",
+              confirmButtonText: "Yes, delete it!",
+              cancelButtonText: "No, cancel",
+              closeOnConfirm: false,
+              closeOnCancel: true
+            },
+            function(isConfirm) {
+              if (isConfirm) {
+                document.location.href='./#{object.id}/remove';
+              } else {
+                //
+              }
+            });
+          };
+        });

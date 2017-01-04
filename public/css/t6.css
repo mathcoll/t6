@@ -1152,3 +1152,5 @@ a:focus {
 /* End Inline Edit */
 
 .panel.with-nav-tabs .panel-heading { padding:0; }
+
+.popover-content { min-width: 200px; }
