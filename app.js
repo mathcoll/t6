@@ -29,12 +29,26 @@ util				= require('util');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
-if ( db_type === "sqlite3" ) {
+if ( db_type.sqlite3 == true ) {
 	var sqlite3	= require('sqlite3').verbose();
 	dbSQLite3		= new sqlite3.Database(SQLite3Settings);
-} else if( db_type === "influxdb" ) {
+	console.log('Activating sqlite3');
+}
+if( db_type.influxdb == true ) {
 	var influx		= require('influx');
 	dbInfluxDB	= influx(influxSettings);
+	var dbString = influxSettings.protocol+'://'+influxSettings.host+':'+influxSettings.port+'/'+influxSettings.database;
+	/*
+	var Influx = require('influxdb-nodejs');
+	influx = new Influx(dbString);
+
+	influx.schema('data', {
+		time: 'integer',
+		value: 'string',
+	});
+	influx.createDatabase();
+	*/
+	console.log('Activating influxdb: '+dbString);
 }
 
 /* Main Database settings */

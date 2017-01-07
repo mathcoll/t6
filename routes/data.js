@@ -6,6 +6,7 @@ var ErrorSerializer = require('../serializers/error');
 var users;
 var tokens;
 var flows;
+var datatypes;
 
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -54,7 +55,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			var join = flow.eqJoin(units.chain(), 'unit_id', 'id');
 	
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
-			if ( db_type == 'influxdb' ) {
+			if ( db_type.influxdb == true ) {
 				/* InfluxDB database */
 				var query = squel.select()
 					.field('time, publish, value')
@@ -84,7 +85,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						res.status(200).send(new DataSerializer(data[0]).serialize());
 					} else if(output == 'svg') {}
 				});
-			} else if ( db_type == 'sqlite3' ) {
+			} else if ( db_type.sqlite3 == true ) {
 				/* sqlite3 database */
 				// SELECT strftime('%Y', timestamp), AVG(value), MIN(value), MAX(value), count(value) FROM data WHERE flow_id=5 GROUP BY strftime('%Y', timestamp);
 				var query = squel.select()
@@ -258,7 +259,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 			var f = flows.chain().find({id: flow_id}).limit(1).data();
 			var mqtt_topic = (f[0].mqtt_topic!==undefined)?f[0].mqtt_topic:null;
 
-			if ( db_type == 'influxdb' ) {
+			if ( db_type.influxdb == true ) {
 				/* InfluxDB database */
 				var query = squel.select()
 					.field('time, publish, value')
@@ -284,7 +285,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 					
 					res.status(200).send(new DataSerializer(data[0]).serialize());
 				});
-			} else if ( db_type == 'sqlite3' ) {
+			} else if ( db_type.sqlite3 == true ) {
 				/* sqlite3 database */
 				var query = squel.select()
 					.field('timestamp, value, flow_id, timestamp AS id')
@@ -344,34 +345,54 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		res.status(401).send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized'}).serialize());
 	} else {
 		flows	= db.getCollection('flows');
-		var f = flows.chain().find({id: flow_id}).limit(1).data();
+		datatypes	= db.getCollection('datatypes');
+		var f = flows.chain().find({id: flow_id}).limit(1);
+		var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
+		console.log();
 		if ( !mqtt_topic && f[0].mqtt_topic ) {
 			mqtt_topic = f[0].mqtt_topic;
 		}
+		var datatype = (join.data())[0].right.name;
+		
+		// Cast value according to Flow settings
+		var fields = [];
+		if ( datatype == 'boolean' ) {
+			fields[0] = {time:time, value: value};
+		} else if ( datatype == 'date' ) {
+			fields[0] = {time:time, value: value};
+		} else if ( datatype == 'integer' ) {
+			fields[0] = {time:time, value: parseInt(value)};
+		} else if ( datatype == 'json' ) {
+			fields[0] = {time:time, value: {value:value}};
+		} else if ( datatype == 'string' ) {
+			fields[0] = {time:time, value: ""+value};
+		} else if ( datatype == 'time' ) {
+			fields[0] = {time:time, value: value};
+		} else if ( datatype == 'float' ) {
+			fields[0] = {time:time, value: parseFloat(value)};
+		} else {
+			fields[0] = {time:time, value: ""+value};
+		}
+		// End casting
+		
 		var permissions = (req.bearer.permissions);
 		var p = permissions.filter(function(p) {
 		    return p.flow_id == flow_id; 
 		})[0];
 
 		if ( p.permission == '644' || p.permission == '620' || p.permission == '600' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
-			// TODO: In case text != null, we should also save that text to Db!
-			
-			var data = [ { time:time, value: value } ]; // TODO: is it only for influxdb???
+			//console.log(data);
 			if ( save == true ) {
-				if ( db_type == 'influxdb' ) {
+				if ( db_type.influxdb == true ) {
 					/* InfluxDB database */
 					var tags = {};
-					if ( flow_id !== undefined ) tags.flow_id = flow_id;
-					if ( unit !== "" ) tags.unit = unit;
-					if ( publish !== "" ) tags.publish = publish;
-					if ( save !== "" ) tags.save = save;
-					if ( text !== "" ) tags.text = text;
-					if ( mqtt_topic !== "" ) tags.mqtt_topic = mqtt_topic;
-					dbInfluxDB.writePoint("data", data[0], tags, {}, function(err, response) {
-						if (err) { }
-						if (response) console.log('Res: '+response);
+					if (flow_id!== "") tags.flow_id = flow_id;
+					if (text!== "") tags.text = text;
+					dbInfluxDB.writePoint("data", fields[0], tags, {}, function(err, response) {
+						if (err) console.log('Err: '+err);
 					});
-				} else if ( db_type == 'sqlite3' ) {
+				}
+				if ( db_type.sqlite3 == true ) {
 					/* sqlite3 database */
 					var query = squel.insert()
 						.into("data")
@@ -394,16 +415,16 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 				}
 			}
 
-			data.flow_id = flow_id;
-			data[0].parent;
-			data[0].first;
-			data[0].prev;
-			data[0].next;
-			data[0].id = time;
-			data[0].time = time;
-			data[0].timestamp = time;
-			data[0].mqtt_topic = mqtt_topic;
-			res.status(200).send(new DataSerializer(data).serialize());
+			fields.flow_id = flow_id;
+			fields[0].parent;
+			fields[0].first;
+			fields[0].prev;
+			fields[0].next;
+			fields[0].id = time;
+			fields[0].time = time;
+			fields[0].timestamp = time;
+			fields[0].mqtt_topic = mqtt_topic;
+			res.status(200).send(new DataSerializer(fields).serialize());
 			
 		} else {
 			// Not Authorized due to permission
