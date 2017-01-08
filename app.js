@@ -36,18 +36,8 @@ if ( db_type.sqlite3 == true ) {
 }
 if( db_type.influxdb == true ) {
 	var influx		= require('influx');
-	dbInfluxDB	= influx(influxSettings);
-	var dbString = influxSettings.protocol+'://'+influxSettings.host+':'+influxSettings.port+'/'+influxSettings.database;
-	/*
-	var Influx = require('influxdb-nodejs');
-	influx = new Influx(dbString);
-
-	influx.schema('data', {
-		time: 'integer',
-		value: 'string',
-	});
-	influx.createDatabase();
-	*/
+	var dbString	= influxSettings.protocol+'://'+influxSettings.host+':'+influxSettings.port+'/'+influxSettings.database;
+	dbInfluxDB		= new influx.InfluxDB(dbString);
 	console.log('Activating influxdb: '+dbString);
 }
 

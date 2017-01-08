@@ -7,6 +7,7 @@ var users;
 var tokens;
 var flows;
 var datatypes;
+var units;
 
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -47,44 +48,72 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			}
 
 			flows = db.getCollection('flows');
-			var units	= db.getCollection('units');
-			var flow = flows.chain().find({ 'id' : { '$aeq' : flow_id } }).limit(1);
-			//var flow = flows.findOne({ 'id' : { '$aeq' : flow_id } });
-			
 			units	= db.getCollection('units');
+			var flow = flows.chain().find({ 'id' : { '$aeq' : flow_id } }).limit(1);
 			var join = flow.eqJoin(units.chain(), 'unit_id', 'id');
 	
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 			if ( db_type.influxdb == true ) {
 				/* InfluxDB database */
 				var query = squel.select()
-					.field('time, publish, value')
+					.field('time, value')
 					.from('data')
 					.where('flow_id=?', flow_id)
 					.limit(limit)
 					.offset((page - 1) * limit)
 					.order('time', sorting)
 				;
-				
+
+				if ( req.query.start != undefined ) {
+					if ( !isNaN(req.query.start) ) {
+						//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
+						query.where('time>='+req.query.start*1000000);
+					} else {
+						query.where('time>='+moment(req.query.start).format('x')*1000000); 
+					}
+				}	
+				if ( req.query.end != undefined ) {
+					if ( !isNaN(req.query.end) ) {
+						//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
+						query.where('time<='+req.query.end*1000000);
+					} else {
+						query.where('time<='+moment(req.query.end).format('x')*1000000); 
+					}
+				}
+
 				query = query.toString();
-				//res.send({query: query}, 200);
-				dbInfluxDB.query(query, function(err, data) {
-					if (err) console.log(err);
-					data[0].id = moment(data[0].time).format('x');
-					data[0].flow_id = flow_id;
-					data[0].page = page;
-					data[0].next = page+1;
-					data[0].prev = page-1;
-					data[0].limit = limit;
-					data[0].time = moment(data[0].time).format('x');
-					data[0].timestamp = moment(data[0].time).format('x');
-					data[0].mqtt_topic = ((join.data())[0].left).mqtt_topic;
-					data[0].order = req.query.order!==undefined?req.query.order:'asc';
-					
-					if (output == 'json') {
-						res.status(200).send(new DataSerializer(data[0]).serialize());
-					} else if(output == 'svg') {}
+
+				dbInfluxDB.query(query).then(data => {
+					if ( data.length > 0 ) {
+						data.map(function(d) {
+							d.id = Date.parse(d.time);
+							d.timestamp = Date.parse(d.time);
+							d.time = Date.parse(d.time);
+						});
+						
+						data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
+						data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:'';
+						data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
+						data.ttl = 3600;
+						data.flow_id = flow_id;
+						data.page = page;
+						data.next = page+1;
+						data.prev = page-1;
+						data.limit = limit;
+						data.order = req.query.order!==undefined?req.query.order:'asc';
+						
+						if (output == 'json') {
+							res.status(200).send(new DataSerializer(data).serialize());
+						} else if(output == 'svg') {
+							res.status(404).send("SVG Not Implemented with influxDB");
+						};
+					} else {
+						res.status(404).send(new ErrorSerializer({'id': 898, 'code': 404, 'message': 'Not Found'}).serialize());
+					};
+				}).catch(err => {
+					res.status(500).send({query: query, err: err, 'id': 899, 'code': 500, 'message': 'Internal Error'});
 				});
+
 			} else if ( db_type.sqlite3 == true ) {
 				/* sqlite3 database */
 				// SELECT strftime('%Y', timestamp), AVG(value), MIN(value), MAX(value), count(value) FROM data WHERE flow_id=5 GROUP BY strftime('%Y', timestamp);
@@ -122,6 +151,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						data.id = moment(data.timestamp).format('x');
 						data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
 						data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:'';
+						data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 						data.ttl = 3600;
 						data.flow_id = flow_id;
 						data.page = page;
@@ -130,7 +160,6 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 						data.limit = limit;
 						data.time = moment(data.timestamp).format('x');
 						data.timestamp = moment(data.timestamp).format('x');
-						data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 						data.order = req.query.order!==undefined?req.query.order:'asc';
 						
 						if (output == 'json') {
@@ -348,7 +377,6 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		datatypes	= db.getCollection('datatypes');
 		var f = flows.chain().find({id: flow_id}).limit(1);
 		var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
-		console.log();
 		if ( !mqtt_topic && f[0].mqtt_topic ) {
 			mqtt_topic = f[0].mqtt_topic;
 		}
@@ -357,21 +385,21 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		// Cast value according to Flow settings
 		var fields = [];
 		if ( datatype == 'boolean' ) {
-			fields[0] = {time:time, value: value};
+			fields[0] = {time:time, value: value,};
 		} else if ( datatype == 'date' ) {
-			fields[0] = {time:time, value: value};
+			fields[0] = {time:time, value: value,};
 		} else if ( datatype == 'integer' ) {
-			fields[0] = {time:time, value: parseInt(value)};
+			fields[0] = {time:time, value: parseInt(value),};
 		} else if ( datatype == 'json' ) {
-			fields[0] = {time:time, value: {value:value}};
+			fields[0] = {time:time, value: {value:value,},};
 		} else if ( datatype == 'string' ) {
-			fields[0] = {time:time, value: ""+value};
+			fields[0] = {time:time, value: ""+value,};
 		} else if ( datatype == 'time' ) {
-			fields[0] = {time:time, value: value};
+			fields[0] = {time:time, value: value,};
 		} else if ( datatype == 'float' ) {
-			fields[0] = {time:time, value: parseFloat(value)};
+			fields[0] = {time:time, value: parseFloat(value),};
 		} else {
-			fields[0] = {time:time, value: ""+value};
+			fields[0] = {time:time, value: ""+value,};
 		}
 		// End casting
 		
@@ -388,9 +416,17 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 					var tags = {};
 					if (flow_id!== "") tags.flow_id = flow_id;
 					if (text!== "") tags.text = text;
+					/*
 					dbInfluxDB.writePoint("data", fields[0], tags, {}, function(err, response) {
 						if (err) console.log('Err: '+err);
 					});
+					*/
+					dbInfluxDB.writePoints([{
+						measurement: 'data',
+						tags: tags,
+						fields: fields[0],
+						timestamp: time*1000000,
+					}]);
 				}
 				if ( db_type.sqlite3 == true ) {
 					/* sqlite3 database */

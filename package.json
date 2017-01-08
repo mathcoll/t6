@@ -27,7 +27,7 @@
     "express": "~4.12.4",
     "express-http-proxy": "^0.6.0",
     "express-session": "^1.13.0",
-    "influx": "~4.0.1",
+    "influx": "^5.0.0-alpha.4",
     "jade": "^1.11.0",
     "jsonapi-serializer": "~2.0.4",
     "lokijs": "^1.3.15",
