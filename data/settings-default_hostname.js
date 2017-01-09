@@ -35,9 +35,12 @@ mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smt
 transporter			= nodemailer.createTransport({ host: mailhost, ignoreTLS: true, auth: mailauth });
 
 /* Database settings - Storage */
-db_type				= 'sqlite3'; // sqlite3 | influxdb
-SQLite3Settings = path.join(__dirname, 'data.db');
-influxSettings = { host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' }
+db_type				= {
+	influxdb: true,
+	sqlite3: true,
+};
+SQLite3Settings		= path.join(__dirname, 'data.db');
+influxSettings		= { host : 'localhost', port : 8086, protocol : 'http', username : 'datawarehouse', password : 'datawarehouse', database : 'datawarehouse' }
 
 /* Quota settings */
 quota = {
