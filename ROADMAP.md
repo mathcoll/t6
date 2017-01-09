@@ -4,12 +4,11 @@ t6 is a platform to connect physical Objects with realtime-timeseries DB.
 
 Roadmap
 ===========================
-# Step 1: API completion with right managements on flows, data, users.
-That step is almost complete.
+# Milestone 1: API completion with right managements on flows, data, users.
+Milestone is almost done.
 
-# Step 2: Dashboard integration
-That step is ongoing.
+# Milestone 2: Dashboard integration
+Milestone is almost done on basic User Experience.
 
-# Step 3: Process with a better TSdb database integration - than SQLite! - tested influxDb...
-Still stuck at that stage...
-Arm processor as prerequisites - very low hard drive space on server.
+# Milestone 3: Process with a better TSdb database integration - than SQLite!
+influxDb branch is ongoing
