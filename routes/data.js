@@ -266,6 +266,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
+	var output = req.query.output!==undefined?req.query.output:'json';
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({'id': 59, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
@@ -285,34 +286,51 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 			var sorting = req.query.order=='asc'?true:false;
 			
 			flows	= db.getCollection('flows');
-			var f = flows.chain().find({id: flow_id}).limit(1).data();
-			var mqtt_topic = (f[0].mqtt_topic!==undefined)?f[0].mqtt_topic:null;
+			units	= db.getCollection('units');
+			var flow = flows.chain().find({ 'id' : { '$aeq' : flow_id, }, }).limit(1);
+			var mqtt_topic = ((flow.data())[0].mqtt_topic!==undefined)?(flow.data())[0].mqtt_topic:null;
+			var join = flow.eqJoin(units.chain(), 'unit_id', 'id');
 
 			if ( db_type.influxdb == true ) {
 				/* InfluxDB database */
 				var query = squel.select()
-					.field('time, publish, value')
+					.field('time, value')
 					.from('data')
 					.where('flow_id=?', flow_id)
-					.where('time=?', data_id)
+					.where('time='+data_id)
 					.limit(limit)
-					.toString()
 				;
+				query = query.toString();
 
-				dbInfluxDB.query(query, function(err, data) {
-					if (err) console.log(err);
-					data[0].id = moment(data[0].time).format('x');
-					data[0].flow_id = flow_id;
-					data[0].page = page;
-					data[0].next = page+1;
-					data[0].prev = page-1;
-					data[0].limit = limit;
-					data[0].id = data[0].time;
-					data[0].timestamp = data[0].time;
-					data[0].mqtt_topic = mqtt_topic;
-					data[0].order = req.query.order!==undefined?req.query.order:'asc';
-					
-					res.status(200).send(new DataSerializer(data[0]).serialize());
+				dbInfluxDB.query(query).then(data => {
+					if ( data.length > 0 ) {
+						data.map(function(d) {
+							d.id = Date.parse(d.time);
+							d.timestamp = Date.parse(d.time);
+							d.time = Date.parse(d.time);
+						});
+
+						data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
+						data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:'';
+						data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
+						data.ttl = 3600;
+						data.flow_id = flow_id;
+						data.page = page;
+						data.next = page+1;
+						data.prev = page-1;
+						data.limit = limit;
+						data.order = req.query.order!==undefined?req.query.order:'asc';
+						
+						if (output == 'json') {
+							res.status(200).send(new DataSerializer(data).serialize());
+						} else if(output == 'svg') {
+							res.status(404).send("SVG Not Implemented with influxDB");
+						};
+					} else {
+						res.status(404).send(new ErrorSerializer({'id': 900, 'code': 404, 'message': 'Not Found'}).serialize());
+					};
+				}).catch(err => {
+					res.status(500).send({query: query, err: err, 'id': 901, 'code': 500, 'message': 'Internal Error'});
 				});
 			} else if ( db_type.sqlite3 == true ) {
 				/* sqlite3 database */
@@ -375,12 +393,12 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	} else {
 		flows	= db.getCollection('flows');
 		datatypes	= db.getCollection('datatypes');
-		var f = flows.chain().find({id: flow_id}).limit(1);
+		var f = flows.chain().find({id: flow_id,}).limit(1);
 		var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
 		if ( !mqtt_topic && f[0].mqtt_topic ) {
 			mqtt_topic = f[0].mqtt_topic;
 		}
-		var datatype = (join.data())[0].right.name;
+		var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
 		
 		// Cast value according to Flow settings
 		var fields = [];
@@ -416,11 +434,6 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 					var tags = {};
 					if (flow_id!== "") tags.flow_id = flow_id;
 					if (text!== "") tags.text = text;
-					/*
-					dbInfluxDB.writePoint("data", fields[0], tags, {}, function(err, response) {
-						if (err) console.log('Err: '+err);
-					});
-					*/
 					dbInfluxDB.writePoints([{
 						measurement: 'data',
 						tags: tags,
