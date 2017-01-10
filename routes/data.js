@@ -395,8 +395,8 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		datatypes	= db.getCollection('datatypes');
 		var f = flows.chain().find({id: flow_id,}).limit(1);
 		var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
-		if ( !mqtt_topic && f[0].mqtt_topic ) {
-			mqtt_topic = f[0].mqtt_topic;
+		if ( !mqtt_topic && (f.data())[0].mqtt_topic ) {
+			mqtt_topic = (f.data())[0].mqtt_topic;
 		}
 		var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
 		
@@ -455,14 +455,14 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 					});
 				}
 			}
-			
+
 			if( publish == true && mqtt_topic !== "" ) {
 				if ( text !== "" ) {
-					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text}), {retain: true});
+					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text, flow: flow_id, }), {retain: true,});
 				} else {
-					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value}), {retain: true});
-				}
-			}
+					client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, flow: flow_id, }), {retain: true,});
+				};
+			};
 
 			fields.flow_id = flow_id;
 			fields[0].parent;
@@ -478,8 +478,8 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		} else {
 			// Not Authorized due to permission
 			res.status(401).send(new ErrorSerializer({'id': 65, 'code': 401, 'message': 'Not Authorized'}).serialize());
-		}
-	}
+		};
+	};
 });
 
 function bearerAuthToken(req, res, next) {
