@@ -36,23 +36,24 @@ html(lang='en')
               -end
               
               dt Datatype:
-              - if ( flow.data_type )
+              - if ( flow.data_type ) {
                 - for (d in datatypes) {
-                  - if ( datatypes[d].id == flow.data_type )
+                  - if ( datatypes[d].id == flow.data_type ) {
                     dd #{datatypes[d].name}
+                  - }
                 - }
-              - else
+              - }
 
               dt Unit:
-              dd #{unit.format}
-                - if (unit.name)
-                  |  (Name: #{unit.name}, Type: #{unit.type})
+              - if (unit.name) {
+                dd #{unit.format} (Name: #{unit.name}, Type: #{unit.type})
+              - }
 
               dt Permission:
               dd
                 span.label.label-danger #{flow.permission}
                 
-              dt
+              dt  
               dd
                 p 
                 ul.list-inline
