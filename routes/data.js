@@ -51,18 +51,45 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			units	= db.getCollection('units');
 			var flow = flows.chain().find({ 'id' : { '$aeq' : flow_id } }).limit(1);
 			var join = flow.eqJoin(units.chain(), 'unit_id', 'id');
-	
+			
+
+			var flowsDT = db.getCollection('flows');
+			datatypes	= db.getCollection('datatypes');
+			var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
+			var joinDT = flowDT.eqJoin(datatypes.chain(), 'data_type', 'id');
+			var datatype = (joinDT.data())[0]!==undefined?(joinDT.data())[0].right.name:null;
+			
 			//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 			if ( db_type.influxdb == true ) {
 				/* InfluxDB database */
+				
 				var query = squel.select()
-					.field('time, value')
 					.from('data')
 					.where('flow_id=?', flow_id)
 					.limit(limit)
 					.offset((page - 1) * limit)
 					.order('time', sorting)
 				;
+				
+				// Cast value according to Flow settings
+				if ( datatype == 'boolean' ) {
+					query.field('time, valueBoolean');
+				} else if ( datatype == 'date' ) {
+					query.field('time, valueDate');
+				} else if ( datatype == 'integer' ) {
+					query.field('time, valueInteger');
+				} else if ( datatype == 'json' ) {
+					query.field('time, valueJson');
+				} else if ( datatype == 'string' ) {
+					query.field('time, valueString');
+				} else if ( datatype == 'time' ) {
+					query.field('time, valueTime');
+				} else if ( datatype == 'float' ) {
+					query.field('time, valueFloat');
+				} else {
+					query.field('time, value');
+				}
+				// End casting
 
 				if ( req.query.start != undefined ) {
 					if ( !isNaN(req.query.start) ) {
@@ -82,6 +109,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 				}
 
 				query = query.toString();
+				//console.log('query: '+query);
 
 				dbInfluxDB.query(query).then(data => {
 					if ( data.length > 0 ) {
@@ -89,6 +117,23 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 							d.id = Date.parse(d.time);
 							d.timestamp = Date.parse(d.time);
 							d.time = Date.parse(d.time);
+							if ( datatype == 'boolean' ) {
+								d.value = d.valueBoolean=='true'?true:false;
+							} else if ( datatype == 'date' ) {
+								d.value = d.valueDate;
+							} else if ( datatype == 'integer' ) {
+								d.value = parseInt((d.valueInteger).substring(-1));
+							} else if ( datatype == 'json' ) {
+								d.value = d.valueJson;
+							} else if ( datatype == 'string' ) {
+								d.value = d.valueString;
+							} else if ( datatype == 'time' ) {
+								d.value = d.valueTime;
+							} else if ( datatype == 'float' ) {
+								d.value = parseFloat(d.valueFloat);
+							} else {
+								d.value = d.value;
+							}
 						});
 						
 						data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
@@ -403,19 +448,19 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		// Cast value according to Flow settings
 		var fields = [];
 		if ( datatype == 'boolean' ) {
-			fields[0] = {time:time, value: value,};
+			fields[0] = {time:time, valueBoolean: value,};
 		} else if ( datatype == 'date' ) {
-			fields[0] = {time:time, value: value,};
+			fields[0] = {time:time, valueDate: value,};
 		} else if ( datatype == 'integer' ) {
-			fields[0] = {time:time, value: parseInt(value),};
+			fields[0] = {time:time, valueInteger: parseInt(value)+'i',};
 		} else if ( datatype == 'json' ) {
-			fields[0] = {time:time, value: {value:value,},};
+			fields[0] = {time:time, valueJson: {value:value,},};
 		} else if ( datatype == 'string' ) {
-			fields[0] = {time:time, value: ""+value,};
+			fields[0] = {time:time, valueString: ""+value,};
 		} else if ( datatype == 'time' ) {
-			fields[0] = {time:time, value: value,};
+			fields[0] = {time:time, valueTime: value,};
 		} else if ( datatype == 'float' ) {
-			fields[0] = {time:time, value: parseFloat(value),};
+			fields[0] = {time:time, valueFloat: parseFloat(value),};
 		} else {
 			fields[0] = {time:time, value: ""+value,};
 		}
@@ -433,7 +478,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 					/* InfluxDB database */
 					var tags = {};
 					if (flow_id!== "") tags.flow_id = flow_id;
-					if (text!== "") tags.text = text;
+					if (text!== "") fields[0].text = text;
 					dbInfluxDB.writePoints([{
 						measurement: 'data',
 						tags: tags,
