@@ -1,19 +1,13 @@
-.clearfix.list-group-item(name='#{dashboards[dashboard].id}')
+a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards/#{dashboards[dashboard].id}')
   div.col-sm-6.ellipsis
     h4.list-group-item-heading(style="margin:0; padding:0;")
       span.fa.fa-area-chart  #{dashboards[dashboard].name}
-  div.col-sm-3
+
+  div.col-sm-4
     span
+
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.created).format('DD/MM/YYYY, HH:mm')}
-
-  div.col-sm-1.btn-group-vertical.pull-right(role="group")
-    a.btn.btn-warning.btn-sm(href='/dashboards/#{dashboards[dashboard].id}')
-      span.fa.fa-external-link  Open
-    a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{dashboards[dashboard].id}', data-name='#{dashboards[dashboard].name}', onclick="return false;")
-      span.fa.fa-trash-o  Remove
-    a.btn.btn-primary.btn-sm(href='/dashboards/#{dashboards[dashboard].id}/edit')
-      span.fa.fa-pencil-square-o  Edit
   
   div.col-sm-2
    span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title='Dashboard Id')  #{dashboards[dashboard].id}
@@ -24,10 +18,14 @@
   div.col-sm-2
     span.xs-visible-inline.fa.fa-puzzle-piece  #{dashboards[dashboard].snippets.length} Snippet(s) linked
 
-  div.col-sm-1
+  div.col-sm-2
     img.img.img-responsive(src='#{baseUrlCdn}/img/layout_#{dashboards[dashboard].layout}.png', alt='#{dashboards[dashboard].layout}', width='30')
 
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.updated).format('DD/MM/YYYY, HH:mm')}
 
-  div.col-sm-10 #{dashboards[dashboard].description}
+  div.col-sm-11
+    div #{dashboards[dashboard].description}
+    
+  div.col-sm-1
+    div.fa.fa-chevron-right.pull-right 

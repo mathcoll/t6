@@ -14,38 +14,46 @@
     link(href='/css/font-awesome/font-awesome.min-4.7.0.css', rel='stylesheet')
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     body
-      //include ../includes/navbar-minimal.jade
-- }
-  
-    .row.simplerow.no-padding.container-fluid.col-sm-12
-      .list-group
-        mixin row(flow_id, name, icon)
-          a.list-group-item.list-unstyled.container-fluid(class="col-sm-#{graph_layout}", id="body#{rnd}_#{flow_id}", href='/flows/#{flow_id}')
-            span.col-xs-12.col-sm-12
-              h4.list-group-item-heading(id="title#{rnd}_#{flow_id}")
-                span.icon.fa(id="icon#{rnd}_#{flow_id}", class="#{icon}")
-          
-            span.col-xs-8.col-sm-8
-              span &nbsp;
-          
-            span.col-xs-3.col-sm-3
-              span.col-xs-12.col-sm-12.label.label-default.value.ellipsis.pull-right(id="value#{rnd}_#{flow_id}", data-toggle='tooltip', data-placement='bottom', title='')
-
-            span.col-xs-1.col-sm-1.btn-group-vertical.pull-right(role="group")
-              div.fa.fa-chevron-right.pull-right 
-          
-            span.col-xs-12.col-sm-12
-              span(id="row#{rnd}_#{flow_id}") &nbsp;
-              
-            span.col-xs-12.col-sm-12
-              span.fa.fa-clock-o.col-xs-12.col-sm-12.ellipsis(id="lastDate#{rnd}_#{flow_id}") &nbsp;
+      include ../includes/navbar-on-top.jade
       
-        -for(i in snippet.flows) {
-          - var flow_id = (snippet.flows[i])
-          - var name = (snippet.flows[i]).name
-          - var icon = (snippet.flows[i]).icon
-          +row(flow_id, name, icon)
-        - }
+      .container-fluid
+        .row.starter-template
+          a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{snippet.id}', data-name='#{snippet.name}', onclick="return false;")
+            span.fa.fa-trash-o  Remove
+          | 
+          a.btn.btn-primary.btn-sm(href='/snippets/#{snippet.id}/edit')
+            span.fa.fa-pencil-square-o  Edit
+          | 
+- }
+        .row.simplerow.no-padding.container-fluid.col-sm-12
+          .list-group
+            mixin row(flow_id, name, icon)
+              a.list-group-item.list-unstyled.container-fluid(class="col-sm-#{graph_layout}", id="body#{rnd}_#{flow_id}", href='/flows/#{flow_id}')
+                span.col-xs-12.col-sm-12
+                  h4.list-group-item-heading(id="title#{rnd}_#{flow_id}")
+                    span.icon.fa(id="icon#{rnd}_#{flow_id}", class="#{icon}")
+              
+                span.col-xs-2.col-sm-6.col-lg-9
+                  span &nbsp;
+              
+                span.col-xs-8.col-sm-5.col-lg-2
+                  span.col-xs-12.col-sm-12.label.label-default.value.ellipsis.pull-right(id="value#{rnd}_#{flow_id}", data-toggle='tooltip', data-placement='bottom', title='')
+        
+                span.col-xs-1.col-sm-1.col-lg-1.btn-group-vertical.pull-right(role="group")
+                  div.fa.fa-chevron-right.pull-right 
+              
+                span.col-xs-12.col-sm-12
+                  span(id="row#{rnd}_#{flow_id}") &nbsp;
+                  
+                span.col-xs-12.col-sm-12
+                  span.fa.fa-clock-o.col-xs-12.col-sm-12.ellipsis(id="lastDate#{rnd}_#{flow_id}") &nbsp;
+          
+            -for(i in snippet.flows) {
+              - var flow_id = (snippet.flows[i])
+              - var name = (snippet.flows[i]).name
+              - var icon = (snippet.flows[i]).icon
+              +row(flow_id, name, icon)
+            - }
 
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     script(src='#{baseUrlCdn}/js/jquery-ui/jquery-ui-1.11.4.min.js')
@@ -100,3 +108,29 @@
     script.
       getDataRow#{rnd}('/v#{version}/data/', '#{snippet.flows[i]}', 'GET', 'application/json', drawRow#{rnd}, 'row#{rnd}_#{snippet.flows[i]}');
   - }
+
+  link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
+  script.
+    $('.sweet-5').on('click', function (e) {
+      var id = $(this).data("id");
+      var name = $(this).data("name");
+      swal({
+        title: "Are you sure?",
+        text: "Are you sure to remove "+name+" ?",
+        type: "error",
+        showCancelButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Yes, remove it!",
+        cancelButtonText: "No, cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true
+      },
+      function(isConfirm) {
+        if (isConfirm) {
+          document.location.href='/snippets/'+id+'/remove';
+        } else {
+          //
+        }
+      });
+    });

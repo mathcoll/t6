@@ -25,6 +25,16 @@ html(lang='en')
                 a(href='./#{dashboard.id}?layout=twocolumnsright') 2 Columns Layout (left sidebar)
               li
                 a(href='./#{dashboard.id}?layout=twocolumnsleft') 2 Columns Layout (right sidebar)
+            | 
+
+            a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{dashboard.id}', data-name='#{dashboard.name}', onclick="return false;")
+              span.fa.fa-trash-o  Remove
+            | 
+            
+            a.btn.btn-primary.btn-sm(href='/dashboards/#{dashboard.id}/edit')
+              span.fa.fa-pencil-square-o  Edit
+            | 
+            
         p.editable-click#description(href='#', data-type='textarea', data-pk='2', data-url='./#{dashboard.id}/setDescription', data-title='Your dashboard description') !{nl2br(dashboard.description)}
 
       .row
@@ -36,6 +46,8 @@ html(lang='en')
 
     include ../includes/foot.jade
     
+    link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+    script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
     link(href='#{baseUrlCdn}/css/bootstrap-editable/bootstrap-editable-1.5.0.css', rel='stylesheet')
     script(src='#{baseUrlCdn}/js/bootstrap-editable/bootstrap-editable-1.5.0.min.js')
     script.
@@ -43,4 +55,27 @@ html(lang='en')
         $.fn.editable.defaults.mode = 'inline';
         $('h2#name').editable();
         $('p#description').editable();
+      });
+      
+      $('.sweet-5').on('click', function (e) {
+        var id = $(this).data("id");
+        var name = $(this).data("name");
+        swal({
+          title: "Are you sure?",
+          text: "Are you sure to remove "+name+" ?",
+          type: "error",
+          showCancelButton: true,
+          confirmButtonClass: "btn-danger",
+          confirmButtonText: "Yes, remove it!",
+          cancelButtonText: "No, cancel",
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm) {
+          if (isConfirm) {
+            document.location.href='/dashboards/'+id+'/remove';
+          } else {
+            //
+          }
+        });
       });

@@ -22,7 +22,16 @@
     link(href='#{baseUrlCdn}/css/font-awesome/font-awesome.min-4.7.0.css', rel='stylesheet')
 - if ( currentUrl.indexOf("snippets") > -1 ) {
     body
-      //include ../includes/navbar-minimal.jade
+      include ../includes/navbar-on-top.jade
+      
+      .container-fluid
+        .row.starter-template
+          a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{snippet.id}', data-name='#{snippet.name}', onclick="return false;")
+            span.fa.fa-trash-o  Remove
+          | 
+          a.btn.btn-primary.btn-sm(href='/snippets/#{snippet.id}/edit')
+            span.fa.fa-pencil-square-o  Edit
+          | 
 - }
 
     li.list-unstyled.container-fluid.ui-sortable-handle(id="body#{rnd}", style="width:100%;", class="col-sm-#{graph_layout}")
@@ -237,3 +246,29 @@
         }); // end
       }
       flowGraph#{rnd}();
+
+  link(href='#{baseUrlCdn}/css/sweetalert/sweetalert.css', rel='stylesheet')
+  script(src='#{baseUrlCdn}/js/sweetalert/sweetalert.js')
+  script.
+    $('.sweet-5').on('click', function (e) {
+      var id = $(this).data("id");
+      var name = $(this).data("name");
+      swal({
+        title: "Are you sure?",
+        text: "Are you sure to remove "+name+" ?",
+        type: "error",
+        showCancelButton: true,
+        confirmButtonClass: "btn-danger",
+        confirmButtonText: "Yes, remove it!",
+        cancelButtonText: "No, cancel",
+        closeOnConfirm: false,
+        closeOnCancel: true
+      },
+      function(isConfirm) {
+        if (isConfirm) {
+          document.location.href='/snippets/'+id+'/remove';
+        } else {
+          //
+        }
+      });
+    });
