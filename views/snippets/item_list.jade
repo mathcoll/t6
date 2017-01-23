@@ -1,25 +1,10 @@
 a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{snippets[snippet].id}')
-  div.col-sm-12
+  div.col-sm-4
     h4.list-group-item-heading(style="margin:0; padding:0;")
       span.fa(class="#{snippets[snippet].icon}")  #{snippets[snippet].name}
 
-  //-
-    div.col-sm-1.btn-group-vertical.pull-right(role="group")
-      a.btn.btn-warning.btn-sm(href='/snippets/#{snippets[snippet].id}', target='_blank')
-        span.fa.fa-external-link  Open
-      a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{snippets[snippet].id}', data-name='#{snippets[snippet].name}', onclick="return false;")
-        span.fa.fa-trash-o  Remove
-      a.btn.btn-primary.btn-sm(href='/snippets/#{snippets[snippet].id}/edit')
-        span.fa.fa-pencil-square-o  Edit
-  
-  div.col-sm-2
-    span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title='Snippet Id')  #{snippets[snippet].id}
-
-  div.col-sm-2
-    span &nbsp;
-
   div.col-sm-1
-    img.img-responsive(src="#{baseUrlCdn}/img/snippet-#{snippets[snippet].type}.jpg", width="70")
+    img.img-responsive(src="#{baseUrlCdn}/img/snippet-#{snippets[snippet].type}.jpg", width="50")
 
   div.col-sm-1
     span #{snippets[snippet].color}
@@ -30,6 +15,9 @@ a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{sni
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(snippets[snippet].meta.created).format('DD/MM/YYYY, HH:mm')}
     span.fa.fa-clock-o  #{moment(snippets[snippet].meta.updated).format('DD/MM/YYYY, HH:mm')}
+  
+  div.col-sm-2
+    span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title='Snippet Id')  #{snippets[snippet].id}
     
-  div.col-sm-12
+  div.col-sm-10
     div.fa.fa-chevron-right.pull-right 
