@@ -8,18 +8,29 @@ html(lang='en')
     .container.starter-template
       .row
         .col-sm-12
-          h2.fa.fa-2x.fa-wrench &nbsp;t6 install
+          h2.fa.fa-2x.fa-wrench &nbsp;t6, Install your own server
+          p t6 is Open-Source and can be installed on your own server from the  
+            a(href='https://github.com/mathcoll/t6') github repository
+            | .
+            | And if you don't care about installing the application yourself, feel free to 
+            a(href='/account/register') create your account
+            |  on this server.
 
         .col-sm-12
+          p Following prerequisites are required to run t6 on your server:
           pre.language-markup Install node (if needed): https://nodejs.org/en/
             |Install npm (if needed): https://github.com/npm/npm
+          p Then you should get the latest release from the github repository:
           pre.language-markup git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
+          p Once cloning is done, you can proceed to depedencies installation using npm command-line:
           pre.language-markup npm install
+          p Final step is to customize you installation by adjusting settings from the default templates files:
+          p You can use the Linux command-line (`uname -n`) to get your machine hostname.
           pre.language-markup rename "settings-default_hostname.js" according to your server hostname and edit the file.
             | rename "rules-default_hostname.js" according to your server hostname.
             | rename "quota-default_hostname.js" according to your server hostname.
             | rename "db-default_hostname.json" according to your server hostname.
-          p You can add the server running as a service, tested with Ubuntu and Debian:
+          p Optionally, you can add the service at boot time (tested with Ubuntu and Debian):
             ul
               li First: install the server in services:
                 pre.language-markup sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
@@ -28,12 +39,70 @@ html(lang='en')
               
     .container.starter-template
       .row
-        .col-sm-12
-          h2.fa.fa-2x.fa-wrench &nbsp;API for developers
-        blockquote.fa.fa-comment  Update events Flows using the Time-series API and remotely manage you data.
+        .col-sm-8
+          h2.fa.fa-2x.fa-wrench &nbsp;Getting Started
+          p t6 API is based on top of 
+            a(href='//en.wikipedia.org/wiki/Representational_state_transfer') REST
+            |  architecture.
+          p The current public version of the Api is: v#{version}; this version number is required for calling the Api endpoints.
+          p t6 is handling SSL/TLS, meaning the Api should be called from https protocol when feasible. 
+           
+          h3 API endpoints
+          ul
+            li 
+              a(href='#Status') I. Status
+            li 
+              a(href='#Users') II. Users
+            li 
+              a(href='#Objects') III. Objects
+            li 
+              a(href='#Flows') IV. Flows
+            li 
+              a(href='#Data') V. Data
+            li 
+              a(href='#Units') VI. Units
+            li 
+              a(href='#Datatypes') VII. Datatypes
 
+        .col-sm-4
+          p 
+              
+    .container.starter-template
+      .row
         .col-sm-12
-          h3 Users and Permissions
+          h3
+            a(name='Status') I. Api Status
+        
+        .col-sm-12
+          ul#tabs.nav.nav-tabs(data-tabs='tabs')
+            li.active
+              a(href='#curl0', data-toggle='tab') Curl
+            li
+              a(href='#nodejs0', data-toggle='tab') Node.js
+
+          #my-tab-content.tab-content
+            #curl0.tab-pane.active
+              p
+                span.label.label-success GET
+                |  Get Api Status:
+              pre.language-markup curl -i \
+                | -H "Accept: application/json" \
+                | -H "Content-Type:application/json" \
+                | -X GET #{baseUrl}/v#{version}/status \
+              hr/
+
+            #nodejs0.tab-pane
+              p
+                span.label.label-success GET
+                |  Get Api Status:
+              pre.language-javascript 
+          
+              
+    .container.starter-template
+      .row
+        .col-sm-12
+          h3
+            a(name='Users') II. Users and Permissions
         
         .col-sm-12
           ul#tabs.nav.nav-tabs(data-tabs='tabs')
@@ -47,7 +116,10 @@ html(lang='en')
               p
                 span.label.label-success GET
                 |  Get self details current User:
-              pre.language-markup 
+              pre.language-markup curl -i \
+                | -H "Accept: application/json" \
+                | -H "Content-Type:application/json" \
+                | -X GET #{baseUrl}/v#{version}/users/me/token \
               hr/
               
               p  Refresh token from current User:
@@ -60,21 +132,27 @@ html(lang='en')
               pre.language-markup curl -i \
                 | -H "Accept: application/json" \
                 | -H "Content-Type:application/json" \
-                | -X POST http://127.0.0.1:3000/v#{version}/users/ \
+                | -X POST #{baseUrl}/v#{version}/users/ \
                 | --data '{"firstName": "My FirstName", "lastName": "My LastName", "email": "myemail@domain.tld"}'
               
               span Response:
               pre.language-markup HTTP/1.1 201 Created
-                | {"code":201,"message":"Created","user":{"links":{"parent":"http://127.0.0.1:3000/v2.0.1/users"},"data":{"type":"users","id":"98e2f250-c6d9-4cfd-97ae-8d7142bd6f97","attributes":{"first_name":"My FirstName","last_name":"My LastName","email":"myemail@domain.tld","subscription_date":"1479839898260"},"links":{"self":"http://127.0.0.1:3000/v2.0.1/users/98e2f250-c6d9-4cfd-97ae-8d7142bd6f97"}}},"token":{"user_id":"98e2f250-c6d9-4cfd-97ae-8d7142bd6f97","key":"rvdagYpPNPiarzBzsFoovqBwrNKkLntERFyqeYFnKxdskhQAYxJPuhMMSOIqAS.k","secret":"tOMACwIBJCnmYqIFFu.yreBGBRSVEGVRFWzMRebUBMbxgwttsclIHZSrO.CBXZwK","expiration":"","meta":{"revision":0,"created":1479839898260,"version":0},"$loki":25}}
+                | {"code":201,"message":"Created","user":{"links":{"parent":"#{baseUrl}/v2.0.1/users"},"data":{"type":"users","id":"98e2f250-c6d9-4cfd-97ae-8d7142bd6f97","attributes":{"first_name":"My FirstName","last_name":"My LastName","email":"myemail@domain.tld","subscription_date":"1479839898260"},"links":{"self":"#{baseUrl}/v2.0.1/users/98e2f250-c6d9-4cfd-97ae-8d7142bd6f97"}}},"token":{"user_id":"98e2f250-c6d9-4cfd-97ae-8d7142bd6f97","key":"rvdagYpPNPiarzBzsFoovqBwrNKkLntERFyqeYFnKxdskhQAYxJPuhMMSOIqAS.k","secret":"tOMACwIBJCnmYqIFFu.yreBGBRSVEGVRFWzMRebUBMbxgwttsclIHZSrO.CBXZwK","expiration":"","meta":{"revision":0,"created":1479839898260,"version":0},"$loki":25}}
               hr/
               
               p
                 span.label.label-primary PUT
                 |  Update a User to platform:
-              pre.language-markup 
+              pre.language-markup curl -i \
+                | -H 'Authorization: Bearer :bearer'
+                | -H "Accept: application/json" \
+                | -H "Content-Type:application/json" \
+                | -X POST #{baseUrl}/v#{version}/users/ \
+                | --data '{"firstName": "My updated FirstName", "lastName": "My updated LastName", "email": "myNewEmail@domain.tld"}'
               
               span Response:
-              pre.language-markup {}
+              pre.language-markup HTTP/1.1 200 Successfully updated
+                | {"code":200,"message":"Successfully updated"}
               hr/
               
               p
@@ -90,7 +168,7 @@ html(lang='en')
               pre.language-markup curl -i \
                 | -H "Accept: application/json" \
                 | -H "Content-Type:application/json" \
-                | -X POST http://127.0.0.1:3000/v#{version}/users/me/token \
+                | -X POST #{baseUrl}/v#{version}/users/me/token \
                 | --data '{"key": ":key", "secret": ":secret"}'
               
               span Response:
@@ -139,7 +217,8 @@ html(lang='en')
               hr/
 
         .col-sm-12
-          h3 Objects
+          h3
+            a(name='Objects') III. Objects
         
         .col-sm-12
           ul#tabs.nav.nav-tabs(data-tabs='tabs')
@@ -153,7 +232,7 @@ html(lang='en')
               p
                 span.label.label-success GET
                 |  Get the list of Objects from the current User:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/objects/'
+              pre.language-markup curl -X GET '#{baseUrl}/v#{version}/objects/'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
                 | -H "Content-Type: application/json"
@@ -166,7 +245,7 @@ html(lang='en')
               p
                 span.label.label-success GET
                 |  Get details on the selected Object:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/objects/:object_id'
+              pre.language-markup curl -X GET '#{baseUrl}/v#{version}/objects/:object_id'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
                 | -H "Content-Type: application/json"
@@ -179,7 +258,7 @@ html(lang='en')
               p
                 span.label.label-warning POST
                 |  Create a new Object to current User:
-              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v#{version}/objects'
+              pre.language-markup  curl -X POST '#{baseUrl}/v#{version}/objects'
                 | --data '{}'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
@@ -193,7 +272,7 @@ html(lang='en')
               p
                 span.label.label-primary PUT
                 |  Update an Object:
-              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v#{version}/objects/:object_id'
+              pre.language-markup  curl -X PUT '#{baseUrl}/v#{version}/objects/:object_id'
                 | --data '{}' -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
                 | -H "Content-Type: application/json"
@@ -206,7 +285,7 @@ html(lang='en')
               p
                 span.label.label-danger DELETE
                 |  Delete an Object:
-              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v#{version}/objects/:object_id'
+              pre.language-markup  curl -X DELETE '#{baseUrl}/v#{version}/objects/:object_id'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
                 | -H "Content-Type: application/json"
@@ -263,7 +342,8 @@ html(lang='en')
               hr/
 
         .col-sm-12
-          h3 Flows
+          h3
+            a(name='Flows') IV. Flows
         
         .col-sm-12
           ul#tabs.nav.nav-tabs(data-tabs='tabs')
@@ -277,7 +357,7 @@ html(lang='en')
               p
                 span.label.label-success GET
                 |  Get the list of Flows from the current User:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/flows/'
+              pre.language-markup curl -X GET '#{baseUrl}/v#{version}/flows/'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
                 | -H "Content-Type: application/json"
@@ -290,7 +370,7 @@ html(lang='en')
               p
                 span.label.label-success GET
                 |  Get details on the selected Flow:
-              pre.language-markup curl -X GET 'http://127.0.0.1:3000/v#{version}/flows/:flow_id'
+              pre.language-markup curl -X GET '#{baseUrl}/v#{version}/flows/:flow_id'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
                 | -H "Content-Type: application/json"
@@ -303,7 +383,7 @@ html(lang='en')
               p
                 span.label.label-warning POST
                 |  Create a new Flow and get 'rw' permissions:
-              pre.language-markup  curl -X POST 'http://127.0.0.1:3000/v#{version}/flows'
+              pre.language-markup  curl -X POST '#{baseUrl}/v#{version}/flows'
                 | --data '{}'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
@@ -317,7 +397,7 @@ html(lang='en')
               p
                 span.label.label-primary PUT
                 |  Update a Flow:
-              pre.language-markup  curl -X PUT 'http://127.0.0.1:3000/v#{version}/flows/:flow_id'
+              pre.language-markup  curl -X PUT '#{baseUrl}/v#{version}/flows/:flow_id'
                 | --data '{}'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
@@ -331,7 +411,7 @@ html(lang='en')
               p
                 span.label.label-danger DELETE
                 |  Delete a Flow:
-              pre.language-markup  curl -X DELETE 'http://127.0.0.1:3000/v#{version}/flows/:flow_id'
+              pre.language-markup  curl -X DELETE '#{baseUrl}/v#{version}/flows/:flow_id'
                 | -H 'Authorization: Bearer :bearer'
                 | -H "Accept: application/json"
                 | -H "Content-Type: application/json"
@@ -388,7 +468,8 @@ html(lang='en')
               hr/
 
         .col-sm-12
-          h3 Data
+          h3
+            a(name='Data') V. Data
         
         .col-sm-12
           ul#tabs.nav.nav-tabs(data-tabs='tabs')
@@ -455,7 +536,8 @@ html(lang='en')
               hr/
 
         .col-sm-12
-          h3 Units
+          h3
+            a(name='Units') VI. Units
         
         .col-sm-12
           ul#tabs.nav.nav-tabs(data-tabs='tabs')
@@ -558,7 +640,8 @@ html(lang='en')
               hr/
           
         .col-sm-12
-          h3 Datatypes
+          h3
+            a(name='Datatypes') VII. Datatypes
         
         .col-sm-12
           ul#tabs.nav.nav-tabs(data-tabs='tabs')
