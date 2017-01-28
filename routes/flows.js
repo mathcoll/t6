@@ -7,6 +7,20 @@ var flows;
 var users;
 var tokens;
 
+/**
+ * @api {get} /datatypes Get Flow
+ * @apiName Get Flow
+ * @apiGroup Flow
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} flow_id Flow ID.
+ * 
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 	var results = Array();
 	var flow_id = req.params.flow_id;

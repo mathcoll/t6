@@ -7,6 +7,20 @@ var objects;
 var users;
 var tokens;
 
+/**
+ * @api {get} /objects Get Object
+ * @apiName Get Object
+ * @apiGroup Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} object_id Object ID.
+ * 
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	var object_id = req.params.object_id;
 	var name = req.query.name;

@@ -6,6 +6,97 @@ var tokens;
 var users;
 var qt;
 
+/**
+ * @apiDefine 400
+ * @apiError 400 Require a Bearer Authentication.
+ * @apiErrorExample 400 Response
+ *     HTTP/1.1 400 Bad Request
+ *     {
+ *       "message": "Bad Request",
+ *       "id": "0",
+ *       "code": 400
+ *     }
+ */
+
+/**
+ * @apiDefine 401
+ * @apiError 401 Require a Bearer Authentication.
+ * @apiErrorExample 401 Response
+ *     HTTP/1.1 401 Not Authorized
+ *     {
+ *       "message": "Not Authorized",
+ *       "id": "10",
+ *       "code": 401
+ *     }
+ */
+
+/**
+ * @apiDefine 403
+ * @apiError 403 Forbidden.
+ * @apiErrorExample 403 Response
+ *     HTTP/1.1 403 Forbidden
+ *     {
+ *       "message": "Forbidden",
+ *       "id": "20",
+ *       "code": 403
+ *     }
+ */
+
+/**
+ * @apiDefine 404
+ * @apiError 404 Not Found.
+ * @apiErrorExample 404 Response
+ *     HTTP/1.1 404 Not Found
+ *     {
+ *       "message": "Not Found",
+ *       "id": "30",
+ *       "code": 404
+ *     }
+ */
+
+/**
+ * @apiDefine 405
+ * @apiError 405 Method Not Allowed.
+ * @apiErrorExample 405 Response
+ *     HTTP/1.1 405 Method Not Allowed
+ *     {
+ *       "message": "Not Authorized",
+ *       "id": "40",
+ *       "code": 405
+ *     }
+ */
+
+/**
+ * @apiDefine 412
+ * @apiError 412 Precondition Failed.
+ * @apiErrorExample 412 Response
+ *     HTTP/1.1 412 Precondition Failed
+ *     {
+ *       "message": "Precondition Failed",
+ *       "id": "50",
+ *       "code": 412
+ *     }
+ */
+
+/**
+ * @apiDefine 500
+ * @apiError 500 Internal Error.
+ * @apiErrorExample 500 Response
+ *     HTTP/1.1 500 Internal Error
+ *     {
+ *       "message": "Internal Error",
+ *       "id": "60",
+ *       "code": 500
+ *     }
+ */
+
+/**
+ * @apiDefine Auth
+ * @apiHeader {String} Authorization Bearer :bearer
+ * @apiHeader {String} [Accept] application/json
+ * @apiHeader {String} [Content-Type] application/json
+ */
+
 //catch API calls for quotas
 router.all('*', function (req, res, next) {
 	tokens	= db.getCollection('tokens');

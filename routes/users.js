@@ -7,7 +7,20 @@ var ErrorSerializer = require('../serializers/error');
 var users;
 var tokens;
 
-
+/**
+ * @api {get} /users Get User
+ * @apiName Get User
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} user_id User ID.
+ * 
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.token !== undefined && req.user.id == user_id ) {
@@ -18,6 +31,18 @@ router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {post} /users/me/token Create New Token
+ * @apiName Create New Token
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} key API_KEY.
+ * @apiParam {String} secret API_SECRET.
+ * 
+ * @apiUse 400
+ * @apiUse 403
+ */
 router.post('/me/token', function (req, res) {
 	users			= db.getCollection('users');
 	tokens			= db.getCollection('tokens');
@@ -70,6 +95,18 @@ router.post('/me/token', function (req, res) {
 	}	
 });
 
+/**
+ * @api {get} /users/me/token Get self Current Token
+ * @apiName Get self Current Token
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/me/token', bearerAuthToken, function (req, res) {
 	if ( req.user !== undefined ) {
 		var json = new UserSerializer(req.user).serialize();
@@ -83,6 +120,18 @@ router.get('/me/token', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {post} /users Create New User
+ * @apiName Create New User
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} firstName
+ * @apiParam {String} lastName
+ * @apiParam {String} email
+ * 
+ * @apiUse 412
+ */
 router.post('/', function (req, res) {
 	if ( !req.body.email ) {
 		res.status(412).send(new ErrorSerializer({'id': 9,'code': 412, 'message': 'Precondition Failed'}).serialize());
@@ -112,6 +161,20 @@ router.post('/', function (req, res) {
 	}
 });
 
+/**
+ * @api {put} /users Edit a User
+ * @apiName Edit a User
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} firstName
+ * @apiParam {String} lastName
+ * @apiParam {String} email
+ * 
+ * @apiUse 403
+ * @apiUse 412
+ */
 router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( !(req.body.email || req.body.lastName || req.body.firstName ) ) {
@@ -133,6 +196,18 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {put} /users Edit a User
+ * @apiName Edit a User
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} user_id
+ * 
+ * @apiUse 403
+ * @apiUse 404
+ */
 router.delete('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.token !== undefined && req.user.id == user_id ) {

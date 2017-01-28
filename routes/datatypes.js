@@ -7,11 +7,35 @@ var datatypes;
 var users;
 var tokens;
 
+/**
+ * @api {get} /datatypes Get Data Types
+ * @apiName Get Data Types
+ * @apiGroup DataType
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/', function (req, res) {
 	datatypes	= db.getCollection('datatypes');
 	res.status(200).send(new DataTypeSerializer(datatypes.find()).serialize());
 });
 
+/**
+ * @api {get} /datatypes Get Data Types
+ * @apiName Get Data Types
+ * @apiGroup DataType
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} datatype_id Data Type ID you want to get.
+ * 
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/:datatype_id([0-9a-z\-]+)', function (req, res) {
 	var datatype_id = req.params.datatype_id;
 	datatypes	= db.getCollection('datatypes');

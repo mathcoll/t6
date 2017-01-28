@@ -1,0 +1,39 @@
+doctype html
+html(lang='en')
+  - title='API for developers'
+  include ../includes/head.jade
+  body
+    include ../includes/navbar-on-top.jade
+    
+    .container.starter-template
+      .row
+        .col-sm-12
+          h2.fa.fa-2x.fa-wrench &nbsp;t6, Install your own server
+          p t6 is Open-Source and can be installed on your own server from the  
+            a(href='https://github.com/mathcoll/t6') github repository
+            | .
+            | And if you don't care about installing the application yourself, feel free to 
+            a(href='/account/register') create your account
+            |  on this server.
+
+        .col-sm-12
+          p Following prerequisites are required to run t6 on your server:
+          pre.language-markup Install node (if needed): https://nodejs.org/en/
+            |Install npm (if needed): https://github.com/npm/npm
+          p Then you should get the latest release from the github repository:
+          pre.language-markup git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
+          p Once cloning is done, you can proceed to depedencies installation using npm command-line:
+          pre.language-markup npm install
+          p Final step is to customize you installation by adjusting settings from the default templates files:
+          p You can use the Linux command-line (`uname -n`) to get your machine hostname.
+          pre.language-markup rename "settings-default_hostname.js" according to your server hostname and edit the file.
+            | rename "rules-default_hostname.js" according to your server hostname.
+            | rename "quota-default_hostname.js" according to your server hostname.
+            | rename "db-default_hostname.json" according to your server hostname.
+          p Optionally, you can add the service at boot time (tested with Ubuntu and Debian):
+            ul
+              li First: install the server in services:
+                pre.language-markup sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
+              li Then set the server to run at start:
+                pre.language-markup sudo update-rc.d t6 defaults
+             

@@ -7,6 +7,16 @@ var units;
 var users;
 var tokens;
 
+/**
+ * @api {get} /units/:unit_id Get Unit
+ * @apiName Get Unit
+ * @apiGroup Unit
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} [unit_id] Unit ID.
+ * 
+ * @apiUse 404
+ */
 router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res) {
 	var json;
 	var unit_id = req.params.unit_id;

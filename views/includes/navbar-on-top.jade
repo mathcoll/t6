@@ -55,6 +55,11 @@ nav.navbar.navbar-default.navbar-fixed-top
               span.fa.fa-commenting
               |  Mqtt Topics
 
+          li(class=(currentUrl.indexOf("/docs")>-1)?'active':undefined)
+            a(href='/docs')
+              i.fa.fa-wrench
+              |  API Documentation
+
         - else
           li(class=(currentUrl.indexOf("/features/architecture")>-1)?'active':undefined)
             a(href='/features/architecture')
@@ -65,11 +70,6 @@ nav.navbar.navbar-default.navbar-fixed-top
             a(href='/features/customize-dashboards')
               i.fa.fa-area-chart
               |  Dashboards & Snippets
-
-          li(class=(currentUrl.indexOf("/features/api")>-1)?'active':undefined)
-            a(href='/features/api')
-              i.fa.fa-wrench
-              |  Developers
         - end
 
       ul.nav.navbar-nav.navbar-right

@@ -51,6 +51,12 @@
                       a(href='/keys')
                         span.fa.fa-flash.pull-right
                         |  API Keys
+                    -if(user.role=='admin') 
+                      li(class=(currentUrl.indexOf("/accounts")>-1)?'active':undefined)
+                        a(href='/accounts')
+                          span.fa.fa-users.pull-right
+                          |  Users Accounts    
+                    -end
                     li
                       a(href='/account/logout')
                         span.fa.fa-sign-out.pull-right
@@ -98,8 +104,8 @@
 
           li.separator &nbsp;
 
-          li(class=(currentUrl.indexOf("/features/api")>-1)?'active':undefined)
-            a(href='/features/api')
+          li(class=(currentUrl.indexOf("/docs")>-1)?'active':undefined)
+            a(href='/docs')
               span.fa.fa-book.pull-right
               |  API Documentation
           li(class=(currentUrl.indexOf("/status")>-1)?'active':undefined)

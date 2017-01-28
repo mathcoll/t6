@@ -2273,6 +2273,39 @@ router.get('/keys/:token([0-9a-z\-.]+)/extend', Auth, function(req, res) {
 	}
 });
 
+/* USER ACCOUNTS */
+router.get('/accounts', Auth, function(req, res) {
+	if ( req.session.user.role == 'admin' ) { // TODO
+		users	= db.getCollection('users');
+		var query = {};
+		var pagination=12;
+		req.query.page=req.query.page!==undefined?req.query.page:1;
+		var offset = (req.query.page -1) * pagination;
+		var message = req.session.message!==null?req.session.message:null;
+		req.session.message = null; // Force to unset
+	
+		var u = users.chain().find(query).simplesort('subscription_date', 1).offset(offset).limit(pagination).data();
+		//console.log(u);
+		if ( u.length == 0 ) {
+			res.redirect('/account/register');
+		} else {
+			var users_length = (users.chain().find(query).data()).length;
+			res.render('accounts/accounts', {
+				title : 'User Accounts',
+				users: u,
+				page: req.query.page,
+				pagenb: Math.ceil(users_length/pagination),
+				user: req.session.user,
+				users_length: users_length,
+				currentUrl: req.path,
+				message: message,
+			});
+		}
+	} else {
+		//console.log(req.session.user.role);
+		res.redirect('/unauthorized');
+	}
+});
 
 function Auth(req, res, next) {
 	users	= db.getCollection('users');

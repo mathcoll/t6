@@ -9,6 +9,29 @@ var flows;
 var datatypes;
 var units;
 
+/**
+ * @api {get} /data/:flow_id Get Data
+ * @apiName Get Data
+ * @apiGroup Data
+ * @apiVersion 2.0.1
+ *
+ * @apiUse Auth
+ * 
+ * @apiParam {String} flow_id Flow ID you want to get data from.
+ * @apiSuccess {Object[]} data Data point from the Flow.
+ * @apiSuccess {String} data.type
+ * @apiSuccess {String} data.id
+ * @apiSuccess {Object[]} data.links
+ * @apiSuccess {String} data.links.self
+ * @apiSuccess {Object[]} data.attributes
+ * @apiSuccess {Number} data.attributes.time
+ * @apiSuccess {Number} data.attributes.timestamp
+ * @apiSuccess {String} data.attributes.value
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
 	var output = req.query.output!==undefined?req.query.output:'json';
@@ -308,6 +331,30 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {get} /data/:flow_id/:data_id Get Data Point
+ * @apiName Get Data Point
+ * @apiGroup Data
+ * @apiVersion 2.0.1
+ *
+ * @apiUse Auth
+ * 
+ * @apiParam {String} flow_id Flow ID you want to get data from.
+ * @apiParam {Number} data_id DataPoint ID you want to get.
+ * @apiSuccess {Object[]} data Data point.
+ * @apiSuccess {String} data.type
+ * @apiSuccess {String} data.id
+ * @apiSuccess {Object[]} data.links
+ * @apiSuccess {String} data.links.self
+ * @apiSuccess {Object[]} data.attributes
+ * @apiSuccess {Number} data.attributes.time
+ * @apiSuccess {Number} data.attributes.timestamp
+ * @apiSuccess {String} data.attributes.value
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
@@ -417,6 +464,19 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 	}
 });
 
+/**
+ * @api {post} /data/:flow_id Post Data
+ * @apiName Post Data
+ * @apiGroup Data
+ * @apiVersion 2.0.1
+ *
+ * @apiUse Auth
+ * 
+ * @apiParam {String} flow_id Flow ID you want to get data from.
+ * @apiUse 401
+ * @apiUse 405
+ * @apiUse 500
+ */
 router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
 	var time		= (req.body.timestamp!==''&&req.body.timestamp!==undefined)?parseInt(req.body.timestamp):moment().format('x');
