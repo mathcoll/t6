@@ -1,0 +1,30 @@
+.clearfix.list-group-item(name='#{users[user].id}')
+  div.col-sm-1
+    h4.list-group-item-heading(style="margin:0; padding:0;")
+    img.img-responsive(alt='#{users[user].firstName} #{users[user].lastName}', src='//www.gravatar.com/avatar/#{users[user].mail_hash}?s=28&d=mm&r=g')
+
+  div.col-sm-3
+    h4 #{users[user].firstName}&nbsp;#{users[user].lastName}
+
+  div.col-sm-2
+    span #{users[user].email}
+
+  div.col-sm-1
+    -if ( users[user].token )
+      span.fa.fa-uncheck &nbsp;
+    -else
+      span.fa.fa-check &nbsp;
+    -end 
+
+  div.col-sm-1
+      span #{users[user].role}
+
+  div.col-sm-2
+    span.fa.fa-clock-o  #{moment(users[user].meta.created).format('DD/MM/YYYY, HH:mm')}
+
+  div.col-sm-2
+    -if( users[user].meta.updated )
+      span.fa.fa-clock-o  #{moment(users[user].meta.updated).format('DD/MM/YYYY, HH:mm')}
+    -else
+      span 
+    -end
