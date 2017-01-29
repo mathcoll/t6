@@ -2296,6 +2296,7 @@ router.get('/accounts', Auth, function(req, res) {
 				page: req.query.page,
 				pagenb: Math.ceil(users_length/pagination),
 				user: req.session.user,
+				md5: md5,
 				users_length: users_length,
 				currentUrl: req.path,
 				message: message,
