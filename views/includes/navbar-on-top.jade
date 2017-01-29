@@ -99,6 +99,11 @@ nav.navbar.navbar-default.navbar-fixed-top
                 a(href='/keys')
                   i.fa.fa-flash
                   |  API Keys
+              -if(user.role=='admin') 
+                li(class=(currentUrl.indexOf("/accounts")>-1)?'active':undefined)
+                  a(href='/accounts')
+                    span.fa.fa-users
+                    |  Users Accounts
               li.divider(role='separator')
               li(class=(currentUrl.indexOf("/status")>-1)?'active':undefined)
                 a(href='/status')

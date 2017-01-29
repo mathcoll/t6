@@ -1,10 +1,11 @@
 .clearfix.list-group-item(name='#{users[user].id}')
   div.col-sm-1
     h4.list-group-item-heading(style="margin:0; padding:0;")
-    img.img-responsive(alt='#{users[user].firstName} #{users[user].lastName}', src='//www.gravatar.com/avatar/#{users[user].mail_hash}?s=28&d=mm&r=g')
+    img.img-responsive(alt='#{users[user].firstName} #{users[user].lastName}', src='//www.gravatar.com/avatar/#{md5(users[user].email)}?s=28&d=mm&r=g')
 
   div.col-sm-3
     h4 #{users[user].firstName}&nbsp;#{users[user].lastName}
+    span.label.label-default.ellipsis #{users[user].id}
 
   div.col-sm-2
     span #{users[user].email}
