@@ -19,6 +19,7 @@ var tokens;
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
+ * @apiUse 429
  * @apiUse 500
  */
 router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {

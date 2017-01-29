@@ -13,7 +13,7 @@ var qt;
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Bad Request",
- *       "id": "0",
+ *       "id": "",
  *       "code": 400
  *     }
  */
@@ -25,7 +25,7 @@ var qt;
  *     HTTP/1.1 401 Not Authorized
  *     {
  *       "message": "Not Authorized",
- *       "id": "10",
+ *       "id": "",
  *       "code": 401
  *     }
  */
@@ -37,7 +37,7 @@ var qt;
  *     HTTP/1.1 403 Forbidden
  *     {
  *       "message": "Forbidden",
- *       "id": "20",
+ *       "id": "",
  *       "code": 403
  *     }
  */
@@ -49,7 +49,7 @@ var qt;
  *     HTTP/1.1 404 Not Found
  *     {
  *       "message": "Not Found",
- *       "id": "30",
+ *       "id": "",
  *       "code": 404
  *     }
  */
@@ -61,7 +61,7 @@ var qt;
  *     HTTP/1.1 405 Method Not Allowed
  *     {
  *       "message": "Not Authorized",
- *       "id": "40",
+ *       "id": "",
  *       "code": 405
  *     }
  */
@@ -73,8 +73,20 @@ var qt;
  *     HTTP/1.1 412 Precondition Failed
  *     {
  *       "message": "Precondition Failed",
- *       "id": "50",
+ *       "id": "",
  *       "code": 412
+ *     }
+ */
+
+/**
+ * @apiDefine 429
+ * @apiError 429 Too Many Requests.
+ * @apiErrorExample 429 Response
+ *     HTTP/1.1 429 Too Many Requests
+ *     {
+ *       "message": "Too Many Requests",
+ *       "id": "",
+ *       "code": 429
  *     }
  */
 
@@ -85,7 +97,7 @@ var qt;
  *     HTTP/1.1 500 Internal Error
  *     {
  *       "message": "Internal Error",
- *       "id": "60",
+ *       "id": "",
  *       "code": 500
  *     }
  */
@@ -95,6 +107,7 @@ var qt;
  * @apiHeader {String} Authorization Bearer :bearer
  * @apiHeader {String} [Accept] application/json
  * @apiHeader {String} [Content-Type] application/json
+ * @apiParam {String} bearer Auth Bearer from the Token identification
  */
 
 //catch API calls for quotas
@@ -153,6 +166,12 @@ router.get('/authenticate', function (req, res) {
 	// should refresh the Bearer for 1 hour then Bearer is not valid anymore
 });
 
+/**
+ * @api {get} /status Get API Status
+ * @apiName Get API Status
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ */
 router.get('/status', function(req, res, next) {
 	var status = {
 		links: {

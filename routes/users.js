@@ -19,6 +19,7 @@ var tokens;
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
+ * @apiUse 429
  * @apiUse 500
  */
 router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
@@ -42,6 +43,7 @@ router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * 
  * @apiUse 400
  * @apiUse 403
+ * @apiUse 429
  */
 router.post('/me/token', function (req, res) {
 	users			= db.getCollection('users');
@@ -105,6 +107,7 @@ router.post('/me/token', function (req, res) {
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
+ * @apiUse 429
  * @apiUse 500
  */
 router.get('/me/token', bearerAuthToken, function (req, res) {
@@ -126,11 +129,12 @@ router.get('/me/token', bearerAuthToken, function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam {String} firstName
- * @apiParam {String} lastName
- * @apiParam {String} email
+ * @apiParam {String} firstName The User First Name
+ * @apiParam {String} lastName The User Last Name
+ * @apiParam {String} email The User Email address
  * 
  * @apiUse 412
+ * @apiUse 429
  */
 router.post('/', function (req, res) {
 	if ( !req.body.email ) {
@@ -162,18 +166,20 @@ router.post('/', function (req, res) {
 });
 
 /**
- * @api {put} /users Edit a User
+ * @api {put} /users/:user_id Edit a User
  * @apiName Edit a User
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} firstName
- * @apiParam {String} lastName
- * @apiParam {String} email
+ * @apiParam {String} user_id
+ * @apiParam {String} [firstName] The new User First Name
+ * @apiParam {String} [lastName] The new User Last Name
+ * @apiParam {String} [email] The new User Email address
  * 
  * @apiUse 403
  * @apiUse 412
+ * @apiUse 429
  */
 router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
@@ -197,7 +203,7 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 });
 
 /**
- * @api {put} /users Edit a User
+ * @api {delete} /users/:user_id Edit a User
  * @apiName Edit a User
  * @apiGroup User
  * @apiVersion 2.0.1
@@ -207,6 +213,7 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * 
  * @apiUse 403
  * @apiUse 404
+ * @apiUse 429
  */
 router.delete('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var user_id = req.params.user_id;
