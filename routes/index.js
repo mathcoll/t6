@@ -32,7 +32,7 @@ var qt;
 
 /**
  * @apiDefine 403
- * @apiError 403 Forbidden.
+ * @apiError 403 Forbidden - Token used in transaction is not valid. Check your token and/or permission.
  * @apiErrorExample 403 Response
  *     HTTP/1.1 403 Forbidden
  *     {
@@ -44,7 +44,7 @@ var qt;
 
 /**
  * @apiDefine 404
- * @apiError 404 Not Found.
+ * @apiError 404 Not Found - We couldn't find the element you are trying to access.
  * @apiErrorExample 404 Response
  *     HTTP/1.1 404 Not Found
  *     {
@@ -56,7 +56,7 @@ var qt;
 
 /**
  * @apiDefine 405
- * @apiError 405 Method Not Allowed.
+ * @apiError 405 Method Not Allowed - API endpoint does not accept the method used..
  * @apiErrorExample 405 Response
  *     HTTP/1.1 405 Method Not Allowed
  *     {
@@ -109,6 +109,12 @@ var qt;
  * @apiHeader {String} [Content-Type] application/json
  * @apiParam {String} bearer Auth Bearer from the Token identification
  */
+
+/**
+ * @apiDefine admin Admin User access only
+ * Only t6 Administrator User have permission to this Endpoint.
+ */
+
 
 //catch API calls for quotas
 router.all('*', function (req, res, next) {
@@ -167,57 +173,13 @@ router.get('/authenticate', function (req, res) {
 });
 
 /**
- * @api {get} /status Get API Status
- * @apiName Get API Status
+ * @api {get} /status API Status
+ * @apiName API Status
  * @apiGroup General
  * @apiVersion 2.0.1
  */
 router.get('/status', function(req, res, next) {
 	var status = {
-		links: {
-			self: {
-				baseUrl: baseUrl+'/v'+version+'/status',
-				description: 'Get Server status and basic documentation.',
-				permissions: '',
-				verbs: ['GET'],
-			},
-			users: {
-				baseUrl: baseUrl+'/v'+version+'/users',
-				description: 'User API to create, modify or delete a user.',
-				permissions: '',
-				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
-			},
-			data: {
-				baseUrl: baseUrl+'/v'+version+'/data',
-				description: 'Data API to create, modify or delete data.',
-				permissions: '',
-				verbs: ['GET', 'POST'],
-			},
-			objects: {
-				baseUrl: baseUrl+'/v'+version+'/objects',
-				description: 'Object API to create, modify or delete an object.',
-				permissions: '',
-				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
-			},
-			datatypes: {
-				baseUrl: baseUrl+'/v'+version+'/datatypes',
-				description: 'Datatype API to create, modify or delete a data-type.',
-				permissions: '',
-				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
-			},
-			flows: {
-				baseUrl: baseUrl+'/v'+version+'/flows',
-				description: 'Flow API to create, modify or delete a flow.',
-				permissions: '',
-				verbs: ['GET', 'POST', 'PUT', 'DELETE'],
-			},
-			units: {
-				baseUrl: baseUrl+'/v'+version+'/units',
-				description: 'Unit API to create, modify or delete a unit.',
-				permissions: '',
-				verbs: ['GET'],
-			},
-		},
 		version: version,
 		status: 'running',
 		mqtt_info: mqtt_info,

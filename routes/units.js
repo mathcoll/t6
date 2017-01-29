@@ -8,9 +8,9 @@ var users;
 var tokens;
 
 /**
- * @api {get} /units/:unit_id Get Unit
- * @apiName Get Unit
- * @apiGroup Unit
+ * @api {get} /units/:unit_id Get Unit(s)
+ * @apiName Get Unit(s)
+ * @apiGroup General
  * @apiVersion 2.0.1
  * 
  * @apiParam {String} [unit_id] Unit ID.
@@ -39,6 +39,19 @@ router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res) {
 	}
 });
 
+/**
+ * @api {post} /units Create a Unit
+ * @apiName Create a Unit
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * @apiPermission admin
+ * 
+ * @apiParam {String} [name=unamed]
+ * @apiParam {String} [format='']
+ * @apiParam {String} [type='']
+ * 
+ * @apiUse 401
+ */
 router.post('/', bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		units	= db.getCollection('units');
@@ -57,6 +70,20 @@ router.post('/', bearerAdmin, function (req, res) {
 	}
 });
 
+/**
+ * @api {put} /units/:unit_id Edit a Unit
+ * @apiName Edit a Unit
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * @apiPermission admin
+ * 
+ * @apiParam {String} unit_id
+ * @apiParam {String} [name]
+ * @apiParam {String} [format]
+ * @apiParam {String} [type]
+ * 
+ * @apiUse 401
+ */
 router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var unit_id = req.params.unit_id;
@@ -79,6 +106,18 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	}
 });
 
+/**
+ * @api {delete} /units/:unit_id Delete a Unit
+ * @apiName Delete a Unit
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * @apiPermission admin
+ * 
+ * @apiParam {String} unit_id
+ * 
+ * @apiUse 401
+ * @apiUse 404
+ */
 router.delete('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var unit_id = req.params.unit_id;

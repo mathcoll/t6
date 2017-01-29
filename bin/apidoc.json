@@ -5,6 +5,12 @@
   "title": "t6, IoT platform and API",
   "url" : "https://api.internetcollaboratif.info",
   "sampleUrl": "https://api.internetcollaboratif.info/v2.0.1",
+  "order": [
+            "General",
+            "User",
+            "Flow",
+            "Object"
+          ],
   "header": {
     "title": "t6, IoT platform and API",
     "filename": "header.md"

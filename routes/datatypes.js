@@ -8,9 +8,9 @@ var users;
 var tokens;
 
 /**
- * @api {get} /datatypes Get Data Types
- * @apiName Get Data Types
- * @apiGroup DataType
+ * @api {get} /datatypes Get DataType
+ * @apiName Get DataType
+ * @apiGroup General
  * @apiVersion 2.0.1
  * 
  * @apiUse 401
@@ -24,12 +24,12 @@ router.get('/', function (req, res) {
 });
 
 /**
- * @api {get} /datatypes Get Data Types
- * @apiName Get Data Types
- * @apiGroup DataType
+ * @api {get} /datatypes/:datatype_id Get DataType
+ * @apiName Get DataType
+ * @apiGroup General
  * @apiVersion 2.0.1
  * 
- * @apiParam {String} datatype_id Data Type ID you want to get.
+ * @apiParam {String} datatype_id DataType ID you want to get.
  * 
  * @apiUse 401
  * @apiUse 404
@@ -48,6 +48,17 @@ router.get('/:datatype_id([0-9a-z\-]+)', function (req, res) {
 	}
 });
 
+/**
+ * @api {post} /datatypes Create DataType
+ * @apiName Create DataType
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * @apiPermission admin
+ * 
+ * @apiParam {String} [name=unamed]
+ * 
+ * @apiUse 401
+ */
 router.post('/', bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		datatypes	= db.getCollection('datatypes');
@@ -62,6 +73,18 @@ router.post('/', bearerAdmin, function (req, res) {
 	}
 });
 
+/**
+ * @api {put} /datatypes/:datatype_id Edit a DataType
+ * @apiName Edit a DataType
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * @apiPermission admin
+ * 
+ * @apiParam {String} datatype_id
+ * @apiParam {String} [name]
+ * 
+ * @apiUse 401
+ */
 router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var datatype_id = req.params.datatype_id;
@@ -81,6 +104,17 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	}
 });
 
+/**
+ * @api {delete} /datatypes/:datatype_id Delete a DataType
+ * @apiName Delete a DataType
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * @apiPermission admin
+ * 
+ * @apiParam {String} datatype_id
+ * 
+ * @apiUse 401
+ */
 router.delete('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var datatype_id = req.params.datatype_id;

@@ -10,19 +10,19 @@ var datatypes;
 var units;
 
 /**
- * @api {get} /data/:flow_id Get Data
- * @apiName Get Data Points
- * @apiGroup Data Point
+ * @api {get} /data/:flow_id Get DataPoints
+ * @apiName Get DataPoints
+ * @apiGroup DataPoint
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
  * @apiParam {String} flow_id Flow ID you want to get data from.
- * @apiParam {String} order 
- * @apiParam {String} sort asc OR desc
- * @apiParam {Number} page Page offset
- * @apiParam {Number} limit 
- * @apiSuccess {Object[]} data Data point from the Flow.
+ * @apiParam {String} [order]
+ * @apiParam {String} [sort] asc OR desc
+ * @apiParam {Number} [page] Page offset
+ * @apiParam {Number} [limit] 
+ * @apiSuccess {Object[]} data DataPoint from the Flow.
  * @apiSuccess {String} data.type
  * @apiSuccess {String} data.id
  * @apiSuccess {Object[]} data.links
@@ -337,9 +337,9 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 });
 
 /**
- * @api {get} /data/:flow_id/:data_id Get Data Point
- * @apiName Get specific Data Point
- * @apiGroup Data Point
+ * @api {get} /data/:flow_id/:data_id Get DataPoint
+ * @apiName Get DataPoint
+ * @apiGroup DataPoint
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -471,14 +471,20 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
 });
 
 /**
- * @api {post} /data/:flow_id Post Data
- * @apiName Post Data to Flow
- * @apiGroup Data Point
+ * @api {post} /data/:flow_id Create a DataPoint
+ * @apiName Create a DataPoint
+ * @apiGroup DataPoint
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
  * @apiParam {String} flow_id Flow ID you want to add Data Point to.
+ * @apiParam {String} value 
+ * @apiParam {Boolean} [publish=false]
+ * @apiParam {Boolean} [save =false]
+ * @apiParam {String} [unit] 
+ * @apiParam {String} [mqtt_topic] 
+ * @apiParam {String} [text] 
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429

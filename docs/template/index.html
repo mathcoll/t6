@@ -46,7 +46,7 @@
 <script id="template-project" type="text/x-handlebars-template">
   <div class="pull-left">
     <h1>{{name}}</h1>
-    {{#if description}}<h2>{{{nl2br description}}}</h2>{{/if}}
+    {{#if description}}<p>{{{nl2br description}}}</p>{{/if}}
   </div>
   {{#if template.withCompare}}
   <div class="pull-right">
@@ -145,7 +145,7 @@
           {{name}}
           {{#if title}}
           <button type="button" class="btn btn-info btn-xs" data-title="{{title}}" data-content="{{nl2br description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
-              <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+              <span class="fa fa-info" aria-hidden="true"></span>
           </button>
           {{/if}}
         {{/each}}
@@ -405,7 +405,7 @@
         {{source.name}}
         {{#if source.title}}
           <button type="button" class="btn btn-info btn-xs" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
-            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            <span class="fa fa-info" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
         {{/if}}
@@ -415,7 +415,7 @@
         <ins>{{source.name}}</ins>
         {{#if source.title}}
           <button type="button" class="btn btn-info btn-xs" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
-            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            <span class="fa fa-info" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
         {{/if}}
@@ -425,7 +425,7 @@
         <del>{{source.name}}</del>
         {{#if source.title}}
           <button type="button" class="btn btn-info btn-xs" data-title="{{source.title}}" data-content="{{nl2br source.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
-            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            <span class="fa fa-info" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
         {{/if}}
@@ -435,7 +435,7 @@
         {{compare.name}}
         {{#if compare.title}}
           <button type="button" class="btn btn-info btn-xs" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
-            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            <span class="fa fa-info" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
         {{/if}}
@@ -445,7 +445,7 @@
         <ins>{{compare.name}}</ins>
         {{#if compare.title}}
           <button type="button" class="btn btn-info btn-xs" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
-            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            <span class="fa fa-info" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
         {{/if}}
@@ -455,7 +455,7 @@
         <del>{{compare.name}}</del>
         {{#if compare.title}}
           <button type="button" class="btn btn-info btn-xs" data-title="{{compare.title}}" data-content="{{nl2br compare.description}}" data-html="true" data-toggle="popover" data-placement="right" data-trigger="hover">
-            <span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span>
+            <span class="fa fa-info" aria-hidden="true"></span>
           </button>
           {{#unless _last}}, {{/unless}}
         {{/if}}
@@ -642,7 +642,7 @@
 
 <div class="container-fluid starter-template">
   <div class="row side-body">
-    <div id="sidenav" class="span2"></div>
+    <div id="sidenav" class="hidden-xs span2"></div>
     <div id="content" style="margin:0 !important;" class="col-sm-12">
       <div id="project"></div>
       <div id="header"></div>

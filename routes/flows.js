@@ -8,7 +8,7 @@ var users;
 var tokens;
 
 /**
- * @api {get} /flows Get Flow
+ * @api {get} /flows/:flow_id Get Flow
  * @apiName Get Flow
  * @apiGroup Flow
  * @apiVersion 2.0.1
@@ -48,6 +48,23 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {post} /flows Create New Flow
+ * @apiName Create New Flow
+ * @apiGroup Flow
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} [name=unamed]
+ * @apiParam {String} data_type
+ * @apiParam {String} unit
+ * @apiParam {String} theme
+ * @apiParam {Object[]} permission
+ * @apiParam {String[]} objects
+ * 
+ * @apiUse 400
+ * @apiUse 429
+ */
 router.post('/', bearerAuthToken, function (req, res) {
 	flows	= db.getCollection('flows');
 	/* Check for quota limitation */
@@ -81,6 +98,27 @@ router.post('/', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {put} /flows/:flow_id Edit a Flow
+ * @apiName Edit a Flow
+ * @apiGroup Flow
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} name
+ * @apiParam {String} data_type
+ * @apiParam {String} unit
+ * @apiParam {Object[]} permission
+ * @apiParam {String[]} objects
+ * 
+ * @apiUse 400
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
 router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	if ( req.token !== undefined ) {
 		var flow_id = req.params.flow_id;
@@ -132,6 +170,15 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {delete} /flows/:flow_id Delete a Flow
+ * @apiName Delete a Flow
+ * @apiGroup Flow
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} flow_id
+ */
 router.delete('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	// TODO
 	// TODO: delete all data related to that flow?

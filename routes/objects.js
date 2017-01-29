@@ -8,13 +8,14 @@ var users;
 var tokens;
 
 /**
- * @api {get} /objects Get Object
- * @apiName Get Object
+ * @api {get} /objects/:object_id Get Object(s)
+ * @apiName Get Object(s)
  * @apiGroup Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} object_id Object ID.
+ * @apiParam {String} [object_id] Object ID.
+ * @apiParam {String} [name] Object Name you want to search for.
  * 
  * @apiUse 401
  * @apiUse 404
@@ -63,6 +64,26 @@ router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {post} /objects Add an Object
+ * @apiName Add an Object
+ * @apiGroup Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} [type=default] 
+ * @apiParam {String} [name=unamed] 
+ * @apiParam {String} [description] 
+ * @apiParam {String} [position] 
+ * @apiParam {String} [longitude] 
+ * @apiParam {String} [latitude] 
+ * @apiParam {String} [ipv4] 
+ * @apiParam {String} [ipv6] 
+ * @apiParam {Boolean} [isPublic=false] 
+ * 
+ * @apiUse 403
+ * @apiUse 429
+ */
 router.post('/', bearerAuthToken, function (req, res) {
 	objects	= db.getCollection('objects');
 	/* Check for quota limitation */
@@ -94,6 +115,25 @@ router.post('/', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {put} /objects Edit an Object
+ * @apiName Edit an Object
+ * @apiGroup Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} [type] 
+ * @apiParam {String} [name] 
+ * @apiParam {String} [description] 
+ * @apiParam {String} [position] 
+ * @apiParam {String} [longitude] 
+ * @apiParam {String} [latitude] 
+ * @apiParam {String} [ipv4] 
+ * @apiParam {String} [ipv6] 
+ * @apiParam {Boolean} [isPublic=false] 
+ * 
+ * @apiUse 403
+ */
 router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	if ( req.token !== undefined ) {
 	var object_id = req.params.object_id;
@@ -123,6 +163,18 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {delete} /objects Delete an Object
+ * @apiName Delete an Object
+ * @apiGroup Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} object_id 
+ * 
+ * @apiUse 403
+ * @apiUse 404
+ */
 router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	var object_id = req.params.object_id;
 	if ( req.token !== undefined ) {
@@ -147,6 +199,22 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	}
 });
 
+/**
+ * @api {put} /objects/:object_id/:pName Edit Object Custom Parameter
+ * @apiName Edit Object Custom Parameter
+ * @apiGroup Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} object_id 
+ * @apiParam {String} pName 
+ * @apiParam {String} value
+ * 
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 404
+ * @apiUse 405
+ */
 router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, res) {
 	var object_id = req.params.object_id;
 	var pName = req.params.pName;
@@ -201,6 +269,21 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
 	}
 });
 
+/**
+ * @api {get} /objects/:object_id/:pName Get Object Custom Parameter
+ * @apiName Get Object Custom Parameter
+ * @apiGroup Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} object_id 
+ * @apiParam {String} pName 
+ * 
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 404
+ * @apiUse 405
+ */
 router.get('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, res) {
 	var object_id = req.params.object_id;
 	var pName = req.params.pName;
