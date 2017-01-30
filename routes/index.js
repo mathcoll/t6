@@ -110,8 +110,12 @@ var qt;
  */
 
 /**
- * @apiDefine admin Admin access rights needed.
+ * @apiDefine AuthAdmin Admin access rights needed.
  * Only t6 Administrator user have permission to this Endpoint.
+ * 
+ * @apiHeader {String} Authorization Bearer &lt;Token&gt;
+ * @apiHeader {String} [Accept] application/json
+ * @apiHeader {String} [Content-Type] application/json
  */
 
 //catch API calls for quotas

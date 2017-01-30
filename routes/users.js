@@ -8,7 +8,7 @@ var users;
 var tokens;
 
 /**
- * @api {get} /users Get User
+ * @api {get} /users/:user_id Get User
  * @apiName Get User
  * @apiGroup User
  * @apiVersion 2.0.1

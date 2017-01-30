@@ -13,7 +13,7 @@ var tokens;
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
- * @apiParam {uuid-v4} [unit_id] Unit ID.
+ * @apiParam {uuid-v4} [unit_id] Unit ID
  * 
  * @apiUse 404
  */
@@ -44,11 +44,12 @@ router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res) {
  * @apiName Create a Unit
  * @apiGroup General
  * @apiVersion 2.0.1
- * @apiPermission admin
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
  * 
- * @apiParam {String} [name=unamed]
- * @apiParam {String} [format='']
- * @apiParam {String} [type='']
+ * @apiParam {String} [name=unamed] Unit Name
+ * @apiParam {String} [format=''] Unit Format
+ * @apiParam {String} [type=''] Unit Type
  * 
  * @apiUse 401
  */
@@ -75,12 +76,13 @@ router.post('/', bearerAdmin, function (req, res) {
  * @apiName Edit a Unit
  * @apiGroup General
  * @apiVersion 2.0.1
- * @apiPermission admin
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
  * 
- * @apiParam {uuid-v4} unit_id
- * @apiParam {String} [name]
- * @apiParam {String} [format]
- * @apiParam {String} [type]
+ * @apiParam {uuid-v4} unit_id Unit ID
+ * @apiParam {String} [name] Unit Name
+ * @apiParam {String} [format] Unit Format
+ * @apiParam {String} [type] Unit Type
  * 
  * @apiUse 401
  */
@@ -111,9 +113,10 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
  * @apiName Delete a Unit
  * @apiGroup General
  * @apiVersion 2.0.1
- * @apiPermission admin
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
  * 
- * @apiParam {uuid-v4} unit_id
+ * @apiParam {uuid-v4} unit_id Unit ID
  * 
  * @apiUse 401
  * @apiUse 404

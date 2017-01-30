@@ -13,7 +13,7 @@ var tokens;
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
- * @apiParam {uuid-v4} [datatype_id] DataType ID you want to get
+ * @apiParam {uuid-v4} [datatype_id] DataType ID
  * 
  * @apiUse 401
  * @apiUse 404
@@ -42,9 +42,10 @@ router.get('(:datatype_id([0-9a-z\-]+))?', function (req, res) {
  * @apiName Create DataType
  * @apiGroup General
  * @apiVersion 2.0.1
- * @apiPermission admin
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
  * 
- * @apiParam {String} [name=unamed]
+ * @apiParam {String} [name=unamed] DataType Name
  * 
  * @apiUse 401
  */
@@ -67,9 +68,10 @@ router.post('/', bearerAdmin, function (req, res) {
  * @apiName Edit a DataType
  * @apiGroup General
  * @apiVersion 2.0.1
- * @apiPermission admin
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
  * 
- * @apiParam {uuid-v4} datatype_id
+ * @apiParam {uuid-v4} datatype_id DataType Id
  * @apiParam {String} [name]
  * 
  * @apiUse 401
@@ -98,11 +100,13 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
  * @apiName Delete a DataType
  * @apiGroup General
  * @apiVersion 2.0.1
- * @apiPermission admin
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
  * 
- * @apiParam {uuid-v4} datatype_id
+ * @apiParam {uuid-v4} datatype_id DataType Id
  * 
  * @apiUse 401
+ * @apiUse 404
  */
 router.delete('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 	if ( req.token ) {
