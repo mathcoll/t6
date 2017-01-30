@@ -17,20 +17,21 @@ var units;
  *
  * @apiUse Auth
  * 
- * @apiParam {String} flow_id Flow ID you want to get data from.
- * @apiParam {String} [order]
- * @apiParam {String} [sort] asc OR desc
+ * @apiParam {String} flow_id Flow ID you want to get data from
+ * @apiParam {String} [order] Field to order results
+ * @apiParam {String} [sort=desc] Sorting order asc OR desc
  * @apiParam {Number} [page] Page offset
- * @apiParam {Number} [limit] 
- * @apiSuccess {Object[]} data DataPoint from the Flow.
- * @apiSuccess {String} data.type
- * @apiSuccess {String} data.id
+ * @apiParam {Number} [limit] Pagination, results limit
+ * @apiSuccess {Object[]} data DataPoint from the Flow
+ * @apiSuccess {Object[]} data Data point Object
+ * @apiSuccess {String} data.type Data point Type
+ * @apiSuccess {String} data.id Data point Identifier
  * @apiSuccess {Object[]} data.links
- * @apiSuccess {String} data.links.self
- * @apiSuccess {Object[]} data.attributes
- * @apiSuccess {Number} data.attributes.time
- * @apiSuccess {Number} data.attributes.timestamp
- * @apiSuccess {String} data.attributes.value
+ * @apiSuccess {String} data.links.self Data point Url
+ * @apiSuccess {Object[]} data.attributes Data point attributes
+ * @apiSuccess {Number} data.attributes.time Time of Data point 
+ * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
+ * @apiSuccess {String} data.attributes.value Value of Data point
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -344,17 +345,17 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  *
  * @apiUse Auth
  * 
- * @apiParam {String} flow_id Flow ID you want to get data from.
- * @apiParam {Number} data_id DataPoint ID you want to get.
- * @apiSuccess {Object[]} data Data point.
- * @apiSuccess {String} data.type
- * @apiSuccess {String} data.id
+ * @apiParam {String} flow_id Flow ID you want to get data from
+ * @apiParam {Number} data_id DataPoint ID you want to get
+ * @apiSuccess {Object[]} data Data point Object
+ * @apiSuccess {String} data.type Data point Type
+ * @apiSuccess {String} data.id Data point Identifier
  * @apiSuccess {Object[]} data.links
- * @apiSuccess {String} data.links.self
- * @apiSuccess {Object[]} data.attributes
- * @apiSuccess {Number} data.attributes.time
- * @apiSuccess {Number} data.attributes.timestamp
- * @apiSuccess {String} data.attributes.value
+ * @apiSuccess {String} data.links.self Data point Url
+ * @apiSuccess {Object[]} data.attributes Data point attributes
+ * @apiSuccess {Number} data.attributes.time Time of Data point 
+ * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
+ * @apiSuccess {String} data.attributes.value Value of Data point
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -479,12 +480,12 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
  * @apiUse Auth
  * 
  * @apiParam {String} flow_id Flow ID you want to add Data Point to.
- * @apiParam {String} value 
- * @apiParam {Boolean} [publish=false]
- * @apiParam {Boolean} [save =false]
- * @apiParam {String} [unit] 
- * @apiParam {String} [mqtt_topic] 
- * @apiParam {String} [text] 
+ * @apiParam {String} value Data Point value
+ * @apiParam {Boolean} [publish=false] Flag to publish to Mqtt Topic
+ * @apiParam {Boolean} [save =false] Flag to store in database the Value
+ * @apiParam {String} [unit] Unit of the Value (optional)
+ * @apiParam {String} [mqtt_topic] Mqtt Topic to publish value to 
+ * @apiParam {String} [text] Optional text to qualify Value
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429

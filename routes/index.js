@@ -104,17 +104,15 @@ var qt;
 
 /**
  * @apiDefine Auth
- * @apiHeader {String} Authorization Bearer :bearer
+ * @apiHeader {String} Authorization Bearer &lt;Token&gt;
  * @apiHeader {String} [Accept] application/json
  * @apiHeader {String} [Content-Type] application/json
- * @apiParam {String} bearer Auth Bearer from the Token identification
  */
 
 /**
  * @apiDefine admin Admin User access only
- * Only t6 Administrator User have permission to this Endpoint.
+ * Only t6 Administrator user have permission to this Endpoint.
  */
-
 
 //catch API calls for quotas
 router.all('*', function (req, res, next) {

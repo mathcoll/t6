@@ -8,13 +8,13 @@ var users;
 var tokens;
 
 /**
- * @api {get} /flows/:flow_id Get Flow
- * @apiName Get Flow
+ * @api {get} /flows/:flow_id Get Flow(s)
+ * @apiName Get Flow(s)
  * @apiGroup Flow
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} flow_id Flow ID.
+ * @apiParam {String} [flow_id] Flow Id
  * 
  * @apiUse 401
  * @apiUse 404
@@ -55,12 +55,12 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} [name=unamed]
- * @apiParam {String} data_type
- * @apiParam {String} unit
- * @apiParam {String} theme
+ * @apiParam {String} [name=unamed] Flow Name
+ * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
+ * @apiParam {String} [unit] Flow Unit
+ * @apiParam {String} [theme] Flow theme, deprecated
  * @apiParam {Object[]} permission
- * @apiParam {String[]} objects
+ * @apiParam {String[]} [objects] List of Object Ids
  * 
  * @apiUse 400
  * @apiUse 429
@@ -105,11 +105,12 @@ router.post('/', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} name
- * @apiParam {String} data_type
- * @apiParam {String} unit
- * @apiParam {Object[]} permission
- * @apiParam {String[]} objects
+ * @apiParam {String} [name] Flow Name
+ * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
+ * @apiParam {String} [unit] Flow Unit
+ * @apiParam {String} [theme]] Flow theme, deprecated
+ * @apiParam {Object[]} [permission]
+ * @apiParam {String[]} [objects] List of Object Ids
  * 
  * @apiUse 400
  * @apiUse 401
@@ -177,7 +178,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} flow_id
+ * @apiParam {String} flow_id Flow Id
  */
 router.delete('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	// TODO

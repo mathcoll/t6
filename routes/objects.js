@@ -14,8 +14,8 @@ var tokens;
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} [object_id] Object ID.
- * @apiParam {String} [name] Object Name you want to search for.
+ * @apiParam {String} [object_id] Object Id.
+ * @apiParam {String} [name] Object Name you want to search for; this is using an case-insensitive regexp
  * 
  * @apiUse 401
  * @apiUse 404
@@ -71,15 +71,15 @@ router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} [type=default] 
- * @apiParam {String} [name=unamed] 
- * @apiParam {String} [description] 
- * @apiParam {String} [position] 
- * @apiParam {String} [longitude] 
- * @apiParam {String} [latitude] 
- * @apiParam {String} [ipv4] 
- * @apiParam {String} [ipv6] 
- * @apiParam {Boolean} [isPublic=false] 
+ * @apiParam {String} [name=unamed] Object Name
+ * @apiParam {String} [type=default] Object Type, to customize icon on the List
+ * @apiParam {String{1024}} [description] Object Description
+ * @apiParam {String} [position] Object Location Name
+ * @apiParam {String} [longitude] Object Location Longitude
+ * @apiParam {String} [latitude] Object Location Latitude
+ * @apiParam {String} [ipv4] Object IP v4
+ * @apiParam {String} [ipv6] Object IP v6
+ * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * 
  * @apiUse 403
  * @apiUse 429
@@ -97,7 +97,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 				id:				uuid.v4(),
 				type:  			req.body.type!==undefined?req.body.type:'default',
 				name:			req.body.name!==undefined?req.body.name:'unamed',
-				description:	req.body.description!==undefined?req.body.description:'',
+				description:	req.body.description!==undefined?(req.body.description).substring(0, 1024):'',
 				position: 	 	req.body.position!==undefined?req.body.position:'',
 				longitude:		req.body.longitude!==undefined?req.body.longitude:'',
 				latitude:		req.body.latitude!==undefined?req.body.latitude:'',
@@ -122,15 +122,15 @@ router.post('/', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} [type] 
- * @apiParam {String} [name] 
- * @apiParam {String} [description] 
- * @apiParam {String} [position] 
- * @apiParam {String} [longitude] 
- * @apiParam {String} [latitude] 
- * @apiParam {String} [ipv4] 
- * @apiParam {String} [ipv6] 
- * @apiParam {Boolean} [isPublic=false] 
+ * @apiParam {String} [name] Object Name
+ * @apiParam {String} [type] Object Type, to customize icon on the List
+ * @apiParam {String{1024}} [description] Object Description
+ * @apiParam {String} [position] Object Location Name
+ * @apiParam {String} [longitude] Object Location Longitude
+ * @apiParam {String} [latitude] Object Location Latitude
+ * @apiParam {String} [ipv4] Object IP v4
+ * @apiParam {String} [ipv6] Object IP v6
+ * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * 
  * @apiUse 403
  */
@@ -145,7 +145,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			function(item){
 				item.type				= req.body.type!==undefined?req.body.type:item.type;
 				item.name				= req.body.name!==undefined?req.body.name:item.name;
-				item.description		= req.body.description!==undefined?req.body.description:item.description;
+				item.description		= req.body.description!==undefined?(req.body.description).substring(0, 1024):item.description;
 				item.position			= req.body.position!==undefined?req.body.position:item.position;
 				item.longitude			= req.body.longitude!==undefined?req.body.longitude:item.longitude;
 				item.latitude			= req.body.latitude!==undefined?req.body.latitude:item.latitude;
@@ -170,7 +170,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} object_id 
+ * @apiParam {String} object_id Object Id
  * 
  * @apiUse 403
  * @apiUse 404
@@ -206,9 +206,9 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} object_id 
- * @apiParam {String} pName 
- * @apiParam {String} value
+ * @apiParam {String} object_id Object Id
+ * @apiParam {String} pName Customer Parameter Name
+ * @apiParam {String} value Customer Parameter Value
  * 
  * @apiUse 401
  * @apiUse 403
@@ -276,8 +276,8 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} object_id 
- * @apiParam {String} pName 
+ * @apiParam {String} object_id Object Id
+ * @apiParam {String} pName Customer Parameter Name
  * 
  * @apiUse 401
  * @apiUse 403

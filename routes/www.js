@@ -2285,7 +2285,7 @@ router.get('/accounts', Auth, function(req, res) {
 		req.session.message = null; // Force to unset
 	
 		var u = users.chain().find(query).simplesort('subscription_date', 1).offset(offset).limit(pagination).data();
-		//console.log(u);
+		
 		if ( u.length == 0 ) {
 			res.redirect('/account/register');
 		} else {

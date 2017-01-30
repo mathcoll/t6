@@ -8,38 +8,27 @@ var users;
 var tokens;
 
 /**
- * @api {get} /datatypes Get DataType
- * @apiName Get DataType
+ * @api {get} /datatypes/:datatype_id Get DataType(s)
+ * @apiName Get DataType(s)
  * @apiGroup General
  * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} [datatype_id] DataType ID you want to get.
  * 
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
  * @apiUse 500
  */
-router.get('/', function (req, res) {
-	datatypes	= db.getCollection('datatypes');
-	res.status(200).send(new DataTypeSerializer(datatypes.find()).serialize());
-});
-
-/**
- * @api {get} /datatypes/:datatype_id Get DataType
- * @apiName Get DataType
- * @apiGroup General
- * @apiVersion 2.0.1
- * 
- * @apiParam {String} datatype_id DataType ID you want to get.
- * 
- * @apiUse 401
- * @apiUse 404
- * @apiUse 405
- * @apiUse 500
- */
-router.get('/:datatype_id([0-9a-z\-]+)', function (req, res) {
+router.get('(:datatype_id([0-9a-z\-]+))?', function (req, res) {
 	var datatype_id = req.params.datatype_id;
 	datatypes	= db.getCollection('datatypes');
-	var json = datatypes.find({ 'id': { '$eq': datatype_id } });
+	var json;
+	if ( unit_id === undefined ) {
+		json = datatypes.find();
+	} else {
+		json = datatypes.find({ 'id': { '$eq': datatype_id } });
+	}
 	//console.log(json);
 	if ( json.length > 0 ) {
 		res.status(200).send(new DataTypeSerializer(json).serialize());
