@@ -13,7 +13,7 @@ var tokens;
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
- * @apiParam {String} [unit_id] Unit ID.
+ * @apiParam {uuid-v4} [unit_id] Unit ID.
  * 
  * @apiUse 404
  */
@@ -77,7 +77,7 @@ router.post('/', bearerAdmin, function (req, res) {
  * @apiVersion 2.0.1
  * @apiPermission admin
  * 
- * @apiParam {String} unit_id
+ * @apiParam {uuid-v4} unit_id
  * @apiParam {String} [name]
  * @apiParam {String} [format]
  * @apiParam {String} [type]
@@ -113,7 +113,7 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
  * @apiVersion 2.0.1
  * @apiPermission admin
  * 
- * @apiParam {String} unit_id
+ * @apiParam {uuid-v4} unit_id
  * 
  * @apiUse 401
  * @apiUse 404

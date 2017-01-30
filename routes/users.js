@@ -14,7 +14,7 @@ var tokens;
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} user_id User ID.
+ * @apiParam {uuid-v4} user_id User ID.
  * 
  * @apiUse 401
  * @apiUse 404
@@ -172,7 +172,7 @@ router.post('/', function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} user_id
+ * @apiParam {uuid-v4} user_id
  * @apiParam {String} [firstName] The new User First Name
  * @apiParam {String} [lastName] The new User Last Name
  * @apiParam {String} [email] The new User Email address
@@ -209,7 +209,7 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} user_id
+ * @apiParam {uuid-v4} user_id
  * 
  * @apiUse 403
  * @apiUse 404

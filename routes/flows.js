@@ -14,7 +14,7 @@ var tokens;
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} [flow_id] Flow Id
+ * @apiParam {uuid-v4} [flow_id] Flow Id
  * 
  * @apiUse 401
  * @apiUse 404
@@ -105,6 +105,7 @@ router.post('/', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * @apiParam {uuid-v4} flow_id Flow Id
  * @apiParam {String} [name] Flow Name
  * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
  * @apiParam {String} [unit] Flow Unit
@@ -178,7 +179,7 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} flow_id Flow Id
+ * @apiParam {uuid-v4} flow_id Flow Id
  */
 router.delete('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 	// TODO

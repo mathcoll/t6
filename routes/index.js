@@ -110,7 +110,7 @@ var qt;
  */
 
 /**
- * @apiDefine admin Admin User access only
+ * @apiDefine admin Admin access rights needed.
  * Only t6 Administrator user have permission to this Endpoint.
  */
 
