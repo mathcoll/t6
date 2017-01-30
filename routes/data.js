@@ -17,7 +17,7 @@ var units;
  *
  * @apiUse Auth
  * 
- * @apiParam {String} flow_id Flow ID you want to get data from
+ * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
  * @apiParam {String} [order] Field to order results
  * @apiParam {String} [sort=desc] Sorting order asc OR desc
  * @apiParam {Number} [page] Page offset
@@ -25,7 +25,7 @@ var units;
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
- * @apiSuccess {String} data.id Data point Identifier
+ * @apiSuccess {Number} data.id Data point Identifier
  * @apiSuccess {Object[]} data.links
  * @apiSuccess {String} data.links.self Data point Url
  * @apiSuccess {Object[]} data.attributes Data point attributes
@@ -345,7 +345,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  *
  * @apiUse Auth
  * 
- * @apiParam {String} flow_id Flow ID you want to get data from
+ * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
  * @apiParam {Number} data_id DataPoint ID you want to get
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -479,7 +479,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
  *
  * @apiUse Auth
  * 
- * @apiParam {String} flow_id Flow ID you want to add Data Point to.
+ * @apiParam {uuid-v4} flow_id Flow ID you want to add Data Point to
  * @apiParam {String} value Data Point value
  * @apiParam {Boolean} [publish=false] Flag to publish to Mqtt Topic
  * @apiParam {Boolean} [save =false] Flag to store in database the Value

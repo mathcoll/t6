@@ -13,7 +13,7 @@ var tokens;
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
- * @apiParam {String} [datatype_id] DataType ID you want to get.
+ * @apiParam {uuid-v4} [datatype_id] DataType ID you want to get
  * 
  * @apiUse 401
  * @apiUse 404
@@ -69,7 +69,7 @@ router.post('/', bearerAdmin, function (req, res) {
  * @apiVersion 2.0.1
  * @apiPermission admin
  * 
- * @apiParam {String} datatype_id
+ * @apiParam {uuid-v4} datatype_id
  * @apiParam {String} [name]
  * 
  * @apiUse 401
@@ -100,7 +100,7 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
  * @apiVersion 2.0.1
  * @apiPermission admin
  * 
- * @apiParam {String} datatype_id
+ * @apiParam {uuid-v4} datatype_id
  * 
  * @apiUse 401
  */

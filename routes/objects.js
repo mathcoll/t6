@@ -14,7 +14,7 @@ var tokens;
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} [object_id] Object Id.
+ * @apiParam {uuid-v4} [object_id] Object Id
  * @apiParam {String} [name] Object Name you want to search for; this is using an case-insensitive regexp
  * 
  * @apiUse 401
@@ -116,12 +116,13 @@ router.post('/', bearerAuthToken, function (req, res) {
 });
 
 /**
- * @api {put} /objects Edit an Object
+ * @api {put} /objects/:object_id Edit an Object
  * @apiName Edit an Object
  * @apiGroup Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * @apiParam {uuid-v4} [object_id] Object Id
  * @apiParam {String} [name] Object Name
  * @apiParam {String} [type] Object Type, to customize icon on the List
  * @apiParam {String{1024}} [description] Object Description
@@ -170,7 +171,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} object_id Object Id
+ * @apiParam {uuid-v4} object_id Object Id
  * 
  * @apiUse 403
  * @apiUse 404
@@ -206,7 +207,7 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} object_id Object Id
+ * @apiParam {uuid-v4} object_id Object Id
  * @apiParam {String} pName Customer Parameter Name
  * @apiParam {String} value Customer Parameter Value
  * 
@@ -276,7 +277,7 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} object_id Object Id
+ * @apiParam {uuid-v4} object_id Object Id
  * @apiParam {String} pName Customer Parameter Name
  * 
  * @apiUse 401
