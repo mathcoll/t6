@@ -8,6 +8,73 @@ var users;
 var tokens;
 
 /**
+ * @api {post} /users/reminderMail Send reminder Email to Users
+ * @apiName Send reminder Email to Users
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.get('/reminderMail', bearerAdmin, function (req, res) {
+	if ( req.token !== undefined && process.env.NODE_ENV === 'production' ) {
+		users	= db.getCollection('users');
+		//var query = {'token': { '$eq': null }};
+		var query = { '$and': [
+	   	           {'subscription_date': { '$lte': moment().subtract(7, 'days') }},
+	 	           {'reminderMail': undefined},
+	 	           {'token': undefined},
+	 			]};
+		var json = users.find( query );
+		if ( json.length > 0 ) {
+			/* Send a Reminder Email to each users */
+			json.forEach(function(user) {
+				//console.log(user.firstName+' '+user.lastName+' <'+user.email+'>');
+				res.render('emails/reminder', {user: user}, function(err, html) {
+					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
+					var mailOptions = {
+						from: from,
+						bcc: bcc,
+						to: to,
+						subject: 't6 Reminder',
+						text: 'Html email client is required',
+						html: html
+					};
+					transporter.sendMail(mailOptions, function(err, info){
+					    if( err ){
+							var err = new Error('Internal Error');
+							err.status = 500;
+							res.status(err.status || 500).render(err.status, {
+								title : 'Internal Error'+app.get('env'),
+								user: req.session.user,
+								currentUrl: req.path,
+								err: err
+							});
+					    } else {
+							users.findAndUpdate(
+								function(i){return i.id==user.id},
+								function(item){
+									item.reminderMail = parseInt(moment().format('x'));
+								}
+							);
+							db.save();
+					    }
+					});
+				});
+			});
+			//res.status(200).send(new UserSerializer(json).serialize());
+			res.status(200).send(json);
+		} else {
+			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 19, 'code': 403, 'message': 'Forbidden '+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
  * @api {get} /users/:user_id Get User
  * @apiName Get User
  * @apiGroup User
@@ -160,6 +227,7 @@ router.post('/', function (req, res) {
 		};
 		var tokens	= db.getCollection('tokens');
 		tokens.insert(new_token);
+		// TODO: the Welcome Mail is never sent!.
 		
 		res.status(201).send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }); // TODO: missing serializer
 	}
@@ -280,6 +348,35 @@ function bearerAuthToken(req, res, next) {
 		}
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 1, 'code': 401, 'message': 'Unauthorized'}).serialize());
+	}
+}
+
+function bearerAdmin(req, res, next) {
+	var bearerToken;
+	var bearerHeader = req.headers['authorization'];
+	tokens	= db.getCollection('tokens');
+	users	= db.getCollection('users');
+	if ( typeof bearerHeader !== 'undefined' ) {
+		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
+		bearerToken = bearer[1];
+		req.token = bearerToken;
+		req.bearer = tokens.findOne(
+			{ '$and': [
+	           {'token': { '$eq': req.token }},
+	           {'expiration': { '$gte': moment().format('x') }},
+			]}
+		);
+		if ( !req.bearer ) {
+			res.status(403).send(new ErrorSerializer({'id': 22, 'code': 431, 'message': 'Forbidden'}).serialize());
+		} else {
+			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }, 'role': 'admin'}) ) {
+				next();
+			} else {
+				res.status(404).send(new ErrorSerializer({'id': 23, 'code': 404, 'message': 'Not Found'}).serialize());
+			}
+		}
+	} else {
+		res.status(401).send(new ErrorSerializer({'id': 24, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}
 }
 
