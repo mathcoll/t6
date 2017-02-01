@@ -21,7 +21,7 @@ var units;
  * @apiParam {String} [order] Field to order results
  * @apiParam {String} [sort=desc] Sorting order asc OR desc
  * @apiParam {Number} [page] Page offset
- * @apiParam {Number} [limit] Pagination, results limit
+ * @apiParam {Number{1-5000}} [limit] Pagination, results limit
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -70,8 +70,8 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			var limit = parseInt(req.query.limit, 10);
 			if (isNaN(limit)) {
 			  limit = 10;
-			} else if (limit > 500) {
-			  limit = 50;
+			} else if (limit > 5000) {
+			  limit = 5000;
 			} else if (limit < 1) {
 			  limit = 1;
 			}
