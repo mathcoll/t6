@@ -142,7 +142,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		//console.log(objects);
 		var result;
 		objects.findAndUpdate(
-			function(i){return i.id==object_id},
+			function(i){return i.id==object_id;},
 			function(item){
 				item.type				= req.body.type!==undefined?req.body.type:item.type;
 				item.name				= req.body.name!==undefined?req.body.name:item.name;
@@ -182,9 +182,9 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		objects	= db.getCollection('objects');
 		var query = {
 			'$and': [
-				{ 'user_id' : req.user.id }, // delete only object from current user
-				{ 'id' : object_id },
-			]
+				{ 'user_id' : req.user.id, }, // delete only object from current user
+				{ 'id' : object_id, },
+			],
 		};
 		var o = objects.find(query);
 		//console.log(o);
@@ -235,11 +235,6 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
 		}
 	}
 	if ( p!== undefined && (p.permission == '644' || p.permission == '620' || p.permission == '600') ) { // TODO
-		/*
-		Sample Content:
-		http://127.0.0.1:3000/v2.0.1/objects/3e48c1e0-ea98-4987-b6af-92258117e964/pName/
-		{"value": "foobar"}
-		*/
 		if ( object_id && req.token !== undefined && req.body.value !== undefined ) {
 			objects	= db.getCollection('objects');
 			var query = {

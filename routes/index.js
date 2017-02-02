@@ -161,7 +161,7 @@ router.all('*', function (req, res, next) {
 	req.user = users.findOne({'id': { '$eq': o.user_id }});
 	var i = (qt.find(queryQ)).length;
 	if( (req.user && i >= (quota[req.user.role]).calls) && !unlimited ) {
-		// TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
+		//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
 		res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 	} else {
 		qt.insert(o);
