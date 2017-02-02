@@ -114,7 +114,7 @@ app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
-app.use('/modules', modules);
+app.use('/modules', modules); //TODO: to be removed, deprecated
 app.use('/', www);
 
 app.use(function(req, res, next) {
