@@ -1004,7 +1004,7 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 	
 	if ( password == password2 ) {
 		user.password = md5(password);
-		user.passwordLastUpdated = moment().format('x');
+		user.passwordLastUpdated = parseInt(moment().format('x'));
 		user.token = null;
 		users.update(user);
 		db.save();
@@ -1020,7 +1020,6 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 			user: user
 		});
 	}
-	
 });
 
 router.post('/account/forgot-password', function(req, res) {
