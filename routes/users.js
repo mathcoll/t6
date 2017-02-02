@@ -25,7 +25,7 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
 		var query = { '$and': [
 	   	           {'subscription_date': { '$lte': moment().subtract(7, 'days') }},
 	 	           {'reminderMail': undefined},
-	 	           {'token': undefined},
+	 	           {'token': null},
 	 			]};
 		var json = users.find( query );
 		if ( json.length > 0 ) {
@@ -64,8 +64,7 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
 					});
 				});
 			});
-			//res.status(200).send(new UserSerializer(json).serialize());
-			res.status(200).send(json);
+			res.status(200).send(new UserSerializer(json).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
 		}
