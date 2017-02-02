@@ -536,7 +536,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		} else if ( datatype == 'float' ) {
 			fields[0] = {time:time, valueFloat: parseFloat(value),};
 		} else {
-			fields[0] = {time:time, value: ""+value,};
+			fields[0] = {time:time, valueString: ""+value,};
 		}
 		// End casting
 		
