@@ -16,9 +16,9 @@ LOG=/var/log/node/$NAME.log
 PIDFILE=/var/run/$NAME.pid
 NODE_ENV="development"
 BASE_URL="http://127.0.0.1:3000"
-DAEMON=/home/mathieu/Projets/2016/t6/bin/www
+DAEMON=/var/www/t6/bin/www
 DAEMON_ARGS=""
-EXEC="/usr/bin/node -- $DAEMON" # $DAEMON_ARGS >>$LOG 2>&1
+EXEC="/usr/bin/nodejs -- $DAEMON" # $DAEMON_ARGS >>$LOG 2>&1
 USER=root
 
 [ -x "$DAEMON" ] || exit 0
