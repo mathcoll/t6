@@ -6,9 +6,7 @@ head
   meta(name='author', content='')
   link(rel='icon', href='#{baseUrlCdn}/img/favicon.ico')
   title #{title}
-  link(href='#{baseUrlCdn}/css/bootstrap.min.css', rel='stylesheet')
-  link(href='#{baseUrlCdn}/css/t6.css', rel='stylesheet')
-  link(href='#{baseUrlCdn}/css/font-awesome/font-awesome.min-4.7.0.css', rel='stylesheet')
+  link(href='#{baseUrlCdn}/css/t6.min.css', rel='stylesheet')
   | <!--[if IE 10]>
   link(href='#{baseUrlCdn}/css/ie10-viewport-bug-workaround.css', rel='stylesheet')
   | <![endif]-->
@@ -22,7 +20,7 @@ head
   script(type='text/javascript', src='#{baseUrlCdn}/js/ie10-viewport-bug-workaround.min.js', async)
   | <![endif]-->
   
-  script(type='text/javascript', src='#{baseUrlCdn}/js/vendor/jquery.min.js')
+  script(type='text/javascript', src='#{baseUrlCdn}/js/t6.min.js')
   script.
     window.jQuery || document.write('<script src="//code.jquery.com/jquery-1.12.3.min.js" async><\\/script>')
   script(type='application/ld+json').
