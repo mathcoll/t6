@@ -1,3 +1,4 @@
+body {background: rgba(0, 0, 0, 0.05);}
 h1, h2, h3, h4, h5, h6 {
     color: #337ab7;
 }
@@ -31,6 +32,12 @@ a.white {
 	position: absolute;
 	bottom: 0;
 	right: 0;
+}
+.tab-content {
+	background: #fff;
+	border-radius: 0 0 4px 4px;
+	border: 1px solid #e7e7e7;
+	border-top: 0 none;
 }
 .navbar-toggle.navbar-left {
 	float: left;
@@ -434,13 +441,14 @@ a:focus {
 .box > .icon:hover > .image { background: #333; }
 .box > .icon > .image > i { font-size: 56px !important; color: #fff !important; }
 .box > .icon:hover > .image > i { color: white !important; }
-.box > .icon > .info { margin-top: -24px; background: rgba(0, 0, 0, 0.04); border: 1px solid #2973ac; padding: 15px 0 10px 0; }
+.box > .icon > .info { margin-top: -24px; background: rgba(0, 0, 0, 0.04); padding:30px; border-radius:5px; }
 .box > .icon:hover > .info { background: rgba(0, 0, 0, 0.04); border-color: #000; color: white; }
 .box > .icon > .info > h3.title { font-family: sans-serif !important; font-size: 16px; color: #222; font-weight: 500; }
 .box > .icon > .info > p { font-family: sans-serif !important; font-size: 13px; color: #666; line-height: 1.5em; margin: 20px;}
 .box > .icon:hover > .info > h3.title, .box > .icon:hover > .info > p, .box > .icon:hover > .info > .more > a { color: #222; }
-.box > .icon > .info > .more a { font-family: sans-serif !important; font-size: 12px; color: #222; line-height: 12px; text-transform: uppercase; text-decoration: none; }
-.box > .icon:hover > .info > .more > a { color: #fff; padding: 6px 8px; background-color: #2e6da4; }
+.box > .icon > .info > .more .btn { font-family: sans-serif !important; font-size: 12px; color: #fff; line-height: 12px; text-transform: uppercase; text-decoration: none; }
+.box > .icon > .info > .more a { color: #fff; padding: 6px 8px; background-color: #2e6da4; }
+.box:hover > .icon .info { box-shadow: 0 14px 30px -15px rgba(0, 0, 0, 0.75); }
 .box .space { height: 30px; }
 /* End Home Page Featurettes */
 
@@ -570,7 +578,7 @@ a:focus {
 .account-wall
 {
     margin-top: 20px;
-    padding: 40px 0px 20px 0px;
+    padding: 20px 0px;
     background-color: #f7f7f7;
     -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
     -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
@@ -578,10 +586,12 @@ a:focus {
 }
 .login-title
 {
-    color: #fff;
+    color: #2973ac;
     font-size: 18px;
-    font-weight: 400;
+    font-weight: bold;
     display: block;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 .profile-img
 {

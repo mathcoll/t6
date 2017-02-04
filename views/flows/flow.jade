@@ -13,59 +13,62 @@ html(lang='en')
             div.alert(class='alert-#{message.type}', role='alert') !{message.value}
 
       .row.side-body
-        .col-sm-12.col-md-8.col-md-offset-0
-          div
-            dl.dl-horizontal
-              dt Name:
-              dd
-                strong #{flow.name}
-                br/
-                i Created: #{moment(flow.meta.created).format('DD/MM/YYYY, HH:mm')} - Updated: #{moment(flow.meta.updated).format('DD/MM/YYYY, HH:mm')} - Revision: #{flow.meta.revision}
-
-              dt Id:
-              dd
-                span.label.label-default.ellipis.fa.fa-random  #{flow.id}
-
-              -if (flow.mqtt_topic)
-                dt MQTT Topic:
+        .col-sm-8.col-md-8
+          .row
+            col-sm-12.col-md-12
+              dl.dl-horizontal
+                dt Name:
                 dd
-                  -if(flow.mqtt_topic)
-                    span.label.label-warning.fa.fa-commenting-o  #{flow.mqtt_topic}
-                  -else
-                    span  
-              -end
-              
-              dt Datatype:
-              - if ( flow.data_type ) {
-                - for (d in datatypes) {
-                  - if ( datatypes[d].id == flow.data_type ) {
-                    dd #{datatypes[d].name}
+                  strong #{flow.name}
+                  br/
+                  i Created: #{moment(flow.meta.created).format('DD/MM/YYYY, HH:mm')} - Updated: #{moment(flow.meta.updated).format('DD/MM/YYYY, HH:mm')} - Revision: #{flow.meta.revision}
+            
+                dt Id:
+                dd
+                  span.label.label-default.ellipis.fa.fa-random  #{flow.id}
+            
+                -if (flow.mqtt_topic)
+                  dt MQTT Topic:
+                  dd
+                    -if(flow.mqtt_topic)
+                      span.label.label-warning.fa.fa-commenting-o  #{flow.mqtt_topic}
+                    -else
+                      span  
+                -end
+                
+                dt Datatype:
+                - if ( flow.data_type ) {
+                  - for (d in datatypes) {
+                    - if ( datatypes[d].id == flow.data_type ) {
+                      dd #{datatypes[d].name}
+                    - }
                   - }
                 - }
-              - }
-
-              dt Unit:
-              - if (unit.name) {
-                dd #{unit.format} (Name: #{unit.name}, Type: #{unit.type})
-              - }
-
-              dt Permission:
-              dd
-                span.label.label-danger #{flow.permission}
-                
-              dt  
-              dd
-                p 
-                ul.list-inline
-                  li
-                    a.btn.btn-primary.btn-sm(href='/flows/#{flow.id}/edit')
-                      span.fa.fa-pencil-square-o  Edit
+            
+                dt Unit:
+                - if (unit.name) {
+                  dd #{unit.format} (Name: #{unit.name}, Type: #{unit.type})
+                - }
+            
+                dt Permission:
+                dd
+                  span.label.label-danger #{flow.permission}
                   
-                  li
-                    a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', onclick="return false;")
-                      span.fa.fa-trash-o  Delete Flow
-              
-        .col-sm-12.col-md-4.col-md-offset-0
+                dt  
+                dd
+                  p 
+                  ul.list-inline
+                    li
+                      a.btn.btn-primary.btn-sm(href='/flows/#{flow.id}/edit')
+                        span.fa.fa-pencil-square-o  Edit
+                    
+                    li
+                      a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', onclick="return false;")
+                        span.fa.fa-trash-o  Delete Flow
+            .col-sm-12.col-md-12
+              include ../snippets/flowgraph.jade
+
+        .col-sm-4.col-md-4
           .with-nav-tabs
             ul.nav.nav-tabs.nav-justified
               li.active(role='presentation')
@@ -108,10 +111,6 @@ html(lang='en')
                   span e.g.:
                   pre.language-markup curl -X GET -i #{baseUrl}/v#{version}/data/#{flow.id} -H "Accept: application/json" -H "Content-Type: application/json" -H 'Connection: keep-alive' -H 'Authorization: Bearer :bearer'
 
-    .container-fluid
-      .row.side-body
-        .col-sm-12
-          include ../snippets/flowgraph.jade
 
     include ../includes/foot.jade
     p &nbsp;
