@@ -13,7 +13,7 @@ var tokens;
 var rules;
 var dashboards;
 var qt;
-var objectTypes = ['rooter', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'nodemcu', 'tablet', 'server', 'printer'];
+var objectTypes = ['rooter', 'microchip', 'sensor', 'computer', 'laptop', 'desktop', 'phone', 'smartphone', 'nodemcu', 'tablet', 'server', 'printer'];
 
 function nl2br(str, isXhtml) {
     var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
@@ -850,24 +850,81 @@ router.get('/account/profile', Auth, function(req, res) {
 	};
 	request(options, function(error, response, body) {
 		if ( !error && response.statusCode != 404 ) {
-			res.render('profile', {
-				title : 'My Profile',
-				objects : ((objects.chain().find(queryO).data()).length),
-				flows : ((flows.chain().find(queryF).data()).length),
-				rules : (rules.chain().find(queryR).data().length),
-				snippets : (snippets.chain().find(queryS).data().length),
-				dashboards : (dashboards.chain().find(queryD).data().length),
-				tokens : (tokens.chain().find(queryT).data()),
-				calls : (qt.chain().find(queryQ).data().length),
-				quota : (quota[req.session.user.role]),
-				user : req.session.user,
-				currentUrl: req.path,
-				gravatar : JSON.parse(body)
+			var f = (flows.chain().find(queryF).data());
+			
+			var query = squel.select()
+			.field('*')
+			.from('data')
+			.limit(15)
+			.offset(1)
+			.order('time', false)
+			;
+			
+			var flowsList="";
+			var lastPoints = new Array();
+			f.forEach(function(flow, i) {
+				if (i != 0) { flowsList += " OR "; }
+				flowsList += "flow_id='"+flow.id+"'";
+			});
+			query.where(flowsList);
+			query = query.toString();
+			//console.log(query);
+			dbInfluxDB.query(query).then(data => {
+				var v;
+				data.map(function(d) {
+					if (d.valueFloat!==null) {
+						v = d.valueFloat;
+					} else if (d.valueInteger!==null) {
+						v = d.valueInteger;
+					} else if (d.valueString!==null) {
+						v = d.valueString;
+					} else {
+						v = d.value;
+					}
+					lastPoints.push({flow_id: d.flow_id, time: d.time.getNanoTime(), value: v,});
+					//console.log(lastPoints);
+				});
+
+				//console.log(lastPoints);
+				res.render('profile', {
+					title : 'My Profile',
+					objects : ((objects.chain().find(queryO).data()).length),
+					lastPoints : lastPoints,
+					flows : f.length,
+					rules : (rules.chain().find(queryR).data().length),
+					snippets : (snippets.chain().find(queryS).data().length),
+					dashboards : (dashboards.chain().find(queryD).data().length),
+					tokens : (tokens.chain().find(queryT).data()),
+					calls : (qt.chain().find(queryQ).data().length),
+					quota : (quota[req.session.user.role]),
+					user : req.session.user,
+					currentUrl: req.path,
+					gravatar : JSON.parse(body),
+				});
+			}).catch(err => {
+				console.log('ERRORRRR: '+err);
+
+				res.render('profile', {
+					title : 'My Profile',
+					objects : ((objects.chain().find(queryO).data()).length),
+					lastPoints : null,
+					flows : f.length,
+					rules : (rules.chain().find(queryR).data().length),
+					snippets : (snippets.chain().find(queryS).data().length),
+					dashboards : (dashboards.chain().find(queryD).data().length),
+					tokens : (tokens.chain().find(queryT).data()),
+					calls : (qt.chain().find(queryQ).data().length),
+					quota : (quota[req.session.user.role]),
+					user : req.session.user,
+					currentUrl: req.path,
+					gravatar : JSON.parse(body),
+				});
 			});
 		} else {
 			res.render('profile', {
 				title : 'My Profile',
 				objects : ((objects.chain().find(queryO).data()).length),
+				lastPoints : null,
 				flows : ((flows.chain().find(queryF).data()).length),
 				rules : (rules.chain().find(queryR).data().length),
 				snippets : (snippets.chain().find(queryS).data().length),
@@ -877,7 +934,7 @@ router.get('/account/profile', Auth, function(req, res) {
 				quota : (quota[req.session.user.role]),
 				user : req.session.user,
 				currentUrl: req.path,
-				gravatar : null
+				gravatar : null,
 			});
 		}
 	});

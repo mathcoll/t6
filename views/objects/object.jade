@@ -49,6 +49,8 @@ html(lang='en')
                 - var style = "fa fa-tasks"
               - else if (object.type == 'printer')
                 - var style = "fa fa-print"
+              - else if (object.type == 'microchip')
+                - var style = "fa fa-microchip"
               - end
               dd
                 a.label.label-default(href='#', class="#{style}")   #{object.type}
