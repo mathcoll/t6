@@ -5,7 +5,7 @@ html(lang='en')
     include ./includes/navbar.jade
 
     .container-fluid
-      .row.side-body.hidden-xs
+      .row.side-body.hidden
         .col-sm-12
           h2.fa.fa-2x.fa-filter &nbsp;Decision Rules
         blockquote.fa.fa-comment  "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months. To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.

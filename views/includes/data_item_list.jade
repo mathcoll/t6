@@ -1,11 +1,9 @@
-.list-group-item(href='#')
-  h4.list-group-item-heading
-    span.fa.fa-bullseye
-    | &nbsp;value
-  p
-    span.label.label-primary Mqtt:
-    | &nbsp;
-    span.label.label-warning ID:
-    | &nbsp;
-    span.label.label-danger Flow:
-    | &nbsp;
+a.clearfix.list-group-item(name='#{lastPoints[point].time}')
+  div.col-sm-3
+    span.fa.fa-bullseye  #{moment((lastPoints[point].time)/1000000).format('DD/MM/YYYY, HH:mm')}
+
+  div.col-sm-4
+    span.label.label-danger Flow: #{lastPoints[point].flow_id}
+
+  div.col-sm-5
+    span.label.label-default #{lastPoints[point].value}
