@@ -114,6 +114,7 @@ html(lang='en')
         - if( lastPoints )
           .col-lg-8.col-sm-6.col-xs-12
             h3.list-group Last Data Points
+            include ../data/item_header.jade
             ul.panel-group.no-padding
               - for( point in lastPoints )
                 include ../data/data_item_list.jade
