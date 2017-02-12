@@ -890,22 +890,37 @@ router.get('/account/profile', Auth, function(req, res) {
 						var point = {flow_id: d.flow_id, time: d.time, value: v, text: d.text,};
 						lastPoints.push(point);
 					});
+
+					var query = squel.select()
+						.field('count(url)')
+						.from('quota7d.requests')
+						.where('user_id=?', req.session.user.id)
+						.where('time>now() - 7d')
+						.limit(1)
+						.toString();
+					dbInfluxDB.query(query).then(data => {
+						//console.log(query);
+						//console.log(data[0]);
+						//console.log(i);
+						//console.log((quota[req.user.role]).calls);
+						var i = data[0]!==undefined?data[0].count:0;
 	
-					//console.log(lastPoints);
-					res.render('account/profile', {
-						title : 'My Profile',
-						objects : ((objects.chain().find(queryO).data()).length),
-						lastPoints : lastPoints,
-						flows : f.length,
-						rules : (rules.chain().find(queryR).data().length),
-						snippets : (snippets.chain().find(queryS).data().length),
-						dashboards : (dashboards.chain().find(queryD).data().length),
-						tokens : (tokens.chain().find(queryT).data()),
-						calls : (qt.chain().find(queryQ).data().length),
-						quota : (quota[req.session.user.role]),
-						user : req.session.user,
-						currentUrl: req.path,
-						gravatar : JSON.parse(body),
+						//console.log(lastPoints);
+						res.render('account/profile', {
+							title : 'My Profile',
+							objects : ((objects.chain().find(queryO).data()).length),
+							lastPoints : lastPoints,
+							flows : f.length,
+							rules : (rules.chain().find(queryR).data().length),
+							snippets : (snippets.chain().find(queryS).data().length),
+							dashboards : (dashboards.chain().find(queryD).data().length),
+							tokens : (tokens.chain().find(queryT).data()),
+							calls : i,
+							quota : (quota[req.session.user.role]),
+							user : req.session.user,
+							currentUrl: req.path,
+							gravatar : JSON.parse(body),
+						});
 					});
 				} else {
 					console.log('ERRORRRR: no data');
@@ -919,7 +934,7 @@ router.get('/account/profile', Auth, function(req, res) {
 						snippets : (snippets.chain().find(queryS).data().length),
 						dashboards : (dashboards.chain().find(queryD).data().length),
 						tokens : (tokens.chain().find(queryT).data()),
-						calls : (qt.chain().find(queryQ).data().length),
+						calls : 0,// TODO
 						quota : (quota[req.session.user.role]),
 						user : req.session.user,
 						currentUrl: req.path,
@@ -939,7 +954,7 @@ router.get('/account/profile', Auth, function(req, res) {
 					dashboards : (dashboards.chain().find(queryD).data().length),
 					tokens : (tokens.chain().find(queryT).data()),
 					calls : (qt.chain().find(queryQ).data().length),
-					quota : (quota[req.session.user.role]),
+					calls : 0,// TODO
 					user : req.session.user,
 					currentUrl: req.path,
 					gravatar : JSON.parse(body),
@@ -958,7 +973,7 @@ router.get('/account/profile', Auth, function(req, res) {
 				dashboards : (dashboards.chain().find(queryD).data().length),
 				tokens : (tokens.chain().find(queryT).data()),
 				calls : (qt.chain().find(queryQ).data().length),
-				quota : (quota[req.session.user.role]),
+				calls : 0,// TODO
 				user : req.session.user,
 				currentUrl: req.path,
 				gravatar : null,
@@ -1021,7 +1036,7 @@ router.post('/account/register', function(req, res) {
 					var err = new Error('Internal Error');
 					err.status = 500;
 					res.status(err.status || 500).render(err.status, {
-						title : 'Internal Error'+app.get('env'),
+						title : 'Internal Error '+process.env.NODE_ENV,
 						user: req.session.user,
 						currentUrl: req.path,
 						err: err,
@@ -1138,7 +1153,7 @@ router.post('/account/forgot-password', function(req, res) {
 					var err = new Error('Internal Error');
 					err.status = 500;
 					res.status(err.status || 500).render(err.status, {
-						title : 'Internal Error'+app.get('env'),
+						title : 'Internal Error '+process.env.NODE_ENV,
 						user: user,
 						currentUrl: req.path,
 						err: err

@@ -159,14 +159,54 @@ router.all('*', function (req, res, next) {
        {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
 	]};
 	req.user = users.findOne({'id': { '$eq': o.user_id }});
-	var i = (qt.find(queryQ)).length;
-	if( (req.user && i >= (quota[req.user.role]).calls) && !unlimited ) {
-		//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
-		res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
-	} else {
-		qt.insert(o);
-		next();
-	}
+	var i = (qt.find(queryQ)).length; // TEMP !!! TODO: to be removed
+	
+	var query = squel.select()
+		.field('count(url)')
+		.from('quota7d.requests')
+		.where('user_id=?', o.user_id)
+		.where('time>now() - 7d')
+		.limit(1)
+		.toString();
+	dbInfluxDB.query(query).then(data => {
+		//console.log(query);
+		//console.log(data[0].count);
+		//console.log(i);
+		//console.log((quota[req.user.role]).calls);
+		i = data[0]!==undefined?data[0].count:0;
+		
+		if( (req.user && i >= (quota[req.user.role]).calls) && !unlimited ) {
+			//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
+			res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
+		} else {
+			if ( db_type.influxdb == true ) {
+				var tags = {user_id: o.user_id, session_id: o.session_id!==undefined?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+				var fields = {url: o.url};
+				//CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATION 1d
+				dbInfluxDB.writePoints([{
+					measurement: 'requests',
+					tags: tags,
+					fields: fields,
+				}], { retentionPolicy: 'quota7d', precision: 's', })
+				.then(err => {
+					//console.error('OK ===>'+err);
+					//console.log(tags);
+					//console.log(fields);
+					next();
+				}).catch(err => {
+					console.error('ERROR ===> Error writting logs for quota:\n'+err);
+					//console.log(tags);
+					//console.log(fields);
+					next();
+			    });
+			}
+			qt.insert(o);
+		};
+	}).catch(err => {
+		console.error('ERROR ===> Error getting logs for quota:\n'+err);
+		console.log(query);
+		res.status(429).send(new ErrorSerializer({'id': 101, 'code': 429, 'message': 'Too Many Requests; or we can\'t perform your request.'}));
+    });
 });
 
 router.get('/authenticate', function (req, res) {
