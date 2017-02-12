@@ -1,0 +1,12 @@
+a.clearfix.list-group-item(name='#{lastPoints[point].time}', href='/flows/#{lastPoints[point].flow_id}')
+  div.col-sm-3
+    span.fa.fa-bullseye  #{moment(lastPoints[point].time).format('DD/MM/YYYY, HH:mm')}
+
+  div.col-sm-4
+    span.label.label-danger Flow: #{lastPoints[point].flow_id}
+
+  div.col-sm-5
+    span.label.label-default #{lastPoints[point].value}
+
+  div.col-sm-1
+    span.label.label-default #{lastPoints[point].text}

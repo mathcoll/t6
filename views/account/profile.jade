@@ -1,8 +1,8 @@
 doctype html
 html(lang='en')
-  include ./includes/head.jade
+  include ../includes/head.jade
   body
-    include ./includes/navbar.jade
+    include ../includes/navbar.jade
 
     .container-fluid
       .row.side-body
@@ -121,7 +121,7 @@ html(lang='en')
             ul.panel-group.no-padding
               - for( point in lastPoints )
                 li.list-unstyled
-                  include ./includes/data_item_list.jade
+                  include ../data/data_item_list.jade
               - end
         - end
 
@@ -288,4 +288,4 @@ html(lang='en')
                     - end
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
               
-    include ./includes/foot.jade
+    include ../includes/foot.jade

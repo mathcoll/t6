@@ -861,7 +861,7 @@ router.get('/account/profile', Auth, function(req, res) {
 			;
 			
 			var flowsList="";
-			var lastPoints = new Array();
+			var lastPoints = Array();
 			f.forEach(function(flow, i) {
 				if (i != 0) { flowsList += " OR "; }
 				flowsList += "flow_id='"+flow.id+"'";
@@ -870,41 +870,61 @@ router.get('/account/profile', Auth, function(req, res) {
 			query = query.toString();
 			//console.log(query);
 			dbInfluxDB.query(query).then(data => {
-				var v;
-				data.map(function(d) {
-					if (d.valueFloat!==null) {
-						v = d.valueFloat;
-					} else if (d.valueInteger!==null) {
-						v = d.valueInteger;
-					} else if (d.valueString!==null) {
-						v = d.valueString;
-					} else {
-						v = d.value;
-					}
-					lastPoints.push({flow_id: d.flow_id, time: d.time.getNanoTime(), value: v,});
+				if ( data.length > 0 ) {
+					data.map(function(d) {
+						var v;
+						if (d.valueFloat!==null) {
+							v = d.valueFloat;
+						} else if (d.valueInteger!==null) {
+							v = d.valueInteger;
+						} else if (d.valueString!==null) {
+							v = d.valueString;
+						} else {
+							v = d.value;
+						}
+						var point = {flow_id: d.flow_id, time: d.time, value: v, text: d.text,};
+						lastPoints.push(point);
+					});
+	
 					//console.log(lastPoints);
-				});
+					res.render('account/profile', {
+						title : 'My Profile',
+						objects : ((objects.chain().find(queryO).data()).length),
+						lastPoints : lastPoints,
+						flows : f.length,
+						rules : (rules.chain().find(queryR).data().length),
+						snippets : (snippets.chain().find(queryS).data().length),
+						dashboards : (dashboards.chain().find(queryD).data().length),
+						tokens : (tokens.chain().find(queryT).data()),
+						calls : (qt.chain().find(queryQ).data().length),
+						quota : (quota[req.session.user.role]),
+						user : req.session.user,
+						currentUrl: req.path,
+						gravatar : JSON.parse(body),
+					});
+				} else {
+					console.log('ERRORRRR: no data');
 
-				//console.log(lastPoints);
-				res.render('profile', {
-					title : 'My Profile',
-					objects : ((objects.chain().find(queryO).data()).length),
-					lastPoints : lastPoints,
-					flows : f.length,
-					rules : (rules.chain().find(queryR).data().length),
-					snippets : (snippets.chain().find(queryS).data().length),
-					dashboards : (dashboards.chain().find(queryD).data().length),
-					tokens : (tokens.chain().find(queryT).data()),
-					calls : (qt.chain().find(queryQ).data().length),
-					quota : (quota[req.session.user.role]),
-					user : req.session.user,
-					currentUrl: req.path,
-					gravatar : JSON.parse(body),
-				});
+					res.render('account/profile', {
+						title : 'My Profile',
+						objects : ((objects.chain().find(queryO).data()).length),
+						lastPoints : null,
+						flows : f.length,
+						rules : (rules.chain().find(queryR).data().length),
+						snippets : (snippets.chain().find(queryS).data().length),
+						dashboards : (dashboards.chain().find(queryD).data().length),
+						tokens : (tokens.chain().find(queryT).data()),
+						calls : (qt.chain().find(queryQ).data().length),
+						quota : (quota[req.session.user.role]),
+						user : req.session.user,
+						currentUrl: req.path,
+						gravatar : JSON.parse(body),
+					});
+				}
 			}).catch(err => {
 				console.log('ERRORRRR: '+err);
 
-				res.render('profile', {
+				res.render('account/profile', {
 					title : 'My Profile',
 					objects : ((objects.chain().find(queryO).data()).length),
 					lastPoints : null,
@@ -921,7 +941,9 @@ router.get('/account/profile', Auth, function(req, res) {
 				});
 			});
 		} else {
-			res.render('profile', {
+			console.log('ERRORRRR: Not connected');
+
+			res.render('account/profile', {
 				title : 'My Profile',
 				objects : ((objects.chain().find(queryO).data()).length),
 				lastPoints : null,
