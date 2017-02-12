@@ -83,39 +83,47 @@ html(lang='en')
 
           h3.list-group Contacts
           ul.panel-group.no-padding
-            a.col-sm-12.list-group-item.fa.fa-envelope(href='mailto:#{user.email}')  Email: #{user.email}
-              span.fa.fa-external-link.pull-right
+            li.list-unstyled
+              a.clearfix.list-group-item(href='mailto:#{user.email}', target='_blank')
+                span.fa.fa-envelope  Email: #{user.email}
+                span.fa.fa-external-link.pull-right
             - if ( gravatar && gravatar.entry[0].phoneNumbers )
               - for ( i in (gravatar.entry[0].phoneNumbers) )
                 - var phone = (gravatar.entry[0].phoneNumbers)[i]
-                a.col-sm-12.list-group-item.fa.fa-phone(href='tel:#{phone.value}', title="#{phone.type}")  #{phone.type}: #{phone.value}
-                  span.fa.fa-external-link.pull-right
+                li.list-unstyled
+                  a.clearfix.list-group-item(href='tel:#{phone.value}', title="#{phone.type}", target='_blank')
+                    span.fa.fa-phone  #{phone.type}: #{phone.value}
+                    span.fa.fa-external-link.pull-right
               - end
             - end
             - if ( gravatar && gravatar.entry[0].urls )
               - for ( i in gravatar.entry[0].urls )
                 - var url = gravatar.entry[0].urls[i]
-                a.col-sm-12.list-group-item.fa.fa-star(href='#{url.value}', target='_blank')  #{url.title}
-                  span.fa.fa-external-link.pull-right
+                li.list-unstyled
+                  a.clearfix.list-group-item(href='#{url.value}', target='_blank')
+                    span.fa.fa-star  #{url.title}
+                    span.fa.fa-external-link.pull-right
               - end
             - end
             - if ( gravatar && gravatar.entry[0].currency )
               - for ( i in gravatar.entry[0].currency )
                 - var curr = gravatar.entry[0].currency[i]
-                a.col-sm-12.list-group-item.fa.fa-bitcoin(href='#', title="#{curr.type}")  #{curr.value}
-                  span.fa.fa-external-link.pull-right
+                li.list-unstyled
+                  a.clearfix.list-group-item(href='#', title="#{curr.type}", target='_blank')
+                    span.fa.fa-bitcoin  #{curr.value}
+                    span.fa.fa-external-link.pull-right
               - end
             - end
 
-        - if( lastPoints ) {
+        - if( lastPoints )
           .col-lg-8.col-sm-6.col-xs-12
             h3.list-group Last Data Points
             ul.panel-group.no-padding
-              - for( point in lastPoints ) {
-                include ./includes/data_item_list.jade
-              - }
-        - }
-
+              - for( point in lastPoints )
+                li.list-unstyled
+                  include ./includes/data_item_list.jade
+              - end
+        - end
 
       .row.side-body
         .col-lg-12
