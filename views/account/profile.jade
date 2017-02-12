@@ -83,35 +83,31 @@ html(lang='en')
 
           h3.list-group Contacts
           ul.panel-group.no-padding
-            li.list-unstyled
-              a.clearfix.list-group-item(href='mailto:#{user.email}', target='_blank')
-                span.fa.fa-envelope  Email: #{user.email}
-                span.fa.fa-external-link.pull-right
+            a.list-group-item.list-unstyled(href='mailto:#{user.email}', target='_blank')
+              span.fa.fa-envelope  Email: #{user.email}
+              span.fa.fa-external-link.pull-right
             - if ( gravatar && gravatar.entry[0].phoneNumbers )
               - for ( i in (gravatar.entry[0].phoneNumbers) )
                 - var phone = (gravatar.entry[0].phoneNumbers)[i]
-                li.list-unstyled
-                  a.clearfix.list-group-item(href='tel:#{phone.value}', title="#{phone.type}", target='_blank')
-                    span.fa.fa-phone  #{phone.type}: #{phone.value}
-                    span.fa.fa-external-link.pull-right
+                a.list-group-item.list-unstyled(href='tel:#{phone.value}', title="#{phone.type}", target='_blank')
+                  span.fa.fa-phone  #{phone.type}: #{phone.value}
+                  span.fa.fa-external-link.pull-right
               - end
             - end
             - if ( gravatar && gravatar.entry[0].urls )
               - for ( i in gravatar.entry[0].urls )
                 - var url = gravatar.entry[0].urls[i]
-                li.list-unstyled
-                  a.clearfix.list-group-item(href='#{url.value}', target='_blank')
-                    span.fa.fa-star  #{url.title}
-                    span.fa.fa-external-link.pull-right
+                a.list-group-item.list-unstyled(href='#{url.value}', target='_blank')
+                  span.fa.fa-star  #{url.title}
+                  span.fa.fa-external-link.pull-right
               - end
             - end
             - if ( gravatar && gravatar.entry[0].currency )
               - for ( i in gravatar.entry[0].currency )
                 - var curr = gravatar.entry[0].currency[i]
-                li.list-unstyled
-                  a.clearfix.list-group-item(href='#', title="#{curr.type}", target='_blank')
-                    span.fa.fa-bitcoin  #{curr.value}
-                    span.fa.fa-external-link.pull-right
+                a.list-group-item.list-unstyled(href='#', title="#{curr.type}", target='_blank')
+                  span.fa.fa-bitcoin  #{curr.value}
+                  span.fa.fa-external-link.pull-right
               - end
             - end
 
@@ -120,8 +116,7 @@ html(lang='en')
             h3.list-group Last Data Points
             ul.panel-group.no-padding
               - for( point in lastPoints )
-                li.list-unstyled
-                  include ../data/data_item_list.jade
+                include ../data/data_item_list.jade
               - end
         - end
 
