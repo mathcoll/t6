@@ -1027,7 +1027,7 @@ router.post('/account/register', function(req, res) {
 						err: err,
 					});
 			    } else {
-			    	res.render('login', {
+			    	res.render('account/login', {
 						title : 'Login to t6',
 						user: req.session.user,
 						currentUrl: req.path,
@@ -1050,7 +1050,7 @@ router.post('/account/register', function(req, res) {
 router.get('/account/login', function(req, res) {
 	var message = req.session.message!==null?req.session.message:null;
 	req.session.message = null; // Force to unset
-	res.render('login', {
+	res.render('account/login', {
 		title : 'Log-in',
 		currentUrl: req.path,
 		message: message,
@@ -1059,7 +1059,7 @@ router.get('/account/login', function(req, res) {
 });
 
 router.get('/account/forgot-password', function(req, res) {
-	res.render('forgot-password', {
+	res.render('account/forgot-password', {
 		title : 'Forgot your password',
 		currentUrl: req.path,
 		user: req.session.user
@@ -1073,7 +1073,7 @@ router.get('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) {
 	var user = (users.chain().find(query).data())[0];
 	
 	if ( user ) {
-		res.render('reset-password', {
+		res.render('account/reset-password', {
 			title : 'Reset your password',
 			currentUrl: req.path,
 			token: token,
@@ -1103,7 +1103,7 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 		req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.'};
 		res.redirect('/account/login');
 	} else {
-		res.render('reset-password', {
+		res.render('account/reset-password', {
 			title : 'Reset your password',
 			currentUrl: req.path,
 			message: {type: 'danger', value: 'Password does not match!'},
@@ -1144,7 +1144,7 @@ router.post('/account/forgot-password', function(req, res) {
 						err: err
 					});
 			    } else {
-			    	res.render('login', {
+			    	res.render('account/login', {
 					title : 'Login to t6',
 					user: user,
 					currentUrl: req.path,
@@ -1154,7 +1154,7 @@ router.post('/account/forgot-password', function(req, res) {
 			});
 		});
 	} else {
-    	res.render('forgot-password', {
+    	res.render('account/forgot-password', {
 			title : 'Forgot your password',
 			user: req.session.user,
 			currentUrl: req.path,
@@ -1173,7 +1173,7 @@ router.get('/account/logout', function(req, res) {
 router.post('/account/login', Auth, function(req, res) {
 	if ( !req.session.user ) {
 		//console.log("Error! invalid credentials, user not found");
-		res.render('login', {
+		res.render('account/login', {
 			title : 'Log-in Failed',
 			currentUrl: req.path,
 			user: req.session.user
