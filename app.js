@@ -85,7 +85,6 @@ var data			= require('./routes/data');
 var flows			= require('./routes/flows');
 var units			= require('./routes/units');
 var datatypes		= require('./routes/datatypes');
-var modules			= require('./routes/modules');
 var www				= require('./routes/www');
 var app				= express();
 
@@ -119,7 +118,6 @@ app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
-app.use('/modules', modules); //TODO: to be removed, deprecated
 app.use('/', www);
 
 app.use(function(req, res, next) {
