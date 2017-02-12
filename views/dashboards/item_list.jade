@@ -22,7 +22,11 @@ a.clearfix.list-group-item(name='#{dashboards[dashboard].id}', href='/dashboards
     img.img.img-responsive(src='#{baseUrlCdn}/img/layout_#{dashboards[dashboard].layout}.png', alt='#{dashboards[dashboard].layout}', width='30')
 
   div.col-sm-2
-    span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.updated).format('DD/MM/YYYY, HH:mm')}
+    -if (dashboards[dashboard].meta.updated)
+      span.fa.fa-clock-o  #{moment(dashboards[dashboard].meta.updated).format('DD/MM/YYYY, HH:mm')}
+    -else
+      span  
+    -end
 
   div.col-sm-11
     div #{dashboards[dashboard].description}

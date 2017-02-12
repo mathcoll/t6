@@ -14,10 +14,16 @@ a.clearfix.list-group-item(name='#{snippets[snippet].id}', href='/snippets/#{sni
 
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(snippets[snippet].meta.created).format('DD/MM/YYYY, HH:mm')}
-    span.fa.fa-clock-o  #{moment(snippets[snippet].meta.updated).format('DD/MM/YYYY, HH:mm')}
   
   div.col-sm-2
     span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title='Snippet Id')  #{snippets[snippet].id}
     
-  div.col-sm-10
+  div.col-sm-2
+    -if(snippets[snippet].meta.updated)
+      span.fa.fa-clock-o  #{moment(snippets[snippet].meta.updated).format('DD/MM/YYYY, HH:mm')}
+    -else
+      span  &nbsp;
+    -end
+
+  div.col-sm-3
     div.fa.fa-chevron-right.pull-right 
