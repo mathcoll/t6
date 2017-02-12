@@ -10,7 +10,7 @@ html(lang='en')
           h3.list-group Profile of #{user.firstName} #{user.lastName}
           ul.accordion#accordion
             li.list-unstyled
-              .iamgurdeep-pic
+              .iamgurdeep-pic(style='background:url("#{gravatar.entry[0].profileBackground.url}") no-repeat scroll 50% 50%')
                 img.img-responsive.center-block(alt='#{user.firstName} #{user.lastName}', src='//www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g')
                 .edit-pic
                   - if ( gravatar && gravatar.entry[0].ims )
