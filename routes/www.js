@@ -24,6 +24,11 @@ function alphaSort(obj1, obj2) {
     return (obj1.name).toLowerCase().localeCompare((obj2.name).toLowerCase());
 };
 
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+}
+
 router.get('/', function(req, res) {
 	res.render('index', {
 		title : 't6, IoT platform and API',
@@ -983,6 +988,14 @@ router.post('/account/register', function(req, res) {
 		token:				token,
 		subscription_date:  moment().format('x'),
 	};
+	if ( !validateEmail(new_user.email) ) {
+		res.render('register', {
+			title : 'Register',
+			user: req.session.user,
+			currentUrl: req.path,
+			message: {type: 'danger', value: 'Please verify your email address!'}
+		});
+	}
 	if ( new_user.email && new_user.id ) {
 		users.insert(new_user);
 		var new_token = {
@@ -997,7 +1010,7 @@ router.post('/account/register', function(req, res) {
 			var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
 			var mailOptions = {
 				from: from,
-				bcc: bcc,
+				bcc: bcc!==undefined?bcc:null,
 				to: to,
 				subject: 'Welcome to t6',
 				text: 'Html email client is required',
@@ -1011,20 +1024,19 @@ router.post('/account/register', function(req, res) {
 						title : 'Internal Error'+app.get('env'),
 						user: req.session.user,
 						currentUrl: req.path,
-						err: err
+						err: err,
 					});
 			    } else {
 			    	res.render('login', {
-					title : 'Login to t6',
-					user: req.session.user,
-					currentUrl: req.path,
-					message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
-				});
-			    }
+						title : 'Login to t6',
+						user: req.session.user,
+						currentUrl: req.path,
+						message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
+					});
+			    };
 			});
 		});
 		
-		//res.redirect('/profile');
 	} else {
 		res.render('register', {
 			title : 'Register',
@@ -1032,7 +1044,7 @@ router.post('/account/register', function(req, res) {
 			currentUrl: req.path,
 			message: {type: 'danger', value: 'Please, give me your name!'}
 		});
-	}
+	};
 });
 
 router.get('/account/login', function(req, res) {
@@ -1115,7 +1127,7 @@ router.post('/account/forgot-password', function(req, res) {
 			var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
 			var mailOptions = {
 				from: from,
-				bcc: bcc,
+				bcc: bcc!==undefined?bcc:null,
 				to: to,
 				subject: 'Reset your password to t6',
 				text: 'Html email client is required',
