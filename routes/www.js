@@ -1180,22 +1180,15 @@ router.post('/account/login', Auth, function(req, res) {
 /* RULES */
 router.get('/decision-rules', Auth, function(req, res) {
 	rules = dbRules.getCollection("rules");
-	var queryR = { 'user_id': req.session.user.id };
-	/*queryR = {
-		'$and': [
-					{ 'user_id': req.session.user.id },
-					{ 'id': 'ceda166a-df25-4bc4-ae77-3823f63193f9' }
-				]
-			};
-	*/
+	var queryR = { 'user_id': req.session.user.id, };
 	var r = rules.chain().find(queryR).simplesort('on', 'priority', 'name').data();
-	res.render('decision-rules', {
+	res.render('rules/rules', {
 		title : 'Decision Rules',
 		user: req.session.user,
 		currentUrl: req.path,
 		rules_length: r.length,
 		rules: r,
-		quota : (quota[req.session.user.role])
+		quota : (quota[req.session.user.role]),
 	});
 });
 
@@ -1203,13 +1196,13 @@ router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(re
 	/* no put? */
 	var rule_id = req.params.rule_id;
 	if ( !rule_id || !req.body.name ) {
-		res.status(412).send(new ErrorSerializer({'id': 1009,'code': 412, 'message': 'Precondition Failed'}).serialize());
+		res.status(412).send(new ErrorSerializer({'id': 1009,'code': 412, 'message': 'Precondition Failed',}).serialize());
 	} else {
 		rules = dbRules.getCollection("rules");
 		var queryR = {
 			'$and': [
-						{ 'user_id': req.session.user.id },
-						{ 'id': rule_id }
+						{ 'user_id': req.session.user.id, },
+						{ 'id': rule_id, },
 					]
 				};
 		var rule = rules.findOne(queryR);
@@ -1224,8 +1217,8 @@ router.post('/decision-rules/save-rule/:rule_id([0-9a-z\-]+)', Auth, function(re
 			rule.flow_control	= req.body.flow_control;
 			rules.update(rule);
 			res.status(200).send({ 'code': 200, message: 'Successfully updated', rule: rule });
-		}
-	}
+		};
+	};
 });
 
 /* GENERIC */

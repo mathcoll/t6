@@ -1,8 +1,8 @@
 doctype html
 html(lang='en')
-  include ./includes/head.jade
+  include ../includes/head.jade
   body
-    include ./includes/navbar.jade
+    include ../includes/navbar.jade
 
     .container-fluid
       .row.side-body.hidden
@@ -36,10 +36,10 @@ html(lang='en')
         #accordion.col-sm-12.panel-group(role='tablist', aria-multiselectable='true')
           ol#sortable
             - for(rule in rules) {
-              include ./includes/rule_item_list.jade
+              include ./rule_item_list.jade
             - }
 
-    include ./includes/foot.jade
+    include ../includes/foot.jade
 
 //- Rules
 link(href='#{baseUrlCdn}/css/query-builder/query-builder.2.3.3.css', rel='stylesheet')
