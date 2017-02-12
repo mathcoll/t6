@@ -44,30 +44,35 @@ if( db_type.influxdb == true ) {
 /* Main Database settings */
 db	= new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 db.loadDatabase(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'));
+if ( db === null ) console.log('db is failing');
+if ( db.getCollection('objects') === null ) console.log('Collection Objects is failing');
+if ( db.getCollection('flows') === null ) console.log('Collection Flows is failing');
+if ( db.getCollection('users') === null ) console.log('Collection Users is failing');
+if ( db.getCollection('tokens') === null ) console.log('Collection Keys is failing');
 
 /* Rules settings */
 dbRules	= new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbRules.loadDatabase(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'));
+if ( dbRules === null ) console.log('db Rules is failing');
+if ( dbRules.getCollection('rules') === null ) console.log('Collection Rules is failing');
 
 /* Quota settings */
 dbQuota	= new loki(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbQuota.loadDatabase(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'));
+if ( dbQuota === null ) console.log('db Quota is failing');
+if ( dbQuota.getCollection('quota') === null ) console.log('Collection Quota is failing');
 
 /* Snippets settings */
 dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
+if ( dbSnippets === null ) console.log('db Snippets is failing');
+if ( dbSnippets.getCollection('snippets') === null ) console.log('db Snippets is failing');
 
 /* Dashboards settings */
 dbDashboards	= new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 dbDashboards.loadDatabase(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'));
-
-if ( !db.getCollection('objects') ) console.log('db Objects is failing');
-if ( !db.getCollection('flows') ) console.log('db Flows is failing');
-if ( !db.getCollection('tokens') ) console.log('db Tokens is failing');
-if ( !dbRules.getCollection('rules') ) console.log('db Rules is failing');
-if ( !dbQuota.getCollection('quota') ) console.log('db Quota is failing');
-if ( !dbSnippets.getCollection('snippets') ) console.log('db Snippets is failing');
-if ( !dbDashboards.getCollection('dashboards') ) console.log('db Dashboards is failing');
+if ( dbDashboards === null ) console.log('db Dashboards is failing');
+if ( dbDashboards.getCollection('dashboards') === null ) console.log('Collection Dashboards is failing');
 
 client.on("connect", function () {
 	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)"}), {retain: false});
