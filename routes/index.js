@@ -157,9 +157,14 @@ router.all('*', function (req, res, next) {
 	/*var queryQ = { '$and': [
        {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null},
        {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
-	]};*/
+	]};
+	var i = (qt.find(queryQ)).length;
+	*/
+
 	req.user = users.findOne({'id': { '$eq': o.user_id }});
-	//var i = (qt.find(queryQ)).length;
+	if (req.user !== null && req.user.role  !== null ) {
+		res.header('X-RateLimit-Limit', (quota[req.user.role]).calls);
+	}
 	var i;
 	
 	var query = squel.select()
@@ -175,6 +180,11 @@ router.all('*', function (req, res, next) {
 		//console.log(i);
 		//console.log((quota[req.user.role]).calls);
 		i = data[0]!==undefined?data[0].count:0;
+		
+		if ( (quota[req.user.role]).calls-i > 0 ) {
+			res.header('X-RateLimit-Remaining', (quota[req.user.role]).calls-i);
+			//res.header('X-RateLimit-Reset', '');
+		}
 		
 		if( (req.user && i >= (quota[req.user.role]).calls) && !unlimited ) {
 			//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
