@@ -1367,6 +1367,10 @@ router.get('/mail/forgot-password', function(req, res) {
 	});
 });
 
+router.get('/features/api', function(req, res) {
+	res.redirect('/docs');
+});
+
 router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
 	var feature = req.params.feature;
 	res.render('features/'+feature, {
