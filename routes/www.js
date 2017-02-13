@@ -40,7 +40,7 @@ router.get('/', function(req, res) {
 /* OBJECTS */
 router.get('/objects', Auth,  function(req, res) {
 	objects	= db.getCollection('objects');
-	qt	= dbQuota.getCollection('quota');
+	//qt	= dbQuota.getCollection('quota');
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -479,7 +479,7 @@ router.get('/mqtts?', Auth, function(req, res) {
 /* FLOWS */
 router.get('/flows', Auth, function(req, res) {
 	flows	= db.getCollection('flows');
-	qt	= dbQuota.getCollection('quota');
+	//qt	= dbQuota.getCollection('quota');
 
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
@@ -828,7 +828,7 @@ router.get('/account/profile', Auth, function(req, res) {
 	tokens	= db.getCollection('tokens');
 	rules	= dbRules.getCollection('rules');
 	dashboards= dbDashboards.getCollection('dashboards');
-	qt		= dbQuota.getCollection('quota');
+	//qt		= dbQuota.getCollection('quota');
 	snippets= dbSnippets.getCollection('snippets');
 
 	var queryO = { 'user_id' : req.session.user.id };
@@ -953,7 +953,6 @@ router.get('/account/profile', Auth, function(req, res) {
 					snippets : (snippets.chain().find(queryS).data().length),
 					dashboards : (dashboards.chain().find(queryD).data().length),
 					tokens : (tokens.chain().find(queryT).data()),
-					calls : (qt.chain().find(queryQ).data().length),
 					calls : 0,// TODO
 					user : req.session.user,
 					currentUrl: req.path,
@@ -972,7 +971,6 @@ router.get('/account/profile', Auth, function(req, res) {
 				snippets : (snippets.chain().find(queryS).data().length),
 				dashboards : (dashboards.chain().find(queryD).data().length),
 				tokens : (tokens.chain().find(queryT).data()),
-				calls : (qt.chain().find(queryQ).data().length),
 				calls : 0,// TODO
 				user : req.session.user,
 				currentUrl: req.path,
@@ -1379,7 +1377,6 @@ router.get('/features/:feature([0-9a-z\-]+)', function(req, res) {
 });
 
 router.get('/plans', function(req, res) {
-	qt		= dbQuota.getCollection('quota');
 	res.render('plans', {
 		title : 't6 Plans',
 		currentUrl: req.path,
@@ -1389,7 +1386,6 @@ router.get('/plans', function(req, res) {
 });
 
 router.get('/status', function(req, res) {
-	qt		= dbQuota.getCollection('quota');
 	res.render('status', {
 		title : 't6 API Status',
 		currentUrl: req.path,
@@ -1409,7 +1405,7 @@ router.get('/unauthorized', function(req, res) {
 /* DASHBOARDS */
 router.get('/dashboards', Auth, function(req, res) {
 	dashboards	= dbDashboards.getCollection('dashboards');
-	qt		= dbQuota.getCollection('quota');
+	//qt		= dbQuota.getCollection('quota');
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -1814,7 +1810,7 @@ router.get('/dashboards/?(:dashboard_id)?', Auth, function(req, res) {
 /* SNIPPETS */
 router.get('/snippets', Auth, function(req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
-	qt		= dbQuota.getCollection('quota');
+	//qt		= dbQuota.getCollection('quota');
 	var query = { 'user_id': req.session.user.id };
 	var pagination=12;
 	req.query.page=req.query.page!==undefined?req.query.page:1;
@@ -2020,7 +2016,7 @@ router.get('/snippets/:snippet_id([0-9a-z\-]+)/remove', Auth, function(req, res)
 /* API KEYS */
 router.get('/keys', Auth, function(req, res) {
 	tokens	= db.getCollection('tokens');
-	qt	= dbQuota.getCollection('quota');
+	//qt	= dbQuota.getCollection('quota');
 	var query = { '$and': [
    	           {'user_id' : req.session.user.id},
  	           {'token': { '$ne': '' }},

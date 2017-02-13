@@ -57,10 +57,10 @@ if ( dbRules === null ) console.log('db Rules is failing');
 if ( dbRules.getCollection('rules') === null ) console.log('Collection Rules is failing');
 
 /* Quota settings */
-dbQuota	= new loki(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbQuota.loadDatabase(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'));
-if ( dbQuota === null ) console.log('db Quota is failing');
-if ( dbQuota.getCollection('quota') === null ) console.log('Collection Quota is failing');
+//dbQuota	= new loki(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+//dbQuota.loadDatabase(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'));
+//if ( dbQuota === null ) console.log('db Quota is failing');
+//if ( dbQuota.getCollection('quota') === null ) console.log('Collection Quota is failing');
 
 /* Snippets settings */
 dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});

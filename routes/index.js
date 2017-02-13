@@ -4,7 +4,7 @@ var router = express.Router();
 var ErrorSerializer = require('../serializers/error');
 var tokens;
 var users;
-var qt;
+//var qt;
 
 /**
  * @apiDefine 400
@@ -122,7 +122,7 @@ var qt;
 router.all('*', function (req, res, next) {
 	tokens	= db.getCollection('tokens');
 	users	= db.getCollection('users');
-	qt 		= dbQuota.getCollection('quota');
+	//qt 		= dbQuota.getCollection('quota');
 	var unlimited = false;
 	var bearerHeader = req.headers['authorization'];
 	if ( bearerHeader ) {
@@ -154,12 +154,13 @@ router.all('*', function (req, res, next) {
 		date:		moment().format('x')
 	};
 	
-	var queryQ = { '$and': [
+	/*var queryQ = { '$and': [
        {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null},
        {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
-	]};
+	]};*/
 	req.user = users.findOne({'id': { '$eq': o.user_id }});
-	var i = (qt.find(queryQ)).length; // TEMP !!! TODO: to be removed
+	//var i = (qt.find(queryQ)).length;
+	var i;
 	
 	var query = squel.select()
 		.field('count(url)')
@@ -200,7 +201,7 @@ router.all('*', function (req, res, next) {
 					next();
 			    });
 			}
-			qt.insert(o);
+			//qt.insert(o);
 		};
 	}).catch(err => {
 		console.error('ERROR ===> Error getting logs for quota:\n'+err);
