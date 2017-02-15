@@ -24,7 +24,7 @@ router.get('(:datatype_id([0-9a-z\-]+))?', function (req, res) {
 	var datatype_id = req.params.datatype_id;
 	datatypes	= db.getCollection('datatypes');
 	var json;
-	if ( unit_id === undefined ) {
+	if ( datatype_id === undefined ) {
 		json = datatypes.find();
 	} else {
 		json = datatypes.find({ 'id': { '$eq': datatype_id } });
