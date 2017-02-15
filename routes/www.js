@@ -30,6 +30,7 @@ function validateEmail(email) {
 }
 
 router.get('/', function(req, res) {
+	if ( req.session.user !== undefined ) events.add('t6App', 'get/', req.session.user.id);
 	res.render('index', {
 		title : 't6, IoT platform and API',
 		currentUrl: req.path,
@@ -1011,6 +1012,7 @@ router.post('/account/register', function(req, res) {
 	}
 	if ( new_user.email && new_user.id ) {
 		users.insert(new_user);
+		events.add('t6App', 'user register', new_user.id);
 		var new_token = {
 				user_id:			new_user.id,
 				token:				token,
@@ -1040,6 +1042,7 @@ router.post('/account/register', function(req, res) {
 						err: err,
 					});
 			    } else {
+			    	events.add('t6App', 'user welcome mail', new_user.id);
 			    	res.render('account/login', {
 						title : 'Login to t6',
 						user: req.session.user,
@@ -1112,7 +1115,7 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 		user.token = null;
 		users.update(user);
 		db.save();
-
+		events.add('t6App', 'user reset password', user.id);
 		req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.'};
 		res.redirect('/account/login');
 	} else {
@@ -1157,6 +1160,7 @@ router.post('/account/forgot-password', function(req, res) {
 						err: err
 					});
 			    } else {
+					events.add('t6App', 'user forgot password mail', user.id);
 			    	res.render('account/login', {
 					title : 'Login to t6',
 					user: user,
@@ -1192,6 +1196,7 @@ router.post('/account/login', Auth, function(req, res) {
 			user: req.session.user
 		});
 	} else {
+		events.add('t6App', 'user login', req.session.user.id);
 		//console.log(req.session.user);
 		if ( req.url == "/account/login" ) {
 		//res.redirect('/dashboards');

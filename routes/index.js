@@ -162,15 +162,16 @@ router.all('*', function (req, res, next) {
 	*/
 
 	req.user = users.findOne({'id': { '$eq': o.user_id }});
+	var limit = req.user!==null?(quota[req.user.role]).calls:-1;
 	if (req.user !== null && req.user.role  !== null ) {
-		res.header('X-RateLimit-Limit', (quota[req.user.role]).calls);
+		res.header('X-RateLimit-Limit', limit);
 	}
 	var i;
 	
 	var query = squel.select()
 		.field('count(url)')
 		.from('quota7d.requests')
-		.where('user_id=?', o.user_id)
+		.where('user_id=?', o.user_id!==null?o.user_id:'')
 		.where('time>now() - 7d')
 		.limit(1)
 		.toString();
@@ -181,13 +182,14 @@ router.all('*', function (req, res, next) {
 		//console.log((quota[req.user.role]).calls);
 		i = data[0]!==undefined?data[0].count:0;
 		
-		if ( (quota[req.user.role]).calls-i > 0 ) {
-			res.header('X-RateLimit-Remaining', (quota[req.user.role]).calls-i);
+		if ( limit-i > 0 ) {
+			res.header('X-RateLimit-Remaining', limit-i);
 			//res.header('X-RateLimit-Reset', '');
 		}
 		
-		if( (req.user && i >= (quota[req.user.role]).calls) && !unlimited ) {
+		if( (req.user && i >= limit) && !unlimited ) {
 			//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
+			events.add('t6Api', 'api 429', req.user!==null?req.user.id:'');
 			res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 		} else {
 			if ( db_type.influxdb == true ) {
@@ -203,6 +205,7 @@ router.all('*', function (req, res, next) {
 					//console.error('OK ===>'+err);
 					//console.log(tags);
 					//console.log(fields);
+					events.add('t6Api', 'api call', req.user!==null?req.user.id:'');
 					next();
 				}).catch(err => {
 					console.error('ERROR ===> Error writting logs for quota:\n'+err);
@@ -214,8 +217,8 @@ router.all('*', function (req, res, next) {
 			//qt.insert(o);
 		};
 	}).catch(err => {
-		console.error('ERROR ===> Error getting logs for quota:\n'+err);
-		console.log(query);
+		//console.error('ERROR ===> Error getting logs for quota:\n'+err);
+		//console.log(query);
 		res.status(429).send(new ErrorSerializer({'id': 101, 'code': 429, 'message': 'Too Many Requests; or we can\'t perform your request.'}));
     });
 });

@@ -26,6 +26,9 @@ qrCode				= require('qrcode-npm');
 striptags			= require('striptags');
 fs					= require('fs');
 util				= require('util');
+events				= require('./events');
+events.setMeasurement('events');
+events.setRP('autogen');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
@@ -155,4 +158,5 @@ if (app.get('env') === 'development') {
 	});
 }
 
+events.add('t6App', 'start', '');
 module.exports = app;
