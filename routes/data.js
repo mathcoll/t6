@@ -615,7 +615,11 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 						tags: tags,
 						fields: fields[0],
 						timestamp: time*1000000,
-					}]);
+					}], { retentionPolicy: 'autogen', }).then(err => {
+						
+					}).catch(err => {
+						console.error('ERROR ===> Error writting to influxDb:\n'+err);
+				    });
 				}
 				if ( db_type.sqlite3 == true ) {
 					/* sqlite3 database */
