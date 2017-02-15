@@ -68,12 +68,12 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 router.post('/', bearerAuthToken, function (req, res) {
 	flows	= db.getCollection('flows');
 	/* Check for quota limitation */
-	var queryQ = { 'user_id' : req.token.user_id };
+	var queryQ = { 'user_id' : req.user.id };
 	var i = (flows.find(queryQ)).length;
 	if( i >= (quota[req.session.user.role]).flows ) {
 		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
 	} else {
-		if ( req.token !== undefined ) {
+		if ( req.token !== undefined && req.user.id !== undefined ) {
 			var permission = req.body.permission!==undefined?req.body.permission:'600'; //TODO: default to Owner: Read+Write
 			if ( permission < 600 ) {
 				res.status(400).send(new ErrorSerializer({'id': 38, 'code': 400, 'message': 'Bad Request', details: 'Permission must be greater than 600!'}).serialize());
