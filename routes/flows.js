@@ -89,6 +89,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 					permission:	permission,
 					objects:	req.body.objects!==undefined?req.body.objects:new Array(),
 				};
+				events.add('t6Api', 'flow add', new_flow.id);
 				flows.insert(new_flow);
 				//console.log(flows);
 				

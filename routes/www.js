@@ -1154,7 +1154,7 @@ router.post('/account/forgot-password', function(req, res) {
 					var err = new Error('Internal Error');
 					err.status = 500;
 					res.status(err.status || 500).render(err.status, {
-						title : 'Internal Error '+process.env.NODE_ENV,
+						title : 'Internal Error',
 						user: user,
 						currentUrl: req.path,
 						err: err
@@ -1196,7 +1196,7 @@ router.post('/account/login', Auth, function(req, res) {
 			user: req.session.user
 		});
 	} else {
-		events.add('t6App', 'user login', req.session.user.id);
+		events.add('t6App', 'user POST login', req.session.user.id);
 		//console.log(req.session.user);
 		if ( req.url == "/account/login" ) {
 		//res.redirect('/dashboards');
@@ -2419,7 +2419,7 @@ function Auth(req, res, next) {
 	var email = req.body.email;
 	var password = req.body.password;
 	if ( email && password ) {
-		console.log("I have an Email and a Password");
+		//console.log("I have an Email and a Password");
 		var queryU = {
 				'$and': [
 							{ 'email': email },

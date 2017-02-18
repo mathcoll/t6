@@ -158,5 +158,5 @@ if (app.get('env') === 'development') {
 	});
 }
 
-events.add('t6App', 'start', '');
+events.add('t6App', 'start', 'self');
 module.exports = app;

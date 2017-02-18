@@ -11,9 +11,9 @@ events.setRP = function(rp) {
 	retention = rp;
 };
 
-events.add = function(type, name, id) {
-	var tags = {name: name, type: type};
-	var fields = {id: id};
+events.add = function(where, what, who) {
+	var tags = {name: what, type: where};
+	var fields = {id: who};
 	dbInfluxDB.writePoints([{
 		measurement: measurement,
 		tags: tags,

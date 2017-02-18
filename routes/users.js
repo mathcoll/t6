@@ -216,6 +216,7 @@ router.post('/', function (req, res) {
 			role:				'free', // no admin creation from the API
 			subscription_date:  moment().format('x'),
 		};
+		events.add('t6Api', 'user add', new_user.id);
 		users.insert(new_user);
 		
 		var new_token = {

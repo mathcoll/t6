@@ -106,6 +106,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 				ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 				user_id:		req.user.id,
 			};
+			events.add('t6Api', 'object add', new_object.id);
 			objects.insert(new_object);
 			//console.log(objects);
 			res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() });
