@@ -3,46 +3,23 @@ html(lang='en')
   - title=dashboard.name
   include ../includes/head.jade
   body
-    include ../includes/navbar-on-top.jade
+    .container-fluid
+        h2.fa.fa-2x.fa-random.editable-click#name(href='#', data-type='text', data-pk='1', data-url='./#{dashboard.id}/setName', data-title='Your dashboard name')  #{dashboard.name}
+        p.editable-click#description(href='#', data-type='textarea', data-pk='2', data-url='./#{dashboard.id}/setDescription', data-title='Your dashboard description') !{nl2br(dashboard.description)}
 
-    .container-fluid.starter-template
       .row
         - if (message && message.type && message.value)
           div.alert.alert-dismissible(class='alert-#{message.type}', role='alert') #{message.value}
             button.close(type='button', data-dismiss='alert', aria-label='Close')
               span(aria-hidden='true') &times;
         - end
-        h2.fa.fa-2x.fa-random.editable-click#name(href='#', data-type='text', data-pk='1', data-url='./#{dashboard.id}/setName', data-title='Your dashboard name')  #{dashboard.name}
-        span.editable.pull-right(style="margin-top: 20px;")
-          .dropdown
-            button#dropdownLayout.btn.btn-default.dropdown-toggle(type='button', data-toggle='dropdown', aria-haspopup='true', aria-expanded='true')
-              i.fa.fa-table Layouts switch
-              span.caret
-            ul.dropdown-menu.dropdown-menu-right(aria-labelledby='dropdownLayout')
-              li
-                a(href='./#{dashboard.id}?layout=onecolumn') One Column Layout
-              li
-                a(href='./#{dashboard.id}?layout=twocolumnsright') 2 Columns Layout (left sidebar)
-              li
-                a(href='./#{dashboard.id}?layout=twocolumnsleft') 2 Columns Layout (right sidebar)
-            | 
-
-            a.btn.btn-danger.btn-sm.sweet-5#remove(href='#', data-id='#{dashboard.id}', data-name='#{dashboard.name}', onclick="return false;")
-              span.fa.fa-trash-o  Remove
-            | 
-            
-            a.btn.btn-primary.btn-sm(href='/dashboards/#{dashboard.id}/edit')
-              span.fa.fa-pencil-square-o  Edit
-            | 
-            
-        p.editable-click#description(href='#', data-type='textarea', data-pk='2', data-url='./#{dashboard.id}/setDescription', data-title='Your dashboard description') !{nl2br(dashboard.description)}
 
       .row
         ul.col-md-12.no-padding.connectedSortable#sortable
           | !{snippetHtml}
 
       .row.col-sm-12
-        p &nbsp;
+        include ../includes/material-menu.jade
 
     include ../includes/foot.jade
     
@@ -55,27 +32,4 @@ html(lang='en')
         $.fn.editable.defaults.mode = 'inline';
         $('h2#name').editable();
         $('p#description').editable();
-      });
-      
-      $('.sweet-5').on('click', function (e) {
-        var id = $(this).data("id");
-        var name = $(this).data("name");
-        swal({
-          title: "Are you sure?",
-          text: "Are you sure to remove "+name+" ?",
-          type: "error",
-          showCancelButton: true,
-          confirmButtonClass: "btn-danger",
-          confirmButtonText: "Yes, remove it!",
-          cancelButtonText: "No, cancel",
-          closeOnConfirm: false,
-          closeOnCancel: true
-        },
-        function(isConfirm) {
-          if (isConfirm) {
-            document.location.href='/dashboards/'+id+'/remove';
-          } else {
-            //
-          }
-        });
       });

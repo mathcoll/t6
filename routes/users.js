@@ -54,7 +54,7 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
 							});
 					    } else {
 							users.findAndUpdate(
-								function(i){return i.id==user.id},
+								function(i){return i.id==user.id;},
 								function(item){
 									item.reminderMail = parseInt(moment().format('x'));
 								}

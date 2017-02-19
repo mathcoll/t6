@@ -14,6 +14,10 @@ $(function () {
 	$('[data-toggle="tooltip"]').tooltip();
 	$('.navbar-toggle').click(function () { $('.navbar-nav form.header-search input[name="q"]').attr('style', 'width:100%;'); $('.navbar-nav:first-child').attr('style', 'padding-top:50px;'); $('.navbar-nav').toggleClass('slide-in'); $('.side-body').toggleClass('body-slide-in'); $('#search').removeClass('in').addClass('collapse').slideUp(300); });
 	$('#search-trigger').click(function () { $('.navbar-nav').removeClass('slide-in'); $('.side-body').removeClass('body-slide-in'); });
+	$('.material-button-toggle').click(function () {
+	    $(this).toggleClass('open');
+	    $('.option').toggleClass('scale-on');
+	});
 });
 
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();

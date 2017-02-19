@@ -1,0 +1,67 @@
+.material-button-anim
+  ul#options.list-inline
+    li.option
+      a(href='/dashboards/')
+        button.material-button.option1.btn-sm.btn-warning(type='button')
+          span.fa.fa-list(aria-hidden='true')
+    li.option
+      a#addButton(href='#', data-id='#{dashboard.id}', data-name='#{dashboard.name}', onclick="return false;")
+        button.material-button.option2.btn-sm.addButton.btn-primary(type='button')
+          span.fa.fa-plus(aria-hidden='true')
+    li.option
+      a#deleteButton(href='#', data-id='#{dashboard.id}', data-name='#{dashboard.name}', onclick="return false;")
+        button.material-button.option3.btn-sm.deleteButton.btn-danger(type='button')
+          span.fa.fa-trash-o(aria-hidden='true')
+    li.option
+      a#switchButton(href='#', data-id='#{dashboard.id}', data-name='#{dashboard.name}', onclick="return false;")
+        button.material-button.option4.btn-sm.switchButton.btn-primary(type='button')
+          span.fa.fa-table(aria-hidden='true')
+    li.option
+      a(href='/dashboards/#{dashboard.id}/edit')
+        button.material-button.option5.btn-sm.btn-success(type='button')
+          span.fa.fa-pencil(aria-hidden='true')
+
+  button.material-button.material-button-toggle(type='button')
+    span.fa.fa-plus(aria-hidden='true')
+
+script.
+  $('.deleteButton').on('click', function (e) {
+    var id = $(this).data("id");
+    var name = $(this).data("name");
+    swal({
+      title: "Are you sure?",
+      text: "Are you sure to remove "+name+" ?",
+      type: "error",
+      showCancelButton: true,
+      confirmButtonClass: "btn-danger",
+      confirmButtonText: "Yes, remove it!",
+      cancelButtonText: "No, cancel",
+      closeOnConfirm: false,
+      closeOnCancel: true
+    },
+    function(isConfirm) {
+      if (isConfirm) {
+        document.location.href='/dashboards/'+id+'/remove';
+      } else {
+        //
+      }
+    });
+  });
+  
+  $('.switchButton').on('click', function (e) {
+    var id = $(this).data("id");
+    var name = $(this).data("name");
+    swal({
+      html: true,
+      type: "info",
+      title: "Switch layout",
+      text: "<ul><li><a href='./#{dashboard.id}?layout=onecolumn'>One Column Layout</a></li>"
+      		+"<li><a href='./#{dashboard.id}?layout=twocolumnsright'>2 Columns Layout (left sidebar)</a></li>"
+      		+"<li><a href='./#{dashboard.id}?layout=twocolumnsleft'>2 Columns Layout (right sidebar)</a></li>"
+      		+"</ul>"
+      ,
+      showConfirmButton: false,
+      showCancelButton: true,
+      closeOnCancel: true
+    });
+  });
