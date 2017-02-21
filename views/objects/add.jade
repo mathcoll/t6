@@ -1,3 +1,17 @@
+- if ( !new_object.longitude ) {
+  - if ( user.location && user.location.geo && user.location.geo.ll ) {
+    - new_object.longitude = user.location.geo.ll[1]
+  - } else {
+    - new_object.longitude = 0
+  - }
+- }
+- if ( !new_object.latitude ) {
+  - if ( user.location && user.location.geo && user.location.geo.ll ) {
+    - new_object.latitude = user.location.geo.ll[0]
+  - } else {
+    - new_object.latitude = 0
+  - }
+- }
 doctype html
 html(lang='en')
   include ../includes/head.jade
@@ -98,7 +112,7 @@ html(lang='en')
               .form-group
                 hr/
                 h3 Custom Parameters
-                .alert.alert-warning Customer Parameters allows to store specific content to your Objects. Special characters in Name are removed (Accepted chars: alpha-numeric, lower and upper case, dash "-" and underscore "_").
+                .alert.alert-warning Custom Parameters allows to store specific content to your Objects. Special characters in Name are removed (Accepted chars: alpha-numeric, lower and upper case, dash "-" and underscore "_").
 
                 ul.customParameter.list-unstyled
 
@@ -113,12 +127,6 @@ html(lang='en')
           #popup(title='#{new_object.name}')  
 
     include ../includes/foot.jade
-      - if ( !new_object.longitude ) {
-        - new_object.longitude = 0
-      - }
-      - if ( !new_object.latitude ) {
-        - new_object.latitude = 0
-      - }
       link(rel="stylesheet", href="#{baseUrlCdn}/css/OpenLayers/ol.css")
       script(type='text/javascript', src='#{baseUrlCdn}/js/OpenLayers/OpenLayers-3.20.1.min.js')
       script(type='text/javascript').

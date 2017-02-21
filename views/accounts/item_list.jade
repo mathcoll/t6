@@ -3,7 +3,7 @@
     h4.list-group-item-heading(style="margin:0; padding:0;")
     img.img-responsive(alt='#{users[user].firstName} #{users[user].lastName}', src='//www.gravatar.com/avatar/#{md5(users[user].email)}?s=55&d=mm&r=g')
 
-  div.col-sm-2
+  div.col-sm-3
     h4 #{users[user].firstName}&nbsp;#{users[user].lastName}
     span.label.label-default.ellipsis #{users[user].id}
 
@@ -21,6 +21,24 @@
       span #{users[user].role}
 
   div.col-sm-1
+      span
+      -if (users[user].location && users[user].location.geo && users[user].location.geo.region)
+        |  #{users[user].location.geo.region}
+        br/
+      -end
+      -if (users[user].location && users[user].location.geo && users[user].location.geo.city)
+        |  #{users[user].location.geo.city}
+        br/
+      -end
+      -if (users[user].location && users[user].location.geo && users[user].location.geo.country)
+        |  #{users[user].location.geo.country}
+        br/
+      -end
+      -if (users[user].location && users[user].location.ip)
+        |  #{users[user].location.ip}
+      -end
+
+  div.col-sm-1
     -if( users[user].reminderMail )
       span.fa.fa-envelope-o(data-toggle='tooltip', data-placement='top', title="Sent on #{moment(users[user].reminderMail).format('DD/MM/YYYY, HH:mm')}") &nbsp;
     -else
@@ -29,8 +47,7 @@
 
   div.col-sm-2
     span.fa.fa-clock-o  #{moment(users[user].meta.created).format('DD/MM/YYYY, HH:mm')}
-
-  div.col-sm-2
+    br/
     -if( users[user].meta.updated )
       span.fa.fa-clock-o  #{moment(users[user].meta.updated).format('DD/MM/YYYY, HH:mm')}
     -else
