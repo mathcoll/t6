@@ -1,3 +1,8 @@
+-if ( gravatar.entry[0].profileBackground )
+  -var bck = (gravatar.entry[0].profileBackground.url).substring(5)
+-else
+  -var bck = ''
+-end
 doctype html
 html(lang='en')
   include ../includes/head.jade
@@ -10,7 +15,7 @@ html(lang='en')
           h3.list-group Profile of #{user.firstName} #{user.lastName}
           ul.accordion#accordion
             li.list-unstyled
-              .iamgurdeep-pic(style='background:url("#{(gravatar.entry[0].profileBackground.url).substring(5)}") no-repeat scroll 50% 50%')
+              .iamgurdeep-pic(style='background:url(#{bck}) no-repeat scroll 50% 50%')
                 img.img-responsive.center-block(alt='#{user.firstName} #{user.lastName}', src='//www.gravatar.com/avatar/#{user.mail_hash}?s=240&d=mm&r=g')
                 .edit-pic
                   - if ( gravatar && gravatar.entry[0].ims )
@@ -75,6 +80,15 @@ html(lang='en')
                       -if (gravatar)
                         |  #{gravatar.entry[0].currentLocation}
                       -end
+                      -if (user.location && user.location.geo && user.location.geo.region)
+                        |  #{user.location.geo.region}
+                      -end
+                      -if (user.location && user.location.geo && user.location.geo.city)
+                        |  #{user.location.geo.city}
+                      -end
+                      -if (user.location && user.location.geo && user.location.geo.country)
+                        |  #{user.location.geo.country}
+                      -end
                   p
                     i.fa.fa-briefcase
                     |  #{user.role}
@@ -105,32 +119,26 @@ html(lang='en')
             - if ( gravatar && gravatar.entry[0].currency )
               - for ( i in gravatar.entry[0].currency )
                 - var curr = gravatar.entry[0].currency[i]
-                a.list-group-item.list-unstyled(href='#', title="#{curr.type}", target='_blank')
+                a.list-group-item.list-unstyled(title="#{curr.type}")
                   span.fa.fa-bitcoin  #{curr.value}
-                  span.fa.fa-external-link.pull-right
               - end
             - end
 
-        - if( lastPoints )
-          .col-lg-8.col-sm-6.col-xs-12
-            h3.list-group Last Data Points
-            include ../data/item_header.jade
-            ul.panel-group.no-padding
-              - for( point in lastPoints )
-                include ../data/data_item_list.jade
-              - end
-        - end
+          h3.list-group Activity
+          ul.panel-group.no-padding.list-unstyled
+            li
+              a.list-group-item()
+                span.fa.fa-vcard-o  Current session: #{locals.ip} (#{moment(locals.session.__lastAccess).format('DD/MM/YYYY, HH:mm')})
+                - console.log(user);
 
-      .row.side-body
-        .col-lg-12
           h3#objects.list-group User Statistics
           #accordion.panel-group.no-padding(role='tablist', aria-multiselectable='true')
             #headingObjects.col-sm-12.list-group-item(role='tab')
-              h4.panel-title
-                a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+              a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+                h4.panel-title
                   span.fa.fa-cubes
                   |  #{objects} Objects
-                a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseObjects', aria-expanded='false', aria-controls='collapseObjects')
+                  span.fa.fa-plus.pull-right
               #collapseObjects.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingObjects')
                 .panel-body
                   |  &ndash;
@@ -149,11 +157,11 @@ html(lang='en')
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{objects}", aria-valuemin="0", aria-valuemax="#{quota.objects}", style="width: #{percent}%")
               
             #headingFlows.col-sm-12.list-group-item(role='tab')
-              h4.panel-title
-                a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+              a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+                h4.panel-title
                   span.fa.fa-random
                   |  #{flows} Flows
-                a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseFlows', aria-expanded='false', aria-controls='collapseFlows')
+                  span.fa.fa-plus.pull-right
               #collapseFlows.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingFlows')
                 .panel-body
                   |  &ndash;
@@ -172,11 +180,11 @@ html(lang='en')
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{flows}", aria-valuemin="0", aria-valuemax="#{quota.flows}", style="width: #{percent}%")
               
             #headingSnippets.col-sm-12.list-group-item(role='tab')
-              h4.panel-title
-                a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
+              a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
+                h4.panel-title
                   span.fa.fa-puzzle-piece
                   |  #{snippets} Snippets
-                a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseSnippets', aria-expanded='false', aria-controls='collapseSnippets')
+                  span.fa.fa-plus.pull-right
               #collapseSnippets.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingSnippets')
                 .panel-body
                   |  &ndash;
@@ -195,11 +203,11 @@ html(lang='en')
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%")
               
             #headingDashboards.col-sm-12.list-group-item(role='tab')
-              h4.panel-title
-                a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
+              a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
+                h4.panel-title
                   span.fa.fa-area-chart
                   |  #{dashboards} Dashboards
-                a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseDashboards', aria-expanded='false', aria-controls='collapseDashboards')
+                  span.fa.fa-plus.pull-right
               #collapseDashboards.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingDashboards')
                 .panel-body
                   |  &ndash;
@@ -218,11 +226,11 @@ html(lang='en')
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%")
                                       
             #headingRules.col-sm-12.list-group-item(role='tab')
-              h4.panel-title
-                a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+              a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                h4.panel-title
                   span.fa.fa-filter
                   |  #{rules} Rules
-                a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseRules', aria-expanded='false', aria-controls='collapseRules')
+                  span.fa.fa-plus.pull-right
               #collapseRules.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingRules')
                 .panel-body
                   |  &ndash;
@@ -241,11 +249,11 @@ html(lang='en')
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%")
               
             #headingKeys.col-sm-12.list-group-item(role='tab')
-              h4.panel-title
-                a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+              a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                h4.panel-title
                   span.fa.fa-flash
                   |  #{tokens.length}  API Keys
-                a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseKeys', aria-expanded='false', aria-controls='collapseKeys')
+                  span.fa.fa-plus.pull-right
               #collapseKeys.panel-collapse.collapse(role='tabpanel', aria-labelledby='headingKeys')
                 .panel-body
                   |  &ndash;
@@ -264,11 +272,11 @@ html(lang='en')
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{tokens}", aria-valuemin="0", aria-valuemax="#{quota.tokens}", style="width: #{percent}%")
                 
             #headingCalls.col-sm-12.list-group-item(role='tab')
-              h4.panel-title
-                a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+              a(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+                h4.panel-title
                   span.fa.fa-flash
                   |  #{calls} API calls
-                a.fa.fa-plus.pull-right(role='button', data-toggle='collapse', data-parent='#accordion', href='#collapseCalls', aria-expanded='true', aria-controls='collapseCalls')
+                  span.fa.fa-plus.pull-right
               #collapseCalls.panel-collapse.collapse.in(role='tabpanel', aria-labelledby='headingCalls')
                 .panel-body
                   |  &ndash;
@@ -284,4 +292,14 @@ html(lang='en')
                     - end
                     div.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{calls}", aria-valuemin="0", aria-valuemax="#{quota.calls}", style="width: #{percent}%")
               
+
+        .col-lg-8.col-sm-6.col-xs-12
+            h3.list-group Last Data Points
+            ul.panel-group.no-padding
+              include ../data/item_header.jade
+              - if( lastPoints )
+                - for( point in lastPoints )
+                  include ../data/data_item_list.jade
+                - end
+              - end
     include ../includes/foot.jade
