@@ -29,6 +29,12 @@ function validateEmail(email) {
     return re.test(email);
 }
 
+router.all('*', function (req, res, next) {
+	res.locals.ip = req.ip;
+	res.locals.session = req.session;
+	next();
+});
+
 router.get('/', function(req, res) {
 	if ( req.session.user !== undefined ) events.add('t6App', 'get/', req.session.user.id);
 	res.render('index', {
@@ -872,9 +878,10 @@ router.get('/account/profile', Auth, function(req, res) {
 				if (i != 0) { flowsList += " OR "; }
 				flowsList += "flow_id='"+flow.id+"'";
 			});
+			if (flowsList == "") { flowsList = "flow_id='null non set'" };
 			query.where(flowsList);
 			query = query.toString();
-			//console.log(query);
+			console.log(query);
 			dbInfluxDB.query(query).then(data => {
 				if ( data.length > 0 ) {
 					data.map(function(d) {
@@ -1197,6 +1204,17 @@ router.post('/account/login', Auth, function(req, res) {
 		});
 	} else {
 		events.add('t6App', 'user POST login', req.session.user.id);
+		// Set geoIP to User
+		var geo = geoip.lookup(req.ip);
+		
+		users	= db.getCollection('users');
+		var u = users.chain().find({id: req.session.user.id,}).limit(1).data();
+		if ( u[0].location === undefined || u[0].location === null ) {
+			u[0].location = {geo: geo, ip: req.ip,};
+		}
+		users.update(u);
+		db.save();
+		
 		//console.log(req.session.user);
 		if ( req.url == "/account/login" ) {
 		//res.redirect('/dashboards');
