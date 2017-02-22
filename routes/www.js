@@ -32,6 +32,10 @@ function validateEmail(email) {
 router.all('*', function (req, res, next) {
 	res.locals.ip = req.ip;
 	res.locals.session = req.session;
+	res.locals.session['user-agent'] = req.headers['user-agent'];
+	var mydevice = device(res.locals.session['user-agent']);
+	//console.log("type: "+mydevice.type);
+	//console.log("model: "+mydevice.model);
 	next();
 });
 
@@ -1195,14 +1199,7 @@ router.get('/account/logout', function(req, res) {
 });
 
 router.post('/account/login', Auth, function(req, res) {
-	if ( !req.session.user ) {
-		//console.log("Error! invalid credentials, user not found");
-		res.render('account/login', {
-			title : 'Log-in Failed',
-			currentUrl: req.path,
-			user: req.session.user
-		});
-	} else {
+	if ( req.session.user ) {
 		events.add('t6App', 'user POST login', req.session.user.id);
 		// Set geoIP to User
 		var geo = geoip.lookup(req.ip);
@@ -1369,7 +1366,7 @@ router.get('/mail/welcome', function(req, res) {
 		baseUrlCdn: baseUrlCdn,
 		user: fake_user,
 		currentUrl: req.path,
-		token: fake_token.token
+		token: fake_token.token,
 	});
 });
 
@@ -1386,7 +1383,20 @@ router.get('/mail/forgot-password', function(req, res) {
 		baseUrlCdn: baseUrlCdn,
 		user: fake_user,
 		currentUrl: req.path,
-		token: fake_token.token
+		token: fake_token.token,
+	});
+});
+
+router.get('/mail/loginfailure', function(req, res) {
+	var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
+	geo.ip = req.ip;
+	res.render('emails/loginfailure', {
+		title : '',
+		baseUrl: baseUrl,
+		baseUrlCdn: baseUrlCdn,
+		currentUrl: req.path,
+		device: device(res.locals.session['user-agent']),
+		geoip: geo,
 	});
 });
 
@@ -2473,7 +2483,38 @@ function Auth(req, res, next) {
 			next();
 		} else {
 			// Invalid Credentials
-			//console.log("I have not found a valid User");
+			var query = squel.select()
+				.field('count(*)')
+				.from(events.getMeasurement())
+				.where('what=?', 'user login failure')
+				.where('who=?', req.body.email)
+				.where('time>now() - 1h')
+				.toString()
+				;
+			dbInfluxDB.query(query).then(data => {
+				if( data[0].count_who > 2 ) {
+					var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
+					geo.ip = req.ip;
+					res.render('emails/loginfailure', {device: device(res.locals.session['user-agent']), geoip: geo}, function(err, html) {
+						var to = req.body.email;
+						var mailOptions = {
+							from: from,
+							bcc: bcc!==undefined?bcc:null,
+							to: to,
+							subject: 't6 warning notification',
+							text: 'Html email client is required',
+							html: html
+						};
+						transporter.sendMail(mailOptions, function(err, info){
+						    if( err ){ }
+						});
+					});
+				}
+			}).catch(err => {
+				console.log(err);
+				//
+		    });
+			events.add('t6App', 'user login failure', req.body.email);
 			res.redirect('/unauthorized');
 		}
 	} else {

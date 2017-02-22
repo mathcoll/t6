@@ -7,13 +7,17 @@ events.setMeasurement = function(m) {
 	measurement = m;
 };
 
+events.getMeasurement = function() {
+	return measurement;
+};
+
 events.setRP = function(rp) {
 	retention = rp;
 };
 
 events.add = function(where, what, who) {
-	var tags = {name: what, type: where};
-	var fields = {id: who};
+	var tags = {what: what, where: where};
+	var fields = {who: who};
 	dbInfluxDB.writePoints([{
 		measurement: measurement,
 		tags: tags,
