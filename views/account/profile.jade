@@ -128,8 +128,10 @@ html(lang='en')
           ul.panel-group.no-padding.list-unstyled
             li
               a.list-group-item()
-                span.fa.fa-vcard-o  Current session: #{locals.ip} (#{moment(locals.session.__lastAccess).format('DD/MM/YYYY, HH:mm')})
-                - console.log(user);
+                span.fa.fa-vcard-o  #{moment(locals.session.__lastAccess).format('DD/MM/YYYY, HH:mm')} (#{locals.ip})
+                br/
+                span #{locals.session['user-agent']}
+                //- console.log(user);
 
           h3#objects.list-group User Statistics
           #accordion.panel-group.no-padding(role='tablist', aria-multiselectable='true')

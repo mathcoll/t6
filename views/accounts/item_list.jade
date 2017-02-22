@@ -23,19 +23,19 @@
   div.col-sm-1
       span
       -if (users[user].location && users[user].location.geo && users[user].location.geo.region)
-        |  #{users[user].location.geo.region}
+        span(data-toggle='tooltip', data-placement='top', title="Region") #{users[user].location.geo.region}
         br/
       -end
       -if (users[user].location && users[user].location.geo && users[user].location.geo.city)
-        |  #{users[user].location.geo.city}
+        span(data-toggle='tooltip', data-placement='top', title="City") #{users[user].location.geo.city}
         br/
       -end
       -if (users[user].location && users[user].location.geo && users[user].location.geo.country)
-        |  #{users[user].location.geo.country}
+        span(data-toggle='tooltip', data-placement='top', title="Country") #{users[user].location.geo.country}
         br/
       -end
       -if (users[user].location && users[user].location.ip)
-        |  #{users[user].location.ip}
+        span(data-toggle='tooltip', data-placement='top', title="IP") #{users[user].location.ip}
       -end
 
   div.col-sm-1
