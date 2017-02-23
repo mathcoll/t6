@@ -28,6 +28,7 @@ striptags			= require('striptags');
 fs					= require('fs');
 util				= require('util');
 geoip				= require('geoip-lite');
+device				= require('device');
 events				= require('./events');
 events.setMeasurement('events');
 events.setRP('autogen');
