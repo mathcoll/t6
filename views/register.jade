@@ -15,7 +15,7 @@ html(lang='en')
               
               form.form-signin(method="post", action="/account/register")
                 if (message && message.type && message.value)
-                  div.alert(class='alert-#{message.type}', role='alert') #{message.value}
+                  div.alert(class='alert-#{message.type}', role='alert') !{message.value}
 
                 label.sr-only(for='email') Email Address
                 input#mail.form-control(name='email', type='email', placeholder='Email', required='', autofocus='')

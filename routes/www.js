@@ -997,19 +997,7 @@ router.get('/account/register', function(req, res) {
 
 router.post('/account/register', function(req, res) {
 	users	= db.getCollection('users');
-	var my_id = uuid.v4();
-	var token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
-
-	var new_user = {
-		id:					my_id,
-		firstName:			req.body.firstName!==undefined?req.body.firstName:'',
-		lastName:			req.body.lastName!==undefined?req.body.lastName:'',
-		email:				req.body.email!==undefined?req.body.email:'',
-		role:				'free', // no admin creation from the Front-End dashboard
-		token:				token,
-		subscription_date:  moment().format('x'),
-	};
-	if ( !validateEmail(new_user.email) ) {
+	if ( !validateEmail(req.body.email) ) {
 		res.render('register', {
 			title : 'Register',
 			user: req.session.user,
@@ -1017,56 +1005,77 @@ router.post('/account/register', function(req, res) {
 			message: {type: 'danger', value: 'Please verify your email address!'}
 		});
 	}
-	if ( new_user.email && new_user.id ) {
-		users.insert(new_user);
-		events.add('t6App', 'user register', new_user.id);
-		var new_token = {
-				user_id:			new_user.id,
-				token:				token,
-		        expiration:			'',
-		};
-		//var tokens	= db.getCollection('tokens');
-		//tokens.insert(new_token);
-		
-		res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
-			var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
-			var mailOptions = {
-				from: from,
-				bcc: bcc!==undefined?bcc:null,
-				to: to,
-				subject: 'Welcome to t6',
-				text: 'Html email client is required',
-				html: html
-			};
-			transporter.sendMail(mailOptions, function(err, info){
-			    if( err ){
-					var err = new Error('Internal Error');
-					err.status = 500;
-					res.status(err.status || 500).render(err.status, {
-						title : 'Internal Error '+process.env.NODE_ENV,
-						user: req.session.user,
-						currentUrl: req.path,
-						err: err,
-					});
-			    } else {
-			    	events.add('t6App', 'user welcome mail', new_user.id);
-			    	res.render('account/login', {
-						title : 'Login to t6',
-						user: req.session.user,
-						currentUrl: req.path,
-						message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
-					});
-			    };
-			});
-		});
-		
-	} else {
+	
+	if ( users.chain().find({email: req.body.email,}).data().length > 0 ) {
 		res.render('register', {
 			title : 'Register',
 			user: req.session.user,
 			currentUrl: req.path,
-			message: {type: 'danger', value: 'Please, give me your name!'}
+			message: {type: 'danger', value: 'Your account has already been created. Please follow the <a href="/account/forgot-password">instructions to reset your password</a> if you forgot it.',}
 		});
+	} else {
+		var my_id = uuid.v4();
+		var token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
+		var new_user = {
+			id:					my_id,
+			firstName:			req.body.firstName!==undefined?req.body.firstName:'',
+			lastName:			req.body.lastName!==undefined?req.body.lastName:'',
+			email:				req.body.email!==undefined?req.body.email:'',
+			role:				'free', // no admin creation from the Front-End dashboard
+			token:				token,
+			subscription_date:  moment().format('x'),
+		};
+		if ( new_user.email && new_user.id ) {
+			users.insert(new_user);
+			events.add('t6App', 'user register', new_user.id);
+			var new_token = {
+					user_id:			new_user.id,
+					token:				token,
+			        expiration:			'',
+			};
+			//var tokens	= db.getCollection('tokens');
+			//tokens.insert(new_token);
+			
+			res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
+				var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
+				var mailOptions = {
+					from: from,
+					bcc: bcc!==undefined?bcc:null,
+					to: to,
+					subject: 'Welcome to t6',
+					text: 'Html email client is required',
+					html: html
+				};
+				transporter.sendMail(mailOptions, function(err, info){
+				    if( err ){
+						var err = new Error('Internal Error');
+						err.status = 500;
+						res.status(err.status || 500).render(err.status, {
+							title : 'Internal Error '+process.env.NODE_ENV,
+							user: req.session.user,
+							currentUrl: req.path,
+							err: err,
+						});
+				    } else {
+				    	events.add('t6App', 'user welcome mail', new_user.id);
+				    	res.render('account/login', {
+							title : 'Login to t6',
+							user: req.session.user,
+							currentUrl: req.path,
+							message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
+						});
+				    };
+				});
+			});
+			
+		} else {
+			res.render('register', {
+				title : 'Register',
+				user: req.session.user,
+				currentUrl: req.path,
+				message: {type: 'danger', value: 'Please, give me your name!'}
+			});
+		};
 	};
 });
 
