@@ -2501,7 +2501,7 @@ function Auth(req, res, next) {
 				.toString()
 				;
 			dbInfluxDB.query(query).then(data => {
-				if( data[0].count_who > 2 ) {
+				if( data[0].count_who > 2 && data[0].count_who < 4 ) {
 					var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 					geo.ip = req.ip;
 					res.render('emails/loginfailure', {device: device(res.locals.session['user-agent']), geoip: geo}, function(err, html) {
