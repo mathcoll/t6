@@ -1,14 +1,17 @@
 a.clearfix.list-group-item(name='#{moment(lastPoints[point].time)}', href='/flows/#{lastPoints[point].flow_id}')
-  span.col-sm-3.col-xs-6
+  span.col-sm-12.col-xs-12
     span.fa.fa-bullseye  #{moment(lastPoints[point].time).format('DD/MM/YYYY, HH:mm')}
       small
         sup '#{moment(lastPoints[point].time).format('ss')}
+  
+  span.col-sm-4.col-xs-4
+    span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title="User Id") #{lastPoints[point].user_id}
 
-  span.col-sm-4.col-xs-6
-    span.label.label-danger Flow: #{lastPoints[point].flow_id}
+  span.col-sm-4.col-xs-4
+    span.label.label-danger.ellipsis(data-toggle='tooltip', data-placement='top', title="Flow") #{lastPoints[point].flow_id}
 
-  span.col-sm-5.col-xs-6
-    span.label.label-default #{lastPoints[point].value}
-
-  span.col-sm-1.col-xs-6
-    span.label.label-default #{lastPoints[point].text}
+  span.col-sm-4.col-xs-4
+    -if(lastPoints[point].text)
+      span.label.label-default #{lastPoints[point].text}
+    -else
+      span.label.label-default #{lastPoints[point].value}

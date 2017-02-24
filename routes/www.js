@@ -871,21 +871,24 @@ router.get('/account/profile', Auth, function(req, res) {
 			var query = squel.select()
 			.field('*')
 			.from('data')
+			.where('user_id=?', req.session.user.id)
 			.limit(15)
 			.offset(1)
 			.order('time', false)
 			;
 			
-			var flowsList="";
 			var lastPoints = Array();
+			/*
+			var flowsList="";
 			f.forEach(function(flow, i) {
 				if (i != 0) { flowsList += " OR "; }
 				flowsList += "flow_id='"+flow.id+"'";
 			});
 			if (flowsList == "") { flowsList = "flow_id='null non set'" };
 			query.where(flowsList);
-			query = query.toString();
 			console.log(query);
+			*/
+			query = query.toString();
 			dbInfluxDB.query(query).then(data => {
 				if ( data.length > 0 ) {
 					data.map(function(d) {
@@ -899,7 +902,7 @@ router.get('/account/profile', Auth, function(req, res) {
 						} else {
 							v = d.value;
 						}
-						var point = {flow_id: d.flow_id, time: d.time, value: v, text: d.text,};
+						var point = {flow_id: d.flow_id, time: d.time, value: v, text: d.text, user_id: d.user_id,};
 						lastPoints.push(point);
 					});
 
@@ -2502,6 +2505,7 @@ function Auth(req, res, next) {
 				;
 			dbInfluxDB.query(query).then(data => {
 				if( data[0].count_who > 2 && data[0].count_who < 4 ) {
+					// when >4, then we should block the account and maybe ban the IP address
 					var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 					geo.ip = req.ip;
 					res.render('emails/loginfailure', {device: device(res.locals.session['user-agent']), geoip: geo}, function(err, html) {

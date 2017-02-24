@@ -609,6 +609,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 					/* InfluxDB database */
 					var tags = {};
 					if (flow_id!== "") tags.flow_id = flow_id;
+					tags.user_id = req.user.id;
 					if (text!== "") fields[0].text = text;
 					dbInfluxDB.writePoints([{
 						measurement: 'data',
