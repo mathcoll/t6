@@ -48,6 +48,7 @@
     "sprintf-js": "~1.0.3",
     "sqlite3": "@3.0.5",
     "squel": "~4.2.3",
+    "strength": "^0.1.4",
     "striptags": "^2.1.1"
   },
   "readmeFilename": "README.md"

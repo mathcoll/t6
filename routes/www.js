@@ -1121,19 +1121,29 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 	var user = (users.chain().find(query).data())[0];
 	
 	if ( password == password2 ) {
-		user.password = md5(password);
-		user.passwordLastUpdated = parseInt(moment().format('x'));
-		user.token = null;
-		users.update(user);
-		db.save();
-		events.add('t6App', 'user reset password', user.id);
-		req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.'};
-		res.redirect('/account/login');
+		if ( strength(password) < 4 ) {
+			res.render('account/reset-password', {
+				title : 'Reset your password',
+				currentUrl: req.path,
+				message: {type: 'danger', value: 'Password is not strong enough!',},
+				token: token,
+				user: user
+			});
+		} else {
+			user.password = md5(password);
+			user.passwordLastUpdated = parseInt(moment().format('x'));
+			user.token = null;
+			users.update(user);
+			db.save();
+			events.add('t6App', 'user reset password', user.id);
+			req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.'};
+			res.redirect('/account/login');
+		}
 	} else {
 		res.render('account/reset-password', {
 			title : 'Reset your password',
 			currentUrl: req.path,
-			message: {type: 'danger', value: 'Password does not match!'},
+			message: {type: 'danger', value: 'Password does not match!',},
 			token: token,
 			user: user
 		});
