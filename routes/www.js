@@ -1152,7 +1152,7 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 
 router.post('/account/forgot-password', function(req, res) {
 	users	= db.getCollection('users');
-	var query = { 'email': req.body.email };
+	var query = { 'email': req.body.email, };
 	var user = (users.chain().find(query).data())[0];
 	if ( user ) {
 		var token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
@@ -1363,51 +1363,80 @@ router.get('/contact', function(req, res) {
 	});
 });
 
-router.get('/mail/welcome', function(req, res) {
-	var fake_user = req.session.user;
-	var fake_token = {
-		user_id:			fake_user.id,
-		token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-        expiration:			'',
-	};
-	res.render('emails/welcome', {
-		title : '',
-		baseUrl: baseUrl,
-		baseUrlCdn: baseUrlCdn,
-		user: fake_user,
-		currentUrl: req.path,
-		token: fake_token.token,
-	});
+router.get('/mail/welcome', Auth, function(req, res) {
+	if ( req.session.user.role == 'admin' ) { // TODO: Admin access
+		var fake_user = req.session.user;
+		var fake_token = {
+			user_id:			fake_user.id,
+			token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+	        expiration:			'',
+		};
+		res.render('emails/welcome', {
+			title : '',
+			baseUrl: baseUrl,
+			baseUrlCdn: baseUrlCdn,
+			user: fake_user,
+			currentUrl: req.path,
+			token: fake_token.token,
+		});
+	} else {
+		//console.log(req.session.user.role);
+		res.redirect('/unauthorized');
+	}
 });
 
-router.get('/mail/forgot-password', function(req, res) {
-	var fake_user = req.session.user;
-	var fake_token = {
-		user_id:			fake_user.id,
-		token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-        expiration:			'',
-	};
-	res.render('emails/forgot-password', {
-		title : '',
-		baseUrl: baseUrl,
-		baseUrlCdn: baseUrlCdn,
-		user: fake_user,
-		currentUrl: req.path,
-		token: fake_token.token,
-	});
+router.get('/mail/forgot-password', Auth, function(req, res) {
+	if ( req.session.user.role == 'admin' ) { // TODO: Admin access
+		var fake_user = req.session.user;
+		var fake_token = {
+			user_id:			fake_user.id,
+			token:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+	        expiration:			'',
+		};
+		res.render('emails/forgot-password', {
+			title : '',
+			baseUrl: baseUrl,
+			baseUrlCdn: baseUrlCdn,
+			user: fake_user,
+			currentUrl: req.path,
+			token: fake_token.token,
+		});
+	} else {
+		//console.log(req.session.user.role);
+		res.redirect('/unauthorized');
+	}
 });
 
-router.get('/mail/loginfailure', function(req, res) {
-	var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
-	geo.ip = req.ip;
-	res.render('emails/loginfailure', {
-		title : '',
-		baseUrl: baseUrl,
-		baseUrlCdn: baseUrlCdn,
-		currentUrl: req.path,
-		device: device(res.locals.session['user-agent']),
-		geoip: geo,
-	});
+router.get('/mail/loginfailure', Auth, function(req, res) {
+	if ( req.session.user.role == 'admin' ) { // TODO: Admin access
+		var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
+		geo.ip = req.ip;
+		res.render('emails/loginfailure', {
+			title : '',
+			baseUrl: baseUrl,
+			baseUrlCdn: baseUrlCdn,
+			currentUrl: req.path,
+			device: device(res.locals.session['user-agent']),
+			geoip: geo,
+		});
+	} else {
+		//console.log(req.session.user.role);
+		res.redirect('/unauthorized');
+	}
+});
+
+router.get('/mail/change-password', Auth, function(req, res) {
+	if ( req.session.user.role == 'admin' ) { // TODO: Admin access
+		res.render('emails/change-password', {
+			title : '',
+			baseUrl: baseUrl,
+			baseUrlCdn: baseUrlCdn,
+			currentUrl: req.path,
+		});
+	} else {
+		//console.log(req.session.user.role);
+		res.redirect('/unauthorized');
+	}
 });
 
 router.get('/features/api', function(req, res) {
@@ -2416,7 +2445,7 @@ router.get('/keys/:token([0-9a-z\-.]+)/extend', Auth, function(req, res) {
 
 /* USER ACCOUNTS */
 router.get('/accounts', Auth, function(req, res) {
-	if ( req.session.user.role == 'admin' ) { // TODO
+	if ( req.session.user.role == 'admin' ) { // TODO: Admin access
 		users	= db.getCollection('users');
 		var query = {};
 		var pagination=12;
@@ -2469,6 +2498,14 @@ function Auth(req, res, next) {
 		//console.log("User: ");
 		//console.log(queryU);
 		//console.log(user);
+		
+		/*
+		if(  ) {
+			// High Rate of Login Attempts
+			
+		}
+		*/
+		
 		if ( user ) {
 			var SESS_ID = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
 			//console.log("I have created a SESS_ID: "+SESS_ID);
@@ -2482,6 +2519,8 @@ function Auth(req, res, next) {
 				permissions.push( { flow_id: p.id, permission: p.permission } );
 			}); // End permissions on all User Flows
 			//console.log(permissions);
+			
+			// if() {// Deviation from Normal GEO Location}
 			
 			req.session.bearer.permissions = permissions;
 			req.session.user.permissions = req.session.bearer.permissions;
@@ -2502,7 +2541,8 @@ function Auth(req, res, next) {
 				.toString()
 				;
 			dbInfluxDB.query(query).then(data => {
-				if( data[0].count_who > 2 ) {
+				if( data[0].count_who >= 3 ) {
+					// Multiple Failed Passwords 
 					var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 					geo.ip = req.ip;
 					res.render('emails/loginfailure', {device: device(res.locals.session['user-agent']), geoip: geo}, function(err, html) {
@@ -2519,6 +2559,14 @@ function Auth(req, res, next) {
 						    if( err ){ }
 						});
 					});
+				} else if( data[0].count_who >= 5 ) {
+					// Multiple Failed Passwords 
+					// Ban the IP
+					
+				} else if( data[0].count_who >= 7 ) {
+					// Multiple Failed Passwords 
+					// Lock the User, would require 2FA to unlock
+					
 				}
 			}).catch(err => {
 				console.log(err);
