@@ -886,9 +886,9 @@ router.get('/account/profile', Auth, function(req, res) {
 			});
 			if (flowsList == "") { flowsList = "flow_id='null non set'" };
 			query.where(flowsList);
-			console.log(query);
 			*/
 			query = query.toString();
+			//console.log(query);
 			dbInfluxDB.query(query).then(data => {
 				if ( data.length > 0 ) {
 					data.map(function(d) {
@@ -2111,7 +2111,7 @@ router.get('/keys', Auth, function(req, res) {
 	}
 });
 
-router.get('/keys/add', function(req, res) {
+router.get('/keys/add', Auth, function(req, res) {
 	tokens	= db.getCollection('tokens');
 	flows		= db.getCollection('flows');
 	objects		= db.getCollection('objects');
@@ -2133,7 +2133,7 @@ router.get('/keys/add', function(req, res) {
 	});
 });
 
-router.post('/keys/add', function(req, res) {
+router.post('/keys/add', Auth, function(req, res) {
 	tokens	= db.getCollection('tokens');
 	flows		= db.getCollection('flows');
 	var query = { 'user_id': req.session.user.id };
@@ -2201,7 +2201,7 @@ router.post('/keys/add', function(req, res) {
 	}
 });
 
-router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
+router.get('/keys/:token([0-9a-z\-.]+)/edit', Auth, function(req, res) {
 	var token = req.params.token;
 	tokens	= db.getCollection('tokens');
 	flows		= db.getCollection('flows');
@@ -2252,7 +2252,7 @@ router.get('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
 	}
 });
 
-router.post('/keys/:token([0-9a-z\-.]+)/edit', function(req, res) {
+router.post('/keys/:token([0-9a-z\-.]+)/edit', Auth, function(req, res) {
 	var token = req.params.token;
 	if ( token !== undefined ) {
 		tokens	= db.getCollection('tokens');

@@ -40,7 +40,12 @@
 
   div.col-sm-1
     -if( users[user].reminderMail )
-      span.fa.fa-envelope-o(data-toggle='tooltip', data-placement='top', title="Sent on #{moment(users[user].reminderMail).format('DD/MM/YYYY, HH:mm')}") &nbsp;
+      span.fa.fa-envelope-o(data-toggle='tooltip', data-placement='top', title="Welcome Reminder Sent on #{moment(users[user].reminderMail).format('DD/MM/YYYY, HH:mm')}") &nbsp;
+    -else
+      span 
+    -end
+    -if( users[user].changePasswordMail )
+      span.fa.fa-envelope-o(data-toggle='tooltip', data-placement='top', title="Change Password Sent on #{moment(users[user].changePasswordMail).format('DD/MM/YYYY, HH:mm')}") &nbsp;
     -else
       span 
     -end
