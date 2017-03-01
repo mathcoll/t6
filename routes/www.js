@@ -1117,17 +1117,18 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 	var token = req.params.token;
 	var password = req.body.password;
 	var password2 = req.body.password2;
-	var query = { 'token': token };
+	var query = { 'token': token, };
 	var user = (users.chain().find(query).data())[0];
 	
 	if ( password == password2 ) {
-		if ( strength(password) < 4 ) {
+		//console.log(password + ' is :' + strength(password) + ' score.');
+		if ( strength(password) < 3 ) {
 			res.render('account/reset-password', {
 				title : 'Reset your password',
 				currentUrl: req.path,
 				message: {type: 'danger', value: 'Password is not strong enough!',},
 				token: token,
-				user: user
+				user: user,
 			});
 		} else {
 			user.password = md5(password);
@@ -1136,7 +1137,7 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 			users.update(user);
 			db.save();
 			events.add('t6App', 'user reset password', user.id);
-			req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.'};
+			req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.',};
 			res.redirect('/account/login');
 		}
 	} else {
@@ -1145,7 +1146,7 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 			currentUrl: req.path,
 			message: {type: 'danger', value: 'Password does not match!',},
 			token: token,
-			user: user
+			user: user,
 		});
 	}
 });
@@ -1427,11 +1428,13 @@ router.get('/mail/loginfailure', Auth, function(req, res) {
 
 router.get('/mail/change-password', Auth, function(req, res) {
 	if ( req.session.user.role == 'admin' ) { // TODO: Admin access
+		var fake_user = req.session.user;
 		res.render('emails/change-password', {
 			title : '',
 			baseUrl: baseUrl,
 			baseUrlCdn: baseUrlCdn,
 			currentUrl: req.path,
+			user: fake_user,
 		});
 	} else {
 		//console.log(req.session.user.role);
