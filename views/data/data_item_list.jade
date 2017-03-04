@@ -12,6 +12,6 @@ a.clearfix.list-group-item(name='#{moment(lastPoints[point].time)}', href='/flow
 
   span.col-sm-4.col-xs-4
     -if(lastPoints[point].text)
-      span.label.label-default #{lastPoints[point].text}
+      span.label.label-default.ellipsis(data-toggle='tooltip', data-placement='top', title=lastPoints[point].text) #{lastPoints[point].text}
     -else
       span.label.label-default #{lastPoints[point].value}
