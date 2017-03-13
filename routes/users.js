@@ -74,6 +74,72 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
 });
 
 /**
+ * @api {post} /users/changePassword Send Password Expiration Email to Users
+ * @apiName Send Password Expiration Email to Users
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.get('/changePassword', bearerAdmin, function (req, res) {
+	if ( req.token !== undefined && process.env.NODE_ENV === 'production' ) {
+		users	= db.getCollection('users');
+		//var query = {'token': { '$eq': null }};
+		var query = { '$and': [
+		           {'$or': [{'passwordLastUpdated': { '$lte': moment().subtract(3, 'months') }}, {passwordLastUpdated: undefined}]},
+	 	           {'changePasswordMail': { '$lte': moment().subtract(3, 'months') }},
+	 	           {'token': null},
+	 			]};
+		var json = users.find( query );
+		if ( json.length > 0 ) {
+			/* Send a Reminder Email to each users */
+			json.forEach(function(user) {
+				//console.log(user.firstName+' '+user.lastName+' <'+user.email+'>' + ' --> ' + user.changePasswordMail + moment(user.changePasswordMail).format('DD/MM/YYYY, HH:mm'));
+				res.render('emails/change-password', {user: user}, function(err, html) {
+					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
+					var mailOptions = {
+						from: from,
+						bcc: bcc,
+						to: bcc, // DO NOT COMMIT // DO NOT COMMIT // DO NOT COMMIT // DO NOT COMMIT // DO NOT COMMIT
+						subject: 't6 Password Expiration',
+						text: 'Html email client is required',
+						html: html
+					};
+					transporter.sendMail(mailOptions, function(err, info){
+					    if( err ){
+							var err = new Error('Internal Error');
+							err.status = 500;
+							res.status(err.status || 500).render(err.status, {
+								title : 'Internal Error'+app.get('env'),
+								user: req.session.user,
+								currentUrl: req.path,
+								err: err
+							});
+					    } else {
+							users.findAndUpdate(
+								function(i){return i.id==user.id;},
+								function(item){
+									item.changePasswordMail = parseInt(moment().format('x'));
+								}
+							);
+							db.save();
+					    }
+					});
+				});
+			});
+			res.status(200).send(new UserSerializer(json).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
  * @api {get} /users/:user_id Get User
  * @apiName Get User
  * @apiGroup User
@@ -362,8 +428,8 @@ function bearerAdmin(req, res, next) {
 		req.token = bearerToken;
 		req.bearer = tokens.findOne(
 			{ '$and': [
-	           {'token': { '$eq': req.token }},
-	           {'expiration': { '$gte': moment().format('x') }},
+	           {'token': { '$eq': req.token, }},
+	           {'expiration': { '$gte': moment().format('x'), }}
 			]}
 		);
 		if ( !req.bearer ) {
