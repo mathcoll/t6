@@ -15,7 +15,9 @@
   "scripts": {
     "start": "node ./bin/www",
     "test": "snyk test && ./bin/test.sh",
-    "check-security": "nsp check"
+    "check-security": "nsp check",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
     "bearer": "0.0.20",
@@ -25,7 +27,7 @@
     "cookie-parser": "^1.4.1",
     "debug": "~2.1.1",
     "device": "^0.3.8",
-    "express": "~4.12.4",
+    "express": "^4.15.2",
     "express-http-proxy": "^0.6.0",
     "express-session": "^1.13.0",
     "geoip-lite": "^1.1.9",
@@ -48,10 +50,10 @@
     "sprintf-js": "~1.0.3",
     "squel": "~4.2.3",
     "strength": "^0.1.4",
-    "striptags": "^2.1.1"
+    "striptags": "^2.1.1",
+    "snyk": "^1.25.2"
   },
   "readmeFilename": "README.md",
-  "devDependencies": {
-    "snyk": "^1.25.2"
-  }
+  "devDependencies": {},
+  "snyk": true
 }
