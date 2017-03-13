@@ -13,10 +13,10 @@ html(lang='en')
         blockquote.fa.fa-comment  Snippets are used to graph data from Flows.
 
       .row.side-body
-        .col-xs-12.col-sm-12.col-md-12
+        div
           ul.clearfix.pagination
-            li.active
-              span.fa.fa-3x.fa-puzzle-piece(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{snippets_length} Snippets        
+            li.no-padding.active
+              span.fa.fa-2x.fa-puzzle-piece(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{snippets_length} Snippets        
                 - var percent = Math.round((snippets_length*100/quota.snippets)*100) /100
                 - var style = "success"
                 - if (percent > 60)
@@ -31,15 +31,16 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-            li
+            li.no-padding
               - if( snippets_length < quota.snippets )
-                a.fa-3x.btn.btn-success(href="/snippets/add", data-toggle='tooltip', data-placement='right	', title='Add a Snippet')
+                a.fa-2x.btn.btn-success(href="/snippets/add", data-toggle='tooltip', data-placement='right	', title='Add a Snippet')
                   span.fa.fa-plus
               - else
-                a.fa-3x.btn.btn-danger(href="/plans", data-toggle='tooltip', data-placement='right', title='Upgrade your plan')
+                a.fa-2x.btn.btn-danger(href="/plans", data-toggle='tooltip', data-placement='right', title='Upgrade your plan')
                   span.fa.fa-level-up
               - end
-            p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets_length}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%; height: 5px;") &nbsp;
+          ul.list-unstyled.no-padding
+            li.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{snippets_length}", aria-valuemin="0", aria-valuemax="#{quota.snippets}", style="width: #{percent}%; height: 5px;") &nbsp;
 
       .row.side-body
         .col-sm-12

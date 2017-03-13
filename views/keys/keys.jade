@@ -13,10 +13,10 @@ html(lang='en')
         blockquote.fa.fa-comment  Expired keys will automatically be removed from your list.
  
       .row.side-body
-        .col-xs-12.col-sm-12.col-md-12
+        div
           ul.clearfix.pagination
-            li.active
-              span.fa.fa-3x.fa-flash(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{tokens_length} Keys        
+            li.no-padding.active
+              span.fa.fa-2x.fa-flash(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{tokens_length} Keys        
                 - var percent = Math.round((tokens_length*100/quota.tokens)*100) /100
                 - var style = "success"
                 - if (percent > 60)
@@ -31,15 +31,16 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-            li
+            li.no-padding
               - if( tokens_length < quota.tokens )
-                a.fa-3x.btn.btn-success(href="/keys/add", data-toggle='tooltip', data-placement='right	', title='Add an API Key')
+                a.fa-2x.btn.btn-success(href="/keys/add", data-toggle='tooltip', data-placement='right	', title='Add an API Key')
                   span.fa.fa-plus
               - else
-                a.fa-3x.btn.btn-danger(href="/plans", data-toggle='tooltip', data-placement='right', title='Upgrade your plan')
+                a.fa-2x.btn.btn-danger(href="/plans", data-toggle='tooltip', data-placement='right', title='Upgrade your plan')
                   span.fa.fa-level-up
               - end
-            p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{tokens_length}", aria-valuemin="0", aria-valuemax="#{quota.tokens}", style="width: #{percent}%; height: 5px;") &nbsp;
+          ul.list-unstyled.no-padding
+            li.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{tokens_length}", aria-valuemin="0", aria-valuemax="#{quota.tokens}", style="width: #{percent}%; height: 5px;") &nbsp;
        
       .row.side-body
         .col-sm-12

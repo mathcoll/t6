@@ -11,10 +11,10 @@ html(lang='en')
         blockquote.fa.fa-comment  "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months. To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
 
       .row.side-body
-        .col-xs-12.col-sm-12.col-md-12
+        div
           ul.clearfix.pagination
-            li.active
-              span.fa.fa-3x.fa-filter(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{rules_length} Rules
+            li.no-padding.active
+              span.fa.fa-2x.fa-filter(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{rules_length} Rules
                 - var percent = Math.round((rules_length*100/quota.rules)*100) /100
                 - var style = "success"
                 - if (percent > 60)
@@ -29,7 +29,8 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-              p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules_length}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%; height: 5px;") &nbsp;
+          ul.list-unstyled.no-padding
+            li.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{rules_length}", aria-valuemin="0", aria-valuemax="#{quota.rules}", style="width: #{percent}%; height: 5px;") &nbsp;
 
     .container-fluid
       .row.side-body

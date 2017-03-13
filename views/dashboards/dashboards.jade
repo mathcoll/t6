@@ -13,10 +13,10 @@ html(lang='en')
         blockquote.fa.fa-comment  
 
       .row.side-body
-        .col-xs-12.col-sm-12.col-md-12
+        div
           ul.clearfix.pagination
-            li.active
-              span.fa.fa-3x.fa-area-chart(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{dashboards_length} Dashboards        
+            li.no-padding.active
+              span.fa.fa-2x.fa-area-chart(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{dashboards_length} Dashboards        
                 - var percent = Math.round((dashboards_length*100/quota.dashboards)*100) /100
                 - var style = "success"
                 - if (percent > 60)
@@ -31,15 +31,16 @@ html(lang='en')
                 - else
                   - percent_txt = percent
                 - end
-            li
+            li.no-padding
               - if( dashboards_length < quota.dashboards )
-                a.fa-3x.btn.btn-success(href="/dashboards/add", data-toggle='tooltip', data-placement='right	', title='Add a Dashboard')
+                a.fa-2x.btn.btn-success(href="/dashboards/add", data-toggle='tooltip', data-placement='right	', title='Add a Dashboard')
                   span.fa.fa-plus
               - else
-                a.fa-3x.btn.btn-danger(href="/plans", data-toggle='tooltip', data-placement='right', title='Upgrade your plan')
+                a.fa-2x.btn.btn-danger(href="/plans", data-toggle='tooltip', data-placement='right', title='Upgrade your plan')
                   span.fa.fa-level-up
               - end
-            p.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards_length}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%; height: 5px;") &nbsp;
+          ul.list-unstyled.no-padding
+            li.progress-bar.progress-bar-striped.active(data-toggle='tooltip', data-placement='top', title='#{percent_txt}%', class="progress-bar-#{style}", role="progressbar", aria-valuenow="#{dashboards_length}", aria-valuemin="0", aria-valuemax="#{quota.dashboards}", style="width: #{percent}%; height: 5px;") &nbsp;
 
       .row.side-body
         .col-sm-12

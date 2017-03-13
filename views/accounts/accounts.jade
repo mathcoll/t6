@@ -12,10 +12,13 @@ html(lang='en')
             div.alert(class='alert-#{message.type}', role='alert') #{message.value} 
 
       .row.side-body
-        .col-xs-12.col-sm-12.col-md-12
+        div
           ul.clearfix.pagination
-            li.active
-              span.fa.fa-3x.fa-users(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{users_length} Users
+            li.no-padding.active
+              span.fa.fa-2x.fa-users(style='border-bottom-left-radius:0;border-bottom-right-radius:0;')  #{users_length} Users
+            li.no-padding
+              a.fa-2x.btn.btn-success(href="/account/register", data-toggle='tooltip', data-placement='right	', title='Add a User')
+                span.fa.fa-plus
 
       .row.side-body
         .col-sm-12
