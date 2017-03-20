@@ -5,18 +5,18 @@ var request		= require('request');
 var os			= require('os');
 var exec		= require('child_process').exec;
 
-var bearer		= '!VQJUWMjxdurf5s&6!#9bnTWTK2&xze76B3wARNS4E-%!EwtA$mF+A3Hw+5Y+Mvw';
+var bearer		= '';
 var api			= 'http://127.0.0.1:3000/v2.0.1/data/';
-var flow_id		= '2';
+var flow_id		= '';
 var publish		= true;
 var save		= true;
-var mqtt_topic	= 'couleurs/'+os.hostname()+'/freespace';
+var mqtt_topic	= '';
 var unit		= 'byte';
 var timestamp = moment().format('x');
 
-var df = exec('df -t rootfs | tail -1 | cut -d: -f2 | awk \'{ print $4}\' ORS=\'\'', function(error, stdout, stderr) {
+var df = exec('df | grep \'dev/root\' | tail -1 | cut -d: -f2 | awk \'{ print $4}\' ORS=\'\'', function(error, stdout, stderr) {
     if (error !== null) {
-        console.log('exec error: ' + error + stderr);
+    	//console.log('exec error: ' + error + stderr);
     } else if( stdout ) {
     	var body = {flow_id: flow_id, value:stdout, timestamp: timestamp, publish: publish, save: save, unit: unit, mqtt_topic: mqtt_topic};
     	//console.log(body);
@@ -25,6 +25,7 @@ var df = exec('df -t rootfs | tail -1 | cut -d: -f2 | awk \'{ print $4}\' ORS=\'
     		method: 'POST',
     		json: true,
     		headers: {
+    			'User-Agent': "t6 javascript file",
     			'Accept': 'application/json',
     			'Content-Type': 'application/json',
     			'Authorization': 'Bearer '+bearer,
@@ -33,5 +34,7 @@ var df = exec('df -t rootfs | tail -1 | cut -d: -f2 | awk \'{ print $4}\' ORS=\'
     	}, function (error, response, body){
     		//console.log(response);
     	});
+    } else {
+    	//console.log('exec error: ' + error + stderr);
     }
 });
