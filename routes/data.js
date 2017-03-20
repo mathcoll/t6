@@ -603,7 +603,6 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 		})[0];
 
 		if ( p.permission == '644' || p.permission == '620' || p.permission == '600' ) { // TODO: Must check if our Bearer is from the flow Owner, Group, or Other, and then, check permissions
-			//console.log(data);
 			if ( save == true ) {
 				if ( db_type.influxdb == true ) {
 					/* InfluxDB database */
@@ -659,6 +658,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 			fields[0].datatype = datatype;
 			fields[0].publish = publish;
 			fields[0].mqtt_topic = mqtt_topic;
+			
 			res.status(200).send(new DataSerializer(fields).serialize());
 			
 		} else {
