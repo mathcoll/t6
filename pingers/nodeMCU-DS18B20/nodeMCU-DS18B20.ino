@@ -2,20 +2,16 @@
 #include <ArduinoHttpClient.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
+#include "settings.h"
 
 #define SLEEP_DELAY_IN_SECONDS  1800    // 30 minutes
 #define ONE_WIRE_BUS            D4      // DS18B20 pin
 
-const char* ssid = "WIFI SSID";
-const char* password = "WIFI PASSWD";
-const char* flow_id = "t6 Flow ID";
-const char* object_id = "t6 Object ID";
-const char* Bearer = "t6 Bearer token";
 String response;
 int statusCode = 0;
 WiFiClient wifi;
 WiFiClient client;
-IPAddress server(192,168,0,22);
+IPAddress server(192,168,0,21);
 int status = WL_IDLE_STATUS;
 
 OneWire oneWire(ONE_WIRE_BUS);
@@ -50,7 +46,7 @@ void httpRequest(String postData) {
     Serial.println("connecting...");
     client.println("POST /v2.0.1/data/ HTTP/1.1");
     client.println("Authorization: Bearer " + String(Bearer));
-    client.println("Host: bleu");
+    client.println("Host: pink");
     client.println("User-Agent: Arduino/2.2.0/" + String(object_id));
     client.println("Connection: close");
     client.println("Accept: application/json");
