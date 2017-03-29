@@ -103,7 +103,7 @@ router.get('/changePassword', bearerAdmin, function (req, res) {
 					var mailOptions = {
 						from: from,
 						bcc: bcc,
-						to: bcc, // DO NOT COMMIT // DO NOT COMMIT // DO NOT COMMIT // DO NOT COMMIT // DO NOT COMMIT
+						to: to,
 						subject: 't6 Password Expiration',
 						text: 'Html email client is required',
 						html: html
