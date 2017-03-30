@@ -557,7 +557,7 @@ router.get('/flows/:flow_id([0-9a-z\-]+)', Auth, function(req, res) {
 		var f = flows.chain().find(queryF).limit(1);
 		var join = f.eqJoin(units.chain(), 'unit_id', 'id');
 
-		if ( (join.data())[0].left ) {
+		if ( (join.data())[0] && (join.data())[0].left ) {
 			var message = req.session.message!==null?req.session.message:null;
 			req.session.message = null; // Force to unset
 			res.render('flows/flow', {
