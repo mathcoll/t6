@@ -52,3 +52,10 @@ footer.footer.navbar-fixed-bottom
     a(href='/privacy-policies') Privacy Policies
     span &nbsp;&ndash;&nbsp;
     a(href='/plans') Plans & Prices
+
+  - if (user)
+    script(type='text/javascript').
+      Tawk_API.setAttributes({
+        'name'  : '#{user.firstName} #{user.lastName}',
+        'email' : '#{user.email}'
+      }, function(error){});
