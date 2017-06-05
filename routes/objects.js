@@ -7,6 +7,56 @@ var objects;
 var users;
 var tokens;
 
+
+/**
+ * @api {get} /objects/:object_id/qrcode/:typenumber/:errorcorrectionlevel Get qrcode for an Object
+ * @apiName Get Object(s)
+ * @apiGroup Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} object_id Object Id
+ * @apiParam {integer} [typenumber] 1 to 10
+ * @apiParam {String{1}} [errorcorrectionlevel] 'L','M','Q','H'
+ * 
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlevel)', bearerAuthToken, function (req, res) {
+	var object_id = req.params.object_id;
+	var typenumber = req.params.typenumber;
+	var errorcorrectionlevel = req.params.errorcorrectionlevel!==undefined?req.params.errorcorrectionlevel:'M';
+		
+	if ( req.token !== undefined ) {
+		objects	= db.getCollection('objects');
+		var query;
+		if ( object_id !== undefined ) {
+			query = {
+			'$and': [
+					{ 'user_id' : req.user.id },
+					{ 'id' : object_id },
+				]
+			};
+		}
+		
+		var json = objects.find(query);
+		//console.log(query);
+		if ( json.length > 0 ) {
+			var qr = qrCode.qrcode(typenumber, errorcorrectionlevel);
+			qr.addData(baseUrl+'/objects/'+object_id+'/public');
+			qr.make();
+			res.status(200).send({'data': qr.createImg(5, 5).src});
+		} else {
+			res.status(404).send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 28, 'code': 403, 'message': 'Forbidden'}).serialize());
+	}
+});
+
 /**
  * @api {get} /objects/:object_id Get Object(s)
  * @apiName Get Object(s)

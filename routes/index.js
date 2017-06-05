@@ -245,4 +245,52 @@ router.get('/status', function(req, res, next) {
 	res.status(200).send(status);
 });
 
+router.get('/index', function(req, res, next) {
+	var index = [
+	    {
+			title: 'Data Flows as Time-series',
+			description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.',
+			image: process.env.BASE_URL_HTTPS+'/img/opl_img3.jpg',
+			url: '#/features/architecture',
+	    },
+	    {
+			title: 'Connected Objects',
+			description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.',
+			image: process.env.BASE_URL_HTTPS+'/img/opl_img3.jpg',
+			url: '#/features/architecture',
+	    },
+	    {
+			title: 'Tokens for security',
+			description: 'Bearer Tokens allows to manage Objects & Flows API. Permissions based on access Tokens.',
+			image: process.env.BASE_URL_HTTPS+'/img/opl_img2.jpg',
+			url: '#/features/architecture',
+	    },
+	    {
+			title: 'Dashboards',
+			description: 'Graphics, data-management, Monitoring, Reporting',
+			image: process.env.BASE_URL_HTTPS+'/img/opl_img.jpg',
+			url: '#/features/customize-dashboards',
+	    },
+	    {
+			title: 'Decision Rules to get smart',
+			description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.',
+			image: '',
+			url: '#/decision-rules',
+	    },
+	    {
+			title: 'Sense events',
+			description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.',
+			image: '',
+			url: '/docs',
+	    },
+	    {
+			title: 't6 is Mobile-first',
+			description: 'Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.',
+			image: '//cdn.internetcollaboratif.info/img/phone.jpg',
+			url: '',
+	    },
+	];
+	res.status(200).send(index);
+});
+
 module.exports = router;
