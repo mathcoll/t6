@@ -1,6 +1,23 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.7.0
-ignore: {}
+version: v1.7.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:minimatch:20160620':
+    - passgen > vows > glob > minimatch:
+        reason: None given
+        expires: '2017-07-05T13:19:10.031Z'
+  'npm:ms:20170412':
+    - compression > debug > ms:
+        reason: None given
+        expires: '2017-07-05T13:19:10.031Z'
+  'npm:uglify-js:20151024':
+    - jade > transformers > uglify-js:
+        reason: None given
+        expires: '2017-07-05T13:19:10.032Z'
+  'npm:uglify-js:20150824':
+    - jade > transformers > uglify-js:
+        reason: None given
+        expires: '2017-07-05T13:19:10.032Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
@@ -8,7 +25,13 @@ patch:
         patched: '2017-03-13T19:23:06.595Z'
   'npm:uglify-js:20150824':
     - jade > transformers > uglify-js:
-        patched: '2017-03-13T19:56:47.888Z'
+        patched: '2017-06-05T13:18:24.845Z'
   'npm:uglify-js:20151024':
     - jade > transformers > uglify-js:
-        patched: '2017-03-13T19:56:47.888Z'
+        patched: '2017-06-05T13:18:24.845Z'
+  'npm:minimatch:20160620':
+    - passgen > vows > glob > minimatch:
+        patched: '2017-06-05T13:18:24.845Z'
+  'npm:ms:20170412':
+    - compression > debug > ms:
+        patched: '2017-06-05T13:18:24.845Z'
