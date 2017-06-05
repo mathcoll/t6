@@ -16,6 +16,7 @@ LOG=/var/log/node/$NAME.log
 PIDFILE=/var/run/$NAME.pid
 NODE_ENV="development"
 BASE_URL="http://127.0.0.1:3000"
+BASE_URL_HTTPS="http://127.0.0.1:3000"
 DAEMON=/var/www/t6/bin/www
 DAEMON_ARGS=""
 EXEC="/usr/bin/nodejs -- $DAEMON" # $DAEMON_ARGS >>$LOG 2>&1
@@ -28,6 +29,7 @@ do_start() {
 	echo -n "Starting "$NAME" on "$BASE_URL ...
 	export NODE_ENV=$NODE_ENV
 	export BASE_URL=$BASE_URL
+	export BASE_URL_HTTPS=$BASE_URL_HTTPS
 	export NAME=$NAME
 	export STARTED=`date +%s`
 	start-stop-daemon --start --background --make-pidfile --user "$USER" --pidfile $PIDFILE --exec $EXEC
