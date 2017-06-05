@@ -7,6 +7,30 @@ var users;
 //var qt;
 
 /**
+ * @apiDefine 200
+ * @apiSuccess 200 Success
+ * @apiSuccessExample 200 Response
+ *     HTTP/1.1 200 Success
+ *     {
+ *       "message": "Success",
+ *       "id": "",
+ *       "code": 200
+ *     }
+ */
+
+/**
+ * @apiDefine 201
+ * @apiSuccess 201 Created
+ * @apiSuccessExample 201 Response
+ *     HTTP/1.1 201 Created
+ *     {
+ *       "message": "Created",
+ *       "id": "",
+ *       "code": 201
+ *     }
+ */
+
+/**
  * @apiDefine 400
  * @apiError 400 Require a Bearer Authentication.
  * @apiErrorExample 400 Response
@@ -44,7 +68,7 @@ var users;
 
 /**
  * @apiDefine 404
- * @apiError 404 Not Found - We couldn't find the element you are trying to access.
+ * @apiError 404 Not Found - We couldn't find the resource you are trying to access.
  * @apiErrorExample 404 Response
  *     HTTP/1.1 404 Not Found
  *     {
@@ -56,7 +80,7 @@ var users;
 
 /**
  * @apiDefine 405
- * @apiError 405 Method Not Allowed - API endpoint does not accept the method used..
+ * @apiError 405 Method Not Allowed - API endpoint does not accept the method used.
  * @apiErrorExample 405 Response
  *     HTTP/1.1 405 Method Not Allowed
  *     {
@@ -245,6 +269,13 @@ router.get('/status', function(req, res, next) {
 	res.status(200).send(status);
 });
 
+
+/**
+ * @api {get} /index PWA index cards
+ * @apiName API IndexCards
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ */
 router.get('/index', function(req, res, next) {
 	var index = [
 	    {

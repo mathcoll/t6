@@ -16,6 +16,7 @@ var tokens;
  * @apiUse Auth
  * @apiParam {uuid-v4} [flow_id] Flow Id
  * 
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -62,6 +63,7 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
  * @apiParam {Object[]} permission
  * @apiParam {String[]} [objects] List of Object Ids
  * 
+ * @apiUse 201
  * @apiUse 400
  * @apiUse 429
  */
@@ -115,6 +117,7 @@ router.post('/', bearerAuthToken, function (req, res) {
  * @apiParam {Object[]} [permission]
  * @apiParam {String[]} [objects] List of Object Ids
  * 
+ * @apiUse 200
  * @apiUse 400
  * @apiUse 401
  * @apiUse 403

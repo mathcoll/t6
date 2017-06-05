@@ -14,8 +14,8 @@ function str2bool(v) {
 }
 
 /**
- * @api {get} /data/:flow_id Get DataPoints
- * @apiName Get DataPoints
+ * @api {get} /data/:flow_id Get DataPoint List
+ * @apiName Get DataPoint List
  * @apiGroup DataPoint
  * @apiVersion 2.0.1
  *
@@ -36,6 +36,7 @@ function str2bool(v) {
  * @apiSuccess {Number} data.attributes.time Time of Data point 
  * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
  * @apiSuccess {String} data.attributes.value Value of Data point
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -359,6 +360,7 @@ router.get('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiSuccess {Number} data.attributes.time Time of Data point 
  * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
  * @apiSuccess {String} data.attributes.value Value of Data point
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -535,6 +537,8 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', bearerAuthToken, func
  * @apiParam {String} [unit] Unit of the Value (optional)
  * @apiParam {String} [mqtt_topic] Mqtt Topic to publish value to 
  * @apiParam {String} [text] Optional text to qualify Value
+ * @apiUse 200
+ * @apiUse 201
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429

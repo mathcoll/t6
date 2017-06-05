@@ -17,6 +17,7 @@ var tokens;
  * @apiParam {uuid-v4} [dashboard_id] Dashboard Id
  * @apiParam {String} [name] 
  * 
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405

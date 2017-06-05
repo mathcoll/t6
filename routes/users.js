@@ -8,13 +8,14 @@ var users;
 var tokens;
 
 /**
- * @api {post} /users/reminderMail Send reminder Email to Users
+ * @api {get} /users/reminderMail Send reminder Email to Users
  * @apiName Send reminder Email to Users
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
  * 
+ * @apiUse 200
  * @apiUse 403
  * @apiUse 404
  */
@@ -74,13 +75,14 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
 });
 
 /**
- * @api {post} /users/changePassword Send Password Expiration Email to Users
+ * @api {get} /users/changePassword Send Password Expiration Email to Users
  * @apiName Send Password Expiration Email to Users
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
  * 
+ * @apiUse 200
  * @apiUse 403
  * @apiUse 404
  */
@@ -148,6 +150,7 @@ router.get('/changePassword', bearerAdmin, function (req, res) {
  * @apiUse Auth
  * @apiParam {uuid-v4} user_id User ID
  * 
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -173,6 +176,7 @@ router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiParam {String} key API_KEY.
  * @apiParam {String} secret API_SECRET.
  * 
+ * @apiUse 201
  * @apiUse 400
  * @apiUse 403
  * @apiUse 429
@@ -237,6 +241,7 @@ router.post('/me/token', function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -266,6 +271,7 @@ router.get('/me/token', bearerAuthToken, function (req, res) {
  * @apiParam {String} lastName The User Last Name
  * @apiParam {String} email The User Email address
  * 
+ * @apiUse 201
  * @apiUse 412
  * @apiUse 429
  */
@@ -313,6 +319,7 @@ router.post('/', function (req, res) {
  * @apiParam {String} [lastName] The updated User Last Name
  * @apiParam {String} [email] The updated User Email address
  * 
+ * @apiUse 200
  * @apiUse 403
  * @apiUse 412
  * @apiUse 429
@@ -349,6 +356,7 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiUse Auth
  * @apiParam {uuid-v4} user_id User ID
  * 
+ * @apiUse 200
  * @apiUse 403
  * @apiUse 404
  * @apiUse 429

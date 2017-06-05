@@ -19,6 +19,7 @@ var tokens;
  * @apiParam {integer} [typenumber] 1 to 10
  * @apiParam {String{1}} [errorcorrectionlevel] 'L','M','Q','H'
  * 
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -67,6 +68,7 @@ router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
  * @apiParam {uuid-v4} [object_id] Object Id
  * @apiParam {String} [name] Object Name you want to search for; this is using an case-insensitive regexp
  * 
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -131,6 +133,7 @@ router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
  * @apiParam {String} [ipv6] Object IP v6
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * 
+ * @apiUse 201
  * @apiUse 403
  * @apiUse 429
  */
@@ -186,6 +189,7 @@ router.post('/', bearerAuthToken, function (req, res) {
  * @apiParam {String} [ipv6] Object IP v6
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * 
+ * @apiUse 200
  * @apiUse 403
  */
 router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
@@ -228,6 +232,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiUse Auth
  * @apiParam {uuid-v4} object_id Object Id
  * 
+ * @apiUse 200
  * @apiUse 403
  * @apiUse 404
  */
@@ -266,6 +271,7 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiParam {String} pName Customer Parameter Name
  * @apiParam {String} value Customer Parameter Value
  * 
+ * @apiUse 201
  * @apiUse 401
  * @apiUse 403
  * @apiUse 404
@@ -332,6 +338,7 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
  * @apiParam {uuid-v4} object_id Object Id
  * @apiParam {String} pName Customer Parameter Name
  * 
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 403
  * @apiUse 404

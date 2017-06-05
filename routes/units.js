@@ -15,6 +15,7 @@ var tokens;
  * 
  * @apiParam {uuid-v4} [unit_id] Unit ID
  * 
+ * @apiUse 200
  * @apiUse 404
  */
 router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res) {
@@ -51,6 +52,7 @@ router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res) {
  * @apiParam {String} [format=''] Unit Format
  * @apiParam {String} [type=''] Unit Type
  * 
+ * @apiUse 201
  * @apiUse 401
  */
 router.post('/', bearerAdmin, function (req, res) {
@@ -86,6 +88,7 @@ router.post('/', bearerAdmin, function (req, res) {
  * @apiParam {String} [format] Unit Format
  * @apiParam {String} [type] Unit Type
  * 
+ * @apiUse 200
  * @apiUse 401
  */
 router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
@@ -122,6 +125,7 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
  * 
  * @apiParam {uuid-v4} unit_id Unit ID
  * 
+ * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  */
