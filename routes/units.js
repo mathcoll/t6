@@ -65,6 +65,8 @@ router.post('/', bearerAdmin, function (req, res) {
 		};
 		units.insert(new_unit);
 		//console.log(units);
+		
+		res.header('Location', '/v'+version+'/units/'+new_unit.id);
 		res.status(201).send({ 'code': 201, message: 'Created', unit: new UnitSerializer(new_unit).serialize() }, 201);
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 18, 'code': 401, 'message': 'Unauthorized'}).serialize());
@@ -102,6 +104,8 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 			}
 		);
 		db.save();
+		
+		res.header('Location', '/v'+version+'/units/'+unit_id);
 		res.status(200).send({ 'code': 200, message: 'Successfully updated', unit: new UnitSerializer(result).serialize() });
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 19, 'code': 401, 'message': 'Unauthorized'}).serialize());

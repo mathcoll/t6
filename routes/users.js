@@ -182,8 +182,7 @@ router.post('/me/token', function (req, res) {
 	tokens			= db.getCollection('tokens');
 	var API_KEY		= req.params.key!==undefined?req.params.key:req.body.key;
 	var API_SECRET	= req.params.secret!==undefined?req.params.secret:req.body.secret;
-	
-	if  ( API_KEY && API_SECRET ) {
+	if ( API_KEY && API_SECRET ) {
 		// check KEY+SECRET against Collection and expiration date
 		var auth = tokens.find(
 			{ '$and': [
@@ -212,6 +211,8 @@ router.post('/me/token', function (req, res) {
 					token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				};
 				tokens.insert(new_token);
+
+				res.header('Location', new_token.token);
 				res.status(201).send({ 'code': 201, message: 'Created', token: new_token }); // TODO: missing serializer
 				
 				// Find and remove expired tokens from Db
@@ -294,7 +295,8 @@ router.post('/', function (req, res) {
 		var tokens	= db.getCollection('tokens');
 		tokens.insert(new_token);
 		// TODO: the Welcome Mail is never sent!.
-		
+
+		res.header('Location', '/v'+version+'/users/'+new_user.id);
 		res.status(201).send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }); // TODO: missing serializer
 	}
 });
@@ -329,6 +331,8 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 			item.email			= req.body.email!==undefined?req.body.email:item.email;
 			item.update_date	= moment().format('x');
 			users.update(item);
+			
+			res.header('Location', '/v'+version+'/users/'+user_id);
 			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() }); // TODO: missing serializer
 		} else {
 			res.status(403).send(new ErrorSerializer({'id': 7,'code': 403, 'message': 'Forbidden'}).serialize());

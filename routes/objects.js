@@ -159,6 +159,8 @@ router.post('/', bearerAuthToken, function (req, res) {
 			events.add('t6Api', 'object add', new_object.id);
 			objects.insert(new_object);
 			//console.log(objects);
+			
+			res.header('Location', '/v'+version+'/objects/'+new_object.id);
 			res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() });
 		} else {
 			res.status(403).send(new ErrorSerializer({'id': 29, 'code': 403, 'message': 'Forbidden'}).serialize());
@@ -209,6 +211,8 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 		);
 		//console.log(objects);
 		db.save();
+		
+		res.header('Location', '/v'+version+'/objects/'+object_id);
 		res.status(200).send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() });
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 30, 'code': 403, 'message': 'Forbidden'}).serialize());
@@ -300,6 +304,8 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
 				var p = object.parameters.filter(function(e, i) { if ( e.name == pName ) { object.parameters[i].value = req.body.value; return e; } });
 				if ( p !== null ) {
 					db.saveDatabase();
+					
+					res.header('Location', '/v'+version+'/objects/'+pName);
 					res.status(201).send({ 'code': 201, message: 'Success', name: pName, value: p[0].value });
 				} else {
 					res.status(404).send(new ErrorSerializer({'id': 320, 'code': 404, 'message': 'Not Found'}).serialize());

@@ -658,7 +658,8 @@ router.post('/(:flow_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
 			fields[0].datatype = datatype;
 			fields[0].publish = publish;
 			fields[0].mqtt_topic = mqtt_topic;
-			
+
+			res.header('Location', '/v'+version+'/flows/'+flow_id+'/'+fields[0].id);
 			res.status(200).send(new DataSerializer(fields).serialize());
 			
 		} else {

@@ -93,6 +93,7 @@ router.post('/', bearerAuthToken, function (req, res) {
 				flows.insert(new_flow);
 				//console.log(flows);
 				
+				res.header('Location', '/v'+version+'/flows/'+new_flow.id);
 				res.status(201).send({ 'code': 201, message: 'Created', flow: new FlowSerializer(new_flow).serialize() }); // TODO: missing serializer
 			}
 		}
@@ -159,6 +160,8 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 					//console.log(flows);
 					if ( result !== undefined ) {
 						db.save();
+						
+						res.header('Location', '/v'+version+'/flows/'+flow_id);
 						res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
 					} else {
 						res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());

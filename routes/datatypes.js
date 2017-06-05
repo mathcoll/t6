@@ -57,6 +57,8 @@ router.post('/', bearerAdmin, function (req, res) {
 			name:	req.body.name!==undefined?req.body.name:'unamed',
 		};
 		datatypes.insert(new_datatype);
+		
+		res.header('Location', '/v'+version+'/datatypes/'+new_datatype.id);
 		res.status(201).send(new ErrorSerializer({ 'code': 201, message: 'Created', datatype: new DataTypeSerializer(new_datatype).serialize() }).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 49, 'code': 401, 'message': 'Unauthorized'}).serialize());
@@ -89,6 +91,8 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 			}
 		);
 		db.save();
+		
+		res.header('Location', '/v'+version+'/datatypes/'+datatype_id);
 		res.status(200).send(new ErrorSerializer({ 'code': 200, message: 'Successfully updated', datatype: new DataTypeSerializer(result).serialize() }).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 50, 'code': 401, 'message': 'Unauthorized'}).serialize());
