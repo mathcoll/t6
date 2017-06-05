@@ -87,12 +87,14 @@ client.on("connect", function () {
 
 var index			= require('./routes/index');
 var objects			= require('./routes/objects');
+var dashboards		= require('./routes/dashboards');
 var users			= require('./routes/users');
 var data			= require('./routes/data');
 var flows			= require('./routes/flows');
 var units			= require('./routes/units');
 var datatypes		= require('./routes/datatypes');
 var www				= require('./routes/www');
+var pwa				= require('./routes/pwa');
 var app				= express();
 
 /* Logging */
@@ -104,6 +106,25 @@ process.on('uncaughtException', function(err) {
 	console.error((err && err.stack) ? err.stack : err);
 });
 
+var CrossDomain = function(req, res, next) {
+    if (req.method == 'OPTIONS') {
+    	res.header('Access-Control-Allow-Origin', '*');
+    	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+    	res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Authorization, Content-Length, X-Requested-With');
+    	res.status(200).send('');
+    }
+    else {
+		res.setHeader('X-Powered-By', appName+'@'+version);
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Authorization, Content-Length, X-Requested-With');
+		if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
+			res.setHeader('Cache-Control', 'public, max-age=3600');
+		}
+		next();
+    }
+};
+
+app.use(CrossDomain);
 app.enable('trust proxy');
 app.use(compression());
 app.use(morgan(logFormat, {stream: fs.createWriteStream(logAccessFile, {flags: 'a'})}));
@@ -121,21 +142,13 @@ app.use(express.static(path.join(__dirname, '/docs'), staticOptions));
 app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);
+app.use('/v'+version+'/dashboards', dashboards);
 app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
 app.use('/', www);
-
-app.use(function(req, res, next) {
-	res.setHeader('X-Powered-By', appName+'@'+version);
-	res.header('Access-Control-Allow-Origin', '*');
-	res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-	if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
-		res.setHeader('Cache-Control', 'public, max-age=3600');
-	}
-	next();
-});
+app.use('/m', pwa);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
