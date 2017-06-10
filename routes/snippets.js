@@ -1,22 +1,20 @@
 'use strict';
 var express = require('express');
 var router = express.Router();
-var DashboardSerializer = require('../serializers/dashboard');
 var SnippetSerializer = require('../serializers/snippet');
 var ErrorSerializer = require('../serializers/error');
-var dashboards;
-var users;
 var snippets;
+var users;
 var tokens;
 
 /**
- * @api {get} /dashboards/:dashboard_id Get Dashboard(s)
- * @apiName Get Dashboard(s)
- * @apiGroup Dashboard
+ * @api {get} /snippets/:snippet_id Get Snippet(s)
+ * @apiName Get Snippet(s)
+ * @apiGroup Snippet
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} [dashboard_id] Dashboard Id
+ * @apiParam {uuid-v4} [snippet_id] Snippet Id
  * @apiParam {String} [name] 
  * 
  * @apiUse 200
@@ -26,18 +24,17 @@ var tokens;
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/?(:dashboard_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
-	var dashboard_id = req.params.dashboard_id;
+router.get('/(:snippet_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
+	var snippet_id = req.params.snippet_id;
 	var name = req.query.name;
 	if ( req.token !== undefined ) {
-		dashboards	= dbDashboards.getCollection('dashboards');
-		snippets = dbSnippets.getCollection('snippets');
+		snippets	= dbSnippets.getCollection('snippets');
 		var query;
-		if ( dashboard_id !== undefined ) {
+		if ( snippet_id !== undefined ) {
 			query = {
 			'$and': [
 					{ 'user_id' : req.user.id },
-					{ 'id' : dashboard_id },
+					{ 'id' : snippet_id },
 				]
 			};
 		} else {
@@ -56,22 +53,10 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', bearerAuthToken, function (req, re
 				};
 			}
 		}
-		var json = dashboards.find(query);
+		var json = snippets.find(query);
+		//console.log(query);
 		if ( json.length > 0 ) {
-			for ( var n=0; n<json.length; n++ ) {
-				if ( (json[n].snippets) && (json[n].snippets).length > 0 ) {
-					for( var i=0; i<(json[n].snippets).length; i++ ) {
-						var snippet_id;
-						if ( (json[n]).snippets[i].data && (json[n]).snippets[i].data.id ) {
-							snippet_id = (json[n]).snippets[i].data.id;
-						} else {
-							snippet_id = (json[n]).snippets[i];
-						}
-						(json[n]).snippets[i] = new SnippetSerializer( snippets.findOne({id: snippet_id}) ).serialize();
-					};
-				}
-			}
-			res.status(200).send(new DashboardSerializer(json).serialize());
+			res.status(200).send(new SnippetSerializer(json).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({'id': 127, 'code': 404, 'message': 'Not Found'}).serialize());
 		}

@@ -25,7 +25,6 @@
 		// status is "granted", if accepted by user
 	});*/
 
-	var containers = new Array('index', 'objects', 'flows', 'snippets', 'dashboards', 'rules', 'mqtts', 'login', 'profile');
 	var cardsWidth = {'objects': '12', 'flows': '12', 'snippets': '12', 'dashboards': '12', 'rules': '12', 'mqtts': '12', 'login': '12'}
 	var icons = {'objects': 'devices_other', 'flows': 'settings_input_component', 'snippets': 'widgets', 'dashboards': 'dashboards', 'rules': '', 'mqtts': '', 'login': ''}
 	var containers = {};
@@ -34,6 +33,9 @@
 	containers.object = document.querySelector('section#object');
 	containers.flows = document.querySelector('section#flows');
 	containers.dashboards = document.querySelector('section#dashboards');
+	containers.dashboard = document.querySelector('section#dashboard');
+	containers.snippets = document.querySelector('section#snippets');
+	containers.snippet = document.querySelector('section#snippet');
 	containers.profile = document.querySelector('section#profile');
 
 	
@@ -50,10 +52,16 @@
 	app.updateActions = function(type) {
 		var items = document.querySelectorAll("[data-action='view']");
 		for (var i in items) {
-			if ( (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
+			if ( (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type && type == 'objects' ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displayObject(item.dataset.id);
+					evt.preventDefault();
+				});
+			} else if ( (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type && type == 'dashboards' ) {
+				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
+					var item = evt.target.parentNode.parentNode.parentNode;
+					app.displayDashboard(item.dataset.id);
 					evt.preventDefault();
 				});
 			}
@@ -82,41 +90,41 @@
 				"		</div>";
 
 				if ( object.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(object.attributes.description), false, false, false);
+					node += app.getField(null, null, app.nl2br(object.attributes.description), false, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
-					node += app.getField('event', 'Created', moment(object.attributes.meta.created).format('DD/MM/YYYY, HH:mm'), false, false, false);
+					node += app.getField('event', 'Created', moment(object.attributes.meta.created).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
 				}
 				if ( object.attributes.meta.updated ) {
-					node += app.getField('event', 'Updated', moment(object.attributes.meta.updated).format('DD/MM/YYYY, HH:mm'), false, false, false);
+					node += app.getField('event', 'Updated', moment(object.attributes.meta.updated).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
 				}
 				if ( object.attributes.meta.revision ) {
-					node += app.getField('update', 'Revision: ', object.attributes.meta.revision, false, false, false);
+					node += app.getField('update', 'Revision: ', object.attributes.meta.revision, false, false, false, true);
 				}
 				if ( object.attributes.type ) {
-					node += app.getField('extension', 'Type', object.attributes.type, false, false, false);
+					node += app.getField('extension', 'Type', object.attributes.type, false, false, false, true);
 				}
 				if ( object.attributes.ipv4 ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, false, false, false);
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, false, false, false, true);
 				}
 				if ( object.attributes.ipv6 ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, false, false, false);
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, false, false, false, true);
 				}
 				if ( object.attributes.is_public == "true" ) {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, false, false, false);
+					node += app.getField('visibility', 'Visibility', object.attributes.is_public, false, false, false, true);
 					node += app.getQrcodeImg('event', '', object.id, false, false, false);
 					app.getQrcode('event', '', object.id, false, false, false);
 				} else {
-					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, false, false, false);
+					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, false, false, false, true);
 				}
 				if ( object.attributes.longitude ) {
-					node += app.getField('place', 'Longitude', object.attributes.longitude, false, false, false);
+					node += app.getField('place', 'Longitude', object.attributes.longitude, false, false, false, true);
 				}
 				if ( object.attributes.latitude ) {
-					node += app.getField('place', 'Latitude', object.attributes.latitude, false, false, false);
+					node += app.getField('place', 'Latitude', object.attributes.latitude, false, false, false, true);
 				}
 				if ( object.attributes.position ) {
-					node += app.getField('pin_drop', 'Position', object.attributes.position, false, false, false);
+					node += app.getField('pin_drop', 'Position', object.attributes.position, false, false, false, true);
 				}
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
@@ -177,6 +185,77 @@
 		app.spinner.setAttribute('hidden', true);
 	};
 
+	app.displayDashboard = function(id) {
+		app.spinner.removeAttribute('hidden');
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+id;
+		fetch(url, myInit)
+		.then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			for (var i=0; i < (response.data).length ; i++ ) {
+				var dashboard = response.data[i];
+				var node;
+				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<span class=\"mdl-list__item\">";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
+				node += "			</span>";
+				node += "			<span class='mdl-list__item-secondary-action'>";
+				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+				node += "					<i class='material-icons'>expand_more</i>";
+				node += "				</button>";
+				node += "			</span>";
+				node += "		</span>";
+				node += "	<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+				if ( dashboard.attributes.description ) {
+					node += app.getField(null, null, app.nl2br(dashboard.attributes.description), false, false, false, true);
+				}
+				if ( dashboard.attributes.meta.created ) {
+					node += app.getField('event', 'Created', moment(dashboard.attributes.meta.created).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
+				}
+				if ( dashboard.attributes.meta.updated ) {
+					node += app.getField('event', 'Updated', moment(dashboard.attributes.meta.updated).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
+				}
+				if ( dashboard.attributes.meta.revision ) {
+					node += app.getField('update', 'Revision: ', dashboard.attributes.meta.revision, false, false, false, true);
+				}
+				node += "	</div>";
+				node += "	</div>";
+
+				node += "</section>";
+				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
+					var snippet = dashboard.attributes.snippets[i].data;
+					//var icon = snippet.attributes.icon!==undefined?snippet.attributes.icon:icons.snippets;
+					var icon = icons.snippets;
+					node += app.getSnippet(icon, snippet);
+				}
+
+				(containers.dashboard).querySelector('.page-content').innerHTML = node;
+				var showdescription_button = document.querySelector('.showdescription_button');
+				showdescription_button.addEventListener('click', function(evt) {
+					var id = (evt.target.parentElement).getAttribute('for');
+					document.getElementById(id).classList.toggle('hidden');
+					if ( evt.target.innerHTML == 'expand_more' ) {
+						evt.target.innerHTML = 'expand_less';
+					} else {
+						evt.target.innerHTML = 'expand_more';
+					}
+				}, false);
+				app.setSection('dashboard');
+			}
+		})
+		.catch(function (error) {
+			toast('displayDashboard error occured...' + error, 5000);
+		});
+		app.spinner.setAttribute('hidden', true);
+	};
+
 	app.displayListItem = function(type, width, iconName, title, line1, line2, id) {
 		var node = "" +
 		"<section class=\"mdl-grid mdl-cell--"+width+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+id+"\">" +
@@ -230,6 +309,12 @@
 			var container = (containers.dashboards).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 			var title = 'My Dashboards';
+		} else if (type == 'snippets') {
+			var icon = icons.snippets;
+			var width = cardsWidth.snippets;
+			var container = (containers.snippets).querySelector('.page-content');
+			var url = app.baseUrl+'/'+app.api_version+'/snippets';
+			var title = 'My Snippets';
 		} else {
 			type='undefined';
 			toast('Error ' + error, 5000);
@@ -361,12 +446,13 @@
 		app.spinner.setAttribute('hidden', true);
 	};
 
-	app.getField = function(icon, label, value, isEditable, isActionable, isThreeLines) {
+	app.getField = function(icon, label, value, isEditable, isActionable, isThreeLines, isVisible) {
 		var field = "";
+		var hidden = isVisible===true?"":" hidden";
 		if ( isThreeLines == true) {
-			field = "<div class='mdl-list__item mdl-list__item--three-line'>";
+			field = "<div class='mdl-list__item mdl-list__item--three-line "+hidden+"'>";
 		} else {
-			field = "<div class='mdl-list__item'>";
+			field = "<div class='mdl-list__item "+hidden+"'>";
 		}
 
 		//- PRIMARY
@@ -404,9 +490,34 @@
 		return field;
 	}
 
+	app.getSnippet = function(icon, s) {
+		var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+s.id+"'>";
+		snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+		snippet +=	"		<span class='mdl-list__item'>";
+		snippet +=	"			<span class='mdl-list__item-primary-content'>";
+		snippet +=	"				<i class='material-icons'>"+icon+"</i>";
+		snippet +=	"				<label>"+s.attributes.name+"</label>";
+		snippet +=	"			</span>";
+		if ( s.attributes.type == 'valuedisplay' ) {
+			snippet += "		<span class='mdl-list__item-secondary-content'>";
+			snippet += "			<span class='mdl-list__item-sub-title' id='snippet-value-"+s.id+"'></span>";
+			snippet += "		</span>";
+		}
+		snippet += "			<span class='mdl-list__item-secondary-action'>";
+		snippet += "				<i class='material-icons'>chevron_right</i>";
+		snippet += "			</span>";
+
+		snippet +=	"		</span>";
+		snippet +=	"	</div>";
+		snippet +=	"</section>";
+		return snippet;
+	}
+
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item'>";
-		field += "	<span class='mdl-list__item-primary-content'><img src='' id='qr-"+id+"' class='img-responsive' /></span>";
+		field += "	<span class='mdl-list__item-primary-content'>";
+		field += "		<img src='' id='qr-"+id+"' class='img-responsive' />";
+		field += "	</span>";
 		field += "</div>";
 		return field;
 	}
@@ -423,9 +534,11 @@
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			var container = document.getElementById('qr-'+id);
-			console.log("Get container by Id ==> qr-"+id);
-			container.setAttribute('src', response.data);
+			if ( response ) {
+				var container = document.getElementById('qr-'+id);
+				console.log("Get container by Id ==> qr-"+id);
+				container.setAttribute('src', response.data);
+			}
 		})
 		.catch(function (error) {
 			toast('fetch Qrcode error out...' + error, 5000);
@@ -443,6 +556,7 @@
 	app.fetchIndex('index');
 	app.fetchItems('objects');
 	app.fetchItems('dashboards');
+	app.fetchItems('snippets');
 	app.fetchItems('flows');
 	//fetchProfile();
 })();

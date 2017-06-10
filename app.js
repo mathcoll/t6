@@ -50,7 +50,7 @@ if( db_type.influxdb == true ) {
 
 /* Main Database settings */
 db	= new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-db.loadDatabase(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'));
+//db.loadDatabase(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'));
 if ( db === null ) console.log('db is failing');
 if ( db.getCollection('objects') === null ) console.log('Collection Objects is failing');
 if ( db.getCollection('flows') === null ) console.log('Collection Flows is failing');
@@ -59,7 +59,7 @@ if ( db.getCollection('tokens') === null ) console.log('Collection Keys is faili
 
 /* Rules settings */
 dbRules	= new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbRules.loadDatabase(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'));
+//dbRules.loadDatabase(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'));
 if ( dbRules === null ) console.log('db Rules is failing');
 if ( dbRules.getCollection('rules') === null ) console.log('Collection Rules is failing');
 
@@ -71,13 +71,13 @@ if ( dbRules.getCollection('rules') === null ) console.log('Collection Rules is 
 
 /* Snippets settings */
 dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
+//dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
 if ( dbSnippets === null ) console.log('db Snippets is failing');
 if ( dbSnippets.getCollection('snippets') === null ) console.log('db Snippets is failing');
 
 /* Dashboards settings */
 dbDashboards	= new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbDashboards.loadDatabase(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'));
+//dbDashboards.loadDatabase(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'));
 if ( dbDashboards === null ) console.log('db Dashboards is failing');
 if ( dbDashboards.getCollection('dashboards') === null ) console.log('Collection Dashboards is failing');
 
@@ -88,6 +88,7 @@ client.on("connect", function () {
 var index			= require('./routes/index');
 var objects			= require('./routes/objects');
 var dashboards		= require('./routes/dashboards');
+var snippets		= require('./routes/snippets');
 var users			= require('./routes/users');
 var data			= require('./routes/data');
 var flows			= require('./routes/flows');
@@ -143,6 +144,7 @@ app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);
 app.use('/v'+version+'/dashboards', dashboards);
+app.use('/v'+version+'/snippets', snippets);
 app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);

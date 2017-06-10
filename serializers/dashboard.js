@@ -6,7 +6,7 @@ function DashboardTypeSerializer(dashboard) {
   this.serialize = function () {
     return new JSONAPISerializer('dashboard', dashboard, {
     	keyForAttribute: 'underscore_case',
-    	attributes: ['name', 'user_id', 'description'],
+    	attributes: ['name', 'user_id', 'description', 'meta', 'snippets'],
 		topLevelLinks : {
 			parent : sprintf('%s/v%s/dashboards', baseUrl, version)
 		},
@@ -14,7 +14,7 @@ function DashboardTypeSerializer(dashboard) {
 			self : function(dashboard) {
 				return sprintf('%s/v%s/dashboards/%s', baseUrl, version, dashboard.id);
 			},
-			dashboard : function(dashboard) {
+			user : function(dashboard) {
 				if ( dashboard.user_id!='' ) {
 					return sprintf('%s/v%s/users/%s', baseUrl, version, dashboard.user_id);
 				} else {
