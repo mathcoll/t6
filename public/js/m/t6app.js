@@ -5,9 +5,14 @@
 		api_version: 'v2.0.1',
 		spinner: document.querySelector('section#loading-spinner'),
 		baseUrl: '',
-		//baseUrl: 'https://api.internetcollaboratif.info',
 		bearer: '',
+		userHash: '',
+		date_format: 'DD/MM/YYYY, HH:mm',
 	};
+	
+	window.addEventListener('hashchange', function() {
+	    console.log('this view\'s id is ', location.hash.substr(1));
+	});
 
 	// Add service worker code here
 	if ('serviceWorker' in navigator) {
@@ -52,13 +57,13 @@
 	app.updateActions = function(type) {
 		var items = document.querySelectorAll("[data-action='view']");
 		for (var i in items) {
-			if ( (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type && type == 'objects' ) {
+			if ( type == 'objects' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displayObject(item.dataset.id);
 					evt.preventDefault();
 				});
-			} else if ( (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type && type == 'dashboards' ) {
+			} else if ( type == 'dashboards' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displayDashboard(item.dataset.id);
@@ -93,10 +98,10 @@
 					node += app.getField(null, null, app.nl2br(object.attributes.description), false, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
-					node += app.getField('event', 'Created', moment(object.attributes.meta.created).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
+					node += app.getField('event', 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
 				}
 				if ( object.attributes.meta.updated ) {
-					node += app.getField('event', 'Updated', moment(object.attributes.meta.updated).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
+					node += app.getField('event', 'Updated', moment(object.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( object.attributes.meta.revision ) {
 					node += app.getField('update', 'Revision: ', object.attributes.meta.revision, false, false, false, true);
@@ -202,7 +207,7 @@
 				var node;
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<span class=\"mdl-list__item\">";
+				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
 				node += "			</span>";
@@ -211,42 +216,31 @@
 				node += "					<i class='material-icons'>expand_more</i>";
 				node += "				</button>";
 				node += "			</span>";
-				node += "		</span>";
-				node += "	<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+				node += "		</div>";
+				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
 				if ( dashboard.attributes.description ) {
 					node += app.getField(null, null, app.nl2br(dashboard.attributes.description), false, false, false, true);
 				}
 				if ( dashboard.attributes.meta.created ) {
-					node += app.getField('event', 'Created', moment(dashboard.attributes.meta.created).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
+					node += app.getField('event', 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), false, false, false, true);
 				}
 				if ( dashboard.attributes.meta.updated ) {
-					node += app.getField('event', 'Updated', moment(dashboard.attributes.meta.updated).format('DD/MM/YYYY, HH:mm'), false, false, false, true);
+					node += app.getField('event', 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( dashboard.attributes.meta.revision ) {
 					node += app.getField('update', 'Revision: ', dashboard.attributes.meta.revision, false, false, false, true);
 				}
+				node += "		</div>";
 				node += "	</div>";
-				node += "	</div>";
-
 				node += "</section>";
-				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-					var snippet = dashboard.attributes.snippets[i].data;
-					//var icon = snippet.attributes.icon!==undefined?snippet.attributes.icon:icons.snippets;
-					var icon = icons.snippets;
-					node += app.getSnippet(icon, snippet);
-				}
-
 				(containers.dashboard).querySelector('.page-content').innerHTML = node;
-				var showdescription_button = document.querySelector('.showdescription_button');
-				showdescription_button.addEventListener('click', function(evt) {
-					var id = (evt.target.parentElement).getAttribute('for');
-					document.getElementById(id).classList.toggle('hidden');
-					if ( evt.target.innerHTML == 'expand_more' ) {
-						evt.target.innerHTML = 'expand_less';
-					} else {
-						evt.target.innerHTML = 'expand_more';
-					}
-				}, false);
+				
+				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
+					var icon = icons.snippets;
+					app.getSnippet(icon, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
+				}
+				//app.setExpandAction(); // BUG
+
 				app.setSection('dashboard');
 			}
 		})
@@ -255,6 +249,20 @@
 		});
 		app.spinner.setAttribute('hidden', true);
 	};
+	
+	app.setExpandAction = function() {
+		componentHandler.upgradeDom();
+		var showdescription_button = document.querySelector('.showdescription_button');
+		showdescription_button.addEventListener('click', function(evt) {
+			var id = (evt.target.parentElement).getAttribute('for');
+			document.getElementById(id).classList.toggle('hidden');
+			if ( evt.target.innerHTML == 'expand_more' ) {
+				evt.target.innerHTML = 'expand_less';
+			} else {
+				evt.target.innerHTML = 'expand_more';
+			}
+		}, false);
+	}
 
 	app.displayListItem = function(type, width, iconName, title, line1, line2, id) {
 		var node = "" +
@@ -383,7 +391,7 @@
 
 			var myHeaders = new Headers();
 			var myInit = { method: 'GET', headers: myHeaders, 'mode': 'no-cors' };
-			fetch("http://en.gravatar.com/d8122c6b61dcc7c68ecaf56692f6b696.json", myInit)
+			fetch("http://en.gravatar.com/"+app.userHash+".json", myInit)
 			.then(function(fetchResponse){ 
 				return fetchResponse.json();
 			})
@@ -391,12 +399,10 @@
 				var gravatar = response.entry[0];
 				//console.log(gravatar);
 				//console.log(gravatar.profileBackground);
-
 			})
 			.catch(function (error) {
 				toast('fetchProfile error in...' + error, 5000);
 			});
-
 		})
 		.catch(function (error) {
 			toast('fetchProfile error out...' + error, 5000);
@@ -490,27 +496,83 @@
 		return field;
 	}
 
-	app.getSnippet = function(icon, s) {
-		var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+s.id+"'>";
-		snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		snippet +=	"		<span class='mdl-list__item'>";
-		snippet +=	"			<span class='mdl-list__item-primary-content'>";
-		snippet +=	"				<i class='material-icons'>"+icon+"</i>";
-		snippet +=	"				<label>"+s.attributes.name+"</label>";
-		snippet +=	"			</span>";
-		if ( s.attributes.type == 'valuedisplay' ) {
-			snippet += "		<span class='mdl-list__item-secondary-content'>";
-			snippet += "			<span class='mdl-list__item-sub-title' id='snippet-value-"+s.id+"'></span>";
-			snippet += "		</span>";
-		}
-		snippet += "			<span class='mdl-list__item-secondary-action'>";
-		snippet += "				<i class='material-icons'>chevron_right</i>";
-		snippet += "			</span>";
+	app.getSnippet = function(icon, snippet_id, dashboard_container) {
+		app.spinner.removeAttribute('hidden');
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var container = (containers.index).querySelector('.page-content');
+		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
 
-		snippet +=	"		</span>";
-		snippet +=	"	</div>";
-		snippet +=	"</section>";
-		return snippet;
+		fetch(url, myInit)
+		.then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			var my_snippet = response.data[0];
+			var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
+			snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+			snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
+			snippet +=	"			<span class='mdl-list__item-primary-content'>";
+			snippet +=	"				<i class='material-icons'>"+icon+"</i>";
+			snippet +=	"				<span>"+my_snippet.attributes.name+"</span>";
+			snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+			snippet +=	"			</span>";
+			if ( my_snippet.attributes.type == 'valuedisplay' ) {
+				snippet += "		<span class='mdl-list__item-secondary-content'>";
+				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
+				snippet += "		</span>";
+			} 
+			if ( false ) {
+				snippet += "			<span class='mdl-list__item-secondary-action'>";
+				snippet += "				<i class='material-icons'>chevron_right</i>";
+				snippet += "			</span>";
+			} 
+	
+			snippet +=	"		</span>";
+			if ( my_snippet.attributes.type == 'flowgraph' ) {
+				snippet +=	"		<span class='mdl-list__item'>";
+				snippet += "			<span class='mdl-list__item-secondary-content'>";
+				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-graph-"+my_snippet.id+"'></span>";
+				snippet += "			</span>";
+				snippet +=	"		</span>";
+			}
+			snippet +=	"	</div>";
+			snippet +=	"</section>";
+			
+			if ( my_snippet.attributes.type == 'valuedisplay' ) {
+				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=1';
+				
+				fetch(url_snippet, myInit)
+				.then(function(fetchResponse){ 
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					//console.log("Get data from Flow: "+ url_snippet);
+					var id = response.data[0].attributes.id;
+					var time = response.data[0].attributes.time;
+					var value = response.data[0].attributes.value;
+					var unit = response.links.unit!==undefined?response.links.unit:'';
+					var ttl = response.links.ttl;
+					document.getElementById('snippet-value-'+my_snippet.id).innerHTML = value+" "+unit;
+					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + ", " + moment(time).fromNow();;
+				})
+				.catch(function (error) {
+					toast('getSnippet Inside error...' + error, 5000);
+				});
+				//
+				//"?limit=1&order=asc"
+			}
+			dashboard_container.innerHTML += snippet;
+			//console.log(dashboard_container);
+			//componentHandler.upgradeDom();
+			//return snippet;
+		})
+		.catch(function (error) {
+			toast('getSnippet error out...' + error, 5000);
+		});
+		app.spinner.setAttribute('hidden', true);
 	}
 
 	app.getQrcodeImg = function(icon, label, id) {
@@ -536,7 +598,6 @@
 		.then(function(response) {
 			if ( response ) {
 				var container = document.getElementById('qr-'+id);
-				console.log("Get container by Id ==> qr-"+id);
 				container.setAttribute('src', response.data);
 			}
 		})

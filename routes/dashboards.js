@@ -58,19 +58,6 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', bearerAuthToken, function (req, re
 		}
 		var json = dashboards.find(query);
 		if ( json.length > 0 ) {
-			for ( var n=0; n<json.length; n++ ) {
-				if ( (json[n].snippets) && (json[n].snippets).length > 0 ) {
-					for( var i=0; i<(json[n].snippets).length; i++ ) {
-						var snippet_id;
-						if ( (json[n]).snippets[i].data && (json[n]).snippets[i].data.id ) {
-							snippet_id = (json[n]).snippets[i].data.id;
-						} else {
-							snippet_id = (json[n]).snippets[i];
-						}
-						(json[n]).snippets[i] = new SnippetSerializer( snippets.findOne({id: snippet_id}) ).serialize();
-					};
-				}
-			}
 			res.status(200).send(new DashboardSerializer(json).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({'id': 127, 'code': 404, 'message': 'Not Found'}).serialize());

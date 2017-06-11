@@ -26,11 +26,16 @@ html, body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
+html > *:target {
+    display: block;
+    animation: pulse 0.5s linear 1;
+}
 html {
   overflow: hidden;
 }
-
+.material-icons {
+    vertical-align: middle;
+}
 body {
   display: -webkit-box;
   display: -webkit-flex;
