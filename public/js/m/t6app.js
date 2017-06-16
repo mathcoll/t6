@@ -9,10 +9,6 @@
 		userHash: '',
 		date_format: 'DD/MM/YYYY, HH:mm',
 	};
-	
-	window.addEventListener('hashchange', function() {
-	    console.log('this view\'s id is ', location.hash.substr(1));
-	});
 
 	// Add service worker code here
 	if ('serviceWorker' in navigator) {
@@ -37,6 +33,7 @@
 	containers.objects = document.querySelector('section#objects');
 	containers.object = document.querySelector('section#object');
 	containers.flows = document.querySelector('section#flows');
+	containers.flow = document.querySelector('section#flow');
 	containers.dashboards = document.querySelector('section#dashboards');
 	containers.dashboard = document.querySelector('section#dashboard');
 	containers.snippets = document.querySelector('section#snippets');
@@ -52,6 +49,7 @@
 	app.setSection = function(section) {
 		document.querySelector('section.is-active').classList.remove('is-active');
 		document.querySelector('#'+section).classList.add('is-active');
+		
 	};
 
 	app.updateActions = function(type) {
@@ -60,7 +58,13 @@
 			if ( type == 'objects' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
-					app.displayObject(item.dataset.id);
+					app.displayObject(item.dataset.id, false);
+					evt.preventDefault();
+				});
+			} else if ( type == 'flows' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
+				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
+					var item = evt.target.parentNode.parentNode.parentNode;
+					app.displayFlow(item.dataset.id);
 					evt.preventDefault();
 				});
 			} else if ( type == 'dashboards' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
@@ -69,11 +73,96 @@
 					app.displayDashboard(item.dataset.id);
 					evt.preventDefault();
 				});
+			} else if ( type == 'snippets' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
+				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
+					var item = evt.target.parentNode.parentNode.parentNode;
+					app.displaySnippet(item.dataset.id);
+					evt.preventDefault();
+				});
 			}
 		}
-	};
+	}; //updateActions
 
-	app.displayObject = function(id) {
+	app.setListActions = function() {
+		var dialog = document.querySelector('#dialog');
+		var deleteButtons = document.querySelectorAll('#objects .delete-button');
+		for (var d=0;d<deleteButtons.length;d++) {
+			//console.log(deleteButtons[d]);
+			deleteButtons[d].addEventListener('click', function(evt) {
+				dialog.querySelector('h3').innerHTML = 'Delete Object';
+				dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
+				dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+				dialog.showModal();
+				evt.preventDefault();
+				
+				dialog.querySelector('.cancel-button').addEventListener('click', function(evt) {
+					dialog.close();
+					evt.preventDefault();
+				});
+			});
+		}
+		var editButtons = document.querySelectorAll('#objects .edit-button');
+		for (var e=0;e<editButtons.length;e++) {
+			//console.log(editButtons[e]);
+			editButtons[e].addEventListener('click', function(evt) {
+				app.displayObject(evt.currentTarget.dataset.id, true);
+				evt.preventDefault();
+			});
+		}
+		
+		var deleteButtons = document.querySelectorAll('#flows .delete-button');
+		for (var d=0;d<deleteButtons.length;d++) {
+			//console.log(deleteButtons[d]);
+			deleteButtons[d].addEventListener('click', function(evt) {
+				dialog.querySelector('h3').innerHTML = 'Delete Flow';
+				dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
+				dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+				dialog.showModal();
+				evt.preventDefault();
+
+				document.querySelector('#flows .cancel-button').addEventListener('click', function(evt) {
+					dialog.close();
+					evt.preventDefault();
+				});
+			});
+		}
+		
+		var deleteButtons = document.querySelectorAll('#dashboards .delete-button');
+		for (var d=0;d<deleteButtons.length;d++) {
+			//console.log(deleteButtons[d]);
+			deleteButtons[d].addEventListener('click', function(evt) {
+				dialog.querySelector('h3').innerHTML = 'Delete Dashboard';
+				dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
+				dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+				dialog.showModal();
+				evt.preventDefault();
+
+				document.querySelector('#dashboards .cancel-button').addEventListener('click', function(evt) {
+					dialog.close();
+					evt.preventDefault();
+				});
+			});
+		}
+		
+		var deleteButtons = document.querySelectorAll('#snippets .delete-button');
+		for (var d=0;d<deleteButtons.length;d++) {
+			//console.log(deleteButtons[d]);
+			deleteButtons[d].addEventListener('click', function(evt) {
+				dialog.querySelector('h3').innerHTML = 'Delete Snippet';
+				dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
+				dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+				dialog.showModal();
+				evt.preventDefault();
+
+				document.querySelector('.cancel-button').addEventListener('click', function(evt) {
+					dialog.close();
+					evt.preventDefault();
+				});
+			});
+		}
+	} //setListActions
+
+	app.displayObject = function(id, isEditMode) {
 		app.spinner.removeAttribute('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
@@ -87,15 +176,17 @@
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var object = response.data[i];
-				var node = "" +
-				"<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">" +
-				"	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">" +
-				"		<div class=\"mdl-card__title\">" +
-				"			<h2 class=\"mdl-card__title-text\">"+object.attributes.name+"</h2>" +
-				"		</div>";
-
+				var node = "";
+				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-card__title\">";
+				node += "			<h2 class=\"mdl-card__title-text\">";
+				node += "				<i class=\"material-icons\">"+icons.objects+"</i>";
+				node += "				"+object.attributes.name;
+				node += "			</h2>";
+				node += "		</div>";
 				if ( object.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(object.attributes.description), false, false, false, true);
+					node += app.getField(null, null, app.nl2br(object.attributes.description), isEditMode, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
 					node += app.getField('event', 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
@@ -107,36 +198,35 @@
 					node += app.getField('update', 'Revision: ', object.attributes.meta.revision, false, false, false, true);
 				}
 				if ( object.attributes.type ) {
-					node += app.getField('extension', 'Type', object.attributes.type, false, false, false, true);
+					node += app.getField('extension', 'Type', object.attributes.type, isEditMode, false, false, true);
 				}
 				if ( object.attributes.ipv4 ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, false, false, false, true);
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEditMode, false, false, true);
 				}
 				if ( object.attributes.ipv6 ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, false, false, false, true);
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, isEditMode, false, false, true);
 				}
-				if ( object.attributes.is_public == "true" ) {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, false, false, false, true);
+				if ( object.attributes.is_public == "true" && !isEditMode ) {
+					node += app.getField('visibility', 'Visibility', object.attributes.is_public, isEditMode, false, false, true);
 					node += app.getQrcodeImg('event', '', object.id, false, false, false);
 					app.getQrcode('event', '', object.id, false, false, false);
 				} else {
-					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, false, false, false, true);
+					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEditMode, false, false, true);
 				}
 				if ( object.attributes.longitude ) {
-					node += app.getField('place', 'Longitude', object.attributes.longitude, false, false, false, true);
+					node += app.getField('place', 'Longitude', object.attributes.longitude, isEditMode, false, false, true);
 				}
 				if ( object.attributes.latitude ) {
-					node += app.getField('place', 'Latitude', object.attributes.latitude, false, false, false, true);
+					node += app.getField('place', 'Latitude', object.attributes.latitude, isEditMode, false, false, true);
 				}
 				if ( object.attributes.position ) {
-					node += app.getField('pin_drop', 'Position', object.attributes.position, false, false, false, true);
+					node += app.getField('pin_drop', 'Position', object.attributes.position, isEditMode, false, false, true);
 				}
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
 				}
-				
-				"	</div>" +
-				"</section>";
+				node += "	</div>";
+				node += "</section>";
 
 				(containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
@@ -188,7 +278,107 @@
 			toast('displayObject error occured...' + error, 5000);
 		});
 		app.spinner.setAttribute('hidden', true);
-	};
+	}; //displayObject
+
+	app.displayFlow = function(id) {
+		app.spinner.removeAttribute('hidden');
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+'/'+app.api_version+'/flows/'+id;
+		fetch(url, myInit)
+		.then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			for (var i=0; i < (response.data).length ; i++ ) {
+				var flow = response.data[i];
+				var node = "";
+				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-card__title\">";
+				node += "			<h2 class=\"mdl-card__title-text\">";
+				node += "				<i class=\"material-icons\">"+icons.flows+"</i>";
+				node += "				"+flow.attributes.name+"</h2>";
+				node += "		</div>";
+				if ( flow.attributes.description ) {
+					node += app.getField(null, null, app.nl2br(flow.attributes.description), false, false, false, true);
+				}
+				if ( flow.attributes.meta.created ) {
+					node += app.getField('event', 'Created', moment(flow.attributes.meta.created).format(app.date_format), false, false, false, true);
+				}
+				if ( flow.attributes.meta.updated ) {
+					node += app.getField('event', 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), false, false, false, true);
+				}
+				if ( flow.attributes.meta.revision ) {
+					node += app.getField('update', 'Revision: ', flow.attributes.meta.revision, false, false, false, true);
+				}
+				if ( flow.attributes.type ) {
+					node += app.getField('extension', 'Type', flow.attributes.type, false, false, false, true);
+				}
+				if ( flow.attributes.permission ) {
+					node += app.getField('visibility', 'Permission', flow.attributes.permission, false, false, false, true);
+				}
+				node += "	</div>";
+				node += "</section>";
+				
+				node += "<section class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
+				node += "	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+				node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node +=	"				<span>"+flow.attributes.name+" ("+flow.attributes.unit+")</span>";
+				node +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+flow.id+"'></span>";
+				node +=	"			</span>";
+				node +=	"		</span>";
+				node += "		<span class='mdl-list__item' id='flow-graph-"+flow.id+"' style='width:100%; height:200px;'>";
+				node += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
+				node += "		</span>";
+				var options = {
+						series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
+						colors: [flow.attributes.color],
+						points : { show : true },
+						legend: { show: true, position: "sw" },
+						grid: {
+							borderWidth: { top: 0, right: 0, bottom: 0, left: 0 },
+							borderColor: { top: "", right: "", bottom: "", left: "" },
+							// markings: weekendAreas,
+							clickable: true,
+							hoverable: true,
+							autoHighlight: true,
+							mouseActiveRadius: 5
+						},
+						xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+						yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+				};
+
+				var my_flow_data_url = app.baseUrl+'/'+app.api_version+'/data/'+flow.id+'?limit=100&sort=desc';
+				fetch(my_flow_data_url, myInit)
+				.then(function(fetchResponse){ 
+					return fetchResponse.json();
+				})
+				.then(function(data) {
+					var dataset = [data.data.map(function(i) {
+						return [i.attributes.timestamp, i.attributes.value];
+				    })];
+					$.plot($('#flow-graph-'+flow.id), dataset, options);
+				})
+				.catch(function (error) {
+					toast('displayFlow error out...' + error, 5000);
+				});
+				node +=	"	</div>";
+				node +=	"</section>";
+
+				(containers.flow).querySelector('.page-content').innerHTML = node;
+				componentHandler.upgradeDom();
+				app.setSection('flow');
+			}
+		})
+		.catch(function (error) {
+			toast('displayFlow error occured...' + error, 5000);
+		});
+		app.spinner.setAttribute('hidden', true);
+	}; //displayFlow
 
 	app.displayDashboard = function(id) {
 		app.spinner.removeAttribute('hidden');
@@ -234,12 +424,12 @@
 				node += "	</div>";
 				node += "</section>";
 				(containers.dashboard).querySelector('.page-content').innerHTML = node;
+				app.setExpandAction();
+				componentHandler.upgradeDom();
 				
 				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-					var icon = icons.snippets;
-					app.getSnippet(icon, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
+					app.getSnippet(icons.snippets, dashboard.attributes.snippets[i]);
 				}
-				//app.setExpandAction(); // BUG
 
 				app.setSection('dashboard');
 			}
@@ -248,8 +438,25 @@
 			toast('displayDashboard error occured...' + error, 5000);
 		});
 		app.spinner.setAttribute('hidden', true);
-	};
+	}; //displayDashboard
 	
+	app.getAllEventListeners = function(el) {
+		var allListeners = {}, listeners;
+
+		while(el) {
+			listeners = getEventListeners(el);
+
+			for(event in listeners) {
+				allListeners[event] = allListeners[event] || [];
+				allListeners[event].push({listener: listeners[event], element: el});  
+			}
+
+			el = el.parentNode;
+		}
+
+		return allListeners;
+	}
+
 	app.setExpandAction = function() {
 		componentHandler.upgradeDom();
 		var showdescription_button = document.querySelector('.showdescription_button');
@@ -262,37 +469,89 @@
 				evt.target.innerHTML = 'expand_more';
 			}
 		}, false);
-	}
+	} //setExpandAction
 
-	app.displayListItem = function(type, width, iconName, title, line1, line2, id) {
-		var node = "" +
-		"<section class=\"mdl-grid mdl-cell--"+width+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+id+"\">" +
-		"	<div class=\"mdl-cell mdl-cell--"+width+"-col mdl-card mdl-shadow--2dp\">" +
-		"		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">" +
-		"			<h2 class=\"mdl-card__title-text\">"+title+"</h2>" +
-		"		</div>" +
-		"		<div class=\"mdl-card__supporting-text\">" +
-		" 			"+line1+
-		"		</div>" +
-		"		<div class=\"mdl-card__actions mdl-card--border\">" +
-		"			<button id=\"menu_"+id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">" +
-		"				<i class=\"material-icons\">"+iconName+"</i>" +
-		"			</button>" +
-		"			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+id+"\">" +
-		"				<li class=\"mdl-menu__item\">" +
-		"					<i class=\"material-icons mdl-js-button mdl-js-ripple-effect\">delete</i>Delete" +
-		"				</li>" +
-		"				<li class=\"mdl-menu__item\">" +
-		"					<i class=\"material-icons\">edit</i>Edit" +
-		"				</li>" +
-		"			</ul>" +
-		"		</div>" +
-		"	</div>" +
-		"</section>";
+	app.displaySnippet = function(id) {
+		app.spinner.removeAttribute('hidden');
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+id;
+		fetch(url, myInit)
+		.then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			for (var i=0; i < (response.data).length ; i++ ) {
+				var snippet = response.data[i];
+				var node = "";
+				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-card__title\">";
+				node += "			<h2 class=\"mdl-card__title-text\">";
+				node += "				<i class=\"material-icons\">"+icons.snippets+"</i>";
+				node += "				"+snippet.attributes.name+"</h2>";
+				node += "		</div>";
+				node += "	</div>";
+				node += "</section>";
+				
+				node += "<section class='mdl-grid mdl-cell--12-col' id='"+snippet.id+"'>";
+				node += "	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+				node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node +=	"				<span>"+snippet.attributes.name+"</span>";
+				node +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+snippet.id+"'></span>";
+				node +=	"			</span>";
+				node +=	"		</span>";
+				node +=	"	</div>";
+				node +=	"</section>";
+
+				(containers.snippet).querySelector('.page-content').innerHTML = node;
+				componentHandler.upgradeDom();
+				app.setSection('snippet');
+			}
+		})
+		.catch(function (error) {
+			toast('displayFlow error occured...' + error, 5000);
+		});
+		app.spinner.setAttribute('hidden', true);
+	}; //displaySnippet
+
+	app.displayListItem = function(type, width, iconName, item) {
+		var name = item.attributes.name!==undefined?item.attributes.name:"";
+		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, 128):"";
+		var node = "";
+		node += "<section class=\"mdl-grid mdl-cell--"+width+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
+		node += "	<div class=\"mdl-cell mdl-cell--"+width+"-col mdl-card mdl-shadow--2dp\">";
+		node += "		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">";
+		node += "			<h2 class=\"mdl-card__title-text\">";
+		node += "			<i class=\"material-icons\">"+iconName+"</i>";
+		node += "			"+name+"</h2>";
+		node += "		</div>";
+		if ( description ) {
+			node += app.getField(null, null, description, false, false, false, true);
+		}
+		node += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		node += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		node += "				<i class=\"material-icons\">menu</i>";
+		node += "			</button>";
+		node += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
+		node += "				<li class=\"mdl-menu__item\">";
+		node += "					<i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">delete</i>Delete";
+		node += "				</li>";
+		node += "				<li class=\"mdl-menu__item\">";
+		node += "					<i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">edit</i>Edit";
+		node += "				</li>";
+		node += "			</ul>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "</section>";
+		
 		return node;
-	}
+	} //displayListItem
 
-	app.fetchItems = function(type) {
+	app.fetchItems = function(type, filter) {
 		app.spinner.removeAttribute('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
@@ -304,12 +563,18 @@
 			var width = cardsWidth.objects;
 			var container = (containers.objects).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/objects';
+			if ( filter !== undefined ) {
+				url += "?name="+escape(filter);
+			}
 			var title = 'My Objects';
 		} else if (type == 'flows') {
 			var icon = icons.flows;
 			var width = cardsWidth.flows;
 			var container = (containers.flows).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/flows';
+			if ( filter !== undefined ) {
+				url += "?name="+escape(filter);
+			}
 			var title = 'My Flows';
 		} else if (type == 'dashboards') {
 			var icon = icons.dashboards;
@@ -334,13 +599,17 @@
 				return fetchResponse.json();
 			})
 			.then(function(response) {
+				if ( filter !== undefined ) { // If we have some filters we should clear the display first
+					container.innerHTML = "";
+				}
 				for (var i=0; i < (response.data).length ; i++ ) {
 					var item = response.data[i];
-					var node = app.displayListItem(type, width, icon, item.attributes.name!==undefined?item.attributes.name:"", item.attributes.description!==undefined?item.attributes.description.substring(0, 128):"", item.attributes.position!==undefined?item.attributes.position:"", item.id);
+					var node = app.displayListItem(type, width, icon, item);
 					container.innerHTML += node;
 				}
 				componentHandler.upgradeDom();
 				app.updateActions(type);
+				app.setListActions(type);
 			})
 			.catch(function (error) {
 				toast('fetchItems '+type+' error occured...'+ error, 5000);
@@ -349,7 +618,7 @@
 			toast('Error: No type defined', 5000);
 		}
 		app.spinner.setAttribute('hidden', true);
-	};
+	}; //fetchItems
 
 	app.fetchProfile = function() {
 		app.spinner.removeAttribute('hidden');
@@ -367,48 +636,44 @@
 		})
 		.then(function(response) {
 			var user = response.data;
-			//console.log(user);
-			container.innerHTML = "" +
-			"<section class=\"mdl-grid\">" +
-			"	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp mdl-card--horizontal\">" +
-			"		<div class=\"mdl-card__media\" style=\"background:no-repeat scroll 50% 50%\">" +
-			"			<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"User Profile\">" +
-			"		</div>" +
-			"		<div class=\"mdl-card__title\">" +
-			"			<h2 class=\"mdl-card__title-text\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h2>" +
-			"		</div>" +
-			"		<div class=\"mdl-card__supporting-text\">" +
-			"		</div>" +
-			"		<div class=\"mdl-card__actions mdl-card--border\">" +
-			"			<a rel=\"nofollow\" class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">Get Started</a>" +
-			"		</div>" +
-			"		<div class=\"mdl-card__menu\">" +
-			"			<button class=\"mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect\"><i class=\"material-icons\">share</i></button>" +
-			"		</div>" +
-			"	</div>" +
-			"</section>";
-			//console.log(container.innerHTML);
-
-			var myHeaders = new Headers();
-			var myInit = { method: 'GET', headers: myHeaders, 'mode': 'no-cors' };
-			fetch("http://en.gravatar.com/"+app.userHash+".json", myInit)
-			.then(function(fetchResponse){ 
-				return fetchResponse.json();
-			})
-			.then(function(response) {
-				var gravatar = response.entry[0];
-				//console.log(gravatar);
-				//console.log(gravatar.profileBackground);
-			})
-			.catch(function (error) {
-				toast('fetchProfile error in...' + error, 5000);
-			});
+			var gravatar = user.attributes.gravatar.entry[0];
+			var node = "";
+			node += "<section class=\"mdl-grid\">";
+			node += "	<div class=\"mdl-card mdl-card--small mdl-cell mdl-cell--12-col mdl-shadow--2dp mdl-card--horizontal\">";
+			node += "		<div class=\"mdl-card__supporting-text\" style=\"background: url("+gravatar.profile_background.url+") no-repeat scroll 50% 50%\">";
+			
+			node += "		</div>";
+			node += "		<div class=\"mdl-card__image\" style=\"background: url(//gravatar.com/avatar/"+hex_md5(user.attributes.email)+") no-repeat scroll 50% 50%\">";
+			//node += "			<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"User Profile\">";
+			node += "  			<h2 class=\"mdl-card__title\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h2>";
+			node += "			<ul class=\"mdl-card__subtitle\">";
+			node += "				<li><i class=\"material-icons\">location_on</i>" + gravatar.current_location + "</li>";
+			for (var phone in gravatar.phone_numbers) {
+				node += "			<li><i class=\"material-icons\">phone</i>" + gravatar.phone_numbers[phone].value + "</li>";
+			}
+			node += "			</ul>";
+			node += "		</div>";
+            node += "  		<div class=\"mdl-card__supporting-text\">";
+            node += "			<ul>"; 
+            for (var account in gravatar.accounts) {
+            	node += "  	 		  <li><a href=\""+gravatar.accounts[account].url+"\"><i class=\"material-icons\">link</i>" + gravatar.accounts[account].shortname + "</a></li>";
+            }
+            node += "  			</ul>";
+            node += "  		</div>";
+			node += "  		<div class=\"mdl-card__actions mdl-card--border\">";
+			node += "    		<button class=\"mdl-card__button mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">SHARE</button>";
+			node += "    		<button class=\"mdl-card__button mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">LEARN MORE</button>";
+			node += "  		</div>";
+			node += "	</div>";
+			node += "</section>";
+			container.innerHTML = node;
+			
 		})
 		.catch(function (error) {
 			toast('fetchProfile error out...' + error, 5000);
 		});
 		app.spinner.setAttribute('hidden', true);
-	};
+	}; //fetchProfile
 
 	app.fetchIndex = function() {
 		app.spinner.removeAttribute('hidden');
@@ -450,7 +715,7 @@
 			toast('fetchIndex error out...' + error, 5000);
 		});
 		app.spinner.setAttribute('hidden', true);
-	};
+	}; //fetchIndex
 
 	app.getField = function(icon, label, value, isEditable, isActionable, isThreeLines, isVisible) {
 		var field = "";
@@ -494,15 +759,15 @@
 		//- ---------
 		
 		return field;
-	}
+	} //getField
 
-	app.getSnippet = function(icon, snippet_id, dashboard_container) {
+	app.getSnippet = function(icon, snippet_id) {
 		app.spinner.removeAttribute('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var container = (containers.index).querySelector('.page-content');
+		var dashboard_container = (containers.dashboard).querySelector('.page-content');
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
 
 		fetch(url, myInit)
@@ -532,18 +797,51 @@
 	
 			snippet +=	"		</span>";
 			if ( my_snippet.attributes.type == 'flowgraph' ) {
-				snippet +=	"		<span class='mdl-list__item'>";
-				snippet += "			<span class='mdl-list__item-secondary-content'>";
-				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-graph-"+my_snippet.id+"'></span>";
-				snippet += "			</span>";
-				snippet +=	"		</span>";
+				snippet += "		<span class='mdl-list__item' id='snippet-graph-"+my_snippet.id+"' style='width:100%; height:200px;'>";
+				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
+				snippet += "		</span>";
+				var options = {
+					series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
+					colors: [my_snippet.attributes.color],
+					points : { show : true },
+					legend: { show: true, position: "sw" },
+					grid: {
+						borderWidth: { top: 0, right: 0, bottom: 0, left: 0 },
+						borderColor: { top: "", right: "", bottom: "", left: "" },
+						// markings: weekendAreas,
+						clickable: true,
+						hoverable: true,
+						autoHighlight: true,
+						mouseActiveRadius: 5
+					},
+					xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+					yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+				};
+
+				var my_snippet_data_url = app.baseUrl+'/'+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?limit=100&sort=desc';
+				fetch(my_snippet_data_url, myInit)
+				.then(function(fetchResponse){ 
+					return fetchResponse.json();
+				})
+				.then(function(data) {
+					var dataset = [data.data.map(function(i) {
+						return [i.attributes.timestamp, i.attributes.value];
+				    })];
+					$.plot($('#snippet-graph-'+my_snippet.id), dataset, options);
+				})
+				.catch(function (error) {
+					toast('fetchIndex error out...' + error, 5000);
+				});
 			}
 			snippet +=	"	</div>";
 			snippet +=	"</section>";
+			var c = document.createElement('div');
+			c.innerHTML = snippet;
+			dashboard_container.appendChild(c);
+			componentHandler.upgradeDom();
 			
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
 				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=1';
-				
 				fetch(url_snippet, myInit)
 				.then(function(fetchResponse){ 
 					return fetchResponse.json();
@@ -561,19 +859,15 @@
 				.catch(function (error) {
 					toast('getSnippet Inside error...' + error, 5000);
 				});
-				//
-				//"?limit=1&order=asc"
 			}
-			dashboard_container.innerHTML += snippet;
 			//console.log(dashboard_container);
-			//componentHandler.upgradeDom();
 			//return snippet;
 		})
 		.catch(function (error) {
 			toast('getSnippet error out...' + error, 5000);
 		});
 		app.spinner.setAttribute('hidden', true);
-	}
+	} //getSnippet
 
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item'>";
@@ -582,7 +876,7 @@
 		field += "	</span>";
 		field += "</div>";
 		return field;
-	}
+	} //getQrcodeImg
 
 	app.getQrcode = function(icon, label, id) {
 		var myHeaders = new Headers();
@@ -605,19 +899,41 @@
 			toast('fetch Qrcode error out...' + error, 5000);
 		});
 		app.spinner.setAttribute('hidden', true);
-	}
+	} //getQrcode
 
 	app.getMap = function(icon, id, longitude, latitude, isEditable, isActionable) {
 		var field = "<div class='mdl-list__item'>";
 		field += "	<span class='mdl-list__item-primary-content' id='"+id+"' style='width:100%; height:400px;'></span>";
 		field += "</div>";
 		return field;
-	}
+	} //getMap
+
+	document.getElementById('search-exp').addEventListener('keypress', function(e) {
+	    if(e.keyCode === 13) {
+	        e.preventDefault();
+	        var input = this.value;
+	        alert("Searching for "+input);
+	    }
+	});
+	
+	document.getElementById('filter-exp').addEventListener('keypress', function(e) {
+	    if(e.keyCode === 13) {
+	        e.preventDefault();
+	        var input = this.value;
+	        var type = 'objects';
+	        if ( document.querySelector('section#objects').classList.contains('is-active') ) {
+	        	type = 'objects';
+	        } else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
+	        	type = 'flows';
+	        }
+	        app.fetchItems(type, this.value);
+	    }
+	});
 
 	app.fetchIndex('index');
 	app.fetchItems('objects');
+	app.fetchItems('flows');
 	app.fetchItems('dashboards');
 	app.fetchItems('snippets');
-	app.fetchItems('flows');
-	//fetchProfile();
+	app.fetchProfile();
 })();
