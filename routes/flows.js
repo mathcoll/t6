@@ -26,6 +26,7 @@ var tokens;
 router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 	var results = Array();
 	var flow_id = req.params.flow_id;
+	var name = req.query.name;
 	if ( req.token !== undefined && req.user !== undefined ) {
 		flows	= db.getCollection('flows');
 		users	= db.getCollection('users');
@@ -33,7 +34,30 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 		var permissions = (req.bearer.permissions);
 		permissions.map(function(permission) {
 			if ( permission.permission == '644' || permission.permission == '600' ) { // TODO: if Owner: then should be >= 4, etc ...
-				var flow = flows.findOne({'id': permission.flow_id });
+				var query;
+				if ( flow_id !== undefined ) {
+					query = {
+					'$and': [
+							{ 'id': permission.flow_id },
+						]
+					};
+				} else {
+					if ( name !== undefined ) {
+						query = {
+						'$and': [
+								{ 'id': permission.flow_id },
+								{ 'name': { '$regex': [name, 'i'] } }
+							]
+						};
+					} else {
+						query = {
+						'$and': [
+								{ 'id': permission.flow_id },
+							]
+						};
+					}
+				}
+				var flow = flows.findOne(query);
 				if ( flow && flow_id && flow_id == permission.flow_id ) results.push(flow);
 				else if ( flow && !flow_id ) results.push(flow);
 			}
