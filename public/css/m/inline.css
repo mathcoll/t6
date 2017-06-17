@@ -37,6 +37,13 @@ html > *:target {
 html {
     overflow: hidden;
 }
+.mdl-layout__drawer-button {
+	margin: 0 !important;
+}
+#search-exp::placeholder,
+#filter-exp::placeholder {
+	color: rgba(255,255,255,.6);
+}
 .material-icons {
     vertical-align: middle;
 }
@@ -72,10 +79,9 @@ body {
 .mdl-list__item .mdl-list__item-secondary-content {
 	margin-left: 0 !important;
 }
-.mdl-card--small .mdl-card__title {
-    color: #000000;
-    left: 88px;
-    top: 8px;
+section#profile .mdl-card--small .mdl-card__title {
+    left: 90px;
+    top: 20px;
     -moz-user-select: none;
     font-size: 24px;
     font-weight: 400;
@@ -87,18 +93,15 @@ body {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-.mdl-card--small .mdl-card__image {
+section#profile .mdl-card--small .mdl-card__image {
     border-radius: 1px 0 0 1px;
     left: 0;
-    min-height: 100px;
-    max-height: 136px;
-    opacity: 1;
     top: 0;
-    width: 88px;
+    height: 156px;
+    opacity: 1;
 }
-.mdl-card__subtitle {
+section#profile .mdl-card__subtitle {
     -moz-user-select: none;
-    color: #000000;
     display: block;
     font-size: 14px;
     overflow: hidden;
@@ -111,6 +114,12 @@ body {
     transition: all 200ms cubic-bezier(0.075, 0.82, 0.165, 1) 0s;
     white-space: nowrap;
 }
+section#profile .mdl-list__item {
+    text-overflow: ellipsis;
+    padding: 0 10px 0 88px;
+    min-height: auto !important;
+}
+
 .mdl-card__supporting-text {
 	width: 100% !important;
 }
@@ -158,6 +167,17 @@ body {
 .mdl-dialog__content {
     padding: 20px 24px 24px 24px;
     color: rgba(0, 0, 0, 0.54);
+}
+@media (max-width: 479px) {
+	.mdl-cell {
+	    margin: 5px 0 !important;
+	}
+	section.mdl-grid {
+	    padding: 0 !important;
+	}
+	.mdl-cell--12-col, .mdl-cell--12-col-phone.mdl-cell--12-col-phone {
+		width:100% !important;
+	}
 }
 .btn.success {
   
@@ -911,6 +931,7 @@ section > button {
     color: #ffffff !important;
     display: block !important;
 }
+.mdl-list__item { color: inherit !important; }
 .mdl-layout__title,
 .mdl-layout-title {
     color: #ffffff;
@@ -919,8 +940,8 @@ section > button {
     bottom: 1em !important;
 }
 .mdl-layout__tab-bar {
-    padding: 0 0 0 20px !important;
-    width: 100% !important;
+    padding:0 0 0 45px !important;
+    width: calc(100% - 60px) !important;
 }
 .mdl-layout__tab-bar-button {
     width: 30px !important;

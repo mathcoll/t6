@@ -34,7 +34,7 @@
 	profile_button.addEventListener('click', setTab, false);
 
 	function setTab(evt) {
-		//console.log('setTab');
+		window.scrollTo(0, 0);
 		var href = evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href');
 		var tabId = (href).substr(1);
 		hideAllTabs();

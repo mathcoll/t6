@@ -12,7 +12,6 @@ html.ltr
     link(rel='apple-touch-icon', href='#{baseUrl_https}/img/m/icons/icon-152x152.png')
     
     link(rel="stylesheet", href="//openlayers.org/en/v4.1.1/css/ol.css")
-    script(type='text/javascript', src='//openlayers.org/en/v4.1.1/build/ol.js')
 
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
@@ -29,10 +28,18 @@ html.ltr
 
           nav.mdl-navigation
             .mdl-textfield.mdl-js-textfield.mdl-textfield--expandable.mdl-textfield--floating-label.mdl-textfield--align-right
-              label.mdl-button.mdl-js-button.mdl-button--icon(for='waterfall-exp')
+              label.mdl-button.mdl-js-button.mdl-button--icon(for='search-exp')
                 i.material-icons search
               .mdl-textfield__expandable-holder
-                input#waterfall-exp.mdl-textfield__input(type='text', name='sample')
+                form
+                  input#search-exp.mdl-textfield__input(type='text', name='q', placeholder='Search')
+
+            .mdl-textfield.mdl-js-textfield.mdl-textfield--expandable.mdl-textfield--floating-label.mdl-textfield--align-right
+              label.mdl-button.mdl-js-button.mdl-button--icon(for='filter-exp')
+                i.material-icons tune
+              .mdl-textfield__expandable-holder
+                form
+                  input#filter-exp.mdl-textfield__input(type='text', name='name', placeholder='Filter by name')
 
           nav.mdl-navigation.mdl-layout--large-screen-only
             a.mdl-navigation__link(href='/status')
@@ -76,7 +83,7 @@ html.ltr
         div.side-nav__header(style="height: 171px; position: relative; width: 100%; background: #795548 url(#{baseUrl_https}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
           img(src="//gravatar.com/avatar/d8122c6b61dcc7c68ecaf56692f6b696", style="border-radius: 50%;padding: 20px 10px 10px 10px")
           div.mdl-layout-title(style="bottom:auto !important;") Mathieu Lory
-          div.mdl-layout-subheader(style="color: #ffffff; margin: 20px;") mathieu@internetcollaboratif.info
+          div.mdl-layout-subheader(style="color: #ffffff;") mathieu@internetcollaboratif.info
         nav.mdl-navigation.menu__list
           a.mdl-navigation__link(href='#index')
             i.material-icons home
@@ -150,6 +157,11 @@ html.ltr
         //- View Object
         section#object.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content
+
+  
+        //- Edit Object
+        section#object_edit.mdl-tabs__panel.mdl-layout__tab-panel
+          .page-content
               
 
         //- List Flows
@@ -174,6 +186,12 @@ html.ltr
         section#flow.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content 
 
+  
+        //- Edit Flow
+        section#flow_edit.mdl-tabs__panel.mdl-layout__tab-panel
+          .page-content
+
+
         //- List Snippets
         section#snippets.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content
@@ -193,7 +211,13 @@ html.ltr
 
         //- View Snippet
         section#snippet.mdl-tabs__panel.mdl-layout__tab-panel
-          .page-content 
+          .page-content
+
+  
+        //- Edit Snippet
+        section#snippet_edit.mdl-tabs__panel.mdl-layout__tab-panel
+          .page-content
+
             
         //- List Dashboards
         section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel
@@ -216,6 +240,12 @@ html.ltr
         section#dashboard.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content 
 
+  
+        //- Edit Dashboard
+        section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel
+          .page-content
+
+
         //- List Rules
         section#rules.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content 
@@ -234,13 +264,18 @@ html.ltr
                 i.material-icons content_paste
 
 
+        //- Edit Rules
+        section#rule_edit.mdl-tabs__panel.mdl-layout__tab-panel
+          .page-content
+
+
         //- List Mqtt
         section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content 
 
 
         //- View Sign In
-        section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel.mdl-grid.mdl-cell--12-col
+        section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content
             section.content-grid.mdl-grid
               .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
@@ -264,7 +299,7 @@ html.ltr
               
 
         //- View Sign Up
-        section#signup.mdl-tabs__panel.mdl-layout__tab-panel.mdl-grid.mdl-cell--12-col
+        section#signup.mdl-tabs__panel.mdl-layout__tab-panel
           .page-content
             section.content-grid.mdl-grid
               .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
@@ -289,10 +324,6 @@ html.ltr
 
         //- View My Profile
         section#profile.mdl-tabs__panel.mdl-layout__tab-panel
-          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope My Profile
           .page-content
               
 
@@ -303,14 +334,24 @@ html.ltr
               .mdl-subheader-content
                 span.ng-scope Settings
           .page-content
+          
+        //- Modal Dialog
+        dialog#dialog.mdl-dialog
+          h3.mdl-dialog__title
+          .mdl-dialog__content
+          .mdl-dialog__actions
 
       .menu__overlay
       .toast__container
 
-      script(src='#{baseUrl_https}/js/m/t6app.js', async='')
-      script(src='#{baseUrl_https}/js/m/md5.js')
-      script(src='#{baseUrl_https}/js/m/material.min.js')
-      script(src='#{baseUrl_https}/js/m/toast.js')
-      script(src='#{baseUrl_https}/js/m/offline.js')
-      script(src='#{baseUrl_https}/js/m/menu.js')
-      script(src='#{baseUrl_https}/js/m/moment.min-2.18.1.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/m/t6app.js', async='')
+      script(type='text/javascript', src='#{baseUrl_https}/js/m/md5.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/m/material.min.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/m/toast.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/m/offline.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/m/menu.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/t6.min.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/flot/jquery.flot.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/flot/jquery.flot.time.min.js')
+      script(type='text/javascript', src='#{baseUrl_https}/js/m/moment.min-2.18.1.js')
+      script(type='text/javascript', src='//openlayers.org/en/v4.1.1/build/ol.js')
