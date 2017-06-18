@@ -251,7 +251,7 @@ router.post('/me/token', function (req, res) {
 router.get('/me/token', bearerAuthToken, function (req, res) {
 	if ( req.user !== undefined ) {
 		var options = {
-		  url: 'http://en.gravatar.com/' + req.user.mail_hash + '.json',
+		  url: 'https://en.gravatar.com/' + req.user.mail_hash + '.json',
 		  headers: {
 		    'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/44.0'
 		  }

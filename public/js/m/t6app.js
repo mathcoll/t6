@@ -110,12 +110,17 @@
 				deleteButtons[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = 'Delete Object';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
-					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(evt) {
 						dialog.close();
+						evt.preventDefault();
+					});
+					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+						dialog.close();
+						toast('Object should be deleted...', 5000);
 						evt.preventDefault();
 					});
 				});
@@ -134,8 +139,8 @@
 				//console.log(deleteButtons[d]);
 				deleteButtons[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = 'Delete Flow';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
-					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
+					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
 					evt.preventDefault();
 	
@@ -143,16 +148,29 @@
 						dialog.close();
 						evt.preventDefault();
 					});
+					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+						dialog.close();
+						toast('Flow should be deleted...', 5000);
+						evt.preventDefault();
+					});
 				});
 			}
+			var editButtons = document.querySelectorAll('#flows .edit-button');
+			for (var e=0;e<editButtons.length;e++) {
+				//console.log(editButtons[e]);
+				editButtons[e].addEventListener('click', function(evt) {
+					app.displayObject(evt.currentTarget.dataset.id, true);
+					evt.preventDefault();
+				});
+			}	
 		} else if ( type == 'dashboards' ) {
 			var deleteButtons = document.querySelectorAll('#dashboards .delete-button');
 			for (var d=0;d<deleteButtons.length;d++) {
 				//console.log(deleteButtons[d]);
 				deleteButtons[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = 'Delete Dashboard';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
-					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
+					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
 					evt.preventDefault();
 	
@@ -160,16 +178,29 @@
 						dialog.close();
 						evt.preventDefault();
 					});
+					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+						dialog.close();
+						toast('Dashboard should be deleted...', 5000);
+						evt.preventDefault();
+					});
 				});
 			}
+			var editButtons = document.querySelectorAll('#dashboards .edit-button');
+			for (var e=0;e<editButtons.length;e++) {
+				//console.log(editButtons[e]);
+				editButtons[e].addEventListener('click', function(evt) {
+					app.displayObject(evt.currentTarget.dataset.id, true);
+					evt.preventDefault();
+				});
+			}	
 		} else if ( type == 'snippets' ) {
 			var deleteButtons = document.querySelectorAll('#snippets .delete-button');
 			for (var d=0;d<deleteButtons.length;d++) {
 				//console.log(deleteButtons[d]);
 				deleteButtons[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = 'Delete Snippet';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
-					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button cancel-button">No, Cancel</button> <button class="mdl-button btn danger">Yes</button>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
+					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
 					evt.preventDefault();
 	
@@ -177,6 +208,19 @@
 						dialog.close();
 						evt.preventDefault();
 					});
+					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+						dialog.close();
+						toast('Snippet should be deleted...', 5000);
+						evt.preventDefault();
+					});
+				});
+			}
+			var editButtons = document.querySelectorAll('#snippets .edit-button');
+			for (var e=0;e<editButtons.length;e++) {
+				//console.log(editButtons[e]);
+				editButtons[e].addEventListener('click', function(evt) {
+					app.displayObject(evt.currentTarget.dataset.id, true);
+					evt.preventDefault();
 				});
 			}
 		}
@@ -218,6 +262,11 @@
 				if ( object.attributes.meta.revision ) {
 					node += app.getField('update', 'Revision: ', object.attributes.meta.revision, false, false, false, true);
 				}
+				node += "	</div>";
+				node += "</section>";
+				
+				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.type ) {
 					node += app.getField('extension', 'Type', object.attributes.type, isEditMode, false, false, true);
 				}
@@ -234,6 +283,19 @@
 				} else {
 					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEditMode, false, false, true);
 				}
+				node += "	</div>";
+				node += "</section>";
+				
+				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				for ( var i in object.attributes.parameters ) {
+					node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEditMode, false, false, true);
+				}
+				node += "	</div>";
+				node += "</section>";
+				
+				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.longitude ) {
 					node += app.getField('place', 'Longitude', object.attributes.longitude, isEditMode, false, false, true);
 				}
@@ -292,6 +354,7 @@
 					});
 					map.updateSize();
 		        }
+				
 				app.setSection('object');
 			}
 		})

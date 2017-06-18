@@ -7,7 +7,7 @@ function ObjectTypeSerializer(object) {
 	//console.log(object);
     return new JSONAPISerializer('object', object, {
     	keyForAttribute: 'underscore_case',
-    	attributes: ['name', 'user_id', 'type', 'description', 'position', 'ipv4', 'ipv6', 'isPublic', 'longitude', 'latitude', 'meta'],
+    	attributes: ['name', 'user_id', 'type', 'description', 'position', 'ipv4', 'ipv6', 'isPublic', 'longitude', 'latitude', 'meta', 'parameters'],
 		topLevelLinks : {
 			parent : sprintf('%s/v%s/objects', baseUrl, version)
 		},
