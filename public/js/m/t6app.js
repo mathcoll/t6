@@ -27,7 +27,7 @@
 	});*/
 
 	var cardsWidth = {'objects': '12', 'flows': '12', 'snippets': '12', 'dashboards': '12', 'rules': '12', 'mqtts': '12', 'login': '12'}
-	var icons = {'objects': 'devices_other', 'flows': 'settings_input_component', 'snippets': 'widgets', 'dashboards': 'dashboards', 'rules': '', 'mqtts': '', 'login': ''}
+	var icons = {'objects': 'devices_other', 'flows': 'settings_input_component', 'snippets': 'widgets', 'dashboards': 'dashboards', 'rules': '', 'mqtts': '', 'login': '', 'datapoints': 'filter_center_focus'}
 	var containers = {};
 	containers.index = document.querySelector('section#index');
 	containers.objects = document.querySelector('section#objects');
@@ -444,23 +444,31 @@
 					yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
 				};
 
+				var datapoints = "";
 				var my_flow_data_url = app.baseUrl+'/'+app.api_version+'/data/'+flow.id+'?limit=100&sort=desc';
 				fetch(my_flow_data_url, myInit)
 				.then(function(fetchResponse){ 
 					return fetchResponse.json();
 				})
 				.then(function(data) {
+					datapoints += "<section class='mdl-grid mdl-cell--12-col' id='last-datapoints_"+flow.id+"'>";
+					datapoints += "	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					var dataset = [data.data.map(function(i) {
+						datapoints += app.getField(icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value, false, false, false, true);
 						return [i.attributes.timestamp, i.attributes.value];
 				    })];
 					$.plot($('#flow-graph-'+flow.id), dataset, options);
+					datapoints += "	</div>";
+					datapoints += "</section>";
+					
+					(containers.flow).querySelector('.page-content').innerHTML += datapoints;
 				})
 				.catch(function (error) {
 					toast('displayFlow error out...' + error, 5000);
 				});
 				node +=	"	</div>";
 				node +=	"</section>";
-
+				
 				(containers.flow).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
@@ -742,37 +750,38 @@
 			var gravatar = user.attributes.gravatar.entry[0];
 			var node = "";
 			node += "<section class=\"mdl-grid\">";
-			node += "	<div class=\"mdl-card mdl-card--small mdl-cell mdl-cell--12-col mdl-shadow--2dp mdl-card--horizontal\">";
-			//node += "		<div class=\"mdl-card__supporting-text\">";
-			//node += "		</div>";
-			node += "		<div class=\"mdl-card__image\" style=\"color:"+gravatar.profile_background.color+"; background:url("+gravatar.profile_background.url+") no-repeat scroll 50% 50%\">";
-			node += "  			<h2 class=\"mdl-card__title\" style=\"color:"+gravatar.profile_background.color+";\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h2>";
-			node += "			<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"User Profile\">";
-			node += app.getField('location_on', 'Location', gravatar.current_location, false, false, false, true);
+			
+			
+			
+			
+			node += "<div class=\"card card-user\">";
+			node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important; height:100px\">";
+			node += "		<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
+			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
+			node += "		<div class=\"subhead\">";
+			node += 			gravatar.current_location;
+			node += "		</div>";
+			node += "	</div>";
+			node += "	<div class=\"card-body\">";
 			for (var phone in gravatar.phone_numbers) {
 				node += app.getField('phone', gravatar.phone_numbers[phone].type, gravatar.phone_numbers[phone].value, false, false, false, true);
 			}
-			node += "		</div>";
-            node += "  		<div class=\"mdl-card__supporting-text mdl-grid--no-spacing\">";
-            node += "			<ul class='no-padding'>"; 
+			node += "		<ul class=\"social-links\">";
             for (var account in gravatar.accounts) {
-            	node += "  	 		  <li><a href=\""+gravatar.accounts[account].url+"\"><i class=\"material-icons\">link</i>" + gravatar.accounts[account].shortname + "</a></li>";
+            	node += "  	 	<li><a href=\""+gravatar.accounts[account].url+"\"><i class=\"material-icons\">link</i>" + gravatar.accounts[account].shortname + "</a></li>";
             }
-            node += "  			</ul>";
-            node += "  		</div>";
-            node += "  		<div class=\"mdl-card__supporting-text mdl-grid--no-spacing\">";
-            node += "			<ul class='no-padding'>"; 
+			node += "		</ul>";
+            node += "		<ul class='social-links'>"; 
             for (var url in gravatar.urls) {
-            	node += "  	 		  <li><a href=\""+gravatar.urls[url].value+"\"><i class=\"material-icons\">bookmark</i>" + gravatar.urls[url].title + "</a></li>";
+            	node += "  		<li><a href=\""+gravatar.urls[url].value+"\"><i class=\"material-icons\">bookmark</i>" + gravatar.urls[url].title + "</a></li>";
             }
-            node += "  			</ul>";
-            node += "  		</div>";
-			node += "  		<div class=\"mdl-card__actions mdl-card--border\">";
-			node += "    		<button class=\"mdl-card__button mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\"" + gravatar.profile_url + "\">SEE PROFILE</button>";
-			node += "    		<button class=\"mdl-card__button mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">EDIT ON GRAVATAR</button>";
-			node += "  		</div>";
+            node += "  		</ul>";
 			node += "	</div>";
-			node += "</section>";
+			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
+			node += "		<a href=\"#\" class=\"pull-left\"><small>xxxyyyzzz</small></a>";
+			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profile_url+"\">Edit</a>";
+			node += "	</div>";
+			node += "</div>";
 			container.innerHTML = node;
 			
 		})
@@ -884,31 +893,70 @@
 		.then(function(response) {
 			var my_snippet = response.data[0];
 			var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
-			snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-			snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
-			snippet +=	"			<span class='mdl-list__item-primary-content'>";
-			snippet +=	"				<i class='material-icons'>"+icon+"</i>";
-			snippet +=	"				<span>"+my_snippet.attributes.name+"</span>";
-			snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-			snippet +=	"			</span>";
 			
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
-				snippet += "		<span class='mdl-list__item-secondary-content'>";
-				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
-				snippet += "		</span>";
+				snippet += "	<div class=\"valuedisplay tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "		<div class=\"contextual\">";
+				snippet += "			<div class='mdl-list__item-primary-content'>";
+				snippet += "				<i class='material-icons'>"+icon+"</i>";
+				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet += "			</div>";
+				snippet += "			<div class='mdl-list__item-secondary-content'>";
+				snippet += "				<span class='snippet-value' id='snippet-value-"+my_snippet.id+"'></span>";
+				snippet += "				<span class='snippet-unit' id='snippet-unit-"+my_snippet.id+"'></span>";
+				snippet += "			</div>";
+				snippet += "		</div>";
+				snippet += "		<div class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet += "		<div class=\"chart without-time chart-balance\"></div>";
+				snippet += "	</div>";
+				
 			} else if ( my_snippet.attributes.type == 'sparkline' ) {
-				snippet += "		<span class='mdl-list__item-secondary-content'>";
-				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
+				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
+				snippet +=	"			<span class='mdl-list__item-primary-content'>";
+				snippet +=	"				<i class='material-icons'>"+icon+"</i>";
+				snippet +=	"				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet +=	"			</span>";
+				snippet += "			<span class='mdl-list__item-secondary-content'>";
+				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
+				snippet += "			</span>";
+				snippet += "			<span class='mdl-list__item' id='snippet-sparkline-"+my_snippet.id+"' style='width:100%; height:200px;'>";
+				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'>sparkline</span>";
+				snippet += "			</span>";
 				snippet += "		</span>";
-				snippet += "		<span class='mdl-list__item' id='snippet-sparkline-"+my_snippet.id+"' style='width:100%; height:200px;'>";
-				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
+				snippet += "	</div>";
+				
+			} else if ( my_snippet.attributes.type == 'simplerow' ) {
+				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
+				snippet +=	"			<span class='mdl-list__item-primary-content'>";
+				snippet +=	"				<i class='material-icons'>"+icon+"</i>";
+				snippet +=	"				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet +=	"			</span>";
+				snippet += "			<span class='mdl-list__item-secondary-content'>";
+				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
+				snippet += "			</span>";
 				snippet += "		</span>";
+				snippet += "	</div>";
+				
 			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
-				snippet += "	</span>";
-				snippet += "	<span class='mdl-list__item-primary-content'>";
-				snippet += "		<span class='mdl-list__item' id='snippet-graph-"+my_snippet.id+"' style='width:100%; height:200px;'>";
-				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
+				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
+				snippet +=	"			<span class='mdl-list__item-primary-content'>";
+				snippet +=	"				<i class='material-icons'>"+icon+"</i>";
+				snippet +=	"				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet +=	"			</span>";
 				snippet += "		</span>";
+				snippet += "		<span class='mdl-list__item-primary-content'>";
+				snippet += "			<span class='mdl-list__item' id='snippet-graph-"+my_snippet.id+"' style='width:100%; height:200px;'>";
+				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
+				snippet += "			</span>";
+				snippet += "		</span>";
+				snippet += "	</div>";
+				
 				var options = {
 					series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
 					colors: [my_snippet.attributes.color],
@@ -941,23 +989,21 @@
 				.catch(function (error) {
 					toast('fetchIndex error out...' + error, 5000);
 				});
-			}
-			
-			if ( false ) {
-				snippet += "			<span class='mdl-list__item-secondary-action'>";
-				snippet += "				<i class='material-icons'>chevron_right</i>";
-				snippet += "			</span>";
+			} else {
+				snippet += "		<span class='mdl-list__item-secondary-content'>";
+				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.attributes.type+"'></span>";
+				snippet += "		</span>";
+				snippet += "	</span>";
+				snippet += "	</div>";
 			}
 
-			snippet += "	</span>";
-			snippet += "	</div>";
 			snippet += "</section>";
 			var c = document.createElement('div');
 			c.innerHTML = snippet;
 			dashboard_container.appendChild(c);
 			componentHandler.upgradeDom();
 			
-			if ( my_snippet.attributes.type == 'valuedisplay' ) {
+			if ( my_snippet.attributes.type == 'simplerow' || my_snippet.attributes.type == 'valuedisplay' ) {
 				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=1';
 				fetch(url_snippet, myInit)
 				.then(function(fetchResponse){ 
@@ -970,7 +1016,8 @@
 					var value = response.data[0].attributes.value;
 					var unit = response.links.unit!==undefined?response.links.unit:'';
 					var ttl = response.links.ttl;
-					document.getElementById('snippet-value-'+my_snippet.id).innerHTML = value+" "+unit;
+					document.getElementById('snippet-value-'+my_snippet.id).innerHTML = value;
+					document.getElementById('snippet-unit-'+my_snippet.id).innerHTML = unit;
 					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + ", " + moment(time).fromNow();;
 				})
 				.catch(function (error) {
@@ -1048,9 +1095,11 @@
 	});
 
 	app.fetchIndex('index');
-	app.fetchItems('objects');
-	app.fetchItems('flows');
-	app.fetchItems('dashboards');
-	app.fetchItems('snippets');
-	app.fetchProfile();
+	if( app.bearer != undefined ) {
+		app.fetchItems('objects');
+		app.fetchItems('flows');
+		app.fetchItems('dashboards');
+		app.fetchItems('snippets');
+		app.fetchProfile();
+	}
 })();
