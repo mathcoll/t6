@@ -76,8 +76,45 @@ body {
     align-content: stretch;
     background: #ececec;
 }
+
+/* Snippets */
+div .heading {
+    font-weight: 600;
+}
+div.valuedisplay .snippet-value {
+    color: #ffffff;
+    display: inline;
+    font-size: 65px;
+    font-weight: 600;
+}
+div.valuedisplay .snippet-unit {
+    color: #ffffff;
+    display: inline;
+    font-size: 65px;
+    font-weight: 600;
+}
+div.valuedisplay .mdl-list__item-secondary-content {
+	background: url(/img/m/snippets/valuedisplay.jpg) 50% 59%;
+    width: 100%;
+    min-height: 190px;
+    text-align: center;
+    display: block;
+    padding-top: 25%;
+    position: relative;
+}
+
+/* End Snippets */
 .mdl-list__item .mdl-list__item-secondary-content {
 	margin-left: 0 !important;
+}
+.card-dashboard-graph {
+    background: #ffffff none repeat scroll 0 0;
+    height: 250px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 16px;
+    margin: 5px 0;
 }
 section#profile .mdl-card--small .mdl-card__title {
     left: 90px;
@@ -116,10 +153,46 @@ section#profile .mdl-card__subtitle {
 }
 section#profile .mdl-list__item {
     text-overflow: ellipsis;
-    padding: 0 10px 0 88px;
+    padding: 0 10px 0 18px;
     min-height: auto !important;
 }
-
+section#profile .card.card-user .card-heading.heading-left .user-image {
+    left: 30px;
+    top: 30px;
+}
+section#profile .card.card-user .card-heading .user-image {
+    border: 5px solid #ffffff;
+    border-radius: 40px;
+    height: 80px;
+    position: absolute;
+    width: 80px;
+}
+section#profile .card.card-user .card-heading.heading-left .card-title {
+    left: 125px;
+    position: absolute;
+    top: 25px;
+}
+section#profile ul.social-links {
+    padding: 0 10px 0 18px;
+}
+section#profile .card .card-heading .card-title {
+	color: #fff !important;
+    color: inherit;
+    float: left;
+    font-weight: bold;
+    line-height: 26px;
+    margin: 0;
+    padding: 12px 0;
+}
+section#profile .card.card-user .card-heading.heading-left .subhead {
+	color: #fff !important;
+    left: 125px;
+    position: absolute;
+    top: 75px;
+}
+section#profile .subhead {
+    font-size: 20px;
+}
 .mdl-card__supporting-text {
 	width: 100% !important;
 }
@@ -414,11 +487,11 @@ a {
     box-sizing: border-box;
     background: #fff;
     border-radius: 2px;
-    margin: 16px;
+    margin: 16px 0;
+    width: 100%;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 .demo-card-wide.mdl-card {
-    //width: 22em;
     margin: .5em;
     float: left;
 }
