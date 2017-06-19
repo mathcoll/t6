@@ -167,16 +167,29 @@ router.all('*', function (req, res, next) {
 		unlimited = true; 
 		req.bearer.user_id = null;
 	}
-	
-	var o = {
-		key:		req.bearer!==undefined?req.bearer.key:req.session.bearer!==undefined?req.session.bearer.key:null,
-		secret:		req.bearer!==undefined?req.bearer.secret:req.session.bearer!==undefined?req.session.bearer.secret:null,
-		user_id:	req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null,
-		session_id:	req.bearer!==undefined?req.bearer.session_id:req.session.bearer!==undefined?req.session.bearer.session_id:null,
-		verb:		req.method,
-		url:		req.originalUrl,
-		date:		moment().format('x')
-	};
+
+	var o = {};
+	if( req.bearer && req.session ) {
+		o = {
+			key:		req.bearer!==undefined?req.bearer.key:req.session.bearer!==undefined?req.session.bearer.key:'',
+			secret:		req.bearer!==undefined?req.bearer.secret:req.session.bearer!==undefined?req.session.bearer.secret:null,
+			user_id:	req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null,
+			session_id:	req.bearer!==undefined?req.bearer.session_id:req.session.bearer!==undefined?req.session.bearer.session_id:null,
+			verb:		req.method,
+			url:		req.originalUrl,
+			date:		moment().format('x')
+		};
+	} else {
+		o = {
+			key:		'',
+			secret:		'',
+			user_id:	'',
+			session_id:	'',
+			verb:		req.method,
+			url:		req.originalUrl,
+			date:		moment().format('x')
+		};
+	}
 	
 	/*var queryQ = { '$and': [
        {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null},
