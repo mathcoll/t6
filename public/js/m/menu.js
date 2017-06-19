@@ -24,9 +24,9 @@
 			(menuItems[item]).addEventListener('click', setTab, false);
 		}
 	};
-	//menuIconElement.addEventListener('click', showMenu, false);
-	menuOverlayElement.addEventListener('click', hideMenu, false);
-	menuElement.addEventListener('transitionend', onTransitionEnd, false);
+	//menuIconElement.addEventListener('click', showMenu, {passive: true});
+	menuOverlayElement.addEventListener('click', hideMenu, {passive: true});
+	menuElement.addEventListener('transitionend', onTransitionEnd, {passive: true});
 	
 	settings_button.addEventListener('click', setTab, false);
 	login_button.addEventListener('click', setTab, false);
@@ -105,7 +105,7 @@
 	document.body.addEventListener('touchstart', function(event) {
 		touchStartPoint = event.changedTouches[0].pageX;
 		touchMovePoint = touchStartPoint;
-	}, false);
+	}, {passive: true});
 
 	//`TouchMove` event to determine user touch movement
 	document.body.addEventListener('touchmove', function(event) {
@@ -114,13 +114,13 @@
 			menuElement.style.transform = "translateX(0)";
 			//showMenu();
 		}
-	}, false);
+	}, {passive: true});
 
 	function onTransitionEnd() {
 		if (touchStartPoint < 10) {
 			//menuElement.style.transform = "translateX(0)";
 			menuOverlayElement.classList.add('menu__overlay--show');
-			menuElement.removeEventListener('transitionend', onTransitionEnd, false); 
+			menuElement.removeEventListener('transitionend', onTransitionEnd, {passive: true}); 
 			//showMenu();
 		}
 	}
