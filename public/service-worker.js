@@ -1,10 +1,9 @@
 
-var dataCacheName= 't6-cache-2017-06-13';
-var cacheName= 't6-cache-2017-06-13';
+var dataCacheName= 't6-cache-2017-06-19_1033';
+var cacheName= 't6-cache-2017-06-19_1033';
 var filesToCache = [
     '/m',
     '/manifest.json',
-    '/css/m/inline.css',
     '/js/m/material.min.js',
     '/js/m/t6app.js',
     '/js/m/menu.js',
@@ -14,6 +13,9 @@ var filesToCache = [
     '/js/flot/jquery.flot.js',
     '/js/flot/jquery.flot.time.min.js',
     '/js/m/moment.min-2.18.1.js',
+    '/js/OpenLayers/ol-4.1.1.min.js',
+    '/css/m/inline.css',
+    '/css/OpenLayers/ol-4.1.1.min.css',
 
     '/img/opl_img3.jpg',
     '/img/opl_img2.jpg',
@@ -86,18 +88,22 @@ self.addEventListener('fetch', function(event) {
 					return response;
 				}
 				console.log('No response found in cache. About to fetch from network...');
-				toast('No response found in cache. About to fetch from network...', 5000);
+				//toast('No response found in cache. About to fetch from network...', 5000);
 				return fetch(event.request).then(function(response) {
+					/*
 					caches.open(cacheName).then(function(cache) {
 						console.log('About to put');
 						cache.put(event.request, response.clone());
 						console.log('Put is done');
 						//toast('Put is done.', 5000);
 					});
+					*/
+					caches.open(cacheName).then(function(cache) {
+						return cache.addAll([event.request]);
+					})
 					return response;
 				}).catch(function(error) {
 					console.error('Fetching failed:', error);
-
 					throw error;
 				});
 			})
