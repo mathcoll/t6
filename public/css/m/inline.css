@@ -638,6 +638,9 @@ a {
 .material-icons.md-48 {
     font-size: 48px;
 }
+dialog .mdl-dialog__title {
+	padding: 0;
+}
 .pull-right {
     float: right!important;
     text-align: right!important;
