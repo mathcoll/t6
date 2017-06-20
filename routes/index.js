@@ -223,6 +223,7 @@ router.all('*', function (req, res, next) {
 			res.header('X-RateLimit-Remaining', limit-i);
 			//res.header('X-RateLimit-Reset', '');
 		}
+		res.header('Cache-Control', 'no-cache, max-age=360, private, must-revalidate, proxy-revalidate');
 		
 		if( (req.user && i >= limit) && !unlimited ) {
 			//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
