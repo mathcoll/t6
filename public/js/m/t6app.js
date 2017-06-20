@@ -27,7 +27,17 @@
 	});*/
 
 	var cardsWidth = {'objects': '12', 'flows': '12', 'snippets': '12', 'dashboards': '12', 'rules': '12', 'mqtts': '12', 'login': '12'}
-	var icons = {'objects': 'devices_other', 'flows': 'settings_input_component', 'snippets': 'widgets', 'dashboards': 'dashboards', 'rules': '', 'mqtts': '', 'login': '', 'datapoints': 'filter_center_focus'}
+	var icons = {
+		'objects': 'devices_other',
+		'flows': 'settings_input_component',
+		'snippets': 'widgets',
+		'dashboards': 'dashboards',
+		'rules': '',
+		'mqtts': '',
+		'login': '',
+		'datapoints': 'filter_center_focus',
+		'type': 'label',
+	}
 	var containers = {};
 	containers.index = document.querySelector('section#index');
 	containers.objects = document.querySelector('section#objects');
@@ -108,7 +118,7 @@
 			for (var d=0;d<deleteButtons.length;d++) {
 				//console.log(deleteButtons[d]);
 				deleteButtons[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = 'Delete Object';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Object';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
@@ -138,7 +148,7 @@
 			for (var d=0;d<deleteButtons.length;d++) {
 				//console.log(deleteButtons[d]);
 				deleteButtons[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = 'Delete Flow';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Flow';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
@@ -168,7 +178,7 @@
 			for (var d=0;d<deleteButtons.length;d++) {
 				//console.log(deleteButtons[d]);
 				deleteButtons[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = 'Delete Dashboard';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Dashboard';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
@@ -198,7 +208,7 @@
 			for (var d=0;d<deleteButtons.length;d++) {
 				//console.log(deleteButtons[d]);
 				deleteButtons[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = 'Delete Snippet';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Snippet';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
@@ -268,7 +278,7 @@
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.type ) {
-					node += app.getField('extension', 'Type', object.attributes.type, isEditMode, false, false, true);
+					node += app.getField(icons.type, 'Type', object.attributes.type, isEditMode, false, false, true);
 				}
 				if ( object.attributes.ipv4 ) {
 					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEditMode, false, false, true);
@@ -631,7 +641,8 @@
 
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
-		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, 128):"";
+		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, 128):'';
+		var attributeType = item.attributes.type!==undefined?item.attributes.type:"";
 		var node = "";
 		node += "<section class=\"mdl-grid mdl-cell--"+width+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
 		node += "	<div class=\"mdl-cell mdl-cell--"+width+"-col mdl-card mdl-shadow--2dp\">";
@@ -642,6 +653,15 @@
 		node += "		</div>";
 		if ( description ) {
 			node += app.getField(null, null, description, false, false, false, true);
+		}
+		if ( item.attributes.flows!==undefined?item.attributes.flows.length>-1:null ) {
+			node += app.getField(icons.flows, 'Flows #', item.attributes.flows.length, false, false, false, true);
+		}
+		if ( attributeType!==undefined ) {
+			node += app.getField(icons.type, 'Type', attributeType, false, false, false, true);
+		}
+		if ( item.attributes.color!==undefined ) {
+			node += app.getField('format_color_fill', 'Color', item.attributes.color, false, false, false, true);
 		}
 		node += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		node += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
@@ -1095,7 +1115,7 @@
 	});
 
 	app.fetchIndex('index');
-	if( app.bearer != undefined ) {
+	if( app.bearer != "" ) {
 		app.fetchItems('objects');
 		app.fetchItems('flows');
 		app.fetchItems('dashboards');

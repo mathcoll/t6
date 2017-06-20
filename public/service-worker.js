@@ -1,6 +1,6 @@
 
-var dataCacheName= 't6-cache-2017-06-19_1033';
-var cacheName= 't6-cache-2017-06-19_1033';
+var dataCacheName= 't6-cache-2017-06-20_2337';
+var cacheName= 't6-cache-2017-06-20_2337';
 var filesToCache = [
     '/m',
     '/manifest.json',
@@ -80,7 +80,7 @@ self.addEventListener('fetch', function(e) {
 */
 self.addEventListener('fetch', function(event) {
 	console.log('Handling fetch event for', event.request.url);
-	if (event.request.url.indexOf('2.0.1') > -1) {
+	if (event.request.url.indexOf('2.0.1') < -1) { //////////////////////////////////////// REMOVING CACHE
 		event.respondWith(
 			caches.match(event.request).then(function(response) {
 				if (response) {
