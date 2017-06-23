@@ -21,10 +21,6 @@
 			console.log('[ServiceWorker] error occured...'+ error);
 		});
 	}
-	
-	/*Notification.requestPermission(function(status) {
-		// status is "granted", if accepted by user
-	});*/
 
 	var cardsWidth = {'objects': '12', 'flows': '12', 'snippets': '12', 'dashboards': '12', 'rules': '12', 'mqtts': '12', 'login': '12'}
 	var icons = {
@@ -110,6 +106,14 @@
 			}
 		}
 	}; //setItemsClickAction
+	
+	function fetchStatusHandler(response) {
+	  if (response.status === 200) {
+	    return response;
+	  } else {
+	    throw new Error(response.statusText);
+	  }
+	}
 
 	app.setListActions = function(type) {
 		var dialog = document.querySelector('#dialog');
@@ -122,15 +126,32 @@
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
+					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
 					
-					dialog.querySelector('.cancel-button').addEventListener('click', function(evt) {
+					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
 						dialog.close();
 						evt.preventDefault();
 					});
-					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						dialog.close();
-						toast('Object should be deleted...', 5000);
+						var myHeaders = new Headers();
+						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'DELETE', headers: myHeaders };
+						var url = app.baseUrl+'/'+app.api_version+'/objects/'+myId;
+						fetch(url, myInit)
+						.then(
+							fetchStatusHandler
+						).then(function(fetchResponse){ 
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							toast('Object has been deleted...', 5000);
+						})
+						.catch(function (error) {
+							toast('Object has not been deleted...', 5000);
+						});
 						evt.preventDefault();
 					});
 				});
@@ -152,15 +173,32 @@
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
+					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
-	
-					dialog.querySelector('.cancel-button').addEventListener('click', function(evt) {
+					
+					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
 						dialog.close();
 						evt.preventDefault();
 					});
-					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						dialog.close();
-						toast('Flow should be deleted...', 5000);
+						var myHeaders = new Headers();
+						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'DELETE', headers: myHeaders };
+						var url = app.baseUrl+'/'+app.api_version+'/flows/'+myId;
+						fetch(url, myInit)
+						.then(
+							fetchStatusHandler
+						).then(function(fetchResponse){ 
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							toast('Flow has been deleted...', 5000);
+						})
+						.catch(function (error) {
+							toast('Flow has not been deleted...', 5000);
+						});
 						evt.preventDefault();
 					});
 				});
@@ -182,15 +220,32 @@
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
+					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
-	
-					dialog.querySelector('.cancel-button').addEventListener('click', function(evt) {
+					
+					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
 						dialog.close();
 						evt.preventDefault();
 					});
-					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						dialog.close();
-						toast('Dashboard should be deleted...', 5000);
+						var myHeaders = new Headers();
+						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'DELETE', headers: myHeaders };
+						var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+myId;
+						fetch(url, myInit)
+						.then(
+							fetchStatusHandler
+						).then(function(fetchResponse){ 
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							toast('Dashboard has been deleted...', 5000);
+						})
+						.catch(function (error) {
+							toast('Dashboard has not been deleted...', 5000);
+						});
 						evt.preventDefault();
 					});
 				});
@@ -212,15 +267,32 @@
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
+					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
-	
-					dialog.querySelector('.cancel-button').addEventListener('click', function(evt) {
+					
+					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
 						dialog.close();
 						evt.preventDefault();
 					});
-					dialog.querySelector('.yes-button').addEventListener('click', function(evt) {
+					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						dialog.close();
-						toast('Snippet should be deleted...', 5000);
+						var myHeaders = new Headers();
+						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'DELETE', headers: myHeaders };
+						var url = app.baseUrl+'/'+app.api_version+'/snippets/'+myId;
+						fetch(url, myInit)
+						.then(
+							fetchStatusHandler
+						).then(function(fetchResponse){ 
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							toast('Snippet has been deleted...', 5000);
+						})
+						.catch(function (error) {
+							toast('Snippet has not been deleted...', 5000);
+						});
 						evt.preventDefault();
 					});
 				});
@@ -642,7 +714,7 @@
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
 		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, 128):'';
-		var attributeType = item.attributes.type!==undefined?item.attributes.type:"";
+		var attributeType = item.attributes.type!==undefined?item.attributes.type:'';
 		var node = "";
 		node += "<section class=\"mdl-grid mdl-cell--"+width+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
 		node += "	<div class=\"mdl-cell mdl-cell--"+width+"-col mdl-card mdl-shadow--2dp\">";
@@ -657,7 +729,7 @@
 		if ( item.attributes.flows!==undefined?item.attributes.flows.length>-1:null ) {
 			node += app.getField(icons.flows, 'Flows #', item.attributes.flows.length, false, false, false, true);
 		}
-		if ( attributeType!==undefined ) {
+		if ( attributeType !== '' ) {
 			node += app.getField(icons.type, 'Type', attributeType, false, false, false, true);
 		}
 		if ( item.attributes.color!==undefined ) {
@@ -859,7 +931,7 @@
 		if ( isThreeLines == true) {
 			field = "<div class='mdl-list__item mdl-list__item--three-line "+hidden+"'>";
 		} else {
-			field = "<div class='mdl-list__item "+hidden+"'>";
+			field = "<div class='mdl-list__item small-padding "+hidden+"'>";
 		}
 
 		//- PRIMARY
@@ -1122,4 +1194,8 @@
 		app.fetchItems('snippets');
 		app.fetchProfile();
 	}
+	
+	Notification.requestPermission(function(status) {
+		// status is "granted", if accepted by user
+	});
 })();
