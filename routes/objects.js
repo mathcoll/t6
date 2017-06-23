@@ -224,7 +224,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
 });
 
 /**
- * @api {delete} /objects Delete an Object
+ * @api {delete} /objects/:object_id Delete an Object
  * @apiName Delete an Object
  * @apiGroup Object
  * @apiVersion 2.0.1
