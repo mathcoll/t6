@@ -50,6 +50,10 @@ html {
 .mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
     font-size: 12px !important;
 }
+.small-padding {
+	min-height: auto !important;
+	padding: 5px 16px !important;
+}
 body {
     display: -webkit-box;
     display: -webkit-flex;
