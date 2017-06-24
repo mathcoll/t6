@@ -116,10 +116,15 @@ self.addEventListener('fetch', function(event) {
 self.addEventListener('push', function(event) {
 	//console.log('[ServiceWorker] Push Received.');
 	//console.log('[ServiceWorker] Push had this data: ', event.data.text());
-	const title = 't6 notification';
+	var notif = JSON.parse(event.data.text());
+	const title = notif.title!==null?notif.title:'t6 notification';
 	const options = {
-		body: event.data.text(),
-		icon: '/img/m/icons/icon-32x32.png',
+		body: notif.body,
+		icon: notif.icon!==null?notif.icon:'/img/m/icons/icon-128x128.png',
 	};
-	event.waitUntil(self.registration.showNotification(title, options));
+	if ( notif.type == 'message' ) {
+		event.waitUntil(self.registration.showNotification(title, options));
+	} else {
+		console.log(notif);
+	}
 });
