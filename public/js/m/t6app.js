@@ -9,20 +9,22 @@
 		userHash: '',
 		date_format: 'DD/MM/YYYY, HH:mm',
 		applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
+		icons: {
+			'objects': 'devices_other',
+			'flows': 'settings_input_component',
+			'snippets': 'widgets',
+			'dashboards': 'dashboards',
+			'rules': '',
+			'mqtts': '',
+			'login': '',
+			'datapoints': 'filter_center_focus',
+			'type': 'label',
+			'settings': 'settings',
+			'menu': 'menu',
+		}
 	};
 
 	var cardsWidth = {'objects': '12', 'flows': '12', 'snippets': '12', 'dashboards': '12', 'rules': '12', 'mqtts': '12', 'login': '12'}
-	var icons = {
-		'objects': 'devices_other',
-		'flows': 'settings_input_component',
-		'snippets': 'widgets',
-		'dashboards': 'dashboards',
-		'rules': '',
-		'mqtts': '',
-		'login': '',
-		'datapoints': 'filter_center_focus',
-		'type': 'label',
-	}
 	var containers = {};
 	containers.index = document.querySelector('section#index');
 	containers.objects = document.querySelector('section#objects');
@@ -86,7 +88,23 @@
 		})
 		.then(function(pushSubscription) {
 			console.log('Go to the settings to see the endpoints details for push notifications.');
-			(containers.settings).querySelector('.page-content').innerHTML = '<div>' + JSON.stringify(pushSubscription) + '</div>';
+			var settings = "";
+			var j = JSON.parse(JSON.stringify(pushSubscription));
+			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+			settings += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+			settings += "		<div class=\"mdl-card__title\">";
+			settings += "			<h2 class=\"mdl-card__title-text\">";
+			settings += "				<i class=\"material-icons\">"+app.icons.settings+"</i>";
+			settings += "				API Push";
+			settings += "			</h2>";
+			settings += "		</div>";
+			settings += app.getField('cloud', 'endpoint', j.endpoint, 'text', false, false, true);
+			settings += app.getField('vpn_key', 'key', j.keys.p256dh, 'text', false, false, true);
+			settings += app.getField('vpn_lock', 'auth', j.keys.auth, 'text', false, false, true);
+			settings += "	</div>";
+			settings += "</section>";
+
+			(containers.settings).querySelector('.page-content').innerHTML = settings;
 			return pushSubscription;
 		})
 		.catch(function (error) {
@@ -370,7 +388,7 @@
 		}
 	} //setListActions
 
-	app.displayObject = function(id, isEditMode) {
+	app.displayObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
 		app.spinner.removeAttribute('hidden');
 		var myHeaders = new Headers();
@@ -390,12 +408,12 @@
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-card__title\">";
 				node += "			<h2 class=\"mdl-card__title-text\">";
-				node += "				<i class=\"material-icons\">"+icons.objects+"</i>";
+				node += "				<i class=\"material-icons\">"+app.icons.objects+"</i>";
 				node += "				"+object.attributes.name;
 				node += "			</h2>";
 				node += "		</div>";
 				if ( object.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(object.attributes.description), isEditMode, false, false, true);
+					node += app.getField(null, null, app.nl2br(object.attributes.description), isEdit==true?'textarea':false, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
 					node += app.getField('event', 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
@@ -412,20 +430,20 @@
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.type ) {
-					node += app.getField(icons.type, 'Type', object.attributes.type, isEditMode, false, false, true);
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'text':false, false, false, true);
 				}
 				if ( object.attributes.ipv4 ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEditMode, false, false, true);
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEdit==true?'text':false, false, false, true);
 				}
 				if ( object.attributes.ipv6 ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, isEditMode, false, false, true);
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, isEdit==true?'text':false, false, false, true);
 				}
-				if ( object.attributes.is_public == "true" && !isEditMode ) {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, isEditMode, false, false, true);
+				if ( object.attributes.is_public == "true" && isEdit==false ) {
+					node += app.getField('visibility', 'Visibility', object.attributes.is_public, isEdit==true?'select':false, false, false, true);
 					node += app.getQrcodeImg('event', '', object.id, false, false, false);
 					app.getQrcode('event', '', object.id, false, false, false);
 				} else {
-					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEditMode, false, false, true);
+					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEdit==true?'switch':false, false, false, true);
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -433,7 +451,7 @@
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				for ( var i in object.attributes.parameters ) {
-					node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEditMode, false, false, true);
+					node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true);
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -441,13 +459,13 @@
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.longitude ) {
-					node += app.getField('place', 'Longitude', object.attributes.longitude, isEditMode, false, false, true);
+					node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
 				}
 				if ( object.attributes.latitude ) {
-					node += app.getField('place', 'Latitude', object.attributes.latitude, isEditMode, false, false, true);
+					node += app.getField('place', 'Latitude', object.attributes.latitude, isEdit==true?'text':false, false, false, true);
 				}
 				if ( object.attributes.position ) {
-					node += app.getField('pin_drop', 'Position', object.attributes.position, isEditMode, false, false, true);
+					node += app.getField('pin_drop', 'Position', object.attributes.position, isEdit==true?'text':false, false, false, true);
 				}
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
@@ -528,7 +546,7 @@
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<i class=\"material-icons\">"+icons.flows+"</i>";
+				node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
 				node += "				"+flow.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
@@ -598,7 +616,7 @@
 					datapoints += "<section class='mdl-grid mdl-cell--12-col' id='last-datapoints_"+flow.id+"'>";
 					datapoints += "	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					var dataset = [data.data.map(function(i) {
-						datapoints += app.getField(icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value, false, false, false, true);
+						datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value, false, false, false, true);
 						return [i.attributes.timestamp, i.attributes.value];
 				    })];
 					$.plot($('#flow-graph-'+flow.id), dataset, options);
@@ -674,7 +692,7 @@
 				componentHandler.upgradeDom();
 				
 				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-					app.getSnippet(icons.snippets, dashboard.attributes.snippets[i]);
+					app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i]);
 				}
 
 				app.setSection('dashboard');
@@ -726,7 +744,7 @@
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<h2 class=\"mdl-card__title-text\">";
-				node += "					<i class=\"material-icons\">"+icons.snippets+"</i>";
+				node += "					<i class=\"material-icons\">"+app.icons.snippets+"</i>";
 				node += "					"+snippet.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
@@ -789,17 +807,17 @@
 			node += app.getField(null, null, description, false, false, false, true);
 		}
 		if ( item.attributes.flows!==undefined?item.attributes.flows.length>-1:null ) {
-			node += app.getField(icons.flows, 'Flows #', item.attributes.flows.length, false, false, false, true);
+			node += app.getField(app.icons.flows, 'Flows #', item.attributes.flows.length, false, false, false, true);
 		}
 		if ( attributeType !== '' ) {
-			node += app.getField(icons.type, 'Type', attributeType, false, false, false, true);
+			node += app.getField(app.icons.type, 'Type', attributeType, false, false, false, true);
 		}
 		if ( item.attributes.color!==undefined ) {
 			node += app.getField('format_color_fill', 'Color', item.attributes.color, false, false, false, true);
 		}
 		node += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		node += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		node += "				<i class=\"material-icons\">menu</i>";
+		node += "				<i class=\"material-icons\">"+app.icons.menu+"</i>";
 		node += "			</button>";
 		node += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
 		node += "				<li class=\"mdl-menu__item\">";
@@ -824,7 +842,7 @@
 		var myInit = { method: 'GET', headers: myHeaders };
 
 		if (type == 'objects') {
-			var icon = icons.objects;
+			var icon = app.icons.objects;
 			var width = cardsWidth.objects;
 			var container = (containers.objects).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/objects';
@@ -833,7 +851,7 @@
 			}
 			var title = 'My Objects';
 		} else if (type == 'flows') {
-			var icon = icons.flows;
+			var icon = app.icons.flows;
 			var width = cardsWidth.flows;
 			var container = (containers.flows).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/flows';
@@ -842,13 +860,13 @@
 			}
 			var title = 'My Flows';
 		} else if (type == 'dashboards') {
-			var icon = icons.dashboards;
+			var icon = app.icons.dashboards;
 			var width = cardsWidth.dashboards;
 			var container = (containers.dashboards).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 			var title = 'My Dashboards';
 		} else if (type == 'snippets') {
-			var icon = icons.snippets;
+			var icon = app.icons.snippets;
 			var width = cardsWidth.snippets;
 			var container = (containers.snippets).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/snippets';
@@ -904,10 +922,6 @@
 			var gravatar = user.attributes.gravatar.entry[0];
 			var node = "";
 			node += "<section class=\"mdl-grid\">";
-			
-			
-			
-			
 			node += "<div class=\"card card-user\">";
 			node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important\">";
 			node += "		<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
@@ -932,7 +946,7 @@
             node += "  		</ul>";
 			node += "	</div>";
 			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
-			node += "		<a href=\"#\" class=\"pull-left\"><small>xxxyyyzzz</small></a>";
+			node += "		<a href=\"#\" class=\"pull-left\"></a>";
 			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profile_url+"\">Edit</a>";
 			node += "	</div>";
 			node += "</div>";
@@ -987,7 +1001,7 @@
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchIndex
 
-	app.getField = function(icon, label, value, isEditable, isActionable, isThreeLines, isVisible) {
+	app.getField = function(icon, label, value, isEditMode, isActionable, isThreeLines, isVisible) {
 		var field = "";
 		var hidden = isVisible===true?"":" hidden";
 		if ( isThreeLines == true) {
@@ -1011,7 +1025,13 @@
 
 		//- SECONDARY
 		field += "<span class='mdl-list__item-secondary-content'>";
-		if ( isEditable == true ) {
+		if ( isEditMode == 'text' ) {
+			field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+		} else if ( isEditMode == 'textarea' ) {
+			field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;'>"+escape(value)+"</textarea>";
+		} else if ( isEditMode == 'select' ) {
+			field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+		} else if ( isEditMode == 'switch' ) {
 			field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
 		} else {
 			field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
