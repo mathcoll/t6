@@ -124,7 +124,7 @@ html.ltr(lang='en')
 
       main.mdl-layout__content
         //- Loading
-        section#loading-spinner(hidden='true')
+        section#loading-spinner.hidden
           #spinner.mdl-progress.mdl-js-progress.mdl-progress__indeterminate.loader(style='width:auto;')
 
 
@@ -137,7 +137,7 @@ html.ltr(lang='en')
           .page-content
   
         //- List Objects
-        section#objects.mdl-tabs__panel.mdl-layout__tab-panel
+        section#objects.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
           
           //- Actions
@@ -155,17 +155,17 @@ html.ltr(lang='en')
 
 
         //- View Object
-        section#object.mdl-tabs__panel.mdl-layout__tab-panel
+        section#object.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
   
         //- Edit Object
-        section#object_edit.mdl-tabs__panel.mdl-layout__tab-panel
+        section#object_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
               
 
         //- List Flows
-        section#flows.mdl-tabs__panel.mdl-layout__tab-panel
+        section#flows.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
           
           //- Actions
@@ -183,17 +183,17 @@ html.ltr(lang='en')
 
 
         //- View Flow
-        section#flow.mdl-tabs__panel.mdl-layout__tab-panel
+        section#flow.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content 
 
   
         //- Edit Flow
-        section#flow_edit.mdl-tabs__panel.mdl-layout__tab-panel
+        section#flow_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
 
         //- List Snippets
-        section#snippets.mdl-tabs__panel.mdl-layout__tab-panel
+        section#snippets.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
           
           //- Actions
@@ -210,17 +210,17 @@ html.ltr(lang='en')
                 i.material-icons content_paste
 
         //- View Snippet
-        section#snippet.mdl-tabs__panel.mdl-layout__tab-panel
+        section#snippet.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
   
         //- Edit Snippet
-        section#snippet_edit.mdl-tabs__panel.mdl-layout__tab-panel
+        section#snippet_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
             
         //- List Dashboards
-        section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel
+        section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content 
           
           //- Actions
@@ -237,17 +237,17 @@ html.ltr(lang='en')
                 i.material-icons content_paste
 
         //- View Dashboard
-        section#dashboard.mdl-tabs__panel.mdl-layout__tab-panel
+        section#dashboard.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content 
 
   
         //- Edit Dashboard
-        section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel
+        section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
 
         //- List Rules
-        section#rules.mdl-tabs__panel.mdl-layout__tab-panel
+        section#rules.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content 
           
           //- Actions
@@ -265,17 +265,17 @@ html.ltr(lang='en')
 
 
         //- Edit Rules
-        section#rule_edit.mdl-tabs__panel.mdl-layout__tab-panel
+        section#rule_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
 
         //- List Mqtt
-        section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel
+        section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content 
 
 
         //- View Sign In
-        section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel
+        section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
             section.content-grid.mdl-grid
               .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
@@ -299,7 +299,7 @@ html.ltr(lang='en')
               
 
         //- View Sign Up
-        section#signup.mdl-tabs__panel.mdl-layout__tab-panel
+        section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
             section.content-grid.mdl-grid
               .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
@@ -323,12 +323,12 @@ html.ltr(lang='en')
               
 
         //- View My Profile
-        section#profile.mdl-tabs__panel.mdl-layout__tab-panel
+        section#profile.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
               
 
         //- View Settings
-        section#settings.mdl-tabs__panel.mdl-layout__tab-panel
+        section#settings.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
             .md-subheader-inner
               .mdl-subheader-content
