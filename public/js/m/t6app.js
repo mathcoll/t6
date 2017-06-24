@@ -14,13 +14,15 @@
 			'flows': 'settings_input_component',
 			'snippets': 'widgets',
 			'dashboards': 'dashboards',
-			'rules': '',
-			'mqtts': '',
+			'rules': 'call_split',
+			'mqtts': 'volume_down',
 			'login': '',
 			'datapoints': 'filter_center_focus',
 			'type': 'label',
 			'settings': 'settings',
 			'menu': 'menu',
+			'delete': 'delete',
+			'edit': 'edit',
 		}
 	};
 
@@ -541,13 +543,16 @@
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var flow = response.data[i];
+				((containers.flow).querySelector('.page-content')).innerHTML = '';
+				var datapoints = "";
+				
 				var node = "";
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
-				node += "				"+flow.attributes.name+"</h2>";
+				node += flow.attributes.name;
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
 				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
@@ -582,7 +587,7 @@
 				node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node +=	"				<span>"+flow.attributes.name+" ("+flow.attributes.unit+")</span>";
-				node +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+flow.id+"'></span>";
+				node +=	"				<span class='mdl-list__item-sub-title' id='flow-graph-time-"+flow.id+"'></span>";
 				node +=	"			</span>";
 				node +=	"		</span>";
 				node += "		<span class='mdl-list__item' id='flow-graph-"+flow.id+"' style='width:100%; height:200px;'>";
@@ -590,7 +595,7 @@
 				node += "		</span>";
 				var options = {
 					series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
-					colors: [flow.attributes.color],
+					colors: [flow.attributes.color!==''?flow.attributes.color:'#000000'],
 					points : { show : true },
 					legend: { show: true, position: "sw" },
 					grid: {
@@ -606,7 +611,6 @@
 					yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
 				};
 
-				var datapoints = "";
 				var my_flow_data_url = app.baseUrl+'/'+app.api_version+'/data/'+flow.id+'?limit=100&sort=desc';
 				fetch(my_flow_data_url, myInit)
 				.then(function(fetchResponse){ 
@@ -615,15 +619,33 @@
 				.then(function(data) {
 					datapoints += "<section class='mdl-grid mdl-cell--12-col' id='last-datapoints_"+flow.id+"'>";
 					datapoints += "	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+					datapoints += "		<div class='mdl-list__item small-padding'>";
+					datapoints += "			<span class='mdl-list__item-primary-content'>";
+					datapoints += "				<i class='material-icons'>"+app.icons.datapoints+"</i>";
+					datapoints += "				Data Points";
+					datapoints += "			</span>";
+					datapoints += "			<span class='mdl-list__item-secondary-action'>";
+					datapoints += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='datapoints-"+flow.id+"'>";
+					datapoints += "					<i class='material-icons'>expand_more</i>";
+					datapoints += "				</button>";
+					datapoints += "			</span>";
+					datapoints += "		</div>";
+					datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
 					var dataset = [data.data.map(function(i) {
 						datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value, false, false, false, true);
 						return [i.attributes.timestamp, i.attributes.value];
 				    })];
+					componentHandler.upgradeDom();
 					$.plot($('#flow-graph-'+flow.id), dataset, options);
+					datapoints += "		</div>";
 					datapoints += "	</div>";
 					datapoints += "</section>";
 					
-					(containers.flow).querySelector('.page-content').innerHTML += datapoints;
+					var dtps = document.createElement('div');
+					dtps.innerHTML = datapoints;
+					((containers.flow).querySelector('.page-content')).appendChild(dtps);
+					app.setExpandAction();
+					
 				})
 				.catch(function (error) {
 					toast('displayFlow error out...' + error, 5000);
@@ -631,8 +653,10 @@
 				node +=	"	</div>";
 				node +=	"</section>";
 				
-				(containers.flow).querySelector('.page-content').innerHTML = node;
-				app.setExpandAction();
+				var c = document.createElement('div');
+				c.innerHTML = node;
+				((containers.flow).querySelector('.page-content')).appendChild(c);
+				componentHandler.upgradeDom();
 				componentHandler.upgradeDom();
 				app.setSection('flow');
 			}
@@ -809,6 +833,9 @@
 		if ( item.attributes.flows!==undefined?item.attributes.flows.length>-1:null ) {
 			node += app.getField(app.icons.flows, 'Flows #', item.attributes.flows.length, false, false, false, true);
 		}
+		if ( item.attributes.objects!==undefined?item.attributes.objects.length>-1:null ) {
+			node += app.getField(app.icons.objects, 'Objects #', item.attributes.objects.length, false, false, false, true);
+		}
 		if ( attributeType !== '' ) {
 			node += app.getField(app.icons.type, 'Type', attributeType, false, false, false, true);
 		}
@@ -821,10 +848,10 @@
 		node += "			</button>";
 		node += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
 		node += "				<li class=\"mdl-menu__item\">";
-		node += "					<i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">delete</i>Delete";
+		node += "					<i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete";
 		node += "				</li>";
 		node += "				<li class=\"mdl-menu__item\">";
-		node += "					<i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">edit</i>Edit";
+		node += "					<i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit";
 		node += "				</li>";
 		node += "			</ul>";
 		node += "		</div>";
@@ -1133,7 +1160,7 @@
 				
 				var options = {
 					series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
-					colors: [my_snippet.attributes.color],
+					colors: [my_snippet.attributes.color!==''?my_snippet.attributes.color:'#000000'],
 					points : { show : true },
 					legend: { show: true, position: "sw" },
 					grid: {
