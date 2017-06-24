@@ -112,3 +112,14 @@ self.addEventListener('fetch', function(event) {
 		console.log('No caching on this file.');
 	}
 });
+
+self.addEventListener('push', function(event) {
+	//console.log('[ServiceWorker] Push Received.');
+	//console.log('[ServiceWorker] Push had this data: ', event.data.text());
+	const title = 't6 notification';
+	const options = {
+		body: event.data.text(),
+		icon: '/img/m/icons/icon-32x32.png',
+	};
+	event.waitUntil(self.registration.showNotification(title, options));
+});

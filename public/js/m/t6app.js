@@ -8,19 +8,8 @@
 		bearer: '',
 		userHash: '',
 		date_format: 'DD/MM/YYYY, HH:mm',
+		applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
 	};
-
-	// Add service worker code here
-	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker
-		.register('./service-worker.js')
-		.then(function() {
-			console.log('[ServiceWorker] Registered');
-		})
-		.catch(function (error) {
-			console.log('[ServiceWorker] error occured...'+ error);
-		});
-	}
 
 	var cardsWidth = {'objects': '12', 'flows': '12', 'snippets': '12', 'dashboards': '12', 'rules': '12', 'mqtts': '12', 'login': '12'}
 	var icons = {
@@ -45,7 +34,79 @@
 	containers.snippets = document.querySelector('section#snippets');
 	containers.snippet = document.querySelector('section#snippet');
 	containers.profile = document.querySelector('section#profile');
+	containers.settings = document.querySelector('section#settings');
 
+	function urlBase64ToUint8Array(base64String) {
+		const padding = '='.repeat((4 - base64String.length % 4) % 4);
+		const base64 = (base64String + padding)  .replace(/\-/g, '+') .replace(/_/g, '/');
+		const rawData = window.atob(base64);
+		const outputArray = new Uint8Array(rawData.length);
+		for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+		return outputArray;
+	}
+	
+	function askPermission() {
+		return new Promise(function(resolve, reject) {
+			const permissionResult = Notification.requestPermission(function(result) {
+				resolve(result);
+			});
+			
+			if (permissionResult) {
+				permissionResult.then(resolve, reject);
+			}
+		})
+		.then(function(permissionResult) {
+			if (permissionResult !== 'granted') {
+				throw new Error('We weren\'t granted permission.');
+			}
+		});
+	}
+	
+	function registerServiceWorker() {
+		return navigator.serviceWorker.register('./service-worker.js')
+		.then(function(registration) {
+			console.log('[ServiceWorker] Registered');
+			askPermission();
+		    return registration;
+		})
+		.catch(function(err) {
+			console.log('[ServiceWorker] error occured...'+ err);
+		});
+	}
+	
+	function subscribeUserToPush() {
+		//return getSWRegistration()
+		return registerServiceWorker()
+		.then(function(registration) {
+			const subscribeOptions = {
+				userVisibleOnly: true,
+				applicationServerKey: urlBase64ToUint8Array(app.applicationServerKey)
+			};
+			return registration.pushManager.subscribe(subscribeOptions);
+		})
+		.then(function(pushSubscription) {
+			console.log('Go to the settings to see the endpoints details for push notifications.');
+			(containers.settings).querySelector('.page-content').innerHTML = '<div>' + JSON.stringify(pushSubscription) + '</div>';
+			return pushSubscription;
+		})
+		.catch(function (error) {
+			console.log(error);
+			toast(error, 5000);
+		});
+	}
+	
+	if (!('serviceWorker' in navigator)) {
+		// Service Worker isn't supported on this browser, disable or hide UI.
+		return;
+	} else {
+		registerServiceWorker();
+	}
+	if (!('PushManager' in window)) {
+		// Push isn't supported on this browser, disable or hide UI.
+		return;
+	} else {
+		subscribeUserToPush();
+	}
 	
 	app.nl2br = function (str, isXhtml) {
 		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
@@ -147,6 +208,7 @@
 							return fetchResponse.json();
 						})
 						.then(function(response) {
+							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
 							toast('Object has been deleted...', 5000);
 						})
 						.catch(function (error) {
@@ -847,7 +909,7 @@
 			
 			
 			node += "<div class=\"card card-user\">";
-			node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important; height:100px\">";
+			node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important\">";
 			node += "		<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
 			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
 			node += "		<div class=\"subhead\">";
@@ -1110,7 +1172,8 @@
 					var ttl = response.links.ttl;
 					document.getElementById('snippet-value-'+my_snippet.id).innerHTML = value;
 					document.getElementById('snippet-unit-'+my_snippet.id).innerHTML = unit;
-					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + ", " + moment(time).fromNow();;
+					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + ", " + moment(time).fromNow();
+					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
 				.catch(function (error) {
 					toast('getSnippet Inside error...' + error, 5000);
@@ -1124,6 +1187,10 @@
 		});
 		app.spinner.setAttribute('hidden', true);
 	} //getSnippet
+	
+	app.refreshFromNow = function(id, time) {
+		document.getElementById(id).innerHTML = moment(time).format(app.date_format) + ", " + moment(time).fromNow();
+	}
 
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item'>";
@@ -1195,7 +1262,4 @@
 		app.fetchProfile();
 	}
 	
-	Notification.requestPermission(function(status) {
-		// status is "granted", if accepted by user
-	});
 })();
