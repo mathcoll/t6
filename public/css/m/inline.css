@@ -115,7 +115,7 @@ div.valuedisplay .mdl-list__item-secondary-content {
     min-height: 190px;
     text-align: center;
     display: block;
-    padding-top: 25%;
+    padding-top: 50px;
     position: relative;
 }
 
@@ -125,7 +125,7 @@ div.valuedisplay .mdl-list__item-secondary-content {
 }
 .card-dashboard-graph {
     background: #ffffff none repeat scroll 0 0;
-    height: 250px;
+    min-height: 250px;
     width: 100%;
     overflow: hidden;
     position: relative;
@@ -610,7 +610,7 @@ a {
     opacity: 1;
 }
 .mdl-layout__header-row {
-    padding: 0 10px 0 60px !important; //overload
+    padding: 0 10px 0 50px !important;
 }
 .margin-5 {
     margin: 0 5px;
@@ -1035,8 +1035,8 @@ section > button {
     bottom: 1em !important;
 }
 .mdl-layout__tab-bar {
-    padding:0 0 0 45px !important;
-    width: calc(100% - 60px) !important;
+    padding:0 0 0 40px !important;
+    width: calc(100% - 40px) !important;
 }
 .mdl-layout__tab-bar-button {
     width: 30px !important;
