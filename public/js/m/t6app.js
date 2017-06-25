@@ -429,13 +429,19 @@
 					node += app.getField(app.icons.date, 'Updated', moment(object.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( object.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision: ', object.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision', object.attributes.meta.revision, false, false, false, true);
 				}
 				node += "	</div>";
 				node += "</section>";
 				
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-card__title\">";
+				node += "			<h2 class=\"mdl-card__title-text\">";
+				node += "				<i class=\"material-icons\">class</i>";
+				node += "				Parameters";
+				node += "			</h2>";
+				node += "		</div>";
 				if ( object.attributes.type ) {
 					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'text':false, false, false, true);
 				}
@@ -457,6 +463,12 @@
 				
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-card__title\">";
+				node += "			<h2 class=\"mdl-card__title-text\">";
+				node += "				<i class=\"material-icons\">class</i>";
+				node += "				Custom Parameters";
+				node += "			</h2>";
+				node += "		</div>";
 				for ( var i in object.attributes.parameters ) {
 					node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true);
 				}
@@ -465,6 +477,12 @@
 				
 				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-card__title\">";
+				node += "			<h2 class=\"mdl-card__title-text\">";
+				node += "				<i class=\"material-icons\">my_location</i>";
+				node += "				Localization";
+				node += "			</h2>";
+				node += "		</div>";
 				if ( object.attributes.longitude ) {
 					node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
 				}
@@ -514,14 +532,15 @@
 						layers: [
 					         new ol.layer.Tile({ source: new ol.source.OSM() }),
 					         vectorLayer,
-					         ],
-					         target: 'osm',
-					         view: new ol.View({
-					        	 center: ol.proj.fromLonLat([object.attributes.longitude, object.attributes.latitude]),
-					        	 zoom: 2,
-					         }),
+				        ],
+				        target: 'osm',
+				        interactions: [],
+				        view: new ol.View({
+				        	center: ol.proj.fromLonLat([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)]),
+				        	zoom: 18,
+				        }),
 					});
-					map.updateSize();
+					setTimeout(function() {map.updateSize();}, 1000);
 		        }
 				
 				app.setSection('object');
@@ -576,7 +595,7 @@
 					node += app.getField(app.icons.date, 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( flow.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision: ', flow.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision', flow.attributes.meta.revision, false, false, false, true);
 				}
 				if ( flow.attributes.type ) {
 					node += app.getField('extension', 'Type', flow.attributes.type, false, false, false, true);
@@ -689,7 +708,8 @@
 				var dashboard = response.data[i];
 				var node;
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+				//node += "	<div class=\"tile material-animate margin-top-4 material-animated mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
@@ -711,7 +731,7 @@
 					node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( dashboard.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision: ', dashboard.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, false, false, false, true);
 				}
 				node += "		</div>";
 				node += "	</div>";
@@ -732,25 +752,6 @@
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayDashboard
-	
-	/*
-	app.getAllEventListeners = function(el) {
-		var allListeners = {}, listeners;
-
-		while(el) {
-			listeners = getEventListeners(el);
-
-			for(event in listeners) {
-				allListeners[event] = allListeners[event] || [];
-				allListeners[event].push({listener: listeners[event], element: el});  
-			}
-
-			el = el.parentNode;
-		}
-
-		return allListeners;
-	}
-	*/
 
 	app.displaySnippet = function(id) {
 		window.scrollTo(0, 0);
@@ -793,7 +794,7 @@
 					node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( snippet.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision: ', snippet.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, false, false, false, true);
 				}
 				node += app.getField(app.icons.name, 'Name', snippet.attributes.name, false, false, false, true);
 				node += app.getField(app.icons.type, 'Type', snippet.attributes.type, false, false, false, true);
@@ -1115,13 +1116,13 @@
 				snippet += "	</div>";
 				
 			} else if ( my_snippet.attributes.type == 'sparkline' ) {
-				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
-				snippet +=	"			<span class='mdl-list__item-primary-content'>";
-				snippet +=	"				<i class='material-icons'>"+icon+"</i>";
-				snippet +=	"				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
-				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet +=	"			</span>";
+				snippet += "	<div class=\"sparkline tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
+				snippet += "			<span class='mdl-list__item-primary-content'>";
+				snippet += "				<i class='material-icons'>"+icon+"</i>";
+				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet += "			</span>";
 				snippet += "			<span class='mdl-list__item-secondary-content'>";
 				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
 				snippet += "			</span>";
@@ -1137,13 +1138,13 @@
 				}
 				for (var f in my_snippet.attributes.flows) {
 					var flow_id = my_snippet.attributes.flows[f];
-					snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-					snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
-					snippet +=	"			<span class='mdl-list__item-primary-content'>";
-					snippet +=	"				<i class='material-icons'>"+icon+"</i>";
-					snippet +=	"				<span class=\"heading\">"+flow_id+"</span>";
-					snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-					snippet +=	"			</span>";
+					snippet += "	<div class=\"simplerow tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+					snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
+					snippet += "			<span class='mdl-list__item-primary-content'>";
+					snippet += "				<i class='material-icons'>"+icon+"</i>";
+					snippet += "				<span class=\"heading\">"+flow_id+"</span>";
+					snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+					snippet += "			</span>";
 					snippet += "			<span class='mdl-list__item-secondary-content'>";
 					snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
 					snippet += "			</span>";
@@ -1151,13 +1152,13 @@
 					snippet += "	</div>";
 				}
 			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
-				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
-				snippet +=	"			<span class='mdl-list__item-primary-content'>";
-				snippet +=	"				<i class='material-icons'>"+icon+"</i>";
-				snippet +=	"				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
-				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet +=	"			</span>";
+				snippet += "	<div class=\"flowgraph tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
+				snippet += "			<span class='mdl-list__item-primary-content'>";
+				snippet += "				<i class='material-icons'>"+icon+"</i>";
+				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet += "			</span>";
 				snippet += "		</span>";
 				snippet += "		<span class='mdl-list__item-primary-content'>";
 				snippet += "			<span class='mdl-list__item' id='snippet-graph-"+my_snippet.id+"' style='width:100%; height:200px;'>";
@@ -1199,13 +1200,13 @@
 					toast('fetchIndex error out...' + error, 5000);
 				});
 			} else if ( my_snippet.attributes.type == 'clock' ) {
-				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
-				snippet +=	"			<span class='mdl-list__item-primary-content'>";
-				snippet +=	"				<i class='material-icons'>alarm</i>";
-				snippet +=	"				<span class=\"heading\"></span>";
-				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet +=	"			</span>";
+				snippet += "	<div class=\"clock tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
+				snippet += "			<span class='mdl-list__item-primary-content'>";
+				snippet += "				<i class='material-icons'>alarm</i>";
+				snippet += "				<span class=\"heading\"></span>";
+				snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet += "			</span>";
 				snippet += "			<span class='mdl-list__item-secondary-content'>";
 				snippet += "				<span class='mdl-list__item'>";
 				snippet += "					<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-"+my_snippet.id+"'>"+moment().format(app.date_format)+"</span>";
@@ -1215,10 +1216,9 @@
 				snippet += "	</div>";
 				setInterval(function() {app.refreshFromNow('snippet-clock-'+my_snippet.id, moment(), null)}, 3600);
 			} else {
+				snippet += "	<div class=\" tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
 				snippet += "		<span class='mdl-list__item-secondary-content'>";
-				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.attributes.type+"'></span>";
-				snippet += "		</span>";
-				snippet += "	</span>";
+				snippet += "		<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.attributes.type+"'>"+my_snippet.attributes.type+" is not implemented yet.</span>";				snippet += "		</span>";
 				snippet += "	</div>";
 			}
 
@@ -1271,7 +1271,7 @@
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item'>";
 		field += "	<span class='mdl-list__item-primary-content'>";
-		field += "		<img src='' id='qr-"+id+"' class='img-responsive' />";
+		field += "		<img src='' id='qr-"+id+"' class='img-responsive' style='max-width:50%;margin:0 auto;' />";
 		field += "	</span>";
 		field += "</div>";
 		return field;
