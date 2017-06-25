@@ -19,10 +19,15 @@
 			'login': '',
 			'datapoints': 'filter_center_focus',
 			'type': 'label',
+			'icon': 'label_outline',
 			'settings': 'settings',
 			'menu': 'menu',
+			'name': 'list',
 			'delete': 'delete',
 			'edit': 'edit',
+			'color': 'format_color_fill',
+			'date': 'event',
+			'update': 'update',
 		}
 	};
 
@@ -418,13 +423,13 @@
 					node += app.getField(null, null, app.nl2br(object.attributes.description), isEdit==true?'textarea':false, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
-					node += app.getField('event', 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
 				}
 				if ( object.attributes.meta.updated ) {
-					node += app.getField('event', 'Updated', moment(object.attributes.meta.updated).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Updated', moment(object.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( object.attributes.meta.revision ) {
-					node += app.getField('update', 'Revision: ', object.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision: ', object.attributes.meta.revision, false, false, false, true);
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -442,8 +447,8 @@
 				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
 					node += app.getField('visibility', 'Visibility', object.attributes.is_public, isEdit==true?'select':false, false, false, true);
-					node += app.getQrcodeImg('event', '', object.id, false, false, false);
-					app.getQrcode('event', '', object.id, false, false, false);
+					node += app.getQrcodeImg(app.icons.date, '', object.id, false, false, false);
+					app.getQrcode(app.icons.date, '', object.id, false, false, false);
 				} else {
 					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEdit==true?'switch':false, false, false, true);
 				}
@@ -565,13 +570,13 @@
 					node += app.getField(null, null, app.nl2br(flow.attributes.description), false, false, false, true);
 				}
 				if ( flow.attributes.meta.created ) {
-					node += app.getField('event', 'Created', moment(flow.attributes.meta.created).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Created', moment(flow.attributes.meta.created).format(app.date_format), false, false, false, true);
 				}
 				if ( flow.attributes.meta.updated ) {
-					node += app.getField('event', 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( flow.attributes.meta.revision ) {
-					node += app.getField('update', 'Revision: ', flow.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision: ', flow.attributes.meta.revision, false, false, false, true);
 				}
 				if ( flow.attributes.type ) {
 					node += app.getField('extension', 'Type', flow.attributes.type, false, false, false, true);
@@ -700,13 +705,13 @@
 					node += app.getField(null, null, app.nl2br(dashboard.attributes.description), false, false, false, true);
 				}
 				if ( dashboard.attributes.meta.created ) {
-					node += app.getField('event', 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), false, false, false, true);
 				}
 				if ( dashboard.attributes.meta.updated ) {
-					node += app.getField('event', 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( dashboard.attributes.meta.revision ) {
-					node += app.getField('update', 'Revision: ', dashboard.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision: ', dashboard.attributes.meta.revision, false, false, false, true);
 				}
 				node += "		</div>";
 				node += "	</div>";
@@ -716,7 +721,7 @@
 				componentHandler.upgradeDom();
 				
 				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-					app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i]);
+					app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
 				}
 
 				app.setSection('dashboard');
@@ -782,27 +787,25 @@
 					node += app.getField(null, null, app.nl2br(snippet.attributes.description), false, false, false, true);
 				}
 				if ( snippet.attributes.meta.created ) {
-					node += app.getField('event', 'Created', moment(snippet.attributes.meta.created).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), false, false, false, true);
 				}
 				if ( snippet.attributes.meta.updated ) {
-					node += app.getField('event', 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), false, false, false, true);
+					node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), false, false, false, true);
 				}
 				if ( snippet.attributes.meta.revision ) {
-					node += app.getField('update', 'Revision: ', snippet.attributes.meta.revision, false, false, false, true);
+					node += app.getField(app.icons.update, 'Revision: ', snippet.attributes.meta.revision, false, false, false, true);
 				}
+				node += app.getField(app.icons.name, 'Name', snippet.attributes.name, false, false, false, true);
+				node += app.getField(app.icons.type, 'Type', snippet.attributes.type, false, false, false, true);
+				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, false, false, false, true);
+				node += app.getField(app.icons.flows, 'Flows #', snippet.attributes.flows.length, false, false, false, true);
+				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, false, false, false, true);
 				node += "		</div>";
-				node += "	</div>";
-				node += "</section>";
-				
-				node += "<section class='mdl-grid mdl-cell--12-col' id='"+snippet.id+"'>";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += app.getField(null, 'Name', snippet.attributes.name, false, false, false, true);
-				node += app.getField(null, 'Type', snippet.attributes.type, false, false, false, true);
-				node += app.getField(null, 'Icon', snippet.attributes.icon, false, false, false, true);
-				node += app.getField(null, 'Color', snippet.attributes.color, false, false, false, true);
 				node += "	</div>";
 				node +=	"</section>";
 				
+				app.getSnippet(app.icons.snippets, snippet.id, (containers.snippet).querySelector('.page-content'));
+
 				(containers.snippet).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
@@ -810,7 +813,7 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displayFlow error occured...' + error, 5000);
+			toast('displaySnippet error occured...' + error, 5000);
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displaySnippet
@@ -836,11 +839,11 @@
 		if ( item.attributes.objects!==undefined?item.attributes.objects.length>-1:null ) {
 			node += app.getField(app.icons.objects, 'Objects #', item.attributes.objects.length, false, false, false, true);
 		}
+		if ( item.attributes.snippets!==undefined?item.attributes.snippets.length>-1:null ) {
+			node += app.getField(app.icons.snippets, 'Snippets #', item.attributes.snippets.length, false, false, false, true);
+		}
 		if ( attributeType !== '' ) {
 			node += app.getField(app.icons.type, 'Type', attributeType, false, false, false, true);
-		}
-		if ( item.attributes.color!==undefined ) {
-			node += app.getField('format_color_fill', 'Color', item.attributes.color, false, false, false, true);
 		}
 		node += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		node += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
@@ -1078,13 +1081,13 @@
 		return field;
 	} //getField
 
-	app.getSnippet = function(icon, snippet_id) {
+	app.getSnippet = function(icon, snippet_id, container) {
 		app.spinner.removeAttribute('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var dashboard_container = (containers.dashboard).querySelector('.page-content');
+		var myContainer = container!=null?container:(containers.dashboard).querySelector('.page-content');
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
 
 		fetch(url, myInit)
@@ -1093,8 +1096,8 @@
 		})
 		.then(function(response) {
 			var my_snippet = response.data[0];
+
 			var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
-			
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
 				snippet += "	<div class=\"valuedisplay tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
 				snippet += "		<div class=\"contextual\">";
@@ -1129,19 +1132,24 @@
 				snippet += "	</div>";
 				
 			} else if ( my_snippet.attributes.type == 'simplerow' ) {
-				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
-				snippet +=	"			<span class='mdl-list__item-primary-content'>";
-				snippet +=	"				<i class='material-icons'>"+icon+"</i>";
-				snippet +=	"				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
-				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet +=	"			</span>";
-				snippet += "			<span class='mdl-list__item-secondary-content'>";
-				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
-				snippet += "			</span>";
-				snippet += "		</span>";
-				snippet += "	</div>";
-				
+				if( !Array.isArray(my_snippet.attributes.flows.isArray) ) {
+					my_snippet.attributes.flows[0] = my_snippet.attributes.flows;
+				}
+				for (var f in my_snippet.attributes.flows) {
+					var flow_id = my_snippet.attributes.flows[f];
+					snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+					snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
+					snippet +=	"			<span class='mdl-list__item-primary-content'>";
+					snippet +=	"				<i class='material-icons'>"+icon+"</i>";
+					snippet +=	"				<span class=\"heading\">"+flow_id+"</span>";
+					snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+					snippet +=	"			</span>";
+					snippet += "			<span class='mdl-list__item-secondary-content'>";
+					snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
+					snippet += "			</span>";
+					snippet += "		</span>";
+					snippet += "	</div>";
+				}
 			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
 				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
@@ -1190,6 +1198,22 @@
 				.catch(function (error) {
 					toast('fetchIndex error out...' + error, 5000);
 				});
+			} else if ( my_snippet.attributes.type == 'clock' ) {
+				snippet +=	"	<div class='mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+				snippet +=	"		<span class='mdl-list__item mdl-list__item--two-line'>";
+				snippet +=	"			<span class='mdl-list__item-primary-content'>";
+				snippet +=	"				<i class='material-icons'>alarm</i>";
+				snippet +=	"				<span class=\"heading\"></span>";
+				snippet +=	"				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+				snippet +=	"			</span>";
+				snippet += "			<span class='mdl-list__item-secondary-content'>";
+				snippet += "				<span class='mdl-list__item'>";
+				snippet += "					<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-"+my_snippet.id+"'>"+moment().format(app.date_format)+"</span>";
+				snippet += "				</span>";
+				snippet += "			</span>";
+				snippet += "		</span>";
+				snippet += "	</div>";
+				setInterval(function() {app.refreshFromNow('snippet-clock-'+my_snippet.id, moment(), null)}, 3600);
 			} else {
 				snippet += "		<span class='mdl-list__item-secondary-content'>";
 				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.attributes.type+"'></span>";
@@ -1201,7 +1225,7 @@
 			snippet += "</section>";
 			var c = document.createElement('div');
 			c.innerHTML = snippet;
-			dashboard_container.appendChild(c);
+			myContainer.appendChild(c);
 			componentHandler.upgradeDom();
 			
 			if ( my_snippet.attributes.type == 'simplerow' || my_snippet.attributes.type == 'valuedisplay' ) {
@@ -1226,7 +1250,7 @@
 					toast('getSnippet Inside error...' + error, 5000);
 				});
 			}
-			//console.log(dashboard_container);
+			//console.log(myContainer);
 			//return snippet;
 		})
 		.catch(function (error) {
@@ -1235,8 +1259,13 @@
 		app.spinner.setAttribute('hidden', true);
 	} //getSnippet
 	
-	app.refreshFromNow = function(id, time) {
-		document.getElementById(id).innerHTML = moment(time).format(app.date_format) + ", " + moment(time).fromNow();
+	app.refreshFromNow = function(id, time, fromNow) {
+		if (document.getElementById(id)) {
+			document.getElementById(id).innerHTML = moment(time).format(app.date_format);
+			if ( fromNow !== null ) {
+				document.getElementById(id).innerHTML += "<small>, " + moment(time).fromNow() + "</small>";
+			}
+		}
 	}
 
 	app.getQrcodeImg = function(icon, label, id) {
