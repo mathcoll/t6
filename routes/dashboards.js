@@ -30,41 +30,37 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: cfg.jwt.secret
 	// expressJwt IS DONE (/)
 	var dashboard_id = req.params.dashboard_id;
 	var name = req.query.name;
-	if ( req.token !== undefined ) {
-		dashboards	= dbDashboards.getCollection('dashboards');
-		snippets = dbSnippets.getCollection('snippets');
-		var query;
-		if ( dashboard_id !== undefined ) {
+	dashboards	= dbDashboards.getCollection('dashboards');
+	snippets = dbSnippets.getCollection('snippets');
+	var query;
+	if ( dashboard_id !== undefined ) {
+		query = {
+		'$and': [
+				{ 'user_id' : req.user.id },
+				{ 'id' : dashboard_id },
+			]
+		};
+	} else {
+		if ( name !== undefined ) {
 			query = {
 			'$and': [
 					{ 'user_id' : req.user.id },
-					{ 'id' : dashboard_id },
+					{ 'name': { '$regex': [name, 'i'] } }
 				]
 			};
 		} else {
-			if ( name !== undefined ) {
-				query = {
-				'$and': [
-						{ 'user_id' : req.user.id },
-						{ 'name': { '$regex': [name, 'i'] } }
-					]
-				};
-			} else {
-				query = {
-				'$and': [
-						{ 'user_id' : req.user.id },
-					]
-				};
-			}
+			query = {
+			'$and': [
+					{ 'user_id' : req.user.id },
+				]
+			};
 		}
-		var json = dashboards.find(query);
-		if ( json.length > -1 ) {
-			res.status(200).send(new DashboardSerializer(json).serialize());
-		} else {
-			res.status(404).send(new ErrorSerializer({'id': 127, 'code': 404, 'message': 'Not Found'}).serialize());
-		}
+	}
+	var json = dashboards.find(query);
+	if ( json.length > -1 ) {
+		res.status(200).send(new DashboardSerializer(json).serialize());
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 128, 'code': 403, 'message': 'Forbidden'}).serialize());
+		res.status(404).send(new ErrorSerializer({'id': 127, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
 

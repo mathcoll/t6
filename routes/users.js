@@ -160,7 +160,7 @@ router.get('/changePassword', bearerAdmin, function (req, res) {
 router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
-	if ( req.token !== undefined && req.user.id == user_id ) {
+	if ( req.user.id == user_id ) {
 		users	= db.getCollection('users');
 		res.status(200).send(new UserSerializer(users.find({'id': { '$eq': user_id }})).serialize());
 	} else {
@@ -183,52 +183,24 @@ router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), funct
  * @apiUse 429
  */
 router.post('/me/token', function (req, res) {
-	users			= db.getCollection('users');
-	tokens			= db.getCollection('tokens');
 	var API_KEY		= req.params.key!==undefined?req.params.key:req.body.key;
 	var API_SECRET	= req.params.secret!==undefined?req.params.secret:req.body.secret;
 	if ( API_KEY && API_SECRET ) {
-		// check KEY+SECRET against Collection and expiration date
-		var auth = tokens.find(
-			{ '$and': [
-				{ 'key': API_KEY },
-				{ 'secret': API_SECRET },
-			]}
-		);
-		if ( auth.length <= 0 ) {
-			res.status(403).send(new ErrorSerializer({'id': 15, 'code': 403, 'message': 'Forbidden'}).serialize());
+		var queryU = {
+		'$and': [
+					{ 'key': API_KEY },
+					{ 'secret': API_SECRET },
+				]
+		};
+		users = db.getCollection('users');
+		var user = users.findOne(queryU);
+		//console.log(users);
+		if ( user ) {
+			console.log(user);
+			var token = jwt.sign(user, cfg.jwt.secret, { expiresIn: cfg.jwt.expiresInSeconds });
+			return res.status(200).json( {status: 'ok', token: token} );
 		} else {
-			var permissions = req.body.permissions!==undefined?req.body.permissions:'600';
-			if ( permissions < 600 ) {
-				res.status(400).send(new ErrorSerializer({'id': 14, 'code': 400, message: 'Bad Request', details: 'Permission must be greater than 600!'}).serialize());
-			}
-			// check expiration date
-			if ( auth.expiration > moment().format('x') ) {
-				// TODO: is it necessary to check the expiration on an API KEY + SECRET?
-				res.status(403).send(new ErrorSerializer({'id': 13,'code': 403, 'message': 'Forbidden expired token'}).serialize()); // TODO, is there any better Status here?
-			} else {
-				// generates a temporary access token that will expire
-				// in a specified amount of time
-				var new_token = {
-					user_id: auth[0].user_id,
-					expiration: moment().add(1, 'hours').format('x'),
-					permissions: permissions,
-					token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
-				};
-				tokens.insert(new_token);
-
-				res.header('Location', new_token.token);
-				res.status(201).send({ 'code': 201, message: 'Created', token: new_token }); // TODO: missing serializer
-				
-				// Find and remove expired tokens from Db
-				var expired = tokens.chain().find(
-					{ '$and': [
-				           { 'expiration' : { '$lt': moment().format('x') } },
-				           { 'expiration' : { '$ne': '' } },
-					]}
-				).remove();
-				if ( expired ) db.save();
-			}
+			res.status(404).send(new ErrorSerializer({'id': 11,'code': 404, 'message': 'Not Found'}).serialize());
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 12,'code': 403, 'message': 'Forbidden'}).serialize());
@@ -296,16 +268,6 @@ router.post('/', function (req, res) {
 	} else {
 		users	= db.getCollection('users');
 		var my_id = uuid.v4();
-		var new_user = {
-			id:					my_id,
-			firstName:			req.body.firstName!==undefined?req.body.firstName:'',
-			lastName:			req.body.lastName!==undefined?req.body.lastName:'',
-			email:				req.body.email!==undefined?req.body.email:'',
-			role:				'free', // no admin creation from the API
-			subscription_date:  moment().format('x'),
-		};
-		events.add('t6Api', 'user add', new_user.id);
-		users.insert(new_user);
 		
 		var new_token = {
 			user_id:			my_id,
@@ -313,8 +275,22 @@ router.post('/', function (req, res) {
 			secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 	        expiration:			'',
 		};
-		var tokens	= db.getCollection('tokens');
-		tokens.insert(new_token);
+		var new_user = {
+			id:					my_id,
+			firstName:			req.body.firstName!==undefined?req.body.firstName:'',
+			lastName:			req.body.lastName!==undefined?req.body.lastName:'',
+			email:				req.body.email!==undefined?req.body.email:'',
+			role:				'free', // no admin creation from the API
+			subscription_date:  moment().format('x'),
+			key:				new_token.key,
+			secret:				new_token.secret
+		};
+		events.add('t6Api', 'user add', new_user.id);
+		users.insert(new_user);
+		
+		var tokens	= db.getCollection('tokens'); // should be useless with JWT ??
+		tokens.insert(new_token); // should be useless with JWT ??
+		
 		// TODO: the Welcome Mail is never sent!.
 
 		res.header('Location', '/v'+version+'/users/'+new_user.id);
@@ -342,15 +318,19 @@ router.post('/', function (req, res) {
 router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
-	if ( !(req.body.email || req.body.lastName || req.body.firstName ) ) {
+	if ( !( (req.body.email || req.body.lastName || req.body.firstName ) || ( req.body.password ) ) ) {
 		res.status(412).send(new ErrorSerializer({'id': 8,'code': 412, 'message': 'Precondition Failed'}).serialize());
 	} else {
+		users	= db.getCollection('users');
 		if ( req.user.id == user_id ) {
 			var item = users.findOne( {'id': user_id} );
 			item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
 			item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
 			item.email			= req.body.email!==undefined?req.body.email:item.email;
 			item.update_date	= moment().format('x');
+			if ( req.body.password ) {
+				item.password = md5(req.body.password);
+			}
 			users.update(item);
 			
 			res.header('Location', '/v'+version+'/users/'+user_id);

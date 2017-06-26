@@ -81,10 +81,10 @@ router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.user.id };
 	var i = (flows.find(queryQ)).length;
-	if( i >= (quota[req.session.user.role]).flows ) {
+	if( i >= (quota[req.user.role]).flows ) {
 		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
 	} else {
-		if ( req.token !== undefined && req.user.id !== undefined ) {
+		if ( req.user.id !== undefined ) {
 			var permission = req.body.permission!==undefined?req.body.permission:'600'; //TODO: default to Owner: Read+Write
 			if ( permission < 600 ) {
 				res.status(400).send(new ErrorSerializer({'id': 38, 'code': 400, 'message': 'Bad Request', details: 'Permission must be greater than 600!'}).serialize());

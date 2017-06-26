@@ -189,8 +189,7 @@ router.all('*', function (req, res, next) {
 			}
 			res.header('Cache-Control', 'no-cache, max-age=360, private, must-revalidate, proxy-revalidate');
 			
-			if( (req.user && i >= limit) && !unlimited ) {
-				//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
+			if( (req.user && i >= limit) ) {
 				events.add('t6Api', 'api 429', req.user!==null?req.user.id:'');
 				res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 			} else {

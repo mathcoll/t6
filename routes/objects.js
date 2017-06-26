@@ -80,41 +80,37 @@ router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: cfg.jwt.secret}), 
 	// expressJwt IS DONE (/)
 	var object_id = req.params.object_id;
 	var name = req.query.name;
-	if ( req.token !== undefined ) {
-		objects	= db.getCollection('objects');
-		var query;
-		if ( object_id !== undefined ) {
+	objects	= db.getCollection('objects');
+	var query;
+	if ( object_id !== undefined ) {
+		query = {
+		'$and': [
+				{ 'user_id' : req.user.id },
+				{ 'id' : object_id },
+			]
+		};
+	} else {
+		if ( name !== undefined ) {
 			query = {
 			'$and': [
 					{ 'user_id' : req.user.id },
-					{ 'id' : object_id },
+					{ 'name': { '$regex': [name, 'i'] } }
 				]
 			};
 		} else {
-			if ( name !== undefined ) {
-				query = {
-				'$and': [
-						{ 'user_id' : req.user.id },
-						{ 'name': { '$regex': [name, 'i'] } }
-					]
-				};
-			} else {
-				query = {
-				'$and': [
-						{ 'user_id' : req.user.id },
-					]
-				};
-			}
+			query = {
+			'$and': [
+					{ 'user_id' : req.user.id },
+				]
+			};
 		}
-		var json = objects.find(query);
-		//console.log(query);
-		if ( json.length > 0 ) {
-			res.status(200).send(new ObjectSerializer(json).serialize());
-		} else {
-			res.status(404).send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize());
-		}
+	}
+	var json = objects.find(query);
+	//console.log(query);
+	if ( json.length > 0 ) {
+		res.status(200).send(new ObjectSerializer(json).serialize());
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 28, 'code': 403, 'message': 'Forbidden'}).serialize());
+		res.status(404).send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
 
@@ -142,35 +138,33 @@ router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: cfg.jwt.secret}), 
 router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	objects	= db.getCollection('objects');
+		
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.user.id };
 	var i = (objects.find(queryQ)).length;
-	if( i >= (quota[req.session.user.role]).objects ) {
+	if( i >= (quota[req.user.role]).objects ) {
 		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
 	} else {
-		if ( req.token !== undefined ) {
-			var new_object = {
-				id:				uuid.v4(),
-				type:  			req.body.type!==undefined?req.body.type:'default',
-				name:			req.body.name!==undefined?req.body.name:'unamed',
-				description:	req.body.description!==undefined?(req.body.description).substring(0, 1024):'',
-				position: 	 	req.body.position!==undefined?req.body.position:'',
-				longitude:		req.body.longitude!==undefined?req.body.longitude:'',
-				latitude:		req.body.latitude!==undefined?req.body.latitude:'',
-				isPublic:		req.body.isPublic!==undefined?req.body.isPublic:'false',
-				ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
-				ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
-				user_id:		req.user.id,
-			};
-			events.add('t6Api', 'object add', new_object.id);
-			objects.insert(new_object);
-			//console.log(objects);
-			
-			res.header('Location', '/v'+version+'/objects/'+new_object.id);
-			res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() });
-		} else {
-			res.status(403).send(new ErrorSerializer({'id': 29, 'code': 403, 'message': 'Forbidden'}).serialize());
-		}
+		var new_object = {
+			id:				uuid.v4(),
+			type:  			req.body.type!==undefined?req.body.type:'default',
+			name:			req.body.name!==undefined?req.body.name:'unamed',
+			description:	req.body.description!==undefined?(req.body.description).substring(0, 1024):'',
+			position: 	 	req.body.position!==undefined?req.body.position:'',
+			longitude:		req.body.longitude!==undefined?req.body.longitude:'',
+			latitude:		req.body.latitude!==undefined?req.body.latitude:'',
+			isPublic:		req.body.isPublic!==undefined?req.body.isPublic:'false',
+			ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
+			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
+			user_id:		req.user.id,
+		};
+		events.add('t6Api', 'object add', new_object.id);
+		objects.insert(new_object);
+		//console.log(objects);
+		
+		res.header('Location', '/v'+version+'/objects/'+new_object.id);
+		res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() });
+
 	}
 });
 
@@ -197,34 +191,30 @@ router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
  */
 router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
-	if ( req.token !== undefined ) {
 	var object_id = req.params.object_id;
-		objects	= db.getCollection('objects');
-		//console.log(objects);
-		var result;
-		objects.findAndUpdate(
-			function(i){return i.id==object_id;},
-			function(item){
-				item.type				= req.body.type!==undefined?req.body.type:item.type;
-				item.name				= req.body.name!==undefined?req.body.name:item.name;
-				item.description		= req.body.description!==undefined?(req.body.description).substring(0, 1024):item.description;
-				item.position			= req.body.position!==undefined?req.body.position:item.position;
-				item.longitude			= req.body.longitude!==undefined?req.body.longitude:item.longitude;
-				item.latitude			= req.body.latitude!==undefined?req.body.latitude:item.latitude;
-				item.isPublic			= req.body.isPublic!==undefined?req.body.isPublic:item.isPublic;
-				item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
-				item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
-				result = item;
-			}
-		);
-		//console.log(objects);
-		db.save();
-		
-		res.header('Location', '/v'+version+'/objects/'+object_id);
-		res.status(200).send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() });
-	} else {
-		res.status(403).send(new ErrorSerializer({'id': 30, 'code': 403, 'message': 'Forbidden'}).serialize());
-	}
+	objects	= db.getCollection('objects');
+	//console.log(objects);
+	var result;
+	objects.findAndUpdate(
+		function(i){return i.id==object_id;},
+		function(item){
+			item.type				= req.body.type!==undefined?req.body.type:item.type;
+			item.name				= req.body.name!==undefined?req.body.name:item.name;
+			item.description		= req.body.description!==undefined?(req.body.description).substring(0, 1024):item.description;
+			item.position			= req.body.position!==undefined?req.body.position:item.position;
+			item.longitude			= req.body.longitude!==undefined?req.body.longitude:item.longitude;
+			item.latitude			= req.body.latitude!==undefined?req.body.latitude:item.latitude;
+			item.isPublic			= req.body.isPublic!==undefined?req.body.isPublic:item.isPublic;
+			item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
+			item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
+			result = item;
+		}
+	);
+	//console.log(objects);
+	db.save();
+	
+	res.header('Location', '/v'+version+'/objects/'+object_id);
+	res.status(200).send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() });
 });
 
 /**
@@ -243,25 +233,21 @@ router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), fun
 router.delete('/:object_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var object_id = req.params.object_id;
-	if ( req.token !== undefined ) {
-		objects	= db.getCollection('objects');
-		var query = {
-			'$and': [
-				{ 'user_id' : req.user.id, }, // delete only object from current user
-				{ 'id' : object_id, },
-			],
-		};
-		var o = objects.find(query);
-		//console.log(o);
-		if ( o.length > 0 ) {
-			objects.remove(o);
-			db.saveDatabase();
-			res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: object_id }); // TODO: missing serializer
-		} else {
-			res.status(404).send(new ErrorSerializer({'id': 31, 'code': 404, 'message': 'Not Found'}).serialize());
-		}
+	objects	= db.getCollection('objects');
+	var query = {
+		'$and': [
+			{ 'user_id' : req.user.id, }, // delete only object from current user
+			{ 'id' : object_id, },
+		],
+	};
+	var o = objects.find(query);
+	//console.log(o);
+	if ( o.length > 0 ) {
+		objects.remove(o);
+		db.saveDatabase();
+		res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: object_id }); // TODO: missing serializer
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 32, 'code': 403, 'message': 'Forbidden'}).serialize());
+		res.status(404).send(new ErrorSerializer({'id': 31, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
 

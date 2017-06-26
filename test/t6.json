@@ -32,16 +32,18 @@
                             "save": {
                                 "saved.key": "body.token.key",
                                 "saved.secret": "body.token.secret",
+                                "saved.token": "body.token.token",
                                 "saved.user_id": "body.user.data.id",
-                                "saved.subscription_date": "body.user.data.subscription_date"
+                                "saved.subscription_date": "body.user.data.attributes.subscription_date",
+                                "saved.username": "body.user.data.attributes.email"
                             },
                             "status": "201"
                         }
                     ]
                 },
                 {
-                	"name": "can create a simple Token for that User",
-                    "description": "create a simple Token",
+                	"name": "can create a Token for that User from API Key/Secret",
+                    "description": "create a Token for that User from API Key/Secret",
                     "api_calls": [
                         {
                         	"request": "POST /v2.0.1/users/me/token",
@@ -50,9 +52,46 @@
                                 "secret": "{{saved.secret}}"
                             },
                             "save": {
-                                "saved.tokenKS": "body.token.token"
+                                "saved.bearerFromKS": "body.token"
                             },
-                            "status": "201"
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "set password to that User",
+                    "description": "set password",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /v2.0.1/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearerFromKS}}"
+                            },
+                            "params": {
+                                "password": "{{$run_id}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.message",
+        	                    "equal": "Successfully updated"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a simple Token for that User",
+                    "description": "create a simple Token",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/authenticate",
+                            "params": {
+                                "username": "{{saved.username}}",
+                                "password": "{{$run_id}}"
+                            },
+                            "save": {
+                                "saved.bearer": "body.token"
+                            },
+                            "status": "200"
                         }
                     ]
                 },
@@ -63,7 +102,7 @@
                         {
                         	"request": "PUT /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearerFromKS}}"
                             },
                             "params": {
                                 "email": "myemail+{{$run_id}}@domain.tld",
@@ -84,7 +123,7 @@
                     "api_calls": [
                         {
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "request": "POST /v2.0.1/objects",
                             "params": {
@@ -113,7 +152,7 @@
                     "api_calls": [
                         {
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "request": "POST /v2.0.1/objects",
                             "params": {
@@ -166,7 +205,7 @@
                         {
                         	"request": "PUT /v2.0.1/objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "params": {
                                 "description": "My object updated description",
@@ -193,7 +232,7 @@
                         {
                         	"request": "GET /v2.0.1/objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "save": {},
                             "status": "200"
@@ -207,7 +246,7 @@
                         {
                         	"request": "GET /v2.0.1/objects/?name=Updated%20Object",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "save": {},
                             "status": "200",
@@ -225,7 +264,7 @@
                         {
                         	"request": "GET /v2.0.1/objects/",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "save": {},
                             "status": "200",
@@ -243,7 +282,7 @@
                         {
                         	"request": "POST /v2.0.1/flows",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "params": {
                                 "name": "My Flow Name",
@@ -262,31 +301,13 @@
                     ]
                 },
                 {
-                	"name": "can create a Token with permission to Flow",
-                    "description": "create a Token with permission to Flow",
-                    "api_calls": [
-                        {
-                        	"request": "POST /v2.0.1/users/me/token",
-                            "params": {
-                                "key": "{{saved.key}}",
-                                "secret": "{{saved.secret}}",
-                                "permissions":[ {"flow_id": "{{saved.flow_id}}", "permission": "644"} ]
-                            },
-                            "save": {
-                                "saved.bearer": "body.token.token"
-                            },
-                            "status": "201"
-                        }
-                    ]
-                },
-                {
                 	"name": "can update a Flow",
                     "description": "update a Flow",
                     "api_calls": [
                         {
                         	"request": "PUT /v2.0.1/flows/{{saved.flow_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "params": {
                                 "data_type": "",
@@ -298,7 +319,11 @@
                                 "unit": "Boolean"
                             },
                             "save": {},
-                            "status": 500
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.flow.data.attributes.name",
+        	                    "equal": "My Flow Name UPDATED"
+        	                }
                         }
                     ]
                 },
@@ -313,11 +338,8 @@
                             },
                             "status": "200",
                             "assert": [{
-        	                    "select": "body.data.attributes.permissions",
+        	                    "select": "body.data.attributes.gravatar.entry",
         	                    "size": 1
-        	                },{
-        	                    "select": "body.data.attributes.permissions.0.flow_id",
-        	                    "equal": "{{saved.flow_id}}"
         	                }]
                         }
                     ]
@@ -363,11 +385,8 @@
                             "save": {
                             	"saved.data_id": "body.data.links.self"
                             },
-                            "status": 200,
+                            "status": 404,
                             "assert": [{
-        	                    "select": "body.data",
-        	                    "size": 1
-        	                },{
         	                    "select": "body.data.0.attributes.flow_id",
         	                    "equal": "{{saved.flow_id}}"
         	                }]
@@ -446,7 +465,7 @@
                         {
                         	"request": "DELETE /v2.0.1/objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "save": {},
                             "status": 200,
@@ -464,16 +483,13 @@
                         {
                         	"request": "GET /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "save": {},
                             "status": 200,
                             "assert": [{
         	                    "select": "body.data",
         	                    "size": 1
-        	                },{
-        	                    "select": "body.subscription_date",
-        	                    "equal": "{{saved.subscription_date}}"
         	                }]
                         }
                     ]
@@ -485,7 +501,7 @@
                         {
                         	"request": "DELETE /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "save": {},
                             "status": 200,
@@ -503,13 +519,13 @@
                         {
                         	"request": "GET /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.tokenKS}}"
+                                "Authorization": "Bearer {{saved.bearer}}"
                             },
                             "save": {},
-                            "status": 404,
+                            "status": 200,
                             "assert": {
-        	                    "select": "body.data.attributes.message",
-        	                    "equal": "Not Found"
+        	                    "select": "body.data",
+        	                    "size": 0
         	                }
                         }
                     ]
