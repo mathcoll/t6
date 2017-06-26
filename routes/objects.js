@@ -26,7 +26,7 @@ var tokens;
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlevel)', bearerAuthToken, function (req, res) {
+router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlevel)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	var typenumber = req.params.typenumber;
 	var errorcorrectionlevel = req.params.errorcorrectionlevel!==undefined?req.params.errorcorrectionlevel:'M';
@@ -75,7 +75,7 @@ router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
+router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	var name = req.query.name;
 	if ( req.token !== undefined ) {
@@ -137,7 +137,7 @@ router.get('/(:object_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
  * @apiUse 403
  * @apiUse 429
  */
-router.post('/', bearerAuthToken, function (req, res) {
+router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	objects	= db.getCollection('objects');
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.user.id };
@@ -192,7 +192,7 @@ router.post('/', bearerAuthToken, function (req, res) {
  * @apiUse 200
  * @apiUse 403
  */
-router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	if ( req.token !== undefined ) {
 	var object_id = req.params.object_id;
 		objects	= db.getCollection('objects');
@@ -236,7 +236,7 @@ router.put('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiUse 403
  * @apiUse 404
  */
-router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+router.delete('/:object_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	if ( req.token !== undefined ) {
 		objects	= db.getCollection('objects');
@@ -277,7 +277,7 @@ router.delete('/:object_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiUse 404
  * @apiUse 405
  */
-router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, res) {
+router.put('/:object_id([0-9a-z\-]+)/:pName/?', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	var pName = req.params.pName;
 	if ( !object_id ) {
@@ -344,7 +344,7 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, 
  * @apiUse 404
  * @apiUse 405
  */
-router.get('/:object_id([0-9a-z\-]+)/:pName/?', bearerAuthToken, function (req, res) {
+router.get('/:object_id([0-9a-z\-]+)/:pName/?', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	var pName = req.params.pName;
 	if ( !object_id ) {

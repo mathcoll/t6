@@ -26,7 +26,8 @@ var tokens;
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/?(:dashboard_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) {
+router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS DONE (/)
 	var dashboard_id = req.params.dashboard_id;
 	var name = req.query.name;
 	if ( req.token !== undefined ) {

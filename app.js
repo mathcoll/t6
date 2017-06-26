@@ -11,6 +11,8 @@ var bearer			= require('bearer');
 var jade			= require('jade');
 var compression		= require('compression');
 var VERSION			= require("./package.json").version;
+expressJwt			= require('express-jwt');
+jwt					= require('jsonwebtoken');
 favicon				= require('serve-favicon');
 request				= require('request');
 path				= require('path');	
@@ -33,6 +35,12 @@ strength			= require('strength');
 events				= require('./events');
 events.setMeasurement('events');
 events.setRP('autogen');
+
+cfg = {};
+cfg.jwt = {
+    expiresInSeconds: 3600,
+    secret: "ThisIsAVeryGoodSecretFromMyAPI"
+}
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
@@ -140,6 +148,7 @@ app.set('view engine', 'jade');
 app.use(session(sessionSettings));
 app.use(express.static(path.join(__dirname, '/public'), staticOptions));
 app.use(express.static(path.join(__dirname, '/docs'), staticOptions));
+app.use('/v', expressJwt({secret: cfg.jwt.secret}));
 app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);

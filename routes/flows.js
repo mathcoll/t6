@@ -23,71 +23,32 @@ var tokens;
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
+router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS DONE (/)
 	var results = Array();
 	var flow_id = req.params.flow_id;
 	var name = req.query.name;
-	if ( req.token !== undefined && req.user !== undefined ) {
+	if ( req.user !== undefined && req.user.id !== undefined ) {
 		flows	= db.getCollection('flows');
-		users	= db.getCollection('users');
-		
-		var permissions = (req.bearer.permissions);
-		if ( typeof req.bearer.permissions === 'string' ) {
-			// Yes this is a string, so we assume this is not an Array
-			// And so, it means the token does not have any permission at all
-			// So we grant access w/o restriction to all Flows from the user...
-			
-			var query;
-			if ( flow_id !== undefined ) {
-				query = {
-				'$and': [
-						{ 'id': flow_id },
-						{ 'user_id': req.bearer.user_id },
-					]
-				};
-			} else {
-				query = {
-				'$and': [
-						{ 'user_id': req.bearer.user_id },
-					]
-				};
-			}
-			results = flows.find(query);
+
+		var query;
+		if ( flow_id !== undefined ) {
+			query = {
+			'$and': [
+					{ 'id': flow_id },
+					{ 'user_id': req.user.id },
+				]
+			};
 		} else {
-			permissions.map(function(permission) {
-				if ( permission.permission == '644' || permission.permission == '600' ) { // TODO: if Owner: then should be >= 4, etc ...
-					var query;
-					if ( flow_id !== undefined ) {
-						query = {
-						'$and': [
-								{ 'id': permission.flow_id },
-							]
-						};
-					} else {
-						if ( name !== undefined ) {
-							query = {
-							'$and': [
-									{ 'id': permission.flow_id },
-									{ 'name': { '$regex': [name, 'i'] } }
-								]
-							};
-						} else {
-							query = {
-							'$and': [
-									{ 'id': permission.flow_id },
-								]
-							};
-						}
-					}
-					var flow = flows.findOne(query);
-					if ( flow && flow_id && flow_id == permission.flow_id ) results.push(flow);
-					else if ( flow && !flow_id ) results.push(flow);
-				}
-			});
+			query = {
+			'$and': [
+					{ 'user_id': req.user.id },
+				]
+			};
 		}
-		
-		if ( results.length > 0 ) {
-			res.status(200).send(new FlowSerializer(results).serialize());
+		var flow = flows.find(query);
+		if ( flow.length > 0 ) {
+			res.status(200).send(new FlowSerializer(flow).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({'id': 36, 'code': 404, 'message': 'Not Found'}).serialize());
 		}	
@@ -114,7 +75,8 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
  * @apiUse 400
  * @apiUse 429
  */
-router.post('/', bearerAuthToken, function (req, res) {
+router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS NOT YET DONE (x)
 	flows	= db.getCollection('flows');
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.user.id };
@@ -173,7 +135,8 @@ router.post('/', bearerAuthToken, function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS NOT YET DONE (x)
 	if ( req.token !== undefined ) {
 		var flow_id = req.params.flow_id;
 		var permission = req.body.permission!==undefined?req.body.permission:undefined;
@@ -235,7 +198,8 @@ router.put('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiUse Auth
  * @apiParam {uuid-v4} flow_id Flow Id
  */
-router.delete('/:flow_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+router.delete('/:flow_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS NOT YET DONE (x)
 	// TODO
 	// TODO: delete all data related to that flow?
 	res.status(404).send(new ErrorSerializer({'id': 43, 'code': 404, 'message': 'Not Found', details: 'Not yet implemented... Sorry.'}).serialize());

@@ -261,9 +261,26 @@ router.all('*', function (req, res, next) {
     });
 });
 
-router.get('/authenticate', function (req, res) {
-	// TODO
-	// should refresh the Bearer for 1 hour then Bearer is not valid anymore
+router.post('/authenticate', function (req, res) {
+	var email = req.body.username;
+	var password = req.body.password;
+	if ( email && password ) {
+		var queryU = {
+				'$and': [
+							{ 'email': email },
+							{ 'password': md5(password) },
+							// TODO: expiration !! {'expiration': { '$gte': moment().format('x') }},
+						]
+					};
+		
+		var user = users.findOne(queryU);
+	}
+	if (!user || !email || !password ) {
+        return res.status(500).send(new ErrorSerializer({'id': 102, 'code': 500, 'message': info.message}));
+    } else {
+        var token = jwt.sign(user, cfg.jwt.secret, { expiresIn: cfg.jwt.expiresInSeconds });
+        return res.status(200).json( {status: 'ok', token: token} );
+    }
 });
 
 /**

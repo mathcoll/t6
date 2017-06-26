@@ -36,6 +36,7 @@ router.all('*', function (req, res, next) {
 	var mydevice = device(res.locals.session['user-agent']);
 	//console.log("type: "+mydevice.type);
 	//console.log("model: "+mydevice.model);
+	//console.log(req.jwt);
 	next();
 });
 

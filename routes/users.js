@@ -157,7 +157,8 @@ router.get('/changePassword', bearerAdmin, function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( req.token !== undefined && req.user.id == user_id ) {
 		users	= db.getCollection('users');
@@ -248,7 +249,7 @@ router.post('/me/token', function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/me/token', bearerAuthToken, function (req, res) {
+router.get('/me/token', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 	if ( req.user !== undefined ) {
 		var options = {
 		  url: 'https://en.gravatar.com/' + req.user.mail_hash + '.json',
@@ -338,14 +339,13 @@ router.post('/', function (req, res) {
  * @apiUse 412
  * @apiUse 429
  */
-router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( !(req.body.email || req.body.lastName || req.body.firstName ) ) {
 		res.status(412).send(new ErrorSerializer({'id': 8,'code': 412, 'message': 'Precondition Failed'}).serialize());
 	} else {
-		req.token = req.token!==undefined?req.token:req.session.token;
-		req.user = req.user!==undefined?req.user:req.session.user;
-		if ( req.token !== undefined && req.user.id == user_id ) {
+		if ( req.user.id == user_id ) {
 			var item = users.findOne( {'id': user_id} );
 			item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
 			item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
@@ -375,9 +375,10 @@ router.put('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
  * @apiUse 404
  * @apiUse 429
  */
-router.delete('/:user_id([0-9a-z\-]+)', bearerAuthToken, function (req, res) {
+router.delete('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
-	if ( req.token !== undefined && req.user.id == user_id ) {
+	if ( req.user.id == user_id ) { //Well ... not sure
 		users	= db.getCollection('users');
 		var u = users.find({'id': { '$eq': user_id }});
 		if (u) {
