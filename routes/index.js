@@ -183,8 +183,8 @@ router.all('*', function (req, res, next) {
 		o = {
 			key:		'',
 			secret:		'',
-			user_id:	'',
-			session_id:	'',
+			user_id:	'anonymous',
+			session_id:	null,
 			verb:		req.method,
 			url:		req.originalUrl,
 			date:		moment().format('x')
@@ -246,7 +246,7 @@ router.all('*', function (req, res, next) {
 					events.add('t6Api', 'api call', req.user!==null?req.user.id:'');
 					next();
 				}).catch(err => {
-					console.error('ERROR ===> Error writting logs for quota:\n'+err);
+					//console.error('ERROR ===> Error writting logs for quota:\n'+err);
 					//console.log(tags);
 					//console.log(fields);
 					next();
