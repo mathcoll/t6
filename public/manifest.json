@@ -1,7 +1,7 @@
 {
-  "name": "t6",
+  "name": "t6 App",
   "short_name": "t6",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "icons": [{
     "src": "/img/m/icons/icon-128x128.png",
@@ -30,8 +30,9 @@
     }],
   "start_url": "/m",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "default_locale": "en",
+  "lang": "en-US",
   "background_color": "#795548",
   "theme_color": "#795548"
 }
