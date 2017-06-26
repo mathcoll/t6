@@ -54,7 +54,7 @@ router.get('/(:snippet_id([0-9a-z\-]+))?', bearerAuthToken, function (req, res) 
 			}
 		}
 		var json = snippets.find(query);
-		if ( json.length > 0 ) {
+		if ( json.length > -1 ) {
 			res.status(200).send(new SnippetSerializer(json).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({'id': 127, 'code': 404, 'message': 'Not Found'}).serialize());
