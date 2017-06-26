@@ -1043,6 +1043,7 @@ router.post('/account/register', function(req, res) {
 			//var tokens	= db.getCollection('tokens');
 			//tokens.insert(new_token);
 			
+			// TODO: Might be usefull to send the API_KEY/SECRET to the user when it's being created!
 			res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
 				var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
 				var mailOptions = {
@@ -1224,7 +1225,7 @@ router.post('/account/login', Auth, function(req, res) {
 		users.update(u);
 		db.save();
 		
-		//console.log(req.session.user);
+		console.log("TEST TOKEN , when was it created ??????? "+req.session.user.token);
 		if ( req.url == "/account/login" ) {
 		//res.redirect('/dashboards');
 			res.redirect('/account/profile');

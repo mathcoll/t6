@@ -32,36 +32,59 @@ router.get('/:flow_id([0-9a-z\-]+)?', bearerAuthToken, function (req, res) {
 		users	= db.getCollection('users');
 		
 		var permissions = (req.bearer.permissions);
-		permissions.map(function(permission) {
-			if ( permission.permission == '644' || permission.permission == '600' ) { // TODO: if Owner: then should be >= 4, etc ...
-				var query;
-				if ( flow_id !== undefined ) {
-					query = {
-					'$and': [
-							{ 'id': permission.flow_id },
-						]
-					};
-				} else {
-					if ( name !== undefined ) {
+		if ( typeof req.bearer.permissions === 'string' ) {
+			// Yes this is a string, so we assume this is not an Array
+			// And so, it means the token does not have any permission at all
+			// So we grant access w/o restriction to all Flows from the user...
+			
+			var query;
+			if ( flow_id !== undefined ) {
+				query = {
+				'$and': [
+						{ 'id': flow_id },
+						{ 'user_id': req.bearer.user_id },
+					]
+				};
+			} else {
+				query = {
+				'$and': [
+						{ 'user_id': req.bearer.user_id },
+					]
+				};
+			}
+			results = flows.find(query);
+		} else {
+			permissions.map(function(permission) {
+				if ( permission.permission == '644' || permission.permission == '600' ) { // TODO: if Owner: then should be >= 4, etc ...
+					var query;
+					if ( flow_id !== undefined ) {
 						query = {
 						'$and': [
 								{ 'id': permission.flow_id },
-								{ 'name': { '$regex': [name, 'i'] } }
 							]
 						};
 					} else {
-						query = {
-						'$and': [
-								{ 'id': permission.flow_id },
-							]
-						};
+						if ( name !== undefined ) {
+							query = {
+							'$and': [
+									{ 'id': permission.flow_id },
+									{ 'name': { '$regex': [name, 'i'] } }
+								]
+							};
+						} else {
+							query = {
+							'$and': [
+									{ 'id': permission.flow_id },
+								]
+							};
+						}
 					}
+					var flow = flows.findOne(query);
+					if ( flow && flow_id && flow_id == permission.flow_id ) results.push(flow);
+					else if ( flow && !flow_id ) results.push(flow);
 				}
-				var flow = flows.findOne(query);
-				if ( flow && flow_id && flow_id == permission.flow_id ) results.push(flow);
-				else if ( flow && !flow_id ) results.push(flow);
-			}
-		});
+			});
+		}
 		
 		if ( results.length > 0 ) {
 			res.status(200).send(new FlowSerializer(results).serialize());
