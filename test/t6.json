@@ -375,6 +375,40 @@
                     ]
                 },
                 {
+                	"name": "can get All Dashboards",
+                    "description": "get All Dashboards",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/dashboards",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer}}"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 0
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get All Snippets",
+                    "description": "get All Snippets",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/snippets",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer}}"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 0
+        	                }
+                        }
+                    ]
+                },
+                {
                 	"name": "can get All Objects",
                     "description": "get All Objects",
                     "api_calls": [
@@ -551,6 +585,20 @@
                             "assert": {
                             	"select": "body.status",
                             	"equal": "running"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get t6 pwa index cards",
+                	"description": "get t6 pwa index cards",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/index",
+                            "status": 200,
+                            "assert": {
+                            	"select": "body.data",
+                            	"size": 7
         	                }
                         }
                     ]
