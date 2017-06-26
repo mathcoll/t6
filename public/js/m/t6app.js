@@ -6,7 +6,6 @@
 		spinner: document.querySelector('section#loading-spinner'),
 		baseUrl: '',
 		bearer: '',
-		userHash: '',
 		date_format: 'DD/MM/YYYY, HH:mm',
 		applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
 		icons: {
@@ -44,6 +43,14 @@
 	containers.snippet = document.querySelector('section#snippet');
 	containers.profile = document.querySelector('section#profile');
 	containers.settings = document.querySelector('section#settings');
+	
+	/* Sign In */
+	document.querySelector('form#signin').addEventListener('click', function(evt) {
+		//console.log(document.querySelector('form#signin').serialize());
+		//document.querySelector('form#signin').querySelector('input')
+		console.log($("form#signin input").serialize());
+		evt.preventDefault();
+	});
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);

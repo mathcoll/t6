@@ -29,8 +29,9 @@
 	menuElement.addEventListener('transitionend', onTransitionEnd, {passive: true});
 	
 	settings_button.addEventListener('click', setTab, false);
-	login_button.addEventListener('click', setTab, false);
-	signup_button.addEventListener('click', setTab, false);
+	logout_button.addEventListener('click', setTab, false);
+	//login_button.addEventListener('click', setTab, false);
+	//signup_button.addEventListener('click', setTab, false);
 	profile_button.addEventListener('click', setTab, false);
 
 	function setTab(evt) {
