@@ -18,7 +18,7 @@ var tokens;
  * @apiUse 200
  * @apiUse 404
  */
-router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res) {
+router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res, next) {
 	var json;
 	var unit_id = req.params.unit_id;
 	var type = req.query.type;

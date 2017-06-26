@@ -147,111 +147,85 @@ router.all('*', function (req, res, next) {
 	tokens	= db.getCollection('tokens');
 	users	= db.getCollection('users');
 
-	var unlimited = false;
-	var bearerHeader = req.headers['authorization'];
-	if ( bearerHeader ) {
-		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-		req.token = bearer[1];
-		req.bearer = tokens.findOne(
-			{ '$and': [
-	           {'token': { '$eq': req.token }},
-	           {'expiration': { '$gte': moment().format('x') }},
-			]}
-		);
-	} else if ( req.session ) {
-		req.user = req.session.user;
-		req.token = req.session.token;
-		req.bearer = req.session.bearer;
-	} else {
-		// there might be no Auth, when creating a User. :-)
-		unlimited = true; 
-		req.user.id = null;
-	}
+	var o = {
+		key:		req.user!==undefined?req.user.key:'',
+		secret:		req.user!==undefined?req.user.secret:null,
+		user_id:	req.user!==undefined?req.user.id:'anonymous',
+		session_id:	req.user!==undefined?req.user.session_id:null,
+		verb:		req.method,
+		url:		req.originalUrl,
+		date:		moment().format('x')
+	};
 
-	var o = {};
-	if( req.user && req.session ) {
-		o = {
-			key:		req.user!==undefined?req.user.key:req.session.bearer!==undefined?req.session.bearer.key:'',
-			secret:		req.user!==undefined?req.user.secret:req.session.bearer!==undefined?req.session.bearer.secret:null,
-			user_id:	req.user!==undefined?req.user.id:req.session.bearer!==undefined?req.session.bearer.user_id:null,
-			session_id:	req.user!==undefined?req.user.session_id:req.session.bearer!==undefined?req.session.bearer.session_id:null,
-			verb:		req.method,
-			url:		req.originalUrl,
-			date:		moment().format('x')
-		};
-	} else {
-		o = {
-			key:		'',
-			secret:		'',
-			user_id:	'anonymous',
-			session_id:	null,
-			verb:		req.method,
-			url:		req.originalUrl,
-			date:		moment().format('x')
-		};
-	}
-
-	req.user = users.findOne({'id': { '$eq': o.user_id }});
-	var limit = req.user!==null?(quota[req.user.role]).calls:-1;
-	if (req.user !== null && req.user.role  !== null ) {
-		res.header('X-RateLimit-Limit', limit);
-	}
-	var i;
-	
-	var query = squel.select()
-		.field('count(url)')
-		.from('quota7d.requests')
-		.where('user_id=?', o.user_id!==null?o.user_id:'')
-		.where('time>now() - 7d')
-		.limit(1)
-		.toString();
-	dbInfluxDB.query(query).then(data => {
-		//console.log(query);
-		//console.log(data[0].count);
-		//console.log(i);
-		//console.log((quota[req.user.role]).calls);
-		i = data[0]!==undefined?data[0].count:0;
-		
-		if ( limit-i > 0 ) {
-			res.header('X-RateLimit-Remaining', limit-i);
-			//res.header('X-RateLimit-Reset', '');
+	if ( req.headers.authorization ) {
+		if ( !req.user ) {
+			var jwtdecoded = jwt.decode(req.headers.authorization.split(' ')[1]);
+			req.user = jwtdecoded;
 		}
-		res.header('Cache-Control', 'no-cache, max-age=360, private, must-revalidate, proxy-revalidate');
 		
-		if( (req.user && i >= limit) && !unlimited ) {
-			//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
-			events.add('t6Api', 'api 429', req.user!==null?req.user.id:'');
-			res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
-		} else {
-			if ( db_type.influxdb == true ) {
-				var tags = {user_id: o.user_id, session_id: o.session_id!==undefined?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
-				var fields = {url: o.url};
-				//CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATION 1d
-				dbInfluxDB.writePoints([{
-					measurement: 'requests',
-					tags: tags,
-					fields: fields,
-				}], { retentionPolicy: 'quota7d', precision: 's', })
-				.then(err => {
-					//console.error('OK ===>'+err);
-					//console.log(tags);
-					//console.log(fields);
-					events.add('t6Api', 'api call', req.user!==null?req.user.id:'');
-					next();
-				}).catch(err => {
-					//console.error('ERROR ===> Error writting logs for quota:\n'+err);
-					//console.log(tags);
-					//console.log(fields);
-					next();
-			    });
+		var limit = req.user!==null?(quota[req.user.role]).calls:-1;
+		if (req.user !== null && req.user.role  !== null ) {
+			res.header('X-RateLimit-Limit', limit);
+		}
+		var i;
+		
+		var query = squel.select()
+			.field('count(url)')
+			.from('quota7d.requests')
+			.where('user_id=?', o.user_id!==null?o.user_id:'')
+			.where('time>now() - 7d')
+			.limit(1)
+			.toString();
+		dbInfluxDB.query(query).then(data => {
+			//console.log(query);
+			//console.log(data[0].count);
+			//console.log(i);
+			//console.log((quota[req.user.role]).calls);
+			i = data[0]!==undefined?data[0].count:0;
+			
+			if ( limit-i > 0 ) {
+				res.header('X-RateLimit-Remaining', limit-i);
+				//res.header('X-RateLimit-Reset', '');
 			}
-			//qt.insert(o);
-		};
-	}).catch(err => {
-		//console.error('ERROR ===> Error getting logs for quota:\n'+err);
-		//console.log(query);
-		res.status(429).send(new ErrorSerializer({'id': 101, 'code': 429, 'message': 'Too Many Requests; or we can\'t perform your request.'}));
-    });
+			res.header('Cache-Control', 'no-cache, max-age=360, private, must-revalidate, proxy-revalidate');
+			
+			if( (req.user && i >= limit) && !unlimited ) {
+				//TODO: what a fucking workaround!... when creating a User, we do not need any Auth, nor limitation
+				events.add('t6Api', 'api 429', req.user!==null?req.user.id:'');
+				res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
+			} else {
+				if ( db_type.influxdb == true ) {
+					var tags = {user_id: o.user_id, session_id: o.session_id!==undefined?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+					var fields = {url: o.url};
+					//CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATION 1d
+					dbInfluxDB.writePoints([{
+						measurement: 'requests',
+						tags: tags,
+						fields: fields,
+					}], { retentionPolicy: 'quota7d', precision: 's', })
+					.then(err => {
+						//console.error('OK ===>'+err);
+						//console.log(tags);
+						//console.log(fields);
+						events.add('t6Api', 'api call', req.user!==null?req.user.id:'');
+						next();
+					}).catch(err => {
+						//console.error('ERROR ===> Error writting logs for quota:\n'+err);
+						//console.log(tags);
+						//console.log(fields);
+						next();
+				    });
+				}
+				//qt.insert(o);
+			};
+		}).catch(err => {
+			//console.error('ERROR ===> Error getting logs for quota:\n'+err);
+			//console.log(query);
+			res.status(429).send(new ErrorSerializer({'id': 101, 'code': 429, 'message': 'Too Many Requests; or we can\'t perform your request.'}));
+	    });
+	} else {
+		next(); // no User Auth..
+	}
 });
 
 router.post('/authenticate', function (req, res) {
@@ -259,12 +233,12 @@ router.post('/authenticate', function (req, res) {
 	var password = req.body.password;
 	if ( email && password ) {
 		var queryU = {
-				'$and': [
-							{ 'email': email },
-							{ 'password': md5(password) },
-							// TODO: expiration !! {'expiration': { '$gte': moment().format('x') }},
-						]
-					};
+		'$and': [
+					{ 'email': email },
+					{ 'password': md5(password) },
+					// TODO: expiration !! {'expiration': { '$gte': moment().format('x') }},
+				]
+		};
 		
 		var user = users.findOne(queryU);
 	}

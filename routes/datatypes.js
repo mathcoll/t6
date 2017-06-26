@@ -20,14 +20,14 @@ var tokens;
  * @apiUse 405
  * @apiUse 500
  */
-router.get('(:datatype_id([0-9a-z\-]+))?', function (req, res) {
+router.get('/(:datatype_id([0-9a-z\-]+))?', function (req, res) {
 	var datatype_id = req.params.datatype_id;
 	datatypes	= db.getCollection('datatypes');
 	var json;
 	if ( datatype_id === undefined ) {
 		json = datatypes.find();
 	} else {
-		json = datatypes.find({ 'id': { '$eq': datatype_id } });
+		json = datatypes.find({ 'id': { '$eq': ""+datatype_id } });
 	}
 	//console.log(json);
 	if ( json.length > 0 ) {

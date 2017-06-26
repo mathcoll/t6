@@ -76,7 +76,7 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: cfg.jwt.secret}), func
  * @apiUse 429
  */
 router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
-	// expressJwt IS NOT YET DONE (x)
+	// expressJwt IS DONE (/)
 	flows	= db.getCollection('flows');
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.user.id };
@@ -92,7 +92,7 @@ router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
 				var flow_id = uuid.v4();
 				var new_flow = {
 					id:			flow_id,
-					user_id:	req.token.user_id,
+					user_id:	req.user.id,
 					name: 		req.body.name!==undefined?req.body.name:'unamed',
 					data_type:	req.body.data_type!==undefined?req.body.data_type:'',
 					unit:  		req.body.unit!==undefined?req.body.unit:'',
@@ -136,56 +136,49 @@ router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
  * @apiUse 500
  */
 router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
-	// expressJwt IS NOT YET DONE (x)
-	if ( req.token !== undefined ) {
-		var flow_id = req.params.flow_id;
+	// expressJwt IS DONE (/)
+	var flow_id = req.params.flow_id;
+	if ( flow_id ) {
 		var permission = req.body.permission!==undefined?req.body.permission:undefined;
 		if ( permission < 600 ) {
 			res.status(400).send(new ErrorSerializer({'id': 39, 'code': 400, 'message': 'Bad Request', 'details': 'Permission must be greater than 600!'}).serialize());
 		} else {
 			flows	= db.getCollection('flows');
-			var flow = flows.findOne( {'id': flow_id} );
-			if ( flow ) {
-				var flow_user_id = flow.user_id
-				// Check if Token is allowed (write permission) to modify the Flow
-				// Token can be from the Owner, the Group, or Other
-				var permissions = (req.bearer.permissions);
-				var p = permissions.filter(function(p) { // TODO /var/log/node/t6-error.log => TypeError: permissions.filter is not a function
-				    return p.flow_id == flow_id; 
-				})[0];
-				var OwnerPerm = ((p.permission).split(''))[0];
-				var GroupPerm = ((p.permission).split(''))[1]; // Not really used yet
-				var OtherPerm = ((p.permission).split(''))[2];
-				
-				if ( (req.bearer.user_id == flow_user_id && OwnerPerm >= 4 ) || (req.bearer.user_id != flow_user_id && OtherPerm >= 4 ) ) { // TODO sur about that ????????
-					var result;
-					flows.findAndUpdate(
-						function(i){return i.id==flow_id},
-						function(item){
-							item.name		= req.body.name!==undefined?req.body.name:item.name;
-							item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
-							item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
-							item.permission	= permission!==undefined?permission:item.permission;
-							item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
-							result = item;
-						}
-					);
-					//console.log(flows);
-					if ( result !== undefined ) {
-						db.save();
-						
-						res.header('Location', '/v'+version+'/flows/'+flow_id);
-						res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
-					} else {
-						res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+			var query = {
+					'$and': [
+							{ 'id': flow_id },
+							{ 'user_id': req.user.id },
+						]
 					}
+			var flow = flows.findOne( query );
+			if ( flow ) {
+				var result;
+				flows.findAndUpdate(
+					function(i){return i.id==flow_id},
+					function(item){
+						item.name		= req.body.name!==undefined?req.body.name:item.name;
+						item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
+						item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
+						item.permission	= permission!==undefined?permission:item.permission;
+						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
+						result = item;
+					}
+				);
+				//console.log(flows);
+				if ( result !== undefined ) {
+					db.save();
+					
+					res.header('Location', '/v'+version+'/flows/'+flow_id);
+					res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
 				} else {
-					res.status(403).send(new ErrorSerializer({'id': 41, 'code': 403, 'message': 'Forbidden'}).serialize());
+					res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
 				}
 			} else {
 				res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());
 			}
 		}
+	} else {
+		res.status(404).send(new ErrorSerializer({'id': 40.5, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
 
