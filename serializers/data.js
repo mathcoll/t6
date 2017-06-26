@@ -18,7 +18,7 @@ function DataSerializer(data) {
 				datatype: data.datatype,
 			},
 			dataLinks : {
-				//self	:  sprintf('%s/v%s/data/%s/%s', baseUrl, version, data.flow_id, data.id)//TODO: this is too buggy
+				self	:  sprintf('%s/v%s/data/%s/%s', baseUrl, version, data.flow_id, data.id)//TODO: this is too buggy
 				
 			},
 		});
