@@ -146,7 +146,7 @@ var users;
 router.all('*', function (req, res, next) {
 	tokens	= db.getCollection('tokens');
 	users	= db.getCollection('users');
-	//qt 		= dbQuota.getCollection('quota');
+
 	var unlimited = false;
 	var bearerHeader = req.headers['authorization'];
 	if ( bearerHeader ) {
@@ -165,16 +165,16 @@ router.all('*', function (req, res, next) {
 	} else {
 		// there might be no Auth, when creating a User. :-)
 		unlimited = true; 
-		req.bearer.user_id = null;
+		req.user.id = null;
 	}
 
 	var o = {};
-	if( req.bearer && req.session ) {
+	if( req.user && req.session ) {
 		o = {
-			key:		req.bearer!==undefined?req.bearer.key:req.session.bearer!==undefined?req.session.bearer.key:'',
-			secret:		req.bearer!==undefined?req.bearer.secret:req.session.bearer!==undefined?req.session.bearer.secret:null,
-			user_id:	req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null,
-			session_id:	req.bearer!==undefined?req.bearer.session_id:req.session.bearer!==undefined?req.session.bearer.session_id:null,
+			key:		req.user!==undefined?req.user.key:req.session.bearer!==undefined?req.session.bearer.key:'',
+			secret:		req.user!==undefined?req.user.secret:req.session.bearer!==undefined?req.session.bearer.secret:null,
+			user_id:	req.user!==undefined?req.user.id:req.session.bearer!==undefined?req.session.bearer.user_id:null,
+			session_id:	req.user!==undefined?req.user.session_id:req.session.bearer!==undefined?req.session.bearer.session_id:null,
 			verb:		req.method,
 			url:		req.originalUrl,
 			date:		moment().format('x')
@@ -190,13 +190,6 @@ router.all('*', function (req, res, next) {
 			date:		moment().format('x')
 		};
 	}
-	
-	/*var queryQ = { '$and': [
-       {'user_id' : req.bearer!==undefined?req.bearer.user_id:req.session.bearer!==undefined?req.session.bearer.user_id:null},
-       {'date': { '$gte': moment().subtract(7, 'days').format('x') }},
-	]};
-	var i = (qt.find(queryQ)).length;
-	*/
 
 	req.user = users.findOne({'id': { '$eq': o.user_id }});
 	var limit = req.user!==null?(quota[req.user.role]).calls:-1;
