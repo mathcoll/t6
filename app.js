@@ -148,7 +148,6 @@ app.set('view engine', 'jade');
 app.use(session(sessionSettings));
 app.use(express.static(path.join(__dirname, '/public'), staticOptions));
 app.use(express.static(path.join(__dirname, '/docs'), staticOptions));
-app.use('/v'+version, expressJwt({secret: cfg.jwt.secret}));
 app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);
