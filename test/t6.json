@@ -316,7 +316,7 @@
                                     "{{saved.object_id}}"
                                 ],
                                 "permission": 644,
-                                "unit": "Boolean"
+                                "unit": "String"
                             },
                             "save": {},
                             "status": 200,
@@ -360,7 +360,7 @@
                                 "save": "true",
                                 "timestamp": "",
                                 "unit": "-",
-                                "value": "true"
+                                "value": "Hello World"
                             },
                             "save": {
                             	"saved.data_id": "body.data.links.self"
