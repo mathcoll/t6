@@ -3,3 +3,9 @@ data-empty.db
 db.json
 *-*.json
 *-*.js
+*-bleu.json
+*-blanc.json
+*-guruplug.json
+*-bleu.js
+*-blanc.js
+*-guruplug.js
