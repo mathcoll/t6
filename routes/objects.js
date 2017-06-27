@@ -32,30 +32,26 @@ router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 	var typenumber = req.params.typenumber;
 	var errorcorrectionlevel = req.params.errorcorrectionlevel!==undefined?req.params.errorcorrectionlevel:'M';
 		
-	if ( req.token !== undefined ) {
-		objects	= db.getCollection('objects');
-		var query;
-		if ( object_id !== undefined ) {
-			query = {
-			'$and': [
-					{ 'user_id' : req.user.id },
-					{ 'id' : object_id },
-				]
-			};
-		}
-		
-		var json = objects.find(query);
-		//console.log(query);
-		if ( json.length > 0 ) {
-			var qr = qrCode.qrcode(typenumber, errorcorrectionlevel);
-			qr.addData(baseUrl+'/objects/'+object_id+'/public');
-			qr.make();
-			res.status(200).send({'data': qr.createImg(5, 5).src});
-		} else {
-			res.status(404).send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize());
-		}
+	objects	= db.getCollection('objects');
+	var query;
+	if ( object_id !== undefined ) {
+		query = {
+		'$and': [
+				{ 'user_id' : req.user.id },
+				{ 'id' : object_id },
+			]
+		};
+	}
+	
+	var json = objects.find(query);
+	//console.log(query);
+	if ( json.length > 0 ) {
+		var qr = qrCode.qrcode(typenumber, errorcorrectionlevel);
+		qr.addData(baseUrl+'/objects/'+object_id+'/public');
+		qr.make();
+		res.status(200).send({'data': qr.createImg(5, 5).src});
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 28, 'code': 403, 'message': 'Forbidden'}).serialize());
+		res.status(404).send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
 

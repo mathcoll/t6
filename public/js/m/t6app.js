@@ -6,6 +6,7 @@
 		spinner: document.querySelector('section#loading-spinner'),
 		baseUrl: '',
 		bearer: '',
+		auth: {},
 		date_format: 'DD/MM/YYYY, HH:mm',
 		applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
 		icons: {
@@ -45,10 +46,9 @@
 	containers.settings = document.querySelector('section#settings');
 	
 	/* Sign In */
-	document.querySelector('form#signin').addEventListener('click', function(evt) {
-		//console.log(document.querySelector('form#signin').serialize());
-		//document.querySelector('form#signin').querySelector('input')
-		console.log($("form#signin input").serialize());
+	document.querySelector('form#signin button#login_button').addEventListener('click', function(evt) {
+		app.auth = {"username":document.querySelector("form#signin input[name='username']").value, "password":document.querySelector("form#signin input[name='password']").value};
+		app.authenticate();
 		evt.preventDefault();
 	});
 
@@ -164,8 +164,12 @@
 	} //setExpandAction
 	
 	app.setSection = function(section) {
+		console.log("setSection: "+section);
 		document.querySelector('section.is-active').classList.remove('is-active');
 		document.querySelector('#'+section).classList.add('is-active');
+		if( document.querySelector('#'+section).querySelector('.page-content').innerHTML == '' ) {
+			document.querySelector('#'+section).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').querySelector('.page-content').innerHTML;
+		}
 		window.scrollTo(0, 0);
 	};
 
@@ -467,43 +471,47 @@
 				}
 				node += "	</div>";
 				node += "</section>";
-				
-				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-card__title\">";
-				node += "			<h2 class=\"mdl-card__title-text\">";
-				node += "				<i class=\"material-icons\">class</i>";
-				node += "				Custom Parameters";
-				node += "			</h2>";
-				node += "		</div>";
-				for ( var i in object.attributes.parameters ) {
-					node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true);
+
+				if ( object.attributes.parameters && object.attributes.parameters.length > -1 ) { 
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-card__title\">";
+					node += "			<h2 class=\"mdl-card__title-text\">";
+					node += "				<i class=\"material-icons\">class</i>";
+					node += "				Custom Parameters";
+					node += "			</h2>";
+					node += "		</div>";
+					for ( var i in object.attributes.parameters ) {
+						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true);
+					}
+					node += "	</div>";
+					node += "</section>";
 				}
-				node += "	</div>";
-				node += "</section>";
-				
-				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-card__title\">";
-				node += "			<h2 class=\"mdl-card__title-text\">";
-				node += "				<i class=\"material-icons\">my_location</i>";
-				node += "				Localization";
-				node += "			</h2>";
-				node += "		</div>";
-				if ( object.attributes.longitude ) {
-					node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
+
+				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-card__title\">";
+					node += "			<h2 class=\"mdl-card__title-text\">";
+					node += "				<i class=\"material-icons\">my_location</i>";
+					node += "				Localization";
+					node += "			</h2>";
+					node += "		</div>";
+					if ( object.attributes.longitude ) {
+						node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
+					}
+					if ( object.attributes.latitude ) {
+						node += app.getField('place', 'Latitude', object.attributes.latitude, isEdit==true?'text':false, false, false, true);
+					}
+					if ( object.attributes.position ) {
+						node += app.getField('pin_drop', 'Position', object.attributes.position, isEdit==true?'text':false, false, false, true);
+					}
+					if ( object.attributes.longitude && object.attributes.latitude ) {
+						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
+					}
+					node += "	</div>";
+					node += "</section>";
 				}
-				if ( object.attributes.latitude ) {
-					node += app.getField('place', 'Latitude', object.attributes.latitude, isEdit==true?'text':false, false, false, true);
-				}
-				if ( object.attributes.position ) {
-					node += app.getField('pin_drop', 'Position', object.attributes.position, isEdit==true?'text':false, false, false, true);
-				}
-				if ( object.attributes.longitude && object.attributes.latitude ) {
-					node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
-				}
-				node += "	</div>";
-				node += "</section>";
 
 				(containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
@@ -1337,12 +1345,40 @@
 	});
 
 	app.fetchIndex('index');
-	if( app.bearer != "" ) {
+	
+	app.getAllUserData = function() {
 		app.fetchItems('objects');
 		app.fetchItems('flows');
 		app.fetchItems('dashboards');
 		app.fetchItems('snippets');
 		app.fetchProfile();
+	}
+
+	app.authenticate = function() {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(app.auth) };
+		var url = app.baseUrl+"/"+app.api_version+"/authenticate";
+		
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			if ( response.token ) {
+				app.bearer = response.token;
+				app.getAllUserData();
+				app.setSection('index');
+				toast('Success. Welcome Back ! :-)', 5000);
+			} else {
+				toast('Auth error ...' + error, 5000);
+			}
+		})
+		.catch(function (error) {
+			toast('Auth error ...' + error, 5000);
+		});
 	}
 	
 })();

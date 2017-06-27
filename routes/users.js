@@ -196,7 +196,6 @@ router.post('/me/token', function (req, res) {
 		var user = users.findOne(queryU);
 		//console.log(users);
 		if ( user ) {
-			console.log(user);
 			var token = jwt.sign(user, cfg.jwt.secret, { expiresIn: cfg.jwt.expiresInSeconds });
 			return res.status(200).json( {status: 'ok', token: token} );
 		} else {

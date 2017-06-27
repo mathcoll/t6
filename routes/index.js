@@ -241,8 +241,8 @@ router.post('/authenticate', function (req, res) {
 		
 		var user = users.findOne(queryU);
 	}
-	if (!user || !email || !password ) {
-        return res.status(500).send(new ErrorSerializer({'id': 102, 'code': 500, 'message': info.message}));
+	if ( !user || !email || !password ) {
+        return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));
     } else {
         var token = jwt.sign(user, cfg.jwt.secret, { expiresIn: cfg.jwt.expiresInSeconds });
         return res.status(200).json( {status: 'ok', token: token} );
