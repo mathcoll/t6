@@ -30,6 +30,7 @@ if ( config.exec ) {
 	var df = exec(config.exec, function(error, stdout, stderr) {
 	    if (error !== null) {
 	    	console.log('exec error: ' + error + stderr);
+	    	process.exit(1);
 	    } else if( stdout ) {
 	    	request({
 	    		url: config.api+'authenticate',
@@ -41,7 +42,7 @@ if ( config.exec ) {
 	    			'Content-Type': 'application/json',
 	    		},
 	    		body: auth
-	    	}, function (error, response, body){
+	    	}, function (error, response, body) {
 	    		bearer = body.token;
 	    		if ( bearer && !error ) {
 	    			var body = {flow_id: config.flow_id, value: stdout, timestamp: timestamp, publish: config.publish, save: config.save, unit: config.unit, mqtt_topic: config.mqtt_topic, };
@@ -59,10 +60,14 @@ if ( config.exec ) {
 	    	    	}, function (error, response, body){
 	    	    		console.log(response.headers.location);
 	    	    	});
-	    		}
+	    		} else {
+	    	    	console.log('JWT error: ' + bearer);
+	    	    	process.exit(1);
+	    	    }
 	    	});
 	    } else {
-	    	//console.log('exec error: ' + error + stderr);
+	    	console.log('exec error: ' + error + stderr);
+	    	process.exit(1);
 	    }
 	});
 }
