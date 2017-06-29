@@ -11,6 +11,6 @@ PORT = 80
 
 -- Wifi
 cfg={ssid = node.chipid(), pwd = "node1234"}
-WIFI_SSID=""
-WIFI_PWD=""
+WIFI_SSID="couleurs"
+WIFI_PWD="u14nP5X>PWS9fZuw1}CR:~v8>~:uN)m={ozKSKoA7e_,oMF^m-1F?xiUwB&hkQ0"
 WIFI_AUTOCONNECT=1

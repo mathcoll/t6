@@ -9,7 +9,7 @@ sleepTime=30 *1000*1000*60 --30 minutes
 wakeTime=30 *1000 --30 seconds
 
 -- EasyIOT server
-bearer = ""
+bearer = "productionGFlWfiCrebUZLSAbvn.SElHPXthdKDdFIWuM..INsPLBEtYpXntZwpBYXvKrE.xg"
 easyiotHOST = "192.168.0.21"
 easyiotIP = "192.168.0.21"
 easyiotPORT = 3000
@@ -18,6 +18,6 @@ easyiotPORT = 3000
 PORT = 80
 
 -- Wifi
-WIFI_SSID=""
-WIFI_PWD=""
+WIFI_SSID="couleurs"
+WIFI_PWD="u14nP5X>PWS9fZuw1}CR:~v8>~:uN)m={ozKSKoA7e_,oMF^m-1F?xiUwB&hkQ0"
 WIFI_AUTOCONNECT=1
