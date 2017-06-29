@@ -619,9 +619,9 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: cfg.jwt.secret}), f
 
 		if( publish == true && mqtt_topic !== "" ) {
 			if ( text !== "" ) {
-				client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text, flow: flow_id, }), {retain: true,});
+				client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text, flow: flow_id, environment: process.env.NODE_ENV, }), {retain: true,});
 			} else {
-				client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, flow: flow_id, }), {retain: true,});
+				client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, flow: flow_id, environment: process.env.NODE_ENV, }), {retain: true,});
 			};
 		};
 
