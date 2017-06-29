@@ -19,9 +19,9 @@
 
 <h2>Authentication</h2>
 <p>
+	To create and get a JWT Token, you must authenticate yourself on the API by using the dedicated Endpoint.<br />
 	Most API endpoint require an Authentication to identify and approve the user request. This is done by adding 
-	<span class="label label-primary">Authorization: Bearer Key</span> Header to the Http request.<br />
-	API Keys are expiring "tokens", default key duration is 1 hour and you can choose 7 days or 1 month. Additionally, the web-browser interface allows to extend keys duration.
+	<span class="label label-primary">Authorization: Bearer <JWTtoken></span> Header to the Http request.
 </p>
 
 <h2>Quota</h2>
@@ -36,8 +36,8 @@
 		<li><span class="type label label-primary">200 Success</span> Server successfully understood the transaction.</li>
     	<li><span class="type label label-primary">201 Created</span> The Creation of a new resource was successful.</li>
     	<li><span class="type label label-primary">400 Bad Request</span> Require a Bearer Authentication.</li>
-    	<li><span class="type label label-primary">401 Not Authorized</span> Require a Bearer Authentication.</li>
-    	<li><span class="type label label-primary">403 Forbidden</span> Token used in transaction is not valid. Check your token and/or permission.</li>
+    	<li><span class="type label label-primary">401 Not Authorized</span> Require a Bearer JWTtoken Authentication.</li>
+    	<li><span class="type label label-primary">403 Forbidden</span> JWTtoken used in transaction is not valid. Check your token and/or permission.</li>
     	<li><span class="type label label-primary">404 Not Found</span> We couldn't find the resource you are trying to access.</li>
     	<li><span class="type label label-primary">405 Method Not Allowed</span> API endpoint does not accept the method used.</li>
     	<li><span class="type label label-primary">412 Precondition Failed</span> Request input does not match prerequisites, and so, failed.</li>

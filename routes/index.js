@@ -227,6 +227,20 @@ router.all('*', function (req, res, next) {
 	}
 });
 
+
+/**
+ * @api {post} /authenticate Create a JWT Token
+ * @apiName Create a JWT Token
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} username Your own username
+ * @apiParam {String} password Your own password
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 500
+ */
 router.post('/authenticate', function (req, res) {
 	var email = req.body.username;
 	var password = req.body.password;
@@ -240,6 +254,8 @@ router.post('/authenticate', function (req, res) {
 		};
 		
 		var user = users.findOne(queryU);
+		user.permissions = null;
+		user.gravatar = null;
 	}
 	if ( !user || !email || !password ) {
         return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));

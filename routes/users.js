@@ -173,6 +173,7 @@ router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), funct
  * @apiName Create New Token
  * @apiGroup User
  * @apiVersion 2.0.1
+ * @apiDescription DEPRECATED. Please use (#User:Create a JWT Token)
  * 
  * @apiParam {String} key API_KEY.
  * @apiParam {String} secret API_SECRET.
