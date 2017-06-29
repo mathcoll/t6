@@ -157,7 +157,7 @@ router.get('/changePassword', bearerAdmin, function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( req.user.id == user_id ) {
@@ -197,7 +197,7 @@ router.post('/me/token', function (req, res) {
 		var user = users.findOne(queryU);
 		//console.log(users);
 		if ( user ) {
-			var token = jwt.sign(user, cfg.jwt.secret, { expiresIn: cfg.jwt.expiresInSeconds });
+			var token = jwt.sign(user, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 			return res.status(200).json( {status: 'ok', token: token} );
 		} else {
 			res.status(404).send(new ErrorSerializer({'id': 11,'code': 404, 'message': 'Not Found'}).serialize());
@@ -221,7 +221,7 @@ router.post('/me/token', function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/me/token', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.get('/me/token', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user !== undefined ) {
 		var options = {
 		  url: 'https://en.gravatar.com/' + req.user.mail_hash + '.json',
@@ -315,7 +315,7 @@ router.post('/', function (req, res) {
  * @apiUse 412
  * @apiUse 429
  */
-router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( !( (req.body.email || req.body.lastName || req.body.firstName ) || ( req.body.password ) ) ) {
@@ -355,7 +355,7 @@ router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), funct
  * @apiUse 404
  * @apiUse 429
  */
-router.delete('/:user_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.delete('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( req.user.id == user_id ) { //Well ... not sure

@@ -18,6 +18,12 @@ sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDur
 cookie				= sessionSettings.cookie;
 staticOptions		= { etag: true, maxAge: 864000000 };//10 Days
 
+/* JWT */
+jwtsettings = {
+    expiresInSeconds: 3600,
+    secret: 'ThisIsAVeryGoodSecretForMyAPI' // Keyboard-cat
+};
+
 /* Http settings */
 timeoutDuration		= '10s';
 

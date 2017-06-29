@@ -23,7 +23,7 @@ var tokens;
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var results = Array();
 	var flow_id = req.params.flow_id;
@@ -75,7 +75,7 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: cfg.jwt.secret}), func
  * @apiUse 400
  * @apiUse 429
  */
-router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	flows	= db.getCollection('flows');
 	/* Check for quota limitation */
@@ -135,7 +135,7 @@ router.post('/', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// expressJwt IS DONE (/)
 	var flow_id = req.params.flow_id;
 	if ( flow_id ) {
@@ -191,7 +191,7 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), funct
  * @apiUse Auth
  * @apiParam {uuid-v4} flow_id Flow Id
  */
-router.delete('/:flow_id([0-9a-z\-]+)', expressJwt({secret: cfg.jwt.secret}), function (req, res) {
+router.delete('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// expressJwt IS NOT YET DONE (x)
 	// TODO
 	// TODO: delete all data related to that flow?

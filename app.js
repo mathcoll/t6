@@ -36,12 +36,6 @@ events				= require('./events');
 events.setMeasurement('events');
 events.setRP('autogen');
 
-cfg = {};
-cfg.jwt = {
-    expiresInSeconds: 3600,
-    secret: "ThisIsAVeryGoodSecretFromMyAPI"
-}
-
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
 if ( db_type.sqlite3 == true ) {
@@ -176,12 +170,36 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
 	// development error handler
 	app.use(function(err, req, res, next) {
-		res.status(err.status || 500).send({ 'code': err.status, 'error': err.message, 'stack': err.stack }).end();
+		//var token = req.headers.authorization.split(" ")[1];
+		//console.log("token === "+token);
+		//console.log("decode === "+jwt.decode(token, jwtsettings.secret));
+		//console.log("verify === "+jwt.verify(token, jwtsettings.secret));
+		if (err.name === 'UnauthorizedError') {
+			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token...'+err.message, 'stack': err.stack }).end();
+		} else if (err.name === 'TokenExpiredError') {
+			res.status(410).send({ 'code': err.status, 'error': 'Unauthorized: expired token...'+err.message, 'stack': err.stack }).end();
+		} else if (err.name === 'JsonWebTokenError') {
+			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token...'+err.message, 'stack': err.stack }).end();
+		} else if (err.name === 'NotBeforeError') {
+			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token...'+err.message, 'stack': err.stack }).end();
+		} else {
+			res.status(err.status || 500).send({ 'code': err.status, 'error': err.message, 'stack': err.stack }).end();
+		}
 	});
 } else {
 	// production error handler
 	app.use(function(err, req, res, next) {
-		res.status(err.status || 500).send({ 'code': err.status, 'error': err.message }).end();
+		if (err.name === 'UnauthorizedError') {
+			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token' }).end();
+		} else if (err.name === 'TokenExpiredError') {
+			res.status(410).send({ 'code': err.status, 'error': 'Unauthorized: expired token' }).end();
+		} else if (err.name === 'JsonWebTokenError') {
+			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token' }).end();
+		} else if (err.name === 'NotBeforeError') {
+			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token' }).end();
+		} else {
+			res.status(err.status || 500).send({ 'code': err.status, 'error': err.message }).end();
+		}
 	});
 }
 

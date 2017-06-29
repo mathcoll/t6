@@ -860,11 +860,12 @@ router.get('/account/profile', Auth, function(req, res) {
     			]};
 
 	var options = {
-	  url: 'http://en.gravatar.com/' + req.session.user.mail_hash + '.json',
+	  url: 'https://en.gravatar.com/' + req.session.user.mail_hash + '.json',
 	  headers: {
 	    'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/44.0'
 	  }
 	};
+
 	request(options, function(error, response, body) {
 		if ( !error && response.statusCode != 404 ) {
 			var f = (flows.chain().find(queryF).data());

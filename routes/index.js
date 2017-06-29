@@ -260,7 +260,7 @@ router.post('/authenticate', function (req, res) {
 	if ( !user || !email || !password ) {
         return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));
     } else {
-        var token = jwt.sign(user, cfg.jwt.secret, { expiresIn: cfg.jwt.expiresInSeconds });
+        var token = jwt.sign(user, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
         return res.status(200).json( {status: 'ok', token: token} );
     }
 });
