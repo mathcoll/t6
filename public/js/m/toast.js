@@ -11,7 +11,7 @@
     // type = error, done, warning, help, info
 
     var toastMsg = document.createElement('div');
-    toastMsg.className = 'toast__msg';
+    toastMsg.className = 'toast__msg '+options.type;
     var icon = document.createElement('i');
     icon.className = 'material-icons';
     icon.textContent = options.type;

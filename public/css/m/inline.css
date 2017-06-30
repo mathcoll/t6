@@ -570,6 +570,27 @@ a {
     margin: 15px -150px;
     border-radius: 2px;
 }
+.toast__msg.error {
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    color: #a94442;
+}
+.toast__msg.done {
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    color: #3c763d;
+}
+.toast__msg.warning {
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    color: #8a6d3b;
+}
+.toast__msg.help,
+.toast__msg.info {
+    background-color: #d9edf7;
+    border-color: #bce8f1;
+    color: #31708f;
+}
 .toast__msg--hide {
     opacity: 0;
 }
