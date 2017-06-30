@@ -8,7 +8,7 @@
     if (!msg) return;
 
     options = options || {timeout:3000, type: 'error'};
-    // error = error, done, warning, help, info
+    // type = error, done, warning, help, info
 
     var toastMsg = document.createElement('div');
     toastMsg.className = 'toast__msg';

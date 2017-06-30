@@ -576,6 +576,7 @@ a {
 .toast__msg span {
 	width: 100%;
     padding-left: 10px;
+    word-break: break-word;
 }
 .page-footer .footer-copyright {
     align-items: center;
