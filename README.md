@@ -14,155 +14,136 @@ Sample nodeMCU and Arduino scripts are available in the _pingers_ repositories.
 
 Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
 
+
+
 ### General
+Detailed Api documentation is available here: [api-General](https://api.internetcollaboratif.info/docs/#api-General)
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
 | GET | http://127.0.0.1:3000/v2.0.1/v2.0.1/status | _n/a_ | Get the status of the API |
+| GET | http://127.0.0.1:3000/v2.0.1/units | _n/a_ | Get the _Units_ list set on the t6 platform. |
+| GET | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _n/a_ | Get a specific _Units_ details. |
+| POST | http://127.0.0.1:3000/v2.0.1/units | _Bearer Admin_ | Add a _Unit_ to platform, require _Admin_ permissions. |
+| PUT | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer Admin_ | Update a _Unit_ to platform, require _Admin_ permissions. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer Admin_ | Delete a _Unit_ from platform, require _Admin_ permissions. |
+| GET | http://127.0.0.1:3000/v2.0.1/datatypes | _n/a_ | Get the _Datatype_ list set on the t6 platform. |
+| GET | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _n/a_ | Get a specific _Datatype_ details. |
+| POST | http://127.0.0.1:3000/v2.0.1/datatypes | _Bearer Admin_ | Add a _Datatype_ to platform, require _Admin_ permissions. |
+| PUT | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer Admin_ | Update a _Datatype_ to platform, require _Admin_ permissions. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer Admin_ | Delete a _Datatype_ from platform, require _Admin_ permissions. |
+| GET | http://127.0.0.1:3000/v2.0.1/v2.0.1/index | _n/a_ | Get the Index cards for the PWA application |
 
 ### Objects
+Detailed Api documentation is available here: [api-Object](https://api.internetcollaboratif.info/docs/#api-Object)
 _Objects_ are virtual items dedicated to push data to flows.
 _Objects_ are defined for each _Users_.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/objects/ | _Bearer Auth Token_ | Get the list of _Objects_ from the current _User_. |
-| GET | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth Token_ | Get details on the selected _Object_. |
-| POST | http://127.0.0.1:3000/v2.0.1/objects | _Bearer Auth Token_ | Add a new _Object_ to current _User_. |
-| PUT | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth Token_ | Update an _Object_. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth Token_ | Delete an _Object_. |
+| GET | http://127.0.0.1:3000/v2.0.1/objects/ | _Bearer Auth JWT Token_ | Get the list of _Objects_ from the current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth JWT Token_ | Get details on the selected _Object_. |
+| POST | http://127.0.0.1:3000/v2.0.1/objects | _Bearer Auth JWT Token_ | Add a new _Object_ to current _User_. |
+| PUT | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth JWT Token_ | Update an _Object_. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth JWT Token_ | Delete an _Object_. |
 
 
 ### Flows
+Detailed Api documentation is available here: [api-Flow](https://api.internetcollaboratif.info/docs/#api-Flow)
 _Flows_ are datastore to save time/value.
 Each _Object_ can POST data to multiple _Flows_.
 _Flows_ are defined for each _Users_ and are having permissions.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth Token_ | Get the list of _Flows_ from the current _User_. |
-| GET | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth Token_ | Get details on the selected _Flow_. |
-| POST | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth Token_ | Add a new _Flow_ and get 'rw' permissions. |
-| PUT | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth Token_ | Update a _Flow_. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth K/S_ | Delete a _Flow_. |
+| GET | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth JWT Token_ | Get the list of _Flows_ from the current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth JWT Token_ | Get details on the selected _Flow_. |
+| POST | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth JWT Token_ | Add a new _Flow_ and get 'rw' permissions. |
+| PUT | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth JWT Token_ | Update a _Flow_. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer JWT_ | Delete a _Flow_. |
 
 
-### Data
-
-| Verb | Endpoint | Auth | Description |
-| ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth Token_ | Get data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
-| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id/:data_id | _Bearer Auth Token_ | Get 1 specific data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
-| POST | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth Token_ | Add a data to a _Flows_ (_User_ must have 'rw' permission). |
-
-
-### Units
+### DataPoint
+Detailed Api documentation is available here: [api-DataPoint](https://api.internetcollaboratif.info/docs/#api-DataPoint)
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/units | _n/a_ | Get the _Units_ list set on the t6 platform. |
-| GET | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _n/a_ | Get a specific _Units_ details. |
-| POST | http://127.0.0.1:3000/v2.0.1/units | _Bearer Admin_ | Add a _Unit_ to platform, require _Admin_ permissions. |
-| PUT | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer Admin_ | Update a _Unit_ to platform, require _Admin_ permissions. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/units/:unit_id | _Bearer Admin_ | Delete a _Unit_ from platform, require _Admin_ permissions. |
+| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth JWT Token_ | Get data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
+| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id/:data_id | _Bearer Auth JWT Token_ | Get 1 specific data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
+| POST | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth JWT Token_ | Add a data to a _Flows_ (_User_ must have 'rw' permission). |
 
 
-### Datatypes
+### Dashboard
+Detailed Api documentation is available here: [api-Dashboard](https://api.internetcollaboratif.info/docs/#api-Dashboard)
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/datatypes | _n/a_ | Get the _Datatype_ list set on the t6 platform. |
-| GET | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _n/a_ | Get a specific _Datatype_ details. |
-| POST | http://127.0.0.1:3000/v2.0.1/datatypes | _Bearer Admin_ | Add a _Datatype_ to platform, require _Admin_ permissions. |
-| PUT | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer Admin_ | Update a _Datatype_ to platform, require _Admin_ permissions. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/datatypes/:datatype_id | _Bearer Admin_ | Delete a _Datatype_ from platform, require _Admin_ permissions. |
+| GET | http://127.0.0.1:3000/v2.0.1/dashboards/:dashboard_id | _Bearer Auth JWT Token_ | Get dashboards list. |
+
+
+### Snippet
+Detailed Api documentation is available here: [api-Snippet](https://api.internetcollaboratif.info/docs/#api-Snippet)
+
+| Verb | Endpoint | Auth | Description |
+| ------------- | ------------- | ------------- | ------------- |
+| GET | http://127.0.0.1:3000/v2.0.1/snippets/:snippet_id | _Bearer Auth JWT Token_ | Get snippets list. |
 
 
 ### Users and Permissions
+Detailed Api documentation is available here: [api-General](https://api.internetcollaboratif.info/docs/#)
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth Token_ | Get self details current _User_. |
-| POST | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth K/S_ | Refresh token from current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/authenticate | Username/Password Auth | Get JWT Token. |
+| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth JWT Token_ | Get self details current _User_. |
+| POST | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer JWT Token_ | Refresh token from current _User_. |
 | POST | http://127.0.0.1:3000/v2.0.1/users | _n/a_ | Add a _User_ to platform. |
-| PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth Token_ | Update a _User_ to platform. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth Token_ | Delete a _User_ from platform. |
+| PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth JWT Token_ | Update a _User_ to platform. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth JWT Token_ | Delete a _User_ from platform. |
 
 
 ### Security & Tokens
+Detailed Api documentation is available here: [api-General](https://api.internetcollaboratif.info/docs/#)
 #### Process to handle a connection and publish data to flows:
 * Create the User:
 
-```curl -i \
+```
+curl -i \
 -H "Accept: application/json" \
 -H "Content-Type:application/json" \
--X POST http://127.0.0.1:3000/v2.0.1/users/ \
---data '{"firstName": "My FirstName", "lastName": "My LastName", "email": "myemail@domain.tld"}'```
+-X POST http://127.0.0.1:3000/v2.0.1/authenticate/ \
+--data '{"username": "<MY_USERNAME>", "password": "<MY_PASSWORD>"}'
+```
 
---> Key and Secret are returned by api.
+--> JWT Token is returned by api.
 
 
+* Create a Flow with the previous JWT Token and permissions:
 
-* Create the initial token (without any permission) so that we can then create a Flow:
-
-```curl -i \
+```
+curl -i \
 -H "Accept: application/json" \
 -H "Content-Type:application/json" \
--X POST http://127.0.0.1:3000/v2.0.1/users/me/token \
---data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP."}'```
-
---> Token is returned by api.
-
-
-
-* Create a Flow with the previous Bearer Token and permissions:
-
-```curl -i \
--H "Accept: application/json" \
--H "Content-Type:application/json" \
--H "Authorization: Bearer $bearer" \
+-H "Authorization: Bearer <JWT_TOKEN>" \
 -X POST http://127.0.0.1:3000/v2.0.1/flows \
---data '{"name": "My Flow Name", "unit": "String", "permission": "644", "objects": ['1', '2']}'```
+--data '{"name": "My Flow Name", "unit": "String", "permission": "644", "objects": ['1', '2']}'
+```
 
---> Flow ID is returned by api.
+--> FLOW_ID is returned by api.
 
 
 
-* Create the secondary Token (with permission on the returned Flow_ID) so that we can then post data to the flow:
 
-```curl -i \
+* Then, POST data to Flow_ID using <JWT_TOKEN>:
+
+```
+curl -i \
 -H "Accept: application/json" \
 -H "Content-Type:application/json" \
--X POST http://127.0.0.1:3000/v2.0.1/users/me/token \
---data '{"key": "LhEBfEVthAKfyqpUfbIYCtbRH.Shg.RHLSBKXapdEdQLgopnDLwmQNfYyhDXuzQZ", "secret": "uDTCbPANAPzcCyuKStJlozMuuZoiSEwbWsmzakBuUbWHjSRabMvcXsGSYxWxrxP.", "permission":[ {"flow_id": "d05da218-2751-441d-9ed3-3458296a029e", "permission": "644"} ]}'```
-
---> Token2 is returned by api.
-
-
-
-* Finally, POST data to Flow_ID with Bearer Token2, so that we have permission on that Flow_ID:
-
-```curl -i \
--H "Accept: application/json" \
--H "Content-Type:application/json" \
--H "Authorization: Bearer $bearer" \
+-H "Authorization: Bearer <JWT_TOKEN>" \
 -X POST http://127.0.0.1:3000/v2.0.1/data \
---data '{"flow_id":"d05da218-2751-441d-9ed3-3458296a029e", "value":"My String Value", "timestamp": "1459369102418", "publish": "true", "save": "true", "unit": "String", "mqtt_topic": ""}'```
-
-
-#### Details on Tokens
-##### _Bearer Auth K/S_
-This Token is used to create initial Flows before having permissions.
-
-##### _Bearer Auth Token_
-Once a _Flow_ has been created you are able to authenticate using Auth Token with permissions.
-
-##### _Bearer Admin_
-This Token is only for managing _Units_ and _DataTypes_ from Admins level.
-How do we set a _User_ to be admin... I'm sorry, there is no way (yet) to do so; except manually modify json database for a _User_ y adding: ```"role": "admin"```. 
-
-##### _n/a_
-Some Endpoints are open to any request, no Bearer, no authentification at all.
+--data '{"flow_id":"<FLOW_ID>", "value":"My String Value", "timestamp": "1459369102418", "publish": "true", "save": "true", "unit": "String", "mqtt_topic": ""}'
+```
 
 
 
@@ -184,7 +165,7 @@ git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
 npm install
 rename "settings-default_hostname.js" according to your server hostname and edit the file.
 rename "rules-default_hostname.js" according to your server hostname.
-rename "quota-default_hostname.js" according to your server hostname.
+rename "sensors-default_hostname.js" according to your server hostname.
 rename "db-default_hostname.json" according to your server hostname.
 ```
 
