@@ -81,7 +81,6 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
  * @apiUse 429
  */
 router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	flows	= db.getCollection('flows');
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.user.id };
@@ -141,7 +140,6 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 500
  */
 router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	var flow_id = req.params.flow_id;
 	if ( flow_id ) {
 		var permission = req.body.permission!==undefined?req.body.permission:undefined;

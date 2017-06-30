@@ -25,7 +25,6 @@ var tokens;
  * @apiUse 500
  */
 router.get('/(:snippet_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	var snippet_id = req.params.snippet_id;
 	var name = req.query.name;
 	snippets	= dbSnippets.getCollection('snippets');

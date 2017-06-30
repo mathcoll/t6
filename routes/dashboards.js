@@ -27,7 +27,6 @@ var tokens;
  * @apiUse 500
  */
 router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	var dashboard_id = req.params.dashboard_id;
 	var name = req.query.name;
 	dashboards	= dbDashboards.getCollection('dashboards');

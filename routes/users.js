@@ -158,7 +158,6 @@ router.get('/changePassword', bearerAdmin, function (req, res) {
  * @apiUse 500
  */
 router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( req.user.id == user_id ) {
 		users	= db.getCollection('users');
@@ -316,7 +315,6 @@ router.post('/', function (req, res) {
  * @apiUse 429
  */
 router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( !( (req.body.email || req.body.lastName || req.body.firstName ) || ( req.body.password ) ) ) {
 		res.status(412).send(new ErrorSerializer({'id': 8,'code': 412, 'message': 'Precondition Failed'}).serialize());
@@ -356,7 +354,6 @@ router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
  * @apiUse 429
  */
 router.delete('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	var user_id = req.params.user_id;
 	if ( req.user.id == user_id ) { //Well ... not sure
 		users	= db.getCollection('users');
