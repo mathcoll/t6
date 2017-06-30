@@ -65,12 +65,6 @@ dbRules	= new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'),
 if ( dbRules === null ) console.log('db Rules is failing');
 if ( dbRules.getCollection('rules') === null ) console.log('Collection Rules is failing');
 
-/* Quota settings */
-//dbQuota	= new loki(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-//dbQuota.loadDatabase(path.join(__dirname, 'data', 'quota-'+os.hostname()+'.json'));
-//if ( dbQuota === null ) console.log('db Quota is failing');
-//if ( dbQuota.getCollection('quota') === null ) console.log('Collection Quota is failing');
-
 /* Snippets settings */
 dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 //dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
@@ -91,6 +85,8 @@ var index			= require('./routes/index');
 var objects			= require('./routes/objects');
 var dashboards		= require('./routes/dashboards');
 var snippets		= require('./routes/snippets');
+var rules			= require('./routes/rules');
+var mqtts			= require('./routes/mqtts');
 var users			= require('./routes/users');
 var data			= require('./routes/data');
 var flows			= require('./routes/flows');
@@ -146,6 +142,8 @@ app.use('/v'+version, index);
 app.use('/v'+version+'/users', users);
 app.use('/v'+version+'/objects', objects);
 app.use('/v'+version+'/dashboards', dashboards);
+app.use('/v'+version+'/rules', rules);
+app.use('/v'+version+'/mqtts', mqtts);
 app.use('/v'+version+'/snippets', snippets);
 app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
