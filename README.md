@@ -180,7 +180,6 @@ sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
 sudo update-rc.d t6 defaults
 ```
 
-
 ## t6 Troobleshooting after installation
 Q: ```sudo /etc/init.d/t6 start``` does not return any output
 
