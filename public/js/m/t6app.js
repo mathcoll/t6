@@ -115,6 +115,7 @@
 		})
 		.then(function(pushSubscription) {
 			//console.log('Go to the settings to see the endpoints details for push notifications.');
+			console.log(pushSubscription);
 			var settings = "";
 			var j = JSON.parse(JSON.stringify(pushSubscription));
 			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
@@ -644,6 +645,12 @@
 				if ( flow.attributes.type ) {
 					node += app.getField('extension', 'Type', flow.attributes.type, false, false, false, true);
 				}
+				if ( flow.attributes.mqtt_topic ) {
+					node += app.getField(app.icons.mqtts, 'Mqtt', flow.attributes.mqtt_topic, false, false, false, true);
+				}
+				if ( flow.attributes.unit ) {
+					node += app.getField('', 'unit', flow.attributes.unit, false, false, false, true);
+				}
 				if ( flow.attributes.permission ) {
 					node += app.getField('visibility', 'Permission', flow.attributes.permission, false, false, false, true);
 				}
@@ -702,7 +709,7 @@
 					datapoints += "		</div>";
 					datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
 					var dataset = [data.data.map(function(i) {
-						datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value, false, false, false, true);
+						datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value+flow.attributes.unit, false, false, false, true);
 						return [i.attributes.timestamp, i.attributes.value];
 				    })];
 					componentHandler.upgradeDom();
@@ -718,7 +725,11 @@
 					
 				})
 				.catch(function (error) {
-					toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
+					if (error == 'Error: Not Found') {
+						toast('No data found, graph is empty.', {timeout:3000, type: 'error'});
+					} else {
+						toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
+					}
 				});
 				node +=	"	</div>";
 				node +=	"</section>";
@@ -981,7 +992,7 @@
 				}
 				container.querySelector('form').remove();
 				if ( (response.data).length == 0 ) {
-					console.log((response.data).length);
+					//console.log((response.data).length);
 					var node = app.getCard(defaultCard);
 					container.innerHTML += node;
 				} else {
@@ -1403,11 +1414,11 @@
 				app.setSection('index');
 				toast('Success. Welcome Back ! :-)', {timeout:3000, type: 'done'});
 			} else {
-				toast('Auth error ...' + error, {timeout:3000, type: 'error'});
+				toast('Auth internal error', {timeout:3000, type: 'error'});
 			}
 		})
 		.catch(function (error) {
-			toast('Auth error ...' + error, {timeout:3000, type: 'error'});
+			toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
 		});
 	} //authenticate
 
