@@ -990,7 +990,9 @@
 				if ( filter !== undefined ) { // If we have some filters we should clear the display first
 					container.innerHTML = "";
 				}
-				container.querySelector('form').remove();
+				if ( container.querySelector('form') ) {
+					container.querySelector('form').remove();
+				}
 				if ( (response.data).length == 0 ) {
 					//console.log((response.data).length);
 					var node = app.getCard(defaultCard);

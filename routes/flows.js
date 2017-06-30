@@ -24,7 +24,6 @@ var tokens;
  * @apiUse 500
  */
 router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS DONE (/)
 	var results = Array();
 	var flow_id = req.params.flow_id;
 	var name = req.query.name;
@@ -40,11 +39,20 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 				]
 			};
 		} else {
-			query = {
-			'$and': [
-					{ 'user_id': req.user.id },
-				]
-			};
+			if ( name !== undefined ) {
+				query = {
+				'$and': [
+						{ 'user_id' : req.user.id },
+						{ 'name': { '$regex': [name, 'i'] } }
+					]
+				};
+			} else {
+				query = {
+				'$and': [
+						{ 'user_id' : req.user.id },
+					]
+				};
+			}
 		}
 		var flow = flows.find(query);
 		flow = flow.length>0?flow:[];
