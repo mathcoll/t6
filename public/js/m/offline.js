@@ -14,10 +14,10 @@
 	//To update network status
 	function updateNetworkStatus() {
 		if (navigator.onLine) {
-			toast('You are now online...', 3000);
+			toast('You are now online...', {timeout:3000, type: 'done'});
 		}
 		else {
-			toast('You are now offline...', 3000);
+			toast('You are now offline...', {timeout:3000, type: 'warning'});
 		}
 	}
 })();

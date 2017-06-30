@@ -7,8 +7,10 @@
   function toast(msg, options) {
     if (!msg) return;
 
-    options = options || {timeout:3000, type: 'error'};
+    options = options || {timeout:3000, type: 'info'};
     // type = error, done, warning, help, info
+    options.timeout = options.timeout!==undefined?options.timeout:3000;
+    options.type = options.type!==undefined?options.type:'info';
 
     var toastMsg = document.createElement('div');
     toastMsg.className = 'toast__msg '+options.type;
