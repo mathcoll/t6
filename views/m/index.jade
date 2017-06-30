@@ -23,7 +23,7 @@ html.ltr(lang='en')
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
       header.mdl-layout__header.mdl-layout__header--waterfall.mdl-layout__header--waterfall-hide-top
         .mdl-layout__header-row
-          span.page_title t6 App
+          span.page_title t6 IoT App
           .mdl-layout-spacer
 
           nav.mdl-navigation
@@ -80,10 +80,10 @@ html.ltr(lang='en')
             |  Mqtt Topics
 
       #drawer.mdl-layout__drawer
-        div.side-nav__header(style="height: 171px; position: relative; width: 100%; background: #795548 url(#{baseUrl_https}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
-          img(src="//gravatar.com/avatar/d8122c6b61dcc7c68ecaf56692f6b696", style="border-radius: 50%;padding: 20px 10px 10px 10px")
-          div.mdl-layout-title(style="bottom:auto !important;") Mathieu Lory
-          div.mdl-layout-subheader(style="color: #ffffff;") mathieu@internetcollaboratif.info
+        div.side-nav__header(style="height: 176px; position: relative; width: 100%; background: #795548 url(#{baseUrl_https}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
+          img#currentUserHeader(src="", style="border-radius: 50%;padding: 20px 10px 10px 10px")
+          div#currentUserName.mdl-layout-title(style="bottom:auto !important;") 
+          div#currentUserEmail.mdl-layout-subheader(style="color: #ffffff;") 
         nav.mdl-navigation.menu__list
           a.mdl-navigation__link(href='#index')
             i.material-icons home
@@ -115,9 +115,6 @@ html.ltr(lang='en')
           li.mdl-js-ripple-effect.mdl-menu__item#profile_button(href='#profile')
             i  
             | Profile
-          li.mdl-js-ripple-effect.mdl-menu__item#keys_button(href='#keys')
-            i  
-            | API Keys
           li.mdl-js-ripple-effect.mdl-menu__item#logout_button(href='#loginForm')
             i  
             | Logout
@@ -238,22 +235,26 @@ html.ltr(lang='en')
         section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
             section.content-grid.mdl-grid
-              form#signin
+              form.signin
                 .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  .mdl-card__title.mdl-color--primary.mdl-color-text--white
+                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(/img/opl_img.jpg) no-repeat 50% 50%; min-height: 176px;')
                     h2.mdl-card__title-text Log in to t6
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
-                      input.mdl-textfield__input(type='text', name='username')
+                      i.material-icons.mdl-textfield__icon lock
+                      input.mdl-textfield__input(type='text', name='username', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='username') Username
+                      span.mdl-textfield__error Username should be your email address
                     .mdl-textfield.mdl-js-textfield
-                      input.mdl-textfield__input(type='password', name='password')
+                      i.material-icons.mdl-textfield__icon vpn_key
+                      input.mdl-textfield__input(type='password', name='password', pattern='.{4,}')
                       label.mdl-textfield__label(for='password') Password
+                      span.mdl-textfield__error Password must be provided
                   .mdl-card__actions.mdl-card--border
                     a#signup_button.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person_add
                       | Sign-Up
-                    button#login_button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
+                    button.login_button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person
                       | Log in
               
@@ -262,24 +263,28 @@ html.ltr(lang='en')
         section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
             section.content-grid.mdl-grid
-              .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                .mdl-card__title.mdl-color--primary.mdl-color-text--white
-                  h2.mdl-card__title-text Sign-Up to t6
-                .mdl-card__supporting-text
-                  form(action='#formPost')
+              form.signup
+                .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+                  .mdl-card__title.mdl-color--primary.mdl-color-text--white
+                    h2.mdl-card__title-text Sign-Up to t6
+                  .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
-                      input.mdl-textfield__input(type='text')
+                      i.material-icons.mdl-textfield__icon lock
+                      input.mdl-textfield__input(type='text', name='username', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='username') Username
+                      span.mdl-textfield__error Username should be your email address
                     .mdl-textfield.mdl-js-textfield
-                      input.mdl-textfield__input(type='text')
-                      label.mdl-textfield__label(for='userpass') Password
-                .mdl-card__actions.mdl-card--border
-                  a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
-                    i.material-icons person
-                    | Log in
-                  a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(href='#signup')
-                    i.material-icons person_add
-                    | Sign-Up
+                      i.material-icons.mdl-textfield__icon vpn_key
+                      input.mdl-textfield__input(type='password', name='password', pattern='.{4,}')
+                      label.mdl-textfield__label(for='password') Password
+                      span.mdl-textfield__error Password must be provided
+                  .mdl-card__actions.mdl-card--border
+                    a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
+                      i.material-icons person
+                      | Log in
+                    a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(href='#signup')
+                      i.material-icons person_add
+                      | Sign-Up
               
 
         //- View My Profile

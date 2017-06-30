@@ -47,7 +47,8 @@
 		mqtts: document.querySelector('section#mqtts'),
 	};
 	
-	/* Sign In */
+
+/* *********************************** General functions *********************************** */
 	function setLoginAction() {
 		var loginButtons = document.querySelectorAll('form.signin button.login_button');
 		for (var i in loginButtons) {
@@ -62,8 +63,7 @@
 				});
 			}
 		}
-		
-	}
+	}; //setLoginAction
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -72,7 +72,7 @@
 		const outputArray = new Uint8Array(rawData.length);
 		for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
 		return outputArray;
-	}
+	}; //urlBase64ToUint8Array
 	
 	function askPermission() {
 		return new Promise(function(resolve, reject) {
@@ -89,7 +89,7 @@
 				throw new Error('We weren\'t granted permission.');
 			}
 		});
-	}
+	}; //askPermission
 	
 	function registerServiceWorker() {
 		return navigator.serviceWorker.register('./service-worker.js')
@@ -101,7 +101,7 @@
 		.catch(function(err) {
 			console.log('[ServiceWorker] error occured...'+ err);
 		});
-	}
+	}; //registerServiceWorker
 	
 	function subscribeUserToPush() {
 		//return getSWRegistration()
@@ -114,7 +114,7 @@
 			return registration.pushManager.subscribe(subscribeOptions);
 		})
 		.then(function(pushSubscription) {
-			console.log('Go to the settings to see the endpoints details for push notifications.');
+			//console.log('Go to the settings to see the endpoints details for push notifications.');
 			var settings = "";
 			var j = JSON.parse(JSON.stringify(pushSubscription));
 			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
@@ -138,12 +138,13 @@
 			console.log(error);
 			toast(error, {timeout:3000, type: 'error'});
 		});
-	}
-	
+	}; //subscribeUserToPush
+
+/* *********************************** Application functions *********************************** */
 	app.nl2br = function (str, isXhtml) {
 		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
 		return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-	};
+	}; //nl2br
 
 	app.setExpandAction = function() {
 		componentHandler.upgradeDom();
@@ -161,7 +162,7 @@
 				}, false);
 			}
 		}
-	} //setExpandAction
+	}; //setExpandAction
 	
 	app.setSection = function(section) {
 		console.log("setSection: "+section);
@@ -171,7 +172,7 @@
 		if( document.querySelector('#'+section).querySelector('.page-content').innerHTML == '' ) {
 			document.querySelector('#'+section).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').querySelector('.page-content').innerHTML;
 		}
-	};
+	}; //setSection
 
 	app.setItemsClickAction = function(type) {
 		var items = document.querySelectorAll("[data-action='view']");
@@ -214,7 +215,7 @@
 	  } else {
 	    throw new Error(response.statusText);
 	  }
-	}
+	}; //fetchStatusHandler
 
 	app.setListActions = function(type) {
 		var dialog = document.querySelector('#dialog');
@@ -312,7 +313,7 @@
 					app.displayObject(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
-			}	
+			}
 		} else if ( type == 'dashboards' ) {
 			var deleteButtons = document.querySelectorAll('#dashboards .delete-button');
 			for (var d=0;d<deleteButtons.length;d++) {
@@ -572,6 +573,26 @@
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayObject
+	
+	app.getCard = function(card) {
+		var output = "";
+		output += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		output += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		if( card.image ) {
+			output += "		<div class=\"mdl-card__title\" style=\"background:url("+card.image+") no-repeat 50% 50%; min-height: 176px;\">";
+		} else {
+			output += "		<div class=\"mdl-card__title\">";
+		}
+		output += "				<h2 class=\"mdl-card__title-text\" style=\"color:#fff;\">" + card.title + "</h2>";
+		output += "					</div>";
+		output += "  	 				<div class=\"mdl-card__supporting-text\">" + card.description + "</div>";
+		output += "  	 				<div class=\"mdl-card__actions mdl-card--border\">";
+		output += "						<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+ card.url +"\"> Get Started</a>";
+		output += "					</div>";
+		output += "			</div>";
+		output += "</section>";
+		return output;
+	} //getCard
 
 	app.displayFlow = function(id) {
 		window.scrollTo(0, 0);
@@ -594,12 +615,12 @@
 				var datapoints = "";
 				
 				var node = "";
-				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
+				node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
-				node += flow.attributes.name;
+				node += "				<h2 class=\"mdl-card__title-text\">"+flow.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
 				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
@@ -856,9 +877,8 @@
 		node += "<section class=\"mdl-grid mdl-cell--"+width+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
 		node += "	<div class=\"mdl-cell mdl-cell--"+width+"-col mdl-card mdl-shadow--2dp\">";
 		node += "		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">";
-		node += "			<h2 class=\"mdl-card__title-text\">";
 		node += "			<i class=\"material-icons\">"+iconName+"</i>";
-		node += "			"+name+"</h2>";
+		node += "			<h2 class=\"mdl-card__title-text\">"+name+"</h2>";
 		node += "		</div>";
 		if ( description ) {
 			node += app.getField(null, null, description, false, false, false, true);
@@ -909,6 +929,7 @@
 				url += "?name="+escape(filter);
 			}
 			var title = 'My Objects';
+			var defaultCard = {image: '/img/opl_img3.jpg', title: title, description: 'Hey, it looks you don\'t have any Object yet.', url: ''};
 		} else if (type == 'flows') {
 			var icon = app.icons.flows;
 			var container = (containers.flows).querySelector('.page-content');
@@ -917,21 +938,31 @@
 				url += "?name="+escape(filter);
 			}
 			var title = 'My Flows';
+			var defaultCard = {image: '/img/opl_img2.jpg', title: title, description: 'Hey, it looks you don\'t have any Flow yet.', url: ''};
 		} else if (type == 'dashboards') {
 			var icon = app.icons.dashboards;
 			var container = (containers.dashboards).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 			var title = 'My Dashboards';
+			var defaultCard = {image: '/img/opl_img.jpg', title: title, description: 'Hey, it looks you don\'t have any dashboard yet.', url: ''};
 		} else if (type == 'snippets') {
 			var icon = app.icons.snippets;
 			var container = (containers.snippets).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/snippets';
 			var title = 'My Snippets';
+			var defaultCard = {image: '/img/opl_img3.jpg', title: title, description: 'Hey, it looks you don\'t have any snippet yet.', url: ''};
 		} else if (type == 'rules') {
 			var icon = app.icons.snippets;
 			var container = (containers.rules).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/rules';
 			var title = 'My Rules';
+			var defaultCard = {image: '/img/opl_img2.jpg', title: title, description: 'Hey, it looks you don\'t have any rule yet.', url: ''};
+		} else if (type == 'mqtts') {
+			var icon = app.icons.mqtts;
+			var container = (containers.mqtts).querySelector('.page-content');
+			var url = app.baseUrl+'/'+app.api_version+'/mqtts';
+			var title = 'My Mqtts';
+			var defaultCard = {image: '/img/opl_img.jpg', title: title, description: 'Hey, it looks you don\'t have any mqtt topic yet.', url: ''};
 		} else {
 			type='undefined';
 			toast('Error ' + error, {timeout:3000, type: 'error'});
@@ -949,10 +980,16 @@
 					container.innerHTML = "";
 				}
 				container.querySelector('form').remove();
-				for (var i=0; i < (response.data).length ; i++ ) {
-					var item = response.data[i];
-					var node = app.displayListItem(type, 12, icon, item);
+				if ( (response.data).length == 0 ) {
+					console.log((response.data).length);
+					var node = app.getCard(defaultCard);
 					container.innerHTML += node;
+				} else {
+					for (var i=0; i < (response.data).length ; i++ ) {
+						var item = response.data[i];
+						var node = app.displayListItem(type, 12, icon, item);
+						container.innerHTML += node;
+					}
 				}
 				componentHandler.upgradeDom();
 				app.setItemsClickAction(type);
@@ -989,12 +1026,18 @@
 			var node = "";
 			node += "<section class=\"mdl-grid\">";
 			node += "<div class=\"card card-user\">";
-			node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important\">";
+			if (gravatar.profile_background) {
+				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important\">";
+			} else {
+				node += "	<div class=\"card-heading heading-left\" style=\"background: url('/img/opl_img.jpg') 50% 50% !important\">";
+			}
 			node += "		<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
 			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
-			node += "		<div class=\"subhead\">";
-			node += 			gravatar.current_location;
-			node += "		</div>";
+			if (gravatar.current_location) {
+				node += "		<div class=\"subhead\">";
+				node += 			gravatar.current_location;
+				node += "		</div>";
+			}
 			node += "	</div>";
 			node += "	<div class=\"card-body\">";
 			for (var phone in gravatar.phone_numbers) {
@@ -1017,7 +1060,11 @@
 			node += "	</div>";
 			node += "</div>";
 			container.innerHTML = node;
-			
+
+			document.getElementById("currentUserName").innerHTML = user.attributes.first_name+" "+user.attributes.last_name;
+			document.getElementById("currentUserEmail").innerHTML = user.attributes.email;
+			document.getElementById("currentUserHeader").setAttribute('src', gravatar.photos[0].value);
+
 		})
 		.catch(function (error) {
 			toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
@@ -1044,22 +1091,7 @@
 		.then(function(response) {
 			var node = "";
 			for (var i=0; i < (response).length ; i++ ) {
-				var index = response[i];
-				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				if( index.image ) {
-					node += "		<div class=\"mdl-card__title\" style=\"background-image:url("+index.image+");\">";
-				} else {
-					node += "		<div class=\"mdl-card__title\">";
-				}
-				node += "				<h2 class=\"mdl-card__title-text\">" + index.title + "</h2>" + 
-	            "					</div>" +
-	            "  	 				<div class=\"mdl-card__supporting-text\">" + index.description + "</div>" +
-	            "  	 				<div class=\"mdl-card__actions mdl-card--border\">" +
-	            "						<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+ index.url +"\"> Get Started</a>" +
-	            "					</div>" +
-	            "			</div>";
-				node += "</section>";
+				node += app.getCard(response[i]);
             }
 			container.innerHTML = node;
 		})
@@ -1139,7 +1171,7 @@
 
 			var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
-				snippet += "	<div class=\"valuedisplay tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "	<div class=\"valuedisplay tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
 				snippet += "			<div class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
@@ -1155,7 +1187,7 @@
 				snippet += "	</div>";
 				
 			} else if ( my_snippet.attributes.type == 'sparkline' ) {
-				snippet += "	<div class=\"sparkline tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "	<div class=\"sparkline tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 				snippet += "			<span class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
@@ -1177,7 +1209,7 @@
 				}
 				for (var f in my_snippet.attributes.flows) {
 					var flow_id = my_snippet.attributes.flows[f];
-					snippet += "	<div class=\"simplerow tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+					snippet += "	<div class=\"simplerow tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 					snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 					snippet += "			<span class='mdl-list__item-primary-content'>";
 					snippet += "				<i class='material-icons'>"+icon+"</i>";
@@ -1191,7 +1223,7 @@
 					snippet += "	</div>";
 				}
 			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
-				snippet += "	<div class=\"flowgraph tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "	<div class=\"flowgraph tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 				snippet += "			<span class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
@@ -1309,7 +1341,7 @@
 				document.getElementById(id).innerHTML += "<small>, " + moment(time).fromNow() + "</small>";
 			}
 		}
-	}
+	} //refreshFromNow
 
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item'>";
@@ -1352,28 +1384,6 @@
 		return field;
 	} //getMap
 
-	document.getElementById('search-exp').addEventListener('keypress', function(e) {
-	    if(e.keyCode === 13) {
-	        e.preventDefault();
-	        var input = this.value;
-	        alert("Searching for "+input);
-	    }
-	});
-	
-	document.getElementById('filter-exp').addEventListener('keypress', function(e) {
-	    if(e.keyCode === 13) {
-	        e.preventDefault();
-	        var input = this.value;
-	        var type = 'objects';
-	        if ( document.querySelector('section#objects').classList.contains('is-active') ) {
-	        	type = 'objects';
-	        } else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
-	        	type = 'flows';
-	        }
-	        app.fetchItems(type, this.value);
-	    }
-	});
-
 	app.authenticate = function() {
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
@@ -1399,8 +1409,19 @@
 		.catch(function (error) {
 			toast('Auth error ...' + error, {timeout:3000, type: 'error'});
 		});
-	}
+	} //authenticate
 
+	app.getAllUserData = function() {
+		logout_button.addEventListener('click', function() {toast('You have been disconnected :-(', {timeout:3000, type: 'error'});app.auth={}; app.sessionExpired(); app.setSection('loginForm');}, false);
+		app.fetchItems('objects');
+		app.fetchItems('flows');
+		app.fetchItems('dashboards');
+		app.fetchItems('snippets');
+		app.fetchItems('rules');
+		app.fetchItems('mqtts');
+		app.fetchProfile();
+	} //getAllUserData
+	
 	app.sessionExpired = function() {
 		app.bearer = '';
 		app.auth = {};
@@ -1415,11 +1436,33 @@
 		(containers.profile).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.rules).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.mqtts).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.settings).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		//(containers.settings).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		setLoginAction();
-	}
+	}//sessionExpired
+	
+	/* *********************************** Run the App *********************************** */
+	document.getElementById('search-exp').addEventListener('keypress', function(e) {
+	    if(e.keyCode === 13) {
+	        e.preventDefault();
+	        var input = this.value;
+	        alert("Searching for "+input);
+	    }
+	});
+	
+	document.getElementById('filter-exp').addEventListener('keypress', function(e) {
+	    if(e.keyCode === 13) {
+	        e.preventDefault();
+	        var input = this.value;
+	        var type = 'objects';
+	        if ( document.querySelector('section#objects').classList.contains('is-active') ) {
+	        	type = 'objects';
+	        } else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
+	        	type = 'flows';
+	        }
+	        app.fetchItems(type, this.value);
+	    }
+	});
 
-	// Run the App
 	if (!('serviceWorker' in navigator)) {
 		// Service Worker isn't supported on this browser, disable or hide UI.
 		return;
@@ -1433,17 +1476,10 @@
 		subscribeUserToPush();
 	}
 	app.fetchIndex('index');
-	app.getAllUserData = function() {
-		logout_button.addEventListener('click', function() {toast('You have been disconnected :-(', {timeout:3000, type: 'error'});app.auth={}; app.sessionExpired(); app.setSection('loginForm');}, false);
-		app.fetchItems('objects');
-		app.fetchItems('flows');
-		app.fetchItems('dashboards');
-		app.fetchItems('snippets');
-		app.fetchItems('rules');
-		app.fetchProfile();
-	}
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
+	} else if( app.auth.username && app.auth.password ) {
+		app.getAllUserData();
 	}
 	
 })();

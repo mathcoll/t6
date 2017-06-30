@@ -80,7 +80,22 @@ body {
     align-content: stretch;
     background: #ececec;
 }
-
+.mdl-textfield__icon {
+    width: 32px;
+    text-align: center;
+    position: absolute;
+    line-height: 1.5;
+}
+.mdl-textfield.is-disabled .mdl-textfield__icon {
+    color: rgba(0, 0, 0, 0.26) !important;
+}
+.mdl-textfield__icon ~ * {
+    margin-left: 48px !important;
+    width: calc(100% - 48px) !important;
+}
+.mdl-textfield.is-invalid .mdl-textfield__icon {
+    color: #de3226 !important;
+}
 section[data-type="objects"] {
 	opacity: 1;
 	transition: "opacity 5s";
@@ -262,7 +277,7 @@ section#profile .subhead {
 	    margin: 5px 0 !important;
 	}
 	section.mdl-grid {
-	    padding: 0 !important;
+	    padding: 5px !important;
 	}
 	.mdl-cell--12-col, .mdl-cell--12-col-phone.mdl-cell--12-col-phone {
 		width:100% !important;
@@ -507,7 +522,7 @@ a {
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
 .card-user .card-heading {
-	height: 100px;
+	min-height: 150px;
     margin: 0 0 1em 0;
 }
 .demo-card-wide.mdl-card {
@@ -557,6 +572,10 @@ a {
 }
 .toast__msg--hide {
     opacity: 0;
+}
+.toast__msg span {
+	width: 100%;
+    padding-left: 10px;
 }
 .page-footer .footer-copyright {
     align-items: center;
