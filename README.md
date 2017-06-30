@@ -41,11 +41,11 @@ _Objects_ are defined for each _Users_.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/objects/ | _Bearer Auth JWT Token_ | Get the list of _Objects_ from the current _User_. |
-| GET | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth JWT Token_ | Get details on the selected _Object_. |
-| POST | http://127.0.0.1:3000/v2.0.1/objects | _Bearer Auth JWT Token_ | Add a new _Object_ to current _User_. |
-| PUT | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth JWT Token_ | Update an _Object_. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer Auth JWT Token_ | Delete an _Object_. |
+| GET | http://127.0.0.1:3000/v2.0.1/objects/ | _Bearer JWT Token_ | Get the list of _Objects_ from the current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer JWT Token_ | Get details on the selected _Object_. |
+| POST | http://127.0.0.1:3000/v2.0.1/objects | _Bearer JWT Token_ | Add a new _Object_ to current _User_. |
+| PUT | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer JWT Token_ | Update an _Object_. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/objects/:object_id | _Bearer JWT Token_ | Delete an _Object_. |
 
 
 ### Flows
@@ -56,10 +56,10 @@ _Flows_ are defined for each _Users_ and are having permissions.
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth JWT Token_ | Get the list of _Flows_ from the current _User_. |
-| GET | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth JWT Token_ | Get details on the selected _Flow_. |
-| POST | http://127.0.0.1:3000/v2.0.1/flows | _Bearer Auth JWT Token_ | Add a new _Flow_ and get 'rw' permissions. |
-| PUT | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer Auth JWT Token_ | Update a _Flow_. |
+| GET | http://127.0.0.1:3000/v2.0.1/flows | _Bearer JWT Token_ | Get the list of _Flows_ from the current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer JWT Token_ | Get details on the selected _Flow_. |
+| POST | http://127.0.0.1:3000/v2.0.1/flows | _Bearer JWT Token_ | Add a new _Flow_ and get 'rw' permissions. |
+| PUT | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer JWT Token_ | Update a _Flow_. |
 | DELETE | http://127.0.0.1:3000/v2.0.1/flows/:flow_id | _Bearer JWT_ | Delete a _Flow_. |
 
 
@@ -68,9 +68,9 @@ Detailed Api documentation is available here: [api-DataPoint](https://api.intern
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth JWT Token_ | Get data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
-| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id/:data_id | _Bearer Auth JWT Token_ | Get 1 specific data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
-| POST | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer Auth JWT Token_ | Add a data to a _Flows_ (_User_ must have 'rw' permission). |
+| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer JWT Token_ | Get data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
+| GET | http://127.0.0.1:3000/v2.0.1/data/:flow_id/:data_id | _Bearer JWT Token_ | Get 1 specific data from a _Flows_ where the current _User_ is authorized ('rw' or 'r'). |
+| POST | http://127.0.0.1:3000/v2.0.1/data/:flow_id | _Bearer JWT Token_ | Add a data to a _Flows_ (_User_ must have 'rw' permission). |
 
 
 ### Dashboard
@@ -78,7 +78,7 @@ Detailed Api documentation is available here: [api-Dashboard](https://api.intern
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/dashboards/:dashboard_id | _Bearer Auth JWT Token_ | Get dashboards list. |
+| GET | http://127.0.0.1:3000/v2.0.1/dashboards/:dashboard_id | _Bearer JWT Token_ | Get dashboards list. |
 
 
 ### Snippet
@@ -86,7 +86,7 @@ Detailed Api documentation is available here: [api-Snippet](https://api.internet
 
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
-| GET | http://127.0.0.1:3000/v2.0.1/snippets/:snippet_id | _Bearer Auth JWT Token_ | Get snippets list. |
+| GET | http://127.0.0.1:3000/v2.0.1/snippets/:snippet_id | _Bearer JWT Token_ | Get snippets list. |
 
 
 ### Users and Permissions
@@ -95,11 +95,11 @@ Detailed Api documentation is available here: [api-General](https://api.internet
 | Verb | Endpoint | Auth | Description |
 | ------------- | ------------- | ------------- | ------------- |
 | GET | http://127.0.0.1:3000/v2.0.1/authenticate | Username/Password Auth | Get JWT Token. |
-| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer Auth JWT Token_ | Get self details current _User_. |
+| GET | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer JWT Token_ | Get self details current _User_. |
 | POST | http://127.0.0.1:3000/v2.0.1/users/me/token | _Bearer JWT Token_ | Refresh token from current _User_. |
 | POST | http://127.0.0.1:3000/v2.0.1/users | _n/a_ | Add a _User_ to platform. |
-| PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth JWT Token_ | Update a _User_ to platform. |
-| DELETE | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer Auth JWT Token_ | Delete a _User_ from platform. |
+| PUT | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer JWT Token_ | Update a _User_ to platform. |
+| DELETE | http://127.0.0.1:3000/v2.0.1/users/:user_id | _Bearer JWT Token_ | Delete a _User_ from platform. |
 
 
 ### Security & Tokens
@@ -144,8 +144,6 @@ curl -i \
 -X POST http://127.0.0.1:3000/v2.0.1/data \
 --data '{"flow_id":"<FLOW_ID>", "value":"My String Value", "timestamp": "1459369102418", "publish": "true", "save": "true", "unit": "String", "mqtt_topic": ""}'
 ```
-
-
 
 ### Mqtt rules to handle Actions
 #### Rules
