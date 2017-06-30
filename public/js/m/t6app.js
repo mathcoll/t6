@@ -31,26 +31,39 @@
 		}
 	};
 
-	var cardsWidth = {'objects': '12', 'flows': '12', 'snippets': '12', 'dashboards': '12', 'rules': '12', 'mqtts': '12', 'login': '12'}
-	var containers = {};
-	containers.index = document.querySelector('section#index');
-	containers.objects = document.querySelector('section#objects');
-	containers.object = document.querySelector('section#object');
-	containers.flows = document.querySelector('section#flows');
-	containers.flow = document.querySelector('section#flow');
-	containers.dashboards = document.querySelector('section#dashboards');
-	containers.dashboard = document.querySelector('section#dashboard');
-	containers.snippets = document.querySelector('section#snippets');
-	containers.snippet = document.querySelector('section#snippet');
-	containers.profile = document.querySelector('section#profile');
-	containers.settings = document.querySelector('section#settings');
+	var containers = {
+		index: document.querySelector('section#index'),
+		objects: document.querySelector('section#objects'),
+		object: document.querySelector('section#object'),
+		flows: document.querySelector('section#flows'),
+		flow: document.querySelector('section#flow'),
+		dashboards: document.querySelector('section#dashboards'),
+		dashboard: document.querySelector('section#dashboard'),
+		snippets: document.querySelector('section#snippets'),
+		snippet: document.querySelector('section#snippet'),
+		profile: document.querySelector('section#profile'),
+		settings: document.querySelector('section#settings'),
+		rules: document.querySelector('section#rules'),
+		mqtts: document.querySelector('section#mqtts'),
+	};
 	
 	/* Sign In */
-	document.querySelector('form#signin button#login_button').addEventListener('click', function(evt) {
-		app.auth = {"username":document.querySelector("form#signin input[name='username']").value, "password":document.querySelector("form#signin input[name='password']").value};
-		app.authenticate();
-		evt.preventDefault();
-	});
+	function setLoginAction() {
+		var loginButtons = document.querySelectorAll('form.signin button.login_button');
+		for (var i in loginButtons) {
+			if ( loginButtons[i].childElementCount > -1 ) {
+				loginButtons[i].addEventListener('click', function(evt) {
+					var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+					var username = myForm.querySelector("form.signin input[name='username']").value;
+					var password = myForm.querySelector("form.signin input[name='password']").value;
+					app.auth = {"username":username, "password":password};
+					app.authenticate();
+					evt.preventDefault();
+				});
+			}
+		}
+		
+	}
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -123,21 +136,8 @@
 		})
 		.catch(function (error) {
 			console.log(error);
-			toast(error, 5000);
+			toast(error, {timeout:3000, type: 'error'});
 		});
-	}
-	
-	if (!('serviceWorker' in navigator)) {
-		// Service Worker isn't supported on this browser, disable or hide UI.
-		return;
-	} else {
-		registerServiceWorker();
-	}
-	if (!('PushManager' in window)) {
-		// Push isn't supported on this browser, disable or hide UI.
-		return;
-	} else {
-		subscribeUserToPush();
 	}
 	
 	app.nl2br = function (str, isXhtml) {
@@ -165,12 +165,12 @@
 	
 	app.setSection = function(section) {
 		console.log("setSection: "+section);
+		window.scrollTo(0, 0);
 		document.querySelector('section.is-active').classList.remove('is-active');
 		document.querySelector('#'+section).classList.add('is-active');
 		if( document.querySelector('#'+section).querySelector('.page-content').innerHTML == '' ) {
 			document.querySelector('#'+section).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').querySelector('.page-content').innerHTML;
 		}
-		window.scrollTo(0, 0);
 	};
 
 	app.setItemsClickAction = function(type) {
@@ -207,6 +207,10 @@
 	function fetchStatusHandler(response) {
 	  if (response.status === 200) {
 	    return response;
+	  } else if (response.status === 401) {
+		app.sessionExpired();
+		toast('Your session has expired', {timeout:3000, type: 'error'});
+	    return false;
 	  } else {
 	    throw new Error(response.statusText);
 	  }
@@ -245,10 +249,10 @@
 						})
 						.then(function(response) {
 							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
-							toast('Object has been deleted...', 5000);
+							toast('Object has been deleted...', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Object has not been deleted...', 5000);
+							toast('Object has not been deleted...', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -292,10 +296,10 @@
 							return fetchResponse.json();
 						})
 						.then(function(response) {
-							toast('Flow has been deleted...', 5000);
+							toast('Flow has been deleted...', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Flow has not been deleted...', 5000);
+							toast('Flow has not been deleted...', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -339,10 +343,10 @@
 							return fetchResponse.json();
 						})
 						.then(function(response) {
-							toast('Dashboard has been deleted...', 5000);
+							toast('Dashboard has been deleted...', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Dashboard has not been deleted...', 5000);
+							toast('Dashboard has not been deleted...', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -386,10 +390,10 @@
 							return fetchResponse.json();
 						})
 						.then(function(response) {
-							toast('Snippet has been deleted...', 5000);
+							toast('Snippet has been deleted...', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Snippet has not been deleted...', 5000);
+							toast('Snippet has not been deleted...', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -415,7 +419,9 @@
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/objects/'+id;
 		fetch(url, myInit)
-		.then(function(fetchResponse){ 
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -576,7 +582,9 @@
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/flows/'+id;
 		fetch(url, myInit)
-		.then(function(fetchResponse){ 
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -652,7 +660,9 @@
 
 				var my_flow_data_url = app.baseUrl+'/'+app.api_version+'/data/'+flow.id+'?limit=100&sort=desc';
 				fetch(my_flow_data_url, myInit)
-				.then(function(fetchResponse){ 
+				.then(
+					fetchStatusHandler
+				).then(function(fetchResponse){ 
 					return fetchResponse.json();
 				})
 				.then(function(data) {
@@ -687,7 +697,7 @@
 					
 				})
 				.catch(function (error) {
-					toast('displayFlow error out...' + error, 5000);
+					toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
 				});
 				node +=	"	</div>";
 				node +=	"</section>";
@@ -701,7 +711,7 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displayFlow error occured...' + error, 5000);
+			toast('displayFlow error occured...' + error, {timeout:3000, type: 'error'});
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayFlow
@@ -715,7 +725,9 @@
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+id;
 		fetch(url, myInit)
-		.then(function(fetchResponse){ 
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -763,7 +775,7 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displayDashboard error occured...' + error, 5000);
+			toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayDashboard
@@ -777,7 +789,9 @@
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+id;
 		fetch(url, myInit)
-		.then(function(fetchResponse){ 
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -829,7 +843,7 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displaySnippet error occured...' + error, 5000);
+			toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displaySnippet
@@ -889,7 +903,6 @@
 
 		if (type == 'objects') {
 			var icon = app.icons.objects;
-			var width = cardsWidth.objects;
 			var container = (containers.objects).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/objects';
 			if ( filter !== undefined ) {
@@ -898,7 +911,6 @@
 			var title = 'My Objects';
 		} else if (type == 'flows') {
 			var icon = app.icons.flows;
-			var width = cardsWidth.flows;
 			var container = (containers.flows).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/flows';
 			if ( filter !== undefined ) {
@@ -907,33 +919,39 @@
 			var title = 'My Flows';
 		} else if (type == 'dashboards') {
 			var icon = app.icons.dashboards;
-			var width = cardsWidth.dashboards;
 			var container = (containers.dashboards).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 			var title = 'My Dashboards';
 		} else if (type == 'snippets') {
 			var icon = app.icons.snippets;
-			var width = cardsWidth.snippets;
 			var container = (containers.snippets).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/snippets';
 			var title = 'My Snippets';
+		} else if (type == 'rules') {
+			var icon = app.icons.snippets;
+			var container = (containers.rules).querySelector('.page-content');
+			var url = app.baseUrl+'/'+app.api_version+'/rules';
+			var title = 'My Rules';
 		} else {
 			type='undefined';
-			toast('Error ' + error, 5000);
+			toast('Error ' + error, {timeout:3000, type: 'error'});
 		}
 
 		if (type) {
 			fetch(url, myInit)
-			.then(function(fetchResponse){ 
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
 				return fetchResponse.json();
 			})
 			.then(function(response) {
 				if ( filter !== undefined ) { // If we have some filters we should clear the display first
 					container.innerHTML = "";
 				}
+				container.querySelector('form').remove();
 				for (var i=0; i < (response.data).length ; i++ ) {
 					var item = response.data[i];
-					var node = app.displayListItem(type, width, icon, item);
+					var node = app.displayListItem(type, 12, icon, item);
 					container.innerHTML += node;
 				}
 				componentHandler.upgradeDom();
@@ -941,10 +959,10 @@
 				app.setListActions(type);
 			})
 			.catch(function (error) {
-				toast('fetchItems '+type+' error occured...'+ error, 5000);
+				toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
 			});
 		} else {
-			toast('Error: No type defined', 5000);
+			toast('Error: No type defined', {timeout:3000, type: 'error'});
 		}
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchItems
@@ -960,7 +978,9 @@
 		var title = 'My Profile';
 
 		fetch(url, myInit)
-		.then(function(fetchResponse){ 
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -1000,7 +1020,7 @@
 			
 		})
 		.catch(function (error) {
-			toast('fetchProfile error out...' + error, 5000);
+			toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchProfile
@@ -1016,7 +1036,9 @@
 		var title = '';
 
 		fetch(url, myInit)
-		.then(function(fetchResponse){ 
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -1042,7 +1064,7 @@
 			container.innerHTML = node;
 		})
 		.catch(function (error) {
-			toast('fetchIndex error out...' + error, 5000);
+			toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchIndex
@@ -1107,7 +1129,9 @@
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
 
 		fetch(url, myInit)
-		.then(function(fetchResponse){ 
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -1202,7 +1226,9 @@
 
 				var my_snippet_data_url = app.baseUrl+'/'+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?limit=100&sort=desc';
 				fetch(my_snippet_data_url, myInit)
-				.then(function(fetchResponse){ 
+				.then(
+					fetchStatusHandler
+				).then(function(fetchResponse){ 
 					return fetchResponse.json();
 				})
 				.then(function(data) {
@@ -1212,7 +1238,7 @@
 					$.plot($('#snippet-graph-'+my_snippet.id), dataset, options);
 				})
 				.catch(function (error) {
-					toast('fetchIndex error out...' + error, 5000);
+					toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 				});
 			} else if ( my_snippet.attributes.type == 'clock' ) {
 				snippet += "	<div class=\"clock tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
@@ -1246,7 +1272,9 @@
 			if ( my_snippet.attributes.type == 'simplerow' || my_snippet.attributes.type == 'valuedisplay' ) {
 				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=1';
 				fetch(url_snippet, myInit)
-				.then(function(fetchResponse){ 
+				.then(
+					fetchStatusHandler
+				).then(function(fetchResponse){ 
 					return fetchResponse.json();
 				})
 				.then(function(response) {
@@ -1262,14 +1290,14 @@
 					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
 				.catch(function (error) {
-					toast('getSnippet Inside error...' + error, 5000);
+					toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
 				});
 			}
 			//console.log(myContainer);
 			//return snippet;
 		})
 		.catch(function (error) {
-			toast('getSnippet error out...' + error, 5000);
+			toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
 		});
 		app.spinner.setAttribute('hidden', true);
 	} //getSnippet
@@ -1300,7 +1328,9 @@
 		var url = app.baseUrl+"/"+app.api_version+"/objects/"+id+"/qrcode/18/H";
 		
 		fetch(url, myInit)
-		.then(function(fetchResponse){
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){
 			return fetchResponse.json();
 		})
 		.then(function(response) {
@@ -1310,7 +1340,7 @@
 			}
 		})
 		.catch(function (error) {
-			toast('fetch Qrcode error out...' + error, 5000);
+			toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
 		});
 		app.spinner.setAttribute('hidden', true);
 	} //getQrcode
@@ -1344,16 +1374,6 @@
 	    }
 	});
 
-	app.fetchIndex('index');
-	
-	app.getAllUserData = function() {
-		app.fetchItems('objects');
-		app.fetchItems('flows');
-		app.fetchItems('dashboards');
-		app.fetchItems('snippets');
-		app.fetchProfile();
-	}
-
 	app.authenticate = function() {
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
@@ -1371,14 +1391,59 @@
 				app.bearer = response.token;
 				app.getAllUserData();
 				app.setSection('index');
-				toast('Success. Welcome Back ! :-)', 5000);
+				toast('Success. Welcome Back ! :-)', {timeout:3000, type: 'done'});
 			} else {
-				toast('Auth error ...' + error, 5000);
+				toast('Auth error ...' + error, {timeout:3000, type: 'error'});
 			}
 		})
 		.catch(function (error) {
-			toast('Auth error ...' + error, 5000);
+			toast('Auth error ...' + error, {timeout:3000, type: 'error'});
 		});
+	}
+
+	app.sessionExpired = function() {
+		app.bearer = '';
+		app.auth = {};
+		(containers.objects).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.object).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.flows).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.flow).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.dashboards).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.dashboard).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.snippets).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.snippet).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.profile).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.rules).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.mqtts).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.settings).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		setLoginAction();
+	}
+
+	// Run the App
+	if (!('serviceWorker' in navigator)) {
+		// Service Worker isn't supported on this browser, disable or hide UI.
+		return;
+	} else {
+		registerServiceWorker();
+	}
+	if (!('PushManager' in window)) {
+		// Push isn't supported on this browser, disable or hide UI.
+		return;
+	} else {
+		subscribeUserToPush();
+	}
+	app.fetchIndex('index');
+	app.getAllUserData = function() {
+		logout_button.addEventListener('click', function() {toast('You have been disconnected :-(', {timeout:3000, type: 'error'});app.auth={}; app.sessionExpired(); app.setSection('loginForm');}, false);
+		app.fetchItems('objects');
+		app.fetchItems('flows');
+		app.fetchItems('dashboards');
+		app.fetchItems('snippets');
+		app.fetchItems('rules');
+		app.fetchProfile();
+	}
+	if( !app.bearer || app.auth.username == null ) {
+		app.sessionExpired();
 	}
 	
 })();
