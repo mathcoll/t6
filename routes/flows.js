@@ -10,7 +10,7 @@ var tokens;
 /**
  * @api {get} /flows/:flow_id Get Flow(s)
  * @apiName Get Flow(s)
- * @apiGroup Flow
+ * @apiGroup 2. Flow
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -47,11 +47,8 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 			};
 		}
 		var flow = flows.find(query);
-		if ( flow.length > 0 ) {
-			res.status(200).send(new FlowSerializer(flow).serialize());
-		} else {
-			res.status(404).send(new ErrorSerializer({'id': 36, 'code': 404, 'message': 'Not Found'}).serialize());
-		}	
+		flow = flow.length>0?flow:[];
+		res.status(200).send(new FlowSerializer(flow).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 37, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}
@@ -60,7 +57,7 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 /**
  * @api {post} /flows Create New Flow
  * @apiName Create New Flow
- * @apiGroup Flow
+ * @apiGroup 2. Flow
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -114,7 +111,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 /**
  * @api {put} /flows/:flow_id Edit a Flow
  * @apiName Edit a Flow
- * @apiGroup Flow
+ * @apiGroup 2. Flow
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -185,7 +182,7 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 /**
  * @api {delete} /flows/:flow_id Delete a Flow
  * @apiName Delete a Flow
- * @apiGroup Flow
+ * @apiGroup 2. Flow
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

@@ -30,17 +30,14 @@ router.get('/(:datatype_id([0-9a-z\-]+))?', function (req, res) {
 		json = datatypes.find({ 'id': { '$eq': ""+datatype_id } });
 	}
 	//console.log(json);
-	if ( json.length > 0 ) {
-		res.status(200).send(new DataTypeSerializer(json).serialize());
-	} else {
-		res.status(404).send(new ErrorSerializer({'id': 48, 'code': 404, 'message': 'Not Found'}).serialize());
-	}
+	json = json.length>0?json:[];
+	res.status(200).send(new DataTypeSerializer(json).serialize());
 });
 
 /**
  * @api {post} /datatypes Create DataType
  * @apiName Create DataType
- * @apiGroup General
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -68,7 +65,7 @@ router.post('/', bearerAdmin, function (req, res) {
 /**
  * @api {put} /datatypes/:datatype_id Edit a DataType
  * @apiName Edit a DataType
- * @apiGroup General
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -102,7 +99,7 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 /**
  * @api {delete} /datatypes/:datatype_id Delete a DataType
  * @apiName Delete a DataType
- * @apiGroup General
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

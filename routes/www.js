@@ -1227,7 +1227,7 @@ router.post('/account/login', Auth, function(req, res) {
 		users.update(u);
 		db.save();
 		
-		console.log("TEST TOKEN , when was it created ??????? "+req.session.user.token);
+		console.log("TEST TOKEN , when was it created => "+req.session.user.token);
 		if ( req.url == "/account/login" ) {
 		//res.redirect('/dashboards');
 			res.redirect('/account/profile');
@@ -2462,7 +2462,7 @@ function Auth(req, res, next) {
 	var email = req.body.email;
 	var password = req.body.password;
 	if ( email && password ) {
-		//console.log("I have an Email and a Password");
+		console.log("I have an Email and a Password");
 		var queryU = {
 				'$and': [
 							{ 'email': email },
@@ -2471,12 +2471,12 @@ function Auth(req, res, next) {
 						]
 					};
 		var user = users.findOne(queryU);
-		//console.log("User: ");
-		//console.log(queryU);
-		//console.log(user);
+		console.log("User: ");
+		console.log(queryU);
+		console.log(user);
 		if ( user ) {
 			var SESS_ID = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
-			//console.log("I have created a SESS_ID: "+SESS_ID);
+			console.log("I have created a SESS_ID: "+SESS_ID);
 
 			req.session.user = user;
 			req.session.token = '';
@@ -2534,13 +2534,13 @@ function Auth(req, res, next) {
 			res.redirect('/unauthorized');
 		}
 	} else {
-		//console.log("I haven't any Key nor Secret");
+		console.log("I haven't any Email nor Password");
 		// trying to retrieve User from the session... if any...
 		if ( req.session !== undefined && req.session.user !== undefined && req.session.user.id !== undefined ) {
 			if( !(req.session && req.session.user) ) {				
 				res.redirect('/unauthorized');
 			} else {
-				//console.log("I have a session_id: "+req.cookies.session_id);
+				console.log("I have a session_id: "+req.cookies.session_id);
 				next();
 			}
 		} else {

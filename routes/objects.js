@@ -11,7 +11,7 @@ var tokens;
 /**
  * @api {get} /objects/:object_id/qrcode/:typenumber/:errorcorrectionlevel Get qrcode for an Object
  * @apiName Get Object(s)
- * @apiGroup Object
+ * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -58,7 +58,7 @@ router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 /**
  * @api {get} /objects/:object_id Get Object(s)
  * @apiName Get Object(s)
- * @apiGroup Object
+ * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -103,17 +103,14 @@ router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret
 	}
 	var json = objects.find(query);
 	//console.log(query);
-	if ( json.length > 0 ) {
-		res.status(200).send(new ObjectSerializer(json).serialize());
-	} else {
-		res.status(404).send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize());
-	}
+	json = json.length>0?json:[];
+	res.status(200).send(new ObjectSerializer(json).serialize());
 });
 
 /**
  * @api {post} /objects Add an Object
  * @apiName Add an Object
- * @apiGroup Object
+ * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -167,7 +164,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 /**
  * @api {put} /objects/:object_id Edit an Object
  * @apiName Edit an Object
- * @apiGroup Object
+ * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -216,7 +213,7 @@ router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}),
 /**
  * @api {delete} /objects/:object_id Delete an Object
  * @apiName Delete an Object
- * @apiGroup Object
+ * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -250,7 +247,7 @@ router.delete('/:object_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret
 /**
  * @api {put} /objects/:object_id/:pName Edit Object Custom Parameter
  * @apiName Edit Object Custom Parameter
- * @apiGroup Object
+ * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -305,7 +302,7 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', expressJwt({secret: jwtsettings.
 /**
  * @api {get} /objects/:object_id/:pName Get Object Custom Parameter
  * @apiName Get Object Custom Parameter
- * @apiGroup Object
+ * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

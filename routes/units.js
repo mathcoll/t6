@@ -32,18 +32,15 @@ router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res, next) {
 	} else {
 		json = units.find({'type': { '$eq': type }});
 	}
-	
-	if ( json.length > 0 ) {
-		res.status(200).send(new UnitSerializer(json).serialize());
-	} else {
-		res.status(404).send(new ErrorSerializer({'id': 17, 'code': 404, 'message': 'Not Found'}).serialize());
-	}
+
+	json = json.length>0?json:[];
+	res.status(200).send(new UnitSerializer(json).serialize());
 });
 
 /**
  * @api {post} /units Create a Unit
  * @apiName Create a Unit
- * @apiGroup General
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -78,7 +75,7 @@ router.post('/', bearerAdmin, function (req, res) {
 /**
  * @api {put} /units/:unit_id Edit a Unit
  * @apiName Edit a Unit
- * @apiGroup General
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -118,7 +115,7 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 /**
  * @api {delete} /units/:unit_id Delete a Unit
  * @apiName Delete a Unit
- * @apiGroup General
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

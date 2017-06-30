@@ -10,7 +10,7 @@ var tokens;
 /**
  * @api {get} /users/reminderMail Send reminder Email to Users
  * @apiName Send reminder Email to Users
- * @apiGroup User
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -77,7 +77,7 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
 /**
  * @api {get} /users/changePassword Send Password Expiration Email to Users
  * @apiName Send Password Expiration Email to Users
- * @apiGroup User
+ * @apiGroup 7. Admin User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

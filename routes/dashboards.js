@@ -12,7 +12,7 @@ var tokens;
 /**
  * @api {get} /dashboards/:dashboard_id Get Dashboard(s)
  * @apiName Get Dashboard(s)
- * @apiGroup Dashboard
+ * @apiGroup 3. Dashboard
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -57,11 +57,8 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.se
 		}
 	}
 	var json = dashboards.find(query);
-	if ( json.length > -1 ) {
-		res.status(200).send(new DashboardSerializer(json).serialize());
-	} else {
-		res.status(404).send(new ErrorSerializer({'id': 127, 'code': 404, 'message': 'Not Found'}).serialize());
-	}
+	json = json.length>0?json:[];
+	res.status(200).send(new DashboardSerializer(json).serialize());
 });
 
 function bearerAuthToken(req, res, next) {

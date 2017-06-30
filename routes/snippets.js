@@ -10,7 +10,7 @@ var tokens;
 /**
  * @api {get} /snippets/:snippet_id Get Snippet(s)
  * @apiName Get Snippet(s)
- * @apiGroup Snippet
+ * @apiGroup 4. Snippet
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -54,11 +54,8 @@ router.get('/(:snippet_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secre
 		}
 	}
 	var json = snippets.find(query);
-	if ( json.length > -1 ) {
-		res.status(200).send(new SnippetSerializer(json).serialize());
-	} else {
-		res.status(404).send(new ErrorSerializer({'id': 127, 'code': 404, 'message': 'Not Found'}).serialize());
-	}
+	json = json.length>0?json:[];
+	res.status(200).send(new SnippetSerializer(json).serialize());
 });
 
 function bearerAuthToken(req, res, next) {

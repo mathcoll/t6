@@ -231,7 +231,7 @@ router.all('*', function (req, res, next) {
 /**
  * @api {post} /authenticate Create a JWT Token
  * @apiName Create a JWT Token
- * @apiGroup User
+ * @apiGroup Authentication
  * @apiVersion 2.0.1
  * 
  * @apiParam {String} username Your own username
@@ -285,7 +285,7 @@ router.get('/status', function(req, res, next) {
 
 /**
  * @api {get} /index PWA index cards
- * @apiName API IndexCards
+ * @apiName API Cards Index
  * @apiGroup General
  * @apiVersion 2.0.1
  */

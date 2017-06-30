@@ -16,7 +16,7 @@ function str2bool(v) {
 /**
  * @api {get} /data/:flow_id Get DataPoint List
  * @apiName Get DataPoint List
- * @apiGroup DataPoint
+ * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -335,7 +335,7 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 /**
  * @api {get} /data/:flow_id/:data_id Get DataPoint
  * @apiName Get DataPoint
- * @apiGroup DataPoint
+ * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -507,7 +507,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
 /**
  * @api {post} /data/:flow_id Create a DataPoint
  * @apiName Create a DataPoint
- * @apiGroup DataPoint
+ * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
