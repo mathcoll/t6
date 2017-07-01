@@ -358,7 +358,6 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
  * @apiUse 500
  */
 router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt MIGHT BE DONE (x)
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
 	var output = req.query.output!==undefined?req.query.output:'json';
@@ -526,7 +525,6 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiUse 500
  */
 router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt MIGHT BE DONE (x)
 	var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
 	var time		= (req.body.timestamp!==''&&req.body.timestamp!==undefined)?parseInt(req.body.timestamp):moment().format('x');
 	if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };

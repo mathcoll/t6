@@ -30,7 +30,7 @@
     }],
   "start_url": "/m",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "default_locale": "en",
   "lang": "en-US",
   "background_color": "#795548",

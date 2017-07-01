@@ -53,31 +53,6 @@ self.addEventListener('activate', function(e) {
 	return self.clients.claim();
 });
 
-/*
-self.addEventListener('fetch', function(e) {
-	console.log('[ServiceWorker] Fetch', e.request.url);
-	if (e.request.url.indexOf('2.0.1') > -1) {
-		// https://jakearchibald.com/2014/offline-cookbook/#cache-then-network
-		e.respondWith(
-			caches.open(dataCacheName).then(function(cache) {
-				console.log('[ServiceWorker] caching t6 for ', e.request.url);
-				return fetch(e.request).then(function(response){
-					cache.put(e.request.url, response.clone());
-					return response;
-				});
-			})
-		);
-	} else {
-		// https://jakearchibald.com/2014/offline-cookbook/#cache-falling-back-to-network
-		console.log('[ServiceWorker] Cache, falling back to the network -> '+e.request.url);
-		e.respondWith(
-			caches.match(e.request).then(function(response) {
-				return response || fetch(e.request);
-			})
-		);
-	}
-});
-*/
 self.addEventListener('fetch', function(event) {
 	console.log('Handling fetch event for', event.request.url);
 	if (event.request.url.indexOf('2.0.1') < -1) { //////////////////////////////////////// REMOVING CACHE

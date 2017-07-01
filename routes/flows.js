@@ -195,7 +195,6 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
  * @apiParam {uuid-v4} flow_id Flow Id
  */
 router.delete('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// expressJwt IS NOT YET DONE (x)
 	// TODO
 	// TODO: delete all data related to that flow?
 	res.status(404).send(new ErrorSerializer({'id': 43, 'code': 404, 'message': 'Not Found', details: 'Not yet implemented... Sorry.'}).serialize());
