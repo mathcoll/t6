@@ -111,28 +111,34 @@
 				userVisibleOnly: true,
 				applicationServerKey: urlBase64ToUint8Array(app.applicationServerKey)
 			};
-			return registration.pushManager.subscribe(subscribeOptions);
+			if ( registration ) {
+				return registration.pushManager.subscribe(subscribeOptions);
+			} else {
+				return false;
+			}
 		})
 		.then(function(pushSubscription) {
 			//console.log('Go to the settings to see the endpoints details for push notifications.');
 			console.log(pushSubscription);
 			var settings = "";
 			var j = JSON.parse(JSON.stringify(pushSubscription));
-			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
-			settings += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-			settings += "		<div class=\"mdl-card__title\">";
-			settings += "			<h2 class=\"mdl-card__title-text\">";
-			settings += "				<i class=\"material-icons\">"+app.icons.settings+"</i>";
-			settings += "				API Push";
-			settings += "			</h2>";
-			settings += "		</div>";
-			settings += app.getField('cloud', 'endpoint', j.endpoint, 'text', false, false, true);
-			settings += app.getField('vpn_key', 'key', j.keys.p256dh, 'text', false, false, true);
-			settings += app.getField('vpn_lock', 'auth', j.keys.auth, 'text', false, false, true);
-			settings += "	</div>";
-			settings += "</section>";
-
-			(containers.settings).querySelector('.page-content').innerHTML = settings;
+			if ( j && j.keys ) {
+				settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				settings += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				settings += "		<div class=\"mdl-card__title\">";
+				settings += "			<h2 class=\"mdl-card__title-text\">";
+				settings += "				<i class=\"material-icons\">"+app.icons.settings+"</i>";
+				settings += "				API Push";
+				settings += "			</h2>";
+				settings += "		</div>";
+				settings += app.getField('cloud', 'endpoint', j.endpoint, 'text', false, false, true);
+				settings += app.getField('vpn_key', 'key', j.keys.p256dh, 'text', false, false, true);
+				settings += app.getField('vpn_lock', 'auth', j.keys.auth, 'text', false, false, true);
+				settings += "	</div>";
+				settings += "</section>";
+	
+				(containers.settings).querySelector('.page-content').innerHTML = settings;
+			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
@@ -1414,6 +1420,8 @@
 				app.bearer = response.token;
 				app.getAllUserData();
 				app.setSection('index');
+				app.setHiddenElement("signin_button"); 
+				app.setVisibleElement("logout_button");
 				toast('Success. Welcome Back ! :-)', {timeout:3000, type: 'done'});
 			} else {
 				toast('Auth internal error', {timeout:3000, type: 'error'});
@@ -1425,7 +1433,6 @@
 	} //authenticate
 
 	app.getAllUserData = function() {
-		logout_button.addEventListener('click', function() {toast('You have been disconnected :-(', {timeout:3000, type: 'error'});app.auth={}; app.sessionExpired(); app.setSection('loginForm');}, false);
 		app.fetchItems('objects');
 		app.fetchItems('flows');
 		app.fetchItems('dashboards');
@@ -1435,9 +1442,23 @@
 		app.fetchProfile();
 	} //getAllUserData
 	
+	app.toggleElement = function(id) {
+		document.querySelector('#'+id).classList.toggle('hidden');
+	} //toggleElement
+	
+	app.setHiddenElement = function(id) {
+		document.querySelector('#'+id).classList.add('hidden');
+	} //setHiddenElement
+	
+	app.setVisibleElement = function(id) {
+		document.querySelector('#'+id).classList.remove('hidden');
+	} //setVisibleElement
+	
 	app.sessionExpired = function() {
 		app.bearer = '';
 		app.auth = {};
+		app.setVisibleElement("signin_button"); 
+		app.setHiddenElement("logout_button");
 		(containers.objects).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.object).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.flows).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
@@ -1475,6 +1496,8 @@
 	        app.fetchItems(type, this.value);
 	    }
 	});
+	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('loginForm');}, false);
+	logout_button.addEventListener('click', function() {app.auth={}; app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
 
 	if (!('serviceWorker' in navigator)) {
 		// Service Worker isn't supported on this browser, disable or hide UI.
