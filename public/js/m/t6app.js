@@ -3,6 +3,7 @@
 
 	var app = {
 		api_version: 'v2.0.1',
+		debug: false,
 		spinner: document.querySelector('section#loading-spinner'),
 		baseUrl: '',
 		bearer: '',
@@ -143,7 +144,6 @@
 		})
 		.catch(function (error) {
 			console.log(error);
-			toast(error, {timeout:3000, type: 'error'});
 		});
 	}; //subscribeUserToPush
 
@@ -217,7 +217,7 @@
 	    return response;
 	  } else if (response.status === 401) {
 		app.sessionExpired();
-		toast('Your session has expired', {timeout:3000, type: 'error'});
+		toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
 	    return false;
 	  } else {
 	    throw new Error(response.statusText);
@@ -257,10 +257,10 @@
 						})
 						.then(function(response) {
 							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
-							toast('Object has been deleted...', {timeout:3000, type: 'done'});
+							toast('Object has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Object has not been deleted...', {timeout:3000, type: 'error'});
+							toast('Object has not been deleted.', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -304,10 +304,10 @@
 							return fetchResponse.json();
 						})
 						.then(function(response) {
-							toast('Flow has been deleted...', {timeout:3000, type: 'done'});
+							toast('Flow has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Flow has not been deleted...', {timeout:3000, type: 'error'});
+							toast('Flow has not been deleted.', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -351,10 +351,10 @@
 							return fetchResponse.json();
 						})
 						.then(function(response) {
-							toast('Dashboard has been deleted...', {timeout:3000, type: 'done'});
+							toast('Dashboard has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Dashboard has not been deleted...', {timeout:3000, type: 'error'});
+							toast('Dashboard has not been deleted.', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -398,10 +398,10 @@
 							return fetchResponse.json();
 						})
 						.then(function(response) {
-							toast('Snippet has been deleted...', {timeout:3000, type: 'done'});
+							toast('Snippet has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Snippet has not been deleted...', {timeout:3000, type: 'error'});
+							toast('Snippet has not been deleted.', {timeout:3000, type: 'error'});
 						});
 						evt.preventDefault();
 					});
@@ -576,7 +576,9 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displayObject error occured...' + error, 5000);
+			if (app.debug === true ) {
+				toast('displayObject error occured...' + error, 5000);
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayObject
@@ -732,9 +734,11 @@
 				})
 				.catch(function (error) {
 					if (error == 'Error: Not Found') {
-						toast('No data found, graph is empty.', {timeout:3000, type: 'error'});
+						toast('No data found, graph remain empty.', {timeout:3000, type: 'warning'});
 					} else {
-						toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
+						if (app.debug === true ) {
+							toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
+						}
 					}
 				});
 				node +=	"	</div>";
@@ -749,7 +753,9 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displayFlow error occured...' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('displayFlow error occured...' + error, {timeout:3000, type: 'error'});
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayFlow
@@ -813,7 +819,9 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayDashboard
@@ -881,7 +889,9 @@
 			}
 		})
 		.catch(function (error) {
-			toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displaySnippet
@@ -982,7 +992,9 @@
 			var defaultCard = {image: '/img/opl_img.jpg', title: title, description: 'Hey, it looks you don\'t have any mqtt topic yet.', url: ''};
 		} else {
 			type='undefined';
-			toast('Error ' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('Error ' + error, {timeout:3000, type: 'error'});
+			}
 		}
 
 		if (type) {
@@ -1015,10 +1027,14 @@
 				app.setListActions(type);
 			})
 			.catch(function (error) {
-				toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
+				if (app.debug === true ) {
+					toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
+				}
 			});
 		} else {
-			toast('Error: No type defined', {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('Error: No type defined', {timeout:3000, type: 'error'});
+			}
 		}
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchItems
@@ -1086,7 +1102,9 @@
 
 		})
 		.catch(function (error) {
-			toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchProfile
@@ -1115,7 +1133,9 @@
 			container.innerHTML = node;
 		})
 		.catch(function (error) {
-			toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchIndex
@@ -1289,7 +1309,9 @@
 					$.plot($('#snippet-graph-'+my_snippet.id), dataset, options);
 				})
 				.catch(function (error) {
-					toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
+					if (app.debug === true ) {
+						toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
+					}
 				});
 			} else if ( my_snippet.attributes.type == 'clock' ) {
 				snippet += "	<div class=\"clock tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
@@ -1341,14 +1363,18 @@
 					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
 				.catch(function (error) {
-					toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
+					if (app.debug === true ) {
+						toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
+					}
 				});
 			}
 			//console.log(myContainer);
 			//return snippet;
 		})
 		.catch(function (error) {
-			toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	} //getSnippet
@@ -1391,7 +1417,9 @@
 			}
 		})
 		.catch(function (error) {
-			toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
+			if (app.debug === true ) {
+				toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
+			}
 		});
 		app.spinner.setAttribute('hidden', true);
 	} //getQrcode
@@ -1422,9 +1450,11 @@
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
-				toast('Success. Welcome Back ! :-)', {timeout:3000, type: 'done'});
+				toast('Success authentication. Welcome Back! :-)', {timeout:3000, type: 'done'});
 			} else {
-				toast('Auth internal error', {timeout:3000, type: 'error'});
+				if (app.debug === true ) {
+					toast('Auth internal error', {timeout:3000, type: 'error'});
+				}
 			}
 		})
 		.catch(function (error) {
