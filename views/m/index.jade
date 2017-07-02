@@ -1,14 +1,14 @@
 doctype html
 html.ltr(lang='en')
   head
-    title t6 App
+    title t6 IoT App
 
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
-    meta(name='apple-mobile-web-app-title', content='t6 App')
+    meta(name='apple-mobile-web-app-title', content='t6 IoT App')
     meta(name='msapplication-TileImage', content='#{baseUrl_https}/img/m/icons/icon-144x144.png')
     meta(name='msapplication-TileColor', content='#795548')
     meta(name='theme-color', content='#795548')
@@ -142,7 +142,7 @@ html.ltr(lang='en')
           
           //- Actions
           .mdl-button--fab_flinger-container
-            button#button_object_create.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
+            button#createObject.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
               i.material-icons add
 
 
@@ -162,7 +162,7 @@ html.ltr(lang='en')
           
           //- Actions
           .mdl-button--fab_flinger-container
-            button#button_flow_create.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
+            button#createFlow.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
               i.material-icons add
 
 
@@ -182,7 +182,7 @@ html.ltr(lang='en')
           
           //- Actions
           .mdl-button--fab_flinger-container
-            button#button_snippet_create.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
+            button#createSnippet.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
               i.material-icons add
 
         //- View Snippet
@@ -201,7 +201,7 @@ html.ltr(lang='en')
           
           //- Actions
           .mdl-button--fab_flinger-container
-            button#button_dashboard_create.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
+            button#createDashboard.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
               i.material-icons add
 
         //- View Dashboard
@@ -220,7 +220,7 @@ html.ltr(lang='en')
           
           //- Actions
           .mdl-button--fab_flinger-container
-            button#button_rule_create.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
+            button#createRule.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
               i.material-icons add
 
 
@@ -232,6 +232,11 @@ html.ltr(lang='en')
         //- List Mqtt
         section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content 
+          
+          //- Actions
+          .mdl-button--fab_flinger-container
+            button#createMqtt.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
+              i.material-icons add
 
 
         //- View Sign In

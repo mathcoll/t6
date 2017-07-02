@@ -3,7 +3,7 @@
 
 	var app = {
 		api_version: 'v2.0.1',
-		debug: false,
+		debug: true,
 		spinner: document.querySelector('section#loading-spinner'),
 		baseUrl: '',
 		bearer: '',
@@ -32,6 +32,7 @@
 		}
 	};
 
+	var buttons = {}; // see function app.refreshButtonsSelectors()
 	var containers = {
 		index: document.querySelector('section#index'),
 		objects: document.querySelector('section#objects'),
@@ -51,10 +52,9 @@
 
 /* *********************************** General functions *********************************** */
 	function setLoginAction() {
-		var loginButtons = document.querySelectorAll('form.signin button.login_button');
-		for (var i in loginButtons) {
-			if ( loginButtons[i].childElementCount > -1 ) {
-				loginButtons[i].addEventListener('click', function(evt) {
+		for (var i in buttons.loginButtons) {
+			if ( buttons.loginButtons[i].childElementCount > -1 ) {
+				buttons.loginButtons[i].addEventListener('click', function(evt) {
 					var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
 					var username = myForm.querySelector("form.signin input[name='username']").value;
 					var password = myForm.querySelector("form.signin input[name='password']").value;
@@ -105,7 +105,7 @@
 	}; //registerServiceWorker
 	
 	function subscribeUserToPush() {
-		//return getSWRegistration()
+		//return getSWRegistration() //////////////////////////////////////// TODO to avoid registering SW twice!
 		return registerServiceWorker()
 		.then(function(registration) {
 			const subscribeOptions = {
@@ -148,17 +148,53 @@
 	}; //subscribeUserToPush
 
 /* *********************************** Application functions *********************************** */
+	app.refreshButtonsSelectors = function() {
+		componentHandler.upgradeDom();
+		buttons = {
+			//signin_button
+			//logout_button
+
+				
+			loginButtons: document.querySelectorAll('form.signin button.login_button'),
+			expandButtons: document.querySelectorAll('.showdescription_button'),
+			object_create: document.querySelectorAll('.showdescription_button'),
+			
+			deleteObject: document.querySelectorAll('#objects .delete-button'),
+			editObject: document.querySelectorAll('#objects .edit-button'),
+			createObject: document.querySelector('#objects button#createObject'),
+			
+			deleteFlow: document.querySelectorAll('#flows .delete-button'),
+			editFlow: document.querySelectorAll('#flows .edit-button'),
+			createFlow: document.querySelector('#flows button#createFlow'),
+			
+			deleteDashboard: document.querySelectorAll('#dashboards .delete-button'),
+			editDashboard: document.querySelectorAll('#dashboards .edit-button'),
+			createDashboard: document.querySelector('#dashboards button#createDashboard'),
+			
+			deleteSnippet: document.querySelectorAll('#snippets .delete-button'),
+			editSnippet: document.querySelectorAll('#snippets .edit-button'),
+			createSnippet: document.querySelector('#snippets button#createSnippet'),
+			
+			deleteRule: document.querySelectorAll('#rules .delete-button'),
+			editRule: document.querySelectorAll('#rules .edit-button'),
+			createRule: document.querySelector('#rules button#createRule'),
+			
+			deleteMqtt: document.querySelectorAll('#mqtts .delete-button'),
+			editMqtt: document.querySelectorAll('#mqtts .edit-button'),
+			createMqtt: document.querySelector('#mqtts button#createMqtt'),
+		};
+	}
 	app.nl2br = function (str, isXhtml) {
 		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
 		return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
 	}; //nl2br
 
 	app.setExpandAction = function() {
+		app.refreshButtonsSelectors();
 		componentHandler.upgradeDom();
-		var expandButtons = document.querySelectorAll('.showdescription_button');
-		for (var i in expandButtons) {
-			if ( (expandButtons[i]).childElementCount > -1 ) {
-				(expandButtons[i]).addEventListener('click', function(evt) {
+		for (var i in buttons.expandButtons) {
+			if ( (buttons.expandButtons[i]).childElementCount > -1 ) {
+				(buttons.expandButtons[i]).addEventListener('click', function(evt) {
 					var id = (evt.target.parentElement).getAttribute('for');
 					document.getElementById(id).classList.toggle('hidden');
 					if ( evt.target.innerHTML == 'expand_more' ) {
@@ -225,12 +261,11 @@
 	}; //fetchStatusHandler
 
 	app.setListActions = function(type) {
+		app.refreshButtonsSelectors();
 		var dialog = document.querySelector('#dialog');
 		if ( type == 'objects' ) {
-			var deleteButtons = document.querySelectorAll('#objects .delete-button');
-			for (var d=0;d<deleteButtons.length;d++) {
-				//console.log(deleteButtons[d]);
-				deleteButtons[d].addEventListener('click', function(evt) {
+			for (var d=0;d<buttons.deleteObject.length;d++) {
+				buttons.deleteObject[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Object';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -266,19 +301,17 @@
 					});
 				});
 			}
-			var editButtons = document.querySelectorAll('#objects .edit-button');
-			for (var e=0;e<editButtons.length;e++) {
-				//console.log(editButtons[e]);
-				editButtons[e].addEventListener('click', function(evt) {
+			for (var e=0;e<buttons.editObject.length;e++) {
+				//console.log(buttons.editObject[e]);
+				buttons.editObject[e].addEventListener('click', function(evt) {
 					app.displayObject(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
 			}
 		} else if ( type == 'flows' ) {
-			var deleteButtons = document.querySelectorAll('#flows .delete-button');
-			for (var d=0;d<deleteButtons.length;d++) {
-				//console.log(deleteButtons[d]);
-				deleteButtons[d].addEventListener('click', function(evt) {
+			for (var d=0;d<buttons.deleteFlow.length;d++) {
+				//console.log(buttons.deleteFlow[d]);
+				buttons.deleteFlow[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Flow';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -313,19 +346,17 @@
 					});
 				});
 			}
-			var editButtons = document.querySelectorAll('#flows .edit-button');
-			for (var e=0;e<editButtons.length;e++) {
-				//console.log(editButtons[e]);
-				editButtons[e].addEventListener('click', function(evt) {
+			for (var e=0;e<buttons.editFlow.length;e++) {
+				//console.log(buttons.editFlow[e]);
+				buttons.editFlow[e].addEventListener('click', function(evt) {
 					app.displayObject(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
 			}
 		} else if ( type == 'dashboards' ) {
-			var deleteButtons = document.querySelectorAll('#dashboards .delete-button');
-			for (var d=0;d<deleteButtons.length;d++) {
-				//console.log(deleteButtons[d]);
-				deleteButtons[d].addEventListener('click', function(evt) {
+			for (var d=0;d<buttons.deleteDashboard.length;d++) {
+				//console.log(buttons.deleteDashboard[d]);
+				buttons.deleteDashboard[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Dashboard';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -360,19 +391,17 @@
 					});
 				});
 			}
-			var editButtons = document.querySelectorAll('#dashboards .edit-button');
-			for (var e=0;e<editButtons.length;e++) {
-				//console.log(editButtons[e]);
-				editButtons[e].addEventListener('click', function(evt) {
+			for (var d=0;d<buttons.editDashboard.length;d++) {
+				//console.log(buttons.editDashboard[d]);
+				buttons.editDashboard[d].addEventListener('click', function(evt) {
 					app.displayObject(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
-			}	
+			}
 		} else if ( type == 'snippets' ) {
-			var deleteButtons = document.querySelectorAll('#snippets .delete-button');
-			for (var d=0;d<deleteButtons.length;d++) {
-				//console.log(deleteButtons[d]);
-				deleteButtons[d].addEventListener('click', function(evt) {
+			for (var d=0;d<buttons.deleteSnippet.length;d++) {
+				//console.log(buttons.deleteSnippet[d]);
+				buttons.deleteSnippet[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Snippet';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -407,20 +436,24 @@
 					});
 				});
 			}
-			var editButtons = document.querySelectorAll('#snippets .edit-button');
-			for (var e=0;e<editButtons.length;e++) {
-				//console.log(editButtons[e]);
-				editButtons[e].addEventListener('click', function(evt) {
+			for (var s=0;s<buttons.editSnippet.length;s++) {
+				//console.log(buttons.editSnippet[s]);
+				buttons.editSnippet[s].addEventListener('click', function(evt) {
 					app.displayObject(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
 			}
+		} else if ( type == 'rules' ) {
+			// TODO
+		} else if ( type == 'mqtts' ) {
+			// TODO
 		}
 	} //setListActions
 
 	app.displayObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -606,6 +639,7 @@
 	app.displayFlow = function(id) {
 		window.scrollTo(0, 0);
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -763,6 +797,7 @@
 	app.displayDashboard = function(id) {
 		window.scrollTo(0, 0);
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -829,6 +864,7 @@
 	app.displaySnippet = function(id) {
 		window.scrollTo(0, 0);
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -943,6 +979,7 @@
 
 	app.fetchItems = function(type, filter) {
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -993,7 +1030,7 @@
 		} else {
 			type='undefined';
 			if (app.debug === true ) {
-				toast('Error ' + error, {timeout:3000, type: 'error'});
+				toast('Error no Type defined.', {timeout:3000, type: 'error'});
 			}
 		}
 
@@ -1041,6 +1078,7 @@
 
 	app.fetchProfile = function() {
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1111,6 +1149,7 @@
 
 	app.fetchIndex = function() {
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1192,6 +1231,7 @@
 
 	app.getSnippet = function(icon, snippet_id, container) {
 		app.spinner.removeAttribute('hidden');
+		app.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1451,6 +1491,7 @@
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
 				toast('Success authentication. Welcome Back! :-)', {timeout:3000, type: 'done'});
+				app.addJWT(app.bearer);
 			} else {
 				if (app.debug === true ) {
 					toast('Auth internal error', {timeout:3000, type: 'error'});
@@ -1501,8 +1542,97 @@
 		(containers.rules).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.mqtts).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		//(containers.settings).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+
+		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
+		for (var i=0; i<updated.length;i++) {
+			updated[i].classList.remove('is-upgraded');
+			updated[i].removeAttribute('data-upgraded');
+		}
+		
+		componentHandler.upgradeDom();
+		app.refreshButtonsSelectors();
 		setLoginAction();
 	}//sessionExpired
+
+	/* *********************************** indexedDB *********************************** */
+	var db;
+	var idbkr;
+	var objectStore;
+	app.addJWT = function(jwt) {
+		var item = { token: jwt, exp: moment().add(1, 'hour').unix() };
+		var transaction = db.transaction(['jwt'], 'readwrite');
+		var store = transaction.objectStore('jwt');
+		var request = store.add(item);
+		//var request = db.transaction(["jwt"], "readwrite").objectStore("jwt").add(item);
+		request.onsuccess = function(event) {
+			if (app.debug === true ) {
+				console.log("add(): onsuccess.");
+			}
+		}
+		request.onerror = function(event) {
+			if (app.debug === true ) {
+				console.log("add(): onerror.");
+				console.log(event);
+			}
+		}
+		console.log(request);
+		//return;
+	}
+
+	app.searchJWT = function() {
+		var jwt;
+		//console.log("objectStore: ");
+		//console.log(db.transaction(["jwt"], "readonly").objectStore("jwt"));
+		var tx = db.transaction(["jwt"], "readonly");
+		var request = tx.objectStore("jwt").index("exp");
+
+		var toDate = moment().unix();
+		//console.log(toDate);
+		var range = idbkr.upperBound(""+toDate, false);
+		request.openCursor(range, 'prev').onsuccess = function(e) {
+			var cursor = e.target.result;
+			if(cursor && cursor.value['token']) {
+				jwt = cursor.value['token'];
+				//console.log(parseInt(cursor.value['exp'])-toDate);
+				app.bearer = jwt;
+				app.getAllUserData();
+				app.setSection('index');
+				app.setHiddenElement("signin_button"); 
+				app.setVisibleElement("logout_button");
+				if (app.debug === true ) {
+					console.log("Autologin completed. Using JWT:");
+					console.log(jwt);
+				}
+				toast('Still here! :-)', {timeout:3000, type: 'done'});
+				
+				return jwt;
+				//cursor.continue();
+			}
+		}
+		tx.onabort = function() {
+			if (app.debug === true ) {
+				console.log("searchJWT(): tx onerror.");
+				console.log(tx.error);
+			}
+		}
+		request.openCursor(range, 'prev').onerror = function(e) {
+			if (app.debug === true ) {
+				console.log("openCursor: onerror.");
+			}
+		}
+		request.onsuccess = function(event) {
+			if (app.debug === true ) {
+				console.log("searchJWT(): onsuccess.");
+			}
+		};
+		request.onerror = function(event) {
+			if (app.debug === true ) {
+				console.log("searchJWT(): onerror.");
+				console.log(event);
+			}
+		}
+		return jwt;
+	}
 	
 	/* *********************************** Run the App *********************************** */
 	document.getElementById('search-exp').addEventListener('keypress', function(e) {
@@ -1526,26 +1656,80 @@
 	        app.fetchItems(type, this.value);
 	    }
 	});
+	app.refreshButtonsSelectors();
 	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('loginForm');}, false);
 	logout_button.addEventListener('click', function() {app.auth={}; app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
+	buttons.createObject.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
+	buttons.createFlow.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
+	buttons.createSnippet.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
+	buttons.createDashboard.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
+	buttons.createRule.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
+	buttons.createMqtt.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
 
 	if (!('serviceWorker' in navigator)) {
-		// Service Worker isn't supported on this browser, disable or hide UI.
+		if (app.debug === true ) {
+			console.log('Service Worker isn\'t supported on this browser, disable or hide UI.');
+		}
 		return;
 	} else {
 		registerServiceWorker();
 	}
 	if (!('PushManager' in window)) {
-		// Push isn't supported on this browser, disable or hide UI.
+		if (app.debug === true ) {
+			console.log('Push isn\'t supported on this browser, disable or hide UI.');
+		}
 		return;
 	} else {
 		subscribeUserToPush();
 	}
+	(window.screen).orientation.addEventListener("orientationchange", function () {
+		if (app.debug === true ) {
+			console.log(window.screen);
+			toast("The orientation of the screen is: " + (window.screen).orientation, {timeout:3000, type: 'info'});
+		}
+	});
 	app.fetchIndex('index');
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
 	} else if( app.auth.username && app.auth.password ) {
 		app.getAllUserData();
+	}
+	
+	if (!('indexedDB' in window)) {
+		if (app.debug === true ) {
+			console.log('This browser doesn\'t support IndexedDB.');
+		}
+	} else {
+		db = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+		idbkr = window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+		var request = db.open('t6-app', 1, function(upgradeDb) {
+			if (!upgradeDb.objectStoreNames.contains('jwt')) {
+				objectStore = upgradeDb.createObjectStore('jwt', { keyPath: 'exp', autoIncrement: true });
+				objectStore.createIndex("exp", "exp", { unique: false, autoIncrement: true });
+			}
+		});
+		request.onerror = function(event) {
+			if (app.debug === true ) {
+				alert('Database is on-error: ' + event.target.errorCode);
+			}
+		};
+		request.onsuccess = function(event) {
+			db = request.result;
+			if (app.debug === true ) {
+				console.log('Database is on-success');
+				console.log('searchJWT(): ');
+				console.log(app.searchJWT());
+			}
+		};
+		request.onupgradeneeded = function(event) {
+			db = event.target.result;
+			objectStore = db.createObjectStore("jwt", {keyPath: "exp", autoIncrement: true});
+			objectStore.createIndex("exp", "exp", { unique: false, autoIncrement: true });
+			if (app.debug === true ) {
+				console.log('Database is on-upgrade-needed');
+				//console.log('searchJWT(): '+ app.searchJWT());
+			}
+		};
 	}
 	
 })();
