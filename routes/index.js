@@ -231,7 +231,7 @@ router.all('*', function (req, res, next) {
 /**
  * @api {post} /authenticate Create a JWT Token
  * @apiName Create a JWT Token
- * @apiGroup Authentication
+ * @apiGroup General
  * @apiVersion 2.0.1
  * 
  * @apiParam {String} username Your own username
@@ -291,47 +291,53 @@ router.get('/status', function(req, res, next) {
  */
 router.get('/index', function(req, res, next) {
 	var index = [
+ 	    {
+			title: 't6 is Mobile-first',
+			titlecolor: '#000000',
+			description: 'Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.',
+			image: '//cdn.internetcollaboratif.info/img/phone.jpg',
+	    },
 	    {
 			title: 'Data Flows as Time-series',
+			titlecolor: '#ffffff',
 			description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.',
 			image: process.env.BASE_URL_HTTPS+'/img/opl_img3.jpg',
-			url: '#/features/architecture',
+			action: {id: 'flows', label: 'Get Started'},
 	    },
 	    {
 			title: 'Connected Objects',
+			titlecolor: '#ffffff',
 			description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.',
 			image: process.env.BASE_URL_HTTPS+'/img/opl_img3.jpg',
-			url: '#/features/architecture',
+			action: {id: 'objects', label: 'Get Started'},
 	    },
 	    {
 			title: 'Tokens for security',
-			description: 'Bearer Tokens allows to manage Objects & Flows API. Permissions based on access Tokens.',
+			titlecolor: '#ffffff',
+			description: 'JWT Tokens allows to manage Objects & Flows API. Permissions based on access Tokens.',
 			image: process.env.BASE_URL_HTTPS+'/img/opl_img2.jpg',
-			url: '#/features/architecture',
+			action: {id: 'loginForm', label: 'Get Started'},
 	    },
 	    {
 			title: 'Dashboards',
+			titlecolor: '#ffffff',
 			description: 'Graphics, data-management, Monitoring, Reporting',
 			image: process.env.BASE_URL_HTTPS+'/img/opl_img.jpg',
-			url: '#/features/customize-dashboards',
+			action: {id: 'dashoards', label: 'Get Started'},
 	    },
 	    {
 			title: 'Decision Rules to get smart',
+			titlecolor: '#ffffff',
 			description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.',
 			image: '',
-			url: '#/decision-rules',
+			action: {id: 'rules', label: 'Get Started'},
 	    },
 	    {
 			title: 'Sense events',
+			titlecolor: '#ffffff',
 			description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.',
 			image: '',
-			url: '/docs',
-	    },
-	    {
-			title: 't6 is Mobile-first',
-			description: 'Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.',
-			image: '//cdn.internetcollaboratif.info/img/phone.jpg',
-			url: '',
+			action: {id: 'mqtts', label: 'Get Started'},
 	    },
 	];
 	res.status(200).send(index);
