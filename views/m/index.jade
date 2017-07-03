@@ -144,7 +144,7 @@ html.ltr(lang='en')
           .mdl-button--fab_flinger-container
             button#createObject.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
               i.material-icons add
-
+          
 
         //- View Object
         section#object.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -153,6 +153,15 @@ html.ltr(lang='en')
   
         //- Edit Object
         section#object_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .page-content
+
+  
+        //- Add Object
+        section#object_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
+            .md-subheader-inner
+              .mdl-subheader-content
+                span.ng-scope Add Object
           .page-content
               
 
@@ -175,6 +184,15 @@ html.ltr(lang='en')
         section#flow_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
+  
+        //- Add Flow
+        section#flow_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
+            .md-subheader-inner
+              .mdl-subheader-content
+                span.ng-scope Add Flow
+          .page-content
+
 
         //- List Snippets
         section#snippets.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -192,6 +210,15 @@ html.ltr(lang='en')
   
         //- Edit Snippet
         section#snippet_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .page-content
+
+  
+        //- Add Snippet
+        section#snippet_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
+            .md-subheader-inner
+              .mdl-subheader-content
+                span.ng-scope Add Snippet
           .page-content
 
             
@@ -213,6 +240,15 @@ html.ltr(lang='en')
         section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
+  
+        //- Add Dashboard
+        section#dashboard_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
+            .md-subheader-inner
+              .mdl-subheader-content
+                span.ng-scope Add Dashboard
+          .page-content
+
 
         //- List Rules
         section#rules.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -228,6 +264,15 @@ html.ltr(lang='en')
         section#rule_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
 
+  
+        //- Add Rules
+        section#rule_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
+            .md-subheader-inner
+              .mdl-subheader-content
+                span.ng-scope Add Rules
+          .page-content
+
 
         //- List Mqtt
         section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -238,6 +283,14 @@ html.ltr(lang='en')
             button#createMqtt.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
               i.material-icons add
 
+  
+        //- Add Mqtt
+        section#mqtt_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
+            .md-subheader-inner
+              .mdl-subheader-content
+                span.ng-scope Add Mqtt
+          .page-content
 
         //- View Sign In
         section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -259,38 +312,39 @@ html.ltr(lang='en')
                       label.mdl-textfield__label(for='password') Password
                       span.mdl-textfield__error Password must be provided
                   .mdl-card__actions.mdl-card--border
-                    a#signup_button.mdl-button.mdl-js-button.mdl-js-ripple-effect
-                      i.material-icons person_add
-                      | Sign-Up
+                    a#signup_button.mdl-button.mdl-js-button.mdl-js-ripple-effect(onclick="app.setSection('signupForm');")
+                      | Create an account
                     button.login_button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
-                      i.material-icons person
+                      i.material-icons lock
                       | Log in
               
 
         //- View Sign Up
-        section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#signupForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
             section.content-grid.mdl-grid
               form.signup
                 .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  .mdl-card__title.mdl-color--primary.mdl-color-text--white
+                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(/img/opl_img2.jpg) no-repeat 50% 50%; min-height: 176px;')
                     h2.mdl-card__title-text Sign-Up to t6
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
                       i.material-icons.mdl-textfield__icon lock
                       input.mdl-textfield__input(type='text', name='username', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
-                      label.mdl-textfield__label(for='username') Username
+                      label.mdl-textfield__label(for='username') Email/Username
                       span.mdl-textfield__error Username should be your email address
                     .mdl-textfield.mdl-js-textfield
-                      i.material-icons.mdl-textfield__icon vpn_key 
-                      input.mdl-textfield__input(type='password', name='password', pattern='.{4,}')
-                      label.mdl-textfield__label(for='password') Password
-                      span.mdl-textfield__error Password must be provided
+                      i.material-icons.mdl-textfield__icon tag_faces 
+                      input.mdl-textfield__input(type='text', name='firstName')
+                      label.mdl-textfield__label(for='firstName') First Name
+                    .mdl-textfield.mdl-js-textfield
+                      i.material-icons.mdl-textfield__icon tag_faces 
+                      input.mdl-textfield__input(type='text', name='lastName')
+                      label.mdl-textfield__label(for='lastName') Last Name
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
-                      i.material-icons person
-                      | Log in
-                    a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(href='#signup')
+                    a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(onclick="app.setSection('loginForm');")
+                      | Sign-in to my account
+                    button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person_add
                       | Sign-Up
               
