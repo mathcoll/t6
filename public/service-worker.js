@@ -4,6 +4,7 @@ var cacheName= 't6-cache-2017-06-20_2337';
 var filesToCache = [
     '/m',
     '/manifest.json',
+    
     '/js/m/material.min.js',
     '/js/m/t6app.js',
     '/js/m/menu.js',
@@ -14,8 +15,10 @@ var filesToCache = [
     '/js/flot/jquery.flot.time.min.js',
     '/js/m/moment.min-2.18.1.js',
     '/js/OpenLayers/ol-4.1.1.min.js',
+    
     '/css/m/inline.css',
     '/css/OpenLayers/ol-4.1.1.min.css',
+    '/css/m/material.brown-blue.min-1.3.0.css',
 
     '/img/opl_img3.jpg',
     '/img/opl_img2.jpg',
@@ -55,7 +58,7 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(event) {
 	console.log('Handling fetch event for', event.request.url);
-	if (event.request.url.indexOf('2.0.1') < -1) { //////////////////////////////////////// REMOVING CACHE
+	if (event.request.url.indexOf('2.0.1') > -1) {
 		event.respondWith(
 			caches.match(event.request).then(function(response) {
 				if (response) {
