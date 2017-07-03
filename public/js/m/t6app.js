@@ -1,54 +1,53 @@
+var app = {
+	api_version: 'v2.0.1',
+	debug: false,
+	spinner: document.querySelector('section#loading-spinner'),
+	baseUrl: '',
+	bearer: '',
+	auth: {},
+	date_format: 'DD/MM/YYYY, HH:mm',
+	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
+	icons: {
+		'objects': 'devices_other',
+		'flows': 'settings_input_component',
+		'snippets': 'widgets',
+		'dashboards': 'dashboards',
+		'rules': 'call_split',
+		'mqtts': 'volume_down',
+		'login': '',
+		'datapoints': 'filter_center_focus',
+		'type': 'label',
+		'icon': 'label_outline',
+		'settings': 'settings',
+		'menu': 'menu',
+		'name': 'list',
+		'delete': 'delete',
+		'edit': 'edit',
+		'color': 'format_color_fill',
+		'date': 'event',
+		'update': 'update',
+	}
+};
+
+var buttons = {}; // see function app.refreshButtonsSelectors()
+var containers = {
+	index: document.querySelector('section#index'),
+	objects: document.querySelector('section#objects'),
+	object: document.querySelector('section#object'),
+	flows: document.querySelector('section#flows'),
+	flow: document.querySelector('section#flow'),
+	dashboards: document.querySelector('section#dashboards'),
+	dashboard: document.querySelector('section#dashboard'),
+	snippets: document.querySelector('section#snippets'),
+	snippet: document.querySelector('section#snippet'),
+	profile: document.querySelector('section#profile'),
+	settings: document.querySelector('section#settings'),
+	rules: document.querySelector('section#rules'),
+	mqtts: document.querySelector('section#mqtts'),
+};
+	
 (function() {
 	'use strict';
-
-	var app = {
-		api_version: 'v2.0.1',
-		debug: true,
-		spinner: document.querySelector('section#loading-spinner'),
-		baseUrl: '',
-		bearer: '',
-		auth: {},
-		date_format: 'DD/MM/YYYY, HH:mm',
-		applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
-		icons: {
-			'objects': 'devices_other',
-			'flows': 'settings_input_component',
-			'snippets': 'widgets',
-			'dashboards': 'dashboards',
-			'rules': 'call_split',
-			'mqtts': 'volume_down',
-			'login': '',
-			'datapoints': 'filter_center_focus',
-			'type': 'label',
-			'icon': 'label_outline',
-			'settings': 'settings',
-			'menu': 'menu',
-			'name': 'list',
-			'delete': 'delete',
-			'edit': 'edit',
-			'color': 'format_color_fill',
-			'date': 'event',
-			'update': 'update',
-		}
-	};
-
-	var buttons = {}; // see function app.refreshButtonsSelectors()
-	var containers = {
-		index: document.querySelector('section#index'),
-		objects: document.querySelector('section#objects'),
-		object: document.querySelector('section#object'),
-		flows: document.querySelector('section#flows'),
-		flow: document.querySelector('section#flow'),
-		dashboards: document.querySelector('section#dashboards'),
-		dashboard: document.querySelector('section#dashboard'),
-		snippets: document.querySelector('section#snippets'),
-		snippet: document.querySelector('section#snippet'),
-		profile: document.querySelector('section#profile'),
-		settings: document.querySelector('section#settings'),
-		rules: document.querySelector('section#rules'),
-		mqtts: document.querySelector('section#mqtts'),
-	};
-	
 
 /* *********************************** General functions *********************************** */
 	function setLoginAction() {
@@ -208,11 +207,13 @@
 	}; //setExpandAction
 	
 	app.setSection = function(section) {
-		console.log("setSection: "+section);
+		if ( app.debug == true ) {
+			console.log("setSection: "+section);
+		}
 		window.scrollTo(0, 0);
 		document.querySelector('section.is-active').classList.remove('is-active');
 		document.querySelector('#'+section).classList.add('is-active');
-		if( document.querySelector('#'+section).querySelector('.page-content').innerHTML == '' ) {
+		if( document.querySelector('#'+section).querySelector('.page-content').innerHTML == '' && !app.bearer ) {
 			document.querySelector('#'+section).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').querySelector('.page-content').innerHTML;
 		}
 	}; //setSection
@@ -618,6 +619,7 @@
 	
 	app.getCard = function(card) {
 		var output = "";
+		card.titlecolor!==null?card.titlecolor: '#ffffff';
 		output += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		output += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		if( card.image ) {
@@ -625,12 +627,22 @@
 		} else {
 			output += "		<div class=\"mdl-card__title\">";
 		}
-		output += "				<h2 class=\"mdl-card__title-text\" style=\"color:#fff;\">" + card.title + "</h2>";
+		output += "				<h2 class=\"mdl-card__title-text\" style=\"color:"+card.titlecolor+";\">" + card.title + "</h2>";
 		output += "					</div>";
 		output += "  	 				<div class=\"mdl-card__supporting-text\">" + card.description + "</div>";
-		output += "  	 				<div class=\"mdl-card__actions mdl-card--border\">";
-		output += "						<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+ card.url +"\"> Get Started</a>";
-		output += "					</div>";
+		if ( card.url || card.secondaryaction || card.action ) {
+			output += "  	 				<div class=\"mdl-card__actions mdl-card--border\">";
+			if ( card.url ) {
+				output += "						<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+ card.url +"\"> Get Started</a>";
+			}
+			if ( card.secondaryaction ) {
+				output += "						<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\"> "+ card.secondaryaction.label +"</a>";
+			}
+			if ( card.action ) {
+				output += "						<button class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
+			}
+			output += "					</div>";
+		}
 		output += "			</div>";
 		output += "</section>";
 		return output;
@@ -993,7 +1005,7 @@
 				url += "?name="+escape(filter);
 			}
 			var title = 'My Objects';
-			var defaultCard = {image: '/img/opl_img3.jpg', title: title, description: 'Hey, it looks you don\'t have any Object yet.', url: ''};
+			var defaultCard = {image: '/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', action: {id: 'object_add', label: 'Add my first Object'}};
 		} else if (type == 'flows') {
 			var icon = app.icons.flows;
 			var container = (containers.flows).querySelector('.page-content');
@@ -1002,31 +1014,31 @@
 				url += "?name="+escape(filter);
 			}
 			var title = 'My Flows';
-			var defaultCard = {image: '/img/opl_img2.jpg', title: title, description: 'Hey, it looks you don\'t have any Flow yet.', url: ''};
+			var defaultCard = {image: '/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', action: {id: 'flow_add', label: 'Add my first Flow'}};
 		} else if (type == 'dashboards') {
 			var icon = app.icons.dashboards;
 			var container = (containers.dashboards).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 			var title = 'My Dashboards';
-			var defaultCard = {image: '/img/opl_img.jpg', title: title, description: 'Hey, it looks you don\'t have any dashboard yet.', url: ''};
+			var defaultCard = {image: '/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', action: {id: 'dashboard_add', label: 'Add my first Dashboard'}};
 		} else if (type == 'snippets') {
 			var icon = app.icons.snippets;
 			var container = (containers.snippets).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/snippets';
 			var title = 'My Snippets';
-			var defaultCard = {image: '/img/opl_img3.jpg', title: title, description: 'Hey, it looks you don\'t have any snippet yet.', url: ''};
+			var defaultCard = {image: '/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', action: {id: 'snippet_add', label: 'Add my first Snippet'}};
 		} else if (type == 'rules') {
 			var icon = app.icons.snippets;
 			var container = (containers.rules).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/rules';
 			var title = 'My Rules';
-			var defaultCard = {image: '/img/opl_img2.jpg', title: title, description: 'Hey, it looks you don\'t have any rule yet.', url: ''};
+			var defaultCard = {image: '/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', action: {id: 'rule_add', label: 'Add my first Rule'}};
 		} else if (type == 'mqtts') {
 			var icon = app.icons.mqtts;
 			var container = (containers.mqtts).querySelector('.page-content');
 			var url = app.baseUrl+'/'+app.api_version+'/mqtts';
 			var title = 'My Mqtts';
-			var defaultCard = {image: '/img/opl_img.jpg', title: title, description: 'Hey, it looks you don\'t have any mqtt topic yet.', url: ''};
+			var defaultCard = {image: '/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: 'Add my first Mqtt'}};
 		} else {
 			type='undefined';
 			if (app.debug === true ) {
@@ -1048,10 +1060,9 @@
 				if ( container.querySelector('form') ) {
 					container.querySelector('form').remove();
 				}
-				if ( (response.data).length == 0 ) {
-					//console.log((response.data).length);
+				if ( (response.data).length == 0 && app.bearer ) {
 					var node = app.getCard(defaultCard);
-					container.innerHTML += node;
+					container.innerHTML = node;
 				} else {
 					for (var i=0; i < (response.data).length ; i++ ) {
 						var item = response.data[i];
@@ -1486,11 +1497,26 @@
 		.then(function(response) {
 			if ( response.token ) {
 				app.bearer = response.token;
+				
+				/* reset views to default */
+				(containers.objects).querySelector('.page-content').innerHTML = '';
+				(containers.object).querySelector('.page-content').innerHTML = '';
+				(containers.flows).querySelector('.page-content').innerHTML = '';
+				(containers.flow).querySelector('.page-content').innerHTML = '';
+				(containers.dashboards).querySelector('.page-content').innerHTML = '';
+				(containers.dashboard).querySelector('.page-content').innerHTML = '';
+				(containers.snippets).querySelector('.page-content').innerHTML = '';
+				(containers.snippet).querySelector('.page-content').innerHTML = '';
+				(containers.profile).querySelector('.page-content').innerHTML = '';
+				(containers.rules).querySelector('.page-content').innerHTML = '';
+				(containers.mqtts).querySelector('.page-content').innerHTML = '';
+
 				app.getAllUserData();
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
-				toast('Success authentication. Welcome Back! :-)', {timeout:3000, type: 'done'});
+				
+				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
 				app.addJWT(app.bearer);
 			} else {
 				if (app.debug === true ) {
@@ -1528,19 +1554,21 @@
 	app.sessionExpired = function() {
 		app.bearer = '';
 		app.auth = {};
+		
 		app.setVisibleElement("signin_button"); 
 		app.setHiddenElement("logout_button");
-		(containers.objects).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		//(containers.objects).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.object).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.flows).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.flow).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.dashboards).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.dashboard).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.snippets).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: '', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.snippet).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.profile).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.rules).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.mqtts).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		//(containers.settings).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
@@ -1558,6 +1586,14 @@
 	var db;
 	var idbkr;
 	var objectStore;
+
+	app.clearJWT = function() {
+		var jwt;
+		var tx = db.transaction(["jwt"], "readwrite");
+		var request = tx.objectStore("jwt");
+		var objectStoreRequest = request.clear();
+	}
+	
 	app.addJWT = function(jwt) {
 		var item = { token: jwt, exp: moment().add(1, 'hour').unix() };
 		var transaction = db.transaction(['jwt'], 'readwrite');
@@ -1581,8 +1617,6 @@
 
 	app.searchJWT = function() {
 		var jwt;
-		//console.log("objectStore: ");
-		//console.log(db.transaction(["jwt"], "readonly").objectStore("jwt"));
 		var tx = db.transaction(["jwt"], "readonly");
 		var request = tx.objectStore("jwt").index("exp");
 
@@ -1658,7 +1692,7 @@
 	});
 	app.refreshButtonsSelectors();
 	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('loginForm');}, false);
-	logout_button.addEventListener('click', function() {app.auth={}; app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
+	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
 	buttons.createObject.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
 	buttons.createFlow.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
 	buttons.createSnippet.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
