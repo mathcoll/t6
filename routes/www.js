@@ -2534,13 +2534,13 @@ function Auth(req, res, next) {
 			res.redirect('/unauthorized');
 		}
 	} else {
-		console.log("I haven't any Email nor Password");
+		//console.log("I haven't any Email nor Password");
 		// trying to retrieve User from the session... if any...
 		if ( req.session !== undefined && req.session.user !== undefined && req.session.user.id !== undefined ) {
 			if( !(req.session && req.session.user) ) {				
 				res.redirect('/unauthorized');
 			} else {
-				console.log("I have a session_id: "+req.cookies.session_id);
+				//console.log("I have a session_id: "+req.cookies.session_id);
 				next();
 			}
 		} else {

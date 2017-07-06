@@ -323,7 +323,7 @@ router.get('/index', function(req, res, next) {
 			titlecolor: '#ffffff',
 			description: 'Graphics, data-management, Monitoring, Reporting',
 			image: process.env.BASE_URL_HTTPS+'/img/opl_img.jpg',
-			action: {id: 'dashoards', label: 'Get Started'},
+			action: {id: 'dashboards', label: 'Get Started'},
 	    },
 	    {
 			title: 'Decision Rules to get smart',

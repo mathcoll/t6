@@ -9,7 +9,6 @@ echo Javascript minify: Completed
 
 uglifycss \
 	../public/css/bootstrap.css \
-	../public/css/font-awesome/font-awesome.min-4.7.0.css \
 	../public/css/t6.css \
 	> ../public/css/t6.min.css
 	
