@@ -113,13 +113,14 @@
 		touchMovePoint = event.touches[0].pageX;
 		if (touchStartPoint < 10 && touchMovePoint > 30) {          
 			menuElement.style.transform = "translateX(0)";
+			menuOverlayElement.classList.add('menu__overlay--show');
 			//showMenu();
 		}
 	}, {passive: true});
 
 	function onTransitionEnd() {
 		if (touchStartPoint < 10) {
-			//menuElement.style.transform = "translateX(0)";
+			menuElement.style.transform = "translateX(0)";
 			menuOverlayElement.classList.add('menu__overlay--show');
 			menuElement.removeEventListener('transitionend', onTransitionEnd, {passive: true}); 
 			//showMenu();

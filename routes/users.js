@@ -267,11 +267,13 @@ router.post('/', function (req, res) {
 	} else {
 		users	= db.getCollection('users');
 		var my_id = uuid.v4();
-		
+
+		var token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
 		var new_token = {
 			user_id:			my_id,
 			key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 			secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+			token:				token,
 	        expiration:			'',
 		};
 		var new_user = {
@@ -290,7 +292,38 @@ router.post('/', function (req, res) {
 		var tokens	= db.getCollection('tokens'); // should be useless with JWT ??
 		tokens.insert(new_token); // should be useless with JWT ??
 		
-		// TODO: the Welcome Mail is never sent!.
+		// TODO: Might be usefull to send the API_KEY/SECRET to the user when it's being created!
+		res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
+			var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
+			var mailOptions = {
+				from: from,
+				bcc: bcc!==undefined?bcc:null,
+				to: to,
+				subject: 'Welcome to t6',
+				text: 'Html email client is required',
+				html: html
+			};
+			transporter.sendMail(mailOptions, function(err, info){
+			    if( err ){
+					var err = new Error('Internal Error');
+					err.status = 500;
+					res.status(err.status || 500).render(err.status, {
+						title : 'Internal Error '+process.env.NODE_ENV,
+						user: req.session.user,
+						currentUrl: req.path,
+						err: err,
+					});
+			    } else {
+			    	events.add('t6App', 'user welcome mail', new_user.id);
+			    	res.render('account/login', {
+						title : 'Login to t6',
+						user: req.session.user,
+						currentUrl: req.path,
+						message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
+					});
+			    };
+			});
+		});
 
 		res.header('Location', '/v'+version+'/users/'+new_user.id);
 		res.status(201).send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }); // TODO: missing serializer

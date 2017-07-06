@@ -313,7 +313,7 @@ html.ltr(lang='en')
                       label.mdl-textfield__label(for='password') Password
                       span.mdl-textfield__error Password must be provided
                   .mdl-card__actions.mdl-card--border
-                    a#signup_button.mdl-button.mdl-js-button.mdl-js-ripple-effect(onclick="app.setSection('signupForm');")
+                    a#signup_button(onclick="app.setSection('signupForm');")
                       | Create an account
                     button.login_button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons lock
@@ -331,21 +331,21 @@ html.ltr(lang='en')
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
                       i.material-icons.mdl-textfield__icon lock
-                      input.mdl-textfield__input(type='text', name='username', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
-                      label.mdl-textfield__label(for='username') Email/Username
+                      input.mdl-textfield__input(type='text', name='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
+                      label.mdl-textfield__label(for='email') Email/Username
                       span.mdl-textfield__error Username should be your email address
                     .mdl-textfield.mdl-js-textfield
                       i.material-icons.mdl-textfield__icon tag_faces 
-                      input.mdl-textfield__input(type='text', name='firstName')
+                      input.mdl-textfield__input(type='text', name='firstName', pattern='.{1,}')
                       label.mdl-textfield__label(for='firstName') First Name
                     .mdl-textfield.mdl-js-textfield
                       i.material-icons.mdl-textfield__icon tag_faces 
-                      input.mdl-textfield__input(type='text', name='lastName')
+                      input.mdl-textfield__input(type='text', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='lastName') Last Name
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(onclick="app.setSection('loginForm');")
+                    a(onclick="app.setSection('loginForm');")
                       | Sign-in to my account
-                    button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
+                    button.createUser.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person_add
                       | Sign-Up
               

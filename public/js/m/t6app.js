@@ -64,6 +64,55 @@ var containers = {
 			}
 		}
 	}; //setLoginAction
+	
+	function setSignupAction() {
+		for (var i in buttons.user_create) {
+			if ( buttons.user_create[i].childElementCount > -1 ) {
+				buttons.user_create[i].addEventListener('click', function(evt) {
+					var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+					var email = myForm.querySelector("form.signup input[name='email']").value;
+					var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
+					var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
+					var postData = {"email":email, "firstName":firstName, "lastName":lastName};
+					if ( email ) {
+						var myHeaders = new Headers();
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
+						var url = app.baseUrl+"/"+app.api_version+"/users";
+						
+						fetch(url, myInit)
+						.then(
+							fetchStatusHandler
+						).then(function(fetchResponse){
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							app.setSection('loginForm');
+							toast('Welcome, have a look to your inbox!', {timeout:3000, type: 'done'});
+						})
+						.catch(function (error) {
+							if (app.debug == true) {
+								console.log(error);
+							}
+							toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+						});
+					} else {
+						toast('We can\'t process your signup.', {timeout:3000, type: 'warning'});
+					}
+					evt.preventDefault();
+				});
+			}
+		}
+	}; //setSignupAction
+	
+	function onLoginButtonClick(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var username = myForm.querySelector("form.signin input[name='username']").value;
+		var password = myForm.querySelector("form.signin input[name='password']").value;
+		app.auth = {"username":username, "password":password};
+		app.authenticate();
+		evt.preventDefault();
+	}
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -155,6 +204,7 @@ var containers = {
 
 				
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
+			user_create: document.querySelectorAll('form.signup button.createUser'),
 			expandButtons: document.querySelectorAll('.showdescription_button'),
 			object_create: document.querySelectorAll('.showdescription_button'),
 			
@@ -250,7 +300,7 @@ var containers = {
 	}; //setItemsClickAction
 	
 	function fetchStatusHandler(response) {
-	  if (response.status === 200) {
+	  if (response.status === 200 || response.status === 201) {
 	    return response;
 	  } else if (response.status === 401) {
 		app.sessionExpired();
@@ -633,10 +683,10 @@ var containers = {
 		if ( card.url || card.secondaryaction || card.action ) {
 			output += "  	 				<div class=\"mdl-card__actions mdl-card--border\">";
 			if ( card.url ) {
-				output += "						<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+ card.url +"\"> Get Started</a>";
+				output += "						<a href=\""+ card.url +"\"> Get Started</a>";
 			}
 			if ( card.secondaryaction ) {
-				output += "						<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\"> "+ card.secondaryaction.label +"</a>";
+				output += "						<a onclick=\"app.setSection('"+ card.secondaryaction.id +"');\"> "+ card.secondaryaction.label +"</a>";
 			}
 			if ( card.action ) {
 				output += "						<button class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
@@ -826,7 +876,7 @@ var containers = {
 				var dashboard = response.data[i];
 				var node;
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-				node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+				node += "	<div class=\"mdl-card mdl-cell--12-col mdl-shadow--2dp\">";
 				//node += "	<div class=\"tile material-animate margin-top-4 material-animated mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
@@ -1314,18 +1364,18 @@ var containers = {
 				}
 			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
 				snippet += "	<div class=\"flowgraph tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
-				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
-				snippet += "			<span class='mdl-list__item-primary-content'>";
+				snippet += "		<div class=\"contextual\">";
+				snippet += "			<div class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
 				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
 				snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet += "			</span>";
-				snippet += "		</span>";
-				snippet += "		<span class='mdl-list__item-primary-content'>";
-				snippet += "			<span class='mdl-list__item' id='snippet-graph-"+my_snippet.id+"' style='width:100%; height:200px;'>";
+				snippet += "			</div>";
+				snippet += "		</div>";
+				snippet += "		<div class='mdl-list__item-primary-content'>";
+				snippet += "			<div class='mdl-list__item' id='snippet-graph-"+my_snippet.id+"' style='width:100%; height:200px;'>";
 				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
 				snippet += "			</span>";
-				snippet += "		</span>";
+				snippet += "		</div>";
 				snippet += "	</div>";
 				
 				var options = {
@@ -1557,6 +1607,11 @@ var containers = {
 		
 		app.setVisibleElement("signin_button"); 
 		app.setHiddenElement("logout_button");
+
+		document.getElementById("currentUserName").innerHTML = '';
+		document.getElementById("currentUserEmail").innerHTML = '';
+		document.getElementById("currentUserHeader").setAttribute('src', '');
+		
 		//(containers.objects).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.object).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
@@ -1580,6 +1635,7 @@ var containers = {
 		componentHandler.upgradeDom();
 		app.refreshButtonsSelectors();
 		setLoginAction();
+		setSignupAction();
 	}//sessionExpired
 
 	/* *********************************** indexedDB *********************************** */
@@ -1693,12 +1749,12 @@ var containers = {
 	app.refreshButtonsSelectors();
 	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('loginForm');}, false);
 	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
-	buttons.createObject.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
-	buttons.createFlow.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
-	buttons.createSnippet.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
-	buttons.createDashboard.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
-	buttons.createRule.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
-	buttons.createMqtt.addEventListener('click', function() {toast("Not yet implemented.. Sorry.", {timeout:3000, type: 'warning'})}, false);
+	buttons.createObject.addEventListener('click', function() {app.setSection('object_add')}, false);
+	buttons.createFlow.addEventListener('click', function() {app.setSection('flow_add')}, false);
+	buttons.createSnippet.addEventListener('click', function() {app.setSection('snippet_add')}, false);
+	buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add')}, false);
+	buttons.createRule.addEventListener('click', function() {app.setSection('rule_add')}, false);
+	buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
 
 	if (!('serviceWorker' in navigator)) {
 		if (app.debug === true ) {
@@ -1706,15 +1762,15 @@ var containers = {
 		}
 		return;
 	} else {
-		registerServiceWorker();
-	}
-	if (!('PushManager' in window)) {
-		if (app.debug === true ) {
-			console.log('Push isn\'t supported on this browser, disable or hide UI.');
+		//registerServiceWorker();
+		if (!('PushManager' in window)) {
+			if (app.debug === true ) {
+				console.log('Push isn\'t supported on this browser, disable or hide UI.');
+			}
+			return;
+		} else {
+			subscribeUserToPush();
 		}
-		return;
-	} else {
-		subscribeUserToPush();
 	}
 	(window.screen).orientation.addEventListener("orientationchange", function () {
 		if (app.debug === true ) {
