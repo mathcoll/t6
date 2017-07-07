@@ -28,9 +28,9 @@
           "sizes": "512x512",
           "type": "image/png"
     }],
-  "start_url": "/m",
+  "scope": "/m",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
   "default_locale": "en",
   "lang": "en-US",
   "background_color": "#795548",

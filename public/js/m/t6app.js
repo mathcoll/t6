@@ -144,7 +144,6 @@ var containers = {
 		return navigator.serviceWorker.register('./service-worker.js')
 		.then(function(registration) {
 			console.log('[ServiceWorker] Registered');
-			askPermission();
 		    return registration;
 		})
 		.catch(function(err) {
@@ -153,7 +152,6 @@ var containers = {
 	}; //registerServiceWorker
 	
 	function subscribeUserToPush() {
-		//return getSWRegistration() //////////////////////////////////////// TODO to avoid registering SW twice!
 		return registerServiceWorker()
 		.then(function(registration) {
 			const subscribeOptions = {
@@ -1309,7 +1307,8 @@ var containers = {
 		.then(function(response) {
 			var my_snippet = response.data[0];
 
-			var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
+			//var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
+			var snippet = ""; 
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
 				snippet += "	<div class=\"valuedisplay tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
@@ -1437,9 +1436,15 @@ var containers = {
 				snippet += "	</div>";
 			}
 
-			snippet += "</section>";
-			var c = document.createElement('div');
+			//snippet += "</section>";
+			//var c = document.createElement('div');
+			//c.innerHTML = snippet;
+			
+			var c= document.createElement("div");
+			c.setAttribute('class','mdl-grid mdl-cell--6-col');
+			c.setAttribute('id',my_snippet.id);
 			c.innerHTML = snippet;
+			
 			myContainer.appendChild(c);
 			componentHandler.upgradeDom();
 			
@@ -1769,6 +1774,7 @@ var containers = {
 			}
 			return;
 		} else {
+			askPermission();
 			subscribeUserToPush();
 		}
 	}

@@ -272,16 +272,17 @@ section#profile .subhead {
     padding: 20px 24px 24px 24px;
     color: rgba(0, 0, 0, 0.54);
 }
-@media (max-width: 479px) {
-	.mdl-cell {
-	    margin: 5px 0 !important;
-	}
-	section.mdl-grid {
-	    padding: 5px !important;
-	}
-	.mdl-cell--12-col, .mdl-cell--12-col-phone.mdl-cell--12-col-phone {
-		width:100% !important;
-	}
+.mdl-cell {
+    margin: 5px 0 !important;
+}
+section.mdl-grid {
+    padding: 5px !important;
+}
+.mdl-cell--12-col, .mdl-cell--12-col-phone.mdl-cell--12-col-phone {
+	width:100% !important;
+}
+.mdl-cell--6-col, .mdl-cell--6-col-desktop.mdl-cell--6-col-desktop {
+	width:50% !important;
 }
 .btn.success {
   
