@@ -684,7 +684,7 @@ var containers = {
 				output += "						<a href=\""+ card.url +"\"> Get Started</a>";
 			}
 			if ( card.secondaryaction ) {
-				output += "						<a onclick=\"app.setSection('"+ card.secondaryaction.id +"');\"> "+ card.secondaryaction.label +"</a>";
+				output += "						<a href=\"#\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\"> "+ card.secondaryaction.label +"</a>&nbsp;";
 			}
 			if ( card.action ) {
 				output += "						<button class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
@@ -1367,7 +1367,6 @@ var containers = {
 				snippet += "			<div class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
 				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
-				snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
 				snippet += "			</div>";
 				snippet += "		</div>";
 				snippet += "		<div class='mdl-list__item-primary-content'>";
@@ -1375,6 +1374,7 @@ var containers = {
 				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
 				snippet += "			</span>";
 				snippet += "		</div>";
+				snippet += "		<div class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
 				snippet += "	</div>";
 				
 				var options = {
@@ -1407,6 +1407,7 @@ var containers = {
 						return [i.attributes.timestamp, i.attributes.value];
 				    })];
 					$.plot($('#snippet-graph-'+my_snippet.id), dataset, options);
+					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(dataset[0][0][0]).format(app.date_format) + ", " + moment(dataset[0][0][0]).fromNow();
 				})
 				.catch(function (error) {
 					if (app.debug === true ) {
