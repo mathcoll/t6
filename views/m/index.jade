@@ -43,10 +43,10 @@ html.ltr(lang='en')
                   input#filter-exp.mdl-textfield__input(type='text', name='name', placeholder='Filter by name')
 
           nav.mdl-navigation.mdl-layout--large-screen-only
-            a.mdl-navigation__link(href='/status')
+            a.mdl-navigation__link(href='/status', target='_blank', rel='noopener')
               i.material-icons favorite
               |  API Status
-            a.mdl-navigation__link(href='/docs', target='_blank')
+            a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
               i.material-icons code
               |  API Documentation
             a.mdl-navigation__link(href='https://github.com/mathcoll/t6', target='_blank', rel='noopener')
@@ -313,7 +313,7 @@ html.ltr(lang='en')
                       label.mdl-textfield__label(for='password') Password
                       span.mdl-textfield__error Password must be provided
                   .mdl-card__actions.mdl-card--border
-                    a#signup_button(onclick="app.setSection('signupForm');")
+                    a(onclick="app.setSection('signupForm');", href="#")
                       | Create an account
                     button.login_button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons lock
@@ -343,7 +343,7 @@ html.ltr(lang='en')
                       input.mdl-textfield__input(type='text', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='lastName') Last Name
                   .mdl-card__actions.mdl-card--border
-                    a(onclick="app.setSection('loginForm');")
+                    a(onclick="app.setSection('loginForm');", href="#")
                       | Sign-in to my account
                     button.createUser.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person_add
@@ -372,7 +372,6 @@ html.ltr(lang='en')
       .menu__overlay
       .toast__container
 
-      script(type='application/javascript', src='#{baseUrl_https}/js/m/t6app.js', async='')
       script(type='application/javascript', src='#{baseUrl_https}/js/m/md5.js')
       script(type='application/javascript', src='#{baseUrl_https}/js/m/material.min.js')
       script(type='application/javascript', src='#{baseUrl_https}/js/m/toast.js')
@@ -383,3 +382,4 @@ html.ltr(lang='en')
       script(type='application/javascript', src='#{baseUrl_https}/js/flot/jquery.flot.time.min.js')
       script(type='application/javascript', src='#{baseUrl_https}/js/m/moment.min-2.18.1.js')
       script(type='application/javascript', src='#{baseUrl_https}/js/OpenLayers/ol-4.1.1.min.js')
+      script(type='application/javascript', src='#{baseUrl_https}/js/m/t6app.js')
