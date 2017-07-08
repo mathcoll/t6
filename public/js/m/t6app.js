@@ -53,17 +53,20 @@ var containers = {
 	function setLoginAction() {
 		for (var i in buttons.loginButtons) {
 			if ( buttons.loginButtons[i].childElementCount > -1 ) {
-				buttons.loginButtons[i].addEventListener('click', function(evt) {
-					var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
-					var username = myForm.querySelector("form.signin input[name='username']").value;
-					var password = myForm.querySelector("form.signin input[name='password']").value;
-					app.auth = {"username":username, "password":password};
-					app.authenticate();
-					evt.preventDefault();
-				});
+				buttons.loginButtons[i].removeEventListener('click', onLoginButtonClick, false);
+				buttons.loginButtons[i].addEventListener('click', onLoginButtonClick, false);
 			}
 		}
 	}; //setLoginAction
+	
+	function onLoginButtonClick(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var username = myForm.querySelector("form.signin input[name='username']").value;
+		var password = myForm.querySelector("form.signin input[name='password']").value;
+		app.auth = {"username":username, "password":password};
+		app.authenticate();
+		evt.preventDefault();
+	} //onLoginButtonClick
 	
 	function setSignupAction() {
 		for (var i in buttons.user_create) {
@@ -100,19 +103,10 @@ var containers = {
 						toast('We can\'t process your signup.', {timeout:3000, type: 'warning'});
 					}
 					evt.preventDefault();
-				});
+				}, false);
 			}
 		}
 	}; //setSignupAction
-	
-	function onLoginButtonClick(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		var username = myForm.querySelector("form.signin input[name='username']").value;
-		var password = myForm.querySelector("form.signin input[name='password']").value;
-		app.auth = {"username":username, "password":password};
-		app.authenticate();
-		evt.preventDefault();
-	}
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -231,6 +225,7 @@ var containers = {
 			createMqtt: document.querySelector('#mqtts button#createMqtt'),
 		};
 	}
+	
 	app.nl2br = function (str, isXhtml) {
 		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
 		return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
@@ -259,7 +254,15 @@ var containers = {
 			console.log("setSection: "+section);
 		}
 		window.scrollTo(0, 0);
-		document.querySelector('section.is-active').classList.remove('is-active');
+		var act = document.querySelectorAll('section.is-active');
+		for (var i in act) {
+			if ( (act[i]).childElementCount > -1 ) {
+				console.log(act[i]);
+				act[i].classList.remove('is-active');
+				act[i].classList.add('is-inactive');
+			}
+		}
+		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
 		if( document.querySelector('#'+section).querySelector('.page-content').innerHTML == '' && !app.bearer ) {
 			document.querySelector('#'+section).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').querySelector('.page-content').innerHTML;
@@ -978,6 +981,32 @@ var containers = {
 				
 				app.getSnippet(app.icons.snippets, snippet.id, (containers.snippet).querySelector('.page-content'));
 
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-list__item\">";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node += "				<h2 class=\"mdl-card__title-text\">";
+				node += "					<i class=\"material-icons\">"+app.icons.flows+"</i>";
+				node += "					Flows";
+				node += "				</h2>";
+				node += "			</span>";
+				node += "			<span class='mdl-list__item-secondary-action'>";
+				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='snippetflows-"+id+"'>";
+				node += "					<i class='material-icons'>expand_more</i>";
+				node += "				</button>";
+				node += "			</span>";
+				node += "		</div>";
+				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
+				for ( i=0; i<snippet.attributes.flows.length; i++ ) {
+					node += "		<a href=\"#\" onclick=\"app.displayFlow("+snippet.attributes.flows[i]+");\" class=\"mdl-cell--12-col\">";
+					node += app.getField(null, snippet.attributes.flows[i], null, false, true, false, true);
+					node += "		</a>";
+				}
+				node += "		</div>";
+				node += "	</div>";
+				node +=	"</section>";
+				
+
 				(containers.snippet).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
@@ -1261,25 +1290,35 @@ var containers = {
 		//- ---------
 
 		//- SECONDARY
-		field += "<span class='mdl-list__item-secondary-content'>";
-		if ( isEditMode == 'text' ) {
-			field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
-		} else if ( isEditMode == 'textarea' ) {
-			field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;'>"+escape(value)+"</textarea>";
-		} else if ( isEditMode == 'select' ) {
-			field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
-		} else if ( isEditMode == 'switch' ) {
-			field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
-		} else {
-			field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
+		if ( value !== undefined && value !== null ) {
+			field += "<span class='mdl-list__item-secondary-content'>";
+			if ( isEditMode == 'text' ) {
+				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+			} else if ( isEditMode == 'textarea' ) {
+				field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;'>"+escape(value)+"</textarea>";
+			} else if ( isEditMode == 'select' ) {
+				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+			} else if ( isEditMode == 'switch' ) {
+				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+			} else {
+				field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
+			}
+			field += "</span>";
 		}
-		field += "</span>";
 		//- ---------
 
 		//- ACTIONS
-		if ( isActionable == true ) {
+		if ( isActionable == true || typeof isActionable === 'object' ) {
 			field += "<span class='mdl-list__item-secondary-content'>";
-			field += "	<span class='mdl-list__item-secondary-action'></span>";
+			field += "	<span class='mdl-list__item-secondary-action'>";
+			if ( isActionable.action ) {
+				field += "		<a href='#' onclick='app.setSection("+isActionable.action+")'>";
+				field += "			<i class='material-icons'>chevron_right</i>";
+				field += "		</a>";
+			} else {
+				field += "		<i class='material-icons'>chevron_right</i>";
+			}
+			field += "	</span>";
 			field += "</span>";
 		}
 		field += "</div>";
@@ -1306,6 +1345,7 @@ var containers = {
 		})
 		.then(function(response) {
 			var my_snippet = response.data[0];
+			var width = 6; // TODO: should be a parameter in the flow
 
 			//var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
 			var snippet = ""; 
@@ -1362,6 +1402,7 @@ var containers = {
 					snippet += "	</div>";
 				}
 			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
+				width = 12;
 				snippet += "	<div class=\"flowgraph tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
 				snippet += "			<div class='mdl-list__item-primary-content'>";
@@ -1442,7 +1483,7 @@ var containers = {
 			//c.innerHTML = snippet;
 			
 			var c= document.createElement("div");
-			c.setAttribute('class','mdl-grid mdl-cell--6-col');
+			c.setAttribute('class','mdl-grid mdl-cell--'+width+'-col');
 			c.setAttribute('id',my_snippet.id);
 			c.innerHTML = snippet;
 			
@@ -1466,7 +1507,7 @@ var containers = {
 					var ttl = response.links.ttl;
 					document.getElementById('snippet-value-'+my_snippet.id).innerHTML = value;
 					document.getElementById('snippet-unit-'+my_snippet.id).innerHTML = unit;
-					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + ", " + moment(time).fromNow();
+					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
 					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
 				.catch(function (error) {
@@ -1553,20 +1594,7 @@ var containers = {
 		.then(function(response) {
 			if ( response.token ) {
 				app.bearer = response.token;
-				
-				/* reset views to default */
-				(containers.objects).querySelector('.page-content').innerHTML = '';
-				(containers.object).querySelector('.page-content').innerHTML = '';
-				(containers.flows).querySelector('.page-content').innerHTML = '';
-				(containers.flow).querySelector('.page-content').innerHTML = '';
-				(containers.dashboards).querySelector('.page-content').innerHTML = '';
-				(containers.dashboard).querySelector('.page-content').innerHTML = '';
-				(containers.snippets).querySelector('.page-content').innerHTML = '';
-				(containers.snippet).querySelector('.page-content').innerHTML = '';
-				(containers.profile).querySelector('.page-content').innerHTML = '';
-				(containers.rules).querySelector('.page-content').innerHTML = '';
-				(containers.mqtts).querySelector('.page-content').innerHTML = '';
-
+				app.resetSections();
 				app.getAllUserData();
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
@@ -1643,6 +1671,22 @@ var containers = {
 		setLoginAction();
 		setSignupAction();
 	}//sessionExpired
+	
+	app.resetSections = function() {
+		/* reset views to default */
+		if (app.debug == true) {console.log('resetSections()');}
+		(containers.objects).querySelector('.page-content').innerHTML = '';
+		(containers.object).querySelector('.page-content').innerHTML = '';
+		(containers.flows).querySelector('.page-content').innerHTML = '';
+		(containers.flow).querySelector('.page-content').innerHTML = '';
+		(containers.dashboards).querySelector('.page-content').innerHTML = '';
+		(containers.dashboard).querySelector('.page-content').innerHTML = '';
+		(containers.snippets).querySelector('.page-content').innerHTML = '';
+		(containers.snippet).querySelector('.page-content').innerHTML = '';
+		(containers.profile).querySelector('.page-content').innerHTML = '';
+		(containers.rules).querySelector('.page-content').innerHTML = '';
+		(containers.mqtts).querySelector('.page-content').innerHTML = '';
+	} //resetSections
 
 	/* *********************************** indexedDB *********************************** */
 	var db;
@@ -1676,7 +1720,7 @@ var containers = {
 		console.log(request);
 		//return;
 	}
-
+	
 	app.searchJWT = function() {
 		var jwt;
 		var tx = db.transaction(["jwt"], "readonly");
@@ -1691,6 +1735,7 @@ var containers = {
 				jwt = cursor.value['token'];
 				//console.log(parseInt(cursor.value['exp'])-toDate);
 				app.bearer = jwt;
+				app.resetSections();
 				app.getAllUserData();
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
@@ -1815,8 +1860,8 @@ var containers = {
 			if (app.debug === true ) {
 				console.log('Database is on-success');
 				console.log('searchJWT(): ');
-				console.log(app.searchJWT());
 			}
+			app.searchJWT();
 		};
 		request.onupgradeneeded = function(event) {
 			db = event.target.result;
@@ -1841,21 +1886,21 @@ var containers = {
 		menuElement.style.transform = "translateX(0)";
 		menuElement.classList.add('menu--show');
 		menuOverlayElement.classList.add('menu__overlay--show');
-		//drawerObfuscatorElement.classList.add("is-visible");
 		drawerObfuscatorElement.remove();
 	}
 	app.hideMenu = function() {
 		menuElement.style.transform = "translateX(-110%)";
 		menuElement.classList.remove('menu--show');
 		menuOverlayElement.classList.remove('menu__overlay--show');
-		//drawerObfuscatorElement.classList.remove("is-visible");
 		menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
+		menuElement.classList.remove('is-visible');
+		menuOverlayElement.remove();
 	}
 	app.onTransitionEnd = function() {
 		if (touchStartPoint < 10) {
 			menuElement.style.transform = "translateX(0)";
 			menuOverlayElement.classList.add('menu__overlay--show');
-			menuElement.removeEventListener('transitionend', app.onTransitionEnd, false); 
+			menuElement.removeEventListener('transitionend', app.onTransitionEnd, false);
 		}
 	}
 	
@@ -1876,7 +1921,7 @@ var containers = {
 	}, false);
 	document.body.addEventListener('touchmove', function(event) {
 		touchMovePoint = event.touches[0].pageX;
-		if (touchStartPoint < 10 && touchMovePoint > 30) {          
+		if (touchStartPoint < 10 && touchMovePoint > 100) {          
 			menuElement.style.transform = "translateX(0)";
 		}
 	}, false);

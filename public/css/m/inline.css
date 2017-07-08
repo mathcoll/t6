@@ -141,6 +141,13 @@ div.valuedisplay .snippet-unit {
 	font-weight: normal;
 	vertical-align: super;
 }
+#dashboard div.mdl-list__item-primary-content span.heading {
+	width: calc(100% - 24px);
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    float: right;
+}
 
 /* End Snippets */
 .mdl-list__item .mdl-list__item-secondary-content {
