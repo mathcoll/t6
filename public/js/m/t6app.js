@@ -257,7 +257,6 @@ var containers = {
 		var act = document.querySelectorAll('section.is-active');
 		for (var i in act) {
 			if ( (act[i]).childElementCount > -1 ) {
-				console.log(act[i]);
 				act[i].classList.remove('is-active');
 				act[i].classList.add('is-inactive');
 			}
@@ -521,14 +520,21 @@ var containers = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var object = response.data[i];
 				var node = "";
-				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-card__title\">";
-				node += "			<h2 class=\"mdl-card__title-text\">";
+				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
+				node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-list__item\">";
+				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<i class=\"material-icons\">"+app.icons.objects+"</i>";
-				node += "				"+object.attributes.name;
-				node += "			</h2>";
+				node += "				<h2 class=\"mdl-card__title-text\">"+object.attributes.name+"</h2>";
+				node += "			</span>";
+				node += "			<span class='mdl-list__item-secondary-action'>";
+				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+				node += "					<i class='material-icons'>expand_more</i>";
+				node += "				</button>";
+				node += "			</span>";
 				node += "		</div>";
+				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+				
 				if ( object.attributes.description ) {
 					node += app.getField(null, null, app.nl2br(object.attributes.description), isEdit==true?'textarea':false, false, false, true);
 				}
@@ -569,7 +575,6 @@ var containers = {
 					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEdit==true?'switch':false, false, false, true);
 				}
 				node += "	</div>";
-				node += "</section>";
 
 				if ( object.attributes.parameters && object.attributes.parameters.length > -1 ) { 
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
@@ -588,14 +593,13 @@ var containers = {
 				}
 
 				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
-					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += "		<div class=\"mdl-card__title\">";
-					node += "			<h2 class=\"mdl-card__title-text\">";
-					node += "				<i class=\"material-icons\">my_location</i>";
-					node += "				Localization";
-					node += "			</h2>";
-					node += "		</div>";
+					node += "<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-card__title\">";
+					node += "		<h2 class=\"mdl-card__title-text\">";
+					node += "			<i class=\"material-icons\">my_location</i>";
+					node += "			Localization";
+					node += "		</h2>";
+					node += "	</div>";
 					if ( object.attributes.longitude ) {
 						node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
 					}
@@ -608,8 +612,7 @@ var containers = {
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
 					}
-					node += "	</div>";
-					node += "</section>";
+					node += "</div>";
 				}
 
 				(containers.object).querySelector('.page-content').innerHTML = node;
@@ -656,7 +659,8 @@ var containers = {
 					});
 					setTimeout(function() {map.updateSize();}, 1000);
 		        }
-				
+
+				app.setExpandAction();
 				app.setSection('object');
 			}
 		})
@@ -973,7 +977,7 @@ var containers = {
 				node += app.getField(app.icons.name, 'Name', snippet.attributes.name, false, false, false, true);
 				node += app.getField(app.icons.type, 'Type', snippet.attributes.type, false, false, false, true);
 				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, false, false, false, true);
-				node += app.getField(app.icons.flows, 'Flows #', snippet.attributes.flows.length, false, false, false, true);
+				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, false, false, false, true);
 				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, false, false, false, true);
 				node += "		</div>";
 				node += "	</div>";
@@ -1036,13 +1040,13 @@ var containers = {
 			node += app.getField(null, null, description, false, false, false, true);
 		}
 		if ( item.attributes.flows!==undefined?item.attributes.flows.length>-1:null ) {
-			node += app.getField(app.icons.flows, 'Flows #', item.attributes.flows.length, false, false, false, true);
+			node += app.getField(app.icons.flows, 'Linked Flows #', item.attributes.flows.length, false, false, false, true);
 		}
 		if ( item.attributes.objects!==undefined?item.attributes.objects.length>-1:null ) {
-			node += app.getField(app.icons.objects, 'Objects #', item.attributes.objects.length, false, false, false, true);
+			node += app.getField(app.icons.objects, 'Linked Objects #', item.attributes.objects.length, false, false, false, true);
 		}
 		if ( item.attributes.snippets!==undefined?item.attributes.snippets.length>-1:null ) {
-			node += app.getField(app.icons.snippets, 'Snippets #', item.attributes.snippets.length, false, false, false, true);
+			node += app.getField(app.icons.snippets, 'Linked Snippets #', item.attributes.snippets.length, false, false, false, true);
 		}
 		if ( attributeType !== '' ) {
 			node += app.getField(app.icons.type, 'Type', attributeType, false, false, false, true);

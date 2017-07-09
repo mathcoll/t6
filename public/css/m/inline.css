@@ -141,7 +141,7 @@ div.valuedisplay .snippet-unit {
 	font-weight: normal;
 	vertical-align: super;
 }
-#dashboard div.mdl-list__item-primary-content span.heading {
+div.mdl-list__item-primary-content span.heading {
 	width: calc(100% - 24px);
     display: inline-block;
     overflow: hidden;
@@ -150,6 +150,12 @@ div.valuedisplay .snippet-unit {
 }
 
 /* End Snippets */
+.is-inactive {
+	display: none !important;
+}
+.is-active {
+	display: block !important;
+}
 .mdl-list__item .mdl-list__item-secondary-content {
 	margin-left: 0 !important;
 }
