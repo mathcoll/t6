@@ -553,7 +553,7 @@ var containers = {
 				node += "	</div>";
 				node += "</section>";
 				
-				node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-card__title\">";
 				node += "			<h2 class=\"mdl-card__title-text\">";
@@ -578,9 +578,10 @@ var containers = {
 					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEdit==true?'switch':false, false, false, true);
 				}
 				node += "	</div>";
+				node += "</section>";
 
 				if ( object.attributes.parameters && object.attributes.parameters.length > -1 ) { 
-					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += "		<div class=\"mdl-card__title\">";
 					node += "			<h2 class=\"mdl-card__title-text\">";
@@ -596,13 +597,14 @@ var containers = {
 				}
 
 				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
-					node += "<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\" data-id=\""+id+"\">";
-					node += "	<div class=\"mdl-card__title\">";
-					node += "		<h2 class=\"mdl-card__title-text\">";
-					node += "			<i class=\"material-icons\">my_location</i>";
-					node += "			Localization";
-					node += "		</h2>";
-					node += "	</div>";
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-card__title\">";
+					node += "			<h2 class=\"mdl-card__title-text\">";
+					node += "				<i class=\"material-icons\">my_location</i>";
+					node += "				Localization";
+					node += "			</h2>";
+					node += "		</div>";
 					if ( object.attributes.longitude ) {
 						node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
 					}
@@ -615,7 +617,8 @@ var containers = {
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
 					}
-					node += "</div>";
+					node += "	</div>";
+					node += "</section>";
 				}
 
 				(containers.object).querySelector('.page-content').innerHTML = node;
@@ -1003,11 +1006,11 @@ var containers = {
 				node += "				</button>";
 				node += "			</span>";
 				node += "		</div>";
-				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
+				node += "		<div class='mdl-list mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
 				for ( i=0; i<snippet.attributes.flows.length; i++ ) {
-					node += "		<a href=\"#\" onclick=\"app.displayFlow("+snippet.attributes.flows[i]+");\" class=\"mdl-cell--12-col\">";
-					node += app.getField(null, snippet.attributes.flows[i], null, false, true, false, true);
-					node += "		</a>";
+					//node += "		<a href=\"#\" onclick=\";\" class=\"mdl-list__item mdl-cell--12-col\">";
+					node += app.getField(null, snippet.attributes.flows[i], null, false, {action: function() {app.displayFlow(snippet.attributes.flows[i])} }, true, true);
+					//node += "		</a>";
 				}
 				node += "		</div>";
 				node += "	</div>";
@@ -1319,7 +1322,7 @@ var containers = {
 			field += "<span class='mdl-list__item-secondary-content'>";
 			field += "	<span class='mdl-list__item-secondary-action'>";
 			if ( isActionable.action ) {
-				field += "		<a href='#' onclick='app.setSection("+isActionable.action+")'>";
+				field += "		<a href='#' "+isActionable.action+">";
 				field += "			<i class='material-icons'>chevron_right</i>";
 				field += "		</a>";
 			} else {
@@ -1660,11 +1663,11 @@ var containers = {
 			status += "			</span>";
 			status += "		</div>";
 			status += "		<div class='mdl-cell mdl-cell--12-col' id='status-details'>";
-			status += app.getField('verified_user', 'version', response.version, false, false, false, true);
-			status += app.getField(app.icons.status, 'status', response.status, false, false, false, true);
-			status += app.getField(app.icons.mqtts, 'mqtt_info', response.mqtt_info, false, false, false, true);
-			status += app.getField('thumb_up', 'appName', response.appName, false, false, false, true);
-			status += app.getField('alarm', 'started', moment(response.started_at).format(app.date_format), false, false, false, true);
+			status += app.getField('thumb_up', 'Application Name', response.appName, false, false, true, true);
+			status += app.getField('verified_user', 'Application Version', response.version, false, false, true, true);
+			status += app.getField(app.icons.status, 'Status', response.status, false, false, true, true);
+			status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, false, false, true, true);
+			status += app.getField('alarm', 'Start Date', moment(response.started_at).format(app.date_format), false, false, true, true);
 			status += "		</div>";
 			status += "	</div>";
 			status +=	"</section>";
@@ -1879,12 +1882,14 @@ var containers = {
 			subscribeUserToPush();
 		}
 	}
+	/*
 	(window.screen).orientation.addEventListener("orientationchange", function () {
 		if (app.debug === true ) {
 			console.log(window.screen);
 			toast("The orientation of the screen is: " + (window.screen).orientation, {timeout:3000, type: 'info'});
 		}
 	});
+	*/
 	app.fetchIndex('index');
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();

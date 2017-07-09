@@ -50,6 +50,11 @@ html {
 .mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
     font-size: 12px !important;
 }
+.mdl-list__item--three-line,
+.mdl-list__item--three-line .mdl-list__item-secondary-content,
+.mdl-list__item--three-line .mdl-list__item-primary-content {
+	height: auto !important;
+}
 .small-padding {
 	min-height: auto !important;
 	padding: 5px 16px !important;
@@ -144,7 +149,7 @@ div.valuedisplay .snippet-unit {
 div.mdl-list__item-primary-content span.heading {
 	width: calc(100% - 24px);
     display: inline-block;
-    overflow: hidden;
+    overflow: scroll;
     white-space: nowrap;
     float: right;
 }
