@@ -7,8 +7,6 @@ var filesToCache = [
     
     '/js/m/material.min.js',
     '/js/m/t6app.js',
-    '/js/m/menu.js',
-    '/js/m/offline.js',
     '/js/m/toast.js',
     '/js/t6.min.js',
     '/js/flot/jquery.flot.js',
@@ -18,7 +16,6 @@ var filesToCache = [
     
     '/css/m/inline.css',
     '/css/OpenLayers/ol-4.1.1.min.css',
-    '/css/m/material.brown-blue.min-1.3.0.css',
 
     '/img/opl_img3.jpg',
     '/img/opl_img2.jpg',
@@ -58,7 +55,7 @@ self.addEventListener('activate', function(e) {
 
 self.addEventListener('fetch', function(event) {
 	console.log('Handling fetch event for', event.request.url);
-	if (event.request.url.indexOf('2.0.1') > -1) {
+	if (event.request.url.indexOf('2.0.1') < -1) {
 		event.respondWith(
 			caches.match(event.request).then(function(response) {
 				if (response) {
