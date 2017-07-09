@@ -26,6 +26,7 @@ var app = {
 		'color': 'format_color_fill',
 		'date': 'event',
 		'update': 'update',
+		'status': 'favorite',
 	}
 };
 
@@ -44,6 +45,7 @@ var containers = {
 	settings: document.querySelector('section#settings'),
 	rules: document.querySelector('section#rules'),
 	mqtts: document.querySelector('section#mqtts'),
+	status: document.querySelector('section#status'),
 };
 	
 (function() {
@@ -194,6 +196,7 @@ var containers = {
 			//signin_button
 			//logout_button
 
+			status: document.querySelector('a#statusButton'),
 				
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
 			user_create: document.querySelectorAll('form.signup button.createUser'),
@@ -1626,6 +1629,52 @@ var containers = {
 		app.fetchItems('mqtts');
 		app.fetchProfile();
 	} //getAllUserData
+
+	app.getStatus = function() {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/status";
+		
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			var status = "";
+			status += "<section class=\"mdl-grid mdl-cell--12-col\">";
+			status += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+			status += "		<div class=\"mdl-list__item\">";
+			status += "			<span class='mdl-list__item-primary-content'>";
+			status += "				<h2 class=\"mdl-card__title-text\">";
+			status += "					<i class=\"material-icons\">"+app.icons.status+"</i>";
+			status += "					API Status";
+			status += "				</h2>";
+			status += "			</span>";
+			status += "			<span class='mdl-list__item-secondary-action'>";
+			status += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-details'>";
+			status += "					<i class='material-icons'>expand_more</i>";
+			status += "				</button>";
+			status += "			</span>";
+			status += "		</div>";
+			status += "		<div class='mdl-cell mdl-cell--12-col' id='status-details'>";
+			status += app.getField('verified_user', 'version', response.version, false, false, false, true);
+			status += app.getField(app.icons.status, 'status', response.status, false, false, false, true);
+			status += app.getField(app.icons.mqtts, 'mqtt_info', response.mqtt_info, false, false, false, true);
+			status += app.getField('thumb_up', 'appName', response.appName, false, false, false, true);
+			status += app.getField('alarm', 'started', moment(response.started_at).format(app.date_format), false, false, false, true);
+			status += "		</div>";
+			status += "	</div>";
+			status +=	"</section>";
+			(containers.status).querySelector('.page-content').innerHTML = status;
+			app.setExpandAction();
+		})
+		.catch(function (error) {
+			
+		});
+	} //getStatus
 	
 	app.toggleElement = function(id) {
 		document.querySelector('#'+id).classList.toggle('hidden');
@@ -1810,6 +1859,8 @@ var containers = {
 	buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add')}, false);
 	buttons.createRule.addEventListener('click', function() {app.setSection('rule_add')}, false);
 	buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
+	
+	buttons.status.addEventListener('click', function(evt) {app.getStatus(); app.setSection('status'); evt.preventDefault();}, false);
 
 	if (!('serviceWorker' in navigator)) {
 		if (app.debug === true ) {

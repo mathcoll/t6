@@ -44,7 +44,7 @@ html.ltr(lang='en')
                   input#filter-exp.mdl-textfield__input(type='text', name='name', placeholder='Filter by name')
 
           nav.mdl-navigation.mdl-layout--large-screen-only
-            a.mdl-navigation__link(href='/status', target='_blank', rel='noopener')
+            a#statusButton.mdl-navigation__link(href='#', rel='noopener')
               i.material-icons favorite
               |  API Status
             a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
@@ -366,6 +366,15 @@ html.ltr(lang='en')
             .md-subheader-inner
               .mdl-subheader-content
                 span.ng-scope Settings
+          .page-content
+              
+
+        //- View Status
+        section#status.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .md-primary.md-subheader._md.md-altTheme-theme
+            .md-subheader-inner
+              .mdl-subheader-content
+                span.ng-scope t6 Iot API Status
           .page-content
           
         //- Modal Dialog
