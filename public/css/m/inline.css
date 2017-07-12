@@ -149,12 +149,35 @@ div.valuedisplay .snippet-unit {
 div.mdl-list__item-primary-content span.heading {
 	width: calc(100% - 24px);
     display: inline-block;
-    overflow: scroll;
+    overflow: auto;
     white-space: nowrap;
     float: right;
 }
+div.mdl-list__item .mdl-list__item-secondary-content {
+    overflow: auto;
+    width: 40%;
+    display: inline-block;
+}
+div.mdl-list__item .mdl-list__item-secondary-content:only-child {
+    width: 100%;
+}
 
 /* End Snippets */
+
+
+.mdl-layout__header-row {
+	height: 60px !important;
+}
+.mdl-layout__header.is-compact {
+	max-height: 45px !important;
+}
+.mdl-layout__tab-bar-container {
+	height: 50px !important;
+}
+.mdl-layout__drawer-button {
+	height: 55px !important;
+}
+
 .is-inactive {
 	display: none !important;
 }
@@ -547,6 +570,9 @@ a {
     margin: 16px 0;
     width: 100%;
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+.card-user {
+    margin: 0;
 }
 .card-user .card-heading {
 	min-height: 150px;

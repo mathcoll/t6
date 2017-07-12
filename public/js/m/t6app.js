@@ -196,6 +196,7 @@ var containers = {
 			//signin_button
 			//logout_button
 
+			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
 			status: document.querySelector('a#statusButton'),
 				
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
@@ -241,11 +242,13 @@ var containers = {
 			if ( (buttons.expandButtons[i]).childElementCount > -1 ) {
 				(buttons.expandButtons[i]).addEventListener('click', function(evt) {
 					var id = (evt.target.parentElement).getAttribute('for');
-					document.getElementById(id).classList.toggle('hidden');
-					if ( evt.target.innerHTML == 'expand_more' ) {
-						evt.target.innerHTML = 'expand_less';
-					} else {
-						evt.target.innerHTML = 'expand_more';
+					if ( id ) {
+						document.getElementById(id).classList.toggle('hidden');
+						if ( evt.target.innerHTML == 'expand_more' ) {
+							evt.target.innerHTML = 'expand_less';
+						} else {
+							evt.target.innerHTML = 'expand_more';
+						}
 					}
 				}, false);
 			}
@@ -257,11 +260,22 @@ var containers = {
 			console.log("setSection: "+section);
 		}
 		window.scrollTo(0, 0);
+
+		app.refreshButtonsSelectors();
 		var act = document.querySelectorAll('section.is-active');
 		for (var i in act) {
 			if ( (act[i]).childElementCount > -1 ) {
 				act[i].classList.remove('is-active');
 				act[i].classList.add('is-inactive');
+			}
+		}
+		for (var i in buttons.menuTabBar) {
+			if ( (buttons.menuTabBar[i]).childElementCount > -1 ) {
+				buttons.menuTabBar[i].classList.remove('is-active');
+				if ( buttons.menuTabBar[i].getAttribute("for") == section || buttons.menuTabBar[i].getAttribute("for") == section+'s' ) {
+					console.log(buttons.menuTabBar[i].getAttribute("for"));
+					buttons.menuTabBar[i].classList.add('is-active');
+				}
 			}
 		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
@@ -1951,10 +1965,10 @@ var containers = {
 	app.hideMenu = function() {
 		menuElement.style.transform = "translateX(-110%)";
 		menuElement.classList.remove('menu--show');
+		menuOverlayElement.classList.add('menu__overlay--hide');
 		menuOverlayElement.classList.remove('menu__overlay--show');
 		menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
 		menuElement.classList.remove('is-visible');
-		menuOverlayElement.remove();
 	}
 	app.onTransitionEnd = function() {
 		if (touchStartPoint < 10) {
