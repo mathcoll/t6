@@ -1374,7 +1374,7 @@ var containers = {
 			//var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
 			var snippet = ""; 
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
-				snippet += "	<div class=\"valuedisplay tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
+				snippet += "	<div class=\"valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
 				snippet += "			<div class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
@@ -1390,7 +1390,8 @@ var containers = {
 				snippet += "	</div>";
 				
 			} else if ( my_snippet.attributes.type == 'sparkline' ) {
-				snippet += "	<div class=\"sparkline tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
+				width = 12;
+				snippet += "	<div class=\"sparkline tile card-sparkline material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 				snippet += "			<span class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
@@ -1407,27 +1408,56 @@ var containers = {
 				snippet += "	</div>";
 				
 			} else if ( my_snippet.attributes.type == 'simplerow' ) {
-				if( !Array.isArray(my_snippet.attributes.flows.isArray) ) {
+				width = 12;
+				/*
+				if( !Array.isArray(my_snippet.attributes.flows.isArray) ) { // WTF
 					my_snippet.attributes.flows[0] = my_snippet.attributes.flows;
 				}
-				for (var f in my_snippet.attributes.flows) {
+				*/
+				for (var f=0; f<(my_snippet.attributes.flows).length; f++) {
 					var flow_id = my_snippet.attributes.flows[f];
-					snippet += "	<div class=\"simplerow tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
+					snippet += "	<div class=\"simplerow tile card-simplerow material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 					snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 					snippet += "			<span class='mdl-list__item-primary-content'>";
 					snippet += "				<i class='material-icons'>"+icon+"</i>";
 					snippet += "				<span class=\"heading\">"+flow_id+"</span>";
-					snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
+					snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+flow_id+"'></span>";
 					snippet += "			</span>";
 					snippet += "			<span class='mdl-list__item-secondary-content'>";
-					snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
+					snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+flow_id+"'></span>";
 					snippet += "			</span>";
 					snippet += "		</span>";
 					snippet += "	</div>";
+					
+					//var flow_id = my_snippet.attributes.flows[f];
+					var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+flow_id+'?sort=desc&limit=1';
+					fetch(url_snippet, myInit)
+					.then(
+						fetchStatusHandler
+					).then(function(fetchResponse){ 
+						return fetchResponse.json();
+					})
+					.then(function(response) {
+						//console.log("Get data from Flow: "+ url_snippet);
+						var id = response.data[0].attributes.id;
+						var time = response.data[0].attributes.time;
+						var value = response.data[0].attributes.value;
+						var unit = response.links.unit!==undefined?response.links.unit:'';
+						var ttl = response.links.ttl;
+						if (document.getElementById('snippet-value-'+flow_id)) document.getElementById('snippet-value-'+flow_id).innerHTML = value;
+						if (document.getElementById('snippet-unit-'+flow_id)) document.getElementById('snippet-unit-'+flow_id).innerHTML = unit;
+						if (document.getElementById('snippet-time-'+flow_id)) document.getElementById('snippet-time-'+flow_id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
+						setInterval(function() {app.refreshFromNow('snippet-time-'+flow_id, time)}, 10000);
+					})
+					.catch(function (error) {
+						if (app.debug === true ) {
+							toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
+						}
+					});
 				}
 			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
 				width = 12;
-				snippet += "	<div class=\"flowgraph tile card-dashboard-graph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
+				snippet += "	<div class=\"flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
 				snippet += "			<div class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
@@ -1480,7 +1510,7 @@ var containers = {
 					}
 				});
 			} else if ( my_snippet.attributes.type == 'clock' ) {
-				snippet += "	<div class=\"clock tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
+				snippet += "	<div class=\"clock tile card-simpleclock material-animate margin-top-4 material-animated\">";
 				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 				snippet += "			<span class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>alarm</i>";

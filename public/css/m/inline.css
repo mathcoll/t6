@@ -187,13 +187,23 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 .mdl-list__item .mdl-list__item-secondary-content {
 	margin-left: 0 !important;
 }
-.card-dashboard-graph {
+.card-valuedisplay,
+.card-flowgraph {
     background: #ffffff none repeat scroll 0 0;
     min-height: 250px;
     width: 100%;
     overflow: hidden;
     position: relative;
     padding: 16px;
+    margin: 5px 0;
+}
+.card-sparkline,
+.card-simplerow,
+.card-simpleclock {
+    background: #ffffff none repeat scroll 0 0;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
     margin: 5px 0;
 }
 section#profile .mdl-card--small .mdl-card__title {
