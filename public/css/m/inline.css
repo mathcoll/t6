@@ -780,6 +780,9 @@ dialog .mdl-dialog__title {
     float: left!important;
     text-align: left!important;
 }
+.mdl-list__item-primary-content {
+    align-self: flex-start;
+}
 .collection {
     border: 1px solid #e0e0e0;
     border-radius: 2px;

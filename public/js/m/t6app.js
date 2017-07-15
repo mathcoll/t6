@@ -196,6 +196,7 @@ var containers = {
 		buttons = {
 			//signin_button
 			//logout_button
+			notification: document.querySelector('button#notification'),
 
 			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
 			status: document.querySelector('a#statusButton'),
@@ -1322,6 +1323,11 @@ var containers = {
 
 		//- SECONDARY
 		if ( value !== undefined && value !== null ) {
+			if ( value == 'true' && isEditMode === false ) {
+				value = "<i class='material-icons'>check</i>";
+			} else if ( value == 'false' && isEditMode === false ) {
+				value = "<i class='material-icons'>close</i>";
+			}
 			field += "<span class='mdl-list__item-secondary-content'>";
 			if ( isEditMode == 'text' ) {
 				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
@@ -1598,9 +1604,13 @@ var containers = {
 	} //refreshFromNow
 
 	app.getQrcodeImg = function(icon, label, id) {
-		var field = "<div class='mdl-list__item'>";
-		field += "	<span class='mdl-list__item-primary-content'>";
-		field += "		<img src='' id='qr-"+id+"' class='img-responsive' style='max-width:50%;margin:0 auto;' />";
+		var field = "<div class='mdl-list__item small-padding'>";
+		field += "		<span class='mdl-list__item-primary-content'>";
+		field += "			<i class='material-icons'>link</i>";
+		field += "			<span class=\"heading\">QR Code<sup>TM</sup></span>";
+		field += "		</span>";
+		field += "	<span class='mdl-list__item-secondary-content'>";
+		field += "		<img src='' id='qr-"+id+"' class='img-responsive' style='margin:0 auto;' />";
 		field += "	</span>";
 		field += "</div>";
 		return field;
@@ -1749,6 +1759,11 @@ var containers = {
 	app.setVisibleElement = function(id) {
 		document.querySelector('#'+id).classList.remove('hidden');
 	} //setVisibleElement
+
+	app.showNotification = function() {
+		toast('You are offline.', {timeout:3000, type: 'warning'});
+		//app.setHiddenElement("notification");
+	} //showLatestNotification
 	
 	app.sessionExpired = function() {
 		app.bearer = '';
@@ -1923,6 +1938,8 @@ var containers = {
 	buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add')}, false);
 	buttons.createRule.addEventListener('click', function() {app.setSection('rule_add')}, false);
 	buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
+	buttons.notification.addEventListener('click', function(evt) { app.showNotification(); }, false);	
+	app.setHiddenElement("notification");
 	
 	buttons.status.addEventListener('click', function(evt) {app.getStatus(); app.setSection('status'); evt.preventDefault();}, false);
 
@@ -1943,14 +1960,13 @@ var containers = {
 			subscribeUserToPush();
 		}
 	}
-	/*
-	(window.screen).orientation.addEventListener("orientationchange", function () {
-		if (app.debug === true ) {
-			console.log(window.screen);
-			toast("The orientation of the screen is: " + (window.screen).orientation, {timeout:3000, type: 'info'});
-		}
-	});
-	*/
+	var showOrientation = function() {
+		toast("Orientation: " + screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
+	}
+	screen.orientation.addEventListener("change", showOrientation);
+	window.onload = showOrientation;
+	screen.orientation.unlock();
+
 	app.fetchIndex('index');
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
@@ -2028,6 +2044,7 @@ var containers = {
 	settings_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
 	logout_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
 	profile_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
+
 	menuIconElement.addEventListener('click', app.showMenu, false);
 	menuOverlayElement.addEventListener('click', app.hideMenu, false);
 	menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
@@ -2062,9 +2079,11 @@ var containers = {
 	function updateNetworkStatus() {
 		if (navigator.onLine) {
 			toast('You are now online...', {timeout:3000, type: 'done'});
+			app.setHiddenElement("notification");
 		}
 		else {
 			toast('You are now offline...', {timeout:3000, type: 'warning'});
+			app.setVisibleElement("notification");
 		}
 	}
 })();

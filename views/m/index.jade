@@ -29,6 +29,10 @@ html.ltr(lang='en')
           .mdl-layout-spacer
 
           nav.mdl-navigation
+            button#notification.mdl-button.mdl-js-button.mdl-button--icon.mdl-js-ripple-effect
+              i.material-icons priority_high
+                
+          nav.mdl-navigation
             .mdl-textfield.mdl-js-textfield.mdl-textfield--expandable.mdl-textfield--floating-label.mdl-textfield--align-right
               label.mdl-button.mdl-js-button.mdl-button--icon(for='search-exp')
                 i.material-icons search
@@ -340,16 +344,16 @@ html.ltr(lang='en')
                     h2.mdl-card__title-text Sign-Up to t6
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
-                      i.material-icons.mdl-textfield__icon lock
+                      i.material-icons.mdl-textfield__icon(for='email') email
                       input.mdl-textfield__input(type='text', name='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='email') Email/Username
                       span.mdl-textfield__error Username should be your email address
                     .mdl-textfield.mdl-js-textfield
-                      i.material-icons.mdl-textfield__icon tag_faces 
+                      i.material-icons.mdl-textfield__icon(for='firstName') face 
                       input.mdl-textfield__input(type='text', name='firstName', pattern='.{1,}')
                       label.mdl-textfield__label(for='firstName') First Name
                     .mdl-textfield.mdl-js-textfield
-                      i.material-icons.mdl-textfield__icon tag_faces 
+                      i.material-icons.mdl-textfield__icon(for='lastName') face 
                       input.mdl-textfield__input(type='text', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='lastName') Last Name
                   .mdl-card__actions.mdl-card--border
