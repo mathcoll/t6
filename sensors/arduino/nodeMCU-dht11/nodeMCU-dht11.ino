@@ -144,13 +144,21 @@ int16_t addSampleToAverage(struct sAverage *ave, int16_t newSample) {
  readSample
  *******************************************************/
 void readSample() {
-  // Read Humidity
-  float h = dht.readHumidity();
-  // Read temperature in Celcius
-  float t = dht.readTemperature();
-  // Read temperature in Fahrenheit
-  float f = dht.readTemperature(true);
-  float hi = dht.computeHeatIndex(f, h);
+  float t;
+  float f;
+  float h;
+  float hi;
+  do {
+    // Read Humidity
+    h = dht.readHumidity();
+    // Read temperature in Celcius
+    t = dht.readTemperature();
+    // Read temperature in Fahrenheit
+    f = dht.readTemperature(true);
+    hi = dht.computeHeatIndex(f, h);
+    Serial.print("Current t=");
+    Serial.println(t);
+  } while (isnan(t));
 
   Serial.println();
   Serial.println("------------------------------");
@@ -205,7 +213,8 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-  //dht.begin();
+  dht.begin();
+  readSample();
 
   getJWToken(); //get authorization key
 }
@@ -217,7 +226,7 @@ void pleaseGoToBed() {
     Serial.println();
     Serial.println();
     Serial.println("Sleeping in few seconds...");
-    delay(10000);
+    delay(2000);
     ESP.deepSleep(SLEEP_DELAY_IN_SECONDS * 1000000, WAKE_RF_DEFAULT);
 }
 
@@ -228,8 +237,6 @@ void loop() {
   readSample();
   
   if(WiFi.status()== WL_CONNECTED) {
-    processes+=2;
-      
     if ( !privateKey || authorized == false ) {
       //getJWToken();
     }
@@ -239,7 +246,7 @@ void loop() {
     StaticJsonBuffer<BUFFER_SIZE> jsonBufferH;
    
     // ------------------------------------------------------------ TEMPERATURE
-    if ( sensorTValue && authorized == true ) {
+    if ( sensorTValue > -1 && authorized == true ) {
       Serial.println("----------Sending data for Temperature----------");
       WiFiClient clientT;
       if (!clientT.connect(host, httpPort)) {
@@ -260,27 +267,6 @@ void loop() {
       //Serial.println(privateKey);
       postRequest(&clientT, urlDataPoint, dataRootT, true);
       
-      while (clientT.available() == 0) {
-        if (clientT.connected() == 0)  {
-          Serial.println("-------------------------");
-          return;
-        }
-      }
-      // Read all the lines of the reply from server and print them to Serial
-      while (clientT.available()) {
-        String line = clientT.readStringUntil('\r');
-        if (line.equals("HTTP/1.1 401 Unauthorized")) {
-          authorized = false;
-        }
-        Serial.print(line);
-        if (line.indexOf("Location") > 0) {
-          processes--;
-          if (processes <= 0) {
-            pleaseGoToBed();
-          }
-        }
-      }
-      
       if (authorized == false) {
         //getJWToken();
       } else {
@@ -291,7 +277,7 @@ void loop() {
 
     
     // ------------------------------------------------------------ HUMIDITY
-    if ( sensorHValue && authorized == true ) {
+    if ( sensorHValue > -1 && authorized == true ) {
       Serial.println("----------Sending data for Humidity----------");
       WiFiClient clientH;
       if (!clientH.connect(host, httpPort)) {
@@ -311,27 +297,6 @@ void loop() {
       //Serial.print("Using Bearer ");
       //Serial.println(privateKey);
       postRequest(&clientH, urlDataPoint, dataRootH, true);
-
-      while (clientH.available() == 0) {
-        if (clientH.connected() == 0)  {
-          Serial.println("-------------------------");
-          return;
-        }
-      }
-      // Read all the lines of the reply from server and print them to Serial
-      while (clientH.available()) {
-        String line = clientH.readStringUntil('\r');
-        if (line.equals("HTTP/1.1 401 Unauthorized")) {
-          authorized = false;
-        }
-        Serial.print(line);
-        if (line.indexOf("Location") > 0) {
-          processes--;
-          if (processes <= 0) {
-            pleaseGoToBed();
-          }
-        }
-      }
       
       if (authorized == false) {
         //getJWToken();
@@ -342,7 +307,6 @@ void loop() {
     // ------------------------------------------------------------ END HUMIDITY
   }
 
-  Serial.print("processes:");
-  Serial.println(processes);
-  delay(30000);
+  delay(15000);
+  pleaseGoToBed();
 }
