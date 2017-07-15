@@ -5,6 +5,7 @@ var app = {
 	baseUrl: '',
 	bearer: '',
 	auth: {},
+	isLogged: false,
 	date_format: 'DD/MM/YYYY, HH:mm',
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
 	icons: {
@@ -317,15 +318,15 @@ var containers = {
 	}; //setItemsClickAction
 	
 	function fetchStatusHandler(response) {
-	  if (response.status === 200 || response.status === 201) {
-	    return response;
-	  } else if (response.status === 401) {
-		app.sessionExpired();
-		toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
-	    return false;
-	  } else {
-	    throw new Error(response.statusText);
-	  }
+		if (response.status === 200 || response.status === 201) {
+			return response;
+		} else if (response.status === 401 || response.status === 403) {
+			app.sessionExpired();
+			//toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
+			throw new Error(response.statusText);
+		} else {
+			throw new Error(response.statusText);
+		}
 	}; //fetchStatusHandler
 
 	app.setListActions = function(type) {
@@ -1147,11 +1148,17 @@ var containers = {
 			}
 		}
 
-		if (type) {
+		if (!type) {
+			if (app.debug === true ) {
+				toast('Error: No type defined', {timeout:3000, type: 'error'});
+			}
+		}
+		
+		let promise = new Promise((resolve, reject) => {
 			fetch(url, myInit)
 			.then(
 				fetchStatusHandler
-			).then(function(fetchResponse){ 
+			).then(function(fetchResponse){
 				return fetchResponse.json();
 			})
 			.then(function(response) {
@@ -1174,18 +1181,19 @@ var containers = {
 				componentHandler.upgradeDom();
 				app.setItemsClickAction(type);
 				app.setListActions(type);
+				resolve();
 			})
+			/*
 			.catch(function (error) {
 				if (app.debug === true ) {
 					toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
 				}
-			});
-		} else {
-			if (app.debug === true ) {
-				toast('Error: No type defined', {timeout:3000, type: 'error'});
-			}
-		}
+			})*/
+			;
+		});
+			
 		app.spinner.setAttribute('hidden', true);
+		return promise;
 	}; //fetchItems
 
 	app.fetchProfile = function() {
@@ -1249,7 +1257,6 @@ var containers = {
 			document.getElementById("currentUserName").innerHTML = user.attributes.first_name+" "+user.attributes.last_name;
 			document.getElementById("currentUserEmail").innerHTML = user.attributes.email;
 			document.getElementById("currentUserHeader").setAttribute('src', gravatar.photos[0].value);
-
 		})
 		.catch(function (error) {
 			if (app.debug === true ) {
@@ -1648,6 +1655,7 @@ var containers = {
 		.then(function(response) {
 			if ( response.token ) {
 				app.bearer = response.token;
+				app.isLogged = true;
 				app.resetSections();
 				app.getAllUserData();
 				app.setSection('index');
@@ -1666,15 +1674,22 @@ var containers = {
 			toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
 		});
 	} //authenticate
+	
+	function chainError(error) {
+		console.log(error);
+		throw(error);
+		return Promise.reject(error)
+	}
 
 	app.getAllUserData = function() {
-		app.fetchItems('objects');
-		app.fetchItems('flows');
-		app.fetchItems('dashboards');
-		app.fetchItems('snippets');
-		app.fetchItems('rules');
-		app.fetchItems('mqtts');
-		app.fetchProfile();
+		app.fetchItems('objects')
+		.then(app.fetchItems('flows'), chainError)
+		.then(app.fetchItems('dashboards'), chainError)
+		.then(app.fetchItems('snippets'), chainError)
+		.then(app.fetchItems('rules'), chainError)
+		.then(app.fetchItems('mqtts'), chainError)
+		.then(app.fetchProfile(), chainError)
+		.catch(chainError);
 	} //getAllUserData
 
 	app.getStatus = function() {
@@ -1738,6 +1753,8 @@ var containers = {
 	app.sessionExpired = function() {
 		app.bearer = '';
 		app.auth = {};
+		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
+		app.isLogged = false;
 		
 		app.setVisibleElement("signin_button"); 
 		app.setHiddenElement("logout_button");
@@ -1993,7 +2010,7 @@ var containers = {
 		drawerObfuscatorElement.remove();
 	}
 	app.hideMenu = function() {
-		menuElement.style.transform = "translateX(-110%)";
+		menuElement.style.transform = "translateX(-120%)";
 		menuElement.classList.remove('menu--show');
 		menuOverlayElement.classList.add('menu__overlay--hide');
 		menuOverlayElement.classList.remove('menu__overlay--show');

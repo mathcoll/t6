@@ -155,7 +155,7 @@ div.mdl-list__item-primary-content span.heading {
 }
 div.mdl-list__item .mdl-list__item-secondary-content {
     overflow: auto;
-    width: 40%;
+    width: 50%;
     display: inline-block;
 }
 div.mdl-list__item .mdl-list__item-secondary-content:only-child {
@@ -707,7 +707,7 @@ a {
     transition: opacity 0.15s cubic-bezier(0, 0, 0.30, 1);
     visibility: hidden;
     opacity: 0;
-    z-index: 1;
+    z-index: 3;
 }
 .menu__overlay--show {
     visibility: visible;
@@ -748,6 +748,14 @@ a {
 .menu__list li a:active,
 .menu__list li a:hover {
     background: #e7e7e7;
+}
+.mdl-layout__drawer {
+	width: 320px !important;
+	transform: translateX(-320px) !important;
+}
+.mdl-layout__drawer.is-visible {
+    -webkit-transform: translateX(0) !important;
+    transform: translateX(0) !important;
 }
 .material-icons.md-18 {
     font-size: 18px;
