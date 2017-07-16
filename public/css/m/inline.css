@@ -46,6 +46,7 @@ html {
 }
 .material-icons {
     vertical-align: middle;
+    align-self: flex-start;
 }
 .mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
     font-size: 12px !important;

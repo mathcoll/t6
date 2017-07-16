@@ -138,7 +138,7 @@ var containers = {
 	}; //askPermission
 	
 	function registerServiceWorker() {
-		return navigator.serviceWorker.register('./service-worker.js')
+		return navigator.serviceWorker.register('/service-worker.js')
 		.then(function(registration) {
 			console.log('[ServiceWorker] Registered');
 		    return registration;
@@ -258,7 +258,7 @@ var containers = {
 	}; //setExpandAction
 	
 	app.setSection = function(section) {
-		if ( app.debug == true ) {
+		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
 		window.scrollTo(0, 0);
@@ -275,7 +275,6 @@ var containers = {
 			if ( (buttons.menuTabBar[i]).childElementCount > -1 ) {
 				buttons.menuTabBar[i].classList.remove('is-active');
 				if ( buttons.menuTabBar[i].getAttribute("for") == section || buttons.menuTabBar[i].getAttribute("for") == section+'s' ) {
-					console.log(buttons.menuTabBar[i].getAttribute("for"));
 					buttons.menuTabBar[i].classList.add('is-active');
 				}
 			}
@@ -295,25 +294,25 @@ var containers = {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displayObject(item.dataset.id, false);
 					evt.preventDefault();
-				});
+				}, {passive: false,});
 			} else if ( type == 'flows' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displayFlow(item.dataset.id);
 					evt.preventDefault();
-				});
+				}, {passive: false,});
 			} else if ( type == 'dashboards' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displayDashboard(item.dataset.id);
 					evt.preventDefault();
-				});
+				}, {passive: false,});
 			} else if ( type == 'snippets' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displaySnippet(item.dataset.id);
 					evt.preventDefault();
-				});
+				}, {passive: false,});
 			}
 		}
 	}; //setItemsClickAction
@@ -687,7 +686,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('displayObject error occured...' + error, 5000);
 			}
 		});
@@ -859,7 +858,7 @@ var containers = {
 					if (error == 'Error: Not Found') {
 						toast('No data found, graph remain empty.', {timeout:3000, type: 'warning'});
 					} else {
-						if (app.debug === true ) {
+						if ( app.debug === true ) {
 							toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
 						}
 					}
@@ -876,7 +875,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('displayFlow error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -943,7 +942,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1040,7 +1039,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1144,13 +1143,13 @@ var containers = {
 			var defaultCard = {image: '/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: 'Add my first Mqtt'}};
 		} else {
 			type='undefined';
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('Error no Type defined.', {timeout:3000, type: 'error'});
 			}
 		}
 
 		if (!type) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('Error: No type defined', {timeout:3000, type: 'error'});
 			}
 		}
@@ -1186,7 +1185,7 @@ var containers = {
 			})
 			/*
 			.catch(function (error) {
-				if (app.debug === true ) {
+				if ( app.debug === true ) {
 					toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
 				}
 			})*/
@@ -1260,7 +1259,7 @@ var containers = {
 			document.getElementById("currentUserHeader").setAttribute('src', gravatar.photos[0].value);
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1292,7 +1291,7 @@ var containers = {
 			container.innerHTML = node;
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1463,7 +1462,7 @@ var containers = {
 						setInterval(function() {app.refreshFromNow('snippet-time-'+flow_id, time)}, 10000);
 					})
 					.catch(function (error) {
-						if (app.debug === true ) {
+						if ( app.debug === true ) {
 							toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
 						}
 					});
@@ -1518,7 +1517,7 @@ var containers = {
 					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(dataset[0][0][0]).format(app.date_format) + ", " + moment(dataset[0][0][0]).fromNow();
 				})
 				.catch(function (error) {
-					if (app.debug === true ) {
+					if ( app.debug === true ) {
 						toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 					}
 				});
@@ -1578,7 +1577,7 @@ var containers = {
 					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
 				.catch(function (error) {
-					if (app.debug === true ) {
+					if ( app.debug === true ) {
 						toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
 					}
 				});
@@ -1587,7 +1586,7 @@ var containers = {
 			//return snippet;
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1636,7 +1635,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1675,7 +1674,7 @@ var containers = {
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
 				app.addJWT(app.bearer);
 			} else {
-				if (app.debug === true ) {
+				if ( app.debug === true ) {
 					toast('Auth internal error', {timeout:3000, type: 'error'});
 				}
 			}
@@ -1839,12 +1838,12 @@ var containers = {
 		var request = store.add(item);
 		//var request = db.transaction(["jwt"], "readwrite").objectStore("jwt").add(item);
 		request.onsuccess = function(event) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log("add(): onsuccess.");
 			}
 		}
 		request.onerror = function(event) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log("add(): onerror.");
 				console.log(event);
 			}
@@ -1872,7 +1871,7 @@ var containers = {
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
-				if (app.debug === true ) {
+				if ( app.debug === true ) {
 					console.log("Autologin completed. Using JWT:");
 					console.log(jwt);
 				}
@@ -1883,23 +1882,23 @@ var containers = {
 			}
 		}
 		tx.onabort = function() {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log("searchJWT(): tx onerror.");
 				console.log(tx.error);
 			}
 		}
 		request.openCursor(range, 'prev').onerror = function(e) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log("openCursor: onerror.");
 			}
 		}
 		request.onsuccess = function(event) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log("searchJWT(): onsuccess.");
 			}
 		};
 		request.onerror = function(event) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log("searchJWT(): onerror.");
 				console.log(event);
 			}
@@ -1944,14 +1943,14 @@ var containers = {
 	buttons.status.addEventListener('click', function(evt) {app.getStatus(); app.setSection('status'); evt.preventDefault();}, false);
 
 	if (!('serviceWorker' in navigator)) {
-		if (app.debug === true ) {
+		if ( app.debug === true ) {
 			console.log('Service Worker isn\'t supported on this browser, disable or hide UI.');
 		}
 		return;
 	} else {
 		//registerServiceWorker();
 		if (!('PushManager' in window)) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log('Push isn\'t supported on this browser, disable or hide UI.');
 			}
 			return;
@@ -1961,10 +1960,11 @@ var containers = {
 		}
 	}
 	var showOrientation = function() {
-		toast("Orientation: " + screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
+		if ( app.debug === true ) {
+			toast("Orientation: " + screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
+		}
 	}
 	screen.orientation.addEventListener("change", showOrientation);
-	window.onload = showOrientation;
 	screen.orientation.unlock();
 
 	app.fetchIndex('index');
@@ -1975,7 +1975,7 @@ var containers = {
 	}
 	
 	if (!('indexedDB' in window)) {
-		if (app.debug === true ) {
+		if ( app.debug === true ) {
 			console.log('This browser doesn\'t support IndexedDB.');
 		}
 	} else {
@@ -1988,13 +1988,13 @@ var containers = {
 			}
 		});
 		request.onerror = function(event) {
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				alert('Database is on-error: ' + event.target.errorCode);
 			}
 		};
 		request.onsuccess = function(event) {
 			db = request.result;
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log('Database is on-success');
 				console.log('searchJWT(): ');
 			}
@@ -2004,7 +2004,7 @@ var containers = {
 			db = event.target.result;
 			objectStore = db.createObjectStore("jwt", {keyPath: "exp", autoIncrement: true});
 			objectStore.createIndex("exp", "exp", { unique: false, autoIncrement: true });
-			if (app.debug === true ) {
+			if ( app.debug === true ) {
 				console.log('Database is on-upgrade-needed');
 				//console.log('searchJWT(): '+ app.searchJWT());
 			}
@@ -2067,10 +2067,7 @@ var containers = {
 
 	/* *********************************** Offline *********************************** */
 	document.addEventListener('DOMContentLoaded', function(event) {
-		//On initial load to check connectivity
-		if (!navigator.onLine) {
-			updateNetworkStatus();
-		}
+		if (!navigator.onLine) { updateNetworkStatus(); }
 		window.addEventListener('online', updateNetworkStatus, false);
 		window.addEventListener('offline', updateNetworkStatus, false);
 	});
