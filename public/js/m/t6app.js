@@ -15,9 +15,10 @@ var app = {
 		'dashboards': 'dashboards',
 		'rules': 'call_split',
 		'mqtts': 'volume_down',
-		'login': '',
+		'login': 'email',
 		'datapoints': 'filter_center_focus',
 		'type': 'label',
+		'description': 'label',
 		'icon': 'label_outline',
 		'settings': 'settings',
 		'menu': 'menu',
@@ -28,7 +29,46 @@ var app = {
 		'date': 'event',
 		'update': 'update',
 		'status': 'favorite',
-	}
+	},
+	types: [
+		{name: 'cast', value:'Cast'},
+		{name: 'cast_connected', value:'Cast Connected'},
+		{name: 'computer', value:'Computer'},
+		{name: 'desktop_mac', value:'Desktop Mac'},
+		{name: 'desktop_windows', value:'Desktop Windows'},
+		{name: 'developer_board', value:'Developer Board'},
+		{name: 'device_hub', value:'Device Hub'},
+		{name: 'devices_other', value:'Devices Other'},
+		{name: 'dock', value:'Dock'},
+		{name: 'gamepad', value:'Gamepad'},
+		{name: 'headset', value:'Headset'},
+		{name: 'headset_mic', value:'Headset Mic'},
+		{name: 'keyboard', value:'Keyboard'},
+		{name: 'keyboard_voice', value:'Keyboard Voice'},
+		{name: 'laptop', value:'Laptop'},
+		{name: 'laptop_chromeboo', value:'Laptop Chromebook'},
+		{name: 'laptop_mac', value:'Laptop Mac'},
+		{name: 'laptop_windows', value:'Laptop Windows'},
+		{name: 'memory', value:'Memory'},
+		{name: 'mouse', value:'Mouse'},
+		{name: 'phone_android', value:'Phone Android'},
+		{name: 'phone_iphone', value:'Phone Iphone'},
+		{name: 'phonelink', value:'Phonelink'},
+		{name: 'router', value:'Router'},
+		{name: 'scanner', value:'Scanner'},
+		{name: 'security', value:'Security'},
+		{name: 'sim_card', value:'Sim Card'},
+		{name: 'smartphone', value:'Smartphone'},
+		{name: 'speaker', value:'Speaker'},
+		{name: 'speaker_group', value:'Speaker Group'},
+		{name: 'tablet', value:'Tablet'},
+		{name: 'tablet_android', value:'Tablet Android'},
+		{name: 'tablet_mac', value:'Tablet Mac'},
+		{name: 'toys', value:'Toys'},
+		{name: 'tv', value:'Tv'},
+		{name: 'videogame_asset', value:'Videogame Asset'},
+		{name: 'watch', value:'Watch'},
+	]
 };
 
 var buttons = {}; // see function app.refreshButtonsSelectors()
@@ -191,6 +231,26 @@ var containers = {
 	}; //subscribeUserToPush
 
 /* *********************************** Application functions *********************************** */
+	app.onSaveObject = function(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		
+		var body = {
+			type: myForm.querySelector("select[name='Type']").value,
+			name: myForm.querySelector("input[name='Name']").value,
+			description: myForm.querySelector("textarea[name='Description']").innerHTML,
+			position: myForm.querySelector("input[name='Position']").value,
+			longitude: myForm.querySelector("input[name='Longitude']").value,
+			latitude: myForm.querySelector("input[name='Latitude']").value,
+			ipv4: myForm.querySelector("input[name='IPv4']").value,
+			ipv6: myForm.querySelector("input[name='IPv6']").value,
+			isPublic: myForm.querySelector("input[name='Visibility']").value
+		};
+		
+		console.log(body);
+		toast('saveObject is not yet implemented', {timeout:3000, type: 'warning'});
+		evt.preventDefault();
+	} //onSaveObject
+	
 	app.refreshButtonsSelectors = function() {
 		componentHandler.upgradeDom();
 		buttons = {
@@ -209,6 +269,8 @@ var containers = {
 			deleteObject: document.querySelectorAll('#objects .delete-button'),
 			editObject: document.querySelectorAll('#objects .edit-button'),
 			createObject: document.querySelector('#objects button#createObject'),
+			saveObject: document.querySelector('#object section.fixedActionButtons button.save-button'),
+			backObject: document.querySelector('#object section.fixedActionButtons button.back-button'),
 			
 			deleteFlow: document.querySelectorAll('#flows .delete-button'),
 			editFlow: document.querySelectorAll('#flows .edit-button'),
@@ -546,16 +608,19 @@ var containers = {
 				node += "				<h2 class=\"mdl-card__title-text\">"+object.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+object.id+"'>";
 				node += "					<i class='material-icons'>expand_more</i>";
 				node += "				</button>";
 				node += "			</span>";
 				node += "		</div>";
-				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-				
-				if ( object.attributes.description ) {
+				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+object.id+"'>";
+
+				if ( isEdit==true ) {
+					node += app.getField(app.icons.objects, 'Name', object.attributes.name, isEdit==true?'text':false, false, false, true);
+				}
+				if ( object.attributes.description || isEdit==true ) {
 					var description = isEdit===true?object.attributes.description:app.nl2br(object.attributes.description);
-					node += app.getField(null, null, description, isEdit==true?'textarea':false, false, false, true);
+					node += app.getField(app.icons.description, 'Description', description, isEdit==true?'textarea':false, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
 					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
@@ -577,17 +642,17 @@ var containers = {
 				node += "				Parameters";
 				node += "			</h2>";
 				node += "		</div>";
-				if ( object.attributes.type ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'text':false, false, false, true);
+				if ( object.attributes.type || isEdit==true ) {
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'select':false, false, false, true);
 				}
-				if ( object.attributes.ipv4 ) {
+				if ( object.attributes.ipv4 || isEdit==true ) {
 					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEdit==true?'text':false, false, false, true);
 				}
-				if ( object.attributes.ipv6 ) {
+				if ( object.attributes.ipv6 || isEdit==true ) {
 					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, isEdit==true?'text':false, false, false, true);
 				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, isEdit==true?'select':false, false, false, true);
+					node += app.getField('visibility', 'Visibility', object.attributes.is_public, isEdit==true?'switch':false, false, false, true);
 					node += app.getQrcodeImg(app.icons.date, '', object.id, false, false, false);
 					app.getQrcode(app.icons.date, '', object.id, false, false, false);
 				} else {
@@ -638,20 +703,30 @@ var containers = {
 				}
 				
 				if ( isEdit ) {
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons'>";
-					node += "	<button class='mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect pull-left'>";
-					node += "		<i class='material-icons'>chevron_left</i>";
-					node += "		<label>Back</label>";
-					node += "	</button>";
-					node += "	<button class='mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect pull-right'>";
-					node += "		<i class='material-icons'>save</i>";
-					node += "		<label>Save</label>";
-					node += "	</button>";
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
+					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>Back</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect'>";
+					node += "			<i class='material-icons'>save</i>";
+					node += "			<label>Save</label>";
+					node += "		</button>";
+					node += "	</div>";
 					node += "</section>";
 				} 
 
 				(containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
+				
+				if ( isEdit ) {
+					app.refreshButtonsSelectors();
+					buttons.backObject.addEventListener('click', function(evt) { app.setSection('objects'); }, false);
+					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
+				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					var iconFeature = new ol.Feature({
@@ -1343,15 +1418,33 @@ var containers = {
 			}
 			field += "<span class='mdl-list__item-secondary-content'>";
 			if ( isEditMode == 'text' ) {
-				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' /></span>";
+				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' name='"+label+"' /></span>";
+			
 			} else if ( isEditMode == 'textarea' ) {
-				field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input'>"+value+"</textarea>";
+				field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input' name='"+label+"'>"+value+"</textarea>";
+			
 			} else if ( isEditMode == 'select' ) {
-				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' /></span>";
+				field += "<div class='mdl-selectfield mdl-js-selectfield  mdl-selectfield--floating-label'>";
+				field += "	<select class='mdl-selectfield__select' name='"+label+"'>";
+				for (var n=0; n<app.types.length; n++) {
+					var selected = value==app.types[n].name?'selected':'';
+					field += "		<option "+selected+" name='"+app.types[n].name+"'>"+app.types[n].value+"</option>";
+				}
+				field += "	</select>";
+				//field += "	<label class='mdl-selectfield__label'>"+value+"</label>";
+				field += "</div>";
+				
 			} else if ( isEditMode == 'switch' ) {
-				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' /></span>";
+				var checked = value=='true'?'checked':'';
+				var id = Math.floor(Math.random() * (1000));
+				field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect' for='switch-"+id+"'>";
+				field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"'>";
+				field += "	<span class='mdl-switch__label'></span>";
+				field += "</label>";
+			
 			} else {
 				field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
+			
 			}
 			field += "</span>";
 		}

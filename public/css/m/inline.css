@@ -773,6 +773,9 @@ a {
     transform: translateX(0) !important;
     border-right: 0px !important;
 }
+#drawer a.mdl-navigation__link {
+	color: rgb(121,85,72);
+}
 .material-icons.md-18 {
     font-size: 18px;
 }
