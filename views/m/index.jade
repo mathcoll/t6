@@ -86,8 +86,8 @@ html.ltr(lang='en')
             |  Mqtt Topics
 
       #drawer.mdl-layout__drawer
-        div.side-nav__header(style="height: 176px; position: relative; width: 100%; background: #795548 url(#{baseUrlCdn}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
-          img#currentUserHeader(src="", style="border-radius: 50%;padding: 20px 10px 10px 10px")
+        div.side-nav__header(style="height: 148px; position: relative; width: 100%; background: #795548 url(#{baseUrlCdn}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
+          img#currentUserHeader(src="", style="border-radius: 50%; width: 90px; padding: 20px 10px 10px 10px")
           div#currentUserName.mdl-layout-title(style="bottom:auto !important;") 
           div#currentUserEmail.mdl-layout-subheader(style="color: #ffffff;") 
         nav.mdl-navigation.menu__list
@@ -112,6 +112,11 @@ html.ltr(lang='en')
           a.mdl-navigation__link(href='#mqtts')
             i.material-icons volume_down
             |  Mqtt Topics
+            
+          span.mdl-menu__item--full-bleed-divider 
+          a.mdl-navigation__link(href='#settings')
+            i.material-icons settings
+            |  Settings
 
       .setting_menu
         ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
@@ -372,10 +377,6 @@ html.ltr(lang='en')
 
         //- View Settings
         section#settings.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope Settings
           .page-content
               
 

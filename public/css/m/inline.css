@@ -113,6 +113,17 @@ section[data-type="objects"].removed {
 	width: 0;
     height: 0;
 }
+section.fixedActionButtons {
+    position: fixed;
+    z-index: 999;
+    bottom: 0;
+    height: 50px;
+    background: rgb(121,85,72);
+}
+section.fixedActionButtons button.mdl-button {
+    color: #fff ! important;
+    position: auto;
+}
 
 /* Snippets */
 div .heading {
@@ -336,7 +347,7 @@ section#profile .subhead {
     margin: 5px 0 !important;
 }
 section.mdl-grid {
-    padding: 5px !important;
+    padding: 5px 5px 0px 5px !important;
 }
 .mdl-cell--12-col, .mdl-cell--12-col-phone.mdl-cell--12-col-phone {
 	width:100% !important;
@@ -634,6 +645,9 @@ a {
     margin: 15px -150px;
     border-radius: 2px;
 }
+.toast__msg .material-icons {
+    align-self: auto !important;
+}
 .toast__msg.error {
     background-color: #f2dede;
     border-color: #ebccd1;
@@ -751,12 +765,13 @@ a {
     background: #e7e7e7;
 }
 .mdl-layout__drawer {
-	width: 320px !important;
+	width: calc(100% - 56px) !important;
 	transform: translateX(-320px) !important;
 }
 .mdl-layout__drawer.is-visible {
     -webkit-transform: translateX(0) !important;
     transform: translateX(0) !important;
+    border-right: 0px !important;
 }
 .material-icons.md-18 {
     font-size: 18px;
@@ -1138,7 +1153,7 @@ section > button {
 }
 .mdl-layout__subheader,
 .mdl-layout-subheader {
-    padding: 30px 20px !important;
+    padding: 15px !important;
     color: #ffffff !important;
     display: block !important;
 }
@@ -1149,6 +1164,8 @@ section > button {
     position: absolute !important;
     left: 1em !important;
     bottom: 1em !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
 }
 .mdl-layout__tab-bar {
     padding:0 0 0 40px !important;

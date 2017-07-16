@@ -169,12 +169,12 @@ var containers = {
 			if ( j && j.keys ) {
 				settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				settings += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				settings += "		<div class=\"mdl-card__title\">";
-				settings += "			<h2 class=\"mdl-card__title-text\">";
+				//settings += "		<div class=\"md-primary.md-subheader _md md-altTheme-theme\">";
+				settings += "			<span class=\"md-subheader-inner mdl-subheader-content\">";
 				settings += "				<i class=\"material-icons\">"+app.icons.settings+"</i>";
 				settings += "				API Push";
-				settings += "			</h2>";
-				settings += "		</div>";
+				settings += "			</span>";
+				//settings += "		</div>";
 				settings += app.getField('cloud', 'endpoint', j.endpoint, 'text', false, false, true);
 				settings += app.getField('vpn_key', 'key', j.keys.p256dh, 'text', false, false, true);
 				settings += app.getField('vpn_lock', 'auth', j.keys.auth, 'text', false, false, true);
@@ -554,7 +554,8 @@ var containers = {
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
 				
 				if ( object.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(object.attributes.description), isEdit==true?'textarea':false, false, false, true);
+					var description = isEdit===true?object.attributes.description:app.nl2br(object.attributes.description);
+					node += app.getField(null, null, description, isEdit==true?'textarea':false, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
 					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
@@ -612,7 +613,7 @@ var containers = {
 				}
 
 				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
-					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += "		<div class=\"mdl-card__title\">";
 					node += "			<h2 class=\"mdl-card__title-text\">";
@@ -635,6 +636,19 @@ var containers = {
 					node += "	</div>";
 					node += "</section>";
 				}
+				
+				if ( isEdit ) {
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons'>";
+					node += "	<button class='mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect pull-left'>";
+					node += "		<i class='material-icons'>chevron_left</i>";
+					node += "		<label>Back</label>";
+					node += "	</button>";
+					node += "	<button class='mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect pull-right'>";
+					node += "		<i class='material-icons'>save</i>";
+					node += "		<label>Save</label>";
+					node += "	</button>";
+					node += "</section>";
+				} 
 
 				(containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
@@ -1329,13 +1343,13 @@ var containers = {
 			}
 			field += "<span class='mdl-list__item-secondary-content'>";
 			if ( isEditMode == 'text' ) {
-				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' /></span>";
 			} else if ( isEditMode == 'textarea' ) {
-				field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;'>"+escape(value)+"</textarea>";
+				field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input'>"+value+"</textarea>";
 			} else if ( isEditMode == 'select' ) {
-				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' /></span>";
 			} else if ( isEditMode == 'switch' ) {
-				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' /></span>";
+				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' /></span>";
 			} else {
 				field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
 			}
@@ -1731,11 +1745,11 @@ var containers = {
 			status += "			</span>";
 			status += "		</div>";
 			status += "		<div class='mdl-cell mdl-cell--12-col' id='status-details'>";
-			status += app.getField('thumb_up', 'Application Name', response.appName, false, false, true, true);
-			status += app.getField('verified_user', 'Application Version', response.version, false, false, true, true);
-			status += app.getField(app.icons.status, 'Status', response.status, false, false, true, true);
-			status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, false, false, true, true);
-			status += app.getField('alarm', 'Start Date', moment(response.started_at).format(app.date_format), false, false, true, true);
+			status += app.getField('thumb_up', 'Name', response.appName, false, false, false, true);
+			status += app.getField('verified_user', 'Version', response.version, false, false, false, true);
+			status += app.getField(app.icons.status, 'Status', response.status, false, false, false, true);
+			status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, false, false, false, true);
+			status += app.getField('alarm', 'Start Date', response.started_at, false, false, false, true);
 			status += "		</div>";
 			status += "	</div>";
 			status +=	"</section>";
