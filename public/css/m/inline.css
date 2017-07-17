@@ -764,9 +764,19 @@ a {
 .menu__list li a:hover {
     background: #e7e7e7;
 }
-.mdl-layout__drawer {
-	width: calc(100% - 56px) !important;
-	transform: translateX(-320px) !important;
+@media screen and (max-width: 350px) {
+	.mdl-layout__drawer {
+		width: calc(100% - 56px) !important;
+		max-width: 350px !important;
+		transform: translateX(-320px) !important;
+	}
+}
+@media screen and (min-width: 351px) {
+	.mdl-layout__drawer {
+		width: 300px !important;
+		max-width: 350px !important;
+		transform: translateX(-320px) !important;
+	}
 }
 .mdl-layout__drawer.is-visible {
     -webkit-transform: translateX(0) !important;
