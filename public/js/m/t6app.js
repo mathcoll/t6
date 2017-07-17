@@ -615,12 +615,9 @@ var containers = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
-				if ( isEdit==true ) {
-					node += app.getField(app.icons.objects, 'Name', object.attributes.name, isEdit==true?'text':false, false, false, true);
-				}
-				if ( object.attributes.description || isEdit==true ) {
-					var description = isEdit===true?object.attributes.description:app.nl2br(object.attributes.description);
-					node += app.getField(app.icons.description, 'Description', description, isEdit==true?'textarea':false, false, false, true);
+				if ( object.attributes.description || isEdit!=true ) {
+					var description = app.nl2br(object.attributes.description);
+					node += app.getField(null, null, description, false, false, false, true);
 				}
 				if ( object.attributes.meta.created ) {
 					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
@@ -642,6 +639,11 @@ var containers = {
 				node += "				Parameters";
 				node += "			</h2>";
 				node += "		</div>";
+				if ( isEdit==true ) {
+					var description = object.attributes.description;
+					node += app.getField(app.icons.objects, 'Name', object.attributes.name, 'text', false, false, true);
+					node += app.getField(app.icons.description, 'Description', description, 'textarea', false, false, true);
+				}
 				if ( object.attributes.type || isEdit==true ) {
 					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'select':false, false, false, true);
 				}
@@ -801,10 +803,10 @@ var containers = {
 				output += "						<a href=\""+ card.url +"\"> Get Started</a>";
 			}
 			if ( card.secondaryaction ) {
-				output += "						<a href=\"#\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\"> "+ card.secondaryaction.label +"</a>&nbsp;";
+				output += "						<a href=\"#\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\" class=\"mdl-button mdl-button--colored\"> "+ card.secondaryaction.label +"</a>&nbsp;";
 			}
 			if ( card.action ) {
-				output += "						<button class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
+				output += "						<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
 			}
 			output += "					</div>";
 		}
