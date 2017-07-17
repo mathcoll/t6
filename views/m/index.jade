@@ -330,9 +330,9 @@ html.ltr(lang='en')
                       label.mdl-textfield__label(for='password') Password
                       span.mdl-textfield__error Password must be provided
                   .mdl-card__actions.mdl-card--border
-                    a(onclick="app.setSection('signupForm');", href="#")
+                    a.mdl-button.mdl-button--colored(onclick="app.setSection('signupForm');", href="#")
                       | Create an account
-                    button.login_button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
+                    button.login_button.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons lock
                       | Log in
               div.mdl-layout-spacer
@@ -362,9 +362,9 @@ html.ltr(lang='en')
                       input.mdl-textfield__input(type='text', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='lastName') Last Name
                   .mdl-card__actions.mdl-card--border
-                    a(onclick="app.setSection('loginForm');", href="#")
-                      | Sign-in to my account
-                    button.createUser.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect
+                    a.mdl-button.mdl-button--colored(onclick="app.setSection('loginForm');", href="#")
+                      | Sign-in
+                    button.createUser.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person_add
                       | Sign-Up
               div.mdl-layout-spacer
