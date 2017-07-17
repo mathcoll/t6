@@ -1,14 +1,14 @@
 #!/bin/bash
 
-endpoint="https://fcm.googleapis.com/fcm/send/cyeoOA0IV-Q:APA91bFpPWXqFwbbcHe-dwNh9Hzxa9QwD2c_F0pqKLIL5F24jvzKt0ABX7V8NMEANBzY6kkk6le-xBq5aT699xjsEb6cBC3MkRZnfYCHb5697zuzssU32y79AGL6bXhp6kKyRr3dOx_k"
-key="BOlDZicOevpVeGUyC7bbVnrs-gLy82L9txyzbMCTFUl4-WR_7ZjJ8jnekF2kM8uwntF8mkWTgIn0e8WhSPVJkeY="
-auth="JCnBRkJQ2AzTgdeE5BRHBQ=="
+endpoint="https://updates.push.services.mozilla.com/wpush/v2/gAAAAABZbPuhjAuTsCcvekedNcr808SktPQZ3a0MQpFKemZbCGA103kgV8P4DPm0SztRP7a-Gj6Xy_LhnKWIXlEbP1gd_SnjASwtUcpKXjyksm4waGdCZbiQreza1NVpK1m7a-MUBbvavDcHf75XU7nvA90cpNusCXouM4Sv7MlAtiqZH39I6pU"
+key="BL5Kbmfx44RIVgf4HIZnZNDZ8W_CwXRQn3_L_yx2oY4pFbIvoToLpYXG1Vasy9w9wC-dyG2NkbBF-n-DiMW_JfE"
+auth="x3ErTV8S_-vaWVllOdTzeA=="
 pvtkey=""
 pubkey="BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I"
-payload="Hello Dear"
+payload="{\"type\": \"message\", \"title\": \"This is a test of notification\", \"body\": \"Hello Dear\", \"icon\": null}"
 subject="mailto:"
 ttl=3600
 
-web-push send-notification --endpoint=$endpoint --key=$key --auth=$auth --payload=$payload --ttl=$ttl --vapid-subject=$subject --vapid-pubkey=$pubkey --vapid-pvtkey=$pvtkey --gcm-api-key=
+web-push send-notification --endpoint=$endpoint --key=$key --auth=$auth --payload="$payload" --ttl=$ttl --vapid-subject=$subject --vapid-pubkey=$pubkey --vapid-pvtkey=$pvtkey --gcm-api-key=
 
 
