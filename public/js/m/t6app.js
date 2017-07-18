@@ -232,23 +232,46 @@ var containers = {
 
 /* *********************************** Application functions *********************************** */
 	app.onSaveObject = function(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		
-		var body = {
-			type: myForm.querySelector("select[name='Type']").value,
-			name: myForm.querySelector("input[name='Name']").value,
-			description: myForm.querySelector("textarea[name='Description']").innerHTML,
-			position: myForm.querySelector("input[name='Position']").value,
-			longitude: myForm.querySelector("input[name='Longitude']").value,
-			latitude: myForm.querySelector("input[name='Latitude']").value,
-			ipv4: myForm.querySelector("input[name='IPv4']").value,
-			ipv6: myForm.querySelector("input[name='IPv6']").value,
-			isPublic: myForm.querySelector("input[name='Visibility']").value
-		};
-		
-		console.log(body);
-		toast('saveObject is not yet implemented', {timeout:3000, type: 'warning'});
-		evt.preventDefault();
+		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
+		if ( !object_id ) {
+			toast('No Object id found!', {timeout:3000, type: 'error'});
+		} else {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			var body = {
+				type: myForm.querySelector("select[name='Type']").value,
+				name: myForm.querySelector("input[name='Name']").value,
+				description: myForm.querySelector("textarea[name='Description']").value,
+				position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
+				longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
+				latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
+				ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
+				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+			};
+	
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+'/'+app.api_version+'/objects/'+object_id;
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				var objectContainer = document.querySelector("section#objects section[data-id=\""+object_id+"\"]");
+				objectContainer.querySelector("h2").innerHTML = body.name;
+				objectContainer.querySelector("span.mdl-list__item-secondary-content span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, 128));
+				toast('Object has been saved.', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				toast('Object has not been saved.', {timeout:3000, type: 'error'});
+			});
+			evt.preventDefault();
+			evt.preventDefault();
+		}
 	} //onSaveObject
 	
 	app.refreshButtonsSelectors = function() {
@@ -271,6 +294,7 @@ var containers = {
 			createObject: document.querySelector('#objects button#createObject'),
 			saveObject: document.querySelector('#object section.fixedActionButtons button.save-button'),
 			backObject: document.querySelector('#object section.fixedActionButtons button.back-button'),
+			editObject2: document.querySelector('#object section.fixedActionButtons button.edit-button'),
 			
 			deleteFlow: document.querySelectorAll('#flows .delete-button'),
 			editFlow: document.querySelectorAll('#flows .edit-button'),
@@ -480,7 +504,7 @@ var containers = {
 			for (var e=0;e<buttons.editFlow.length;e++) {
 				//console.log(buttons.editFlow[e]);
 				buttons.editFlow[e].addEventListener('click', function(evt) {
-					app.displayObject(evt.currentTarget.dataset.id, true);
+					app.displayFlow(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
 			}
@@ -525,7 +549,7 @@ var containers = {
 			for (var d=0;d<buttons.editDashboard.length;d++) {
 				//console.log(buttons.editDashboard[d]);
 				buttons.editDashboard[d].addEventListener('click', function(evt) {
-					app.displayObject(evt.currentTarget.dataset.id, true);
+					app.displayDashboard(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
 			}
@@ -570,7 +594,7 @@ var containers = {
 			for (var s=0;s<buttons.editSnippet.length;s++) {
 				//console.log(buttons.editSnippet[s]);
 				buttons.editSnippet[s].addEventListener('click', function(evt) {
-					app.displayObject(evt.currentTarget.dataset.id, true);
+					app.displaySnippet(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
 				});
 			}
@@ -707,27 +731,38 @@ var containers = {
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
 					node += "	<div class='mdl-cell--6-col pull-left'>";
-					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect'>";
+					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
-					node += "			<label>Back</label>";
+					node += "			<label>View</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--6-col pull-right'>";
-					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect'>";
+					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "</section>";
-				} 
+				} else {
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
+					node += "	<div class='mdl-cell--12-col pull-right'>";
+					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+					node += "			<i class='material-icons'>edit</i>";
+					node += "			<label>Edit</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "</section>";
+				}
 
 				(containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
 				
+				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					app.refreshButtonsSelectors();
-					buttons.backObject.addEventListener('click', function(evt) { app.setSection('objects'); }, false);
+					buttons.backObject.addEventListener('click', function(evt) { app.displayObject(object.id, false); }, false);
 					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
+				} else {
+					buttons.editObject2.addEventListener('click', function(evt) { app.displayObject(object.id, true); evt.preventDefault(); }, false);
 				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
@@ -1429,7 +1464,7 @@ var containers = {
 				field += "<div class='mdl-selectfield mdl-js-selectfield  mdl-selectfield--floating-label'>";
 				field += "	<select class='mdl-selectfield__select' name='"+label+"'>";
 				for (var n=0; n<app.types.length; n++) {
-					var selected = value==app.types[n].name?'selected':'';
+					var selected = value==app.types[n].value?'selected':'';
 					field += "		<option "+selected+" name='"+app.types[n].name+"'>"+app.types[n].value+"</option>";
 				}
 				field += "	</select>";
@@ -1439,7 +1474,7 @@ var containers = {
 			} else if ( isEditMode == 'switch' ) {
 				var checked = value=='true'?'checked':'';
 				var id = Math.floor(Math.random() * (1000));
-				field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect' for='switch-"+id+"'>";
+				field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect' for='switch-"+id+"' data-id='switch-"+id+"'>";
 				field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"'>";
 				field += "	<span class='mdl-switch__label'></span>";
 				field += "</label>";

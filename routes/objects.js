@@ -177,16 +177,24 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * 
  * @apiUse 200
- * @apiUse 403
+ * @apiUse 401
+ * @apiUse 404
  */
 router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection('objects');
 	//console.log(objects);
-	var result;
-	objects.findAndUpdate(
-		function(i){return i.id==object_id;},
-		function(item){
+	var query = {
+			'$and': [
+					{ 'id': object_id },
+					{ 'user_id': req.user.id },
+				]
+			}
+	var object = objects.findOne( query );
+	if ( object ) {
+		var result;
+		console.log(req.body);
+		objects.chain().find({ 'id': object_id }).update(function(item) {
 			item.type				= req.body.type!==undefined?req.body.type:item.type;
 			item.name				= req.body.name!==undefined?req.body.name:item.name;
 			item.description		= req.body.description!==undefined?(req.body.description).substring(0, 1024):item.description;
@@ -197,13 +205,18 @@ router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}),
 			item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
 			item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
 			result = item;
+		});
+		if ( result !== undefined ) {
+			db.save();
+			
+			res.header('Location', '/v'+version+'/objects/'+object_id);
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() });
+		} else {
+			res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
 		}
-	);
-	//console.log(objects);
-	db.save();
-	
-	res.header('Location', '/v'+version+'/objects/'+object_id);
-	res.status(200).send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() });
+	} else {
+		res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());
+	}
 });
 
 /**
