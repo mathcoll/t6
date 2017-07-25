@@ -295,6 +295,7 @@ var containers = {
 			saveObject: document.querySelector('#object section.fixedActionButtons button.save-button'),
 			backObject: document.querySelector('#object section.fixedActionButtons button.back-button'),
 			editObject2: document.querySelector('#object section.fixedActionButtons button.edit-button'),
+			listObject: document.querySelector('#object section.fixedActionButtons button.list-button'),
 			
 			deleteFlow: document.querySelectorAll('#flows .delete-button'),
 			editFlow: document.querySelectorAll('#flows .edit-button'),
@@ -347,6 +348,7 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
+		//app.fetchItems(section);
 		window.scrollTo(0, 0);
 
 		app.refreshButtonsSelectors();
@@ -468,7 +470,7 @@ var containers = {
 				//console.log(buttons.deleteFlow[d]);
 				buttons.deleteFlow[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Flow';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all datapoints in the flow and can\'t be recovered.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
 					var myId = evt.currentTarget.dataset.id;
@@ -558,7 +560,7 @@ var containers = {
 				//console.log(buttons.deleteSnippet[d]);
 				buttons.deleteSnippet[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Snippet';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all reference to the Snippet in Dashboards.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					dialog.showModal();
 					var myId = evt.currentTarget.dataset.id;
@@ -745,7 +747,13 @@ var containers = {
 					node += "</section>";
 				} else {
 					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
-					node += "	<div class='mdl-cell--12-col pull-right'>";
+					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>List</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--6-col pull-right'>";
 					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
@@ -762,6 +770,7 @@ var containers = {
 					buttons.backObject.addEventListener('click', function(evt) { app.displayObject(object.id, false); }, false);
 					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
 				} else {
+					buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
 					buttons.editObject2.addEventListener('click', function(evt) { app.displayObject(object.id, true); evt.preventDefault(); }, false);
 				}
 				
@@ -1177,7 +1186,7 @@ var containers = {
 		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, 128):'';
 		var attributeType = item.attributes.type!==undefined?item.attributes.type:'';
 		var node = "";
-		node += "<section class=\"mdl-grid mdl-cell--"+width+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
+		node += "<div class=\"mdl-grid mdl-cell--"+width+"-col mdl-tablet--"+width/2+"-col mdl-desktop--"+width/3+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
 		node += "	<div class=\"mdl-cell mdl-cell--"+width+"-col mdl-card mdl-shadow--2dp\">";
 		node += "		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">";
 		node += "			<i class=\"material-icons\">"+iconName+"</i>";
@@ -1212,7 +1221,7 @@ var containers = {
 		node += "			</ul>";
 		node += "		</div>";
 		node += "	</div>";
-		node += "</section>";
+		node += "</div>";
 		
 		return node;
 	} //displayListItem
@@ -1666,6 +1675,7 @@ var containers = {
 					}
 				});
 			} else if ( my_snippet.attributes.type == 'clock' ) {
+				width = 12;
 				snippet += "	<div class=\"clock tile card-simpleclock material-animate margin-top-4 material-animated\">";
 				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 				snippet += "			<span class='mdl-list__item-primary-content'>";
@@ -1826,6 +1836,7 @@ var containers = {
 		.catch(function (error) {
 			toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
 		});
+		app.auth = {};
 	} //authenticate
 	
 	function chainError(error) {
@@ -1836,13 +1847,18 @@ var containers = {
 
 	app.getAllUserData = function() {
 		app.fetchItems('objects')
-		.then(app.fetchItems('flows'), chainError)
-		.then(app.fetchItems('dashboards'), chainError)
-		.then(app.fetchItems('snippets'), chainError)
-		.then(app.fetchItems('rules'), chainError)
-		.then(app.fetchItems('mqtts'), chainError)
-		.then(app.fetchProfile(), chainError)
-		.catch(chainError);
+			.then(app.fetchItems('flows')
+				.then(app.fetchItems('dashboards')
+					.then(app.fetchItems('snippets')
+						.then(app.fetchItems('rules')
+							.then(app.fetchItems('mqtts')
+								.then(app.fetchProfile(),
+								chainError).catch(chainError),
+							chainError).catch(chainError),
+						chainError).catch(chainError),
+					chainError).catch(chainError),
+				chainError).catch(chainError),
+			chainError).catch(chainError);
 	} //getAllUserData
 
 	app.getStatus = function() {
@@ -2008,7 +2024,10 @@ var containers = {
 			var cursor = e.target.result;
 			if(cursor && cursor.value['token']) {
 				jwt = cursor.value['token'];
-				//console.log(parseInt(cursor.value['exp'])-toDate);
+				//console.log(parseInt(cursor.value['exp']));
+				if ( app.debug == true ) {
+					console.log('Using JWT expiring on '+moment(parseInt(cursor.value['exp']*1000)).format(app.date_format));
+				}
 				app.bearer = jwt;
 				app.resetSections();
 				app.getAllUserData();
@@ -2161,6 +2180,7 @@ var containers = {
 	var menuOverlayElement = document.querySelector('.menu__overlay');
 	var drawerObfuscatorElement = document.getElementsByClassName('mdl-layout__obfuscator')[0];
 	var menuItems = document.querySelectorAll('.mdl-layout__drawer nav a.mdl-navigation__link');
+	var menuTabItems = document.querySelectorAll('.mdl-layout__tab-bar nav a.mdl-navigation__link');
 	var touchStartPoint, touchMovePoint;
 
 	app.showMenu = function() {

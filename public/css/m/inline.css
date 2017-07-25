@@ -123,6 +123,8 @@ section.fixedActionButtons {
 section.fixedActionButtons button.mdl-button {
     color: #fff ! important;
     position: auto;
+    width: 100%;
+    margin: 0 !important;
 }
 
 /* Snippets */
@@ -165,10 +167,34 @@ div.mdl-list__item-primary-content span.heading {
     white-space: nowrap;
     float: right;
 }
-div.mdl-list__item .mdl-list__item-secondary-content {
-    overflow: auto;
-    width: 50%;
-    display: inline-block;
+
+@media only screen and (min-device-width: 801px) {
+	div.mdl-list__item .mdl-list__item-secondary-content {
+	    overflow: auto;
+	    width: 80%;
+	    display: inline-block;
+	}
+}
+@media only screen and (min-device-width: 481px) and (max-device-width: 800px) {
+	div.mdl-list__item .mdl-list__item-secondary-content {
+	    overflow: auto;
+	    width: 70%;
+	    display: inline-block;
+	}
+}
+@media only screen and (min-device-width: 351px) and (max-device-width: 480px) {
+	div.mdl-list__item .mdl-list__item-secondary-content {
+	    overflow: auto;
+	    width: 70%;
+	    display: inline-block;
+	}
+}
+@media screen and (max-width: 350px) {
+	div.mdl-list__item .mdl-list__item-secondary-content {
+	    overflow: auto;
+	    width: 50%;
+	    display: inline-block;
+	}
 }
 div.mdl-list__item .mdl-list__item-secondary-content:only-child {
     width: 100%;
