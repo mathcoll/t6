@@ -21,6 +21,7 @@ if ( config === null ) {
 	console.log('Config is not found for '+argv.run);
 	process.exit(1);
 }
+config.postDataPoint = config.postDataPoint!==undefined?config.postDataPoint:false;
 
 var bearer		= '';
 var timestamp = moment().format('x');
@@ -67,6 +68,40 @@ if ( config.exec ) {
 	    	});
 	    } else {
 	    	console.log('exec error: ' + error + stderr);
+	    	process.exit(1);
+	    }
+	});
+} else if( config.postDataPoint == false ) {
+	request({
+		url: config.api+'authenticate',
+		method: 'POST',
+		json: true,
+		headers: {
+			'User-Agent': "t6 javascript file "+argv.run,
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+		},
+		body: auth
+	}, function (error, response, body) {
+		bearer = body.token;
+		if ( bearer && !error ) {
+	    	request({
+	    		url: config.api_endpoint,
+	    		method: config.api_verb,
+	    		json: true,
+	    		headers: {
+	    			'User-Agent': "t6 javascript file "+argv.run,
+	    			'Accept': 'application/json',
+	    			'Content-Type': 'application/json',
+	    			'Authorization': 'Bearer '+bearer,
+	    		},
+	    		body: body
+	    	}, function (error, response, body){
+	    		console.log("statusCode: "+response.statusCode + " <"+argv.run+">");
+	    		console.log(body);
+	    	});
+		} else {
+	    	console.log('JWT error: ' + bearer);
 	    	process.exit(1);
 	    }
 	});

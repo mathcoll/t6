@@ -254,15 +254,36 @@ router.post('/authenticate', function (req, res) {
 		};
 		
 		var user = users.findOne(queryU);
-		user.permissions = null;
-		user.gravatar = null;
 	}
 	if ( !user || !email || !password ) {
         return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));
     } else {
-        var token = jwt.sign(user, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+    	var payload = JSON.parse(JSON.stringify(user));
+    	payload.permissions = undefined;
+    	payload.token = undefined;
+    	payload.password = undefined;
+    	payload.gravatar = undefined;
+    	payload.meta = undefined;
+    	payload.$loki = undefined;
+        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
         return res.status(200).json( {status: 'ok', token: token} );
     }
+});
+
+
+/**
+ * @api {post} /refresh Refresh a JWT Token
+ * @apiName Refresh a JWT Token
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
+ */
+router.post('/refresh', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var originalDecoded = jwt.decode((req.headers['authorization'].split(" "))[1], {complete: true});
+	originalDecoded.payload.exp = undefined;
+    var token = jwt.sign(originalDecoded.payload, jwtsettings.secret, { expiresIn: jwtsettings.refreshExpiresInSeconds });
+    return res.status(200).json( {status: 'ok', token: token} );
 });
 
 /**
@@ -270,6 +291,8 @@ router.post('/authenticate', function (req, res) {
  * @apiName API Status
  * @apiGroup General
  * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
  */
 router.get('/status', function(req, res, next) {
 	var status = {
@@ -288,6 +311,8 @@ router.get('/status', function(req, res, next) {
  * @apiName API Cards Index
  * @apiGroup General
  * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
  */
 router.get('/index', function(req, res, next) {
 	var index = [

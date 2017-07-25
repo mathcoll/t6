@@ -19,8 +19,8 @@ var tokens;
  * @apiUse 403
  * @apiUse 404
  */
-router.get('/reminderMail', bearerAdmin, function (req, res) {
-	if ( req.token !== undefined && process.env.NODE_ENV === 'production' ) {
+router.get('/reminderMail', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role === 'admin' && process.env.NODE_ENV === 'production' ) {
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
 		var query = { '$and': [
@@ -70,7 +70,7 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
 			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 19, 'code': 403, 'message': 'Forbidden '+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({'id': 19, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());
 	}
 });
 
@@ -86,8 +86,8 @@ router.get('/reminderMail', bearerAdmin, function (req, res) {
  * @apiUse 403
  * @apiUse 404
  */
-router.get('/changePassword', bearerAdmin, function (req, res) {
-	if ( req.token !== undefined && process.env.NODE_ENV === 'production' ) {
+router.get('/changePassword', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role === 'admin' && process.env.NODE_ENV === 'production' ) {
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
 		var query = { '$and': [
@@ -137,7 +137,7 @@ router.get('/changePassword', bearerAdmin, function (req, res) {
 			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());
 	}
 });
 
@@ -168,8 +168,8 @@ router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 });
 
 /**
- * @api {post} /users/me/token Create New Token
- * @apiName Create New Token
+ * @api {post} /users/me/token Create New Token DEPRECATED
+ * @apiName Create New Token DEPRECATED
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiDescription DEPRECATED. Please use (#User:Create a JWT Token)
