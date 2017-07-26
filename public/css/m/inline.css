@@ -373,10 +373,11 @@ section#profile .subhead {
     margin: 5px 0 !important;
 }
 section.mdl-grid {
-    padding: 5px 5px 0px 5px !important;
+    padding: 5px 8px 0px 8px !important;
 }
 .mdl-cell--12-col, .mdl-cell--12-col-phone.mdl-cell--12-col-phone {
 	width:100% !important;
+    padding: 0px 8px !important;
 }
 .mdl-cell--6-col, .mdl-cell--6-col-desktop.mdl-cell--6-col-desktop {
 	width:50% !important;
