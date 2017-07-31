@@ -162,12 +162,26 @@ Actions can be: email, SMS, API calls (e.g. twitter), etc ...
 ```
 Install node (if needed): https://nodejs.org/en/
 Install npm (if needed): https://github.com/npm/npm
+_Do not use sudo/root to install t6, this is not necessary_
 git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
 npm install
-rename "settings-default_hostname.js" according to your server hostname and edit the file.
-rename "rules-default_hostname.js" according to your server hostname.
-rename "sensors-default_hostname.js" according to your server hostname.
-rename "db-default_hostname.json" according to your server hostname.
+rename "settings-hostname.js" according to your server _hostname_ and edit the file.
+rename "rules-hostname.js" according to your server _hostname_.
+rename "sensors-hostname.js" according to your server _hostname_.
+rename "db-hostname.json" according to your server _hostname_.
+```
+On linux, to identify your hostname, you can rune the following command:
+```
+hostname
+```
+
+Please have a look at the options in _settings-hostname.js_, there are some secrets to be customized.
+
+Once the setting are done, you can initialize the influxDb databases:
+```
+CREATE DATABASE "t6"
+CREATE DATABASE "requests" WITH DURATION 7d REPLICATION 1 SHARD DURATION 1d NAME "req"
+CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATION 1d
 ```
 
 You can add the server running as a service, tested with Ubuntu and Debian:
@@ -176,17 +190,27 @@ You can add the server running as a service, tested with Ubuntu and Debian:
 sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
 ```
 
+And then, start _t6_ using:
+```
+sudo /etc/init.d/t6 (re)start|stop|status
+```
+
 * Then set the server to run at start: 
 ```
 sudo update-rc.d t6 defaults
 ```
 
 ## t6 Troobleshooting after installation
-Q: ```sudo /etc/init.d/t6 start``` does not return any output
+Q: ```sudo /etc/init.d/t6 start``` does not return any output, what should I do?
 
 A: Try to set chmod +x to file /var/www/t6/bin/www
 
 
-Q: I got an error trying to install sqlite3
+Q: Do I need to install sqlite3?
+
+A: sqlite3 is not required and can be disabled in the settings. sqlite3 lbrary to store data is not maintained and become obsolete.
+
+
+Q: I got an error trying to install sqlite3, what should I do?
 
 A: Ubuntu and Debian usually have a dedicated nodejs version, try removing "node" and install ```sudo apt-get install nodejs-legacy``` instead, then ```sudo npm install sqlite3@3.0.5```.
