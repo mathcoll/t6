@@ -11,4 +11,18 @@ router.get('/', function(req, res) {
 	});
 });
 
+router.get('/applicationStart', function(req, res) {
+	res.render('m/applicationStart', {
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
+router.get('/networkError', function(req, res) {
+	res.render('m/networkError', {
+		currentUrl: req.path,
+		user: req.session.user
+	});
+});
+
 module.exports = router;
