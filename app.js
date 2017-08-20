@@ -13,6 +13,7 @@ var compression		= require('compression');
 var VERSION			= require("./package.json").version;
 expressJwt			= require('express-jwt');
 jwt					= require('jsonwebtoken');
+crypto				= require('crypto');
 favicon				= require('serve-favicon');
 request				= require('request');
 path				= require('path');	
