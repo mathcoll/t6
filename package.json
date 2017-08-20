@@ -22,7 +22,7 @@
   "dependencies": {
     "bearer": "0.0.20",
     "body-parser": "^1.17.2",
-    "compression": "^1.6.2",
+    "compression": "^1.7.0",
     "connect-timeout": "^1.9.0",
     "cookie-parser": "^1.4.1",
     "debug": "^2.6.7",
