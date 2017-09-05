@@ -1,14 +1,14 @@
 
-var dataCacheName= 't6-cache-2017-06-20_2337';
-var cacheName= 't6-cache-2017-06-20_2337';
+var dataCacheName= 't6-cache-2017-09-02_2148';
+var cacheName= 't6-cache-2017-09-02_2148';
 var filesToCache = [
     '/m',
     '/manifest.json',
+    '/m/applicationStart',
     
     '/js/m/material.min.js',
     '/js/m/t6app.js',
     '/js/m/toast.js',
-    '/js/t6.min.js',
     '/js/flot/jquery.flot.js',
     '/js/flot/jquery.flot.time.min.js',
     '/js/m/moment.min-2.18.1.js',
@@ -29,22 +29,22 @@ self.addEventListener('hashchange', function() {
 });
 
 self.addEventListener('install', function(e) {
-	console.log('[ServiceWorker] Install');
+	console.log('[ServiceWorker] Install.');
 	e.waitUntil(
 		caches.open(cacheName).then(function(cache) {
-			console.log('[ServiceWorker] Caching app shell');
+			console.log('[ServiceWorker] Caching app shell.');
 			return cache.addAll(filesToCache);
 		})
 	);
 });
 
 self.addEventListener('activate', function(e) {
-	console.log('[ServiceWorker] Activate');
+	console.log('[ServiceWorker] Activate.');
+	var cacheWhitelist = ['2.0.1'];
 	e.waitUntil(
 		caches.keys().then(function(keyList) {
 			return Promise.all(keyList.map(function(key) {
-				if (key !== cacheName && key !== dataCacheName) {
-					console.log('[ServiceWorker] Removing old cache', key);
+				if (cacheWhitelist.indexOf(key) === -1) {
 					return caches.delete(key);
 				}
 			}));
@@ -53,53 +53,76 @@ self.addEventListener('activate', function(e) {
 	return self.clients.claim();
 });
 
-self.addEventListener('fetch', function(event) {
-	console.log('Handling fetch event for', event.request.url);
-	if (event.request.url.indexOf('2.0.1') < -1) {
-		event.respondWith(
-			caches.match(event.request).then(function(response) {
-				if (response) {
-					console.log('Found response in cache');// , response
-					return response;
-				}
-				console.log('No response found in cache. About to fetch from network...');
-				//toast('No response found in cache. About to fetch from network...', 5000);
-				return fetch(event.request).then(function(response) {
-					/*
-					caches.open(cacheName).then(function(cache) {
-						console.log('About to put');
-						cache.put(event.request, response.clone());
-						console.log('Put is done');
-						//toast('Put is done.', 5000);
-					});
-					*/
-					caches.open(cacheName).then(function(cache) {
-						return cache.addAll([event.request]);
-					})
-					return response;
-				}).catch(function(error) {
-					console.error('Fetching failed:', error);
-					throw error;
-				});
-			})
-		);
+/*
+self.addEventListener('fetch', function(e) {
+	console.log('[ServiceWorker] The service worker is serving the asset.');
+	if (e.request.url.indexOf('authenticate') > -1) {
+		console.log('[ServiceWorker] Not cacheable.');
+		// We should get the policy from server
+		e.respondWith(fromServer(e.request));
 	} else {
-		console.log('No caching on this file.');
+		e.respondWith(fromCache(e.request));
+		e.waitUntil(
+				update(e.request)
+				.then(refresh)
+		);
 	}
 });
+*/
+
+function fromServer(request) {
+	console.log('[ServiceWorker] '+request.url+' from server.');
+	return fetch(request).then(function (response) {
+		return response;
+	});
+}
+
+function fromCache(request) {
+	console.log('[ServiceWorker] '+request.url+' from cache.');
+	return caches.open(cacheName).then(function (cache) {
+		return cache.match(request);
+	});
+}
+
+function update(request) {
+	console.log('[ServiceWorker] '+request.url+' from server.');
+	return caches.open(cacheName).then(function (cache) {
+		return fetch(request).then(function (response) {
+			return cache.put(request, response.clone()).then(function () {
+				return response;
+			});
+		});
+	});
+}
+
+function refresh(response) {
+	console.log('[ServiceWorker] Refresh Cache.');
+	return self.clients.matchAll().then(function (clients) {
+		clients.forEach(function (client) {
+			var message = {
+				type: 'refresh',
+				url: response.url,
+				eTag: response.headers.get('ETag')
+			};
+			client.postMessage(JSON.stringify(message));
+		});
+	});
+}
 
 self.addEventListener('push', function(event) {
 	//console.log('[ServiceWorker] Push Received.');
-	//console.log('[ServiceWorker] Push had this data: ', event.data.text());
-	var notif = JSON.parse(event.data.text());
-	const title = notif.title!==null?notif.title:'t6 notification';
-	const options = {
-		body: notif.body,
-		icon: notif.icon!==null?notif.icon:'/img/m/icons/icon-128x128.png',
-	};
-	if ( notif.type == 'message' ) {
-		event.waitUntil(self.registration.showNotification(title, options));
-	} else {
-		console.log(notif);
+	//console.log('[ServiceWorker] Push had this data: ', event);
+	if( event.data && event.data.text() ) {
+		var notif = JSON.parse(event.data.text());
+		const title = notif.title!==null?notif.title:'t6 notification';
+		const options = {
+			body: notif.body,
+			icon: notif.icon!==null?notif.icon:'/img/m/icons/icon-128x128.png',
+		};
+		if ( notif.type == 'message' ) {
+			event.waitUntil(self.registration.showNotification(title, options));
+		} else {
+			console.log(notif);
+		}
 	}
 });

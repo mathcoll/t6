@@ -68,7 +68,14 @@ var app = {
 		{name: 'tv', value:'Tv'},
 		{name: 'videogame_asset', value:'Videogame Asset'},
 		{name: 'watch', value:'Watch'},
-	]
+	],
+	defaultResources: {
+		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: 0, latitude: 0, position: ''}},
+		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
+		dashboard: {id:'', attributes: {name: '', description: ''}},
+		snippet: {id:'', attributes: {name: ''}},
+		rule: {id:'', attributes: {}},
+	},
 };
 
 var buttons = {}; // see function app.refreshButtonsSelectors()
@@ -76,8 +83,10 @@ var containers = {
 	index: document.querySelector('section#index'),
 	objects: document.querySelector('section#objects'),
 	object: document.querySelector('section#object'),
+	object_add: document.querySelector('section#object_add'),
 	flows: document.querySelector('section#flows'),
 	flow: document.querySelector('section#flow'),
+	flow_add: document.querySelector('section#flow_add'),
 	dashboards: document.querySelector('section#dashboards'),
 	dashboard: document.querySelector('section#dashboard'),
 	snippets: document.querySelector('section#snippets'),
@@ -114,42 +123,46 @@ var containers = {
 	function setSignupAction() {
 		for (var i in buttons.user_create) {
 			if ( buttons.user_create[i].childElementCount > -1 ) {
-				buttons.user_create[i].addEventListener('click', function(evt) {
-					var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
-					var email = myForm.querySelector("form.signup input[name='email']").value;
-					var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
-					var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
-					var postData = {"email":email, "firstName":firstName, "lastName":lastName};
-					if ( email ) {
-						var myHeaders = new Headers();
-						myHeaders.append("Content-Type", "application/json");
-						var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
-						var url = app.baseUrl+"/"+app.api_version+"/users";
-						
-						fetch(url, myInit)
-						.then(
-							fetchStatusHandler
-						).then(function(fetchResponse){
-							return fetchResponse.json();
-						})
-						.then(function(response) {
-							app.setSection('loginForm');
-							toast('Welcome, have a look to your inbox!', {timeout:3000, type: 'done'});
-						})
-						.catch(function (error) {
-							if (app.debug == true) {
-								console.log(error);
-							}
-							toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
-						});
-					} else {
-						toast('We can\'t process your signup.', {timeout:3000, type: 'warning'});
-					}
-					evt.preventDefault();
-				}, false);
+				buttons.user_create[i].addEventListener('click', onSignupButtonClick, false);
 			}
 		}
 	}; //setSignupAction
+	
+	function onSignupButtonClick(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+		var email = myForm.querySelector("form.signup input[name='email']").value;
+		var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
+		var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
+		var postData = {"email":email, "firstName":firstName, "lastName":lastName};
+		if ( email ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
+			var url = app.baseUrl+"/"+app.api_version+"/users";
+			
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				if ( app.debug === true ) {
+					app.setSection('loginForm');
+				}
+				toast('Welcome, have a look to your inbox!', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				if (app.debug == true) {
+					console.log(error);
+				}
+				toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+			});
+		} else {
+			toast('We can\'t process your signup.', {timeout:3000, type: 'warning'});
+		}
+		evt.preventDefault();
+	} //onSignupButtonClick
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -270,9 +283,48 @@ var containers = {
 				toast('Object has not been saved.', {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
-			evt.preventDefault();
 		}
 	} //onSaveObject
+	
+	app.onAddObject = function(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var body = {
+			type: myForm.querySelector("select[name='Type']").value,
+			name: myForm.querySelector("input[name='Name']").value,
+			description: myForm.querySelector("textarea[name='Description']").value,
+			position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
+			longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
+			latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
+			ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
+			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+		};
+		console.log(JSON.stringify(body));
+
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+'/'+app.api_version+'/objects/';
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			/*
+			var objectContainer = document.querySelector("section#objects section[data-id=\""+object_id+"\"]");
+			objectContainer.querySelector("h2").innerHTML = body.name;
+			objectContainer.querySelector("span.mdl-list__item-secondary-content span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, 128));
+			*/
+			toast('Object has been added.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			toast('Object has not been added.', {timeout:3000, type: 'error'});
+		});
+		evt.preventDefault();
+	} //onAddObject
 	
 	app.refreshButtonsSelectors = function() {
 		componentHandler.upgradeDom();
@@ -296,6 +348,8 @@ var containers = {
 			backObject: document.querySelector('#object section.fixedActionButtons button.back-button'),
 			editObject2: document.querySelector('#object section.fixedActionButtons button.edit-button'),
 			listObject: document.querySelector('#object section.fixedActionButtons button.list-button'),
+			addObject: document.querySelector('#object_add section.fixedActionButtons button.add-button'),
+			addObjectBack: document.querySelector('#object_add section.fixedActionButtons button.back-button'),
 			
 			deleteFlow: document.querySelectorAll('#flows .delete-button'),
 			editFlow: document.querySelectorAll('#flows .edit-button'),
@@ -325,18 +379,18 @@ var containers = {
 	}; //nl2br
 
 	app.setExpandAction = function() {
-		app.refreshButtonsSelectors();
 		componentHandler.upgradeDom();
+		app.refreshButtonsSelectors();
 		for (var i in buttons.expandButtons) {
 			if ( (buttons.expandButtons[i]).childElementCount > -1 ) {
 				(buttons.expandButtons[i]).addEventListener('click', function(evt) {
-					var id = (evt.target.parentElement).getAttribute('for');
-					if ( id ) {
+					var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
+					if ( id != null ) {
 						document.getElementById(id).classList.toggle('hidden');
 						if ( evt.target.innerHTML == 'expand_more' ) {
-							evt.target.innerHTML = 'expand_less';
+							evt.target.querySelector('i').innerHTML = 'expand_less';
 						} else {
-							evt.target.innerHTML = 'expand_more';
+							evt.target.querySelector('i').innerHTML = 'expand_more';
 						}
 					}
 				}, false);
@@ -348,7 +402,7 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
-		//app.fetchItems(section);
+		app.fetchItems(section);
 		window.scrollTo(0, 0);
 
 		app.refreshButtonsSelectors();
@@ -375,6 +429,9 @@ var containers = {
 	}; //setSection
 
 	app.setItemsClickAction = function(type) {
+		if ( app.debug === true ) {
+			console.log('setItemsClickAction');
+		}
 		var items = document.querySelectorAll("[data-action='view']");
 		for (var i in items) {
 			if ( type == 'objects' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
@@ -410,7 +467,6 @@ var containers = {
 			return response;
 		} else if (response.status === 401 || response.status === 403) {
 			app.sessionExpired();
-			//toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
 			throw new Error(response.statusText);
 		} else {
 			throw new Error(response.statusText);
@@ -419,7 +475,7 @@ var containers = {
 
 	app.setListActions = function(type) {
 		app.refreshButtonsSelectors();
-		var dialog = document.querySelector('#dialog');
+		var dialog = document.getElementById('dialog');
 		if ( type == 'objects' ) {
 			for (var d=0;d<buttons.deleteObject.length;d++) {
 				buttons.deleteObject[d].addEventListener('click', function(evt) {
@@ -775,6 +831,7 @@ var containers = {
 				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
+					/* Localization Map */
 					var iconFeature = new ol.Feature({
 						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], 'EPSG:4326', 'EPSG:3857')),
 						name: object.attributes.name,
@@ -814,6 +871,7 @@ var containers = {
 				        }),
 					});
 					setTimeout(function() {map.updateSize();}, 1000);
+					/* End Localization Map */
 		        }
 
 				app.setExpandAction();
@@ -827,6 +885,158 @@ var containers = {
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayObject
+
+	app.displayAddObject = function(object) {
+		var node = "";
+		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
+		node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+		node += app.getField(app.icons.objects, 'Name', object.attributes.name, 'text', false, false, true);
+		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), 'textarea', false, false, true);
+		node += app.getField(app.icons.type, 'Type', object.attributes.type, 'select', false, false, true);
+		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, 'text', false, false, true);
+		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, 'text', false, false, true);
+		node += app.getField('visibility', 'Visibility', object.attributes.is_public, 'switch', false, false, true);
+		node += "	</div>";
+		node += "</section>";
+		
+		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += "		<div class=\"mdl-card__title\">";
+		node += "			<h2 class=\"mdl-card__title-text\">";
+		node += "				<i class=\"material-icons\">class</i>";
+		node += "				Custom Parameters";
+		node += "			</h2>";
+		node += "		</div>";
+		node += app.getField('note', '', '', 'text', false, false, true);
+		node += "	</div>";
+		node += "</section>";
+
+		node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
+		node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += "		<div class=\"mdl-card__title\">";
+		node += "			<h2 class=\"mdl-card__title-text\">";
+		node += "				<i class=\"material-icons\">my_location</i>";
+		node += "				Localization";
+		node += "			</h2>";
+		node += "		</div>";
+		node += app.getField('place', 'Longitude', object.attributes.longitude, 'text', false, false, true);
+		node += app.getField('place', 'Latitude', object.attributes.latitude, 'text', false, false, true);
+		node += app.getField('pin_drop', 'Position', object.attributes.position, 'text', false, false, true);
+		node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
+		node += "	</div>";
+		node += "</section>";
+		
+		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
+		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>chevron_left</i>";
+		node += "			<label>List</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>edit</i>";
+		node += "			<label>Save</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "</section>";
+
+		(containers.object_add).querySelector('.page-content').innerHTML = node;
+		componentHandler.upgradeDom();
+
+		/* Localization Map */
+		var iconFeature = new ol.Feature({
+			geometry: new ol.geom.Point(new ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857')),
+			name: '',
+			position: '',
+		});
+		var iconStyle = new ol.style.Style({
+			image: new ol.style.Icon(({
+				anchor: [12, 12],
+				anchorXUnits: 'pixels',
+				anchorYUnits: 'pixels',
+				opacity: .8,
+				size: [24, 24],
+				src: app.baseUrl+'/js/OpenLayers/img/marker.png'
+			}))
+		});
+		iconFeature.setStyle(iconStyle);
+		var vectorSource = new ol.source.Vector({});
+		vectorSource.addFeature(iconFeature);
+		var vectorLayer = new ol.layer.Vector({
+			source: vectorSource
+		});
+		var popup = new ol.Overlay({
+			element: document.getElementById('popup'),
+			//positioning: 'top',
+			stopEvent: false
+		});
+		var map = new ol.Map({
+			layers: [
+		         new ol.layer.Tile({ source: new ol.source.OSM() }),
+		         vectorLayer,
+	        ],
+	        target: 'osm',
+	        interactions: ol.interaction.defaults().extend([ new ol.interaction.DragRotateAndZoom() ]),
+	        view: new ol.View({
+	        	center: ol.proj.fromLonLat([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)]),
+	        	zoom: 2,
+	        }),
+		});
+		setTimeout(function() {map.updateSize();}, 1000);
+		/* End Localization Map */
+		
+		app.refreshButtonsSelectors();
+		buttons.addObjectBack.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
+		buttons.addObject.addEventListener('click', function(evt) { app.onAddObject(evt); }, false);
+
+		app.setExpandAction();
+		app.setSection('object_add');
+	}; //displayAddObject
+	
+	app.displayAddFlow = function(flow) {
+		var node = "";
+		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
+		node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, 'text', false, false, true);
+		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, 'text', false, false, true);
+		node += "	</div>";
+		node += "</section>";
+		
+		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
+		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>chevron_left</i>";
+		node += "			<label>List</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>edit</i>";
+		node += "			<label>Save</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "</section>";
+
+		(containers.flow_add).querySelector('.page-content').innerHTML = node;
+		componentHandler.upgradeDom();
+		app.refreshButtonsSelectors();
+
+		app.setExpandAction();
+		app.setSection('flow_add');
+	}; //displayAddFlow
+
+	app.displayAddDashboard = function(dashboard) {
+		
+	}; //displayAddDashboard
+
+	app.displayAddRule = function(rule) {
+		
+	}; //displayAddRule
+
+	app.displayAddSnippet = function(snippet) {
+		
+	}; //displayAddSnippet
 	
 	app.getCard = function(card) {
 		var output = "";
@@ -849,8 +1059,11 @@ var containers = {
 			if ( card.secondaryaction ) {
 				output += "						<a href=\"#\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\" class=\"mdl-button mdl-button--colored\"> "+ card.secondaryaction.label +"</a>&nbsp;";
 			}
-			if ( card.action ) {
+			if ( card.action && !card.internalAction ) {
 				output += "						<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
+			}
+			if ( card.internalAction ) {
+				output += "						<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\""+ card.internalAction +"\"> "+ card.action.label +"</button>";
 			}
 			output += "					</div>";
 		}
@@ -1227,107 +1440,141 @@ var containers = {
 	} //displayListItem
 
 	app.fetchItems = function(type, filter) {
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
-		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
-		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: 'GET', headers: myHeaders };
-
-		if (type == 'objects') {
-			var icon = app.icons.objects;
-			var container = (containers.objects).querySelector('.page-content');
-			var url = app.baseUrl+'/'+app.api_version+'/objects';
-			if ( filter !== undefined ) {
-				url += "?name="+escape(filter);
-			}
-			var title = 'My Objects';
-			var defaultCard = {image: '/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', action: {id: 'object_add', label: 'Add my first Object'}};
-		} else if (type == 'flows') {
-			var icon = app.icons.flows;
-			var container = (containers.flows).querySelector('.page-content');
-			var url = app.baseUrl+'/'+app.api_version+'/flows';
-			if ( filter !== undefined ) {
-				url += "?name="+escape(filter);
-			}
-			var title = 'My Flows';
-			var defaultCard = {image: '/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', action: {id: 'flow_add', label: 'Add my first Flow'}};
-		} else if (type == 'dashboards') {
-			var icon = app.icons.dashboards;
-			var container = (containers.dashboards).querySelector('.page-content');
-			var url = app.baseUrl+'/'+app.api_version+'/dashboards';
-			var title = 'My Dashboards';
-			var defaultCard = {image: '/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', action: {id: 'dashboard_add', label: 'Add my first Dashboard'}};
-		} else if (type == 'snippets') {
-			var icon = app.icons.snippets;
-			var container = (containers.snippets).querySelector('.page-content');
-			var url = app.baseUrl+'/'+app.api_version+'/snippets';
-			var title = 'My Snippets';
-			var defaultCard = {image: '/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', action: {id: 'snippet_add', label: 'Add my first Snippet'}};
-		} else if (type == 'rules') {
-			var icon = app.icons.snippets;
-			var container = (containers.rules).querySelector('.page-content');
-			var url = app.baseUrl+'/'+app.api_version+'/rules';
-			var title = 'My Rules';
-			var defaultCard = {image: '/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', action: {id: 'rule_add', label: 'Add my first Rule'}};
-		} else if (type == 'mqtts') {
-			var icon = app.icons.mqtts;
-			var container = (containers.mqtts).querySelector('.page-content');
-			var url = app.baseUrl+'/'+app.api_version+'/mqtts';
-			var title = 'My Mqtts';
-			var defaultCard = {image: '/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: 'Add my first Mqtt'}};
-		} else {
-			type='undefined';
-			if ( app.debug === true ) {
-				toast('Error no Type defined.', {timeout:3000, type: 'error'});
-			}
-		}
-
-		if (!type) {
-			if ( app.debug === true ) {
-				toast('Error: No type defined', {timeout:3000, type: 'error'});
-			}
-		}
-		
 		let promise = new Promise((resolve, reject) => {
-			fetch(url, myInit)
-			.then(
-				fetchStatusHandler
-			).then(function(fetchResponse){
-				return fetchResponse.json();
-			})
-			.then(function(response) {
-				if ( filter !== undefined ) { // If we have some filters we should clear the display first
-					container.innerHTML = "";
+			if( type === 'index' || type === 'settings' || type === 'profile' || type === 'loginForm' || type === 'signupForm' || type === 'object' || type === 'object_add' || type === 'flow' || type === 'flow_add' || type === 'dashboard' || type === 'dashboard_add' || type === 'snippet' || type === 'snippet_add' || type === 'rule' || type === 'rule_add' ) {
+				resolve();
+				return true;
+			}
+			
+			app.spinner.removeAttribute('hidden');
+			app.spinner.classList.remove('hidden');
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'GET', headers: myHeaders };
+	
+			if (type == 'objects') {
+				var icon = app.icons.objects;
+				var container = (containers.objects).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/objects';
+				if ( filter !== undefined ) {
+					url += "?name="+escape(filter);
 				}
-				if ( container.querySelector('form') ) {
-					container.querySelector('form').remove();
+				var title = 'My Objects';
+				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: 'Add my first Object'}};
+				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}};
+				
+			} else if (type == 'flows') {
+				var icon = app.icons.flows;
+				var container = (containers.flows).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/flows';
+				if ( filter !== undefined ) {
+					url += "?name="+escape(filter);
 				}
-				if ( (response.data).length == 0 && app.bearer ) {
-					var node = app.getCard(defaultCard);
-					container.innerHTML = node;
-				} else {
-					for (var i=0; i < (response.data).length ; i++ ) {
-						var item = response.data[i];
-						var node = app.displayListItem(type, 12, icon, item);
-						container.innerHTML += node;
+				var title = 'My Flows';
+				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: 'Add my first Flow'}};
+				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+
+			} else if (type == 'dashboards') {
+				var icon = app.icons.dashboards;
+				var container = (containers.dashboards).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
+				var title = 'My Dashboards';
+				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: 'Add my first Dashboard'}};
+				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				
+			} else if (type == 'snippets') {
+				var icon = app.icons.snippets;
+				var container = (containers.snippets).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/snippets';
+				var title = 'My Snippets';
+				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: 'Add my first Snippet'}};
+				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				
+			} else if (type == 'rules') {
+				var icon = app.icons.snippets;
+				var container = (containers.rules).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/rules';
+				var title = 'My Rules';
+				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: 'Add my first Rule'}};
+				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				
+			} else if (type == 'mqtts') {
+				var icon = app.icons.mqtts;
+				var container = (containers.mqtts).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
+				var title = 'My Mqtts';
+				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: 'Add my first Mqtt'}};
+				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				
+			}  else if (type == 'tokens') {
+				var icon = app.icons.tokens;
+				var container = (containers.tokens).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/tokens';
+				var title = 'My tokens';
+				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: 'Add my first Token'}};
+				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				
+			} else {
+				if ( app.debug === true ) {
+					console.log('Error on: '+type);
+				}
+				type='undefined';
+				if ( app.debug === true ) {
+					toast('Error no Type defined.', {timeout:3000, type: 'error'});
+				}
+			}
+			console.log('type:'+type);
+			if (!type) {
+				if ( app.debug === true ) {
+					toast('Error: No type defined', {timeout:3000, type: 'error'});
+				}
+			}
+
+			if ( app.isLogged ) {
+				fetch(url, myInit)
+				.then(
+					fetchStatusHandler
+				).then(function(fetchResponse){
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					if ( filter !== undefined ) { // If we have some filters we should clear the display first
+						container.innerHTML = "";
 					}
-				}
+					if ( container.querySelector('form') ) {
+						container.querySelector('form').remove();
+					}
+					if ( (response.data).length == 0 && app.bearer ) {
+						var node = app.getCard(defaultCard);
+						container.innerHTML = node;
+					} else {
+						for (var i=0; i < (response.data).length ; i++ ) {
+							var item = response.data[i];
+							var node = app.displayListItem(type, 12, icon, item);
+							container.innerHTML += node;
+						}
+					}
+					componentHandler.upgradeDom();
+					app.setItemsClickAction(type);
+					app.setListActions(type);
+					resolve();
+				})
+				.catch(function (error) {
+					if ( app.debug === true ) {
+						toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
+					}
+				});
+			} else {
+				container.innerHTML = app.getCard(defaultCard);
 				componentHandler.upgradeDom();
 				app.setItemsClickAction(type);
 				app.setListActions(type);
 				resolve();
-			})
-			/*
-			.catch(function (error) {
-				if ( app.debug === true ) {
-					toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
-				}
-			})*/
-			;
+			}
+			app.spinner.setAttribute('hidden', true);
 		});
 			
-		app.spinner.setAttribute('hidden', true);
 		return promise;
 	}; //fetchItems
 
@@ -1357,9 +1604,9 @@ var containers = {
 			if (gravatar.profile_background) {
 				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important\">";
 			} else {
-				node += "	<div class=\"card-heading heading-left\" style=\"background: url('/img/opl_img.jpg') 50% 50% !important\">";
+				node += "	<div class=\"card-heading heading-left\" style=\"background: url('//cdn.internetcollaboratif.info/img/opl_img.jpg') 50% 50% !important\">";
 			}
-			node += "		<img src=\"//gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
+			node += "		<img src=\"https://gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
 			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
 			if (gravatar.current_location) {
 				node += "		<div class=\"subhead\">";
@@ -1388,10 +1635,12 @@ var containers = {
 			node += "	</div>";
 			node += "</div>";
 			container.innerHTML = node;
-
-			document.getElementById("currentUserName").innerHTML = user.attributes.first_name+" "+user.attributes.last_name;
-			document.getElementById("currentUserEmail").innerHTML = user.attributes.email;
-			document.getElementById("currentUserHeader").setAttribute('src', gravatar.photos[0].value);
+			
+			// Profile Storage
+			localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
+			localStorage.setItem("currentUserEmail", user.attributes.email);
+			localStorage.setItem("currentUserHeader", gravatar.photos[0].value);
+			app.setDrawer();
 		})
 		.catch(function (error) {
 			if ( app.debug === true ) {
@@ -1400,6 +1649,26 @@ var containers = {
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchProfile
+	
+	app.setDrawer = function() {
+		console.log("setDrawer");
+		if ( localStorage.getItem("currentUserName") !== null ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
+		else { document.getElementById("currentUserName").innerHTML = "t6 IoT App"; }
+		
+		if ( localStorage.getItem("currentUserEmail") !== null ) { document.getElementById("currentUserEmail").innerHTML = localStorage.getItem("currentUserEmail") }
+		else { document.getElementById("currentUserEmail").innerHTML = ""; }
+		
+		if ( localStorage.getItem("currentUserHeader") !== null ) { document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader")) }
+		else { document.getElementById("currentUserHeader").setAttribute('src', "/img/m/icons/icon-128x128.png"); }
+	}
+	
+	app.resetDrawer = function() {
+		localStorage.removeItem("currentUserName");
+		localStorage.removeItem("currentUserEmail");
+		localStorage.removeItem("currentUserHeader");
+		console.log("RESET is DONE");
+		app.setDrawer();
+	}
 
 	app.fetchIndex = function() {
 		app.spinner.removeAttribute('hidden');
@@ -1798,11 +2067,11 @@ var containers = {
 
 	app.getMap = function(icon, id, longitude, latitude, isEditable, isActionable) {
 		var field = "<div class='mdl-list__item'>";
-		field += "	<span class='mdl-list__item-primary-content' id='"+id+"' style='width:100%; height:400px;'></span>";
+		field += "	<span class='mdl-list__item-primary-content map' id='"+id+"' style='width:100%; height:400px;'></span>";
 		field += "</div>";
 		return field;
 	} //getMap
-
+	
 	app.authenticate = function() {
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
@@ -1831,6 +2100,7 @@ var containers = {
 				if ( app.debug === true ) {
 					toast('Auth internal error', {timeout:3000, type: 'error'});
 				}
+				app.resetDrawer();
 			}
 		})
 		.catch(function (error) {
@@ -1929,26 +2199,24 @@ var containers = {
 		app.auth = {};
 		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
 		app.isLogged = false;
+		app.resetDrawer();
 		
 		app.setVisibleElement("signin_button"); 
 		app.setHiddenElement("logout_button");
-
-		document.getElementById("currentUserName").innerHTML = '';
-		document.getElementById("currentUserEmail").innerHTML = '';
-		document.getElementById("currentUserHeader").setAttribute('src', '');
+		app.setDrawer();
 		
 		//(containers.objects).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.object).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.flow).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.dashboard).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: '', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: '', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		(containers.snippet).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 		(containers.profile).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: '/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		//(containers.settings).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
 
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
@@ -1983,7 +2251,17 @@ var containers = {
 	var db;
 	var idbkr;
 	var objectStore;
-
+	
+	function singleExec(fn) {
+	    let lock;
+	    return async function () { 
+	        lock = lock || fn();
+	        r = await lock;
+	        lock = undefined;
+	        return r;
+	    }
+	}
+	
 	app.clearJWT = function() {
 		var jwt;
 		var tx = db.transaction(["jwt"], "readwrite");
@@ -1992,7 +2270,7 @@ var containers = {
 	}
 	
 	app.addJWT = function(jwt) {
-		var item = { token: jwt, exp: moment().add(1, 'hour').unix() };
+		var item = { token: jwt, exp: moment().add(5, 'minute').unix() };
 		var transaction = db.transaction(['jwt'], 'readwrite');
 		var store = transaction.objectStore('jwt');
 		var request = store.add(item);
@@ -2008,7 +2286,6 @@ var containers = {
 				console.log(event);
 			}
 		}
-		console.log(request);
 		//return;
 	}
 	
@@ -2030,7 +2307,7 @@ var containers = {
 				}
 				app.bearer = jwt;
 				app.resetSections();
-				app.getAllUserData();
+				// // //app.getAllUserData();
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
@@ -2068,13 +2345,72 @@ var containers = {
 		}
 		return jwt;
 	}
+
+	app.showOrientation = function() {
+		if ( app.debug === true ) {
+			toast("Orientation: " + screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
+		}
+	}
+	
+	function setPosition(position) {
+		defaultResources.object.attributes.longitude = position.coords.longitude;
+		defaultResources.object.attributes.latitude = position.coords.latitude;
+        toast("Geolocation (Accuracy="+position.coords.accuracy+") is set to: L"+position.coords.longitude+" - l"+position.coords.latitude, {timeout:3000, type: 'info'});
+	}
+	
+	function setPositionError(error) {
+		switch (error.code) {
+			case error.TIMEOUT:
+		    	if ( app.debug === true ) {
+		    		toast("Browser geolocation error !\n\nTimeout.", {timeout:3000, type: 'error'});
+		    	}
+				break;
+			case error.POSITION_UNAVAILABLE:
+				// dirty hack for safari
+				if(error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) {
+			    	if ( app.debug === true ) {
+			    		toast("Origin does not have permission to use Geolocation service - no fallback.", {timeout:3000, type: 'error'});
+			    	}
+				} else {
+			    	if ( app.debug === true ) {
+			    		toast("Browser geolocation error !\n\nPosition unavailable.", {timeout:3000, type: 'error'});
+			    	}
+				}
+				break;
+			case error.PERMISSION_DENIED:
+				if(error.message.indexOf("Only secure origins are allowed") == 0) {
+			    	if ( app.debug === true ) {
+			    		toast("Only secure origins are allowed - no fallback.", {timeout:3000, type: 'error'});
+			    	}
+				}
+				break;
+			case error.UNKNOWN_ERROR:
+		    	if ( app.debug === true ) {
+		    		toast("Can't find your position - no fallback.", {timeout:3000, type: 'error'});
+		    	}
+				break;
+		}
+	}
+	
+	app.getLocation = function() {
+	    if (navigator.geolocation) {
+	    	var options = { enableHighAccuracy: false, timeout: 200000, maximumAge: 500000 };
+	        navigator.geolocation.getCurrentPosition(setPosition, setPositionError, options);
+	    } else {
+	    	if ( app.debug === true ) {
+	    		toast("Geolocation is not supported by this browser.", {timeout:3000, type: 'warning'});
+	    	}
+	    }
+	}
 	
 	/* *********************************** Run the App *********************************** */
 	document.getElementById('search-exp').addEventListener('keypress', function(e) {
 	    if(e.keyCode === 13) {
 	        e.preventDefault();
 	        var input = this.value;
-	        alert("Searching for "+input);
+	        if ( app.debug === true ) {
+	        	alert("Searching for "+input);
+	        }
 	    }
 	});
 	
@@ -2093,12 +2429,12 @@ var containers = {
 	});
 	app.refreshButtonsSelectors();
 	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('loginForm');}, false);
-	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
-	buttons.createObject.addEventListener('click', function() {app.setSection('object_add')}, false);
-	buttons.createFlow.addEventListener('click', function() {app.setSection('flow_add')}, false);
-	buttons.createSnippet.addEventListener('click', function() {app.setSection('snippet_add')}, false);
-	buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add')}, false);
-	buttons.createRule.addEventListener('click', function() {app.setSection('rule_add')}, false);
+	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.resetDrawer(); app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
+	buttons.createObject.addEventListener('click', function() {app.displayAddObject(app.defaultResources.object);}, false);
+	buttons.createFlow.addEventListener('click', function() {app.displayAddFlow(app.defaultResources.flow);}, false);
+	buttons.createSnippet.addEventListener('click', function() {app.displayAddSnippet(app.defaultResources.snippet);}, false);
+	buttons.createDashboard.addEventListener('click', function() {app.displayAddDashboard(app.defaultResources.dashboard);}, false);
+	buttons.createRule.addEventListener('click', function() {app.displayAddRule(app.defaultResources.rule);}, false);
 	buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
 	buttons.notification.addEventListener('click', function(evt) { app.showNotification(); }, false);	
 	app.setHiddenElement("notification");
@@ -2121,20 +2457,16 @@ var containers = {
 			askPermission();
 			subscribeUserToPush();
 		}
-	}
-	var showOrientation = function() {
-		if ( app.debug === true ) {
-			toast("Orientation: " + screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
-		}
-	}
-	screen.orientation.addEventListener("change", showOrientation);
+	};
+	screen.orientation.addEventListener("change", app.showOrientation);
 	screen.orientation.unlock();
+	app.getLocation();
 
 	app.fetchIndex('index');
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
 	} else if( app.auth.username && app.auth.password ) {
-		app.getAllUserData();
+		// // //app.getAllUserData();
 	}
 	
 	if (!('indexedDB' in window)) {
@@ -2180,7 +2512,7 @@ var containers = {
 	var menuOverlayElement = document.querySelector('.menu__overlay');
 	var drawerObfuscatorElement = document.getElementsByClassName('mdl-layout__obfuscator')[0];
 	var menuItems = document.querySelectorAll('.mdl-layout__drawer nav a.mdl-navigation__link');
-	var menuTabItems = document.querySelectorAll('.mdl-layout__tab-bar nav a.mdl-navigation__link');
+	var menuTabItems = document.querySelectorAll('.mdl-layout__tab-bar a.mdl-navigation__link.mdl-layout__tab');
 	var touchStartPoint, touchMovePoint;
 
 	app.showMenu = function() {
@@ -2217,6 +2549,11 @@ var containers = {
 			(menuItems[item]).addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1)); app.hideMenu()}, false);
 		}
 	};
+	for (var item in menuTabItems) {
+		if ( menuTabItems[item].childElementCount > -1 ) {
+			(menuTabItems[item]).addEventListener('click', function(evt) {app.setSection((evt.target.parentNode.getAttribute('hash')!==null?evt.target.parentNode.getAttribute('hash'):evt.target.parentNode.getAttribute('href')).substr(1));}, false);
+		}
+	};
 	document.body.addEventListener('touchstart', function(event) {
 		touchStartPoint = event.changedTouches[0].pageX;
 		touchMovePoint = touchStartPoint;
@@ -2228,6 +2565,7 @@ var containers = {
 		}
 	}, false);
 
+	app.setDrawer();
 
 	/* *********************************** Offline *********************************** */
 	document.addEventListener('DOMContentLoaded', function(event) {

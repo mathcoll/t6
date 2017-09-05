@@ -102,12 +102,14 @@ body {
 .mdl-textfield.is-invalid .mdl-textfield__icon {
     color: #de3226 !important;
 }
-section[data-type="objects"] {
+section[data-type="objects"],
+div[data-type="objects"] {
 	opacity: 1;
 	transition: "opacity 5s";
 }
 
-section[data-type="objects"].removed {
+section[data-type="objects"].removed,
+div[data-type="objects"].removed {
 	transition: "opacity 5s";
 	opacity: 0;
 	width: 0;
