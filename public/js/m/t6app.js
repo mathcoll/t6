@@ -89,8 +89,10 @@ var containers = {
 	flow_add: document.querySelector('section#flow_add'),
 	dashboards: document.querySelector('section#dashboards'),
 	dashboard: document.querySelector('section#dashboard'),
+	dashboard_add: document.querySelector('section#dashboard_add'),
 	snippets: document.querySelector('section#snippets'),
 	snippet: document.querySelector('section#snippet'),
+	snippet_add: document.querySelector('section#snippet_add'),
 	profile: document.querySelector('section#profile'),
 	settings: document.querySelector('section#settings'),
 	rules: document.querySelector('section#rules'),
@@ -119,6 +121,12 @@ var containers = {
 		app.authenticate();
 		evt.preventDefault();
 	} //onLoginButtonClick
+	
+	function onStatusButtonClick(evt) {
+		app.getStatus();
+		app.setSection('status');
+		evt.preventDefault();
+	} //onStatusButtonClick
 	
 	function setSignupAction() {
 		for (var i in buttons.user_create) {
@@ -221,13 +229,15 @@ var containers = {
 			var j = JSON.parse(JSON.stringify(pushSubscription));
 			if ( j && j.keys ) {
 				settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				settings += "	<div class='md-primary md-subheader _md md-altTheme-theme'>";
+				settings += "		<div class='md-subheader-inner'>";
+				settings += "			<div class='mdl-subheader-content'>";
+				settings += "				<span class='ng-scope'>API Push</span>";
+				settings += "			</div>";
+				settings += "		</div>";
+				settings += "	</div>";
+				
 				settings += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				//settings += "		<div class=\"md-primary.md-subheader _md md-altTheme-theme\">";
-				settings += "			<span class=\"md-subheader-inner mdl-subheader-content\">";
-				settings += "				<i class=\"material-icons\">"+app.icons.settings+"</i>";
-				settings += "				API Push";
-				settings += "			</span>";
-				//settings += "		</div>";
 				settings += app.getField('cloud', 'endpoint', j.endpoint, 'text', false, false, true);
 				settings += app.getField('vpn_key', 'key', j.keys.p256dh, 'text', false, false, true);
 				settings += app.getField('vpn_lock', 'auth', j.keys.auth, 'text', false, false, true);
@@ -299,7 +309,9 @@ var containers = {
 			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
 			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
 		};
-		console.log(JSON.stringify(body));
+		if ( app.debug === true ) {
+			console.log(JSON.stringify(body));
+		}
 
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
@@ -326,6 +338,35 @@ var containers = {
 		evt.preventDefault();
 	} //onAddObject
 	
+	app.onAddFlow = function(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var body = {
+			name: myForm.querySelector("input[name='Name']").value,
+			mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
+		};
+		if ( app.debug === true ) {
+			console.log(JSON.stringify(body));
+		}
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+'/'+app.api_version+'/flows/';
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			toast('Flow has been added.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			toast('Flow has not been added.', {timeout:3000, type: 'error'});
+		});
+		evt.preventDefault();
+	} //onAddFlow
+	
 	app.refreshButtonsSelectors = function() {
 		componentHandler.upgradeDom();
 		buttons = {
@@ -334,7 +375,7 @@ var containers = {
 			notification: document.querySelector('button#notification'),
 
 			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
-			status: document.querySelector('a#statusButton'),
+			status: document.querySelectorAll('.statusButton'),
 				
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
 			user_create: document.querySelectorAll('form.signup button.createUser'),
@@ -342,6 +383,7 @@ var containers = {
 			object_create: document.querySelectorAll('.showdescription_button'),
 			
 			deleteObject: document.querySelectorAll('#objects .delete-button'),
+			deleteObject2: document.querySelectorAll('#objects .delete-button'),
 			editObject: document.querySelectorAll('#objects .edit-button'),
 			createObject: document.querySelector('#objects button#createObject'),
 			saveObject: document.querySelector('#object section.fixedActionButtons button.save-button'),
@@ -354,6 +396,8 @@ var containers = {
 			deleteFlow: document.querySelectorAll('#flows .delete-button'),
 			editFlow: document.querySelectorAll('#flows .edit-button'),
 			createFlow: document.querySelector('#flows button#createFlow'),
+			addFlow: document.querySelector('#flow_add section.fixedActionButtons button.add-button'),
+			addFlowBack: document.querySelector('#flow_add section.fixedActionButtons button.back-button'),
 			
 			deleteDashboard: document.querySelectorAll('#dashboards .delete-button'),
 			editDashboard: document.querySelectorAll('#dashboards .edit-button'),
@@ -438,6 +482,15 @@ var containers = {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
 					app.displayObject(item.dataset.id, false);
+					evt.preventDefault();
+				}, {passive: false,});
+				((items[i]).querySelector("div.mdl-card__title")).addEventListener('swl', function(evt) {
+					app.displayEditObject(item.dataset.id);
+					evt.style.left = (evt.pageX - 10) + 'px';
+					evt.preventDefault();
+				}, {passive: false,});
+				((items[i]).querySelector("div.mdl-card__title")).addEventListener('swr', function(evt) {
+					app.onDeleteObject(item.dataset.id);
 					evt.preventDefault();
 				}, {passive: false,});
 			} else if ( type == 'flows' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
@@ -697,6 +750,7 @@ var containers = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
+				node += app.getField(app.icons.objects, 'Id', object.id, false, false, false, true);
 				if ( object.attributes.description || isEdit!=true ) {
 					var description = app.nl2br(object.attributes.description);
 					node += app.getField(null, null, description, false, false, false, true);
@@ -713,14 +767,9 @@ var containers = {
 				node += "	</div>";
 				node += "</section>";
 				
+				node += app.getSubtitle('Parameters');
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-card__title\">";
-				node += "			<h2 class=\"mdl-card__title-text\">";
-				node += "				<i class=\"material-icons\">class</i>";
-				node += "				Parameters";
-				node += "			</h2>";
-				node += "		</div>";
 				if ( isEdit==true ) {
 					var description = object.attributes.description;
 					node += app.getField(app.icons.objects, 'Name', object.attributes.name, 'text', false, false, true);
@@ -746,14 +795,9 @@ var containers = {
 				node += "</section>";
 
 				if ( object.attributes.parameters && object.attributes.parameters.length > -1 ) { 
+					node += app.getSubtitle('Custom Parameters');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += "		<div class=\"mdl-card__title\">";
-					node += "			<h2 class=\"mdl-card__title-text\">";
-					node += "				<i class=\"material-icons\">class</i>";
-					node += "				Custom Parameters";
-					node += "			</h2>";
-					node += "		</div>";
 					for ( var i in object.attributes.parameters ) {
 						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true);
 					}
@@ -762,14 +806,9 @@ var containers = {
 				}
 
 				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
+					node += app.getSubtitle('Localization');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += "		<div class=\"mdl-card__title\">";
-					node += "			<h2 class=\"mdl-card__title-text\">";
-					node += "				<i class=\"material-icons\">my_location</i>";
-					node += "				Localization";
-					node += "			</h2>";
-					node += "		</div>";
 					if ( object.attributes.longitude ) {
 						node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
 					}
@@ -803,13 +842,19 @@ var containers = {
 					node += "</section>";
 				} else {
 					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
-					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "	<div class='mdl-cell--4-col pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "	<div class='mdl-cell--4-col'>";
+					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+					node += "			<i class='material-icons'>delete</i>";
+					node += "			<label>Delete</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--4-col pull-right'>";
 					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
@@ -827,6 +872,7 @@ var containers = {
 					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
 				} else {
 					buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
+					//buttons.deleteObject2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
 					buttons.editObject2.addEventListener('click', function(evt) { app.displayObject(object.id, true); evt.preventDefault(); }, false);
 				}
 				
@@ -885,10 +931,23 @@ var containers = {
 		});
 		app.spinner.setAttribute('hidden', true);
 	}; //displayObject
+	
+	app.getSubtitle = function(subtitle) {
+		var node = "<section role='heading' class='md-primary md-subheader _md md-altTheme-theme sticky'>";
+		node += "	<div class='md-subheader-inner'>";
+		node += "		<div class='mdl-subheader-content'>";
+		node += "			<span class='ng-scope'>"+subtitle+"</span>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "</section>";
+		return node;
+	}; // getSubtitle
 
 	app.displayAddObject = function(object) {
 		var node = "";
-		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
+		object.id = object.id!==""?object.id:app.getUniqueId();
+		node += app.getSubtitle('Description');
+		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
 		node += app.getField(app.icons.objects, 'Name', object.attributes.name, 'text', false, false, true);
 		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), 'textarea', false, false, true);
@@ -899,26 +958,16 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
+		node += app.getSubtitle('Custom Parameters');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += "		<div class=\"mdl-card__title\">";
-		node += "			<h2 class=\"mdl-card__title-text\">";
-		node += "				<i class=\"material-icons\">class</i>";
-		node += "				Custom Parameters";
-		node += "			</h2>";
-		node += "		</div>";
 		node += app.getField('note', '', '', 'text', false, false, true);
 		node += "	</div>";
 		node += "</section>";
 
+		node += app.getSubtitle('Localization');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 		node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += "		<div class=\"mdl-card__title\">";
-		node += "			<h2 class=\"mdl-card__title-text\">";
-		node += "				<i class=\"material-icons\">my_location</i>";
-		node += "				Localization";
-		node += "			</h2>";
-		node += "		</div>";
 		node += app.getField('place', 'Longitude', object.attributes.longitude, 'text', false, false, true);
 		node += app.getField('place', 'Latitude', object.attributes.latitude, 'text', false, false, true);
 		node += app.getField('pin_drop', 'Position', object.attributes.position, 'text', false, false, true);
@@ -946,7 +995,7 @@ var containers = {
 
 		/* Localization Map */
 		var iconFeature = new ol.Feature({
-			geometry: new ol.geom.Point(new ol.proj.transform([0, 0], 'EPSG:4326', 'EPSG:3857')),
+			geometry: new ol.geom.Point(new ol.proj.transform([parseFloat(app.defaultResources.object.attributes.longitude), parseFloat(app.defaultResources.object.attributes.latitude)], 'EPSG:4326', 'EPSG:3857')),
 			name: '',
 			position: '',
 		});
@@ -980,7 +1029,7 @@ var containers = {
 	        interactions: ol.interaction.defaults().extend([ new ol.interaction.DragRotateAndZoom() ]),
 	        view: new ol.View({
 	        	center: ol.proj.fromLonLat([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)]),
-	        	zoom: 2,
+	        	zoom: 18,
 	        }),
 		});
 		setTimeout(function() {map.updateSize();}, 1000);
@@ -1020,22 +1069,141 @@ var containers = {
 
 		(containers.flow_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
+		
 		app.refreshButtonsSelectors();
+		buttons.addFlowBack.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
+		buttons.addFlow.addEventListener('click', function(evt) { app.onAddFlow(evt); }, false);
 
 		app.setExpandAction();
 		app.setSection('flow_add');
 	}; //displayAddFlow
-
+	
 	app.displayAddDashboard = function(dashboard) {
+		var node = "";
+		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
+		node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, 'text', false, false, true);
+		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), 'textarea', false, false, true);
+		node += "	</div>";
+		node += "</section>";
 		
+		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
+		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>chevron_left</i>";
+		node += "			<label>List</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>edit</i>";
+		node += "			<label>Save</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "</section>";
+		
+		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
+		node += "	<div class='md-subheader-inner'>";
+		node += "		<div class='mdl-subheader-content'>";
+		node += "			<span class='ng-scope'>Available Snippets</span>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "	<ul class='mdl-grid'>";
+		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-valuedisplay.jpg' class='img-responsive ' alt='' /></li>";
+		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-boolean.jpg' class='img-responsive' alt='' /></li>";
+		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-flowgraph.jpg' class='img-responsive' alt='' /></li>";
+		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-weather.jpg' class='img-responsive' alt='' /></li>";
+		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-sparkline.jpg' class='img-responsive' alt='' /></li>";
+		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-simplerow.jpg' class='img-responsive' alt='' /></li>";
+		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-clock.jpg' class='img-responsive' alt='' /></li>";
+		node += "	</ul>";
+		node += "</div>";
+		
+		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
+		node += "	<div class='md-subheader-inner'>";
+		node += "		<div class='mdl-subheader-content'>";
+		node += "			<span class='ng-scope'>Grid Parameters</span>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "</div>";
+		node += "<section id='dashboard_grids' class='mdl-layout__content mdl-cell mdl-cell--12-col mdl-tabs mdl-js-tabs'>";
+		node += "	<div class='mdl-tabs__tab-bar mdl-cell mdl-cell--12-col'>";
+		node += "		<a href='#panel-1c' class='mdl-cell mdl-cell--3-col mdl-tabs__tab is-active'>1 column</a>";
+		node += "		<a href='#panel-2cl' class='mdl-cell mdl-cell--3-col mdl-tabs__tab'>2 cols Left</a>";
+		node += "		<a href='#panel-2cc' class='mdl-cell mdl-cell--3-col mdl-tabs__tab'>2 cols Centered</a>";
+		node += "		<a href='#panel-2cr' class='mdl-cell mdl-cell--3-col mdl-tabs__tab'>2 cols Right</a>";
+		node += "	</div>";
+		
+		node += "	<div class='mdl-grid mdl-tabs__panel is-active' id='panel-1c'>";
+		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--12-col mdl-shadow--2dp'>";
+		node += "			A";
+		node += "		</span>";
+		node += "	</div>";
+		
+		node += "	<div class='mdl-grid mdl-tabs__panel' id='panel-2cl'>";
+		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--4-col mdl-shadow--2dp'>";
+		node += "			A";
+		node += "		</span>";
+		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--8-col mdl-shadow--2dp'>";
+		node += "			B";
+		node += "		</span>";
+		node += "	</div>";
+		
+		node += "	<div class='mdl-grid mdl-tabs__panel' id='panel-2cc'>";
+		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--6-col mdl-shadow--2dp'>";
+		node += "			A";
+		node += "		</span>";
+		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--6-col mdl-shadow--2dp'>";
+		node += "			B";
+		node += "		</span>";
+		node += "	</div>";
+
+		node += "	<div class='mdl-grid mdl-tabs__panel' id='panel-2cr'>";
+		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--8-col mdl-shadow--2dp'>";
+		node += "			A";
+		node += "		</span>";
+		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--4-col mdl-shadow--2dp'>";
+		node += "			B";
+		node += "		</span>";
+		node += "	</div>";
+		
+		node += "	<div>&nbsp;</div>";
+		
+		node += "</section>";
+
+		(containers.dashboard_add).querySelector('.page-content').innerHTML = node;
+		componentHandler.upgradeDom();
+		app.refreshButtonsSelectors();
+
+		app.setExpandAction();
+		app.setSection('dashboard_add');
 	}; //displayAddDashboard
 
 	app.displayAddRule = function(rule) {
-		
 	}; //displayAddRule
 
 	app.displayAddSnippet = function(snippet) {
+		var node = "";
+		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+snippet.id+"\">";
+		node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, 'text', false, false, true);
+		node += "	</div>";
+		node += "</section>";
 		
+		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
+		node += "	<div class='md-subheader-inner'>";
+		node += "		<div class='mdl-subheader-content'>";
+		node += "			<span class='ng-scope'>Snippets Type</span>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "</div>";
+
+		(containers.snippet_add).querySelector('.page-content').innerHTML = node;
+		componentHandler.upgradeDom();
+		app.refreshButtonsSelectors();
+
+		app.setExpandAction();
+		app.setSection('snippet_add');
 	}; //displayAddSnippet
 	
 	app.getCard = function(card) {
@@ -1044,7 +1212,7 @@ var containers = {
 		output += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		output += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		if( card.image ) {
-			output += "		<div class=\"mdl-card__title\" style=\"background:url("+card.image+") no-repeat 50% 50%; min-height: 176px;\">";
+			output += "		<div class=\"mdl-card__title\" style=\"background:url("+card.image+") no-repeat 50% 50%;\">";
 		} else {
 			output += "		<div class=\"mdl-card__title\">";
 		}
@@ -1108,6 +1276,7 @@ var containers = {
 				node += "			</span>";
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+				node += app.getField(app.icons.flows, 'Id', flow.id, false, false, false, true);
 				if ( flow.attributes.description ) {
 					node += app.getField(null, null, app.nl2br(flow.attributes.description), false, false, false, true);
 				}
@@ -1399,7 +1568,8 @@ var containers = {
 		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, 128):'';
 		var attributeType = item.attributes.type!==undefined?item.attributes.type:'';
 		var node = "";
-		node += "<div class=\"mdl-grid mdl-cell--"+width+"-col mdl-tablet--"+width/2+"-col mdl-desktop--"+width/3+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
+		//node += "<div class=\"mdl-grid mdl-cell--"+width+"-col mdl-tablet--"+width/2+"-col mdl-desktop--"+width/3+"-col\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
+		node += "<div class=\"mdl-grid\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
 		node += "	<div class=\"mdl-cell mdl-cell--"+width+"-col mdl-card mdl-shadow--2dp\">";
 		node += "		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">";
 		node += "			<i class=\"material-icons\">"+iconName+"</i>";
@@ -1417,9 +1587,11 @@ var containers = {
 		if ( item.attributes.snippets!==undefined?item.attributes.snippets.length>-1:null ) {
 			node += app.getField(app.icons.snippets, 'Linked Snippets #', item.attributes.snippets.length, false, false, false, true);
 		}
+		/*
 		if ( attributeType !== '' ) {
 			node += app.getField(app.icons.type, 'Type', attributeType, false, false, false, true);
 		}
+		*/
 		node += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		node += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
 		node += "				<i class=\"material-icons\">"+app.icons.menu+"</i>";
@@ -1441,7 +1613,7 @@ var containers = {
 
 	app.fetchItems = function(type, filter) {
 		let promise = new Promise((resolve, reject) => {
-			if( type === 'index' || type === 'settings' || type === 'profile' || type === 'loginForm' || type === 'signupForm' || type === 'object' || type === 'object_add' || type === 'flow' || type === 'flow_add' || type === 'dashboard' || type === 'dashboard_add' || type === 'snippet' || type === 'snippet_add' || type === 'rule' || type === 'rule_add' ) {
+			if( type === 'index' || type === 'settings' || type === 'profile' || type === 'loginForm' || type === 'signupForm' || type === 'object' || type === 'object_add' || type === 'flow' || type === 'flow_add' || type === 'dashboard' || type === 'dashboard_add' || type === 'snippet' || type === 'snippet_add' || type === 'rule' || type === 'rule_add' || type === 'status' ) {
 				resolve();
 				return true;
 			}
@@ -1515,6 +1687,11 @@ var containers = {
 				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: 'Add my first Token'}};
 				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
 				
+			}  else if (type == 'status') {
+				var icon = app.icons.status;
+				var container = (containers.status).querySelector('.page-content');
+				defaultCard = {};
+				
 			} else {
 				if ( app.debug === true ) {
 					console.log('Error on: '+type);
@@ -1524,7 +1701,6 @@ var containers = {
 					toast('Error no Type defined.', {timeout:3000, type: 'error'});
 				}
 			}
-			console.log('type:'+type);
 			if (!type) {
 				if ( app.debug === true ) {
 					toast('Error: No type defined', {timeout:3000, type: 'error'});
@@ -1539,9 +1715,9 @@ var containers = {
 					return fetchResponse.json();
 				})
 				.then(function(response) {
-					if ( filter !== undefined ) { // If we have some filters we should clear the display first
+					//if ( filter !== undefined ) { // If we have some filters we should clear the display first
 						container.innerHTML = "";
-					}
+					//}
 					if ( container.querySelector('form') ) {
 						container.querySelector('form').remove();
 					}
@@ -1555,6 +1731,7 @@ var containers = {
 							container.innerHTML += node;
 						}
 					}
+					//app.showAddFAB(type);
 					componentHandler.upgradeDom();
 					app.setItemsClickAction(type);
 					app.setListActions(type);
@@ -1572,9 +1749,9 @@ var containers = {
 				app.setListActions(type);
 				resolve();
 			}
-			app.spinner.setAttribute('hidden', true);
 		});
 			
+		app.spinner.setAttribute('hidden', true);
 		return promise;
 	}; //fetchItems
 
@@ -1651,13 +1828,10 @@ var containers = {
 	}; //fetchProfile
 	
 	app.setDrawer = function() {
-		console.log("setDrawer");
 		if ( localStorage.getItem("currentUserName") !== null ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
 		else { document.getElementById("currentUserName").innerHTML = "t6 IoT App"; }
-		
 		if ( localStorage.getItem("currentUserEmail") !== null ) { document.getElementById("currentUserEmail").innerHTML = localStorage.getItem("currentUserEmail") }
 		else { document.getElementById("currentUserEmail").innerHTML = ""; }
-		
 		if ( localStorage.getItem("currentUserHeader") !== null ) { document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader")) }
 		else { document.getElementById("currentUserHeader").setAttribute('src', "/img/m/icons/icon-128x128.png"); }
 	}
@@ -1666,7 +1840,6 @@ var containers = {
 		localStorage.removeItem("currentUserName");
 		localStorage.removeItem("currentUserEmail");
 		localStorage.removeItem("currentUserHeader");
-		console.log("RESET is DONE");
 		app.setDrawer();
 	}
 
@@ -1702,23 +1875,71 @@ var containers = {
 		app.spinner.setAttribute('hidden', true);
 	}; //fetchIndex
 
+	app.showAddFAB = function(type) {
+		var showFAB = false;
+		if( type == 'objects' ) {
+			var id = 'createObject';
+			var container = (containers.objects).querySelector('.page-content');
+			showFAB = true;
+		}
+		if( type == 'flows' ) {
+			var id = 'createFlow';
+			var container = (containers.flows).querySelector('.page-content');
+			showFAB = true;
+		}
+		if( type == 'dashboards' ) {
+			var id = 'createDashboard';
+			var container = (containers.dashboards).querySelector('.page-content');
+			showFAB = true;
+		}
+		if( type == 'snippets' ) {
+			var id = 'createSnippet';
+			var container = (containers.snippets).querySelector('.page-content');
+			showFAB = true;
+		}
+		if ( showFAB ) {
+			var fab = "<div class='mdl-button--fab_flinger-container'>";
+			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored'>";
+			fab += "		<i class='material-icons'>add</i>";
+			fab += "		<span class='mdl-button__ripple-container'>";
+			fab += "			<span class='mdl-ripple'></span>";
+			fab += "		</span>";
+			fab += "	</button>";
+			fab += "</div>";
+			container.innerHTML += fab;
+			componentHandler.upgradeDom();
+			app.refreshButtonsSelectors();
+			
+			if ( buttons.createObject ) buttons.createObject.addEventListener('click', function() {app.displayAddObject(app.defaultResources.object);}, false);
+			if ( buttons.createFlow ) buttons.createFlow.addEventListener('click', function() {app.displayAddFlow(app.defaultResources.flow);}, false);
+			if ( buttons.createSnippet ) buttons.createSnippet.addEventListener('click', function() {app.displayAddSnippet(app.defaultResources.snippet);}, false);
+			if ( buttons.createDashboard ) buttons.createDashboard.addEventListener('click', function() {app.displayAddDashboard(app.defaultResources.dashboard);}, false);
+			if ( buttons.createRule ) buttons.createRule.addEventListener('click', function() {app.displayAddRule(app.defaultResources.rule);}, false);
+			if ( buttons.createMqtt ) buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
+		}
+	} // showAddFAB
+
+	app.getUniqueId = function() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	} // getUniqueId
+	
 	app.getField = function(icon, label, value, isEditMode, isActionable, isThreeLines, isVisible) {
 		var field = "";
 		var hidden = isVisible===true?"":" hidden";
 		if ( isThreeLines == true) {
-			field = "<div class='mdl-list__item mdl-list__item--three-line "+hidden+"'>";
+			field = "<div class='mdl-list__item--three-line "+hidden+"'>";
 		} else {
-			field = "<div class='mdl-list__item small-padding "+hidden+"'>";
+			field = "<div class='small-padding "+hidden+"'>";
 		}
 
 		//- PRIMARY
-		if ( icon != null || label != null ) {
-			field += "<span class='mdl-list__item-primary-content'>";
+		if ( (icon != null || label != null) && isEditMode != 'text' && isEditMode != 'textarea' && isEditMode != 'select' && isEditMode != 'switch' ) {
+			field += "<span class='mdl-list__item-primary-content mdl-list__item-sub-title'>";
 			if ( icon != null ) {
-				field += "<i class='material-icons'>"+icon+"</i>";
+				field += "	<i class='material-icons'>"+icon+"</i>";
 			}
 			if ( label != null ) {
-				field += "<label>"+label+"</label>";
+				field += "	<label class='mdl-textfield__label mdl-layout--large-screen-only'>"+label+"</label>";
 			}
 			field += "</span>";
 		}
@@ -1733,30 +1954,44 @@ var containers = {
 			}
 			field += "<span class='mdl-list__item-secondary-content'>";
 			if ( isEditMode == 'text' ) {
-				field += "<span class='mdl-list__item-sub-title'><input type='text' value='"+value+"' class='mdl-textfield__input' name='"+label+"' /></span>";
+				var id = app.getUniqueId();
+				field += "<div class='mdl-textfield mdl-js-textfield mdl-list__item-sub-title'>";
+				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+				field += "	<input type='text' value='"+value+"' class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+				field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+				field += "</div>";
 			
 			} else if ( isEditMode == 'textarea' ) {
-				field += "<span class='mdl-list__item-sub-title'><textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input' name='"+label+"'>"+value+"</textarea>";
-			
+				var id = app.getUniqueId();
+				field += "<div class='mdl-textfield mdl-js-textfield mdl-list__item-sub-title'>";
+				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+				field += "	<textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input' name='"+label+"' id='"+id+"'>"+value+"</textarea>";
+				field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+				field += "</div>";
+							
 			} else if ( isEditMode == 'select' ) {
-				field += "<div class='mdl-selectfield mdl-js-selectfield  mdl-selectfield--floating-label'>";
+				var id = app.getUniqueId();
+				field += "<div class='mdl-selectfield mdl-js-selectfield'>";
+				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 				field += "	<select class='mdl-selectfield__select' name='"+label+"'>";
 				for (var n=0; n<app.types.length; n++) {
 					var selected = value==app.types[n].value?'selected':'';
-					field += "		<option "+selected+" name='"+app.types[n].name+"'>"+app.types[n].value+"</option>";
+					field += "	<option "+selected+" name='"+app.types[n].name+"'>"+app.types[n].value+"</option>";
 				}
 				field += "	</select>";
-				//field += "	<label class='mdl-selectfield__label'>"+value+"</label>";
+				field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
 				field += "</div>";
 				
 			} else if ( isEditMode == 'switch' ) {
 				var checked = value=='true'?'checked':'';
-				var id = Math.floor(Math.random() * (1000));
+				var id = app.getUniqueId();
 				field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect' for='switch-"+id+"' data-id='switch-"+id+"'>";
-				field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"'>";
-				field += "	<span class='mdl-switch__label'></span>";
+				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+				field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"' placeholder='"+label+"'>";
+				field += "	<div class='mdl-switch__label'>The Object is visible.</div>";
 				field += "</label>";
-			
+				
+
 			} else {
 				field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
 			
@@ -1781,7 +2016,6 @@ var containers = {
 		}
 		field += "</div>";
 		//- ---------
-		
 		return field;
 	} //getField
 
@@ -2104,7 +2338,9 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
+			if ( app.debug === true ) {
+				toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
+			}
 		});
 		app.auth = {};
 	} //authenticate
@@ -2173,8 +2409,11 @@ var containers = {
 			app.setExpandAction();
 		})
 		.catch(function (error) {
-			
+			if ( app.debug === true ) {
+				toast('Can\'t display Status...' + error, {timeout:3000, type: 'error'});
+			}
 		});
+		app.spinner.setAttribute('hidden', true);
 	} //getStatus
 	
 	app.toggleElement = function(id) {
@@ -2353,9 +2592,11 @@ var containers = {
 	}
 	
 	function setPosition(position) {
-		defaultResources.object.attributes.longitude = position.coords.longitude;
-		defaultResources.object.attributes.latitude = position.coords.latitude;
-        toast("Geolocation (Accuracy="+position.coords.accuracy+") is set to: L"+position.coords.longitude+" - l"+position.coords.latitude, {timeout:3000, type: 'info'});
+		app.defaultResources.object.attributes.longitude = position.coords.longitude;
+		app.defaultResources.object.attributes.latitude = position.coords.latitude;
+		if ( app.debug === true ) {
+			toast("Geolocation (Accuracy="+position.coords.accuracy+") is set to: L"+position.coords.longitude+" - l"+position.coords.latitude, {timeout:3000, type: 'info'});
+		}
 	}
 	
 	function setPositionError(error) {
@@ -2404,6 +2645,22 @@ var containers = {
 	}
 	
 	/* *********************************** Run the App *********************************** */
+	app.fetchIndex('index');
+
+	if( !app.bearer || app.auth.username == null ) {
+		app.sessionExpired();
+	} else if( app.auth.username && app.auth.password ) {
+		// // //app.getAllUserData();
+	}
+	
+	app.refreshButtonsSelectors();
+	if ( document.querySelector('.sticky') ) {
+		if (!window.getComputedStyle(document.querySelector('.sticky')).position.match('sticky')) {
+			if ( app.debug === true ) {
+				toast("Your browser does not support 'position: sticky'!!.", {timeout:3000, type: 'info'});
+			}
+		}
+	}
 	document.getElementById('search-exp').addEventListener('keypress', function(e) {
 	    if(e.keyCode === 13) {
 	        e.preventDefault();
@@ -2427,19 +2684,36 @@ var containers = {
 	        app.fetchItems(type, this.value);
 	    }
 	});
+	
+	for (var i in buttons.status) {
+		if ( buttons.status[i].childElementCount > -1 ) {
+			buttons.status[i].removeEventListener('click', onStatusButtonClick, false);
+			buttons.status[i].addEventListener('click', onStatusButtonClick, false);
+		}
+	}
+
+	var ce=function(e,n){var a=document.createEvent("CustomEvent");a.initCustomEvent(n,true,true,e.target);e.target.dispatchEvent(a);a=null;return false},
+	nm=true,sp={x:0,y:0},ep={x:0,y:0},
+	touch={
+		touchstart:function(e){sp={x:e.touches[0].pageX,y:e.touches[0].pageY}},
+		touchmove:function(e){nm=false;ep={x:e.touches[0].pageX,y:e.touches[0].pageY}},
+		ouchend:function(e){if(nm){ce(e,'fc')}else{var x=ep.x-sp.x,xr=Math.abs(x),y=ep.y-sp.y,yr=Math.abs(y);if(Math.max(xr,yr)>20){ce(e,(xr>yr?(x<0?'swl':'swr'):(y<0?'swu':'swd')))}};nm=true},
+		touchcancel:function(e){nm=false}
+	};
+	for(var a in touch){document.addEventListener(a,touch[a],false);}
+	var h=function(e){console.log(e.type,e)};
+	
 	app.refreshButtonsSelectors();
 	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('loginForm');}, false);
 	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.resetDrawer(); app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
-	buttons.createObject.addEventListener('click', function() {app.displayAddObject(app.defaultResources.object);}, false);
-	buttons.createFlow.addEventListener('click', function() {app.displayAddFlow(app.defaultResources.flow);}, false);
-	buttons.createSnippet.addEventListener('click', function() {app.displayAddSnippet(app.defaultResources.snippet);}, false);
-	buttons.createDashboard.addEventListener('click', function() {app.displayAddDashboard(app.defaultResources.dashboard);}, false);
-	buttons.createRule.addEventListener('click', function() {app.displayAddRule(app.defaultResources.rule);}, false);
-	buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
+	if ( buttons.createObject ) buttons.createObject.addEventListener('click', function() {app.displayAddObject(app.defaultResources.object);}, false);
+	if ( buttons.createFlow ) buttons.createFlow.addEventListener('click', function() {app.displayAddFlow(app.defaultResources.flow);}, false);
+	if ( buttons.createSnippet ) buttons.createSnippet.addEventListener('click', function() {app.displayAddSnippet(app.defaultResources.snippet);}, false);
+	if ( buttons.createDashboard ) buttons.createDashboard.addEventListener('click', function() {app.displayAddDashboard(app.defaultResources.dashboard);}, false);
+	if ( buttons.createRule ) buttons.createRule.addEventListener('click', function() {app.displayAddRule(app.defaultResources.rule);}, false);
+	if ( buttons.createMqtt ) buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
 	buttons.notification.addEventListener('click', function(evt) { app.showNotification(); }, false);	
 	app.setHiddenElement("notification");
-	
-	buttons.status.addEventListener('click', function(evt) {app.getStatus(); app.setSection('status'); evt.preventDefault();}, false);
 
 	if (!('serviceWorker' in navigator)) {
 		if ( app.debug === true ) {
@@ -2461,13 +2735,6 @@ var containers = {
 	screen.orientation.addEventListener("change", app.showOrientation);
 	screen.orientation.unlock();
 	app.getLocation();
-
-	app.fetchIndex('index');
-	if( !app.bearer || app.auth.username == null ) {
-		app.sessionExpired();
-	} else if( app.auth.username && app.auth.password ) {
-		// // //app.getAllUserData();
-	}
 	
 	if (!('indexedDB' in window)) {
 		if ( app.debug === true ) {

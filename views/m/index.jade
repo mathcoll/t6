@@ -48,7 +48,7 @@ html.ltr(lang='en')
                   input#filter-exp.mdl-textfield__input(type='text', name='name', placeholder='Filter by name')
 
           nav.mdl-navigation.mdl-layout--large-screen-only
-            a#statusButton.mdl-navigation__link(href='#', rel='noopener')
+            a.mdl-navigation__link.statusButton(href='/status')
               i.material-icons favorite
               |  API Status
             a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
@@ -120,6 +120,18 @@ html.ltr(lang='en')
 
       .setting_menu
         ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton(href='/status')
+            i
+            |  API Status
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
+            a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
+              i
+              |  API Documentation
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
+            a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
+              i
+              |  GitHub
+          
           li.mdl-js-ripple-effect.mdl-menu__item#settings_button(href='#settings')
             i  
             | Settings
@@ -141,14 +153,16 @@ html.ltr(lang='en')
 
         //- List Index
         section#index.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
-          .md-primary.md-subheader._md.md-altTheme-theme
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope How does t6 works?
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content How does t6 works?
           .page-content
   
         //- List Objects
         section#objects.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='2')
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Objects
           .page-content
           
           //- Actions
@@ -169,16 +183,17 @@ html.ltr(lang='en')
   
         //- Add Object
         section#object_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope Add Object
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Add Object
           .page-content
-            p Not yet implemented.
               
 
         //- List Flows
         section#flows.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='3')
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Flows
           .page-content
           
           //- Actions
@@ -199,16 +214,18 @@ html.ltr(lang='en')
   
         //- Add Flow
         section#flow_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme(role='heading', aria-level='2')
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope Add Flow
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Add Flow
           .page-content
             p Not yet implemented.
 
 
         //- List Snippets
         section#snippets.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='4')
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Snippets
           .page-content
           
           //- Actions
@@ -228,16 +245,18 @@ html.ltr(lang='en')
   
         //- Add Snippet
         section#snippet_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope Add Snippet
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Add Snippet
           .page-content
             p Not yet implemented.
 
             
         //- List Dashboards
         section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='5')
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Dashboards
           .page-content 
           
           //- Actions
@@ -257,16 +276,18 @@ html.ltr(lang='en')
   
         //- Add Dashboard
         section#dashboard_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope Add Dashboard
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Add Dashboard
           .page-content
             p Not yet implemented.
 
 
         //- List Rules
         section#rules.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='6')
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Rules
           .page-content 
           
           //- Actions
@@ -282,16 +303,18 @@ html.ltr(lang='en')
   
         //- Add Rules
         section#rule_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope Add Rules
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Add Rules
           .page-content
             p Not yet implemented.
 
 
         //- List Mqtt
         section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='7')
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Mqtts
           .page-content 
           
           //- Actions
@@ -302,21 +325,23 @@ html.ltr(lang='en')
   
         //- Add Mqtt
         section#mqtt_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope Add Mqtt
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Add Mqtt
           .page-content
             p Not yet implemented.
 
         //- View Sign In
         section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Sign In
           .page-content
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
               form.signin.mdl-cell.mdl-cell--4-col
                 .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img.jpg) no-repeat 50% 50%; min-height: 176px;')
+                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img.jpg) no-repeat 50% 50%;min-height: 176px;')
                     h2.mdl-card__title-text Log in to t6
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
@@ -340,12 +365,15 @@ html.ltr(lang='en')
 
         //- View Sign Up
         section#signupForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Sign Up
           .page-content
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
               form.signup.mdl-cell.mdl-cell--4-col
                 .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%; min-height: 176px;')
+                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
                     h2.mdl-card__title-text Sign-Up to t6
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
@@ -371,21 +399,21 @@ html.ltr(lang='en')
               
 
         //- View My Profile
-        section#profile.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#profile.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive.mdl-grid.mdl-cell--12-col
+          .mdl-cell.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content My Profile
           .page-content
               
 
         //- View Settings
         section#settings.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-cell.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content Settings
           .page-content
               
 
         //- View Status
         section#status.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .md-primary.md-subheader._md.md-altTheme-theme
-            .md-subheader-inner
-              .mdl-subheader-content
-                span.ng-scope t6 Iot API Status
           .page-content
           
         //- Modal Dialog
@@ -399,6 +427,7 @@ html.ltr(lang='en')
 
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/md5.js')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/material.min.js')
+      script(type='application/javascript', src='#{baseUrlCdn}/js/m/mdl-selectfield.min.js')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/toast.js')
       script(type='application/javascript', src='#{baseUrlCdn}/js/vendor/jquery.min.js')
       script(type='application/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.js')

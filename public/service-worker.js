@@ -1,6 +1,6 @@
 
-var dataCacheName= 't6-cache-2017-09-02_2148';
-var cacheName= 't6-cache-2017-09-02_2148';
+var dataCacheName= 't6-cache-2017-09-06_2148';
+var cacheName= 't6-cache-2017-09-06_2148';
 var filesToCache = [
     '/m',
     '/manifest.json',

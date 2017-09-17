@@ -31,7 +31,7 @@
   "scope": "/m",
   "start_url": "/m",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "default_locale": "en",
   "lang": "en-US",
   "background_color": "#795548",
