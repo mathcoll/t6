@@ -525,6 +525,22 @@ var containers = {
 			throw new Error(response.statusText);
 		}
 	}; //fetchStatusHandler
+	
+	app.showModal = function() {
+		dialog.style.display = 'block';
+		dialog.style.position = 'fixed';
+		dialog.style.top = '20%';
+		dialog.style.zIndex = '9999';
+		//menuOverlayElement.classList.remove('menu__overlay--hide');
+		//menuOverlayElement.classList.add('menu__overlay--show');
+	}; // showModal
+	
+	app.hideModal = function() {
+		dialog.style.display = 'none';
+		dialog.style.zIndex = '-9999';
+		//menuOverlayElement.classList.add('menu__overlay--hide');
+		//menuOverlayElement.classList.remove('menu__overlay--show');
+	}; // hideModal
 
 	app.setListActions = function(type) {
 		app.refreshButtonsSelectors();
@@ -535,12 +551,12 @@ var containers = {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Object';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
-					dialog.showModal();
+					app.showModal();
 					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
@@ -581,12 +597,12 @@ var containers = {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Flow';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all datapoints in the flow and can\'t be recovered.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
-					dialog.showModal();
+					app.showModal();
 					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
@@ -626,12 +642,12 @@ var containers = {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Dashboard';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
-					dialog.showModal();
+					app.showModal();
 					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
@@ -671,12 +687,12 @@ var containers = {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Snippet';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all reference to the Snippet in Dashboards.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
-					dialog.showModal();
+					app.showModal();
 					var myId = evt.currentTarget.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
@@ -1109,14 +1125,66 @@ var containers = {
 		node += "		</div>";
 		node += "	</div>";
 		node += "	<ul class='mdl-grid'>";
-		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-valuedisplay.jpg' class='img-responsive ' alt='' /></li>";
-		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-boolean.jpg' class='img-responsive' alt='' /></li>";
-		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-flowgraph.jpg' class='img-responsive' alt='' /></li>";
+		
+		node += "		<li class='mdl-cell mdl-cell--12-col'>";
+		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-valuedisplay.jpg) no-repeat 50% 50%; min-height: 100px;'>";
+		node += "         		<h2 class='mdl-card__title-text'>1 Value Display</h2>";
+		node += "         	</div>";
+		node += "         	<div class='mdl-card__actions mdl-card--border'>";
+		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
+		node += "         			+";
+		node += "         		</a>";
+		node += "         	</div>";
+		node += "         </div>";
+		node += "		</li>";
+		
+		node += "		<li class='mdl-cell mdl-cell--12-col'>";
+		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-boolean.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
+		node += "         		<h2 class='mdl-card__title-text'>Boolean</h2>";
+		node += "         	</div>";
+		node += "         	<div class='mdl-card__actions mdl-card--border'>";
+		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
+		node += "         			+";
+		node += "         		</a>";
+		node += "         	</div>";
+		node += "         </div>";
+		node += "		</li>";
+		
+		node += "		<li class='mdl-cell mdl-cell--12-col'>";
+		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-flowgraph.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
+		node += "         		<h2 class='mdl-card__title-text'>Graph Flow</h2>";
+		node += "         	</div>";
+		node += "         	<div class='mdl-card__actions mdl-card--border'>";
+		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
+		node += "         			+";
+		node += "         		</a>";
+		node += "         	</div>";
+		node += "         </div>";
+		node += "		</li>";
+		
+		node += "		<li class='mdl-cell mdl-cell--12-col'>";
+		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-weather.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
+		node += "         		<h2 class='mdl-card__title-text'>Weather</h2>";
+		node += "         	</div>";
+		node += "         	<div class='mdl-card__actions mdl-card--border'>";
+		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
+		node += "         			Action";
+		node += "         		</a>";
+		node += "         	</div>";
+		node += "         </div>";
+		node += "		</li>";
+		
+		/*
 		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-weather.jpg' class='img-responsive' alt='' /></li>";
 		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-sparkline.jpg' class='img-responsive' alt='' /></li>";
 		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-simplerow.jpg' class='img-responsive' alt='' /></li>";
 		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-clock.jpg' class='img-responsive' alt='' /></li>";
 		node += "	</ul>";
+		*/
 		node += "</div>";
 		
 		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
@@ -1128,10 +1196,12 @@ var containers = {
 		node += "</div>";
 		node += "<section id='dashboard_grids' class='mdl-layout__content mdl-cell mdl-cell--12-col mdl-tabs mdl-js-tabs'>";
 		node += "	<div class='mdl-tabs__tab-bar mdl-cell mdl-cell--12-col'>";
-		node += "		<a href='#panel-1c' class='mdl-cell mdl-cell--3-col mdl-tabs__tab is-active'>1 column</a>";
-		node += "		<a href='#panel-2cl' class='mdl-cell mdl-cell--3-col mdl-tabs__tab'>2 cols Left</a>";
-		node += "		<a href='#panel-2cc' class='mdl-cell mdl-cell--3-col mdl-tabs__tab'>2 cols Centered</a>";
-		node += "		<a href='#panel-2cr' class='mdl-cell mdl-cell--3-col mdl-tabs__tab'>2 cols Right</a>";
+		node += "		<a href='#panel-1c' class='mdl-cell mdl-cell--6-col mdl-tabs__tab is-active'>1 column</a>";
+		node += "		<a href='#panel-2cl' class='mdl-cell mdl-cell--6-col mdl-tabs__tab'>2 cols Left</a>";
+		node += "	</div>"
+		node += "	<div class='mdl-tabs__tab-bar mdl-cell mdl-cell--12-col'>";
+		node += "		<a href='#panel-2cc' class='mdl-cell mdl-cell--6-col mdl-tabs__tab'>2 cols Centered</a>";
+		node += "		<a href='#panel-2cr' class='mdl-cell mdl-cell--6-col mdl-tabs__tab'>2 cols Right</a>";
 		node += "	</div>";
 		
 		node += "	<div class='mdl-grid mdl-tabs__panel is-active' id='panel-1c'>";
@@ -1578,6 +1648,7 @@ var containers = {
 		if ( description ) {
 			node += app.getField(null, null, description, false, false, false, true);
 		}
+		/*
 		if ( item.attributes.flows!==undefined?item.attributes.flows.length>-1:null ) {
 			node += app.getField(app.icons.flows, 'Linked Flows #', item.attributes.flows.length, false, false, false, true);
 		}
@@ -1587,7 +1658,6 @@ var containers = {
 		if ( item.attributes.snippets!==undefined?item.attributes.snippets.length>-1:null ) {
 			node += app.getField(app.icons.snippets, 'Linked Snippets #', item.attributes.snippets.length, false, false, false, true);
 		}
-		/*
 		if ( attributeType !== '' ) {
 			node += app.getField(app.icons.type, 'Type', attributeType, false, false, false, true);
 		}
@@ -2806,7 +2876,13 @@ var containers = {
 	
 	settings_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
 	logout_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
-	profile_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
+	profile_button.addEventListener('click', function(evt) {
+		if ( app.isLogged ) {
+			app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
+		} else {
+			app.setSection('loginForm');
+		}
+	}, false);
 
 	menuIconElement.addEventListener('click', app.showMenu, false);
 	menuOverlayElement.addEventListener('click', app.hideMenu, false);
