@@ -466,7 +466,7 @@ var containers = {
 		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
-		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') ) {
+		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signupForm' ) {
 			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 		}
 	}; //setSection
@@ -1674,7 +1674,7 @@ var containers = {
 	app.fetchItems = function(type, filter) {
 		let promise = new Promise((resolve, reject) => {
 			if( type === 'index' || type === 'settings' || type === 'profile' || type === 'loginForm' || type === 'signupForm' || type === 'object' || type === 'object_add' || type === 'flow' || type === 'flow_add' || type === 'dashboard' || type === 'dashboard_add' || type === 'snippet' || type === 'snippet_add' || type === 'rule' || type === 'rule_add' || type === 'status' ) {
-				//resolve();
+				resolve();
 				return false;
 			}
 			
@@ -1919,7 +1919,7 @@ var containers = {
 			"        			<input name='password' pattern=\""+pattern.password+"\" class='mdl-textfield__input' type='password'>" +
 			"       			<label for='password' class='mdl-textfield__label'>Password</label><span class='mdl-textfield__error'>Password must be provided</span>" +
 			"		        </div>" +
-			"          		<div class='mdl-card__actions mdl-card--border'><a onclick='app.setSection(\'signupForm\');' href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
+			"          		<div class='mdl-card__actions mdl-card--border'><a onclick=\"app.setSection('signupForm');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
 			"               	<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
 			"               		<i class='material-icons'>lock</i>Log in" +
 			"               	</button>" +
