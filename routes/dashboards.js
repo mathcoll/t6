@@ -60,6 +60,35 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.se
 	res.status(200).send(new DashboardSerializer(json).serialize());
 });
 
+/**
+ * @api {delete} /dashboards/:dashboard_id Delete a Dashboard
+ * @apiName Delete a Dashboard
+ * @apiGroup 3. Dashboard
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} dashboard_id Dashboard Id
+ */
+router.delete('/:dashboard_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var dashboard_id = req.params.dashboard_id;
+	dashboards	= dbDashboards.getCollection('dashboards');
+	var query = {
+		'$and': [
+			{ 'user_id' : req.user.id, }, // delete only dashboard from current user
+			{ 'id' : dashboard_id, },
+		],
+	};
+	var d = dashboards.find(query);
+	//console.log(d);
+	if ( d.length > 0 ) {
+		dashboards.remove(d);
+		dbDashboards.saveDatabase();
+		res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: dashboard_id }); // TODO: missing serializer
+	} else {
+		res.status(404).send(new ErrorSerializer({'id': 32, 'code': 404, 'message': 'Not Found'}).serialize());
+	}
+});
+
 function bearerAuthToken(req, res, next) {
 	var bearerToken;
 	var bearerHeader = req.headers['authorization'];

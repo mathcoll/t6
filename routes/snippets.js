@@ -57,6 +57,35 @@ router.get('/(:snippet_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secre
 	res.status(200).send(new SnippetSerializer(json).serialize());
 });
 
+/**
+ * @api {delete} /snippets/:snippet_id Delete a Snippet
+ * @apiName Delete a Snippet
+ * @apiGroup 4. Snippet
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} snippet_id Snippet Id
+ */
+router.delete('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var snippet_id = req.params.snippet_id;
+	snippets	= dbSnippets.getCollection('snippets');
+	var query = {
+		'$and': [
+			{ 'user_id' : req.user.id, }, // delete only snippet from current user
+			{ 'id' : snippet_id, },
+		],
+	};
+	var s = snippets.find(query);
+	//console.log(s);
+	if ( s.length > 0 ) {
+		snippets.remove(s);
+		dbSnippets.saveDatabase();
+		res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: snippet_id }); // TODO: missing serializer
+	} else {
+		res.status(404).send(new ErrorSerializer({'id': 32, 'code': 404, 'message': 'Not Found'}).serialize());
+	}
+});
+
 function bearerAuthToken(req, res, next) {
 	var bearerToken;
 	var bearerHeader = req.headers['authorization'];

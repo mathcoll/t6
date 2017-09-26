@@ -197,7 +197,23 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 router.delete('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// TODO
 	// TODO: delete all data related to that flow?
-	res.status(404).send(new ErrorSerializer({'id': 43, 'code': 404, 'message': 'Not Found', details: 'Not yet implemented... Sorry.'}).serialize());
+	var flow_id = req.params.flow_id;
+	flows	= db.getCollection('flows');
+	var query = {
+		'$and': [
+			{ 'user_id' : req.user.id, }, // delete only flow from current user
+			{ 'id' : flow_id, },
+		],
+	};
+	var f = flows.find(query);
+	//console.log(f);
+	if ( f.length > 0 ) {
+		flows.remove(f);
+		db.saveDatabase();
+		res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: flow_id }); // TODO: missing serializer
+	} else {
+		res.status(404).send(new ErrorSerializer({'id': 43, 'code': 404, 'message': 'Not Found'}).serialize());
+	}
 });
 
 function bearerAuth(req, res, next) {
