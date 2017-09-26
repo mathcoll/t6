@@ -136,7 +136,17 @@ div[data-type="objects"] {
 }
 
 section[data-type="objects"].removed,
-div[data-type="objects"].removed {
+div[data-type="objects"].removed,
+section[data-type="flows"].removed,
+div[data-type="flows"].removed,
+section[data-type="dashboards"].removed,
+div[data-type="dashboards"].removed,
+section[data-type="snippets"].removed,
+div[data-type="snippets"].removed,
+section[data-type="rules"].removed,
+div[data-type="rules"].removed,
+section[data-type="mqtts"].removed,
+div[data-type="mqtts"].removed {
 	transition: "opacity 5s";
 	opacity: 0;
 	width: 0;

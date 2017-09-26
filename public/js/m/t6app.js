@@ -3,6 +3,7 @@ var app = {
 	debug: false,
 	spinner: document.querySelector('section#loading-spinner'),
 	baseUrl: '',
+	baseUrlCdn: '//cdn.internetcollaboratif.info',
 	bearer: '',
 	auth: {},
 	isLogged: false,
@@ -104,7 +105,7 @@ var containers = {
 	'use strict';
 
 /* *********************************** General functions *********************************** */
-	function setLoginAction() {
+	function setLoginAction() {	
 		for (var i in buttons.loginButtons) {
 			if ( buttons.loginButtons[i].childElementCount > -1 ) {
 				buttons.loginButtons[i].removeEventListener('click', onLoginButtonClick, false);
@@ -155,9 +156,7 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				if ( app.debug === true ) {
-					app.setSection('loginForm');
-				}
+				app.setSection('loginForm');
 				toast('Welcome, have a look to your inbox!', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
@@ -467,8 +466,8 @@ var containers = {
 		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
-		if( document.querySelector('#'+section).querySelector('.page-content').innerHTML == '' && !app.bearer ) {
-			document.querySelector('#'+section).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').querySelector('.page-content').innerHTML;
+		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') ) {
+			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 		}
 	}; //setSection
 
@@ -531,15 +530,11 @@ var containers = {
 		dialog.style.position = 'fixed';
 		dialog.style.top = '20%';
 		dialog.style.zIndex = '9999';
-		//menuOverlayElement.classList.remove('menu__overlay--hide');
-		//menuOverlayElement.classList.add('menu__overlay--show');
 	}; // showModal
 	
 	app.hideModal = function() {
 		dialog.style.display = 'none';
 		dialog.style.zIndex = '-9999';
-		//menuOverlayElement.classList.add('menu__overlay--hide');
-		//menuOverlayElement.classList.remove('menu__overlay--show');
 	}; // hideModal
 
 	app.setListActions = function(type) {
@@ -560,7 +555,7 @@ var containers = {
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						var myHeaders = new Headers();
 						myHeaders.append("Authorization", "Bearer "+app.bearer);
 						myHeaders.append("Content-Type", "application/json");
@@ -606,7 +601,7 @@ var containers = {
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						var myHeaders = new Headers();
 						myHeaders.append("Authorization", "Bearer "+app.bearer);
 						myHeaders.append("Content-Type", "application/json");
@@ -619,6 +614,7 @@ var containers = {
 							return fetchResponse.json();
 						})
 						.then(function(response) {
+							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
 							toast('Flow has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
@@ -651,7 +647,7 @@ var containers = {
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						var myHeaders = new Headers();
 						myHeaders.append("Authorization", "Bearer "+app.bearer);
 						myHeaders.append("Content-Type", "application/json");
@@ -664,6 +660,7 @@ var containers = {
 							return fetchResponse.json();
 						})
 						.then(function(response) {
+							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
 							toast('Dashboard has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
@@ -696,7 +693,7 @@ var containers = {
 						evt.preventDefault();
 					});
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
-						dialog.close();
+						app.hideModal();
 						var myHeaders = new Headers();
 						myHeaders.append("Authorization", "Bearer "+app.bearer);
 						myHeaders.append("Content-Type", "application/json");
@@ -709,6 +706,7 @@ var containers = {
 							return fetchResponse.json();
 						})
 						.then(function(response) {
+							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
 							toast('Snippet has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
@@ -1128,7 +1126,7 @@ var containers = {
 		
 		node += "		<li class='mdl-cell mdl-cell--12-col'>";
 		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-valuedisplay.jpg) no-repeat 50% 50%; min-height: 100px;'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-valuedisplay.jpg) no-repeat 50% 50%; min-height: 100px;'>";
 		node += "         		<h2 class='mdl-card__title-text'>1 Value Display</h2>";
 		node += "         	</div>";
 		node += "         	<div class='mdl-card__actions mdl-card--border'>";
@@ -1141,7 +1139,7 @@ var containers = {
 		
 		node += "		<li class='mdl-cell mdl-cell--12-col'>";
 		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-boolean.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-boolean.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
 		node += "         		<h2 class='mdl-card__title-text'>Boolean</h2>";
 		node += "         	</div>";
 		node += "         	<div class='mdl-card__actions mdl-card--border'>";
@@ -1154,7 +1152,7 @@ var containers = {
 		
 		node += "		<li class='mdl-cell mdl-cell--12-col'>";
 		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-flowgraph.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-flowgraph.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
 		node += "         		<h2 class='mdl-card__title-text'>Graph Flow</h2>";
 		node += "         	</div>";
 		node += "         	<div class='mdl-card__actions mdl-card--border'>";
@@ -1167,7 +1165,7 @@ var containers = {
 		
 		node += "		<li class='mdl-cell mdl-cell--12-col'>";
 		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url(//cdn.internetcollaboratif.info/img/snippet-weather.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
+		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-weather.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
 		node += "         		<h2 class='mdl-card__title-text'>Weather</h2>";
 		node += "         	</div>";
 		node += "         	<div class='mdl-card__actions mdl-card--border'>";
@@ -1178,13 +1176,6 @@ var containers = {
 		node += "         </div>";
 		node += "		</li>";
 		
-		/*
-		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-weather.jpg' class='img-responsive' alt='' /></li>";
-		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-sparkline.jpg' class='img-responsive' alt='' /></li>";
-		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-simplerow.jpg' class='img-responsive' alt='' /></li>";
-		node += "		<li class='mdl-cell mdl-cell--2-col'><img src='//cdn.internetcollaboratif.info/img/snippet-clock.jpg' class='img-responsive' alt='' /></li>";
-		node += "	</ul>";
-		*/
 		node += "</div>";
 		
 		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
@@ -1282,30 +1273,30 @@ var containers = {
 		output += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		output += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		if( card.image ) {
-			output += "		<div class=\"mdl-card__title\" style=\"background:url("+card.image+") no-repeat 50% 50%;\">";
+			output += "	<div class=\"mdl-card__title\" style=\"background:url("+card.image+") no-repeat 50% 50%;\">";
 		} else {
-			output += "		<div class=\"mdl-card__title\">";
+			output += "	<div class=\"mdl-card__title\">";
 		}
-		output += "				<h2 class=\"mdl-card__title-text\" style=\"color:"+card.titlecolor+";\">" + card.title + "</h2>";
-		output += "					</div>";
-		output += "  	 				<div class=\"mdl-card__supporting-text\">" + card.description + "</div>";
+		output += "			<h2 class=\"mdl-card__title-text\" style=\"color:"+card.titlecolor+";\">" + card.title + "</h2>";
+		output += "		</div>";
+		output += "  	<div class=\"mdl-card__supporting-text\">" + card.description + "</div>";
 		if ( card.url || card.secondaryaction || card.action ) {
-			output += "  	 				<div class=\"mdl-card__actions mdl-card--border\">";
+			output += "  	<div class=\"mdl-card__actions mdl-card--border\">";
 			if ( card.url ) {
-				output += "						<a href=\""+ card.url +"\"> Get Started</a>";
+				output += "		<a href=\""+ card.url +"\"> Get Started</a>";
 			}
 			if ( card.secondaryaction ) {
-				output += "						<a href=\"#\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\" class=\"mdl-button mdl-button--colored\"> "+ card.secondaryaction.label +"</a>&nbsp;";
+				output += "		<a href=\"#\" onclick=\"app.setSection('"+ card.secondaryaction.id +"');\" class=\"mdl-button mdl-button--colored\"> "+ card.secondaryaction.label +"</a>&nbsp;";
 			}
 			if ( card.action && !card.internalAction ) {
-				output += "						<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
+				output += "		<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\"app.setSection('"+ card.action.id +"');\"> "+ card.action.label +"</button>";
 			}
 			if ( card.internalAction ) {
-				output += "						<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\""+ card.internalAction +"\"> "+ card.action.label +"</button>";
+				output += "		<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\""+ card.internalAction +"\"> "+ card.action.label +"</button>";
 			}
-			output += "					</div>";
+			output += "		</div>";
 		}
-		output += "			</div>";
+		output += "		</div>";
 		output += "</section>";
 		return output;
 	} //getCard
@@ -1456,7 +1447,6 @@ var containers = {
 				var c = document.createElement('div');
 				c.innerHTML = node;
 				((containers.flow).querySelector('.page-content')).appendChild(c);
-				componentHandler.upgradeDom();
 				componentHandler.upgradeDom();
 				app.setSection('flow');
 			}
@@ -1684,8 +1674,8 @@ var containers = {
 	app.fetchItems = function(type, filter) {
 		let promise = new Promise((resolve, reject) => {
 			if( type === 'index' || type === 'settings' || type === 'profile' || type === 'loginForm' || type === 'signupForm' || type === 'object' || type === 'object_add' || type === 'flow' || type === 'flow_add' || type === 'dashboard' || type === 'dashboard_add' || type === 'snippet' || type === 'snippet_add' || type === 'rule' || type === 'rule_add' || type === 'status' ) {
-				resolve();
-				return true;
+				//resolve();
+				return false;
 			}
 			
 			app.spinner.removeAttribute('hidden');
@@ -1703,8 +1693,8 @@ var containers = {
 					url += "?name="+escape(filter);
 				}
 				var title = 'My Objects';
-				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: 'Add my first Object'}};
-				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}};
+				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}};
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 				
 			} else if (type == 'flows') {
 				var icon = app.icons.flows;
@@ -1714,48 +1704,48 @@ var containers = {
 					url += "?name="+escape(filter);
 				}
 				var title = 'My Flows';
-				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: 'Add my first Flow'}};
-				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 
 			} else if (type == 'dashboards') {
 				var icon = app.icons.dashboards;
 				var container = (containers.dashboards).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 				var title = 'My Dashboards';
-				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: 'Add my first Dashboard'}};
-				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 				
 			} else if (type == 'snippets') {
 				var icon = app.icons.snippets;
 				var container = (containers.snippets).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
 				var title = 'My Snippets';
-				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: 'Add my first Snippet'}};
-				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: ''}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 				
 			} else if (type == 'rules') {
 				var icon = app.icons.snippets;
 				var container = (containers.rules).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/rules';
 				var title = 'My Rules';
-				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: 'Add my first Rule'}};
-				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 				
 			} else if (type == 'mqtts') {
 				var icon = app.icons.mqtts;
 				var container = (containers.mqtts).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
 				var title = 'My Mqtts';
-				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: 'Add my first Mqtt'}};
-				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}};
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 				
 			}  else if (type == 'tokens') {
 				var icon = app.icons.tokens;
 				var container = (containers.tokens).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/tokens';
 				var title = 'My tokens';
-				if ( app.isLogged ) var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: 'Add my first Token'}};
-				else var defaultCard = {image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}}
+				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: '<i class=\'material-icons\'>add</i>Add my first Token'}};
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 				
 			}  else if (type == 'status') {
 				var icon = app.icons.status;
@@ -1785,20 +1775,16 @@ var containers = {
 					return fetchResponse.json();
 				})
 				.then(function(response) {
-					//if ( filter !== undefined ) { // If we have some filters we should clear the display first
-						container.innerHTML = "";
+					container.innerHTML = "";
+					//if ( container.querySelector('form') ) {
+					//	container.querySelector('form').remove();
 					//}
-					if ( container.querySelector('form') ) {
-						container.querySelector('form').remove();
-					}
 					if ( (response.data).length == 0 && app.bearer ) {
-						var node = app.getCard(defaultCard);
-						container.innerHTML = node;
+						container.innerHTML = app.getCard(defaultCard);
+						app.displayLoginForm( container );
 					} else {
 						for (var i=0; i < (response.data).length ; i++ ) {
-							var item = response.data[i];
-							var node = app.displayListItem(type, 12, icon, item);
-							container.innerHTML += node;
+							container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
 						}
 					}
 					//app.showAddFAB(type);
@@ -1814,9 +1800,8 @@ var containers = {
 				});
 			} else {
 				container.innerHTML = app.getCard(defaultCard);
-				componentHandler.upgradeDom();
-				app.setItemsClickAction(type);
-				app.setListActions(type);
+				//app.setItemsClickAction(type);
+				//app.setListActions(type);
 				resolve();
 			}
 		});
@@ -1851,7 +1836,7 @@ var containers = {
 			if (gravatar.profile_background) {
 				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important\">";
 			} else {
-				node += "	<div class=\"card-heading heading-left\" style=\"background: url('//cdn.internetcollaboratif.info/img/opl_img.jpg') 50% 50% !important\">";
+				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+app.baseUrlCdn+"/img/opl_img.jpg') 50% 50% !important\">";
 			}
 			node += "		<img src=\"https://gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
 			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
@@ -1913,6 +1898,50 @@ var containers = {
 		app.setDrawer();
 	}
 
+	app.displayLoginForm = function(container) {
+		if ( app.isLogged === false ) {
+			var pattern = {
+				username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+				password: ".{4,}",
+			};
+			var loginForm = "<section class='content-grid mdl-grid mdl-cell--12-col'>" +
+			"	<form class='signin mdl-cell mdl-cell--12-col'>" +
+			"		<div class='mdl-card mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>" +
+			"			<div style='background:url("+app.baseUrlCdn+"/img/opl_img.jpg) no-repeat 50% 50%;min-height: 100px;' class='mdl-card__title mdl-color--primary mdl-color-text--white'>" +
+			"    			<h2 class='mdl-card__title-text'>Log in to t6</h2>" +
+			"			</div>" +
+			"			<div class='mdl-card__supporting-text'>" +
+			"    			<div class='mdl-textfield mdl-js-textfield'><i class='material-icons mdl-textfield__icon'>lock</i>" +
+			"      				<input name='username' pattern=\""+pattern.username+"\" class='mdl-textfield__input' type='text'>" +
+			"       			<label for='username' class='mdl-textfield__label'>Username</label><span class='mdl-textfield__error'>Username should be your email address</span>" +
+			"       		</div>" +
+			"  				<div class='mdl-textfield mdl-js-textfield'><i class='material-icons mdl-textfield__icon'>vpn_key</i>" +
+			"        			<input name='password' pattern=\""+pattern.password+"\" class='mdl-textfield__input' type='password'>" +
+			"       			<label for='password' class='mdl-textfield__label'>Password</label><span class='mdl-textfield__error'>Password must be provided</span>" +
+			"		        </div>" +
+			"          		<div class='mdl-card__actions mdl-card--border'><a onclick='app.setSection(\'signupForm\');' href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
+			"               	<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
+			"               		<i class='material-icons'>lock</i>Log in" +
+			"               	</button>" +
+			"           	</div>" +
+			"        	</div>" +
+			"        </div>" +
+			"    </form>" +
+			"</section>";
+			container.innerHTML += loginForm;
+			componentHandler.upgradeDom();
+			
+			var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
+			for (var i=0; i<updated.length;i++) {
+				updated[i].classList.remove('is-upgraded');
+				updated[i].removeAttribute('data-upgraded');
+			}
+			app.refreshButtonsSelectors();
+			setLoginAction();
+			setSignupAction();
+		}
+	} //displayLoginForm
+
 	app.fetchIndex = function() {
 		app.spinner.removeAttribute('hidden');
 		app.spinner.classList.remove('hidden');
@@ -1938,6 +1967,8 @@ var containers = {
 			container.innerHTML = node;
 		})
 		.catch(function (error) {
+			container.innerHTML = app.getCard( {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)'} );
+			app.displayLoginForm(container);
 			if ( app.debug === true ) {
 				toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 			}
@@ -2389,12 +2420,12 @@ var containers = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			if ( response.token ) {
-				app.bearer = response.token;
+			if ( app.bearer = response.token ) {
 				app.isLogged = true;
 				app.resetSections();
-				app.getAllUserData();
-				app.setSection('index');
+				//app.getAllUserData();
+				app.fetchProfile();
+				app.setSection('index'); // TODO, redirect the user to the previous page
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
 				
@@ -2513,20 +2544,24 @@ var containers = {
 		app.setVisibleElement("signin_button"); 
 		app.setHiddenElement("logout_button");
 		app.setDrawer();
+
+		app.refreshButtonsSelectors();
+		componentHandler.upgradeDom();
+
+		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}); //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+		//app.displayLoginForm( (containers.objects) );
 		
-		//(containers.objects).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		(containers.object).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		(containers.flow).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		(containers.dashboard).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: '', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		(containers.snippet).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.profile).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
-		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		//(containers.settings).querySelector('.page-content').innerHTML = document.querySelector('#loginForm').innerHTML;
+		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		//app.displayLoginForm( (containers.flows) );
+
+		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		//app.displayLoginForm( (containers.dashboards) );
+
+		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: '', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		//app.displayLoginForm( (containers.snippets) );
+		
+		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
 		for (var i=0; i<updated.length;i++) {
@@ -2542,7 +2577,7 @@ var containers = {
 	
 	app.resetSections = function() {
 		/* reset views to default */
-		if (app.debug == true) {console.log('resetSections()');}
+		if (app.debug === true) { console.log('resetSections()'); }
 		(containers.objects).querySelector('.page-content').innerHTML = '';
 		(containers.object).querySelector('.page-content').innerHTML = '';
 		(containers.flows).querySelector('.page-content').innerHTML = '';
