@@ -1,8 +1,8 @@
 {
   "name": "t6 IoT App",
   "short_name": "t6 IoT",
-  "version": "1.0.1",
-  "description": "",
+  "version": "1.0.2",
+  "description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
   "icons": [{
     "src": "/img/m/icons/icon-128x128.png",
       "sizes": "128x128",
@@ -29,9 +29,10 @@
           "type": "image/png"
     }],
   "scope": "/m",
-  "start_url": "/m",
+  "start_url": "/m/",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "natural",
+  "direction": "portrait",
   "default_locale": "en",
   "lang": "en-US",
   "background_color": "#795548",

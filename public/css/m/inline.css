@@ -118,6 +118,9 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
     margin-left: 48px !important;
     /*width: calc(100% - 48px) !important;*/
 }
+.mdl-progress {
+    display: inline-block !important;
+}
 .mdl-switch__label {
     left: 40px !important;
     color: #dadada !important;
