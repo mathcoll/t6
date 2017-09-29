@@ -7,6 +7,7 @@ var app = {
 	bearer: '',
 	auth: {},
 	isLogged: false,
+	RateLimit : {Limit: null, Remaining: null, Used: null},
 	date_format: 'DD/MM/YYYY, HH:mm',
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
 	icons: {
@@ -515,6 +516,11 @@ var containers = {
 	}; //setItemsClickAction
 	
 	function fetchStatusHandler(response) {
+		if ( response.headers.get('X-RateLimit-Limit') && response.headers.get('X-RateLimit-Remaining') ) {
+			app.RateLimit.Limit = response.headers.get('X-RateLimit-Limit');
+			app.RateLimit.Remaining = response.headers.get('X-RateLimit-Remaining');
+			app.RateLimit.Used = app.RateLimit.Limit - app.RateLimit.Remaining;
+		}
 		if (response.status === 200 || response.status === 201) {
 			return response;
 		} else if (response.status === 401 || response.status === 403) {
@@ -2505,7 +2511,39 @@ var containers = {
 			status += app.getField('alarm', 'Start Date', response.started_at, false, false, false, true);
 			status += "		</div>";
 			status += "	</div>";
-			status +=	"</section>";
+			status += "</section>";
+			
+			if ( app.RateLimit.Limit || app.RateLimit.Remaining ) {
+				status += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				status += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				status += "		<div class=\"mdl-list__item\">";
+				status += "			<span class='mdl-list__item-primary-content'>";
+				status += "				<h2 class=\"mdl-card__title-text\">";
+				status += "					<i class=\"material-icons\">crop_free</i>";
+				status += "					API Usage";
+				status += "				</h2>";
+				status += "			</span>";
+				status += "			<span class='mdl-list__item-secondary-action'>";
+				status += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-usage'>";
+				status += "					<i class='material-icons'>expand_more</i>";
+				status += "				</button>";
+				status += "			</span>";
+				status += "		</div>";
+				status += "		<div class='mdl-cell mdl-cell--12-col' id='status-usage'>";
+				if ( app.RateLimit.Used ) {
+					status += app.getField('center_focus_weak', 'Used', app.RateLimit.Used, false, false, false, true);
+				}
+				if ( app.RateLimit.Remaining ) {
+					status += app.getField('center_focus_strong', 'Remaining', app.RateLimit.Remaining, false, false, false, true);
+				}
+				if ( app.RateLimit.Limit ) {
+					status += app.getField('crop_free', 'Limit', app.RateLimit.Limit, false, false, false, true);
+				}
+				status += "		</div>";
+				status += "	</div>";
+				status += "</section>";
+			}
+
 			(containers.status).querySelector('.page-content').innerHTML = status;
 			app.setExpandAction();
 		})
