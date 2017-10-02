@@ -2,8 +2,6 @@ doctype html
 html.ltr(lang='en')
   head
     title t6 IoT App
-    //-var baseUrlCdn=""
-    //-var baseUrl_https=""
 
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
@@ -11,14 +9,13 @@ html.ltr(lang='en')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
     meta(name='apple-mobile-web-app-title', content='t6 IoT App')
-    meta(name='msapplication-TileImage', content='#{baseUrlCdn}/img/m/icons/icon-144x144.png')
+    meta(name='msapplication-TileImage', content='#{baseUrlCdn}/img/m/icons/icon-152x152.png')
     meta(name='msapplication-TileColor', content='#795548')
     meta(name='theme-color', content='#795548')
     
     link(rel='stylesheet', href='#{baseUrlCdn}/css/m/inline.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
     link(rel='stylesheet', href='#{baseUrlCdn}/css/OpenLayers/ol-4.1.1.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
     link(rel='stylesheet', href='//cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.brown-blue.min.css', type='text/css', data-integrity='sha256-012jnyK8Is7QqhaTAgtbKiOKRruBSrvFlNCQUsgP/Q8= sha384-awyt3b8etWsRyeyJVyF5m2f0//Hu3EumMdxBlkeJxFHajbNIiZ1Ifm9J5CJRFf5o sha512-B+axjI0IPpEXLJjTherTfp2IX4vV1Hzw0yLLtuxkjBLCAP7A1j9a76zUFpHmYAZye727jL/LDVmBYUfXN0nQbA==', data-crossorigin='anonymous')
-    link(rel='stylesheet', href='//fonts.googleapis.com/icon?family=Material+Icons', type='text/css')
     link(rel='manifest', href='/manifest.json')
     link(rel='apple-touch-icon', href='#{baseUrlCdn}/img/m/icons/icon-152x152.png')
   body
@@ -121,28 +118,28 @@ html.ltr(lang='en')
       .setting_menu
         ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton(href='/status')
-            i
+            i.material-icons favorite
             |  API Status
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
             a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
-              i
+              i.material-icons launch
               |  API Documentation
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
             a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
-              i
+              i.material-icons launch
               |  GitHub
           
           li.mdl-js-ripple-effect.mdl-menu__item#settings_button(href='#settings')
-            i  
+            i.material-icons settings
             | Settings
           li.mdl-js-ripple-effect.mdl-menu__item#profile_button(href='#profile')
-            i  
+            i.material-icons account_box
             | Profile
           li.mdl-js-ripple-effect.mdl-menu__item#signin_button(href='#loginForm')
-            i  
+            i.material-icons lock
             | Sign-In
           li.mdl-js-ripple-effect.mdl-menu__item.hidden#logout_button(href='#loginForm')
-            i  
+            i.material-icons person_add
             | Logout
 
       main.mdl-layout__content
@@ -164,22 +161,14 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Objects
           .page-content
-          
-          //- Actions
-          .mdl-button--fab_flinger-container
-            button#createObject.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
-              i.material-icons add
-          
 
         //- View Object
         section#object.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
-
   
         //- Edit Object
         section#object_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
-
   
         //- Add Object
         section#object_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -187,7 +176,6 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Add Object
           .page-content
-              
 
         //- List Flows
         section#flows.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='3')
@@ -195,22 +183,14 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Flows
           .page-content
-          
-          //- Actions
-          .mdl-button--fab_flinger-container
-            button#createFlow.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
-              i.material-icons add
-
 
         //- View Flow
         section#flow.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content 
-
   
         //- Edit Flow
         section#flow_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
-
   
         //- Add Flow
         section#flow_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -218,8 +198,6 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Add Flow
           .page-content
-            p Not yet implemented.
-
 
         //- List Snippets
         section#snippets.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='4')
@@ -227,21 +205,14 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Snippets
           .page-content
-          
-          //- Actions
-          .mdl-button--fab_flinger-container
-            button#createSnippet.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
-              i.material-icons add
 
         //- View Snippet
         section#snippet.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
-
   
         //- Edit Snippet
         section#snippet_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
-
   
         //- Add Snippet
         section#snippet_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -249,30 +220,21 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Add Snippet
           .page-content
-            p Not yet implemented.
-
             
         //- List Dashboards
         section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='5')
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Dashboards
-          .page-content 
-          
-          //- Actions
-          .mdl-button--fab_flinger-container
-            button#createDashboard.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
-              i.material-icons add
+          .page-content
 
         //- View Dashboard
         section#dashboard.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content.mdl-grid(style="padding:0;")
-
   
         //- Edit Dashboard
         section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
-
   
         //- Add Dashboard
         section#dashboard_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -280,26 +242,21 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Add Dashboard
           .page-content
-            p Not yet implemented.
-
 
         //- List Rules
         section#rules.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='6')
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Rules
-          .page-content 
-          
-          //- Actions
-          .mdl-button--fab_flinger-container
-            button#createRule.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
-              i.material-icons add
+          .page-content
 
+        //- View Rules
+        section#rule.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .page-content.mdl-grid(style="padding:0;")
 
         //- Edit Rules
         section#rule_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content
-
   
         //- Add Rules
         section#rule_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -307,21 +264,21 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Add Rules
           .page-content
-            p Not yet implemented.
-
 
         //- List Mqtt
         section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='7')
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Mqtts
-          .page-content 
-          
-          //- Actions
-          .mdl-button--fab_flinger-container
-            button#createMqtt.mdl-button.mdl-js-button.mdl-button--fab.mdl-js-ripple-effect.mdl-button--colored
-              i.material-icons add
+          .page-content
 
+        //- View Mqtts
+        section#mqtt.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .page-content.mdl-grid(style="padding:0;")
+
+        //- Edit Mqtt
+        section#mqtt_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .page-content
   
         //- Add Mqtt
         section#mqtt_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -329,7 +286,6 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Add Mqtt
           .page-content
-            p Not yet implemented.
 
         //- View Sign In
         section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -337,7 +293,6 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Sign In
           .page-content
-              
 
         //- View Sign Up
         section#signupForm.content-grid.mdl-grid.mdl-cell--12-col.is-inactive
@@ -372,7 +327,6 @@ html.ltr(lang='en')
                       i.material-icons person_add
                       | Sign-Up
               div.mdl-layout-spacer
-              
 
         //- View My Profile
         section#profile.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive.mdl-grid.mdl-cell--12-col
@@ -380,7 +334,6 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content My Profile
           .page-content
-              
 
         //- View Settings
         section#settings.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -388,7 +341,6 @@ html.ltr(lang='en')
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Settings
           .page-content
-              
 
         //- View Status
         section#status.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -406,13 +358,13 @@ html.ltr(lang='en')
       .menu__overlay
       .toast__container
 
-      script(type='application/javascript', src='#{baseUrlCdn}/js/m/md5.js', data-integrity='sha384-kMcyfxJb4SL8IpdQLMjYJfkBf4oOUMu/Wreu6PwxGc2aaCtM65NmWWc/oQbuZ2TE', data-crossorigin='anonymous')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/material.min.js', data-integrity='sha384-KxJ0gpu9LJdUtdV6oe5/l3PSF37awRaWGFhnKt8hq6vS3/Wlzy1YPuJzIwg/ljkW', data-crossorigin='anonymous')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/mdl-selectfield.min.js', data-integrity='sha384-ZgmjXta8eRivh8NdQ4IAqY6NgqVGyl5H9slPZmkkPS2Ya0WsylQk2SWzQYMtUtor', data-crossorigin='anonymous')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/toast.js', data-integrity='sha384-JawwlX3cEuRMCe1ocqsBATLWhZLe1NvF9UF1y5gspMi+57f0wfUlIOWvNSgVAzIb', data-crossorigin='anonymous')
       script(type='application/javascript', src='#{baseUrlCdn}/js/vendor/jquery.min.js', data-integrity='sha384-6ePHh72Rl3hKio4HiJ841psfsRJveeS+aLoaEf3BWfS+gTF0XdAqku2ka8VddikM', data-crossorigin='anonymous')
       script(type='application/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.js', data-integrity='sha384-cOtGO675tK0ToS95pJnNnyYnM1bhvNLkoqfU1nrUGDXEGzHBeQTQfl0jbyTLmmri', data-crossorigin='anonymous')
-      script(type='application/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.time.min.js', data-integrity='sha384-7grrYsoD2QGsoA3dpNkuY3PJabNmMfOhnu7+JFmAX+5YjfLO2TINaBu/b5khhU0H', data-crossorigin='anonymous')
-      script(type='application/javascript', src='#{baseUrlCdn}/js/m/moment.min-2.18.1.js', data-integrity='sha384-DRe+1gYJauFEenXeWS8TmYdBmDUqnR5Rcw7ax4KTqOxXWd4NAMP2VPU5H69U7yP9', data-crossorigin='anonymous')
-      script(type='application/javascript', src='#{baseUrlCdn}/js/OpenLayers/ol-4.1.1.min.js', data-integrity='sha384-oaswepoPDnt10p+m6EF7IhHMg3pFuN3ZiJ/TxSEYIdaeqZ//ihlFKScJEtyBqkPg', data-crossorigin='anonymous')
+      script(type='application/javascript', src='#{baseUrlCdn}/js/flot/jquery.flot.time.min.js', async='async', data-integrity='sha384-7grrYsoD2QGsoA3dpNkuY3PJabNmMfOhnu7+JFmAX+5YjfLO2TINaBu/b5khhU0H', data-crossorigin='anonymous')
+      script(type='application/javascript', src='#{baseUrlCdn}/js/m/moment.min-2.18.1.js', async='async', data-integrity='sha384-DRe+1gYJauFEenXeWS8TmYdBmDUqnR5Rcw7ax4KTqOxXWd4NAMP2VPU5H69U7yP9', data-crossorigin='anonymous')
+      script(type='application/javascript', src='#{baseUrlCdn}/js/OpenLayers/ol-4.1.1.min.js', async='async', data-integrity='sha384-oaswepoPDnt10p+m6EF7IhHMg3pFuN3ZiJ/TxSEYIdaeqZ//ihlFKScJEtyBqkPg', data-crossorigin='anonymous')
+      script(type='application/javascript', src='#{baseUrlCdn}/js/m/md5.js', data-integrity='sha384-kMcyfxJb4SL8IpdQLMjYJfkBf4oOUMu/Wreu6PwxGc2aaCtM65NmWWc/oQbuZ2TE', data-crossorigin='anonymous')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/t6app.js')
