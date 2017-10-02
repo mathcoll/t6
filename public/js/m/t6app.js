@@ -1793,7 +1793,7 @@ var containers = {
 							container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
 						}
 					}
-					//app.showAddFAB(type);
+					app.showAddFAB(type);
 					componentHandler.upgradeDom();
 					app.setItemsClickAction(type);
 					app.setListActions(type);
@@ -1894,7 +1894,7 @@ var containers = {
 		if ( localStorage.getItem("currentUserEmail") !== null ) { document.getElementById("currentUserEmail").innerHTML = localStorage.getItem("currentUserEmail") }
 		else { document.getElementById("currentUserEmail").innerHTML = ""; }
 		if ( localStorage.getItem("currentUserHeader") !== null ) { document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader")) }
-		else { document.getElementById("currentUserHeader").setAttribute('src', "/img/m/icons/icon-128x128.png"); }
+		else { document.getElementById("currentUserHeader").setAttribute('src', app.baseUrlCdn+"/img/m/icons/icon-128x128.png"); }
 	}
 	
 	app.resetDrawer = function() {
@@ -1983,28 +1983,32 @@ var containers = {
 	}; //fetchIndex
 
 	app.showAddFAB = function(type) {
+		console.log('FAB...');
+		console.log(type);
+		var container;
 		var showFAB = false;
 		if( type == 'objects' ) {
 			var id = 'createObject';
-			var container = (containers.objects).querySelector('.page-content');
+			container = (containers.objects).querySelector('.page-content');
 			showFAB = true;
 		}
 		if( type == 'flows' ) {
 			var id = 'createFlow';
-			var container = (containers.flows).querySelector('.page-content');
+			container = (containers.flows).querySelector('.page-content');
 			showFAB = true;
 		}
 		if( type == 'dashboards' ) {
 			var id = 'createDashboard';
-			var container = (containers.dashboards).querySelector('.page-content');
+			container = (containers.dashboards).querySelector('.page-content');
 			showFAB = true;
 		}
 		if( type == 'snippets' ) {
 			var id = 'createSnippet';
-			var container = (containers.snippets).querySelector('.page-content');
+			container = (containers.snippets).querySelector('.page-content');
 			showFAB = true;
 		}
-		if ( showFAB ) {
+		if ( showFAB  && container ) {
+			console.log(container);
 			var fab = "<div class='mdl-button--fab_flinger-container'>";
 			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored'>";
 			fab += "		<i class='material-icons'>add</i>";
@@ -2015,8 +2019,8 @@ var containers = {
 			fab += "</div>";
 			container.innerHTML += fab;
 			componentHandler.upgradeDom();
-			app.refreshButtonsSelectors();
 			
+			app.refreshButtonsSelectors();
 			if ( buttons.createObject ) buttons.createObject.addEventListener('click', function() {app.displayAddObject(app.defaultResources.object);}, false);
 			if ( buttons.createFlow ) buttons.createFlow.addEventListener('click', function() {app.displayAddFlow(app.defaultResources.flow);}, false);
 			if ( buttons.createSnippet ) buttons.createSnippet.addEventListener('click', function() {app.displayAddSnippet(app.defaultResources.snippet);}, false);
@@ -2099,6 +2103,9 @@ var containers = {
 				field += "</label>";
 				
 
+			} else if ( isEditMode == 'progress-status' ) {
+				field += "<span class='mdl-progress mdl-js-progress' id='progress-status' title=''></span>";
+							
 			} else {
 				field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
 			
@@ -2994,6 +3001,7 @@ var containers = {
 	(function(){
 		var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
 		s1.async=true;
+		s1.async='async';
 		s1.src='https://embed.tawk.to/58852788bcf30e71ac141187/default';
 		s1.charset='UTF-8';
 		s1.setAttribute('crossorigin','*');
