@@ -1516,7 +1516,7 @@ var containers = {
 				(containers.dashboard).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
-				
+
 				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
 					app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
 				}
@@ -1983,8 +1983,6 @@ var containers = {
 	}; //fetchIndex
 
 	app.showAddFAB = function(type) {
-		console.log('FAB...');
-		console.log(type);
 		var container;
 		var showFAB = false;
 		if( type == 'objects' ) {
@@ -2008,7 +2006,6 @@ var containers = {
 			showFAB = true;
 		}
 		if ( showFAB  && container ) {
-			console.log(container);
 			var fab = "<div class='mdl-button--fab_flinger-container'>";
 			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored'>";
 			fab += "		<i class='material-icons'>add</i>";
@@ -2104,7 +2101,7 @@ var containers = {
 				
 
 			} else if ( isEditMode == 'progress-status' ) {
-				field += "<span class='mdl-progress mdl-js-progress' id='progress-status' title=''></span>";
+				field += "<span class='mdl-progress mdl-js-progress' id='progress-status' title=''>"+value+"</span>";
 							
 			} else {
 				field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
@@ -2142,7 +2139,7 @@ var containers = {
 		var myInit = { method: 'GET', headers: myHeaders };
 		var myContainer = container!=null?container:(containers.dashboard).querySelector('.page-content');
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
-
+		
 		fetch(url, myInit)
 		.then(
 			fetchStatusHandler
@@ -2220,15 +2217,21 @@ var containers = {
 						return fetchResponse.json();
 					})
 					.then(function(response) {
-						//console.log("Get data from Flow: "+ url_snippet);
+						//console.log("Get data from Flow: "+ flow_id);
 						var id = response.data[0].attributes.id;
 						var time = response.data[0].attributes.time;
 						var value = response.data[0].attributes.value;
 						var unit = response.links.unit!==undefined?response.links.unit:'';
 						var ttl = response.links.ttl;
-						if (document.getElementById('snippet-value-'+flow_id)) document.getElementById('snippet-value-'+flow_id).innerHTML = value;
-						if (document.getElementById('snippet-unit-'+flow_id)) document.getElementById('snippet-unit-'+flow_id).innerHTML = unit;
-						if (document.getElementById('snippet-time-'+flow_id)) document.getElementById('snippet-time-'+flow_id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
+						if (document.getElementById('snippet-value-'+flow_id)) {
+							document.getElementById('snippet-value-'+flow_id).innerHTML = value;
+						}
+						if (document.getElementById('snippet-unit-'+flow_id)) {
+							document.getElementById('snippet-unit-'+flow_id).innerHTML = unit;
+						}
+						if (document.getElementById('snippet-time-'+flow_id)) {
+							document.getElementById('snippet-time-'+flow_id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
+						}
 						setInterval(function() {app.refreshFromNow('snippet-time-'+flow_id, time)}, 10000);
 					})
 					.catch(function (error) {
@@ -2332,7 +2335,7 @@ var containers = {
 				fetch(url_snippet, myInit)
 				.then(
 					fetchStatusHandler
-				).then(function(fetchResponse){ 
+				).then(function(fetchResponse){
 					return fetchResponse.json();
 				})
 				.then(function(response) {
@@ -2379,9 +2382,9 @@ var containers = {
 		field += "			<i class='material-icons'>link</i>";
 		field += "			<span class=\"heading\">QR Code<sup>TM</sup></span>";
 		field += "		</span>";
-		field += "	<span class='mdl-list__item-secondary-content'>";
-		field += "		<img src='' id='qr-"+id+"' class='img-responsive' style='margin:0 auto;' />";
-		field += "	</span>";
+		field += "		<span class='mdl-list__item-secondary-content'>";
+		field += "			<img src='' id='qr-"+id+"' class='img-responsive' style='margin:0 auto;' />";
+		field += "		</span>";
 		field += "</div>";
 		return field;
 	} //getQrcodeImg
@@ -2538,10 +2541,7 @@ var containers = {
 				status += "		</div>";
 				status += "		<div class='mdl-cell mdl-cell--12-col' id='status-usage'>";
 				if ( app.RateLimit.Used ) {
-					status += app.getField('center_focus_weak', 'Used', app.RateLimit.Used, 'progress-status', false, false, true);
-				}
-				if ( app.RateLimit.Remaining ) {
-					status += app.getField('center_focus_strong', 'Remaining', app.RateLimit.Remaining, false, false, false, true);
+					status += app.getField('center_focus_weak', 'Used', app.RateLimit.Used + '/' +app.RateLimit.Limit, 'progress-status', false, false, true);
 				}
 				if ( app.RateLimit.Limit ) {
 					status += app.getField('crop_free', 'Limit', app.RateLimit.Limit, false, false, false, true);
@@ -2556,7 +2556,6 @@ var containers = {
 				var rate = Math.ceil((app.RateLimit.Used * 100 / app.RateLimit.Limit)/10)*10;
 				document.querySelector('#progress-status').addEventListener('mdl-componentupgraded', function() {
 					this.MaterialProgress.setProgress(rate);
-					this.setAttribute("title", 'Usage: ' + rate + '%');
 				});
 			}
 			app.setExpandAction();
@@ -2589,6 +2588,7 @@ var containers = {
 	app.sessionExpired = function() {
 		app.bearer = '';
 		app.auth = {};
+		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
 		app.isLogged = false;
 		app.resetDrawer();
