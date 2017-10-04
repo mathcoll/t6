@@ -162,11 +162,18 @@ div[data-type="snippets"].removed,
 section[data-type="rules"].removed,
 div[data-type="rules"].removed,
 section[data-type="mqtts"].removed,
-div[data-type="mqtts"].removed {
+div[data-type="mqtts"].removed,
+section.is-active .mdl-button--fab.is-inactive {
 	transition: "opacity 5s";
 	opacity: 0;
 	width: 0;
     height: 0;
+}
+section.is-active .mdl-button--fab.is-active {
+	transition: opacity 5s ease-in-out;
+	opacity: 1;
+	width: 56px;
+    height: 56px;
 }
 section.fixedActionButtons {
     position: fixed;

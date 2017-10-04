@@ -2854,7 +2854,7 @@ var containers = {
 	touch={
 		touchstart:function(e){sp={x:e.touches[0].pageX,y:e.touches[0].pageY}},
 		touchmove:function(e){nm=false;ep={x:e.touches[0].pageX,y:e.touches[0].pageY}},
-		ouchend:function(e){if(nm){ce(e,'fc')}else{var x=ep.x-sp.x,xr=Math.abs(x),y=ep.y-sp.y,yr=Math.abs(y);if(Math.max(xr,yr)>20){ce(e,(xr>yr?(x<0?'swl':'swr'):(y<0?'swu':'swd')))}};nm=true},
+		touchend:function(e){if(nm){ce(e,'fc')}else{var x=ep.x-sp.x,xr=Math.abs(x),y=ep.y-sp.y,yr=Math.abs(y);if(Math.max(xr,yr)>20){ce(e,(xr>yr?(x<0?'swl':'swr'):(y<0?'swu':'swd')))}};nm=true},
 		touchcancel:function(e){nm=false}
 	};
 	for(var a in touch){document.addEventListener(a,touch[a],false);}
@@ -2990,8 +2990,28 @@ var containers = {
 	}, false);
 	document.body.addEventListener('touchmove', function(event) {
 		touchMovePoint = event.touches[0].pageX;
-		if (touchStartPoint < 10 && touchMovePoint > 100) {          
+		if (touchStartPoint < 10 && touchMovePoint > 100) {
 			menuElement.style.transform = "translateX(0)";
+		}
+	}, false);
+	
+	
+	document.body.addEventListener('touchmove', function(evt) {
+		var fabs = document.querySelectorAll('section.is-active .mdl-button--fab');
+		for (var f in fabs) {
+			if ( (fabs[f]).childElementCount > -1 ) {
+				fabs[f].classList.remove('is-active');
+				fabs[f].classList.add('is-inactive');
+			}
+		}
+	}, false);
+	document.body.addEventListener('touchend', function(evt) {
+		var fabs = document.querySelectorAll('section.is-active .mdl-button--fab');
+		for (var f in fabs) {
+			if ( (fabs[f]).childElementCount > -1 ) {
+				fabs[f].classList.remove('is-inactive');
+				fabs[f].classList.add('is-active');
+			}
 		}
 	}, false);
 
