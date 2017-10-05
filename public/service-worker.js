@@ -24,10 +24,6 @@ var filesToCache = [
     '/img/m/side-nav-bg.jpg',
 ];
 
-self.addEventListener('hashchange', function() {
-    console.log('this view\'s id is ', location.hash.substr(1));
-});
-
 self.addEventListener('install', function(e) {
 	console.log('[ServiceWorker] Install.');
 	e.waitUntil(

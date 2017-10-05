@@ -2805,11 +2805,21 @@ var containers = {
 	}
 	
 	/* *********************************** Run the App *********************************** */
-	app.fetchIndex('index');
 	if ( window.location.hash ) {
-		var p = window.location.hash.split('#')[1];
+		var p = window.location.hash.substr(1);
 		app.setSection(p);
 	}
+	app.fetchIndex('index');
+	window.addEventListener('hashchange', function() {
+		if ( app.debug === true ) {
+			console.log('history += ', window.location.hash.substr(1));
+		}
+		if( window.history && window.history.pushState ) {
+			history.pushState( {
+				section: window.location.hash.substr(1),
+			}, null, '#'+window.location.hash.substr(1));
+		}
+	}, false);
 
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
