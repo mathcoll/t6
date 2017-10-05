@@ -7,6 +7,7 @@ var app = {
 	bearer: '',
 	auth: {},
 	isLogged: false,
+	autologin: false,
 	RateLimit : {Limit: null, Remaining: null, Used: null},
 	date_format: 'DD/MM/YYYY, HH:mm',
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
@@ -446,6 +447,7 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
+		window.location.hash = '#'+section;
 		app.fetchItems(section);
 		window.scrollTo(0, 0);
 
@@ -1013,6 +1015,7 @@ var containers = {
 		(containers.object_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 
+		app.getLocation();
 		/* Localization Map */
 		var iconFeature = new ol.Feature({
 			geometry: new ol.geom.Point(new ol.proj.transform([parseFloat(app.defaultResources.object.attributes.longitude), parseFloat(app.defaultResources.object.attributes.latitude)], 'EPSG:4326', 'EPSG:3857')),
@@ -1679,7 +1682,7 @@ var containers = {
 
 	app.fetchItems = function(type, filter) {
 		let promise = new Promise((resolve, reject) => {
-			if( type === 'index' || type === 'settings' || type === 'profile' || type === 'loginForm' || type === 'signupForm' || type === 'object' || type === 'object_add' || type === 'flow' || type === 'flow_add' || type === 'dashboard' || type === 'dashboard_add' || type === 'snippet' || type === 'snippet_add' || type === 'rule' || type === 'rule_add' || type === 'status' ) {
+			if( type !== 'objects' || type !== 'flows' || type !== 'dashboards' || type !== 'rules' || type !== 'mqtts' || type !== 'tokens' || type !== 'status' || type !== 'settings' ) {
 				resolve();
 				return false;
 			}
@@ -1727,7 +1730,7 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
 				var title = 'My Snippets';
 				if ( app.isLogged ) var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
-				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: ''}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else var defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
 				
 			} else if (type == 'rules') {
 				var icon = app.icons.snippets;
@@ -2609,7 +2612,7 @@ var containers = {
 		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		//app.displayLoginForm( (containers.dashboards) );
 
-		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: '', titlecolor: '#ffffff', description: '', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
 		//app.displayLoginForm( (containers.snippets) );
 		
 		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
@@ -2803,6 +2806,10 @@ var containers = {
 	
 	/* *********************************** Run the App *********************************** */
 	app.fetchIndex('index');
+	if ( window.location.hash ) {
+		var p = window.location.hash.split('#')[1];
+		app.setSection(p);
+	}
 
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
@@ -2891,7 +2898,6 @@ var containers = {
 	};
 	screen.orientation.addEventListener("change", app.showOrientation);
 	screen.orientation.unlock();
-	app.getLocation();
 	
 	if (!('indexedDB' in window)) {
 		if ( app.debug === true ) {
@@ -2917,7 +2923,9 @@ var containers = {
 				console.log('Database is on-success');
 				console.log('searchJWT(): ');
 			}
-			app.searchJWT();
+			if ( app.autologin === true ) {
+				app.searchJWT();
+			}
 		};
 		request.onupgradeneeded = function(event) {
 			db = event.target.result;
