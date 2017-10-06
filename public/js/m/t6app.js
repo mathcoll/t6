@@ -1,7 +1,6 @@
 var app = {
 	api_version: 'v2.0.1',
-	debug: false,
-	spinner: document.querySelector('section#loading-spinner'),
+	debug: true,
 	baseUrl: '',
 	baseUrlCdn: '//cdn.internetcollaboratif.info',
 	bearer: '',
@@ -83,6 +82,7 @@ var app = {
 
 var buttons = {}; // see function app.refreshButtonsSelectors()
 var containers = {
+	spinner: document.querySelector('section#loading-spinner'),
 	index: document.querySelector('section#index'),
 	objects: document.querySelector('section#objects'),
 	object: document.querySelector('section#object'),
@@ -740,8 +740,8 @@ var containers = {
 
 	app.displayObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -951,7 +951,7 @@ var containers = {
 				toast('displayObject error occured...' + error, 5000);
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	}; //displayObject
 	
 	app.getSubtitle = function(subtitle) {
@@ -1312,8 +1312,8 @@ var containers = {
 
 	app.displayFlow = function(id) {
 		window.scrollTo(0, 0);
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1465,13 +1465,13 @@ var containers = {
 				toast('displayFlow error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	}; //displayFlow
 
 	app.displayDashboard = function(id) {
 		window.scrollTo(0, 0);
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1532,13 +1532,13 @@ var containers = {
 				toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	}; //displayDashboard
 
 	app.displaySnippet = function(id) {
 		window.scrollTo(0, 0);
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1629,7 +1629,7 @@ var containers = {
 				toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	}; //displaySnippet
 
 	app.displayListItem = function(type, width, iconName, item) {
@@ -1682,13 +1682,13 @@ var containers = {
 
 	app.fetchItems = function(type, filter) {
 		let promise = new Promise((resolve, reject) => {
-			if( type !== 'objects' || type !== 'flows' || type !== 'dashboards' || type !== 'rules' || type !== 'mqtts' || type !== 'tokens' || type !== 'status' || type !== 'settings' ) {
+			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' && type !== 'tokens' && type !== 'status' && type !== 'settings' ) {
 				resolve();
 				return false;
 			}
 			
-			app.spinner.removeAttribute('hidden');
-			app.spinner.classList.remove('hidden');
+			containers.spinner.removeAttribute('hidden');
+			containers.spinner.classList.remove('hidden');
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+app.bearer);
 			myHeaders.append("Content-Type", "application/json");
@@ -1815,13 +1815,13 @@ var containers = {
 			}
 		});
 			
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 		return promise;
 	}; //fetchItems
 
 	app.fetchProfile = function() {
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1888,7 +1888,7 @@ var containers = {
 				toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	}; //fetchProfile
 	
 	app.setDrawer = function() {
@@ -1952,8 +1952,8 @@ var containers = {
 	} //displayLoginForm
 
 	app.fetchIndex = function() {
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -1982,7 +1982,7 @@ var containers = {
 				toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	}; //fetchIndex
 
 	app.showAddFAB = function(type) {
@@ -2134,8 +2134,8 @@ var containers = {
 	} //getField
 
 	app.getSnippet = function(icon, snippet_id, container) {
-		app.spinner.removeAttribute('hidden');
-		app.spinner.classList.remove('hidden');
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
 		myHeaders.append("Content-Type", "application/json");
@@ -2367,7 +2367,7 @@ var containers = {
 				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	} //getSnippet
 	
 	app.refreshFromNow = function(id, time, fromNow) {
@@ -2416,7 +2416,7 @@ var containers = {
 				toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	} //getQrcode
 
 	app.getMap = function(icon, id, longitude, latitude, isEditable, isActionable) {
@@ -2568,7 +2568,7 @@ var containers = {
 				toast('Can\'t display Status...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		app.spinner.setAttribute('hidden', true);
+		containers.spinner.setAttribute('hidden', true);
 	} //getStatus
 	
 	app.toggleElement = function(id) {
@@ -2812,7 +2812,7 @@ var containers = {
 	app.fetchIndex('index');
 	window.addEventListener('hashchange', function() {
 		if ( app.debug === true ) {
-			console.log('history += ', window.location.hash.substr(1));
+			console.log('history+= ', window.location.hash.substr(1));
 		}
 		if( window.history && window.history.pushState ) {
 			history.pushState( {
