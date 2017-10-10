@@ -1,6 +1,6 @@
 var app = {
 	api_version: 'v2.0.1',
-	debug: true,
+	debug: false,
 	baseUrl: '',
 	baseUrlCdn: '//cdn.internetcollaboratif.info',
 	bearer: '',
@@ -3013,22 +3013,21 @@ var containers = {
 		}
 	}, false);
 	
-	
-	document.body.addEventListener('touchmove', function(evt) {
+	document.body.addEventListener('touchstart', function(event) {
 		var fabs = document.querySelectorAll('section.is-active .mdl-button--fab');
 		for (var f in fabs) {
 			if ( (fabs[f]).childElementCount > -1 ) {
-				fabs[f].classList.remove('is-active');
-				fabs[f].classList.add('is-inactive');
+				fabs[f].classList.remove('is-here');
+				fabs[f].classList.add('is-not-here');
 			}
 		}
 	}, false);
-	document.body.addEventListener('touchend', function(evt) {
+	document.body.addEventListener('touchend', function(event) {
 		var fabs = document.querySelectorAll('section.is-active .mdl-button--fab');
 		for (var f in fabs) {
 			if ( (fabs[f]).childElementCount > -1 ) {
-				fabs[f].classList.remove('is-inactive');
-				fabs[f].classList.add('is-active');
+				fabs[f].classList.remove('is-not-here');
+				fabs[f].classList.add('is-here');
 			}
 		}
 	}, false);

@@ -163,17 +163,15 @@ section[data-type="rules"].removed,
 div[data-type="rules"].removed,
 section[data-type="mqtts"].removed,
 div[data-type="mqtts"].removed,
-section.is-active .mdl-button--fab.is-inactive {
-	transition: "opacity 5s";
+section.is-active .mdl-button--fab.is-not-here {
 	opacity: 0;
-	width: 0;
-    height: 0;
+	transition: opacity .2s !important;
+	-webkit-transition: opacity .2s !important;
 }
-section.is-active .mdl-button--fab.is-active {
-	transition: opacity 5s ease-in-out;
+section.is-active .mdl-button--fab.is-here {
 	opacity: 1;
-	width: 56px;
-    height: 56px;
+	transition: opacity .2s !important;
+	-webkit-transition: opacity .2s !important;
 }
 section.fixedActionButtons {
     position: fixed;
