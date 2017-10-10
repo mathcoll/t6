@@ -335,11 +335,56 @@ html.ltr(lang='en')
               h2.mdl-card__title-text.mdl-subheader-content My Profile
           .page-content
           
+        section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive.mdl-grid.mdl-cell--12-col
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Forgot Password
+          .page-content
+            section.content-grid.mdl-grid
+              div.mdl-layout-spacer
+              form.signup.mdl-cell.mdl-cell--12-col
+                .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
+                    h2.mdl-card__title-text Enter your Email address below and we'll send you password reset instructions.
+                  .mdl-card__supporting-text
+                    .mdl-textfield.mdl-js-textfield
+                      i.material-icons.mdl-textfield__icon(for='email') email
+                      input.mdl-textfield__input(type='text', name='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
+                      label.mdl-textfield__label(for='email') Email/Username
+                      span.mdl-textfield__error Username should be your email address
+                  .mdl-card__actions.mdl-card--border
+                    button.createUser.mdl-button.mdl-js-button.mdl-js-ripple-effect
+                      i.material-icons book
+                      | Get instructions
+              div.mdl-layout-spacer
+          
         section#reset-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive.mdl-grid.mdl-cell--12-col
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Set Password
           .page-content
+            section.content-grid.mdl-grid
+              div.mdl-layout-spacer
+              form.signup.mdl-cell.mdl-cell--12-col
+                .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
+                    h2.mdl-card__title-text Set password message
+                  .mdl-card__supporting-text
+                    .mdl-textfield.mdl-js-textfield
+                      i.material-icons.mdl-textfield__icon(for='password') lock 
+                      input.mdl-textfield__input.passmatch#p1(type='password', name='password', pattern='^(?=.{8,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[!@#$&*]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$')
+                      label.mdl-textfield__label(for='password') Password
+                      span.mdl-textfield__error Password is not strong enough
+                    .mdl-textfield.mdl-js-textfield
+                      i.material-icons.mdl-textfield__icon(for='password2') lock 
+                      input.mdl-textfield__input.passmatch#p2(type='password', name='password2')
+                      label.mdl-textfield__label(for='password2') Password Verification
+                      span.mdl-textfield__error Password does not match
+                  .mdl-card__actions.mdl-card--border
+                    button.createUser.mdl-button.mdl-js-button.mdl-js-ripple-effect
+                      i.material-icons lock_open
+                      | Reset my password 
+              div.mdl-layout-spacer
 
         //- View Settings
         section#settings.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive

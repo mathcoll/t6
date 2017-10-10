@@ -469,7 +469,7 @@ var containers = {
 		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
-		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signupForm' ) {
+		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signupForm' && section !== 'loginForm' && section !== 'reset-password' && section !== 'forgot-password' ) {
 			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 		}
 	}; //setSection
@@ -3031,6 +3031,20 @@ var containers = {
 			}
 		}
 	}, false);
+	var pMatches = document.querySelectorAll('.passmatch');
+	for (var p in pMatches) {
+		if ( (pMatches[p]).childElementCount > -1 ) {
+			(pMatches[p]).addEventListener('input', function(event) {
+				if( document.querySelector('#p2').value != '' && document.querySelector('#p1').value != document.querySelector('#p2').value ) {
+					document.querySelector('#p2').parentNode.classList.add('is-invalid');
+					document.querySelector('#p2').parentNode.classList.add('is-dirty');
+				} else {
+					document.querySelector('#p2').parentNode.classList.remove('is-invalid');
+					document.querySelector('#p2').parentNode.classList.remove('is-dirty');
+				}
+			});
+		}
+	}
 
 	app.setDrawer();
 	
