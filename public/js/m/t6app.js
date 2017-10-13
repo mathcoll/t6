@@ -2762,46 +2762,46 @@ var containers = {
 	function setPositionError(error) {
 		switch (error.code) {
 			case error.TIMEOUT:
-		    	if ( app.debug === true ) {
-		    		toast("Browser geolocation error !\n\nTimeout.", {timeout:3000, type: 'error'});
-		    	}
+				if ( app.debug === true ) {
+					toast("Browser geolocation error !\n\nTimeout.", {timeout:3000, type: 'error'});
+				}
 				break;
 			case error.POSITION_UNAVAILABLE:
 				// dirty hack for safari
 				if(error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) {
-			    	if ( app.debug === true ) {
-			    		toast("Origin does not have permission to use Geolocation service - no fallback.", {timeout:3000, type: 'error'});
-			    	}
+					if ( app.debug === true ) {
+						toast("Origin does not have permission to use Geolocation service - no fallback.", {timeout:3000, type: 'error'});
+					}
 				} else {
-			    	if ( app.debug === true ) {
-			    		toast("Browser geolocation error !\n\nPosition unavailable.", {timeout:3000, type: 'error'});
-			    	}
+					if ( app.debug === true ) {
+						toast("Browser geolocation error !\n\nPosition unavailable.", {timeout:3000, type: 'error'});
+					}
 				}
 				break;
 			case error.PERMISSION_DENIED:
 				if(error.message.indexOf("Only secure origins are allowed") == 0) {
-			    	if ( app.debug === true ) {
-			    		toast("Only secure origins are allowed - no fallback.", {timeout:3000, type: 'error'});
-			    	}
+					if ( app.debug === true ) {
+						toast("Only secure origins are allowed - no fallback.", {timeout:3000, type: 'error'});
+					}
 				}
 				break;
 			case error.UNKNOWN_ERROR:
-		    	if ( app.debug === true ) {
-		    		toast("Can't find your position - no fallback.", {timeout:3000, type: 'error'});
-		    	}
+				if ( app.debug === true ) {
+					toast("Can't find your position - no fallback.", {timeout:3000, type: 'error'});
+				}
 				break;
 		}
 	}
 	
 	app.getLocation = function() {
-	    if (navigator.geolocation) {
-	    	var options = { enableHighAccuracy: false, timeout: 200000, maximumAge: 500000 };
-	        navigator.geolocation.getCurrentPosition(setPosition, setPositionError, options);
-	    } else {
-	    	if ( app.debug === true ) {
-	    		toast("Geolocation is not supported by this browser.", {timeout:3000, type: 'warning'});
-	    	}
-	    }
+		if (navigator.geolocation) {
+			var options = { enableHighAccuracy: false, timeout: 200000, maximumAge: 500000 };
+			navigator.geolocation.getCurrentPosition(setPosition, setPositionError, options);
+		} else {
+			if ( app.debug === true ) {
+				toast("Geolocation is not supported by this browser.", {timeout:3000, type: 'warning'});
+			}
+		}
 	}
 	
 	/* *********************************** Run the App *********************************** */
@@ -2810,16 +2810,6 @@ var containers = {
 		app.setSection(p);
 	}
 	app.fetchIndex('index');
-	window.addEventListener('hashchange', function() {
-		if ( app.debug === true ) {
-			console.log('history+= ', window.location.hash.substr(1));
-		}
-		if( window.history && window.history.pushState ) {
-			history.pushState( {
-				section: window.location.hash.substr(1),
-			}, null, '#'+window.location.hash.substr(1));
-		}
-	}, false);
 
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
@@ -2836,27 +2826,36 @@ var containers = {
 		}
 	}
 	document.getElementById('search-exp').addEventListener('keypress', function(e) {
-	    if(e.keyCode === 13) {
-	        e.preventDefault();
-	        var input = this.value;
-	        if ( app.debug === true ) {
-	        	alert("Searching for "+input);
-	        }
-	    }
+		if(e.keyCode === 13) {
+			e.preventDefault();
+			var input = this.value;
+			if ( app.debug === true ) {
+				alert("Searching for "+input);
+			}
+		}
 	});
+	window.addEventListener('hashchange', function() {
+		if( window.history && window.history.pushState ) {
+			history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1));
+			app.setSection(window.location.hash.substr(1));
+			if ( app.debug === true ) {
+				console.log('history+=\"', window.location.hash.substr(1), '\"');
+			}
+		}
+	}, false);
 	
 	document.getElementById('filter-exp').addEventListener('keypress', function(e) {
-	    if(e.keyCode === 13) {
-	        e.preventDefault();
-	        var input = this.value;
-	        var type = 'objects';
-	        if ( document.querySelector('section#objects').classList.contains('is-active') ) {
-	        	type = 'objects';
-	        } else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
-	        	type = 'flows';
-	        }
-	        app.fetchItems(type, this.value);
-	    }
+		if(e.keyCode === 13) {
+			e.preventDefault();
+			var input = this.value;
+			var type = 'objects';
+			if ( document.querySelector('section#objects').classList.contains('is-active') ) {
+				type = 'objects';
+			} else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
+				type = 'flows';
+			}
+			app.fetchItems(type, this.value);
+		}
 	});
 	
 	for (var i in buttons.status) {
