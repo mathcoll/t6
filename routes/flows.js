@@ -73,6 +73,7 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
  * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
  * @apiParam {String} [unit] Flow Unit
  * @apiParam {String} [theme] Flow theme, deprecated
+ * @apiParam {String} [mqtt_topic]] Mqtt topic
  * @apiParam {Object[]} permission
  * @apiParam {String[]} [objects] List of Object Ids
  * 
@@ -101,6 +102,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 					data_type:	req.body.data_type!==undefined?req.body.data_type:'',
 					unit:  		req.body.unit!==undefined?req.body.unit:'',
 					theme:  	req.body.theme!==undefined?req.body.theme:'',
+					mqtt_topic:	req.body.mqtt_topic!==undefined?req.body.mqtt_topic:'',
 					permission:	permission,
 					objects:	req.body.objects!==undefined?req.body.objects:new Array(),
 				};
@@ -127,6 +129,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
  * @apiParam {String} [unit] Flow Unit
  * @apiParam {String} [theme]] Flow theme, deprecated
+ * @apiParam {String} [mqtt_topic]] Mqtt topic
  * @apiParam {Object[]} [permission]
  * @apiParam {String[]} [objects] List of Object Ids
  * 
@@ -164,6 +167,7 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 						item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
 						item.permission	= permission!==undefined?permission:item.permission;
 						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
+						item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
 						result = item;
 					}
 				);
