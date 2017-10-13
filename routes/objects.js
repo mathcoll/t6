@@ -289,7 +289,15 @@ router.put('/:object_id([0-9a-z\-]+)/:pName/?', expressJwt({secret: jwtsettings.
 		var object = objects.findOne(query);
 		
 		if ( object ) {
+			object.parameters = object.parameters!==undefined?object.parameters:[];
 			var p = object.parameters.filter(function(e, i) { if ( e.name == pName ) { object.parameters[i].value = req.body.value; return e; } });
+			console.log(object);
+			console.log(p);
+			if ( p.length == 0 ) {
+				// was not found so we create the custom parameter
+				p.push({ name: pName, value: req.body.value , type: 'String'});
+				object.parameters.push({ name: pName, value: req.body.value , type: 'String'});
+			}
 			if ( p !== null ) {
 				db.saveDatabase();
 				
