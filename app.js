@@ -107,13 +107,13 @@ process.on('uncaughtException', function(err) {
 });
 
 var CrossDomain = function(req, res, next) {
-    if (req.method == 'OPTIONS') {
-    	res.header('Access-Control-Allow-Origin', '*');
-    	res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    	res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Authorization, Content-Length, X-Requested-With');
-    	res.status(200).send('');
-    }
-    else {
+	if (req.method == 'OPTIONS') {
+		res.header('Access-Control-Allow-Origin', '*');
+		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Authorization, Content-Length, X-Requested-With');
+		res.status(200).send('');
+	}
+	else {
 		res.setHeader('X-Powered-By', appName+'@'+version);
 		res.header('Access-Control-Allow-Origin', '*');
 		res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Authorization, Content-Length, X-Requested-With');
@@ -121,7 +121,7 @@ var CrossDomain = function(req, res, next) {
 			res.setHeader('Cache-Control', 'public, max-age=3600');
 		}
 		next();
-    }
+	}
 };
 
 app.use(CrossDomain);
