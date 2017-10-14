@@ -135,10 +135,10 @@ html.ltr(lang='en')
           li.mdl-js-ripple-effect.mdl-menu__item#profile_button(href='#profile')
             i.material-icons account_box
             | Profile
-          li.mdl-js-ripple-effect.mdl-menu__item#signin_button(href='#loginForm')
+          li.mdl-js-ripple-effect.mdl-menu__item#signin_button(href='#login')
             i.material-icons lock
             | Sign-In
-          li.mdl-js-ripple-effect.mdl-menu__item.hidden#logout_button(href='#loginForm')
+          li.mdl-js-ripple-effect.mdl-menu__item.hidden#logout_button(href='#login')
             i.material-icons person_add
             | Logout
 
@@ -288,24 +288,25 @@ html.ltr(lang='en')
           .page-content
 
         //- View Sign In
-        section#loginForm.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#login.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Sign In
           .page-content
 
         //- View Sign Up
-        section#signupForm.content-grid.mdl-grid.mdl-cell--12-col.is-inactive
+        section#signup.content-grid.mdl-grid.mdl-cell--12-col.is-inactive
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Sign Up
+              h2.mdl-card__title-text.mdl-subheader-content Sign Up & create your Free Account
           .page-content
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
               form.signup.mdl-cell.mdl-cell--12-col
                 .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
-                    h2.mdl-card__title-text Sign-Up to t6
+                  //-.mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
+                    //-h2.mdl-card__title-text Sign-Up to t6
+                  .mdl-card__supporting-text You will receive an email to setup your password securely.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
                       i.material-icons.mdl-textfield__icon(for='email') email
@@ -321,7 +322,7 @@ html.ltr(lang='en')
                       input.mdl-textfield__input(type='text', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='lastName') Last Name
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button.mdl-button--colored(onclick="app.setSection('loginForm');", href="#")
+                    a.mdl-button.mdl-button--colored(onclick="app.setSection('login');", href="#")
                       | Sign-in
                     button.createUser.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person_add
@@ -398,6 +399,13 @@ html.ltr(lang='en')
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content t6 API
+          .page-content
+
+        //- View Terms
+        section#terms.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-grid.mdl-cell--12-col
+            .mdl-cell.mdl-cell--12-col
+              h2.mdl-card__title-text.mdl-subheader-content Terms of Service and License Agreement
           .page-content
           
         //- Modal Dialog

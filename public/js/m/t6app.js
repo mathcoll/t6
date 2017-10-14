@@ -158,7 +158,7 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				app.setSection('loginForm');
+				app.setSection('login');
 				toast('Welcome, have a look to your inbox!', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
@@ -469,7 +469,7 @@ var containers = {
 		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
-		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signupForm' && section !== 'loginForm' && section !== 'reset-password' && section !== 'forgot-password' ) {
+		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password' ) {
 			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 		}
 		if ( app.debug === true ) {
@@ -1707,7 +1707,7 @@ var containers = {
 				}
 				var title = 'My Objects';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 				
 			} else if (type == 'flows') {
 				var icon = app.icons.flows;
@@ -1718,7 +1718,7 @@ var containers = {
 				}
 				var title = 'My Flows';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 
 			} else if (type == 'dashboards') {
 				var icon = app.icons.dashboards;
@@ -1726,7 +1726,7 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 				var title = 'My Dashboards';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 				
 			} else if (type == 'snippets') {
 				var icon = app.icons.snippets;
@@ -1734,7 +1734,7 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
 				var title = 'My Snippets';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 				
 			} else if (type == 'rules') {
 				var icon = app.icons.snippets;
@@ -1742,7 +1742,7 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/rules';
 				var title = 'My Rules';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 				
 			} else if (type == 'mqtts') {
 				var icon = app.icons.mqtts;
@@ -1750,7 +1750,7 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
 				var title = 'My Mqtts';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 				
 			} else if (type == 'tokens') {
 				var icon = app.icons.tokens;
@@ -1758,7 +1758,7 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/tokens';
 				var title = 'My tokens';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: '<i class=\'material-icons\'>add</i>Add my first Token'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 				
 			} else if (type == 'status') {
 				var icon = app.icons.status;
@@ -1911,11 +1911,14 @@ var containers = {
 				username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
 				password: ".{4,}",
 			};
-			var loginForm = "<section class='content-grid mdl-grid mdl-cell--12-col'>" +
+			var login = "<section class='content-grid mdl-grid mdl-cell--12-col'>" +
 			"	<form class='signin mdl-cell mdl-cell--12-col'>" +
 			"		<div class='mdl-card mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp'>" +
-			"			<div style='background:url("+app.baseUrlCdn+"/img/opl_img.jpg) no-repeat 50% 50%;min-height: 100px;' class='mdl-card__title mdl-color--primary mdl-color-text--white'>" +
-			"				<h2 class='mdl-card__title-text'>Log in to t6</h2>" +
+			//"			<div style='background:url("+app.baseUrlCdn+"/img/opl_img.jpg) no-repeat 50% 50%;min-height: 100px;' class='mdl-card__title mdl-color--primary mdl-color-text--white'>" +
+			//"				<h2 class='mdl-card__title-text'>Log in to t6</h2>" +
+			//"			</div>" +
+			"			<div class='mdl-card__supporting-text'>" +
+			"				Connect your Objects to collect their data and show your own Dashboards." +
 			"			</div>" +
 			"			<div class='mdl-card__supporting-text'>" +
 			"				<div class='mdl-textfield mdl-js-textfield'><i class='material-icons mdl-textfield__icon'>lock</i>" +
@@ -1926,7 +1929,7 @@ var containers = {
 			"					<input name='password' pattern=\""+pattern.password+"\" class='mdl-textfield__input' type='password'>" +
 			"					<label for='password' class='mdl-textfield__label'>Password</label><span class='mdl-textfield__error'>Password must be provided</span>" +
 			"				</div>" +
-			"				<div class='mdl-card__actions mdl-card--border'><a onclick=\"app.setSection('signupForm');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
+			"				<div class='mdl-card__actions mdl-card--border'><a onclick=\"app.setSection('signup');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
 			"					<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
 			"						<i class='material-icons'>lock</i>Log in" +
 			"					</button>" +
@@ -1935,7 +1938,7 @@ var containers = {
 			"		</div>" +
 			"	</form>" +
 			"</section>";
-			container.innerHTML += loginForm;
+			container.innerHTML += login;
 			componentHandler.upgradeDom();
 			
 			var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
@@ -2601,20 +2604,20 @@ var containers = {
 		app.refreshButtonsSelectors();
 		componentHandler.upgradeDom();
 
-		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}); //, action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}
+		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}); //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
 		//app.displayLoginForm( (containers.objects) );
 		
-		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 		//app.displayLoginForm( (containers.flows) );
 
-		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 		//app.displayLoginForm( (containers.dashboards) );
 
-		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 		//app.displayLoginForm( (containers.snippets) );
 		
-		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
-		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'loginForm', label: 'Sign-In'}, secondaryaction: {id: 'signupForm', label: 'Create an account'}});
+		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
 		for (var i=0; i<updated.length;i++) {
@@ -2877,8 +2880,8 @@ var containers = {
 	var h=function(e){console.log(e.type,e)};
 	
 	app.refreshButtonsSelectors();
-	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('loginForm');}, false);
-	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.resetDrawer(); app.sessionExpired(); app.setSection('loginForm'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
+	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('login');}, false);
+	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.resetDrawer(); app.sessionExpired(); app.setSection('login'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
 	//if ( buttons.createObject ) buttons.createObject.addEventListener('click', function() {app.displayAddObject(app.defaultResources.object);}, false);
 	//if ( buttons.createFlow ) buttons.createFlow.addEventListener('click', function() {app.displayAddFlow(app.defaultResources.flow);}, false);
 	//if ( buttons.createSnippet ) buttons.createSnippet.addEventListener('click', function() {app.displayAddSnippet(app.defaultResources.snippet);}, false);
@@ -2984,7 +2987,7 @@ var containers = {
 		if ( app.isLogged ) {
 			app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
 		} else {
-			app.setSection('loginForm');
+			app.setSection('login');
 		}
 	}, false);
 
