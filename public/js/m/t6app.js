@@ -285,13 +285,13 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				var objectContainer = document.querySelector("section#objects section[data-id=\""+object_id+"\"]");
+				var objectContainer = document.querySelector("section#objects div[data-id=\""+object_id+"\"]");
 				objectContainer.querySelector("h2").innerHTML = body.name;
 				objectContainer.querySelector("span.mdl-list__item-secondary-content span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, 128));
 				toast('Object has been saved.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
-				toast('Object has not been saved.', {timeout:3000, type: 'error'});
+				toast('Object has not been saved.'+object_id, {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
 		}
@@ -2011,7 +2011,7 @@ var containers = {
 		}
 		if ( showFAB  && container ) {
 			var fab = "<div class='mdl-button--fab_flinger-container'>";
-			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored'>";
+			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
 			fab += "		<i class='material-icons'>add</i>";
 			fab += "		<span class='mdl-button__ripple-container'>";
 			fab += "			<span class='mdl-ripple'></span>";
