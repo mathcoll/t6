@@ -291,11 +291,11 @@ html.ltr(lang='en')
         section#login.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Sign In
+              h2.mdl-card__title-text.mdl-subheader-content Sign In to t6
           .page-content
 
         //- View Sign Up
-        section#signup.content-grid.mdl-grid.mdl-cell--12-col.is-inactive
+        section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
             .mdl-cell.mdl-cell--12-col
               h2.mdl-card__title-text.mdl-subheader-content Sign Up & create your Free Account
@@ -345,8 +345,7 @@ html.ltr(lang='en')
               div.mdl-layout-spacer
               form.signup.mdl-cell.mdl-cell--12-col
                 .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
-                    h2.mdl-card__title-text Enter your Email address below and we'll send you password reset instructions.
+                  .mdl-card__supporting-text Enter your Email address below and we'll send you password reset instructions.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
                       i.material-icons.mdl-textfield__icon(for='email') email
@@ -368,8 +367,8 @@ html.ltr(lang='en')
               div.mdl-layout-spacer
               form.signup.mdl-cell.mdl-cell--12-col
                 .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  .mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
-                    h2.mdl-card__title-text Set password message
+                  .mdl-card__supporting-text Set you new password to connect your t6 account.
+                  .mdl-card__supporting-text Password must contains lower cases, upper cases, digits, special characters; and must be longer than 8 characters.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
                       i.material-icons.mdl-textfield__icon(for='password') lock 
