@@ -447,8 +447,20 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
-		window.location.hash = '#'+section;
-		app.fetchItems(section);
+		if ( section == 'object' ) {
+			var urlParams = new URLSearchParams(window.location.search); //.toString();
+			var params = {};
+			for(var pair of urlParams.entries()) {
+				var n = pair[0];
+				params[n] = pair[1];
+			}
+			if ( params['id'] ) {
+				app.displayPublicObject(params['id'], false);
+			}
+		} else {
+			window.location.hash = '#'+section;
+			app.fetchItems(section);
+		}
 		window.scrollTo(0, 0);
 
 		app.refreshButtonsSelectors();
@@ -741,6 +753,159 @@ var containers = {
 		}
 	} //setListActions
 
+	app.displayPublicObject = function(id, isEdit) {
+		window.scrollTo(0, 0);
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+'/'+app.api_version+'/objects/'+id+'/public';
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			for (var i=0; i < (response.data).length ; i++ ) {
+				var object = response.data[i];
+				var node = "";
+				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
+				node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-list__item\">";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node += "				<i class=\"material-icons\">"+app.icons.objects+"</i>";
+				node += "				<h2 class=\"mdl-card__title-text\">"+object.attributes.name+"</h2>";
+				node += "			</span>";
+				node += "			<span class='mdl-list__item-secondary-action'>";
+				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+object.id+"'>";
+				node += "					<i class='material-icons'>expand_more</i>";
+				node += "				</button>";
+				node += "			</span>";
+				node += "		</div>";
+				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+object.id+"'>";
+
+				node += app.getField(app.icons.objects, 'Id', object.id, false, false, false, true);
+				if ( object.attributes.description || isEdit!=true ) {
+					var description = app.nl2br(object.attributes.description);
+					node += app.getField(null, null, description, false, false, false, true);
+				}
+				if ( object.attributes.meta.created ) {
+					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true);
+				}
+				if ( object.attributes.meta.updated ) {
+					node += app.getField(app.icons.date, 'Updated', moment(object.attributes.meta.updated).format(app.date_format), false, false, false, true);
+				}
+				node += "	</div>";
+				node += "</section>";
+				
+				node += app.getSubtitle('Parameters');
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				if ( object.attributes.type || isEdit==true ) {
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'select':false, false, false, true);
+				}
+				if ( object.attributes.ipv4 || isEdit==true ) {
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEdit==true?'text':false, false, false, true);
+				}
+				if ( object.attributes.ipv6 || isEdit==true ) {
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, isEdit==true?'text':false, false, false, true);
+				}
+				node += "	</div>";
+				node += "</section>";
+
+				if ( object.attributes.parameters && object.attributes.parameters.length > -1 ) { 
+					node += app.getSubtitle('Custom Parameters');
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					for ( var i in object.attributes.parameters ) {
+						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true);
+					}
+					node += "	</div>";
+					node += "</section>";
+				}
+
+				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
+					node += app.getSubtitle('Localization');
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
+					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					if ( object.attributes.longitude ) {
+						node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true);
+					}
+					if ( object.attributes.latitude ) {
+						node += app.getField('place', 'Latitude', object.attributes.latitude, isEdit==true?'text':false, false, false, true);
+					}
+					if ( object.attributes.position ) {
+						node += app.getField('pin_drop', 'Position', object.attributes.position, isEdit==true?'text':false, false, false, true);
+					}
+					if ( object.attributes.longitude && object.attributes.latitude ) {
+						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false);
+					}
+					node += "	</div>";
+					node += "</section>";
+				}
+
+				(containers.object).querySelector('.page-content').innerHTML = node;
+				componentHandler.upgradeDom();
+				
+				if ( object.attributes.longitude && object.attributes.latitude ) {
+					/* Localization Map */
+					var iconFeature = new ol.Feature({
+						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], 'EPSG:4326', 'EPSG:3857')),
+						name: object.attributes.name,
+						position: object.attributes.position,
+					});
+					var iconStyle = new ol.style.Style({
+						image: new ol.style.Icon(({
+							anchor: [12, 12],
+							anchorXUnits: 'pixels',
+							anchorYUnits: 'pixels',
+							opacity: .8,
+							size: [24, 24],
+							src: app.baseUrl+'/js/OpenLayers/img/marker.png'
+						}))
+					});
+					iconFeature.setStyle(iconStyle);
+					var vectorSource = new ol.source.Vector({});
+					vectorSource.addFeature(iconFeature);
+					var vectorLayer = new ol.layer.Vector({
+						source: vectorSource
+					});
+					var popup = new ol.Overlay({
+						element: document.getElementById('popup'),
+						//positioning: 'top',
+						stopEvent: false
+					});
+					var map = new ol.Map({
+						layers: [
+							new ol.layer.Tile({ source: new ol.source.OSM() }),
+							vectorLayer,
+						],
+						target: 'osm',
+						interactions: [],
+						view: new ol.View({
+							center: ol.proj.fromLonLat([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)]),
+							zoom: 18,
+						}),
+					});
+					setTimeout(function() {map.updateSize();}, 1000);
+					/* End Localization Map */
+				}
+
+				app.setExpandAction();
+				//app.setSection('object');
+			}
+		})
+		.catch(function (error) {
+			if ( app.debug === true ) {
+				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
+			}
+		});
+		containers.spinner.setAttribute('hidden', true);
+	} //displayPublicObject
+
 	app.displayObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
@@ -943,7 +1108,7 @@ var containers = {
 					});
 					setTimeout(function() {map.updateSize();}, 1000);
 					/* End Localization Map */
-		        }
+				}
 
 				app.setExpandAction();
 				app.setSection('object');
@@ -951,7 +1116,7 @@ var containers = {
 		})
 		.catch(function (error) {
 			if ( app.debug === true ) {
-				toast('displayObject error occured...' + error, 5000);
+				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);

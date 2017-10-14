@@ -54,6 +54,50 @@ router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 	}
 });
 
+
+/**
+ * @api {get} /objects/:object_id Get Public Object 
+ * @apiName Get Public Object
+ * @apiGroup 1. Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get('/(:object_id([0-9a-z\-]+))?/public', function (req, res) {
+	var object_id = req.params.object_id;
+	var name = req.query.name;
+	objects	= db.getCollection('objects');
+	var query;
+	if ( object_id !== undefined ) {
+		query = {
+		'$and': [
+				{ 'isPublic' : 'true' },
+				{ 'id' : object_id },
+			]
+		};
+	} else {
+		if ( name !== undefined ) {
+			query = {
+			'$and': [
+					{ 'isPublic' : 'true' },
+					{ 'name': { '$regex': [name, 'i'] } }
+				]
+			};
+		}
+	}
+	var json = objects.find(query);
+	//console.log(query);
+	json = json.length>0?json:[];
+	res.status(200).send(new ObjectSerializer(json).serialize());
+});
+
 /**
  * @api {get} /objects/:object_id Get Object(s)
  * @apiName Get Object(s)
@@ -175,6 +219,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [ipv4] Object IP v4
  * @apiParam {String} [ipv6] Object IP v6
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
+ * @apiParam {Boolean} [is_public=false] Alias of isPublic
  * 
  * @apiUse 200
  * @apiUse 401
@@ -193,7 +238,7 @@ router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}),
 	var object = objects.findOne( query );
 	if ( object ) {
 		var result;
-		console.log(req.body);
+		req.body.isPublic = req.body.isPublic!==undefined?req.body.isPublic:req.body.is_public!==undefined?req.body.is_public:undefined;
 		objects.chain().find({ 'id': object_id }).update(function(item) {
 			item.type				= req.body.type!==undefined?req.body.type:item.type;
 			item.name				= req.body.name!==undefined?req.body.name:item.name;
