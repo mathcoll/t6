@@ -219,7 +219,7 @@ var containers = {
 		const base64 = (base64String + padding)  .replace(/\-/g, '+') .replace(/_/g, '/');
 		const rawData = window.atob(base64);
 		const outputArray = new Uint8Array(rawData.length);
-		for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+		for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); };
 		return outputArray;
 	}; //urlBase64ToUint8Array
 	
@@ -491,10 +491,10 @@ var containers = {
 		if ( section == 'object' ) {
 			var urlParams = new URLSearchParams(window.location.search); //.toString();
 			var params = {};
-			for(var pair of urlParams.entries()) {
+			urlParams.entries().map(function(pair) {
 				var n = pair[0];
 				params[n] = pair[1];
-			}
+			});
 			if ( params['id'] ) {
 				app.displayPublicObject(params['id'], false);
 			}
