@@ -31,7 +31,7 @@ patch:
         patched: '2017-06-05T13:18:24.845Z'
   'npm:minimatch:20160620':
     - passgen > vows > glob > minimatch:
-        patched: '2017-06-05T13:18:24.845Z'
+        patched: '2017-10-20T20:51:14.961Z'
   'npm:ms:20170412':
     - compression > debug > ms:
         patched: '2017-06-05T13:18:24.845Z'

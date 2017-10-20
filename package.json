@@ -27,7 +27,6 @@
     "cookie-parser": "^1.4.1",
     "debug": "^2.6.9",
     "device": "^0.3.8",
-    "express": "^4.15.5",
     "express-http-proxy": "^0.6.0",
     "express-jwt": "^5.3.0",
     "express-session": "^1.15.6",
