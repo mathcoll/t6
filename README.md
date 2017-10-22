@@ -9,8 +9,10 @@ Physical Objects require a virtual _Object_ in t6 and then, they could add _Data
 Sample nodeMCU and Arduino scripts are available in the _pingers_ repositories.
 
 ### Application Dashboard Screenshot
-![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png)
 ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot3.png)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot4.png)
 
 Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
 
