@@ -116,8 +116,9 @@ html.ltr(lang='en')
       .setting_menu
         ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton(href='/status')
-            i.material-icons favorite
-            |  API Status
+            a.mdl-navigation__link
+              i.material-icons favorite
+              |  API Status
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
             a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
               i.material-icons launch
@@ -128,17 +129,21 @@ html.ltr(lang='en')
               |  GitHub
           
           li.mdl-js-ripple-effect.mdl-menu__item#settings_button(href='#settings')
-            i.material-icons settings
-            | Settings
+            a.mdl-navigation__link
+              i.material-icons settings
+              |  Settings
           li.mdl-js-ripple-effect.mdl-menu__item#profile_button(href='#profile')
-            i.material-icons account_box
-            | Profile
+            a.mdl-navigation__link
+              i.material-icons account_box
+              |  Profile
           li.mdl-js-ripple-effect.mdl-menu__item#signin_button(href='#login')
-            i.material-icons lock
-            | Sign-In
+            a.mdl-navigation__link
+              i.material-icons lock
+              |  Sign-In
           li.mdl-js-ripple-effect.mdl-menu__item.hidden#logout_button(href='#login')
-            i.material-icons person_add
-            | Logout
+            a.mdl-navigation__link
+              i.material-icons person_add
+              |  Logout
 
       main.mdl-layout__content
         //- Loading
@@ -416,4 +421,3 @@ html.ltr(lang='en')
 
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/vendor.min.js')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/t6app.js')
-      script(type='application/javascript', src='//www.gstatic.com/firebasejs/4.6.0/firebase.js')
