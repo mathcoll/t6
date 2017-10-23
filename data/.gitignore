@@ -5,7 +5,13 @@ db.json
 *-blanc.json
 *-pink.json
 *-guruplug.json
+
 *-bleu.js
 *-blanc.js
 *-guruplug.js
 *-pink.js
+
+*-bleu.db
+*-blanc.db
+*-guruplug.db
+*-pink.db

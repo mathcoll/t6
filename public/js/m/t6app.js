@@ -78,6 +78,14 @@ var app = {
 		snippet: {id:'', attributes: {name: ''}},
 		rule: {id:'', attributes: {}},
 	},
+	firebaseConfig: {
+		apiKey: "AIzaSyDI7z7R033CBz_4rWH8JA2TGmql2mw5v7A",
+		authDomain: "t6-app.firebaseapp.com",
+		databaseURL: "https://t6-app.firebaseio.com",
+		projectId: "t6-app",
+		storageBucket: "t6-app.appspot.com",
+		messagingSenderId: "91119083860"
+	},
 };
 
 var buttons = {}; // see function app.refreshButtonsSelectors()
@@ -410,7 +418,7 @@ var containers = {
 	} //onAddFlow
 	
 	app.refreshButtonsSelectors = function() {
-		componentHandler.upgradeDom();
+		if ( componentHandler ) componentHandler.upgradeDom();
 		buttons = {
 			//signin_button
 			//logout_button
@@ -3272,6 +3280,7 @@ var containers = {
 		if (!navigator.onLine) { updateNetworkStatus(); }
 		window.addEventListener('online', updateNetworkStatus, false);
 		window.addEventListener('offline', updateNetworkStatus, false);
+		firebase.initializeApp(app.firebaseConfig);
 	});
 
 	//To update network status

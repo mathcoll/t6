@@ -212,7 +212,7 @@ router.all('*', function (req, res, next) {
 						//console.log(tags);
 						//console.log(fields);
 						next();
-				    });
+					});
 				}
 				//qt.insert(o);
 			};
@@ -220,7 +220,7 @@ router.all('*', function (req, res, next) {
 			//console.error('ERROR ===> Error getting logs for quota:\n'+err);
 			//console.log(query);
 			res.status(429).send(new ErrorSerializer({'id': 101, 'code': 429, 'message': 'Too Many Requests; or we can\'t perform your request.'}));
-	    });
+		});
 	} else {
 		next(); // no User Auth..
 	}

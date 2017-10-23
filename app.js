@@ -70,7 +70,7 @@ if ( dbRules.getCollection('rules') === null ) console.log('Collection Rules is 
 dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 //dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
 if ( dbSnippets === null ) console.log('db Snippets is failing');
-if ( dbSnippets.getCollection('snippets') === null ) console.log('db Snippets is failing');
+if ( dbSnippets.getCollection('snippets') === null ) console.log('Collection Snippets is failing');
 
 /* Dashboards settings */
 dbDashboards	= new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
