@@ -1,17 +1,21 @@
 data.db
 data-empty.db
 db.json
+
 *-bleu.json
 *-blanc.json
 *-pink.json
 *-guruplug.json
+*-hostname.json
 
 *-bleu.js
 *-blanc.js
 *-guruplug.js
 *-pink.js
+*-hostname.js
 
 *-bleu.db
 *-blanc.db
 *-guruplug.db
 *-pink.db
+*-hostname.db
