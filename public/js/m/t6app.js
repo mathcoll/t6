@@ -2370,8 +2370,14 @@ var containers = {
 				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
 				snippet += "			</div>";
 				snippet += "			<div class='mdl-list__item-secondary-content'>";
-				snippet += "				<span class='snippet-value' id='snippet-value-"+my_snippet.id+"'></span>";
-				snippet += "				<span class='snippet-unit' id='snippet-unit-"+my_snippet.id+"'></span>";
+				snippet += "				<span class='snippet-value1' id='snippet-value1-"+my_snippet.id+"'></span>";
+				snippet += "				<span class='snippet-unit1' id='snippet-unit1-"+my_snippet.id+"'></span>";
+				snippet += "				<hr style='' />";
+				snippet += "				<span class='snippet-value2' id='snippet-value2-"+my_snippet.id+"'>19</span>";
+				snippet += "				<span class='snippet-unit2' id='snippet-unit2-"+my_snippet.id+"'>°C</span>";
+				snippet += "				<hr style='' />";
+				snippet += "				<span class='snippet-value3' id='snippet-value3-"+my_snippet.id+"'>20</span>";
+				snippet += "				<span class='snippet-unit3' id='snippet-unit3-"+my_snippet.id+"'>°C</span>";
 				snippet += "			</div>";
 				snippet += "		</div>";
 				snippet += "		<div class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
@@ -2540,7 +2546,7 @@ var containers = {
 			myContainer.appendChild(c);
 			componentHandler.upgradeDom();
 			
-			if ( my_snippet.attributes.type == 'simplerow' || my_snippet.attributes.type == 'valuedisplay' ) {
+			if ( my_snippet.attributes.type == 'simplerow' ) {
 				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=1';
 				fetch(url_snippet, myInit)
 				.then(
@@ -2557,6 +2563,47 @@ var containers = {
 					var ttl = response.links.ttl;
 					document.getElementById('snippet-value-'+my_snippet.id).innerHTML = value;
 					document.getElementById('snippet-unit-'+my_snippet.id).innerHTML = unit;
+					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
+					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
+				})
+				.catch(function (error) {
+					if ( app.debug === true ) {
+						toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
+					}
+				});
+			} else if ( my_snippet.attributes.type == 'valuedisplay' ) {
+				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=3';
+				fetch(url_snippet, myInit)
+				.then(
+					fetchStatusHandler
+				).then(function(fetchResponse){
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					//console.log("Get data from Flow: "+ url_snippet);
+					var id = response.data[0].attributes.id;
+					var time = response.data[0].attributes.time;
+					var value = response.data[0].attributes.value;
+					var unit = response.links.unit!==undefined?response.links.unit:'';
+					var ttl = response.links.ttl;
+					document.getElementById('snippet-value1-'+my_snippet.id).innerHTML = value;
+					document.getElementById('snippet-unit1-'+my_snippet.id).innerHTML = unit;
+					
+					var time = response.data[1].attributes.time;
+					var value = response.data[1].attributes.value;
+					var unit = response.links.unit!==undefined?response.links.unit:'';
+					var ttl = response.links.ttl;
+					document.getElementById('snippet-value2-'+my_snippet.id).innerHTML = value;
+					document.getElementById('snippet-unit2-'+my_snippet.id).innerHTML = unit;
+					
+					var time = response.data[2].attributes.time;
+					var value = response.data[2].attributes.value;
+					var unit = response.links.unit!==undefined?response.links.unit:'';
+					var ttl = response.links.ttl;
+					document.getElementById('snippet-value3-'+my_snippet.id).innerHTML = value;
+					document.getElementById('snippet-unit3-'+my_snippet.id).innerHTML = unit;
+					
+					
 					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
 					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
