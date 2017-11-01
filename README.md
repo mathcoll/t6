@@ -6,9 +6,9 @@ Please referes to CONTRIBUTING.md in case you would like to help :-)
 ### Physical World
 Physical World are composed by your sensors and actuators.
 Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
-Sample nodeMCU and Arduino scripts are available in the _pingers_ repositories.
+Sample nodeMCU and Arduino scripts are available in the _sensors_ repositories.
 
-### Application Dashboard Screenshot
+### Application & Dashboard Screenshots
 ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png)
 ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png)
 ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot3.png)
@@ -154,7 +154,6 @@ curl -i \
 #### Rules
 "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months.
 To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
-
 #### Actions
 _Actions_ are triggered when something is happening on the t6 platform.
 Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
@@ -164,7 +163,10 @@ Actions can be: email, SMS, API calls (e.g. twitter), etc ...
 ```
 Install node (if needed): https://nodejs.org/en/
 Install npm (if needed): https://github.com/npm/npm
+```
+
 _Do not use sudo/root to install t6, this is not necessary_
+```
 git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
 npm install
 rename "settings-hostname.js" according to your server _hostname_ and edit the file.
@@ -172,7 +174,7 @@ rename "rules-hostname.js" according to your server _hostname_.
 rename "sensors-hostname.js" according to your server _hostname_.
 rename "db-hostname.json" according to your server _hostname_.
 ```
-On linux, to identify your hostname, you can rune the following command:
+On linux, to identify your hostname, you can run the following command:
 ```
 hostname
 ```
@@ -197,7 +199,7 @@ And then, start _t6_ using:
 sudo /etc/init.d/t6 (re)start|stop|status
 ```
 
-* Then set the server to run at start: 
+* Then, set the server to run at start: 
 ```
 sudo update-rc.d t6 defaults
 ```
