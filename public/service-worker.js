@@ -1,21 +1,16 @@
 
 var dataCacheName= 't6-cache-2017-09-06_2148';
 var cacheName= 't6-cache-2017-09-06_2148';
+var cacheWhitelist = ['internetcollaboratif.info', 'localhost'];
 var filesToCache = [
     '/m',
     '/manifest.json',
     '/m/applicationStart',
     
-    '/js/m/material.min.js',
+    '/js/m/vendor.min.js',
     '/js/m/t6app.js',
-    '/js/m/toast.js',
-    '/js/flot/jquery.flot.js',
-    '/js/flot/jquery.flot.time.min.js',
-    '/js/m/moment.min-2.18.1.js',
-    '/js/OpenLayers/ol-4.1.1.min.js',
     
-    '/css/m/inline.css',
-    '/css/OpenLayers/ol-4.1.1.min.css',
+    '/css/t6App.min.css',
 
     '/img/opl_img3.jpg',
     '/img/opl_img2.jpg',
@@ -26,17 +21,23 @@ var filesToCache = [
 
 self.addEventListener('install', function(e) {
 	console.log('[ServiceWorker] Install.');
+	/*
 	e.waitUntil(
 		caches.open(cacheName).then(function(cache) {
 			console.log('[ServiceWorker] Caching app shell.');
 			return cache.addAll(filesToCache);
 		})
 	);
+	*/
+	e.waitUntil(precache().then(function() {
+		console.log('[ServiceWorker] Skip waiting on install');
+		return self.skipWaiting();
+	}));
 });
 
 self.addEventListener('activate', function(e) {
 	console.log('[ServiceWorker] Activate.');
-	var cacheWhitelist = ['2.0.1'];
+	/*
 	e.waitUntil(
 		caches.keys().then(function(keyList) {
 			return Promise.all(keyList.map(function(key) {
@@ -47,6 +48,19 @@ self.addEventListener('activate', function(e) {
 		})
 	);
 	return self.clients.claim();
+	*/
+	console.log('[ServiceWorker] Claiming clients for current page');
+	return self.clients.claim();
+});
+
+self.addEventListener('fetch', function(e) {
+	console.log('The service worker is serving the asset.'+ e.request.url);
+	if (cacheWhitelist.indexOf(e.request.url) !== -1) {
+		e.respondWith(fromCache(e.request).catch(fromServer(e.request)));
+		e.waitUntil(update(e.request));
+	} else {
+		e.respondWith(fromServer(e.request));
+	}
 });
 
 /*
@@ -59,50 +73,40 @@ self.addEventListener('fetch', function(e) {
 	} else {
 		e.respondWith(fromCache(e.request));
 		e.waitUntil(
-				update(e.request)
-				.then(refresh)
+			update(e.request).then(refresh)
 		);
 	}
 });
 */
 
-function fromServer(request) {
-	console.log('[ServiceWorker] '+request.url+' from server.');
-	return fetch(request).then(function (response) {
-		return response;
+function precache() {
+	return caches.open(cacheName).then(function (cache) {
+		return cache.addAll(filesToCache);
 	});
 }
 
 function fromCache(request) {
-	console.log('[ServiceWorker] '+request.url+' from cache.');
+	//we pull files from the cache first thing so we can show them fast
 	return caches.open(cacheName).then(function (cache) {
-		return cache.match(request);
+		return cache.match(request).then(function (matching) {
+			return matching || Promise.reject('no-match');
+		});
 	});
 }
 
 function update(request) {
-	console.log('[ServiceWorker] '+request.url+' from server.');
+	//this is where we call the server to get the newest version of the 
+	//file to use the next time we show view
 	return caches.open(cacheName).then(function (cache) {
 		return fetch(request).then(function (response) {
-			return cache.put(request, response.clone()).then(function () {
-				return response;
-			});
+			return cache.put(request, response);
 		});
 	});
 }
 
-function refresh(response) {
-	console.log('[ServiceWorker] Refresh Cache.');
-	return self.clients.matchAll().then(function (clients) {
-		clients.forEach(function (client) {
-			var message = {
-				type: 'refresh',
-				url: response.url,
-				eTag: response.headers.get('ETag')
-			};
-			client.postMessage(JSON.stringify(message));
-		});
-	});
+function fromServer(request){
+	//this is the fallback if it is not in the cahche to go to the server and get it
+	return fetch(request).then(function(response){ return response})
 }
 
 self.addEventListener('push', function(event) {
