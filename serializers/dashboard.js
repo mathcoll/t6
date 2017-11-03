@@ -8,15 +8,15 @@ function DashboardTypeSerializer(dashboard) {
     	keyForAttribute: 'underscore_case',
     	attributes: ['name', 'user_id', 'description', 'meta', 'snippets'],
 		topLevelLinks : {
-			parent : sprintf('%s/v%s/dashboards', baseUrl, version)
+			parent : sprintf('%s/v%s/dashboards', baseUrl_https, version)
 		},
 		dataLinks : {
 			self : function(dashboard) {
-				return sprintf('%s/v%s/dashboards/%s', baseUrl, version, dashboard.id);
+				return sprintf('%s/v%s/dashboards/%s', baseUrl_https, version, dashboard.id);
 			},
 			user : function(dashboard) {
 				if ( dashboard.user_id!='' ) {
-					return sprintf('%s/v%s/users/%s', baseUrl, version, dashboard.user_id);
+					return sprintf('%s/v%s/users/%s', baseUrl_https, version, dashboard.user_id);
 				} else {
 					return null;
 				}

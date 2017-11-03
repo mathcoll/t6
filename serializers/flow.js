@@ -7,26 +7,26 @@ function FlowSerializer(flow) {
 	    	keyForAttribute: 'underscore_case',
 			attributes : [ 'name', 'unit', 'objects', 'permission', 'data_type', 'mqtt_topic', 'meta' ],
 			topLevelLinks : {
-				parent : sprintf('%s/v%s/flows', baseUrl, version)
+				parent : sprintf('%s/v%s/flows', baseUrl_https, version)
 			},
 			dataLinks : {
 				unit : function(flow) {
 					if ( flow.unit_id!='' ) {
-						return sprintf('%s/v%s/units/%s', baseUrl, version, flow.unit_id);
+						return sprintf('%s/v%s/units/%s', baseUrl_https, version, flow.unit_id);
 					} else {
 						return null;
 					}
 				},
 				data : function(flow) {
 					if ( flow.id!='' ) {
-						return sprintf('%s/v%s/data/%s', baseUrl, version, flow.id);
+						return sprintf('%s/v%s/data/%s', baseUrl_https, version, flow.id);
 					} else {
 						return null;
 					}
 				},
 				self : function(flow) {
 					if ( flow.id!='' ) {
-						return sprintf('%s/v%s/flows/%s', baseUrl, version, flow.id);
+						return sprintf('%s/v%s/flows/%s', baseUrl_https, version, flow.id);
 					} else {
 						return null;
 					}
@@ -36,7 +36,7 @@ function FlowSerializer(flow) {
 				attributes : [ 'object_id' ],
 				dataLinks: {
 					self: function (flow) {
-						return sprintf('%s/v%s/objects/%s', baseUrl, version, flow.object_id);
+						return sprintf('%s/v%s/objects/%s', baseUrl_https, version, flow.object_id);
 					}
 				}
 			}

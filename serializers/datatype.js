@@ -8,7 +8,7 @@ function DataTypeSerializer(datatype) {
     	keyForAttribute: 'underscore_case',
 		attributes: ['name'],
 		topLevelLinks : {
-			parent : sprintf('%s/v%s/datatypes', baseUrl, version)
+			parent : sprintf('%s/v%s/datatypes', baseUrl_https, version)
 		},
 	});
   };

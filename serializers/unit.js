@@ -8,7 +8,7 @@ function UnitSerializer(unit) {
     	keyForAttribute: 'underscore_case',
     	attributes: ['name', 'format', 'type'],
 		topLevelLinks : {
-			parent : sprintf('%s/v%s/units', baseUrl, version)
+			parent : sprintf('%s/v%s/units', baseUrl_https, version)
 		},
     });
   };
