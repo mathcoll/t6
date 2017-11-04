@@ -1,11 +1,9 @@
-/* fallback */
 @font-face {
 	font-family: 'Material Icons';
 	font-style: normal;
 	font-weight: 400;
 	src: url(https://fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2) format('woff2');
 }
-
 .material-icons {
 	font-family: 'Material Icons';
 	font-weight: normal;
@@ -21,11 +19,6 @@
 	-moz-font-feature-settings: 'liga';
 	-moz-osx-font-smoothing: grayscale;
 }
-/*
-	End Material Design Icons
-*/
-
-
 * {
 	box-sizing: border-box;
 }
@@ -37,7 +30,6 @@ body {
 	width: 100%;
 	font-family: 'Helvetica', 'Verdana', sans-serif;
 	font-weight: 400;
-	font-display: optional;
 	color: #444;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -49,8 +41,8 @@ html > *:target {
 html {
 	overflow: hidden;
 }
-.mdl-layout__drawer-button {
-	margin: 0 !important;
+a {
+	text-decoration: none;
 }
 #search-exp::placeholder,
 #filter-exp::placeholder {
@@ -66,6 +58,10 @@ html {
 .mdl-list__item--three-line .mdl-list__item-secondary-content,
 .mdl-list__item--three-line .mdl-list__item-primary-content {
 	height: auto !important;
+}
+.mdl-layout__tab.is-active::after {
+    height: 5px !important;
+    background: #fff !important;
 }
 .small-padding {
 	min-height: 70px !important;
@@ -127,7 +123,6 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
 }
 .mdl-textfield__icon ~ * {
 	margin-left: 48px !important;
-	/*width: calc(100% - 48px) !important;*/
 }
 .mdl-progress {
 	display: inline-block !important;
@@ -145,33 +140,36 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
 	padding-left: 0px !important;
 }
 
-section[data-type="objects"],
-div[data-type="objects"] {
-	opacity: 1;
-	transition: "opacity 5s";
-}
-
-section[data-type="objects"].removed,
 div[data-type="objects"].removed,
-section[data-type="flows"].removed,
 div[data-type="flows"].removed,
-section[data-type="dashboards"].removed,
 div[data-type="dashboards"].removed,
-section[data-type="snippets"].removed,
 div[data-type="snippets"].removed,
-section[data-type="rules"].removed,
 div[data-type="rules"].removed,
-section[data-type="mqtts"].removed,
-div[data-type="mqtts"].removed,
+div[data-type="mqtts"].removed {
+	visibility: collapse;
+	opacity: 0;
+	transition: visibility 2s, opacity 2s !important;
+	-webkit-transition: visibility 2s linear, opacity 2s linear !important;
+}
 section.is-active .mdl-button--fab.is-not-here {
 	opacity: 0;
-	transition: opacity .2s !important;
-	-webkit-transition: opacity .2s !important;
+	transform: scale(0);
+	-webkit-transition: all 100ms linear !important;
+	-moz-transition: all 100ms linear !important;
+	-ms-transition: all 100ms linear !important;
+	-o-transition: all 100ms linear !important;
+	transition: all 100ms linear !important;
+	transition-delay: .5s;
 }
 section.is-active .mdl-button--fab.is-here {
 	opacity: 1;
-	transition: opacity .2s !important;
-	-webkit-transition: opacity .2s !important;
+	transform: scale(1);
+	-webkit-transition: all 100ms linear !important;
+	-moz-transition: all 100ms linear !important;
+	-ms-transition: all 100ms linear !important;
+	-o-transition: all 100ms linear !important;
+	transition: all 100ms linear !important;
+	transition-delay: .5s;
 }
 section.fixedActionButtons {
 	position: fixed;
@@ -181,7 +179,7 @@ section.fixedActionButtons {
 	background: rgb(121,85,72);
 }
 section.fixedActionButtons button.mdl-button {
-	color: #fff ! important;
+	color: #fff !important;
 	position: auto;
 	width: 100%;
 	margin: 0 !important;
@@ -191,13 +189,18 @@ section.fixedActionButtons button.mdl-button {
 div .heading {
 	font-weight: 600;
 }
+div.valuedisplay hr {
+    display: block;
+    border-top: 1px solid #815786;
+    margin: .7em 0;
+}
+
 div.valuedisplay .snippet-value,
 div.valuedisplay .snippet-value1,
 div.valuedisplay .snippet-value2,
 div.valuedisplay .snippet-value3 {
 	color: #ffffff;
 	display: inline;
-	font-size: 65px;
 	font-weight: 600;
 }
 div.valuedisplay .snippet-unit,
@@ -206,26 +209,25 @@ div.valuedisplay .snippet-unit2,
 div.valuedisplay .snippet-unit3 {
 	color: #ffffff;
 	display: inline;
-	font-size: 65px;
 	font-weight: 600;
 }
 div.valuedisplay .snippet-value1 {
-	font-size: 65px;
+	font-size: 15vw;
 }
 div.valuedisplay .snippet-unit1 {
-	font-size: 65px;
+	font-size: 11vw;
 }
 div.valuedisplay .snippet-value2 {
-	font-size: 45px;
+	font-size: 9vw;
 }
 div.valuedisplay .snippet-unit2 {
-	font-size: 45px;
+	font-size: 7vw;
 }
 div.valuedisplay .snippet-value3 {
-	font-size: 25px;
+	font-size: 5vw;
 }
 div.valuedisplay .snippet-unit3 {
-	font-size: 25px;
+	font-size: 3vw;
 }
 div.valuedisplay .mdl-list__item-secondary-content {
 	background: url(/img/m/snippets/valuedisplay.jpg) 50% 59%;
@@ -299,18 +301,21 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 
 
 .mdl-layout__header-row {
-	height: 60px !important;
+	height: 50px !important;
 }
 .mdl-layout__header.is-compact {
 	max-height: 45px !important;
 }
 .mdl-layout__tab-bar-container {
-	height: 50px !important;
+	height: 48px !important;
 }
 .mdl-layout__drawer-button {
-	height: 55px !important;
+	height: 50px !important;
+	margin: 0 !important;
 }
-
+.mdl-layout__header {
+    min-height: 50px !important;
+}
 .is-inactive {
 	display: none !important;
 }
@@ -353,6 +358,10 @@ section#profile .mdl-card--small .mdl-card__title {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+.mdl-card__date {
+    font-size: 1rem;
+    padding: 8px;
+}
 section#profile .mdl-card--small .mdl-card__image {
 	border-radius: 1px 0 0 1px;
 	left: 0;
@@ -371,7 +380,6 @@ section#profile .mdl-card__subtitle {
 	text-overflow: ellipsis;
 	left: 88px;
 	top: 45px;
-	transition: all 200ms cubic-bezier(0.075, 0.82, 0.165, 1) 0s;
 	white-space: nowrap;
 }
 section#profile .mdl-list__item {
@@ -467,12 +475,11 @@ section#profile .subhead {
 .mdl-cell {
 	margin: 5px 0 !important;
 }
-section.mdl-grid {
-	padding: 5px 8px 0px 8px !important;
+.mdl-grid {
+	word-break: break-all;
 }
-.mdl-cell--12-col, .mdl-cell--12-col-phone.mdl-cell--12-col-phone {
-	width:100% !important;
-	/*padding: 0px 0px !important;*/
+#terms .mdl-grid {
+	word-break: normal;
 }
 section#dashboard_grids div.mdl-grid.mdl-tabs__panel.is-active {
 	display: flex !important;
@@ -480,9 +487,6 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel.is-active {
 section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	min-height: 20em;
 	padding-top: 0;
-}
-.mdl-cell--6-col, .mdl-cell--6-col-desktop.mdl-cell--6-col-desktop {
-	width:50% !important;
 }
 .btn.success {
   
@@ -502,9 +506,6 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 .btn.danger:hover, .btn.danger:focus {
   background-color: #c0392b;
 }
-a {
-	text-decoration: none;
-}
 .mdl-subheader-content {
 	color: rgb(121, 85, 72) !important;
 	font-weight: 700;
@@ -515,8 +516,30 @@ a {
 	z-index: 2;
 	font-variant: small-caps;
 }
-.mdl-card__title-text {
-	
+@media (min-width: 1px) and (max-width: 479px) {
+	.mdl-cell {
+	    width: 100% !important;
+	}
+}
+@media (min-width: 480px) and (max-width: 839px) {
+	.mdl-cell {
+	    width: 50% !important;
+	}
+}
+@media (min-width: 840px) and (max-width: 1023px) {
+	.mdl-cell {
+	    width: 33% !important;
+	}
+}
+@media (min-width: 1024px) and (max-width: 1279px) {
+	.mdl-cell {
+		width: 25% !important;
+	}
+}
+@media (min-width: 1280px) {
+	.mdl-cell {
+	    width: 12.5% !important;
+	}
 }
 .sticky {
 	position: -webkit-sticky;
@@ -747,11 +770,13 @@ a {
 	margin: .5em;
 	float: left;
 }
-.mdl-card__title {
-	color: #fff;
-}
 #index .mdl-card__menu {
 	color: #fff;
+}
+.mdl-card {
+	min-height: auto !important;
+	overflow: visible !important;
+	width: 100%;
 }
 .toast__container {
 	position: fixed;
@@ -763,7 +788,7 @@ a {
 .toast__msg {
 	width: 300px;
 	min-height: 50px;
-	background: rgba(0, 0, 0, 0.9);
+	background: rgba(0, 0, 0, .9);
 	color: #fff;
 	display: -webkit-box;
 	display: -ms-flexbox;
@@ -778,9 +803,8 @@ a {
 	font-weight: 500;
 	padding-left: 15px;
 	padding-right: 10px;
-	-webkit-transition: opacity 3s cubic-bezier(0, 0, 0.30, 1) 0;
-	-webkit-transition: opacity 0.30s cubic-bezier(0, 0, 0.30, 1) 0;
-	transition: opacity 0.30s cubic-bezier(0, 0, 0.30, 1) 0;
+	-webkit-transition: opacity .3s cubic-bezier(0, 0, 0.30, 1) 0;
+	transition: opacity .3s cubic-bezier(0, 0, 0.30, 1) 0;
 	text-transform: initial;
 	margin: 5px -150px;
 	border-radius: 2px;
@@ -925,6 +949,10 @@ a {
 }
 #drawer a.mdl-navigation__link {
 	color: rgb(121,85,72);
+}
+.mdl-layout__tab-bar a.mdl-navigation__link {
+	opacity: 1 !important;
+	color: #fff;
 }
 .material-icons.md-18 {
 	font-size: 18px;
@@ -1082,18 +1110,13 @@ ul:not(.browser-default) li {
 	transform: scale(0);
 	display: none;
 }
-.mdl-card {
-	min-height: auto !important;
-	overflow: visible !important;
-}
 html.ltr .mdl-card__actions {
 	text-align: right;
+	padding: 0 !important;
 }
 section > button {
 	position: absolute !important;
 	right: 8px !important;
-	/*top: 8px !important;*/
-	
 	z-index: 99 !important;
 }
 .page-content section.mdl-grid[data-action="view"] > div {
@@ -1247,34 +1270,6 @@ section > button {
 	height: auto;
 	display: block;
 }
-.mdl-button {
-	background: transparent;
-	border: none;
-	border-radius: 2px;
-	color: black;
-	position: relative;
-	height: 36px;
-	margin: 0;
-	min-width: 64px;
-	padding: 0 16px;
-	display: inline-block;
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-size: 14px;
-	font-weight: 500;
-	text-transform: uppercase;
-	line-height: 1;
-	letter-spacing: 0;
-	overflow: hidden;
-	will-change: box-shadow;
-	-webkit-transition: box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	transition: box-shadow 0.2s cubic-bezier(0.4, 0, 1, 1), background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	outline: none;
-	cursor: pointer;
-	text-decoration: none;
-	text-align: center;
-	line-height: 36px;
-	vertical-align: middle;
-}
 .mdl-button::-moz-focus-inner {
 	border: 0;
 }
@@ -1286,9 +1281,6 @@ section > button {
 }
 .mdl-button:active {
 	background-color: rgba(158, 158, 158, 0.4);
-}
-.mdl-button.mdl-button--colored {
-	color: #3f51b5;
 }
 .mdl-button.mdl-button--colored:focus:not(:active) {
 	background-color: rgba(0, 0, 0, 0.12);

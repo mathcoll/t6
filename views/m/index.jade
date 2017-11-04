@@ -107,7 +107,6 @@ html.ltr(lang='en')
           a.mdl-navigation__link(href='#mqtts')
             i.material-icons volume_down
             |  Mqtt Topics
-            
           span.mdl-menu__item--full-bleed-divider 
           a.mdl-navigation__link(href='#settings')
             i.material-icons settings
@@ -115,10 +114,14 @@ html.ltr(lang='en')
 
       .setting_menu
         ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
-          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton(href='/status')
-            a.mdl-navigation__link
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton
+            a.mdl-navigation__link(href='/status')
               i.material-icons favorite
               |  API Status
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.termsButton
+            a.mdl-navigation__link(href='/terms')
+              i.material-icons business_center
+              |  Privacy & Terms
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
             a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
               i.material-icons launch
@@ -127,21 +130,20 @@ html.ltr(lang='en')
             a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
               i.material-icons launch
               |  GitHub
-          
-          li.mdl-js-ripple-effect.mdl-menu__item#settings_button(href='#settings')
-            a.mdl-navigation__link
+          li.mdl-js-ripple-effect.mdl-menu__item#settings_button
+            a.mdl-navigation__link(href='#settings')
               i.material-icons settings
               |  Settings
-          li.mdl-js-ripple-effect.mdl-menu__item#profile_button(href='#profile')
-            a.mdl-navigation__link
+          li.mdl-js-ripple-effect.mdl-menu__item#profile_button
+            a.mdl-navigation__link(href='#profile')
               i.material-icons account_box
               |  Profile
-          li.mdl-js-ripple-effect.mdl-menu__item#signin_button(href='#login')
-            a.mdl-navigation__link
+          li.mdl-js-ripple-effect.mdl-menu__item#signin_button
+            a.mdl-navigation__link(href='#login')
               i.material-icons lock
               |  Sign-In
-          li.mdl-js-ripple-effect.mdl-menu__item.hidden#logout_button(href='#login')
-            a.mdl-navigation__link
+          li.mdl-js-ripple-effect.mdl-menu__item.hidden#logout_button
+            a.mdl-navigation__link(href='#login')
               i.material-icons person_add
               |  Logout
 
@@ -150,165 +152,147 @@ html.ltr(lang='en')
         section#loading-spinner.hidden
           #spinner.mdl-progress.mdl-js-progress.mdl-progress__indeterminate.loader(style='width:auto;')
 
-
         //- List Index
         section#index.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content How does t6 works?
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content How does t6 works?
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- List Objects
         section#objects.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='2')
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Objects
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Objects
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Object
         section#object.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Edit Object
         section#object_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Add Object
         section#object_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Add Object
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Add Object
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- List Flows
         section#flows.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='3')
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Flows
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Flows
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Flow
         section#flow.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content 
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Edit Flow
         section#flow_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Add Flow
         section#flow_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Add Flow
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Add Flow
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- List Snippets
         section#snippets.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='4')
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Snippets
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Snippets
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Snippet
         section#snippet.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Edit Snippet
         section#snippet_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Add Snippet
         section#snippet_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Add Snippet
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Add Snippet
+          .page-content.mdl-grid.mdl-grid--no-spacing
             
         //- List Dashboards
         section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='5')
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Dashboards
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Dashboards
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Dashboard
         section#dashboard.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid(style="padding:0;")
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Edit Dashboard
         section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Add Dashboard
         section#dashboard_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Add Dashboard
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Add Dashboard
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- List Rules
         section#rules.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='6')
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Rules
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Rules
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Rules
         section#rule.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid(style="padding:0;")
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- Edit Rules
         section#rule_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Add Rules
         section#rule_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Add Rules
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Add Rules
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- List Mqtt
         section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='7')
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Mqtts
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Mqtts
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Mqtts
         section#mqtt.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid(style="padding:0;")
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- Edit Mqtt
         section#mqtt_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content
+          .page-content.mdl-grid.mdl-grid--no-spacing
   
         //- Add Mqtt
         section#mqtt_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Add Mqtt
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Add Mqtt
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Sign In
         section#login.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Sign In to t6
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Sign In to t6
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Sign Up
         section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Sign Up & create your Free Account
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Sign Up & create your Free Account
+          .page-content.mdl-grid.mdl-grid--no-spacing
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
-              form.signup.mdl-cell.mdl-cell--12-col
-                .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                  //-.mdl-card__title.mdl-color--primary.mdl-color-text--white(style='background:url(#{baseUrlCdn}/img/opl_img2.jpg) no-repeat 50% 50%;min-height: 176px;')
-                    //-h2.mdl-card__title-text Sign-Up to t6
+              form.signup
+                .mdl-card.mdl-shadow--2dp
                   .mdl-card__supporting-text You will receive an email to setup your password securely.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
@@ -335,19 +319,17 @@ html.ltr(lang='en')
         //- View My Profile
         section#profile.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive.mdl-grid.mdl-cell--12-col
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content My Profile
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content My Profile
+          .page-content.mdl-grid.mdl-grid--no-spacing
           
         section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive.mdl-grid.mdl-cell--12-col
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Forgot Password
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Forgot Password
+          .page-content.mdl-grid.mdl-grid--no-spacing
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
-              form.signup.mdl-cell.mdl-cell--12-col
-                .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+              form
+                .mdl-card.mdl-shadow--2dp
                   .mdl-card__supporting-text Enter your Email address below and we'll send you password reset instructions.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield
@@ -363,13 +345,12 @@ html.ltr(lang='en')
           
         section#reset-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive.mdl-grid.mdl-cell--12-col
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Set Password
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Set Password
+          .page-content.mdl-grid.mdl-grid--no-spacing
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
-              form.signup.mdl-cell.mdl-cell--12-col
-                .mdl-card.mdl-cell.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+              form
+                .mdl-card.mdl-shadow--2dp
                   .mdl-card__supporting-text Set you new password to connect your t6 account.
                   .mdl-card__supporting-text Password must contains lower cases, upper cases, digits, special characters; and must be longer than 8 characters.
                   .mdl-card__supporting-text
@@ -392,23 +373,20 @@ html.ltr(lang='en')
         //- View Settings
         section#settings.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Settings
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Settings
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Status
         section#status.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content t6 API
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content t6 API
+          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Terms
         section#terms.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            .mdl-cell.mdl-cell--12-col
-              h2.mdl-card__title-text.mdl-subheader-content Terms of Service and License Agreement
-          .page-content
+            h2.mdl-card__title-text.mdl-subheader-content Terms of Service and License Agreement
+          .page-content.mdl-grid.mdl-grid--no-spacing
           
         //- Modal Dialog
         dialog#dialog.mdl-dialog

@@ -3,7 +3,6 @@ var dataCacheName= 't6-cache-2017-09-06_2148';
 var cacheName= 't6-cache-2017-09-06_2148';
 var cacheWhitelist = ['internetcollaboratif.info', 'localhost'];
 var filesToCache = [
-    '/m',
     '/manifest.json',
     '/m/applicationStart',
     
@@ -17,6 +16,8 @@ var filesToCache = [
     '/img/opl_img.jpg',
     '/img/m/welcome_card.jpg',
     '/img/m/side-nav-bg.jpg',
+
+    '/m',
 ];
 
 self.addEventListener('install', function(e) {
@@ -37,18 +38,6 @@ self.addEventListener('install', function(e) {
 
 self.addEventListener('activate', function(e) {
 	console.log('[ServiceWorker] Activate.');
-	/*
-	e.waitUntil(
-		caches.keys().then(function(keyList) {
-			return Promise.all(keyList.map(function(key) {
-				if (cacheWhitelist.indexOf(key) === -1) {
-					return caches.delete(key);
-				}
-			}));
-		})
-	);
-	return self.clients.claim();
-	*/
 	console.log('[ServiceWorker] Claiming clients for current page');
 	return self.clients.claim();
 });
@@ -63,7 +52,6 @@ self.addEventListener('fetch', function(e) {
 	}
 });
 
-/*
 self.addEventListener('fetch', function(e) {
 	console.log('[ServiceWorker] The service worker is serving the asset.');
 	if (e.request.url.indexOf('authenticate') > -1) {
@@ -77,7 +65,6 @@ self.addEventListener('fetch', function(e) {
 		);
 	}
 });
-*/
 
 function precache() {
 	return caches.open(cacheName).then(function (cache) {
