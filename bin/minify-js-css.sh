@@ -30,8 +30,8 @@ uglifyjs \
 echo PWA Javascript minify: Completed
 
 uglifycss \
-	../public/css/m/inline.css \
 	../public/css/material-design-lite/1.3.0/material.brown-blue.min.css \
+	../public/css/m/inline.css \
 	../public/css/OpenLayers/ol-4.1.1.min.css \
 	> ../public/css/t6App.min.css
 echo PWA Stylesheet minify: Completed
