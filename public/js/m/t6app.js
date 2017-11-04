@@ -33,6 +33,7 @@ var app = {
 		'update': 'update',
 		'status': 'favorite',
 		'terms': 'business_center',
+		'docs': 'code',
 	},
 	types: [
 		{name: 'cast', value:'Cast'},
@@ -104,6 +105,7 @@ var containers = {
 	mqtts: document.querySelector('section#mqtts'),
 	status: document.querySelector('section#status'),
 	terms: document.querySelector('section#terms'),
+	docs: document.querySelector('section#docs'),
 };
 
 (function (exports) {
@@ -174,6 +176,11 @@ var containers = {
 		app.setSection('status');
 		evt.preventDefault();
 	} //onStatusButtonClick
+	
+	function onDocsButtonClick(evt) {
+		app.setSection('docs');
+		evt.preventDefault();
+	} //onDocsButtonClick
 	
 	function onTermsButtonClick(evt) {
 		app.getTerms();
@@ -424,7 +431,8 @@ var containers = {
 
 			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
 			status: document.querySelectorAll('.statusButton'),
-			terms: document.querySelector('.termsButton'),
+			docs: document.querySelectorAll('.docsButton'),
+			terms: document.querySelectorAll('.termsButton'),
 				
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
 			user_create: document.querySelectorAll('form.signup button.createUser'),
@@ -1888,7 +1896,7 @@ var containers = {
 
 	app.fetchItems = function(type, filter) {
 		let promise = new Promise((resolve, reject) => {
-			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' && type !== 'tokens' && type !== 'status' ) {
+			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' ) {
 				resolve();
 				return false;
 			}
@@ -3099,7 +3107,9 @@ var containers = {
 		} else if ( p === 'terms' ) {
 			app.getTerms();
 			app.setSection('terms');
-		} else {
+		}  else if ( p === 'docs' ) {
+			app.setSection('docs');
+		}else {
 			app.setSection(p);
 		}
 	}
@@ -3160,7 +3170,18 @@ var containers = {
 			buttons.status[i].addEventListener('click', onStatusButtonClick, false);
 		}
 	}
-	buttons.terms.addEventListener('click', onTermsButtonClick, false);
+	for (var i in buttons.docs) {
+		if ( buttons.docs[i].childElementCount > -1 ) {
+			buttons.docs[i].removeEventListener('click', onDocsButtonClick, false);
+			buttons.docs[i].addEventListener('click', onDocsButtonClick, false);
+		}
+	}
+	for (var i in buttons.terms) {
+		if ( buttons.terms[i].childElementCount > -1 ) {
+			buttons.terms[i].removeEventListener('click', onTermsButtonClick, false);
+			buttons.terms[i].addEventListener('click', onTermsButtonClick, false);
+		}
+	}
 
 	var ce=function(e,n){var a=document.createEvent("CustomEvent");a.initCustomEvent(n,true,true,e.target);e.target.dispatchEvent(a);a=null;return false},
 	nm=true,sp={x:0,y:0},ep={x:0,y:0},

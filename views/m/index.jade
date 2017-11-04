@@ -46,9 +46,12 @@ html.ltr(lang='en')
             a.mdl-navigation__link.statusButton(href='/status')
               i.material-icons favorite
               |  API Status
-            a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
+            a.mdl-navigation__link.docsButton(href='#docs')
               i.material-icons code
-              |  API Documentation
+              |  API first
+            a.mdl-navigation__link.termsButton(href='#terms')
+              i.material-icons business_center
+              |  Privacy & Terms
             a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
               i.material-icons link
               |  GitHub
@@ -118,14 +121,14 @@ html.ltr(lang='en')
             a.mdl-navigation__link(href='/status')
               i.material-icons favorite
               |  API Status
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.docsButton
+            a.mdl-navigation__link(href='#docs')
+              i.material-icons code
+              |  API first
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.termsButton
             a.mdl-navigation__link(href='/terms')
               i.material-icons business_center
               |  Privacy & Terms
-          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
-            a.mdl-navigation__link(href='/docs', target='_blank', rel='noopener')
-              i.material-icons launch
-              |  API Documentation
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
             a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
               i.material-icons launch
@@ -387,6 +390,46 @@ html.ltr(lang='en')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Terms of Service and License Agreement
           .page-content.mdl-grid.mdl-grid--no-spacing
+
+        //- Docs
+        section#docs.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-grid.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content Api first documentation
+          .page-content.mdl-grid.mdl-grid--no-spacing
+            section.mdl-grid.mdl-cell--12-col
+              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+                div.mdl-grid
+                  h2.mdl-typography--headline t6 API first: Live, eat, and breathe the API-first lifestyle of t6.
+                div.mdl-card__supporting-text.no-padding
+                  h3.mdl-typography--headline Physical World
+                  p Physical World are composed by your sensors and actuators. Physical Objects require a virtual Object in t6 and then, they could add Data to Flows. Sample nodeMCU and Arduino scripts are available in the sensors repositories.
+                  p Physical Objects require a virtual Object in t6 and then, they could add Data to Flows.
+                  h3.mdl-typography--headline Resources
+                  ul.mdl-list
+                    li.mdl-list__item-primary-content
+                      strong - Objects sensors and actuators:
+                      |  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
+                      | Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
+                    li.mdl-list__item-primary-content
+                      strong - Flows & DataPoints:
+                      |  Flows are datastore to save time/values (DataPoints). Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
+                      | Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.
+                      | Objects are sending their Data to Flow-containers using the API.
+                    li.mdl-list__item-primary-content
+                      strong - Dashboards to graph, draw, and monitor:
+                      | Dashboard is a instance of one or multiple Snippets.
+                    li.mdl-list__item-primary-content
+                      strong - Snippets
+                    li.mdl-list__item-primary-content
+                      strong - Rules to Alert and Notify:
+                    li.mdl-list__item-primary-content
+                      strong - Mqtt
+                  p
+                    img.img-responsive(src="https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
+                    
+                  p
+                    a.mdl-button.mdl-js-button(href="/docs") Explore the full Api documentation
+                      i.material-icons chevron_right
           
         //- Modal Dialog
         dialog#dialog.mdl-dialog
