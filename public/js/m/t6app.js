@@ -488,10 +488,10 @@ var containers = {
 					var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
 					if ( id != null ) {
 						document.getElementById(id).classList.toggle('hidden');
-						if ( evt.target.querySelector('i.material-icons').innerHTML == 'expand_more' ) {
-							evt.target.querySelector('i.material-icons').innerHTML = 'expand_less';
+						if ( evt.target.parentElement.querySelector('i.material-icons').innerHTML == 'expand_more' ) {
+							evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_less';
 						} else {
-							evt.target.querySelector('i.material-icons').innerHTML = 'expand_more';
+							evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_more';
 						}
 					}
 				}, false);
@@ -3290,11 +3290,15 @@ var containers = {
 		}
 	}
 	
-	settings_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
-	logout_button.addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));}, false);
+	settings_button.addEventListener('click', function(evt) {
+		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
+	}, false);
+	logout_button.addEventListener('click', function(evt) {
+		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
+	}, false);
 	profile_button.addEventListener('click', function(evt) {
 		if ( app.isLogged ) {
-			app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
+			app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
 		} else {
 			app.setSection('login');
 		}
