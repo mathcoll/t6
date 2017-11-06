@@ -488,10 +488,10 @@ var containers = {
 					var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
 					if ( id != null ) {
 						document.getElementById(id).classList.toggle('hidden');
-						if ( evt.target.querySelector('i.material-icons').innerHTML == 'expand_more' ) {
-							evt.target.querySelector('i.material-icons').innerHTML = 'expand_less';
+						if ( evt.target.parentElement.querySelector('i.material-icons').innerHTML == 'expand_more' ) {
+							evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_less';
 						} else {
-							evt.target.querySelector('i.material-icons').innerHTML = 'expand_more';
+							evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_more';
 						}
 					}
 				}, false);
