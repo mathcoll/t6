@@ -290,7 +290,7 @@ html.ltr(lang='en')
         //- View Sign Up
         section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Sign Up & create your Free Account
+            h2.mdl-card__title-text.mdl-subheader-content Sign Up to t6
           .page-content.mdl-grid.mdl-grid--no-spacing
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
@@ -405,25 +405,27 @@ html.ltr(lang='en')
                   p Physical World are composed by your sensors and actuators. Physical Objects require a virtual Object in t6 and then, they could add Data to Flows. Sample nodeMCU and Arduino scripts are available in the sensors repositories.
                   p Physical Objects require a virtual Object in t6 and then, they could add Data to Flows.
                   h3.mdl-typography--headline Resources
-                  ul.mdl-list
+                  ol.mdl-list(style="list-style:auto;padding:18px;line-height:20px;")
                     li.mdl-list__item-primary-content
-                      strong - Objects sensors and actuators:
+                      strong Objects, sensors and actuators:
                       |  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
                       | Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
                     li.mdl-list__item-primary-content
-                      strong - Flows & DataPoints:
+                      strong Flows & DataPoints:
                       |  Flows are datastore to save time/values (DataPoints). Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
                       | Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.
                       | Objects are sending their Data to Flow-containers using the API.
                     li.mdl-list__item-primary-content
-                      strong - Dashboards to graph, draw, and monitor:
+                      strong Dashboards to graph, draw, and monitor:
                       | Dashboard is a instance of one or multiple Snippets.
                     li.mdl-list__item-primary-content
-                      strong - Snippets
+                      strong Snippets
                     li.mdl-list__item-primary-content
-                      strong - Rules to Alert and Notify:
+                      strong Rules, to Alert and Notify
+                      | 
                     li.mdl-list__item-primary-content
-                      strong - Mqtt
+                      strong Mqtt, to communicate
+                      | 
                   p
                     img.img-responsive(src="https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
                     

@@ -2119,7 +2119,7 @@ var containers = {
 				username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
 				password: ".{4,}",
 			};
-			var login = "<section class='content-grid mdl-grid mdl-grid--no-spacing'>" +
+			var login = "<section class='content-grid mdl-grid'>" +
 			"	<div class='mdl-layout-spacer'></div>" +
 			"	<form class='signin'>" +
 			"		<div class='mdl-card mdl-shadow--2dp'>" +
@@ -2127,19 +2127,24 @@ var containers = {
 			"				Connect your Objects to collect their data and show your own Dashboards." +
 			"			</div>" +
 			"			<div class='mdl-card__supporting-text'>" +
-			"				<div class='mdl-textfield mdl-js-textfield'><i class='material-icons mdl-textfield__icon'>lock</i>" +
+			"				<div class='mdl-textfield mdl-js-textfield'>" +
+			"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
 			"					<input name='username' pattern=\""+pattern.username+"\" class='mdl-textfield__input' type='text'>" +
-			"					<label for='username' class='mdl-textfield__label'>Username</label><span class='mdl-textfield__error'>Username should be your email address</span>" +
+			"					<label for='username' class='mdl-textfield__label'>Username</label>" +
+			"					<span class='mdl-textfield__error'>Username should be your email address</span>" +
 			"				</div>" +
-			"					<div class='mdl-textfield mdl-js-textfield'><i class='material-icons mdl-textfield__icon'>vpn_key</i>" +
+			"				<div class='mdl-textfield mdl-js-textfield'>" +
+			"					<i class='material-icons mdl-textfield__icon'>vpn_key</i>" +
 			"					<input name='password' pattern=\""+pattern.password+"\" class='mdl-textfield__input' type='password'>" +
-			"					<label for='password' class='mdl-textfield__label'>Password</label><span class='mdl-textfield__error'>Password must be provided</span>" +
+			"					<label for='password' class='mdl-textfield__label'>Password</label>" +
+			"					<span class='mdl-textfield__error'>Password must be provided</span>" +
 			"				</div>" +
-			"				<div class='mdl-card__actions mdl-card--border'><a onclick=\"app.setSection('signup');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
-			"					<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
-			"						<i class='material-icons'>lock</i>Log in" +
-			"					</button>" +
-			"				</div>" +
+			"			</div>" +
+			"			<div class='mdl-card__actions mdl-card--border'>" +
+			"				<a onclick=\"app.setSection('signup');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
+			"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
+			"					<i class='material-icons'>lock</i>Log in" +
+			"				</button>" +
 			"			</div>" +
 			"		</div>" +
 			"	</form>" +
@@ -3193,12 +3198,6 @@ var containers = {
 	};
 	for(var a in touch){document.addEventListener(a,touch[a],false);}
 	var h=function(e){console.log(e.type,e)};
-	
-	app.refreshButtonsSelectors();
-	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('login');}, false);
-	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.resetDrawer(); app.sessionExpired(); app.setSection('login'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
-	buttons.notification.addEventListener('click', function(evt) { app.showNotification(); }, false);	
-	app.setHiddenElement("notification");
 
 	if (!('serviceWorker' in navigator)) {
 		if ( app.debug === true ) {
@@ -3290,6 +3289,7 @@ var containers = {
 		}
 	}
 	
+	app.refreshButtonsSelectors();
 	settings_button.addEventListener('click', function(evt) {
 		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
 	}, false);
@@ -3303,6 +3303,10 @@ var containers = {
 			app.setSection('login');
 		}
 	}, false);
+	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('login');}, false);
+	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.resetDrawer(); app.sessionExpired(); app.setSection('login'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
+	buttons.notification.addEventListener('click', function(evt) { app.showNotification(); }, false);	
+	app.setHiddenElement("notification");
 
 	menuIconElement.addEventListener('click', app.showMenu, false);
 	menuOverlayElement.addEventListener('click', app.hideMenu, false);
