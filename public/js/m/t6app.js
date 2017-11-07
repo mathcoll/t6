@@ -2850,7 +2850,7 @@ var containers = {
 			for (var i=0; i < (response).length ; i++ ) {
 				if( response[i].title ) {
 					terms += "	<div class=\"mdl-grid\">";
-					terms += "		<h2 class=\"mdl-typography--headline\">"+response[i].title+"</h2>";
+					terms += "		<h3 class=\"mdl-typography--headline\">"+response[i].title+"</h3>";
 					terms += "	</div>";
 				}
 				terms += "	<div class=\"mdl-card__supporting-text no-padding\">";
