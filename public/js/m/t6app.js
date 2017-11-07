@@ -3294,7 +3294,18 @@ var containers = {
 		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
 	}, false);
 	logout_button.addEventListener('click', function(evt) {
+		app.auth={};
+		app.clearJWT();
+		app.resetDrawer();
+		app.sessionExpired();
+		toast('You have been disconnected :-(', {timeout:3000, type: 'done'});
 		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
+	}, false);
+	signin_button.addEventListener('click', function(evt) {
+		app.auth={}; app.setSection('login');
+	}, false);
+	buttons.notification.addEventListener('click', function(evt) {
+		app.showNotification();
 	}, false);
 	profile_button.addEventListener('click', function(evt) {
 		if ( app.isLogged ) {
@@ -3303,9 +3314,6 @@ var containers = {
 			app.setSection('login');
 		}
 	}, false);
-	signin_button.addEventListener('click', function() {app.auth={}; app.setSection('login');}, false);
-	logout_button.addEventListener('click', function() {app.auth={}; app.clearJWT(); app.resetDrawer(); app.sessionExpired(); app.setSection('login'); toast('You have been disconnected :-(', {timeout:3000, type: 'done'});}, false);
-	buttons.notification.addEventListener('click', function(evt) { app.showNotification(); }, false);	
 	app.setHiddenElement("notification");
 
 	menuIconElement.addEventListener('click', app.showMenu, false);
