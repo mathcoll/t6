@@ -1995,7 +1995,7 @@ var containers = {
 				.then(function(response) {
 					container.innerHTML = "";
 					if ( (response.data).length == 0 && app.bearer ) {
-						container.innerHTML = app.getCard(defaultCard);
+//						container.innerHTML = app.getCard(defaultCard);
 						app.displayLoginForm( container );
 					} else {
 						for (var i=0; i < (response.data).length ; i++ ) {
@@ -3103,6 +3103,10 @@ var containers = {
 		}
 	}
 	
+	app.getScrollPercent = function() {
+	  return ( (document.documentElement.scrollTop || document.body.scrollTop) / ( (document.documentElement.scrollHeight || document.body.scrollHeight) - document.documentElement.clientHeight) * 100 );
+	}
+	
 	/* *********************************** Run the App *********************************** */
 	if ( window.location.hash ) {
 		var p = window.location.hash.substr(1);
@@ -3143,6 +3147,7 @@ var containers = {
 			}
 		}
 	});
+	
 	/*
 	window.addEventListener('hashchange', function() {
 		if( window.history && window.history.pushState ) {
