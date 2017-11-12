@@ -366,7 +366,7 @@ router.get('/status', function(req, res, next) {
 router.get('/index', function(req, res, next) {
 	var index = [
  	    {
-			title: 't6 is Mobile-first',
+			title: 'Mobile-first & progressive web app',
 			titlecolor: '#000000',
 			description: 'Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.',
 			image: '//cdn.internetcollaboratif.info/img/phone.jpg',
@@ -374,7 +374,7 @@ router.get('/index', function(req, res, next) {
 	    {
 			title: 't6 API first',
 			titlecolor: '#ffffff',
-			description: 'Live, eat, and breathe the API-first lifestyle of t6.',
+			description: 'Live, eat, and breathe the API-first lifestyle of t6.<br />6 resources to take controle of your Objects, Flows, Dashboards, Snippets, Rules, and Mqtts topics.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
 			action: {id: 'docs', label: 'Read the Doc'},
 	    },
