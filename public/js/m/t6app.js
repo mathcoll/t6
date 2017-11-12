@@ -34,6 +34,7 @@ var app = {
 		'status': 'favorite',
 		'terms': 'business_center',
 		'docs': 'code',
+		'delete_question': 'error_outline',
 	},
 	types: [
 		{name: 'cast', value:'Cast'},
@@ -169,24 +170,24 @@ var containers = {
 		app.auth = {"username":username, "password":password};
 		app.authenticate();
 		evt.preventDefault();
-	} //onLoginButtonClick
+	}; //onLoginButtonClick
 	
 	function onStatusButtonClick(evt) {
 		app.getStatus();
 		app.setSection('status');
 		evt.preventDefault();
-	} //onStatusButtonClick
+	}; //onStatusButtonClick
 	
 	function onDocsButtonClick(evt) {
 		app.setSection('docs');
 		evt.preventDefault();
-	} //onDocsButtonClick
+	}; //onDocsButtonClick
 	
 	function onTermsButtonClick(evt) {
 		app.getTerms();
 		app.setSection('terms');
 		evt.preventDefault();
-	} //onStatusButtonClick
+	}; //onStatusButtonClick
 	
 	function setSignupAction() {
 		for (var i in buttons.user_create) {
@@ -216,7 +217,7 @@ var containers = {
 			})
 			.then(function(response) {
 				app.setSection('login');
-				toast('Welcome, have a look to your inbox!', {timeout:3000, type: 'done'});
+				toast('Welcome, you should have received an email to set your password.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
 				toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
@@ -225,7 +226,7 @@ var containers = {
 			toast('We can\'t process your signup.', {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
-	} //onSignupButtonClick
+	}; //onSignupButtonClick
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -291,16 +292,47 @@ var containers = {
 				settings += "			</div>";
 				settings += "		</div>";
 				settings += "	</div>";
-				
 				settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				settings += app.getField('cloud', 'endpoint', j.endpoint, 'text', false, false, true, false);
 				settings += app.getField('vpn_key', 'key', j.keys.p256dh, 'text', false, false, true, false);
 				settings += app.getField('vpn_lock', 'auth', j.keys.auth, 'text', false, false, true, false);
 				settings += "	</div>";
 				settings += "</section>";
-	
-				(containers.settings).querySelector('.page-content').innerHTML = settings;
 			}
+
+			settings += app.getSubtitle('Application');
+			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+			settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+			settings += app.getField('add_circle_outline', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ] }, false, false, true, false);
+			settings += "	</div>";
+			
+			settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+			settings += app.getField('add_circle_outline', 'Notifications', true, 'switch', false, false, true, false);
+			settings += "	</div>";
+			
+			settings += "</section>";
+
+			(containers.settings).querySelector('.page-content').innerHTML = settings;
+			
+			document.getElementById('settings.fab_position').addEventListener('change', function(e) {
+				app.setSetting('settings.fab_position', e.target.value);
+				var fabs = document.querySelectorAll('.mdl-button--fab_flinger-container');
+				if ( e.target.value == 'fab__top' ) {
+					for (var f in fabs) {
+						if ( (fabs[f]).childElementCount > -1 ) {
+							(fabs[f]).classList.add('fab__top');
+							(fabs[f]).classList.remove('fab__bottom');
+						}
+					}
+				} else {
+					for (var f in fabs) {
+						if ( (fabs[f]).childElementCount > -1 ) {
+							(fabs[f]).classList.remove('fab__top');
+							(fabs[f]).classList.add('fab__bottom');
+						}
+					}
+				}
+			});
 			return pushSubscription;
 		})
 		.catch(function (error) {
@@ -539,7 +571,7 @@ var containers = {
 		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
-		if ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password' ) {
+		if ( !app.isLogged && ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password') ) {
 			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 		}
 		if ( app.debug === true ) {
@@ -624,7 +656,7 @@ var containers = {
 		if ( type == 'objects' ) {
 			for (var d=0;d<buttons.deleteObject.length;d++) {
 				buttons.deleteObject[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Object';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Object';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
@@ -670,7 +702,7 @@ var containers = {
 			for (var d=0;d<buttons.deleteFlow.length;d++) {
 				//console.log(buttons.deleteFlow[d]);
 				buttons.deleteFlow[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Flow';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Flow';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all datapoints in the flow and can\'t be recovered.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
@@ -716,7 +748,7 @@ var containers = {
 			for (var d=0;d<buttons.deleteDashboard.length;d++) {
 				//console.log(buttons.deleteDashboard[d]);
 				buttons.deleteDashboard[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Dashboard';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Dashboard';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
@@ -762,7 +794,7 @@ var containers = {
 			for (var d=0;d<buttons.deleteSnippet.length;d++) {
 				//console.log(buttons.deleteSnippet[d]);
 				buttons.deleteSnippet[d].addEventListener('click', function(evt) {
-					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">priority_high</i> Delete Snippet';
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Snippet';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all reference to the Snippet in Dashboards.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
@@ -863,13 +895,13 @@ var containers = {
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.type || isEdit==true ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'select':false, false, false, true, false);
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, false, false, false, true, false);
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEdit==true?'text':false, false, false, true, false);
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, false, false, false, true, false);
 				}
 				if ( object.attributes.ipv6 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, isEdit==true?'text':false, false, false, true, false);
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, false, false, false, true, false);
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -879,7 +911,7 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var i in object.attributes.parameters ) {
-						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, false, false, false, true, false);
 					}
 					node += "	</div>";
 					node += "</section>";
@@ -890,13 +922,13 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					if ( object.attributes.longitude ) {
-						node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('place', 'Longitude', object.attributes.longitude, false, false, false, true, false);
 					}
 					if ( object.attributes.latitude ) {
-						node += app.getField('place', 'Latitude', object.attributes.latitude, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('place', 'Latitude', object.attributes.latitude, false, false, false, true, false);
 					}
 					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('pin_drop', 'Position', object.attributes.position, false, false, false, true, false);
 					}
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
@@ -1024,7 +1056,7 @@ var containers = {
 					node += app.getField(app.icons.description, 'Description', description, 'textarea', false, false, true, false);
 				}
 				if ( object.attributes.type || isEdit==true ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?'select':false, false, false, true, false);
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?{type: 'select', id: 'Type', options: app.types }:false, false, false, true, false);
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
 					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEdit==true?'text':false, false, false, true, false);
@@ -1199,7 +1231,7 @@ var containers = {
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.objects, 'Name', object.attributes.name, 'text', false, false, true, false);
 		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), 'textarea', false, false, true, false);
-		node += app.getField(app.icons.type, 'Type', object.attributes.type, 'select', false, false, true, false);
+		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types }, false, false, true, false);
 		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, 'text', false, false, true, false);
 		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, 'text', false, false, true, false);
 		node += app.getField('visibility', 'Visibility', object.attributes.is_public, 'switch', false, false, true, false);
@@ -1558,7 +1590,6 @@ var containers = {
 				var datapoints = "";
 				
 				var node = "";
-				//node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
@@ -1637,7 +1668,6 @@ var containers = {
 					return fetchResponse.json();
 				})
 				.then(function(data) {
-					//datapoints += "<section class='mdl-grid mdl-cell--12-col' id='last-datapoints_"+flow.id+"'>";
 					datapoints += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					datapoints += "		<div class='mdl-list__item small-padding'>";
 					datapoints += "			<span class='mdl-list__item-primary-content'>";
@@ -1659,7 +1689,6 @@ var containers = {
 					$.plot($('#flow-graph-'+flow.id), dataset, options);
 					datapoints += "		</div>";
 					datapoints += "	</div>";
-					//datapoints += "</section>";
 					
 					var dtps = document.createElement('div');
 					dtps.className = "mdl-grid mdl-cell--12-col";
@@ -1679,7 +1708,6 @@ var containers = {
 					}
 				});
 				node +=	"	</div>";
-				//node +=	"</section>";
 				
 				var c = document.createElement('section');
 				c.className = "mdl-grid mdl-cell--12-col";
@@ -1719,7 +1747,6 @@ var containers = {
 				var node;
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				//node += "	<div class=\"tile material-animate margin-top-4 material-animated mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
@@ -1866,32 +1893,32 @@ var containers = {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
 		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, app.cardMaxChars):'';
 		var attributeType = item.attributes.type!==undefined?item.attributes.type:'';
-		var node = "";
-		node += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
-		node += "	<div class=\"mdl-card mdl-shadow--2dp\">";
-		node += "		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">";
-		node += "			<i class=\"material-icons\">"+iconName+"</i>";
-		node += "			<h2 class=\"mdl-card__title-text\">"+name+"</h2>";
-		node += "		</div>";
-		node += app.getField(null, null, description, false, false, false, true, true, false);
-		node += "		<div class=\"mdl-card__actions mdl-card--border\">";
-		node += "			<span class=\"pull-left mdl-card__date\">Created on "+moment(item.attributes.meta.created).format(app.date_format)+"</span>";
-		node += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		node += "				<i class=\"material-icons\">"+app.icons.menu+"</i>";
-		node += "			</button>";
-		node += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
-		node += "				<li class=\"mdl-menu__item\">";
-		node += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
-		node += "				</li>";
-		node += "				<li class=\"mdl-menu__item\">";
-		node += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
-		node += "				</li>";
-		node += "			</ul>";
-		node += "		</div>";
-		node += "	</div>";
-		node += "</div>";
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">";
+		element += "			<i class=\"material-icons\">"+iconName+"</i>";
+		element += "			<h2 class=\"mdl-card__title-text\">"+name+"</h2>";
+		element += "		</div>";
+		element += app.getField(null, null, description, false, false, false, true, true, false);
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">Created on "+moment(item.attributes.meta.created).format(app.date_format)+"</span>";
+		element += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "				<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "			</button>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
 		
-		return node;
+		return element;
 	} //displayListItem
 
 	app.fetchItems = function(type, filter) {
@@ -1994,8 +2021,8 @@ var containers = {
 				})
 				.then(function(response) {
 					container.innerHTML = "";
-					if ( (response.data).length == 0 && app.bearer ) {
-//						container.innerHTML = app.getCard(defaultCard);
+					if ( (response.data).length == 0 ) {
+						container.innerHTML = app.getCard(defaultCard);
 						app.displayLoginForm( container );
 					} else {
 						for (var i=0; i < (response.data).length ; i++ ) {
@@ -2015,8 +2042,6 @@ var containers = {
 				});
 			} else {
 				container.innerHTML = app.getCard(defaultCard);
-				//app.setItemsClickAction(type);
-				//app.setListActions(type);
 				resolve();
 			}
 		});
@@ -2072,13 +2097,13 @@ var containers = {
 			node += "		</ul>";
 			node += "		<ul class='social-links'>"; 
 			for (var url in gravatar.urls) {
-				node += "  		<li><a href=\""+gravatar.urls[url].value+"\"><i class=\"material-icons\">bookmark</i>" + gravatar.urls[url].title + "</a></li>";
+				node += "  		<li><a href=\""+gravatar.urls[url].value+"\" target=\"_blank\"><i class=\"material-icons\">bookmark</i>" + gravatar.urls[url].title + "</a></li>";
 			}
 			node += "  		</ul>";
 			node += "	</div>";
 			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
 			node += "		<a href=\"#\" class=\"pull-left\"></a>";
-			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profile_url+"\">Edit</a>";
+			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profile_url+"\" target=\"_blank\">Edit</a>";
 			node += "	</div>";
 			node += "</div>";
 			container.innerHTML = node;
@@ -2096,6 +2121,14 @@ var containers = {
 		});
 		containers.spinner.setAttribute('hidden', true);
 	}; //fetchProfile
+	
+	app.setSetting = function(name, value) {
+		localStorage.setItem(name, value);
+	}
+	
+	app.getSetting = function(name) {
+		return localStorage.getItem(name);
+	}
 	
 	app.setDrawer = function() {
 		if ( localStorage.getItem("currentUserName") !== null ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
@@ -2222,7 +2255,8 @@ var containers = {
 			showFAB = true;
 		}
 		if ( showFAB  && container ) {
-			var fab = "<div class='mdl-button--fab_flinger-container'>";
+			var fabClass = app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom';
+			var fab = "<div class='mdl-button--fab_flinger-container "+fabClass+"'>";
 			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
 			fab += "		<i class='material-icons'>add</i>";
 			fab += "		<span class='mdl-button__ripple-container'>";
@@ -2294,19 +2328,21 @@ var containers = {
 				field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
 				field += "</div>";
 							
-			} else if ( isEditMode == 'select' ) {
-				var id = app.getUniqueId();
-				field += "<div class='mdl-selectfield mdl-js-selectfield'>";
-				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-				field += "	<select class='mdl-selectfield__select' name='"+label+"'>";
-				for (var n=0; n<app.types.length; n++) {
-					var selected = value==app.types[n].value?'selected':'';
-					field += "	<option "+selected+" name='"+app.types[n].name+"'>"+app.types[n].value+"</option>";
+			} else if ( typeof isEditMode === 'object' ) {
+				if ( isEditMode.type === 'select' ) {
+					var id = isEditMode.id!==null?isEditMode.id:app.getUniqueId();
+					field += "<div class='mdl-selectfield mdl-js-selectfield'>";
+					field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"'>";
+					for (var n=0; n<isEditMode.options.length; n++) {
+						var selected = value==isEditMode.options[n].value?'selected':'';
+						field += "	<option "+selected+" value='"+isEditMode.options[n].name+"'>"+isEditMode.options[n].value+"</option>";
+					}
+					field += "	</select>";
+					field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
+					field += "</div>";
 				}
-				field += "	</select>";
-				field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
-				field += "</div>";
-				
+							
 			} else if ( isEditMode == 'switch' ) {
 				var checked = value=='true'?'checked':'';
 				var id = app.getUniqueId();
@@ -2861,6 +2897,9 @@ var containers = {
 			terms += "</section>";
 
 			(containers.terms).querySelector('.page-content').innerHTML = terms;
+			if ( !app.isLogged ) {
+				app.displayLoginForm( (containers.terms).querySelector('.page-content') );
+			}
 		})
 		.catch(function (error) {
 			if ( app.debug === true ) {
