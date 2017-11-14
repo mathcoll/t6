@@ -283,14 +283,15 @@ router.post('/', function (req, res) {
 			email:				req.body.email!==undefined?req.body.email:'',
 			role:				'free', // no admin creation from the API
 			subscription_date:  moment().format('x'),
-			key:				new_token.key,
-			secret:				new_token.secret
+			token:				token
+			//key:				new_token.key,
+			//secret:				new_token.secret
 		};
 		events.add('t6Api', 'user add', new_user.id);
 		users.insert(new_user);
 		
-		var tokens	= db.getCollection('tokens'); // should be useless with JWT ??
-		tokens.insert(new_token); // should be useless with JWT ??
+		//var tokens	= db.getCollection('tokens'); // should be useless with JWT ??
+		//tokens.insert(new_token); // should be useless with JWT ??
 		
 		// TODO: Might be usefull to send the API_KEY/SECRET to the user when it's being created!
 		res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
@@ -331,6 +332,45 @@ router.post('/', function (req, res) {
 });
 
 /**
+ * @api {post} /users/token/:token Reset a password
+ * @apiName Reset a password
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} token Token to identify the user
+ * @apiParam {String} password The new password
+ * 
+ * @apiUse 201
+ * @apiUse 403
+ * @apiUse 404
+ * @apiUse 412
+ * @apiUse 429
+ */
+router.post('/token/:token([0-9a-zA-Z\.]+)', function (req, res) {
+	if ( !req.body.password ) {
+		res.status(412).send(new ErrorSerializer({'id': 8.3,'code': 412, 'message': 'Precondition Failed'}).serialize());
+	} else {
+		users	= db.getCollection('users');
+		var user = (users.chain().find({ 'token': req.params.token }).data())[0];
+		//console.log({ 'token': req.params.token });
+		//console.log(users);
+		if ( user ) {
+			user.password = md5(req.body.password);
+			user.passwordLastUpdated = parseInt(moment().format('x'));
+			user.token = null;
+			users.update(user);
+			db.save();
+			events.add('t6App', 'user reset password', user.id);
+			res.header('Location', '/v'+version+'/users/'+user.id);
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(user).serialize() }); 
+			
+		} else {
+			res.status(404).send(new ErrorSerializer({'id': 8.4,'code': 404, 'message': 'Not Found'}).serialize());
+		}
+	}
+});
+
+/**
  * @api {put} /users/:user_id Edit a User
  * @apiName Edit a User
  * @apiGroup User
@@ -365,7 +405,7 @@ router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 			users.update(item);
 			
 			res.header('Location', '/v'+version+'/users/'+user_id);
-			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() }); // TODO: missing serializer
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() });
 		} else {
 			res.status(403).send(new ErrorSerializer({'id': 7,'code': 403, 'message': 'Forbidden'}).serialize());
 		}
@@ -373,7 +413,7 @@ router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 });
 
 /**
- * @api {delete} /users/:user_id Edit a User
+ * @api {delete} /users/:user_id Delete a User
  * @apiName Edit a User
  * @apiGroup User
  * @apiVersion 2.0.1

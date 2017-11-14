@@ -151,6 +151,11 @@ div[data-type="mqtts"].removed {
 	transition: visibility 2s, opacity 2s !important;
 	-webkit-transition: visibility 2s linear, opacity 2s linear !important;
 }
+.is-ontime {}
+.is-outdated {
+	background: #7d2020 !important;
+	color: #fff !important;
+}
 section.is-active .mdl-button--fab.is-not-here {
 	opacity: 0;
 	transform: scale(0);
@@ -159,7 +164,7 @@ section.is-active .mdl-button--fab.is-not-here {
 	-ms-transition: all 100ms linear !important;
 	-o-transition: all 100ms linear !important;
 	transition: all 100ms linear !important;
-	transition-delay: .5s;
+	transition-delay: .5s !important;
 }
 section.is-active .mdl-button--fab.is-here {
 	opacity: 1;
@@ -169,7 +174,7 @@ section.is-active .mdl-button--fab.is-here {
 	-ms-transition: all 100ms linear !important;
 	-o-transition: all 100ms linear !important;
 	transition: all 100ms linear !important;
-	transition-delay: .5s;
+	transition-delay: .5s !important;
 }
 section.fixedActionButtons {
 	position: fixed;

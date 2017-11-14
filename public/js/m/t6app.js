@@ -146,8 +146,18 @@ var containers = {
 			event.target.parentNode.removeChild(event.target);
 		});
 	}
-
 	exports.toast = toast; //Make this method available in global
+	
+	function getParameterByName(name, url) {
+	    if (!url) url = window.location.href;
+	    name = name.replace(/[\[\]]/g, "\\$&");
+	    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+	        results = regex.exec(url);
+	    if (!results) return null;
+	    if (!results[2]) return '';
+	    return decodeURIComponent(results[2].replace(/\+/g, " "));
+	}
+	exports.getParameterByName = getParameterByName; //Make this method available in global
 })(typeof window === 'undefined' ? module.exports : window);
 	
 (function() {
@@ -197,6 +207,22 @@ var containers = {
 		}
 	}; //setSignupAction
 	
+	function setPasswordResetAction() {
+		for (var i in buttons.user_setpassword) {
+			if ( buttons.user_setpassword[i].childElementCount > -1 ) {
+				buttons.user_setpassword[i].addEventListener('click', onPasswordResetButtonClick, false);
+			}
+		}
+	}; //setPasswordResetAction
+	
+	function setForgotAction() {
+		for (var i in buttons.user_forgot) {
+			if ( buttons.user_forgot[i].childElementCount > -1 ) {
+				buttons.user_forgot[i].addEventListener('click', onForgotPasswordButtonClick, false);
+			}
+		}
+	}; //setForgotAction
+	
 	function onSignupButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
 		var email = myForm.querySelector("form.signup input[name='email']").value;
@@ -227,6 +253,43 @@ var containers = {
 		}
 		evt.preventDefault();
 	}; //onSignupButtonClick
+	
+	function onPasswordResetButtonClick(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+		var password = myForm.querySelector("form.resetpassword input[name='password']").value;
+		var password2 = myForm.querySelector("form.resetpassword input[name='password2']").value;
+		var token = getParameterByName('token');
+		if ( token !== undefined && password == password2 ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify({"password":password}) };
+			var url = app.baseUrl+"/"+app.api_version+"/users/token/"+token;
+			
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				app.setSection('login');
+				toast('Your password has been reset; please login again.', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				toast('We can\'t process your password reset. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+			});
+		} else {
+			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
+		}
+		evt.preventDefault();
+	}; //onPasswordResetButtonClick
+	
+	function onForgotPasswordButtonClick(evt) {
+		/*
+		 * NOT YET IMPLEMENTED
+		evt.preventDefault();
+		*/
+	}; //onForgotPasswordButtonClick
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -468,6 +531,8 @@ var containers = {
 				
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
 			user_create: document.querySelectorAll('form.signup button.createUser'),
+			user_setpassword: document.querySelectorAll('form.resetpassword button.setPassword'),
+			user_forgot: document.querySelectorAll('form.forgotpassword button.forgotPassword'),
 			expandButtons: document.querySelectorAll('.showdescription_button'),
 			object_create: document.querySelectorAll('.showdescription_button'),
 			
@@ -2404,7 +2469,7 @@ var containers = {
 			var width = 6; // TODO: should be a parameter in the flow
 
 			//var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
-			var snippet = ""; 
+			var snippet = "";
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
 				snippet += "	<div class=\"valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
@@ -2542,6 +2607,11 @@ var containers = {
 					return fetchResponse.json();
 				})
 				.then(function(data) {
+					var id = data.data[0].attributes.id;
+					var time = data.data[0].attributes.time;
+					var value = data.data[0].attributes.value;
+					var unit = data.links.unit!==undefined?response.links.unit:'';
+					var ttl = data.links.ttl;
 					var dataset = [data.data.map(function(i) {
 						return [i.attributes.timestamp, i.attributes.value];
 					})];
@@ -2630,6 +2700,13 @@ var containers = {
 					var value = response.data[0].attributes.value;
 					var unit = response.links.unit!==undefined?response.links.unit:'';
 					var ttl = response.links.ttl;
+					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
+						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-ontime');
+						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-outdated');
+					} else {
+						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-outdated');
+						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-ontime');
+					}
 					document.getElementById('snippet-value1-'+my_snippet.id).innerHTML = value;
 					document.getElementById('snippet-unit1-'+my_snippet.id).innerHTML = unit;
 					
@@ -3334,6 +3411,8 @@ var containers = {
 	}
 	
 	app.refreshButtonsSelectors();
+	setPasswordResetAction();
+	setForgotAction();
 	settings_button.addEventListener('click', function(evt) {
 		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
 	}, false);
