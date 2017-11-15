@@ -1,6 +1,6 @@
 var app = {
 	api_version: 'v2.0.1',
-	debug: false,
+	debug: true,
 	baseUrl: '',
 	baseUrlCdn: '//cdn.internetcollaboratif.info',
 	bearer: '',
@@ -600,7 +600,7 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
-		if ( section == 'object' ) {
+		if ( section === 'public-object' ) {
 			var urlParams = new URLSearchParams(window.location.search); //.toString();
 			var params = {};
 			if ( Array.from(urlParams).length > -1 ) {
@@ -610,6 +610,7 @@ var containers = {
 				}
 				if ( params['id'] ) {
 					app.displayPublicObject(params['id'], false);
+					section = 'object';
 				}
 			}
 		} else {
@@ -928,7 +929,7 @@ var containers = {
 				var object = response.data[i];
 				var node = "";
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
-				node += "	<div class=\"mdl-card mdl-cell mdl-cell--12-col mdl-shadow--2dp\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
 				node += "				<i class=\"material-icons\">"+app.icons.objects+"</i>";
@@ -958,7 +959,7 @@ var containers = {
 				
 				node += app.getSubtitle('Parameters');
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-				node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.type || isEdit==true ) {
 					node += app.getField(app.icons.type, 'Type', object.attributes.type, false, false, false, true, false);
 				}
@@ -974,7 +975,7 @@ var containers = {
 				if ( object.attributes.parameters && object.attributes.parameters.length > -1 ) { 
 					node += app.getSubtitle('Custom Parameters');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var i in object.attributes.parameters ) {
 						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, false, false, false, true, false);
 					}
@@ -985,7 +986,7 @@ var containers = {
 				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
 					node += app.getSubtitle('Localization');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
-					node += "	<div class=\"mdl-cell mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					if ( object.attributes.longitude ) {
 						node += app.getField('place', 'Longitude', object.attributes.longitude, false, false, false, true, false);
 					}

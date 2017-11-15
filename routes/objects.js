@@ -46,7 +46,7 @@ router.get('/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 	//console.log(query);
 	if ( json.length > 0 ) {
 		var qr = qrCode.qrcode(typenumber, errorcorrectionlevel);
-		qr.addData(baseUrl+'/m?id=/'+object_id+'#object');
+		qr.addData(baseUrl+'/m?id=/'+object_id+'#public-object');
 		qr.make();
 		res.status(200).send({'data': qr.createImg(5, 5).src});
 	} else {
