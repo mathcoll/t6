@@ -1687,6 +1687,9 @@ var containers = {
 				if ( flow.attributes.mqtt_topic ) {
 					node += app.getField(app.icons.mqtts, 'Mqtt', flow.attributes.mqtt_topic, false, false, false, true, false);
 				}
+				if ( flow.attributes.ttl ) {
+					node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, false, false, false, true, false);
+				}
 				if ( flow.attributes.unit ) {
 					node += app.getField('', 'unit', flow.attributes.unit, false, false, false, true, false);
 				}
@@ -1694,9 +1697,9 @@ var containers = {
 					node += app.getField('visibility', 'Permission', flow.attributes.permission, false, false, false, true, false);
 				}
 				node += "	</div>";
-				node += "</section>";
+				node += "</div>";
 				
-				node += "<section class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
+				node += "<div class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
 				node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 				node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 				node += "			<span class='mdl-list__item-primary-content'>";
@@ -1773,6 +1776,7 @@ var containers = {
 					}
 				});
 				node +=	"	</div>";
+				node +=	"</div>";
 				
 				var c = document.createElement('section');
 				c.className = "mdl-grid mdl-cell--12-col";
