@@ -411,7 +411,7 @@ var containers = {
 		} else {
 			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 			var body = {
-				type: myForm.querySelector("select[name='Type']").value,
+				type: myForm.querySelector("select[name='Type']").parentNode.querySelector(".mdl-selectfield__box-value").innerHTML,
 				name: myForm.querySelector("input[name='Name']").value,
 				description: myForm.querySelector("textarea[name='Description']").value,
 				position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
@@ -611,6 +611,30 @@ var containers = {
 				if ( params['id'] ) {
 					app.displayPublicObject(params['id'], false);
 					section = 'object';
+				}
+			}
+		} else if ( section === 'object' ) {
+			var urlParams = new URLSearchParams(window.location.search); //.toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] ) {
+					app.displayObject(params['id'], false);
+				}
+			}
+		} else if ( section === 'edit-object' ) {
+			var urlParams = new URLSearchParams(window.location.search); //.toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] ) {
+					app.displayObject(params['id'], true);
 				}
 			}
 		} else {
@@ -941,7 +965,7 @@ var containers = {
 				node += "				</button>";
 				node += "			</span>";
 				node += "		</div>";
-				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+object.id+"'>";
+				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
 				node += app.getField(app.icons.objects, 'Id', object.id, false, false, false, true, false);
 				if ( object.attributes.description || isEdit!=true ) {
@@ -1094,7 +1118,7 @@ var containers = {
 				node += "				</button>";
 				node += "			</span>";
 				node += "		</div>";
-				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+object.id+"'>";
+				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
 				node += app.getField(app.icons.objects, 'Id', object.id, false, false, false, true, false);
 				if ( object.attributes.description || isEdit!=true ) {
@@ -2617,6 +2641,13 @@ var containers = {
 					var value = data.data[0].attributes.value;
 					var unit = data.links.unit!==undefined?response.links.unit:'';
 					var ttl = data.links.ttl;
+					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-ontime');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-outdated');
+					} else {
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-outdated');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-ontime');
+					}
 					var dataset = [data.data.map(function(i) {
 						return [i.attributes.timestamp, i.attributes.value];
 					})];
