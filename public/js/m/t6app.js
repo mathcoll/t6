@@ -185,18 +185,18 @@ var containers = {
 	function onStatusButtonClick(evt) {
 		app.getStatus();
 		app.setSection('status');
-		evt.preventDefault();
+		if (evt) evt.preventDefault();
 	}; //onStatusButtonClick
 	
 	function onDocsButtonClick(evt) {
 		app.setSection('docs');
-		evt.preventDefault();
+		if (evt) evt.preventDefault();
 	}; //onDocsButtonClick
 	
 	function onTermsButtonClick(evt) {
 		app.getTerms();
 		app.setSection('terms');
-		evt.preventDefault();
+		if (evt) evt.preventDefault();
 	}; //onStatusButtonClick
 	
 	function setSignupAction() {
@@ -3266,12 +3266,13 @@ var containers = {
 		if ( p === 'login' ) {
 			app.displayLoginForm( document.querySelector('#login').querySelector('.page-content') );
 			app.setSection('login');
-		} else if ( p === 'terms' ) {
-			app.getTerms();
-			app.setSection('terms');
-		}  else if ( p === 'docs' ) {
-			app.setSection('docs');
-		}else {
+		}else if ( p === 'terms' ) {
+			 onTermsButtonClick();
+		} else if ( p === 'docs' ) {
+			onDocsButtonClick();
+		} else if ( p === 'status' ) {
+			onStatusButtonClick();
+		} else {
 			app.setSection(p);
 		}
 	}
