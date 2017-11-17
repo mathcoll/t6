@@ -1,23 +1,36 @@
 
-var dataCacheName= 't6-cache-2017-09-06_2148';
-var cacheName= 't6-cache-2017-09-06_2148';
+var dataCacheName= 't6-cache-2017-11-17_2007';
+var cacheName= 't6-cache-2017-11-17_2007';
 var cacheWhitelist = ['internetcollaboratif.info', 'localhost'];
 var filesToCache = [
+    //local
     '/manifest.json',
     '/m/applicationStart',
-    
+    '/m',
+
+    //local/javascripts
     '/js/m/vendor.min.js',
     '/js/m/t6app.js',
-    
+    //local/styles
     '/css/t6App.min.css',
-
+    //local/images
     '/img/opl_img3.jpg',
     '/img/opl_img2.jpg',
     '/img/opl_img.jpg',
     '/img/m/welcome_card.jpg',
     '/img/m/side-nav-bg.jpg',
 
-    '/m',
+    //CDN/javascripts
+    '//cdn.internetcollaboratif.info/js/m/vendor.min.js',
+    '//cdn.internetcollaboratif.info/js/m/t6app.js',
+    //CDN/styles
+    '//cdn.internetcollaboratif.info/css/t6App.min.css',
+    //CDN/images
+    '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
+    '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
+    '//cdn.internetcollaboratif.info/img/opl_img.jpg',
+    '//cdn.internetcollaboratif.info/img/m/welcome_card.jpg',
+    '//cdn.internetcollaboratif.info/img/m/side-nav-bg.jpg',
 ];
 
 self.addEventListener('install', function(e) {
