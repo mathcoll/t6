@@ -2736,9 +2736,16 @@ var containers = {
 					var id = response.data[0].attributes.id;
 					var time = response.data[0].attributes.time;
 					
-					var value = response.data[0].attributes.value;
+ 					var value1 = response.data[0].attributes.value;
 					var unit = response.links.unit!==undefined?response.links.unit:'';
 					var ttl = response.links.ttl;
+					if ( value1 == response.data[1].attributes.value ) {
+						value1 = "<i class='material-icons'>trending_flat</i> " + value1;
+					} else if( value1 < response.data[1].attributes.value ) {
+						value1 = "<i class='material-icons'>trending_down</i> " + value1;
+					} else if( value1 > response.data[1].attributes.value ) {
+						value1 = "<i class='material-icons'>trending_up</i> " + value1;
+					}
 					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
 						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-ontime');
 						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-outdated');
@@ -2746,19 +2753,26 @@ var containers = {
 						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-outdated');
 						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-ontime');
 					}
-					document.getElementById('snippet-value1-'+my_snippet.id).innerHTML = value;
+					document.getElementById('snippet-value1-'+my_snippet.id).innerHTML = value1;
 					document.getElementById('snippet-unit1-'+my_snippet.id).innerHTML = unit;
 					
-					var value = response.data[1].attributes.value;
+					var value2 = response.data[1].attributes.value;
 					var unit = response.links.unit!==undefined?response.links.unit:'';
 					var ttl = response.links.ttl;
-					document.getElementById('snippet-value2-'+my_snippet.id).innerHTML = value;
+					if ( value2 == response.data[2].attributes.value ) {
+						value2 = "<i class='material-icons'>trending_flat</i> " + value2;
+					} else if( value2 < response.data[2].attributes.value ) {
+						value2 = "<i class='material-icons'>trending_down</i> " + value2;
+					} else if( value2 > response.data[2].attributes.value ) {
+						value2 = "<i class='material-icons'>trending_up</i> " + value2;
+					}
+					document.getElementById('snippet-value2-'+my_snippet.id).innerHTML = value2;
 					document.getElementById('snippet-unit2-'+my_snippet.id).innerHTML = unit;
 					
-					var value = response.data[2].attributes.value;
+					var value3 = response.data[2].attributes.value;
 					var unit = response.links.unit!==undefined?response.links.unit:'';
 					var ttl = response.links.ttl;
-					document.getElementById('snippet-value3-'+my_snippet.id).innerHTML = value;
+					document.getElementById('snippet-value3-'+my_snippet.id).innerHTML = value3;
 					document.getElementById('snippet-unit3-'+my_snippet.id).innerHTML = unit;
 										
 					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
