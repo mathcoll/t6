@@ -298,16 +298,16 @@ html.ltr(lang='en')
                 .mdl-card.mdl-shadow--2dp
                   .mdl-card__supporting-text You will receive an email to setup your password securely.
                   .mdl-card__supporting-text
-                    .mdl-textfield.mdl-js-textfield
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='email') email
                       input.mdl-textfield__input(type='text', name='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='email') Email/Username
                       span.mdl-textfield__error Username should be your email address
-                    .mdl-textfield.mdl-js-textfield
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='firstName') face 
                       input.mdl-textfield__input(type='text', name='firstName', pattern='.{1,}')
                       label.mdl-textfield__label(for='firstName') First Name
-                    .mdl-textfield.mdl-js-textfield
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='lastName') face 
                       input.mdl-textfield__input(type='text', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='lastName') Last Name
@@ -335,7 +335,7 @@ html.ltr(lang='en')
                 .mdl-card.mdl-shadow--2dp
                   .mdl-card__supporting-text Enter your Email address below and we'll send you password reset instructions.
                   .mdl-card__supporting-text
-                    .mdl-textfield.mdl-js-textfield
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='email') email
                       input.mdl-textfield__input(type='text', name='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='email') Email/Username
@@ -357,12 +357,12 @@ html.ltr(lang='en')
                   .mdl-card__supporting-text Set you new password to connect your t6 account.
                   .mdl-card__supporting-text Password must contains lower cases, upper cases, digits, special characters; and must be longer than 8 characters.
                   .mdl-card__supporting-text
-                    .mdl-textfield.mdl-js-textfield
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='password') lock 
                       input.mdl-textfield__input.passmatch#p1(type='password', name='password', pattern='^(?=.{8,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[!@#$&*]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$')
                       label.mdl-textfield__label(for='password') Password
                       span.mdl-textfield__error Password is not strong enough
-                    .mdl-textfield.mdl-js-textfield
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='password2') lock 
                       input.mdl-textfield__input.passmatch#p2(type='password', name='password2')
                       label.mdl-textfield__label(for='password2') Password Verification

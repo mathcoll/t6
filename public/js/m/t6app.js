@@ -81,7 +81,7 @@ var app = {
 		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: 0, latitude: 0, position: ''}},
 		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
 		dashboard: {id:'', attributes: {name: '', description: ''}},
-		snippet: {id:'', attributes: {name: ''}},
+		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
 		rule: {id:'', attributes: {}},
 	},
 };
@@ -350,54 +350,46 @@ var containers = {
 			var j = JSON.parse(JSON.stringify(pushSubscription));
 			if ( j && j.keys ) {
 				settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
-				settings += "	<div class='mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky'>";
-				settings += "		<div class='md-subheader-inner'>";
-				settings += "			<div class='mdl-subheader-content'>";
-				settings += "				<span class='ng-scope'>API Push</span>";
-				settings += "			</div>";
-				settings += "		</div>";
-				settings += "	</div>";
+				settings += app.getSubtitle('API Push');
 				settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				settings += app.getField('cloud', 'endpoint', j.endpoint, 'text', false, false, true, false);
-				settings += app.getField('vpn_key', 'key', j.keys.p256dh, 'text', false, false, true, false);
-				settings += app.getField('vpn_lock', 'auth', j.keys.auth, 'text', false, false, true, false);
+				settings += app.getField('cloud', 'Endpoint', j.endpoint, {type: 'input', isEdit: true});
+				settings += app.getField('vpn_key', 'Key', j.keys.p256dh, {type: 'input', isEdit: true});
+				settings += app.getField('vpn_lock', 'Auth', j.keys.auth, {type: 'input', isEdit: true});
 				settings += "	</div>";
 				settings += "</section>";
 			}
 
-			settings += app.getSubtitle('Application');
 			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+			settings += app.getSubtitle('Application');
 			settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-			settings += app.getField('add_circle_outline', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ] }, false, false, true, false);
+			settings += app.getField('add_circle_outline', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
+			settings += app.getField('add_circle_outline', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', isEdit: true});
 			settings += "	</div>";
-			
-			settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-			settings += app.getField('add_circle_outline', 'Notifications', true, 'switch', false, false, true, false);
-			settings += "	</div>";
-			
 			settings += "</section>";
 
 			(containers.settings).querySelector('.page-content').innerHTML = settings;
 			
-			document.getElementById('settings.fab_position').addEventListener('change', function(e) {
-				app.setSetting('settings.fab_position', e.target.value);
-				var fabs = document.querySelectorAll('.mdl-button--fab_flinger-container');
-				if ( e.target.value == 'fab__top' ) {
-					for (var f in fabs) {
-						if ( (fabs[f]).childElementCount > -1 ) {
-							(fabs[f]).classList.add('fab__top');
-							(fabs[f]).classList.remove('fab__bottom');
+			if ( document.getElementById('settings.fab_position') ) {
+				document.getElementById('settings.fab_position').addEventListener('change', function(e) {
+					app.setSetting('settings.fab_position', e.target.value);
+					var fabs = document.querySelectorAll('.mdl-button--fab_flinger-container');
+					if ( e.target.value == 'fab__top' ) {
+						for (var f in fabs) {
+							if ( (fabs[f]).childElementCount > -1 ) {
+								(fabs[f]).classList.add('fab__top');
+								(fabs[f]).classList.remove('fab__bottom');
+							}
+						}
+					} else {
+						for (var f in fabs) {
+							if ( (fabs[f]).childElementCount > -1 ) {
+								(fabs[f]).classList.remove('fab__top');
+								(fabs[f]).classList.add('fab__bottom');
+							}
 						}
 					}
-				} else {
-					for (var f in fabs) {
-						if ( (fabs[f]).childElementCount > -1 ) {
-							(fabs[f]).classList.remove('fab__top');
-							(fabs[f]).classList.add('fab__bottom');
-						}
-					}
-				}
-			});
+				});
+			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
@@ -970,16 +962,16 @@ var containers = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
-				node += app.getField(app.icons.objects, 'Id', object.id, false, false, false, true, false);
+				node += app.getField(app.icons.objects, 'Id', object.id, {type: 'input'});
 				if ( object.attributes.description || isEdit!=true ) {
 					var description = app.nl2br(object.attributes.description);
-					node += app.getField(null, null, description, false, false, false, true, false);
+					node += app.getField(null, null, description, {type: 'textarea'});
 				}
 				if ( object.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), {type: 'text'});
 				}
 				if ( object.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(object.attributes.meta.updated).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Updated', moment(object.attributes.meta.updated).format(app.date_format), {type: 'text'});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -988,13 +980,13 @@ var containers = {
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.type || isEdit==true ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, false, false, false, true, false);
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select - listOfIconsssssssssssssssssssssssssssssssssssssssssss'});
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, false, false, false, true, false);
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text'});
 				}
 				if ( object.attributes.ipv6 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, false, false, false, true, false);
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text'});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -1004,7 +996,7 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var i in object.attributes.parameters ) {
-						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, false, false, false, true, false);
+						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text'});
 					}
 					node += "	</div>";
 					node += "</section>";
@@ -1015,13 +1007,13 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					if ( object.attributes.longitude ) {
-						node += app.getField('place', 'Longitude', object.attributes.longitude, false, false, false, true, false);
+						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text'});
 					}
 					if ( object.attributes.latitude ) {
-						node += app.getField('place', 'Latitude', object.attributes.latitude, false, false, false, true, false);
+						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text'});
 					}
 					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, false, false, false, true, false);
+						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text'});
 					}
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
@@ -1123,19 +1115,19 @@ var containers = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
-				node += app.getField(app.icons.objects, 'Id', object.id, false, false, false, true, false);
-				if ( object.attributes.description || isEdit!=true ) {
+				node += app.getField(app.icons.objects, 'Id', object.id, {type: 'text'});
+				if ( object.attributes.description && isEdit!=true ) {
 					var description = app.nl2br(object.attributes.description);
-					node += app.getField(null, null, description, false, false, false, true, false);
+					node += app.getField(null, null, description, {type: 'textarea'});
 				}
 				if ( object.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), {type: 'text'});
 				}
 				if ( object.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(object.attributes.meta.updated).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Updated', moment(object.attributes.meta.updated).format(app.date_format), {type: 'text'});
 				}
 				if ( object.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', object.attributes.meta.revision, false, false, false, true, false);
+					node += app.getField(app.icons.update, 'Revision', object.attributes.meta.revision, {type: 'text'});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -1145,24 +1137,24 @@ var containers = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( isEdit==true ) {
 					var description = object.attributes.description;
-					node += app.getField(app.icons.objects, 'Name', object.attributes.name, 'text', false, false, true, false);
-					node += app.getField(app.icons.description, 'Description', description, 'textarea', false, false, true, false);
+					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: isEdit});
+					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', isEdit: isEdit});
 				}
 				if ( object.attributes.type || isEdit==true ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, isEdit==true?{type: 'select', id: 'Type', options: app.types }:false, false, false, true, false);
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', isEdit: isEdit, id: 'Type', options: app.types });
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, isEdit==true?'text':false, false, false, true, false);
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit});
 				}
 				if ( object.attributes.ipv6 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, isEdit==true?'text':false, false, false, true, false);
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit});
 				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, isEdit==true?'switch':false, false, false, true, false);
-					node += app.getQrcodeImg(app.icons.date, '', object.id, false, false, false, false);
-					app.getQrcode(app.icons.date, '', object.id, false, false, false, false);
+					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: isEdit});
+					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
+					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 				} else {
-					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, isEdit==true?'switch':false, false, false, true, false);
+					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: isEdit});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -1172,7 +1164,7 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var i in object.attributes.parameters ) {
-						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text', isEdit: isEdit});
 					}
 					node += "	</div>";
 					node += "</section>";
@@ -1183,13 +1175,13 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					if ( object.attributes.longitude ) {
-						node += app.getField('place', 'Longitude', object.attributes.longitude, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: isEdit});
 					}
 					if ( object.attributes.latitude ) {
-						node += app.getField('place', 'Latitude', object.attributes.latitude, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: isEdit});
 					}
 					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, isEdit==true?'text':false, false, false, true, false);
+						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: isEdit});
 					}
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
@@ -1322,28 +1314,28 @@ var containers = {
 		node += app.getSubtitle('Description');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.objects, 'Name', object.attributes.name, 'text', false, false, true, false);
-		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), 'textarea', false, false, true, false);
-		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types }, false, false, true, false);
-		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, 'text', false, false, true, false);
-		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, 'text', false, false, true, false);
-		node += app.getField('visibility', 'Visibility', object.attributes.is_public, 'switch', false, false, true, false);
+		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: true});
+		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), {type: 'textarea', isEdit: true});
+		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
+		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: true});
+		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: true});
+		node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
 		node += app.getSubtitle('Custom Parameters');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('note', '', '', 'text', false, false, true, false);
+		node += app.getField('note', '', '', {type: '2inputs', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 
 		node += app.getSubtitle('Localization');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('place', 'Longitude', object.attributes.longitude, 'text', false, false, true, false);
-		node += app.getField('place', 'Latitude', object.attributes.latitude, 'text', false, false, true, false);
-		node += app.getField('pin_drop', 'Position', object.attributes.position, 'text', false, false, true, false);
+		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: true});
+		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: true});
+		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: true});
 		node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
 		node += "	</div>";
 		node += "</section>";
@@ -1421,8 +1413,8 @@ var containers = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, 'text', false, false, true, false);
-		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, 'text', false, false, true, false);
+		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', isEdit: true});
+		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -1456,8 +1448,8 @@ var containers = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, 'text', false, false, true, false);
-		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), 'textarea', false, false, true, false);
+		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: true});
+		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -1484,57 +1476,9 @@ var containers = {
 		node += "	</div>";
 		node += "	<ul class='mdl-grid'>";
 		
-		node += "		<li class='mdl-cell mdl-cell--12-col'>";
-		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-valuedisplay.jpg) no-repeat 50% 50%; min-height: 100px;'>";
-		node += "         		<h2 class='mdl-card__title-text'>1 Value Display</h2>";
-		node += "         	</div>";
-		node += "         	<div class='mdl-card__actions mdl-card--border'>";
-		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
-		node += "         			+";
-		node += "         		</a>";
-		node += "         	</div>";
-		node += "         </div>";
-		node += "		</li>";
+		// dropdown from the Api getSnippets
 		
-		node += "		<li class='mdl-cell mdl-cell--12-col'>";
-		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-boolean.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
-		node += "         		<h2 class='mdl-card__title-text'>Boolean</h2>";
-		node += "         	</div>";
-		node += "         	<div class='mdl-card__actions mdl-card--border'>";
-		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
-		node += "         			+";
-		node += "         		</a>";
-		node += "         	</div>";
-		node += "         </div>";
-		node += "		</li>";
-		
-		node += "		<li class='mdl-cell mdl-cell--12-col'>";
-		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-flowgraph.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
-		node += "         		<h2 class='mdl-card__title-text'>Graph Flow</h2>";
-		node += "         	</div>";
-		node += "         	<div class='mdl-card__actions mdl-card--border'>";
-		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
-		node += "         			+";
-		node += "         		</a>";
-		node += "         	</div>";
-		node += "         </div>";
-		node += "		</li>";
-		
-		node += "		<li class='mdl-cell mdl-cell--12-col'>";
-		node += "         <div class='mdl-card mdl-shadow--2dp demo-card-square'>";
-		node += "         	<div class='mdl-card__title mdl-card--expand' style='background: url("+app.baseUrlCdn+"/img/snippet-weather.jpg) no-repeat 50% 50%; min-height: 100px;;'>";
-		node += "         		<h2 class='mdl-card__title-text'>Weather</h2>";
-		node += "         	</div>";
-		node += "         	<div class='mdl-card__actions mdl-card--border'>";
-		node += "         		<a class='mdl-button mdl-button--accent mdl-js-button mdl-js-ripple-effect'>";
-		node += "         			Action";
-		node += "         		</a>";
-		node += "         	</div>";
-		node += "         </div>";
-		node += "		</li>";
+		node += "	</ul>";
 		
 		node += "</div>";
 		
@@ -1607,15 +1551,22 @@ var containers = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+snippet.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, 'text', false, false, true, false);
+		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true});
+		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: true, id: 'icon', options: app.types });
+		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
-		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-		node += "	<div class='md-subheader-inner'>";
-		node += "		<div class='mdl-subheader-content'>";
-		node += "			<span class='ng-scope'>Snippets Type</span>";
-		node += "		</div>";
+		node += app.getSubtitle('Snippets');
+		
+		node += app.getField('add_circle_outline', 'Snippet', snippet.attributes.icon, {type: 'select', id: 'icon', options: [ {name: 'displayvalue', value:'Value Display'}, {name: 'displaygraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'} ], isEdit: true });
+		
+		node += "<div class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
+		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>add</i>";
+		node += "			<label>Add</label>";
+		node += "		</button>";
 		node += "	</div>";
 		node += "</div>";
 
@@ -1696,33 +1647,33 @@ var containers = {
 				node += "			</span>";
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-				node += app.getField(app.icons.flows, 'Id', flow.id, false, false, false, true, false);
+				node += app.getField(app.icons.flows, 'Id', flow.id, {type: 'text', isEdit: false});
 				if ( flow.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(flow.attributes.description), false, false, false, true, false);
+					node += app.getField(null, null, app.nl2br(flow.attributes.description), {type: 'textarea', isEdit: false});
 				}
 				if ( flow.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(flow.attributes.meta.created).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Created', moment(flow.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
 				}
 				if ( flow.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
 				}
 				if ( flow.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', flow.attributes.meta.revision, false, false, false, true, false);
+					node += app.getField(app.icons.update, 'Revision', flow.attributes.meta.revision, {type: 'text', isEdit: false});
 				}
 				if ( flow.attributes.type ) {
-					node += app.getField('extension', 'Type', flow.attributes.type, false, false, false, true, false);
+					node += app.getField('extension', 'Type', flow.attributes.type, {type: 'text', isEdit: false});
 				}
 				if ( flow.attributes.mqtt_topic ) {
-					node += app.getField(app.icons.mqtts, 'Mqtt', flow.attributes.mqtt_topic, false, false, false, true, false);
+					node += app.getField(app.icons.mqtts, 'Mqtt', flow.attributes.mqtt_topic, {type: 'text', isEdit: false});
 				}
 				if ( flow.attributes.ttl ) {
-					node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, false, false, false, true, false);
+					node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', isEdit: false});
 				}
 				if ( flow.attributes.unit ) {
-					node += app.getField('', 'unit', flow.attributes.unit, false, false, false, true, false);
+					node += app.getField('', 'unit', flow.attributes.unit, {type: 'text', isEdit: false});
 				}
 				if ( flow.attributes.permission ) {
-					node += app.getField('visibility', 'Permission', flow.attributes.permission, false, false, false, true, false);
+					node += app.getField('visibility', 'Permission', flow.attributes.permission, {type: 'text', isEdit: false});
 				}
 				node += "	</div>";
 				node += "</div>";
@@ -1778,7 +1729,7 @@ var containers = {
 					datapoints += "		</div>";
 					datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
 					var dataset = [data.data.map(function(i) {
-						datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value+flow.attributes.unit, false, false, false, true, false);
+						datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value+flow.attributes.unit, {type: 'text', isEdit: false});
 						return [i.attributes.timestamp, i.attributes.value];
 				    })];
 					componentHandler.upgradeDom();
@@ -1856,16 +1807,16 @@ var containers = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
 				if ( dashboard.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(dashboard.attributes.description), false, false, false, true, false);
+					node += app.getField(null, null, app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: false});
 				}
 				if ( dashboard.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
 				}
 				if ( dashboard.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
 				}
 				if ( dashboard.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, false, false, false, true, false);
+					node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, {type: 'text', isEdit: false});
 				}
 				node += "		</div>";
 				node += "	</div>";
@@ -1924,22 +1875,22 @@ var containers = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
 				if ( snippet.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(snippet.attributes.description), false, false, false, true, false);
+					node += app.getField(null, null, app.nl2br(snippet.attributes.description), {type: 'textarea', isEdit: false});
 				}
 				if ( snippet.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
 				}
 				if ( snippet.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), false, false, false, true, false);
+					node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
 				}
 				if ( snippet.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, false, false, false, true, false);
+					node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text', isEdit: false});
 				}
-				node += app.getField(app.icons.name, 'Name', snippet.attributes.name, false, false, false, true, false);
-				node += app.getField(app.icons.type, 'Type', snippet.attributes.type, false, false, false, true, false);
-				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, false, false, false, true, false);
-				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, false, false, false, true, false);
-				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, false, false, false, true, false);
+				node += app.getField(app.icons.name, 'Name', snippet.attributes.name, {type: 'text', isEdit: false});
+				node += app.getField(app.icons.type, 'Type', snippet.attributes.type, {type: 'text', isEdit: false});
+				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'text', isEdit: false});
+				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text', isEdit: false});
+				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: false});
 				node += "		</div>";
 				node += "	</div>";
 				node +=	"</section>";
@@ -1964,7 +1915,7 @@ var containers = {
 				node += "		<div class='mdl-list mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
 				for ( i=0; i<snippet.attributes.flows.length; i++ ) {
 					//node += "		<a href=\"#\" onclick=\";\" class=\"mdl-list__item mdl-cell--12-col\">";
-					node += app.getField(null, snippet.attributes.flows[i], null, false, {action: function() {app.displayFlow(snippet.attributes.flows[i])} }, true, true, false);
+					node += app.getField(null, snippet.attributes.flows[i], null, false, {type: 'text', action: function() {app.displayFlow(snippet.attributes.flows[i])}, isEdit: false });
 					//node += "		</a>";
 				}
 				node += "		</div>";
@@ -1997,7 +1948,7 @@ var containers = {
 		element += "			<i class=\"material-icons\">"+iconName+"</i>";
 		element += "			<h2 class=\"mdl-card__title-text\">"+name+"</h2>";
 		element += "		</div>";
-		element += app.getField(null, null, description, false, false, false, true, true, false);
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		element += "			<span class=\"pull-left mdl-card__date\">Created on "+moment(item.attributes.meta.created).format(app.date_format)+"</span>";
 		element += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
@@ -2185,16 +2136,16 @@ var containers = {
 			node += "	</div>";
 			node += "	<div class=\"card-body\">";
 			for (var phone in gravatar.phone_numbers) {
-				node += app.getField('phone', gravatar.phone_numbers[phone].type, gravatar.phone_numbers[phone].value, false, false, false, true, false);
+				node += app.getField('phone', gravatar.phone_numbers[phone].type, gravatar.phone_numbers[phone].value, {type: 'text', isEdit: false});
 			}
 			node += "		<ul class=\"social-links\">";
 			for (var account in gravatar.accounts) {
-				node += "		<li><a href=\""+gravatar.accounts[account].url+"\"><i class=\"material-icons\">link</i>" + gravatar.accounts[account].shortname + "</a></li>";
+				node += "		<li><a href=\""+gravatar.accounts[account].url+"\"><i class=\"material-icons mdl-textfield__icon\">link</i><span class=\"mdl-list__item-sub-title\">" + gravatar.accounts[account].shortname + "</span></a></li>";
 			}
 			node += "		</ul>";
 			node += "		<ul class='social-links'>"; 
 			for (var url in gravatar.urls) {
-				node += "  		<li><a href=\""+gravatar.urls[url].value+"\" target=\"_blank\"><i class=\"material-icons\">bookmark</i>" + gravatar.urls[url].title + "</a></li>";
+				node += "  		<li><a href=\""+gravatar.urls[url].value+"\" target=\"_blank\"><i class=\"material-icons\">bookmark</i><span class=\"mdl-list__item-sub-title\">" + gravatar.urls[url].title + "</span></a></li>";
 			}
 			node += "  		</ul>";
 			node += "	</div>";
@@ -2257,13 +2208,13 @@ var containers = {
 			"				Connect your Objects to collect their data and show your own Dashboards." +
 			"			</div>" +
 			"			<div class='mdl-card__supporting-text'>" +
-			"				<div class='mdl-textfield mdl-js-textfield'>" +
+			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
 			"					<input name='username' pattern=\""+pattern.username+"\" class='mdl-textfield__input' type='text'>" +
 			"					<label for='username' class='mdl-textfield__label'>Username</label>" +
 			"					<span class='mdl-textfield__error'>Username should be your email address</span>" +
 			"				</div>" +
-			"				<div class='mdl-textfield mdl-js-textfield'>" +
+			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>vpn_key</i>" +
 			"					<input name='password' pattern=\""+pattern.password+"\" class='mdl-textfield__input' type='password'>" +
 			"					<label for='password' class='mdl-textfield__label'>Password</label>" +
@@ -2378,107 +2329,111 @@ var containers = {
 		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
 	} // getUniqueId
 	
-	app.getField = function(icon, label, value, isEditMode, isActionable, isThreeLines, isVisible, isExpand) {
+	app.getField = function(icon, label, value, options) {
+		var hidden = options.isVisible!==false?"":" hidden";
+		var expand = options.isExpand===false?"":" mdl-card--expand";
 		var field = "";
-		var hidden = isVisible===true?"":" hidden";
-		var expand = isExpand===false?"":" mdl-card--expand";
-		if ( isThreeLines == true) {
-			field = "<div class='mdl-list__item--three-line "+hidden+expand+"'>";
-		} else {
-			field = "<div class='small-padding "+hidden+expand+"'>";
-		}
+		field += "<div class='mdl-list__item--three-line small-padding "+hidden+expand+"'>";
 
-		//- PRIMARY
-		if ( (icon != null || label != null) && isEditMode != 'text' && isEditMode != 'textarea' && isEditMode != 'select' && isEditMode != 'switch' ) {
-			field += "<span class='mdl-list__item-primary-content mdl-list__item-sub-title'>";
-			if ( icon != null ) {
-				field += "	<i class='material-icons'>"+icon+"</i>";
-			}
-			if ( label != null ) {
-				field += "	<label class='mdl-textfield__label mdl-layout--large-screen-only'>"+label+"</label>";
-			}
-			field += "</span>";
-		}
-		//- ---------
-
-		//- SECONDARY
-		if ( value !== undefined && value !== null ) {
-			if ( value == 'true' && isEditMode === false ) {
-				value = "<i class='material-icons'>check</i>";
-			} else if ( value == 'false' && isEditMode === false ) {
-				value = "<i class='material-icons'>close</i>";
-			}
-			field += "<span class='mdl-list__item-secondary-content'>";
-			if ( isEditMode == 'text' ) {
-				var id = app.getUniqueId();
-				field += "<div class='mdl-textfield mdl-js-textfield mdl-list__item-sub-title'>";
-				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-				field += "	<input type='text' value='"+value+"' class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
-				field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
-				field += "</div>";
+		if ( typeof options === 'object' ) {
+			var id = options.id!==null?options.id:app.getUniqueId();
 			
-			} else if ( isEditMode == 'textarea' ) {
-				var id = app.getUniqueId();
-				field += "<div class='mdl-textfield mdl-js-textfield mdl-list__item-sub-title'>";
-				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-				field += "	<textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input' name='"+label+"' id='"+id+"'>"+value+"</textarea>";
-				field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
-				field += "</div>";
-							
-			} else if ( typeof isEditMode === 'object' ) {
-				if ( isEditMode.type === 'select' ) {
-					var id = isEditMode.id!==null?isEditMode.id:app.getUniqueId();
-					field += "<div class='mdl-selectfield mdl-js-selectfield'>";
-					field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"'>";
-					for (var n=0; n<isEditMode.options.length; n++) {
-						var selected = value==isEditMode.options[n].value?'selected':'';
-						field += "	<option "+selected+" value='"+isEditMode.options[n].name+"'>"+isEditMode.options[n].value+"</option>";
-					}
-					field += "	</select>";
-					field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
+			if ( options.type === 'input' || options.type === 'text' ) {
+				if ( options.isEdit == true ) {
+					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+					field += "	<input type='text' value='"+value+"' class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+					field += "</div>";
+				} else {
+					field += "<div class='mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
-							
-			} else if ( isEditMode == 'switch' ) {
-				var checked = value=='true'?'checked':'';
-				var id = app.getUniqueId();
-				field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect' for='switch-"+id+"' data-id='switch-"+id+"'>";
-				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-				field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"' placeholder='"+label+"'>";
-				field += "	<div class='mdl-switch__label'>The Object is visible.</div>";
-				field += "</label>";
-				
-
-			} else if ( isEditMode == 'progress-status' ) {
+			} else if ( options.type === 'textarea' ) {
+				if ( options.isEdit == true ) {
+					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+					field += "	<textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input' name='"+label+"' id='"+id+"'>"+value+"</textarea>";
+					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+					field += "</div>";
+				} else {
+					if (value ) field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
+				}
+			} else if ( options.type === 'radio' ) {
+				if ( options.isEdit == true ) {
+					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'> /!\ radio "+icon+"</i>";
+					if (label) field += "	<label class='mdl-textfield__label'> /!\ radio "+label+"</label>";
+					field += "</div>";
+				} else {
+					field += "<div class='mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
+					field += "</div>";
+				}
+			} else if ( options.type === 'checkbox' ) {
+				if ( options.isEdit == true ) {
+					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'> /!\ checkbox "+icon+"</i>";
+					if (label) field += "	<label class='mdl-list__item-sub-title'> /!\ checkbox "+label+"</label>";
+					field += "</div>";
+				} else {
+					field += "<div class='mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
+					field += "</div>";
+				}
+			} else if ( options.type === 'switch' ) {
+				if ( options.isEdit == true ) {
+					var checked = value=='true'?'checked':'';
+					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label' for='switch-"+id+"' data-id='switch-"+id+"'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"' placeholder='"+label+"'>";
+					if (label) field += "	<div class='mdl-switch__label'>"+label+"</div>";
+					field += "</label>";
+				} else {
+					field += "<div class='mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
+					field += "</div>";
+				}
+			} else if ( options.type === 'select' ) {
+				if ( options.isEdit == true ) {
+					field += "<div class='mdl-selectfield mdl-js-selectfield mdl-textfield--floating-label'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"'>";
+					for (var n=0; n<options.options.length; n++) {
+						var selected = value==options.options[n].value?'selected':'';
+						field += "	<option "+selected+" value='"+options.options[n].name+"'>"+options.options[n].value+"</option>";
+					}
+					field += "	</select>";
+					if (label) field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
+					field += "</div>";
+				} else {
+					field += "<div class='mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
+					field += "</div>";
+				}
+			} else if ( options.type === 'progress-status' ) {
 				field += "<span class='mdl-progress mdl-js-progress' id='progress-status' title=''><br />"+value+"</span>";
-							
-			} else {
-				field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
-			
 			}
-			field += "</span>";
+		} else {
+			console.log("Error on options: ", options);
 		}
-		//- ---------
 
-		//- ACTIONS
-		if ( isActionable == true || typeof isActionable === 'object' ) {
-			field += "<span class='mdl-list__item-secondary-content'>";
+		if ( options.action !== undefined ) {
 			field += "	<span class='mdl-list__item-secondary-action'>";
-			if ( isActionable.action ) {
-				field += "		<a href='#' "+isActionable.action+">";
-				field += "			<i class='material-icons'>chevron_right</i>";
-				field += "		</a>";
-			} else {
-				field += "		<i class='material-icons'>chevron_right</i>";
-			}
+			field += "		<a href='#' "+options.action+">";
+			field += "			<i class='material-icons'>chevron_right</i>";
+			field += "		</a>";
 			field += "	</span>";
-			field += "</span>";
 		}
 		field += "</div>";
-		//- ---------
 		return field;
-	} //getField
+	} // getField
 
 	app.getSnippet = function(icon, snippet_id, container) {
 		containers.spinner.removeAttribute('hidden');
@@ -2946,11 +2901,11 @@ var containers = {
 			status += "			</span>";
 			status += "		</div>";
 			status += "		<div class='mdl-cell--12-col' id='status-details'>";
-			status += app.getField('thumb_up', 'Name', response.appName, false, false, false, true, false);
-			status += app.getField('verified_user', 'Version', response.version, false, false, false, true, false);
-			status += app.getField(app.icons.status, 'Status', response.status, false, false, false, true, false);
-			status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, false, false, false, true, false);
-			status += app.getField('alarm', 'Last Update', response.started_at, false, false, false, true, false);
+			status += app.getField('thumb_up', 'Name', response.appName, {type: 'text', isEdit: false});
+			status += app.getField('verified_user', 'Version', response.version, {type: 'text', isEdit: false});
+			status += app.getField(app.icons.status, 'Status', response.status, {type: 'text', isEdit: false});
+			status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, {type: 'text', isEdit: false});
+			status += app.getField('alarm', 'Last Update', response.started_at, {type: 'text', isEdit: false});
 			status += "		</div>";
 			status += "	</div>";
 			status += "</section>";
@@ -2973,7 +2928,7 @@ var containers = {
 				status += "		</div>";
 				status += "		<div class='mdl-cell--12-col' id='status-usage'>";
 				if ( app.RateLimit.Used && app.RateLimit.Limit ) {
-					status += app.getField('center_focus_weak', 'Used', app.RateLimit.Used + '/' +app.RateLimit.Limit, 'progress-status', false, false, true, false);
+					status += app.getField('center_focus_weak', 'Used', app.RateLimit.Used + '/' +app.RateLimit.Limit, {type: 'progress-status', isEdit: false});
 				}
 				status += "		</div>";
 				status += "	</div>";
