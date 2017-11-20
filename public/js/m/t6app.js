@@ -431,11 +431,11 @@ var containers = {
 				var objectContainer = document.querySelector("section#objects div[data-id='"+object_id+"']");
 				app.setSection('objects');
 				objectContainer.querySelector("h2").innerHTML = body.name;
-				objectContainer.querySelector("span.mdl-list__item-secondary-content span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
+				objectContainer.querySelector("div.mdl-list__item--three-line.small-padding span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
 				toast('Object has been saved.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
-				toast('Object has not been saved.'+object_id, {timeout:3000, type: 'error'});
+				toast('Object has not been saved.', {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
 		}
@@ -470,11 +470,7 @@ var containers = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			/*
-			var objectContainer = document.querySelector("section#objects section[data-id=\""+object_id+"\"]");
-			objectContainer.querySelector("h2").innerHTML = body.name;
-			objectContainer.querySelector("span.mdl-list__item-secondary-content span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
-			*/
+			app.setSection('objects');
 			toast('Object has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
