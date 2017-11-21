@@ -488,10 +488,12 @@ var containers = {
 		if ( !flow_id ) {
 			toast('No Flow id found!', {timeout:3000, type: 'error'});
 		} else {
-			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
 			var body = {
 				name: myForm.querySelector("input[name='Name']").value,
-				mqtt_topic: myForm.querySelector("select[name='MQTT Topic']").value,
+				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
+				data_type: myForm.querySelector("select[name='Unit']").value,
+				unit: myForm.querySelector("select[name='DataType']").value,
 			};
 	
 			var myHeaders = new Headers();
@@ -506,7 +508,7 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				var objectContainer = document.querySelector("section#flows div[data-id='"+object_id+"']");
+				var objectContainer = document.querySelector("section#flows div[data-id='"+flow_id+"']");
 				app.setSection('flows');
 				objectContainer.querySelector("h2").innerHTML = body.name;
 				toast('Flow has been saved.', {timeout:3000, type: 'done'});
@@ -583,6 +585,10 @@ var containers = {
 			createFlow: document.querySelector('#flows button#createFlow'),
 			addFlow: document.querySelector('#flow_add section.fixedActionButtons button.add-button'),
 			addFlowBack: document.querySelector('#flow_add section.fixedActionButtons button.back-button'),
+			saveFlow: document.querySelector('#flow section.fixedActionButtons button.save-button'),
+			backFlow: document.querySelector('#flow section.fixedActionButtons button.back-button'),
+			editFlow2: document.querySelector('#flow section.fixedActionButtons button.edit-button'),
+			listFlow: document.querySelector('#flow section.fixedActionButtons button.list-button'),
 			
 			deleteDashboard: document.querySelectorAll('#dashboards .delete-button'),
 			editDashboard: document.querySelectorAll('#dashboards .edit-button'),
@@ -1445,8 +1451,7 @@ var containers = {
 		app.setSection('object_add');
 	}; //displayAddObject
 	
-	app.displayAddFlow = function(flow) {
-		var node = "";
+	app.getUnits = function() {
 		if ( app.units.length == 0 ) {
 			var myHeaders = new Headers();
 			myHeaders.append("Content-Type", "application/json");
@@ -1465,6 +1470,9 @@ var containers = {
 				}
 			});
 		}
+	}
+	
+	app.getDatatypes = function() {
 		if ( app.datatypes.length == 0 ) {
 			var myHeaders = new Headers();
 			myHeaders.append("Content-Type", "application/json");
@@ -1483,6 +1491,13 @@ var containers = {
 				}
 			});
 		}
+	}
+	
+	app.displayAddFlow = function(flow) {
+		var node = "";
+		app.getUnits();
+		app.getDatatypes();
+		
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', isEdit: true});
@@ -1686,7 +1701,7 @@ var containers = {
 		return output;
 	} //getCard
 
-	app.displayFlow = function(id) {
+	app.displayFlow = function(id, isEdit) {
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -1708,135 +1723,194 @@ var containers = {
 				var datapoints = "";
 				
 				var node = "";
-				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-list__item\">";
-				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
-				node += "				<h2 class=\"mdl-card__title-text\">"+flow.attributes.name+"</h2>";
-				node += "			</span>";
-				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
-				node += "					<i class='material-icons'>expand_more</i>";
-				node += "				</button>";
-				node += "			</span>";
-				node += "		</div>";
-				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-				node += app.getField(app.icons.flows, 'Id', flow.id, {type: 'text', isEdit: false});
-				if ( flow.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(flow.attributes.description), {type: 'textarea', isEdit: false});
-				}
-				if ( flow.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(flow.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
-				}
-				if ( flow.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
-				}
-				if ( flow.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', flow.attributes.meta.revision, {type: 'text', isEdit: false});
-				}
-				if ( flow.attributes.type ) {
-					node += app.getField('extension', 'Type', flow.attributes.type, {type: 'text', isEdit: false});
-				}
-				if ( flow.attributes.mqtt_topic ) {
-					node += app.getField(app.icons.mqtts, 'Mqtt', flow.attributes.mqtt_topic, {type: 'text', isEdit: false});
-				}
-				if ( flow.attributes.ttl ) {
-					node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', isEdit: false});
-				}
-				if ( flow.attributes.unit ) {
-					node += app.getField('', 'unit', flow.attributes.unit, {type: 'text', isEdit: false});
-				}
-				if ( flow.attributes.permission ) {
-					node += app.getField('visibility', 'Permission', flow.attributes.permission, {type: 'text', isEdit: false});
-				}
-				node += "	</div>";
-				node += "</div>";
-				
-				node += "<div class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
-				node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-				node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
-				node += "			<span class='mdl-list__item-primary-content'>";
-				node +=	"				<span>"+flow.attributes.name+" ("+flow.attributes.unit+")</span>";
-				node +=	"				<span class='mdl-list__item-sub-title' id='flow-graph-time-"+flow.id+"'></span>";
-				node +=	"			</span>";
-				node +=	"		</span>";
-				node += "		<span class='mdl-list__item' id='flow-graph-"+flow.id+"' style='width:100%; height:200px;'>";
-				node += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
-				node += "		</span>";
-				var options = {
-					series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
-					colors: [flow.attributes.color!==''?flow.attributes.color:'#000000'],
-					points : { show : true },
-					legend: { show: true, position: "sw" },
-					grid: {
-						borderWidth: { top: 0, right: 0, bottom: 0, left: 0 },
-						borderColor: { top: "", right: "", bottom: "", left: "" },
-						// markings: weekendAreas,
-						clickable: true,
-						hoverable: true,
-						autoHighlight: true,
-						mouseActiveRadius: 5
-					},
-					xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-					yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
-				};
-
-				var my_flow_data_url = app.baseUrl+'/'+app.api_version+'/data/'+flow.id+'?limit=100&sort=desc';
-				fetch(my_flow_data_url, myInit)
-				.then(
-					fetchStatusHandler
-				).then(function(fetchResponse){ 
-					return fetchResponse.json();
-				})
-				.then(function(data) {
-					datapoints += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-					datapoints += "		<div class='mdl-list__item small-padding'>";
-					datapoints += "			<span class='mdl-list__item-primary-content'>";
-					datapoints += "				<i class='material-icons'>"+app.icons.datapoints+"</i>";
-					datapoints += "				Data Points";
-					datapoints += "			</span>";
-					datapoints += "			<span class='mdl-list__item-secondary-action'>";
-					datapoints += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='datapoints-"+flow.id+"'>";
-					datapoints += "					<i class='material-icons'>expand_more</i>";
-					datapoints += "				</button>";
-					datapoints += "			</span>";
-					datapoints += "		</div>";
-					datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
-					var dataset = [data.data.map(function(i) {
-						datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value+flow.attributes.unit, {type: 'text', isEdit: false});
-						return [i.attributes.timestamp, i.attributes.value];
-				    })];
-					componentHandler.upgradeDom();
-					$.plot($('#flow-graph-'+flow.id), dataset, options);
-					datapoints += "		</div>";
-					datapoints += "	</div>";
+				if ( isEdit ) {
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true});
+					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTT Topic', isEdit: true});
+					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', isEdit: true, id: 'Unit', options: app.units });
+					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', isEdit: true, id: 'DataType', options: app.datatypes });
+					node += "	</div>";
+					node += "</section>";
 					
-					var dtps = document.createElement('div');
-					dtps.className = "mdl-grid mdl-cell--12-col";
-					dtps.dataset.id = "last-datapoints_"+flow.id;
-					dtps.innerHTML = datapoints;
-					((containers.flow).querySelector('.page-content')).appendChild(dtps);
-					app.setExpandAction();
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+id+"'>";
+					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>View</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>save</i>";
+					node += "			<label>Save</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "</section>";
 					
-				})
-				.catch(function (error) {
-					if (error == 'Error: Not Found') {
-						toast('No data found, graph remain empty.', {timeout:3000, type: 'warning'});
-					} else {
-						if ( app.debug === true ) {
-							toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
-						}
+				} else {
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-list__item\">";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
+					node += "				<h2 class=\"mdl-card__title-text\">"+flow.attributes.name+"</h2>";
+					node += "			</span>";
+					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+					node += "					<i class='material-icons'>expand_more</i>";
+					node += "				</button>";
+					node += "			</span>";
+					node += "		</div>";
+					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+					node += app.getField(app.icons.flows, 'Id', flow.id, {type: 'text'});
+					if ( flow.attributes.description ) {
+						node += app.getField(null, null, app.nl2br(flow.attributes.description), {type: 'textarea', isEdit: isEdit});
 					}
-				});
-				node +=	"	</div>";
-				node +=	"</div>";
+					if ( flow.attributes.meta.created ) {
+						node += app.getField(app.icons.date, 'Created', moment(flow.attributes.meta.created).format(app.date_format), {type: 'text'});
+					}
+					if ( flow.attributes.meta.updated ) {
+						node += app.getField(app.icons.date, 'Updated', moment(flow.attributes.meta.updated).format(app.date_format), {type: 'text'});
+					}
+					if ( flow.attributes.meta.revision ) {
+						node += app.getField(app.icons.update, 'Revision', flow.attributes.meta.revision, {type: 'text'});
+					}
+					if ( flow.attributes.type ) {
+						node += app.getField('extension', 'Type', flow.attributes.type, {type: 'text', isEdit: isEdit});
+					}
+					if ( flow.attributes.mqtt_topic ) {
+						node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', isEdit: isEdit});
+					}
+					if ( flow.attributes.ttl ) {
+						node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', isEdit: isEdit});
+					}
+					if ( flow.attributes.unit ) {
+						node += app.getField('', 'unit', flow.attributes.unit, {type: 'text', isEdit: isEdit});
+					}
+					if ( flow.attributes.permission ) {
+						node += app.getField('visibility', 'Permission', flow.attributes.permission, {type: 'text', isEdit: isEdit});
+					}
+					node += "	</div>";
+					node += "</div>";
+				
+					node += "<div class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
+					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node +=	"				<span>"+flow.attributes.name+" ("+flow.attributes.unit+")</span>";
+					node +=	"				<span class='mdl-list__item-sub-title' id='flow-graph-time-"+flow.id+"'></span>";
+					node +=	"			</span>";
+					node +=	"		</span>";
+					node += "		<span class='mdl-list__item' id='flow-graph-"+flow.id+"' style='width:100%; height:200px;'>";
+					node += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
+					node += "		</span>";
+					var options = {
+						series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
+						colors: [flow.attributes.color!==''?flow.attributes.color:'#000000'],
+						points : { show : true },
+						legend: { show: true, position: "sw" },
+						grid: {
+							borderWidth: { top: 0, right: 0, bottom: 0, left: 0 },
+							borderColor: { top: "", right: "", bottom: "", left: "" },
+							// markings: weekendAreas,
+							clickable: true,
+							hoverable: true,
+							autoHighlight: true,
+							mouseActiveRadius: 5
+						},
+						xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
+						yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
+					};
+	
+					var my_flow_data_url = app.baseUrl+'/'+app.api_version+'/data/'+flow.id+'?limit=100&sort=desc';
+					fetch(my_flow_data_url, myInit)
+					.then(
+						fetchStatusHandler
+					).then(function(fetchResponse){ 
+						return fetchResponse.json();
+					})
+					.then(function(data) {
+						datapoints += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+						datapoints += "		<div class='mdl-list__item small-padding'>";
+						datapoints += "			<span class='mdl-list__item-primary-content'>";
+						datapoints += "				<i class='material-icons'>"+app.icons.datapoints+"</i>";
+						datapoints += "				Data Points";
+						datapoints += "			</span>";
+						datapoints += "			<span class='mdl-list__item-secondary-action'>";
+						datapoints += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='datapoints-"+flow.id+"'>";
+						datapoints += "					<i class='material-icons'>expand_more</i>";
+						datapoints += "				</button>";
+						datapoints += "			</span>";
+						datapoints += "		</div>";
+						datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
+						var dataset = [data.data.map(function(i) {
+							datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value+flow.attributes.unit, {type: 'text', isEdit: false});
+							return [i.attributes.timestamp, i.attributes.value];
+					    })];
+						componentHandler.upgradeDom();
+						$.plot($('#flow-graph-'+flow.id), dataset, options);
+						datapoints += "		</div>";
+						datapoints += "	</div>";
+						
+						var dtps = document.createElement('div');
+						dtps.className = "mdl-grid mdl-cell--12-col";
+						dtps.dataset.id = "last-datapoints_"+flow.id;
+						dtps.innerHTML = datapoints;
+						((containers.flow).querySelector('.page-content')).appendChild(dtps);
+						
+					})
+					.catch(function (error) {
+						if (error == 'Error: Not Found') {
+							toast('No data found, graph remain empty.', {timeout:3000, type: 'warning'});
+						} else {
+							if ( app.debug === true ) {
+								toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
+							}
+						}
+					});
+					node +=	"	</div>";
+					node +=	"</div>";
+
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
+					node += "	<div class='mdl-cell--4-col pull-left'>";
+					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>List</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--4-col'>";
+					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>delete</i>";
+					node += "			<label>Delete</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--4-col pull-right'>";
+					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>edit</i>";
+					node += "			<label>Edit</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "</section>";
+				}
 				
 				var c = document.createElement('section');
 				c.className = "mdl-grid mdl-cell--12-col";
 				c.dataset.id = flow.id;
 				c.innerHTML = node;
 				((containers.flow).querySelector('.page-content')).appendChild(c);
+
+				app.refreshButtonsSelectors();
+				if ( isEdit ) {
+					buttons.backFlow.addEventListener('click', function(evt) { app.displayFlow(flow.id, false); }, false);
+					buttons.saveFlow.addEventListener('click', function(evt) { app.onSaveFlow(evt); }, false);
+				} else {
+					buttons.listFlow.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
+					//buttons.deleteFlow2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
+					buttons.editFlow2.addEventListener('click', function(evt) { app.displayFlow(flow.id, true); evt.preventDefault(); }, false);
+				}
+				
 				componentHandler.upgradeDom();
+				app.setExpandAction();
 				app.setSection('flow');
 			}
 		})
