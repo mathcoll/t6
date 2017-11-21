@@ -492,8 +492,8 @@ var containers = {
 			var body = {
 				name: myForm.querySelector("input[name='Name']").value,
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
-				data_type: myForm.querySelector("select[name='Unit']").value,
-				unit: myForm.querySelector("select[name='DataType']").value,
+				data_type: myForm.querySelector("select[name='DataType']").value,
+				unit: myForm.querySelector("select[name='Unit']").value,
 			};
 	
 			var myHeaders = new Headers();
@@ -525,6 +525,8 @@ var containers = {
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
 			mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
+			data_type: myForm.querySelector("select[name='DataType']").value,
+			unit: myForm.querySelector("select[name='Unit']").value,
 		};
 		if ( app.debug === true ) {
 			console.log(JSON.stringify(body));
@@ -1729,7 +1731,7 @@ var containers = {
 					node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true});
 					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTT Topic', isEdit: true});
 					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', isEdit: true, id: 'Unit', options: app.units });
-					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', isEdit: true, id: 'DataType', options: app.datatypes });
+					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', isEdit: true, id: 'DataType', options: app.datatypes });
 					node += "	</div>";
 					node += "</section>";
 					
@@ -2555,7 +2557,7 @@ var containers = {
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"'>";
 					for (var n=0; n<options.options.length; n++) {
-						var selected = value==options.options[n].value?'selected':'';
+						var selected = value==options.options[n].name?'selected':'';
 						field += "	<option "+selected+" value='"+options.options[n].name+"'>"+options.options[n].value+"</option>";
 					}
 					field += "	</select>";
