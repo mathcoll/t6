@@ -14,29 +14,31 @@ var app = {
 	hotjarid: 694506,
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
 	icons: {
-		'objects': 'devices_other',
-		'flows': 'settings_input_component',
-		'snippets': 'widgets',
-		'dashboards': 'dashboards',
-		'rules': 'call_split',
-		'mqtts': 'volume_down',
-		'login': 'email',
-		'datapoints': 'filter_center_focus',
-		'type': 'label',
-		'description': 'label',
-		'icon': 'label_outline',
-		'settings': 'settings',
-		'menu': 'menu',
-		'name': 'list',
-		'delete': 'delete',
-		'edit': 'edit',
 		'color': 'format_color_fill',
+		'dashboards': 'dashboards',
+		'datapoints': 'filter_center_focus',
+		'datatypes': 'build',
 		'date': 'event',
-		'update': 'update',
+		'delete': 'delete',
+		'delete_question': 'error_outline',
+		'description': 'label',
+		'docs': 'code',
+		'edit': 'edit',
+		'flows': 'settings_input_component',
+		'icon': 'label_outline',
+		'login': 'email',
+		'menu': 'menu',
+		'mqtts': 'volume_down',
+		'name': 'list',
+		'objects': 'devices_other',
+		'rules': 'call_split',
+		'settings': 'settings',
+		'snippets': 'widgets',
 		'status': 'favorite',
 		'terms': 'business_center',
-		'docs': 'code',
-		'delete_question': 'error_outline',
+		'type': 'label',
+		'units': 'hourglass_empty',
+		'update': 'update',
 	},
 	types: [
 		{name: 'cast', value:'Cast'},
@@ -77,6 +79,8 @@ var app = {
 		{name: 'videogame_asset', value:'Videogame Asset'},
 		{name: 'watch', value:'Watch'},
 	],
+	units: [],
+	datatypes: [],
 	defaultResources: {
 		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: 0, latitude: 0, position: ''}},
 		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
@@ -478,6 +482,41 @@ var containers = {
 		});
 		evt.preventDefault();
 	} //onAddObject
+
+	app.onSaveFlow = function(evt) {
+		var flow_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
+		if ( !flow_id ) {
+			toast('No Flow id found!', {timeout:3000, type: 'error'});
+		} else {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			var body = {
+				name: myForm.querySelector("input[name='Name']").value,
+				mqtt_topic: myForm.querySelector("select[name='MQTT Topic']").value,
+			};
+	
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+'/'+app.api_version+'/flows/'+flow_id;
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				var objectContainer = document.querySelector("section#flows div[data-id='"+object_id+"']");
+				app.setSection('flows');
+				objectContainer.querySelector("h2").innerHTML = body.name;
+				toast('Flow has been saved.', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				toast('Flow has not been saved.', {timeout:3000, type: 'error'});
+			});
+			evt.preventDefault();
+		}
+	} //onSaveFlow
 	
 	app.onAddFlow = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -500,6 +539,7 @@ var containers = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
+			app.setSection('flows');
 			toast('Flow has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
@@ -1133,17 +1173,17 @@ var containers = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( isEdit==true ) {
 					var description = object.attributes.description;
-					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: isEdit});
+					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: isEdit, pattern: '.{4,}', error:'Name should be set and more than 4 chars length.'});
 					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', isEdit: isEdit});
 				}
 				if ( object.attributes.type || isEdit==true ) {
 					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', isEdit: isEdit, id: 'Type', options: app.types });
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit});
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit, pattern: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}', error:'IPv4 should be valid.'});
 				}
 				if ( object.attributes.ipv6 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit});
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit, pattern: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$', error:'IPv6 should be valid.'});
 				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
 					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: isEdit});
@@ -1171,13 +1211,13 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					if ( object.attributes.longitude ) {
-						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: isEdit});
+						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: isEdit, pattern: '^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Longitude should be valid.'});
 					}
 					if ( object.attributes.latitude ) {
-						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: isEdit});
+						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: isEdit, pattern: '^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Latitude should be valid.'});
 					}
 					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: isEdit});
+						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: isEdit, pattern: '.{4,255}', error:'Should not be longer than 255 chars.'});
 					}
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
@@ -1310,11 +1350,11 @@ var containers = {
 		node += app.getSubtitle('Description');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: true});
+		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: true, pattern: '.{4,}', error:'Name should be set and more than 4 chars length.'});
 		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), {type: 'textarea', isEdit: true});
 		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
-		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: true});
-		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: true});
+		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: true, pattern: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}', error:'IPv4 should be valid.'});
+		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: true, pattern: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$', error:'IPv6 should be valid.'});
 		node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
@@ -1329,9 +1369,9 @@ var containers = {
 		node += app.getSubtitle('Localization');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: true});
-		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: true});
-		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: true});
+		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: true, pattern: '^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Longitude should be valid.'});
+		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: true, pattern: '^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Latitude should be valid.'});
+		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: true, pattern: '.{4,255}', error:'Should not be longer than 255 chars.'});
 		node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
 		node += "	</div>";
 		node += "</section>";
@@ -1407,10 +1447,48 @@ var containers = {
 	
 	app.displayAddFlow = function(flow) {
 		var node = "";
+		if ( app.units.length == 0 ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'GET', headers: myHeaders };
+			var url = app.baseUrl+'/'+app.api_version+'/units/';
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				for (var i=0; i < (response.data).length ; i++ ) {
+					var u = response.data[i];
+					app.units.push( {name: u.id, value:u.attributes.type+' '+u.attributes.name} );
+				}
+			});
+		}
+		if ( app.datatypes.length == 0 ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'GET', headers: myHeaders };
+			var url = app.baseUrl+'/'+app.api_version+'/datatypes/';
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				for (var i=0; i < (response.data).length ; i++ ) {
+					var d = response.data[i];
+					app.datatypes.push( {name: d.id, value:d.attributes.name} );
+				}
+			});
+		}
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', isEdit: true});
 		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', isEdit: true});
+		node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', isEdit: true, id: 'Unit', options: app.units });
+		node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', isEdit: true, id: 'DataType', options: app.datatypes });
 		node += "	</div>";
 		node += "</section>";
 		
@@ -2336,10 +2414,12 @@ var containers = {
 			
 			if ( options.type === 'input' || options.type === 'text' ) {
 				if ( options.isEdit == true ) {
+					var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='text' value='"+value+"' class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+					field += "	<input type='text' value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+					if (label) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
