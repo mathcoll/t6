@@ -551,6 +551,75 @@ var containers = {
 		});
 		evt.preventDefault();
 	} //onAddFlow
+
+	app.onSaveSnippet = function(evt) {
+		var snippet_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
+		if ( !snippet_id ) {
+			toast('No Snippet id found!', {timeout:3000, type: 'error'});
+		} else {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+			var body = {
+				name: myForm.querySelector("input[name='Name']").value,
+				type: myForm.querySelector("select[name='Type']").value,
+				icon: myForm.querySelector("select[name='Icon']").value,
+				color: myForm.querySelector("input[name='Color']").value,
+			};
+	
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				var snippetContainer = document.querySelector("section#snippets div[data-id='"+snippet_id+"']");
+				app.setSection('snippets');
+				snippetContainer.querySelector("h2").innerHTML = body.name;
+				toast('Snippet has been saved.', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				toast('Snippet has not been saved.', {timeout:3000, type: 'error'});
+			});
+			evt.preventDefault();
+		}
+	} //onSaveSnippet
+	
+	app.onAddSnippet = function(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var body = {
+			name: myForm.querySelector("input[name='Name']").value,
+			type: myForm.querySelector("select[name='Type']").value,
+			icon: myForm.querySelector("select[name='Icon']").value,
+			color: myForm.querySelector("input[name='Color']").value,
+		};
+		if ( app.debug === true ) {
+			console.log(JSON.stringify(body));
+		}
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+'/'+app.api_version+'/snippets/';
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			app.setSection('snippets');
+			toast('Snippet has been added.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			toast('Snippet has not been added.', {timeout:3000, type: 'error'});
+		});
+		evt.preventDefault();
+	} //onAddSnippet
 	
 	app.refreshButtonsSelectors = function() {
 		if ( componentHandler ) componentHandler.upgradeDom();
@@ -599,6 +668,12 @@ var containers = {
 			deleteSnippet: document.querySelectorAll('#snippets .delete-button'),
 			editSnippet: document.querySelectorAll('#snippets .edit-button'),
 			createSnippet: document.querySelector('#snippets button#createSnippet'),
+			addSnippet: document.querySelector('#snippet_add section.fixedActionButtons button.add-button'),
+			addSnippetBack: document.querySelector('#snippet_add section.fixedActionButtons button.back-button'),
+			backSnippet: document.querySelector('#snippet section.fixedActionButtons button.back-button'),
+			saveSnippet: document.querySelector('#snippet section.fixedActionButtons button.save-button'),
+			listSnippet: document.querySelector('#snippet section.fixedActionButtons button.list-button'),
+			editSnippet2: document.querySelector('#snippet section.fixedActionButtons button.edit-button'),
 			
 			deleteRule: document.querySelectorAll('#rules .delete-button'),
 			editRule: document.querySelectorAll('#rules .edit-button'),
@@ -732,7 +807,7 @@ var containers = {
 			} else if ( type == 'flows' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
-					app.displayFlow(item.dataset.id);
+					app.displayFlow(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
 			} else if ( type == 'dashboards' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
@@ -744,7 +819,7 @@ var containers = {
 			} else if ( type == 'snippets' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.target.parentNode.parentNode.parentNode;
-					app.displaySnippet(item.dataset.id);
+					app.displaySnippet(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
 			}
@@ -1640,30 +1715,53 @@ var containers = {
 
 	app.displayAddSnippet = function(snippet) {
 		var node = "";
-		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+snippet.id+"\">";
-		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true});
-		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: true, id: 'icon', options: app.types });
+		
+		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
+		node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true, pattern: '.{4,}', error:'Should be longer than 4 chars.'});
+		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: true, id: 'Icon', options: app.types });
 		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: true});
+		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: true });
 		node += "	</div>";
 		node += "</section>";
 		
-		node += app.getSubtitle('Snippets');
+		node += app.getSubtitle('Flows');
+
+		node += "<section class='mdl-grid mdl-cell--12-col'>";
+		node += "	<div class='mdl-cell--12-col mdl-grid mdl-card mdl-shadow--2dp'>";
+		node += "		<div class='mdl-cell mdl-cell--10-col'>";
+		node += app.getField(app.icons.flows, 'Flows', snippet.attributes.icon, {type: 'select', id: 'icon', options: [{name: 'uuid', value:'Flow Name'}, {name: 'uuid', value:'Flow Name'}, {name: 'uuid', value:'Flow Name'}], isMultiple: true, isEdit: true });
+		node += "		</div>";
+		node += "		<div class='mdl-cell mdl-cell--2-col'>";
+		node += "			<button class='mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "				<i class='material-icons'>add</i>";
+		node += "				<label>Add</label>";
+		node += "			</button>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "</section>";
 		
-		node += app.getField('add_circle_outline', 'Snippet', snippet.attributes.icon, {type: 'select', id: 'icon', options: [ {name: 'displayvalue', value:'Value Display'}, {name: 'displaygraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'} ], isEdit: true });
-		
-		node += "<div class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
+		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
 		node += "	<div class='mdl-cell--6-col pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
-		node += "			<i class='material-icons'>add</i>";
-		node += "			<label>Add</label>";
+		node += "			<i class='material-icons'>chevron_left</i>";
+		node += "			<label>List</label>";
 		node += "		</button>";
 		node += "	</div>";
-		node += "</div>";
+		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>edit</i>";
+		node += "			<label>Save</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "</section>";
 
 		(containers.snippet_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
+		
 		app.refreshButtonsSelectors();
+		buttons.addSnippetBack.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
+		buttons.addSnippet.addEventListener('click', function(evt) { app.onAddSnippet(evt); }, false);
 
 		app.setExpandAction();
 		app.setSection('snippet_add');
@@ -1990,7 +2088,7 @@ var containers = {
 		containers.spinner.setAttribute('hidden', true);
 	}; //displayDashboard
 
-	app.displaySnippet = function(id) {
+	app.displaySnippet = function(id, isEdit) {
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -2024,23 +2122,21 @@ var containers = {
 				node += "			</span>";
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-				if ( snippet.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(snippet.attributes.description), {type: 'textarea', isEdit: false});
-				}
 				if ( snippet.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
+					node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), {type: 'text'});
 				}
 				if ( snippet.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
+					node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), {type: 'text'});
 				}
 				if ( snippet.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text', isEdit: false});
+					node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text',});
 				}
-				node += app.getField(app.icons.name, 'Name', snippet.attributes.name, {type: 'text', isEdit: false});
-				node += app.getField(app.icons.type, 'Type', snippet.attributes.type, {type: 'text', isEdit: false});
-				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'text', isEdit: false});
-				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text', isEdit: false});
-				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: false});
+				node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: isEdit, pattern: '.{4,}', error:'Should be longer than 4 chars.'});
+				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: isEdit, id: 'Icon', options: app.types });
+				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: isEdit});
+				node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
+				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
+				
 				node += "		</div>";
 				node += "	</div>";
 				node +=	"</section>";
@@ -2072,10 +2168,59 @@ var containers = {
 				node += "	</div>";
 				node +=	"</section>";
 				
+				if ( isEdit ) {
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+id+"'>";
+					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>View</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>save</i>";
+					node += "			<label>Save</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "</section>"
+				} else {
+
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
+					node += "	<div class='mdl-cell--4-col pull-left'>";
+					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>List</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--4-col'>";
+					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>delete</i>";
+					node += "			<label>Delete</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--4-col pull-right'>";
+					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>edit</i>";
+					node += "			<label>Edit</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "</section>";
+				}
 
 				(containers.snippet).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
+				
+				app.refreshButtonsSelectors();
+				if ( isEdit ) {
+					buttons.backSnippet.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, false); }, false);
+					buttons.saveSnippet.addEventListener('click', function(evt) { app.onSaveSnippet(evt); }, false);
+				} else {
+					buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
+					//buttons.deleteSnippet2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
+					buttons.editSnippet2.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, true); evt.preventDefault(); }, false);
+				}
+				
 				app.setSection('snippet');
 			}
 		})
@@ -2553,9 +2698,10 @@ var containers = {
 				}
 			} else if ( options.type === 'select' ) {
 				if ( options.isEdit == true ) {
+					var isMultiple = options.isMultiple==true?'multiple':'';
 					field += "<div class='mdl-selectfield mdl-js-selectfield mdl-textfield--floating-label'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"'>";
+					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"' "+isMultiple+">";
 					for (var n=0; n<options.options.length; n++) {
 						var selected = value==options.options[n].name?'selected':'';
 						field += "	<option "+selected+" value='"+options.options[n].name+"'>"+options.options[n].value+"</option>";
