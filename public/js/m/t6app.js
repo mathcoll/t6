@@ -2107,29 +2107,32 @@ var containers = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var snippet = response.data[i];
 				var node = "";
+				
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-list__item\">";
-				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<h2 class=\"mdl-card__title-text\">";
-				node += "					<i class=\"material-icons\">"+app.icons.snippets+"</i>";
-				node += "					"+snippet.attributes.name+"</h2>";
-				node += "			</span>";
-				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
-				node += "					<i class='material-icons'>expand_more</i>";
-				node += "				</button>";
-				node += "			</span>";
-				node += "		</div>";
-				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-				if ( snippet.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), {type: 'text'});
-				}
-				if ( snippet.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), {type: 'text'});
-				}
-				if ( snippet.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text',});
+				if ( !isEdit ) {
+					node += "		<div class=\"mdl-list__item\">";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<h2 class=\"mdl-card__title-text\">";
+					node += "					<i class=\"material-icons\">"+app.icons.snippets+"</i>";
+					node += "					"+snippet.attributes.name+"</h2>";
+					node += "			</span>";
+					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+					node += "					<i class='material-icons'>expand_more</i>";
+					node += "				</button>";
+					node += "			</span>";
+					node += "		</div>";
+					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+					if ( snippet.attributes.meta.created ) {
+						node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), {type: 'text'});
+					}
+					if ( snippet.attributes.meta.updated ) {
+						node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), {type: 'text'});
+					}
+					if ( snippet.attributes.meta.revision ) {
+						node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text',});
+					}
 				}
 				node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: isEdit, pattern: '.{4,}', error:'Should be longer than 4 chars.'});
 				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: isEdit, id: 'Icon', options: app.types });
@@ -2143,30 +2146,32 @@ var containers = {
 				
 				app.getSnippet(app.icons.snippets, snippet.id, (containers.snippet).querySelector('.page-content'));
 
-				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-list__item\">";
-				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<h2 class=\"mdl-card__title-text\">";
-				node += "					<i class=\"material-icons\">"+app.icons.flows+"</i>";
-				node += "					Flows";
-				node += "				</h2>";
-				node += "			</span>";
-				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='snippetflows-"+id+"'>";
-				node += "					<i class='material-icons'>expand_more</i>";
-				node += "				</button>";
-				node += "			</span>";
-				node += "		</div>";
-				node += "		<div class='mdl-list mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
-				for ( i=0; i<snippet.attributes.flows.length; i++ ) {
-					//node += "		<a href=\"#\" onclick=\";\" class=\"mdl-list__item mdl-cell--12-col\">";
-					node += app.getField(null, snippet.attributes.flows[i], null, false, {type: 'text', action: function() {app.displayFlow(snippet.attributes.flows[i])}, isEdit: false });
-					//node += "		</a>";
+				if ( !isEdit ) {
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-list__item\">";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<h2 class=\"mdl-card__title-text\">";
+					node += "					<i class=\"material-icons\">"+app.icons.flows+"</i>";
+					node += "					Flows";
+					node += "				</h2>";
+					node += "			</span>";
+					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='snippetflows-"+id+"'>";
+					node += "					<i class='material-icons'>expand_more</i>";
+					node += "				</button>";
+					node += "			</span>";
+					node += "		</div>";
+					node += "		<div class='mdl-list mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
+					for ( i=0; i<snippet.attributes.flows.length; i++ ) {
+						//node += "		<a href=\"#\" onclick=\";\" class=\"mdl-list__item mdl-cell--12-col\">";
+						node += app.getField(null, snippet.attributes.flows[i], null, false, {type: 'text', action: function() {app.displayFlow(snippet.attributes.flows[i])}, isEdit: false });
+						//node += "		</a>";
+					}
+					node += "		</div>";
+					node += "	</div>";
+					node +=	"</section>";
 				}
-				node += "		</div>";
-				node += "	</div>";
-				node +=	"</section>";
 				
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+id+"'>";
