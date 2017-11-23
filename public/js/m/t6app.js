@@ -621,6 +621,71 @@ var containers = {
 		evt.preventDefault();
 	} //onAddSnippet
 	
+	app.onSaveDashboard = function(evt) {
+		var dashboard_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
+		if ( !dashboard_id ) {
+			toast('No Dashboard id found!', {timeout:3000, type: 'error'});
+		} else {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			var body = {
+				name: myForm.querySelector("input[name='Name']").value,
+				description: myForm.querySelector("textarea[name='Description']").value,
+			};
+	
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+dashboard_id;
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				var dashboardContainer = document.querySelector("section#dashboards div[data-id='"+dashboard_id+"']");
+				app.setSection('dashboards');
+				dashboardContainer.querySelector("h2").innerHTML = body.name;
+				toast('Dashboard has been saved.', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				toast('Dashboard has not been saved.', {timeout:3000, type: 'error'});
+			});
+			evt.preventDefault();
+		}
+	} //onSaveDashboard
+	
+	app.onAddDashboard = function(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var body = {
+			name: myForm.querySelector("input[name='Name']").value,
+			description: myForm.querySelector("textarea[name='Description']").value,
+		};
+		if ( app.debug === true ) {
+			console.log(JSON.stringify(body));
+		}
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+'/'+app.api_version+'/dashboards/';
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			app.setSection('dashboards');
+			toast('Dashboard has been added.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			toast('Dashboard has not been added.', {timeout:3000, type: 'error'});
+		});
+		evt.preventDefault();
+	} //onAddDashboard
+	
 	app.refreshButtonsSelectors = function() {
 		if ( componentHandler ) componentHandler.upgradeDom();
 		buttons = {
@@ -664,6 +729,12 @@ var containers = {
 			deleteDashboard: document.querySelectorAll('#dashboards .delete-button'),
 			editDashboard: document.querySelectorAll('#dashboards .edit-button'),
 			createDashboard: document.querySelector('#dashboards button#createDashboard'),
+			addDashboard: document.querySelector('#dashboard_add section.fixedActionButtons button.add-button'),
+			addDashboardBack: document.querySelector('#dashboard_add section.fixedActionButtons button.back-button'),
+			backDashboard: document.querySelector('#dashboard section.fixedActionButtons button.back-button'),
+			saveDashboard: document.querySelector('#dashboard section.fixedActionButtons button.save-button'),
+			editDashboard2: document.querySelector('#dashboard section.fixedActionButtons button.edit-button'),
+			listDashboard: document.querySelector('#dashboard section.fixedActionButtons button.list-button'),
 			
 			deleteSnippet: document.querySelectorAll('#snippets .delete-button'),
 			editSnippet: document.querySelectorAll('#snippets .edit-button'),
@@ -1614,10 +1685,21 @@ var containers = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: true});
-		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: true});
+		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: true, id: 'Name'});
+		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: true, id: 'Description'});
 		node += "	</div>";
 		node += "</section>";
+		
+		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
+		node += "	<div class='md-subheader-inner'>";
+		node += "		<div class='mdl-subheader-content'>";
+		node += "			<span class='ng-scope'>Available Snippets</span>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "	<ul class='mdl-grid'>";
+		// dropdown from the Api getSnippets
+		node += "	</ul>";
+		node += "</div>";
 		
 		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
 		node += "	<div class='mdl-cell--6-col pull-left'>";
@@ -1634,77 +1716,15 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
-		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-		node += "	<div class='md-subheader-inner'>";
-		node += "		<div class='mdl-subheader-content'>";
-		node += "			<span class='ng-scope'>Available Snippets</span>";
-		node += "		</div>";
-		node += "	</div>";
-		node += "	<ul class='mdl-grid'>";
-		
-		// dropdown from the Api getSnippets
-		
-		node += "	</ul>";
-		
-		node += "</div>";
-		
-		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-		node += "	<div class='md-subheader-inner'>";
-		node += "		<div class='mdl-subheader-content'>";
-		node += "			<span class='ng-scope'>Grid Parameters</span>";
-		node += "		</div>";
-		node += "	</div>";
-		node += "</div>";
-		node += "<section id='dashboard_grids' class='mdl-layout__content mdl-cell mdl-cell--12-col mdl-tabs mdl-js-tabs'>";
-		node += "	<div class='mdl-tabs__tab-bar mdl-cell mdl-cell--12-col'>";
-		node += "		<a href='#panel-1c' class='mdl-cell mdl-cell--6-col mdl-tabs__tab is-active'>1 column</a>";
-		node += "		<a href='#panel-2cl' class='mdl-cell mdl-cell--6-col mdl-tabs__tab'>2 cols Left</a>";
-		node += "	</div>"
-		node += "	<div class='mdl-tabs__tab-bar mdl-cell mdl-cell--12-col'>";
-		node += "		<a href='#panel-2cc' class='mdl-cell mdl-cell--6-col mdl-tabs__tab'>2 cols Centered</a>";
-		node += "		<a href='#panel-2cr' class='mdl-cell mdl-cell--6-col mdl-tabs__tab'>2 cols Right</a>";
-		node += "	</div>";
-		
-		node += "	<div class='mdl-grid mdl-tabs__panel is-active' id='panel-1c'>";
-		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--12-col mdl-shadow--2dp'>";
-		node += "			A";
-		node += "		</span>";
-		node += "	</div>";
-		
-		node += "	<div class='mdl-grid mdl-tabs__panel' id='panel-2cl'>";
-		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--4-col mdl-shadow--2dp'>";
-		node += "			A";
-		node += "		</span>";
-		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--8-col mdl-shadow--2dp'>";
-		node += "			B";
-		node += "		</span>";
-		node += "	</div>";
-		
-		node += "	<div class='mdl-grid mdl-tabs__panel' id='panel-2cc'>";
-		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--6-col mdl-shadow--2dp'>";
-		node += "			A";
-		node += "		</span>";
-		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--6-col mdl-shadow--2dp'>";
-		node += "			B";
-		node += "		</span>";
-		node += "	</div>";
-
-		node += "	<div class='mdl-grid mdl-tabs__panel' id='panel-2cr'>";
-		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--8-col mdl-shadow--2dp'>";
-		node += "			A";
-		node += "		</span>";
-		node += "		<span class='mdl-card mdl-grid mdl-cell mdl-cell--4-col mdl-shadow--2dp'>";
-		node += "			B";
-		node += "		</span>";
-		node += "	</div>";
-		
-		node += "	<div>&nbsp;</div>";
-		
 		node += "</section>";
 
 		(containers.dashboard_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
+		
 		app.refreshButtonsSelectors();
+		buttons.addDashboardBack.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
+		buttons.addDashboard.addEventListener('click', function(evt) { app.onAddDashboard(evt); }, false);
+
 
 		app.setExpandAction();
 		app.setSection('dashboard_add');
@@ -2025,7 +2045,7 @@ var containers = {
 		containers.spinner.setAttribute('hidden', true);
 	}; //displayFlow
 
-	app.displayDashboard = function(id) {
+	app.displayDashboard = function(id, isEdit) {
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -2044,37 +2064,104 @@ var containers = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var dashboard = response.data[i];
 				var node;
-				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				node += "		<div class=\"mdl-list__item\">";
-				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
-				node += "			</span>";
-				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
-				node += "					<i class='material-icons'>expand_more</i>";
-				node += "				</button>";
-				node += "			</span>";
-				node += "		</div>";
-				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-				if ( dashboard.attributes.description ) {
-					node += app.getField(null, null, app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: false});
+				if ( !isEdit ) {
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-list__item\">";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
+					node += "			</span>";
+					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+					node += "					<i class='material-icons'>expand_more</i>";
+					node += "				</button>";
+					node += "			</span>";
+					node += "		</div>";
+					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+					if ( dashboard.attributes.description ) {
+						var description = app.nl2br(dashboard.attributes.description);
+						node += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+					}
+					if ( dashboard.attributes.meta.created ) {
+						node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
+					}
+					if ( dashboard.attributes.meta.updated ) {
+						node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
+					}
+					if ( dashboard.attributes.meta.revision ) {
+						node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, {type: 'text', isEdit: false});
+					}
+					node += "		</div>";
+					node += "	</div>";
+					node += "</section>";
+
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
+					node += "	<div class='mdl-cell--4-col pull-left'>";
+					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>List</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--4-col'>";
+					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>delete</i>";
+					node += "			<label>Delete</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--4-col pull-right'>";
+					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>edit</i>";
+					node += "			<label>Edit</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "</section>";
+				} else {
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: '.{4,}', error:'Name should be set and more than 4 chars length.'});
+					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: isEdit, id: 'Description'});
+					node += "	</div>";
+					node += "</section>";
+					
+					node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
+					node += "	<div class='md-subheader-inner'>";
+					node += "		<div class='mdl-subheader-content'>";
+					node += "			<span class='ng-scope'>Available Snippets</span>";
+					node += "		</div>";
+					node += "	</div>";
+					node += "	<ul class='mdl-grid'>";
+					// dropdown from the Api getSnippets
+					node += "	</ul>";
+					node += "</div>";
+					
+					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+id+"'>";
+					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>View</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>save</i>";
+					node += "			<label>Save</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "</section>"
 				}
-				if ( dashboard.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
-				}
-				if ( dashboard.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
-				}
-				if ( dashboard.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, {type: 'text', isEdit: false});
-				}
-				node += "		</div>";
-				node += "	</div>";
-				node += "</section>";
 				(containers.dashboard).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
+				
+				app.refreshButtonsSelectors();
+				if ( isEdit ) {
+					buttons.backDashboard.addEventListener('click', function(evt) { app.displayDashboard(dashboard.id, false); }, false);
+					buttons.saveDashboard.addEventListener('click', function(evt) { app.onSaveDashboard(evt); }, false);
+				} else {
+					buttons.listDashboard.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
+					//buttons.deleteDashboard2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
+					buttons.editDashboard2.addEventListener('click', function(evt) { app.displayDashboard(dashboard.id, true); evt.preventDefault(); }, false);
+				}
 
 				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
 					app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
@@ -2193,7 +2280,6 @@ var containers = {
 					node += "	</div>";
 					node += "</section>"
 				} else {
-
 					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
 					node += "	<div class='mdl-cell--4-col pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
