@@ -30,7 +30,7 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.se
 	var dashboard_id = req.params.dashboard_id;
 	var name = req.query.name;
 	dashboards	= dbDashboards.getCollection('dashboards');
-	snippets = dbSnippets.getCollection('snippets');
+	snippets = dbSnippets.getCollection('snippets'); // WTF ??
 	var query;
 	if ( dashboard_id !== undefined ) {
 		query = {
@@ -58,6 +58,108 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.se
 	var json = dashboards.find(query);
 	json = json.length>0?json:[];
 	res.status(200).send(new DashboardSerializer(json).serialize());
+});
+
+/**
+ * @api {post} /dashboards Create New Dashboard
+ * @apiName Create New Dashboard
+ * @apiGroup 3. Dashboard
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {String} [name=unamed] Dashboard Name
+ * @apiParam {String} [description] Dashboard Description
+ * @apiParam {String[]} [snippets] List of Snippets Ids
+ * 
+ * @apiUse 201
+ * @apiUse 400
+ * @apiUse 429
+ */
+router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	dashboards	= dbDashboards.getCollection('dashboards');
+	/* Check for quota limitation */
+	var queryQ = { 'user_id' : req.user.id };
+	var i = (dashboards.find(queryQ)).length;
+	if( i >= (quota[req.user.role]).dashboards ) {
+		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
+	} else {
+		if ( req.user.id !== undefined ) {
+			var dashboard_id = uuid.v4();
+			var new_dashboard = {
+				id:			dashboard_id,
+				user_id:	req.user.id,
+				name: 		req.body.name!==undefined?req.body.name:'unamed',
+				description:req.body.description!==undefined?req.body.description:'',
+				snippets:	req.body.snippets!==undefined?req.body.snippets:new Array(),
+			};
+			events.add('t6Api', 'dashboard add', new_dashboard.id);
+			dashboards.insert(new_dashboard);
+			//console.log(dashboards);
+			
+			res.header('Location', '/v'+version+'/dashboards/'+new_dashboard.id);
+			res.status(201).send({ 'code': 201, message: 'Created', flow: new DashboardSerializer(new_dashboard).serialize() });
+		}
+	}
+});
+
+/**
+ * @api {put} /dashboards/:dashboard_id Edit a Dashboard
+ * @apiName Edit a Dashboard
+ * @apiGroup 3. Dashboard
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} flow_id Dashboard Id
+ * @apiParam {String} [name=unamed] Dashboard Name
+ * @apiParam {String} [description] Dashboard Description
+ * @apiParam {String[]} [snippets] List of Snippets Ids
+ * 
+ * @apiUse 200
+ * @apiUse 400
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.put('/:dashboard_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var dashboard_id = req.params.dashboard_id;
+	if ( dashboard_id ) {
+		dashboards	= dbDashboards.getCollection('dashboards');
+		var query = {
+				'$and': [
+						{ 'id': dashboard_id },
+						{ 'user_id': req.user.id },
+					]
+				}
+		var dashboard = dashboards.findOne( query );
+		if ( dashboard ) {
+			var result;
+			dashboards.findAndUpdate(
+				function(i){return i.id==dashboard_id},
+				function(item){
+					item.name		= req.body.name!==undefined?req.body.name:item.name;
+					item.description= req.body.description!==undefined?req.body.description:item.description;
+					item.snippets	= req.body.snippets!==undefined?req.body.snippets:item.snippets;
+					result = item;
+				}
+			);
+			//console.log(dashboards);
+			if ( result !== undefined ) {
+				dbDashboards.save();
+				
+				res.header('Location', '/v'+version+'/dashboards/'+dashboard_id);
+				res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new DashboardSerializer(result).serialize() });
+			} else {
+				res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+			}
+		} else {
+			res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());
+		}
+	} else {
+		res.status(404).send(new ErrorSerializer({'id': 40.5, 'code': 404, 'message': 'Not Found'}).serialize());
+	}
 });
 
 /**
