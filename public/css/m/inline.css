@@ -521,6 +521,7 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	z-index: 2;
 	font-variant: small-caps;
 }
+/*
 @media (min-width: 1px) and (max-width: 479px) {
 	.mdl-cell {
 	    width: 100% !important;
@@ -546,6 +547,7 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	    width: 12.5% !important;
 	}
 }
+*/
 .sticky {
 	position: -webkit-sticky;
 	position: -moz-sticky;
