@@ -88,6 +88,14 @@ var app = {
 		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
 		rule: {id:'', attributes: {}},
 	},
+	patterns: {
+		name: '.{4,}',
+		ipv4: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}',
+		ipv6: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$',
+		longitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
+		latitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
+		position: '.{4,255}',
+	}
 };
 
 var buttons = {}; // see function app.refreshButtonsSelectors()
@@ -1173,10 +1181,11 @@ var containers = {
 					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select - listOfIconsssssssssssssssssssssssssssssssssssssssssss'});
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text'});
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
+
 				}
 				if ( object.attributes.ipv6 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text'});
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -1327,17 +1336,17 @@ var containers = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( isEdit==true ) {
 					var description = object.attributes.description;
-					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: isEdit, pattern: '.{4,}', error:'Name should be set and more than 4 chars length.'});
+					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
 					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', isEdit: isEdit});
 				}
 				if ( object.attributes.type || isEdit==true ) {
 					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', isEdit: isEdit, id: 'Type', options: app.types });
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit, pattern: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}', error:'IPv4 should be valid.'});
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
 				}
 				if ( object.attributes.ipv6 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit, pattern: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$', error:'IPv6 should be valid.'});
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
 					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: isEdit});
@@ -1365,13 +1374,13 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					if ( object.attributes.longitude ) {
-						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: isEdit, pattern: '^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Longitude should be valid.'});
+						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: isEdit, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
 					}
 					if ( object.attributes.latitude ) {
-						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: isEdit, pattern: '^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Latitude should be valid.'});
+						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: isEdit, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
 					}
 					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: isEdit, pattern: '.{4,255}', error:'Should not be longer than 255 chars.'});
+						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: isEdit, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
 					}
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
@@ -1504,11 +1513,11 @@ var containers = {
 		node += app.getSubtitle('Description');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: true, pattern: '.{4,}', error:'Name should be set and more than 4 chars length.'});
+		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
 		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), {type: 'textarea', isEdit: true});
 		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
-		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: true, pattern: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}', error:'IPv4 should be valid.'});
-		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: true, pattern: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$', error:'IPv6 should be valid.'});
+		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: true, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
+		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: true, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 		node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
@@ -1523,9 +1532,9 @@ var containers = {
 		node += app.getSubtitle('Localization');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: true, pattern: '^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Longitude should be valid.'});
-		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: true, pattern: '^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', error:'Latitude should be valid.'});
-		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: true, pattern: '.{4,255}', error:'Should not be longer than 255 chars.'});
+		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: true, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
+		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: true, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
+		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: true, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
 		node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
 		node += "	</div>";
 		node += "</section>";
@@ -1738,7 +1747,7 @@ var containers = {
 		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
 		node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true, id: 'Name', pattern: '.{4,}', error:'Should be longer than 4 chars.'});
+		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true, id: 'Name', pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
 		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: true, id: 'Icon', options: app.types });
 		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: true, id: 'Color'});
 		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: true });
@@ -2118,7 +2127,7 @@ var containers = {
 				} else {
 					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: '.{4,}', error:'Name should be set and more than 4 chars length.'});
+					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
 					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: isEdit, id: 'Description'});
 					node += "	</div>";
 					node += "</section>";
@@ -2224,7 +2233,7 @@ var containers = {
 						node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text',});
 					}
 				} else {
-					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: '.{4,}', error:'Should be longer than 4 chars.'});
+					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
 				}
 				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: isEdit, id: 'Icon', options: app.types });
 				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: isEdit, id: 'Color'});
