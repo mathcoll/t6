@@ -353,8 +353,8 @@ var containers = {
 			var settings = "";
 			var j = JSON.parse(JSON.stringify(pushSubscription));
 			if ( j && j.keys ) {
-				settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				settings += app.getSubtitle('API Push');
+				settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				settings += app.getField('cloud', 'Endpoint', j.endpoint, {type: 'input', isEdit: true});
 				settings += app.getField('vpn_key', 'Key', j.keys.p256dh, {type: 'input', isEdit: true});
@@ -363,8 +363,8 @@ var containers = {
 				settings += "</section>";
 			}
 
-			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 			settings += app.getSubtitle('Application');
+			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 			settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 			settings += app.getField('add_circle_outline', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
 			settings += app.getField('add_circle_outline', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', isEdit: true});
@@ -409,7 +409,7 @@ var containers = {
 		} else {
 			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 			var body = {
-				type: myForm.querySelector("select[name='Type']").parentNode.querySelector(".mdl-selectfield__box-value").innerHTML,
+				type: myForm.querySelector("select[name='Type']").value,
 				name: myForm.querySelector("input[name='Name']").value,
 				description: myForm.querySelector("textarea[name='Description']").value,
 				position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
@@ -557,7 +557,7 @@ var containers = {
 		if ( !snippet_id ) {
 			toast('No Snippet id found!', {timeout:3000, type: 'error'});
 		} else {
-			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 			var body = {
 				name: myForm.querySelector("input[name='Name']").value,
 				type: myForm.querySelector("select[name='Type']").value,
@@ -1718,10 +1718,10 @@ var containers = {
 		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
 		node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true, pattern: '.{4,}', error:'Should be longer than 4 chars.'});
+		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true, id: 'Name', pattern: '.{4,}', error:'Should be longer than 4 chars.'});
 		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: true, id: 'Icon', options: app.types });
-		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: true});
-		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: true });
+		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: true, id: 'Color'});
+		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: true });
 		node += "	</div>";
 		node += "</section>";
 		
@@ -1730,7 +1730,7 @@ var containers = {
 		node += "<section class='mdl-grid mdl-cell--12-col'>";
 		node += "	<div class='mdl-cell--12-col mdl-grid mdl-card mdl-shadow--2dp'>";
 		node += "		<div class='mdl-cell mdl-cell--10-col'>";
-		node += app.getField(app.icons.flows, 'Flows', snippet.attributes.icon, {type: 'select', id: 'icon', options: [{name: 'uuid', value:'Flow Name'}, {name: 'uuid', value:'Flow Name'}, {name: 'uuid', value:'Flow Name'}], isMultiple: true, isEdit: true });
+		node += app.getField(app.icons.flows, 'Flows', snippet.attributes.icon, {type: 'select', id: 'Flows', options: [{name: 'uuid', value:'? Flow Name'}, {name: 'uuid', value:'? Flow Name'}, {name: 'uuid', value:'? Flow Name'}], isMultiple: true, isEdit: true });
 		node += "		</div>";
 		node += "		<div class='mdl-cell mdl-cell--2-col'>";
 		node += "			<button class='mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
@@ -1885,7 +1885,10 @@ var containers = {
 						node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', isEdit: isEdit});
 					}
 					if ( flow.attributes.unit ) {
-						node += app.getField('', 'unit', flow.attributes.unit, {type: 'text', isEdit: isEdit});
+						node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', isEdit: isEdit, id: 'Unit', options: app.units });
+					}
+					if ( flow.attributes.data_type ) {
+						node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', isEdit: isEdit, id: 'DataType', options: app.datatypes });
 					}
 					if ( flow.attributes.permission ) {
 						node += app.getField('visibility', 'Permission', flow.attributes.permission, {type: 'text', isEdit: isEdit});
@@ -2133,11 +2136,12 @@ var containers = {
 					if ( snippet.attributes.meta.revision ) {
 						node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text',});
 					}
+				} else {
+					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: '.{4,}', error:'Should be longer than 4 chars.'});
 				}
-				node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: isEdit, pattern: '.{4,}', error:'Should be longer than 4 chars.'});
 				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: isEdit, id: 'Icon', options: app.types });
-				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: isEdit});
-				node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
+				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: isEdit, id: 'Color'});
+				node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
 				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
 				
 				node += "		</div>";
@@ -2715,6 +2719,7 @@ var containers = {
 					if (label) field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
 					field += "</div>";
 				} else {
+					value = (options.options.filter(function(cur) {return cur.name === value}))[0].value;
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
