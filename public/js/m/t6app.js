@@ -82,7 +82,7 @@ var app = {
 	units: [],
 	datatypes: [],
 	defaultResources: {
-		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: 0, latitude: 0, position: ''}},
+		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: '', latitude: '', position: ''}},
 		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
 		dashboard: {id:'', attributes: {name: '', description: ''}},
 		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
