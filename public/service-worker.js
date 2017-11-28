@@ -22,7 +22,7 @@ var filesToCache = [
 
     //CDN/javascripts
     '//cdn.internetcollaboratif.info/js/m/vendor.min.js',
-    '//cdn.internetcollaboratif.info/js/m/t6app.js',
+    //'//cdn.internetcollaboratif.info/js/m/t6app.js',
     //CDN/styles
     '//cdn.internetcollaboratif.info/css/t6App.min.css',
     //CDN/images
