@@ -1335,7 +1335,7 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var i in object.attributes.parameters ) {
-						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text', isEdit: isEdit});
+						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text', id: object.attributes.parameters[i].name, isEdit: isEdit});
 					}
 					node += "	</div>";
 					node += "</section>";
@@ -1491,7 +1491,7 @@ var containers = {
 		node += app.getSubtitle('Description');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
+		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
 		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), {type: 'textarea', id: 'Description', isEdit: true});
 		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
 		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: true, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
@@ -1503,16 +1503,16 @@ var containers = {
 		node += app.getSubtitle('Custom Parameters');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('note', '', '', {type: '2inputs', isEdit: true});
+		node += app.getField('note', '', '', {type: '2inputs', id: '', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 
 		node += app.getSubtitle('Localization');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: true, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
-		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: true, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
-		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: true, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
+		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', id: 'Longitude', isEdit: true, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
+		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', id: 'Latitude', isEdit: true, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
+		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', id: 'Position', isEdit: true, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
 		node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
 		node += "	</div>";
 		node += "</section>";
@@ -1637,10 +1637,10 @@ var containers = {
 		
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', isEdit: true});
-		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', isEdit: true});
-		node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', isEdit: true, id: 'Unit', options: app.units });
-		node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', isEdit: true, id: 'DataType', options: app.datatypes });
+		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true});
+		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
+		node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, id: 'Unit', options: app.units });
+		node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', id: 'DataType', isEdit: true, id: 'DataType', options: app.datatypes });
 		node += "	</div>";
 		node += "</section>";
 		
@@ -1676,8 +1676,8 @@ var containers = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: true, id: 'Name'});
-		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: true, id: 'Description'});
+		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: true});
+		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -1731,9 +1731,9 @@ var containers = {
 		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
 		node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: true, id: 'Name', pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
-		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: true, id: 'Icon', options: app.types });
-		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: true, id: 'Color'});
+		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
+		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: true, options: app.types });
+		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: true});
 		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: true });
 		node += "	</div>";
 		node += "</section>";
@@ -1842,9 +1842,9 @@ var containers = {
 					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true});
-					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTT Topic', isEdit: true});
-					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', isEdit: true, id: 'Unit', options: app.units });
-					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', isEdit: true, id: 'DataType', options: app.datatypes });
+					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
+					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, options: app.units });
+					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: true, options: app.datatypes });
 					node += "	</div>";
 					node += "</section>";
 					
@@ -1881,7 +1881,7 @@ var containers = {
 					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
 					node += app.getField(app.icons.flows, 'Id', flow.id, {type: 'text'});
 					if ( flow.attributes.description ) {
-						node += app.getField(null, null, app.nl2br(flow.attributes.description), {type: 'textarea', isEdit: isEdit});
+						node += app.getField(null, null, app.nl2br(flow.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
 					}
 					if ( flow.attributes.meta.created ) {
 						node += app.getField(app.icons.date, 'Created', moment(flow.attributes.meta.created).format(app.date_format), {type: 'text'});
@@ -1893,22 +1893,22 @@ var containers = {
 						node += app.getField(app.icons.update, 'Revision', flow.attributes.meta.revision, {type: 'text'});
 					}
 					if ( flow.attributes.type ) {
-						node += app.getField('extension', 'Type', flow.attributes.type, {type: 'text', isEdit: isEdit});
+						node += app.getField('extension', 'Type', flow.attributes.type, {type: 'text', id: 'Type', isEdit: isEdit});
 					}
 					if ( flow.attributes.mqtt_topic ) {
-						node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', isEdit: isEdit});
+						node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: isEdit});
 					}
 					if ( flow.attributes.ttl ) {
-						node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', isEdit: isEdit});
+						node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', id: 'TTL', isEdit: isEdit});
 					}
 					if ( flow.attributes.unit ) {
-						node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', isEdit: isEdit, id: 'Unit', options: app.units });
+						node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: isEdit, id: 'Unit', options: app.units });
 					}
 					if ( flow.attributes.data_type ) {
-						node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', isEdit: isEdit, id: 'DataType', options: app.datatypes });
+						node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: isEdit, id: 'DataType', options: app.datatypes });
 					}
 					if ( flow.attributes.permission ) {
-						node += app.getField('visibility', 'Permission', flow.attributes.permission, {type: 'text', isEdit: isEdit});
+						node += app.getField('visibility', 'Permission', flow.attributes.permission, {type: 'text', id: 'Permission', isEdit: isEdit});
 					}
 					node += "	</div>";
 					node += "</div>";
@@ -2121,8 +2121,8 @@ var containers = {
 				} else {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
-					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: isEdit, id: 'Description'});
+					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
+					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
 					
@@ -2228,13 +2228,13 @@ var containers = {
 						node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), {type: 'text'});
 					}
 					if ( snippet.attributes.meta.revision ) {
-						node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text',});
+						node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text'});
 					}
 				} else {
-					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
+					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
 				}
-				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', isEdit: isEdit, id: 'Icon', options: app.types });
-				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', isEdit: isEdit, id: 'Color'});
+				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
+				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
 				node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
 				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
 				
@@ -2398,19 +2398,7 @@ var containers = {
 				var title = 'My Objects';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}; // ,
-																																																															// action:
-																																																															// {id:
-																																																															// 'login',
-																																																															// label:
-																																																															// 'Sign-In'},
-																																																															// secondaryaction:
-																																																															// {id:
-																																																															// 'signup',
-																																																															// label:
-																																																															// 'Create
-																																																															// an
-																																																															// account'}
-				
+			
 			} else if (type == 'flows') {
 				var icon = app.icons.flows;
 				var container = (containers.flows).querySelector('.page-content');
@@ -2422,18 +2410,6 @@ var containers = {
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; // ,
 																																																																			// action:
-																																																																			// {id:
-																																																																			// 'login',
-																																																																			// label:
-																																																																			// 'Sign-In'},
-																																																																			// secondaryaction:
-																																																																			// {id:
-																																																																			// 'signup',
-																																																																			// label:
-																																																																			// 'Create
-																																																																			// an
-																																																																			// account'}
-
 			} else if (type == 'dashboards') {
 				var icon = app.icons.dashboards;
 				var container = (containers.dashboards).querySelector('.page-content');
@@ -2441,18 +2417,6 @@ var containers = {
 				var title = 'My Dashboards';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; // ,
-																																																// action:
-																																																// {id:
-																																																// 'login',
-																																																// label:
-																																																// 'Sign-In'},
-																																																// secondaryaction:
-																																																// {id:
-																																																// 'signup',
-																																																// label:
-																																																// 'Create
-																																																// an
-																																																// account'}
 				
 			} else if (type == 'snippets') {
 				var icon = app.icons.snippets;
@@ -2461,18 +2425,6 @@ var containers = {
 				var title = 'My Snippets';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
-																																																									// action:
-																																																									// {id:
-																																																									// 'login',
-																																																									// label:
-																																																									// 'Sign-In'},
-																																																									// secondaryaction:
-																																																									// {id:
-																																																									// 'signup',
-																																																									// label:
-																																																									// 'Create
-																																																									// an
-																																																									// account'}
 				
 			} else if (type == 'rules') {
 				var icon = app.icons.snippets;
@@ -2481,18 +2433,6 @@ var containers = {
 				var title = 'My Rules';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; // ,
-																																																																// action:
-																																																																// {id:
-																																																																// 'login',
-																																																																// label:
-																																																																// 'Sign-In'},
-																																																																// secondaryaction:
-																																																																// {id:
-																																																																// 'signup',
-																																																																// label:
-																																																																// 'Create
-																																																																// an
-																																																																// account'}
 				
 			} else if (type == 'mqtts') {
 				var icon = app.icons.mqtts;
@@ -2501,18 +2441,6 @@ var containers = {
 				var title = 'My Mqtts';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
-																																																																	// action:
-																																																																	// {id:
-																																																																	// 'login',
-																																																																	// label:
-																																																																	// 'Sign-In'},
-																																																																	// secondaryaction:
-																																																																	// {id:
-																																																																	// 'signup',
-																																																																	// label:
-																																																																	// 'Create
-																																																																	// an
-																																																																	// account'}
 				
 			} else if (type == 'tokens') {
 				var icon = app.icons.tokens;
@@ -2521,18 +2449,6 @@ var containers = {
 				var title = 'My tokens';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: '<i class=\'material-icons\'>add</i>Add my first Token'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
-																																																																	// action:
-																																																																	// {id:
-																																																																	// 'login',
-																																																																	// label:
-																																																																	// 'Sign-In'},
-																																																																	// secondaryaction:
-																																																																	// {id:
-																																																																	// 'signup',
-																																																																	// label:
-																																																																	// 'Create
-																																																																	// an
-																																																																	// account'}
 				
 			} else if (type == 'status') {
 				var icon = app.icons.status;
