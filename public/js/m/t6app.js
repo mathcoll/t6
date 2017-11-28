@@ -126,11 +126,11 @@ var containers = {
 (function (exports) {
 	'use strict';
 	function hex_md5(r){return rstr2hex(rstr_md5(str2rstr_utf8(r)))}function b64_md5(r){return rstr2b64(rstr_md5(str2rstr_utf8(r)))}function any_md5(r,t){return rstr2any(rstr_md5(str2rstr_utf8(r)),t)}function hex_hmac_md5(r,t){return rstr2hex(rstr_hmac_md5(str2rstr_utf8(r),str2rstr_utf8(t)))}function b64_hmac_md5(r,t){return rstr2b64(rstr_hmac_md5(str2rstr_utf8(r),str2rstr_utf8(t)))}function any_hmac_md5(r,t,d){return rstr2any(rstr_hmac_md5(str2rstr_utf8(r),str2rstr_utf8(t)),d)}function md5_vm_test(){return"900150983cd24fb0d6963f7d28e17f72"==hex_md5("abc").toLowerCase()}function rstr_md5(r){return binl2rstr(binl_md5(rstr2binl(r),8*r.length))}function rstr_hmac_md5(r,t){var d=rstr2binl(r);d.length>16&&(d=binl_md5(d,8*r.length));for(var n=Array(16),_=Array(16),m=0;16>m;m++)n[m]=909522486^d[m],_[m]=1549556828^d[m];var f=binl_md5(n.concat(rstr2binl(t)),512+8*t.length);return binl2rstr(binl_md5(_.concat(f),640))}function rstr2hex(r){try{}catch(t){hexcase=0}for(var d,n=hexcase?"0123456789ABCDEF":"0123456789abcdef",_="",m=0;m<r.length;m++)d=r.charCodeAt(m),_+=n.charAt(d>>>4&15)+n.charAt(15&d);return _}function rstr2b64(r){try{}catch(t){b64pad=""}for(var d="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",n="",_=r.length,m=0;_>m;m+=3)for(var f=r.charCodeAt(m)<<16|(_>m+1?r.charCodeAt(m+1)<<8:0)|(_>m+2?r.charCodeAt(m+2):0),h=0;4>h;h++)n+=8*m+6*h>8*r.length?b64pad:d.charAt(f>>>6*(3-h)&63);return n}function rstr2any(r,t){var d,n,_,m,f,h=t.length,e=Array(Math.ceil(r.length/2));for(d=0;d<e.length;d++)e[d]=r.charCodeAt(2*d)<<8|r.charCodeAt(2*d+1);var a=Math.ceil(8*r.length/(Math.log(t.length)/Math.log(2))),i=Array(a);for(n=0;a>n;n++){for(f=Array(),m=0,d=0;d<e.length;d++)m=(m<<16)+e[d],_=Math.floor(m/h),m-=_*h,(f.length>0||_>0)&&(f[f.length]=_);i[n]=m,e=f}var o="";for(d=i.length-1;d>=0;d--)o+=t.charAt(i[d]);return o}function str2rstr_utf8(r){for(var t,d,n="",_=-1;++_<r.length;)t=r.charCodeAt(_),d=_+1<r.length?r.charCodeAt(_+1):0,t>=55296&&56319>=t&&d>=56320&&57343>=d&&(t=65536+((1023&t)<<10)+(1023&d),_++),127>=t?n+=String.fromCharCode(t):2047>=t?n+=String.fromCharCode(192|t>>>6&31,128|63&t):65535>=t?n+=String.fromCharCode(224|t>>>12&15,128|t>>>6&63,128|63&t):2097151>=t&&(n+=String.fromCharCode(240|t>>>18&7,128|t>>>12&63,128|t>>>6&63,128|63&t));return n}function str2rstr_utf16le(r){for(var t="",d=0;d<r.length;d++)t+=String.fromCharCode(255&r.charCodeAt(d),r.charCodeAt(d)>>>8&255);return t}function str2rstr_utf16be(r){for(var t="",d=0;d<r.length;d++)t+=String.fromCharCode(r.charCodeAt(d)>>>8&255,255&r.charCodeAt(d));return t}function rstr2binl(r){for(var t=Array(r.length>>2),d=0;d<t.length;d++)t[d]=0;for(var d=0;d<8*r.length;d+=8)t[d>>5]|=(255&r.charCodeAt(d/8))<<d%32;return t}function binl2rstr(r){for(var t="",d=0;d<32*r.length;d+=8)t+=String.fromCharCode(r[d>>5]>>>d%32&255);return t}function binl_md5(r,t){r[t>>5]|=128<<t%32,r[(t+64>>>9<<4)+14]=t;for(var d=1732584193,n=-271733879,_=-1732584194,m=271733878,f=0;f<r.length;f+=16){var h=d,e=n,a=_,i=m;d=md5_ff(d,n,_,m,r[f+0],7,-680876936),m=md5_ff(m,d,n,_,r[f+1],12,-389564586),_=md5_ff(_,m,d,n,r[f+2],17,606105819),n=md5_ff(n,_,m,d,r[f+3],22,-1044525330),d=md5_ff(d,n,_,m,r[f+4],7,-176418897),m=md5_ff(m,d,n,_,r[f+5],12,1200080426),_=md5_ff(_,m,d,n,r[f+6],17,-1473231341),n=md5_ff(n,_,m,d,r[f+7],22,-45705983),d=md5_ff(d,n,_,m,r[f+8],7,1770035416),m=md5_ff(m,d,n,_,r[f+9],12,-1958414417),_=md5_ff(_,m,d,n,r[f+10],17,-42063),n=md5_ff(n,_,m,d,r[f+11],22,-1990404162),d=md5_ff(d,n,_,m,r[f+12],7,1804603682),m=md5_ff(m,d,n,_,r[f+13],12,-40341101),_=md5_ff(_,m,d,n,r[f+14],17,-1502002290),n=md5_ff(n,_,m,d,r[f+15],22,1236535329),d=md5_gg(d,n,_,m,r[f+1],5,-165796510),m=md5_gg(m,d,n,_,r[f+6],9,-1069501632),_=md5_gg(_,m,d,n,r[f+11],14,643717713),n=md5_gg(n,_,m,d,r[f+0],20,-373897302),d=md5_gg(d,n,_,m,r[f+5],5,-701558691),m=md5_gg(m,d,n,_,r[f+10],9,38016083),_=md5_gg(_,m,d,n,r[f+15],14,-660478335),n=md5_gg(n,_,m,d,r[f+4],20,-405537848),d=md5_gg(d,n,_,m,r[f+9],5,568446438),m=md5_gg(m,d,n,_,r[f+14],9,-1019803690),_=md5_gg(_,m,d,n,r[f+3],14,-187363961),n=md5_gg(n,_,m,d,r[f+8],20,1163531501),d=md5_gg(d,n,_,m,r[f+13],5,-1444681467),m=md5_gg(m,d,n,_,r[f+2],9,-51403784),_=md5_gg(_,m,d,n,r[f+7],14,1735328473),n=md5_gg(n,_,m,d,r[f+12],20,-1926607734),d=md5_hh(d,n,_,m,r[f+5],4,-378558),m=md5_hh(m,d,n,_,r[f+8],11,-2022574463),_=md5_hh(_,m,d,n,r[f+11],16,1839030562),n=md5_hh(n,_,m,d,r[f+14],23,-35309556),d=md5_hh(d,n,_,m,r[f+1],4,-1530992060),m=md5_hh(m,d,n,_,r[f+4],11,1272893353),_=md5_hh(_,m,d,n,r[f+7],16,-155497632),n=md5_hh(n,_,m,d,r[f+10],23,-1094730640),d=md5_hh(d,n,_,m,r[f+13],4,681279174),m=md5_hh(m,d,n,_,r[f+0],11,-358537222),_=md5_hh(_,m,d,n,r[f+3],16,-722521979),n=md5_hh(n,_,m,d,r[f+6],23,76029189),d=md5_hh(d,n,_,m,r[f+9],4,-640364487),m=md5_hh(m,d,n,_,r[f+12],11,-421815835),_=md5_hh(_,m,d,n,r[f+15],16,530742520),n=md5_hh(n,_,m,d,r[f+2],23,-995338651),d=md5_ii(d,n,_,m,r[f+0],6,-198630844),m=md5_ii(m,d,n,_,r[f+7],10,1126891415),_=md5_ii(_,m,d,n,r[f+14],15,-1416354905),n=md5_ii(n,_,m,d,r[f+5],21,-57434055),d=md5_ii(d,n,_,m,r[f+12],6,1700485571),m=md5_ii(m,d,n,_,r[f+3],10,-1894986606),_=md5_ii(_,m,d,n,r[f+10],15,-1051523),n=md5_ii(n,_,m,d,r[f+1],21,-2054922799),d=md5_ii(d,n,_,m,r[f+8],6,1873313359),m=md5_ii(m,d,n,_,r[f+15],10,-30611744),_=md5_ii(_,m,d,n,r[f+6],15,-1560198380),n=md5_ii(n,_,m,d,r[f+13],21,1309151649),d=md5_ii(d,n,_,m,r[f+4],6,-145523070),m=md5_ii(m,d,n,_,r[f+11],10,-1120210379),_=md5_ii(_,m,d,n,r[f+2],15,718787259),n=md5_ii(n,_,m,d,r[f+9],21,-343485551),d=safe_add(d,h),n=safe_add(n,e),_=safe_add(_,a),m=safe_add(m,i)}return Array(d,n,_,m)}function md5_cmn(r,t,d,n,_,m){return safe_add(bit_rol(safe_add(safe_add(t,r),safe_add(n,m)),_),d)}function md5_ff(r,t,d,n,_,m,f){return md5_cmn(t&d|~t&n,r,t,_,m,f)}function md5_gg(r,t,d,n,_,m,f){return md5_cmn(t&n|d&~n,r,t,_,m,f)}function md5_hh(r,t,d,n,_,m,f){return md5_cmn(t^d^n,r,t,_,m,f)}function md5_ii(r,t,d,n,_,m,f){return md5_cmn(d^(t|~n),r,t,_,m,f)}function safe_add(r,t){var d=(65535&r)+(65535&t),n=(r>>16)+(t>>16)+(d>>16);return n<<16|65535&d}function bit_rol(r,t){return r<<t|r>>>32-t}var hexcase=0,b64pad="";
-	exports.hex_md5 = hex_md5; //Make this method available in global
+	exports.hex_md5 = hex_md5; // Make this method available in global
 	
 	var toastContainer = document.querySelector('.toast__container');
 
-	//To show notification
+	// To show notification
 	function toast(msg, options) {
 		if (!msg) return;
 
@@ -150,17 +150,17 @@ var containers = {
 		toastMsg.appendChild(span);
 		toastContainer.appendChild(toastMsg);
 
-		//Show toast for 3secs and hide it
+		// Show toast for 3secs and hide it
 		setTimeout(function () {
 			toastMsg.classList.add('toast__msg--hide');
 		}, options.timeout);
 
-		//Remove the element after hiding
+		// Remove the element after hiding
 		toastMsg.addEventListener('transitionend', function (event) {
 			event.target.parentNode.removeChild(event.target);
 		});
 	}
-	exports.toast = toast; //Make this method available in global
+	exports.toast = toast; // Make this method available in global
 	
 	function getParameterByName(name, url) {
 	    if (!url) url = window.location.href;
@@ -171,7 +171,7 @@ var containers = {
 	    if (!results[2]) return '';
 	    return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
-	exports.getParameterByName = getParameterByName; //Make this method available in global
+	exports.getParameterByName = getParameterByName; // Make this method available in global
 })(typeof window === 'undefined' ? module.exports : window);
 	
 (function() {
@@ -185,7 +185,7 @@ var containers = {
 				buttons.loginButtons[i].addEventListener('click', onLoginButtonClick, false);
 			}
 		}
-	}; //setLoginAction
+	}; // setLoginAction
 	
 	function onLoginButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -194,24 +194,30 @@ var containers = {
 		app.auth = {"username":username, "password":password};
 		app.authenticate();
 		evt.preventDefault();
-	}; //onLoginButtonClick
+	}; // onLoginButtonClick
 	
 	function onStatusButtonClick(evt) {
 		app.getStatus();
 		app.setSection('status');
 		if (evt) evt.preventDefault();
-	}; //onStatusButtonClick
+	}; // onStatusButtonClick
+	
+	function onSettingsButtonClick(evt) {
+		app.getSettings();
+		app.setSection('settings');
+		if (evt) evt.preventDefault();
+	}; // onSettingsButtonClick
 	
 	function onDocsButtonClick(evt) {
 		app.setSection('docs');
 		if (evt) evt.preventDefault();
-	}; //onDocsButtonClick
+	}; // onDocsButtonClick
 	
 	function onTermsButtonClick(evt) {
 		app.getTerms();
 		app.setSection('terms');
 		if (evt) evt.preventDefault();
-	}; //onStatusButtonClick
+	}; // onTermsButtonClick
 	
 	function setSignupAction() {
 		for (var i in buttons.user_create) {
@@ -219,7 +225,7 @@ var containers = {
 				buttons.user_create[i].addEventListener('click', onSignupButtonClick, false);
 			}
 		}
-	}; //setSignupAction
+	}; // setSignupAction
 	
 	function setPasswordResetAction() {
 		for (var i in buttons.user_setpassword) {
@@ -227,7 +233,7 @@ var containers = {
 				buttons.user_setpassword[i].addEventListener('click', onPasswordResetButtonClick, false);
 			}
 		}
-	}; //setPasswordResetAction
+	}; // setPasswordResetAction
 	
 	function setForgotAction() {
 		for (var i in buttons.user_forgot) {
@@ -235,7 +241,7 @@ var containers = {
 				buttons.user_forgot[i].addEventListener('click', onForgotPasswordButtonClick, false);
 			}
 		}
-	}; //setForgotAction
+	}; // setForgotAction
 	
 	function onSignupButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
@@ -266,7 +272,7 @@ var containers = {
 			toast('We can\'t process your signup.', {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
-	}; //onSignupButtonClick
+	}; // onSignupButtonClick
 	
 	function onPasswordResetButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
@@ -296,14 +302,13 @@ var containers = {
 			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
-	}; //onPasswordResetButtonClick
+	}; // onPasswordResetButtonClick
 	
 	function onForgotPasswordButtonClick(evt) {
 		/*
-		 * NOT YET IMPLEMENTED
-		evt.preventDefault();
-		*/
-	}; //onForgotPasswordButtonClick
+		 * NOT YET IMPLEMENTED evt.preventDefault();
+		 */
+	}; // onForgotPasswordButtonClick
 
 	function urlBase64ToUint8Array(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -312,7 +317,7 @@ var containers = {
 		const outputArray = new Uint8Array(rawData.length);
 		for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); };
 		return outputArray;
-	}; //urlBase64ToUint8Array
+	}; // urlBase64ToUint8Array
 	
 	function askPermission() {
 		return new Promise(function(resolve, reject) {
@@ -329,7 +334,7 @@ var containers = {
 				throw new Error('We weren\'t granted permission.');
 			}
 		});
-	}; //askPermission
+	}; // askPermission
 	
 	function registerServiceWorker() {
 		return navigator.serviceWorker.register('/service-worker.js')
@@ -340,7 +345,7 @@ var containers = {
 		.catch(function(err) {
 			console.log('[ServiceWorker] error occured...'+ err);
 		});
-	}; //registerServiceWorker
+	}; // registerServiceWorker
 	
 	function subscribeUserToPush() {
 		return registerServiceWorker()
@@ -356,60 +361,23 @@ var containers = {
 			}
 		})
 		.then(function(pushSubscription) {
-			//console.log('Go to the settings to see the endpoints details for push notifications.');
-			//console.log(pushSubscription);
-			var settings = "";
 			var j = JSON.parse(JSON.stringify(pushSubscription));
 			if ( j && j.keys ) {
-				settings += app.getSubtitle('API Push');
-				settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
-				settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				settings += app.getField('cloud', 'Endpoint', j.endpoint, {type: 'input', isEdit: true});
-				settings += app.getField('vpn_key', 'Key', j.keys.p256dh, {type: 'input', isEdit: true});
-				settings += app.getField('vpn_lock', 'Auth', j.keys.auth, {type: 'input', isEdit: true});
-				settings += "	</div>";
-				settings += "</section>";
-			}
-
-			settings += app.getSubtitle('Application');
-			settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
-			settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-			settings += app.getField('add_circle_outline', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
-			settings += app.getField('add_circle_outline', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', isEdit: true});
-			settings += "	</div>";
-			settings += "</section>";
-
-			(containers.settings).querySelector('.page-content').innerHTML = settings;
-			
-			if ( document.getElementById('settings.fab_position') ) {
-				document.getElementById('settings.fab_position').addEventListener('change', function(e) {
-					app.setSetting('settings.fab_position', e.target.value);
-					var fabs = document.querySelectorAll('.mdl-button--fab_flinger-container');
-					if ( e.target.value == 'fab__top' ) {
-						for (var f in fabs) {
-							if ( (fabs[f]).childElementCount > -1 ) {
-								(fabs[f]).classList.add('fab__top');
-								(fabs[f]).classList.remove('fab__bottom');
-							}
-						}
-					} else {
-						for (var f in fabs) {
-							if ( (fabs[f]).childElementCount > -1 ) {
-								(fabs[f]).classList.remove('fab__top');
-								(fabs[f]).classList.add('fab__bottom');
-							}
-						}
-					}
-				});
+				app.setSetting('settings.pushSubscription.endpoint', j.endpoint);
+				app.setSetting('settings.pushSubscription.keys.p256dh', j.keys.p256dh);
+				app.setSetting('settings.pushSubscription.keys.auth', j.keys.auth);
 			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
-			console.log(error);
+			console.log(subscribeUserToPush, error);
 		});
-	}; //subscribeUserToPush
+	}; // subscribeUserToPush
 
-/* *********************************** Application functions *********************************** */
+/*
+ * *********************************** Application functions
+ * ***********************************
+ */
 	app.onSaveObject = function(evt) {
 		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
 		if ( !object_id ) {
@@ -451,7 +419,7 @@ var containers = {
 			});
 			evt.preventDefault();
 		}
-	} //onSaveObject
+	} // onSaveObject
 	
 	app.onAddObject = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -489,7 +457,7 @@ var containers = {
 			toast('Object has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
-	} //onAddObject
+	} // onAddObject
 
 	app.onSaveFlow = function(evt) {
 		var flow_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
@@ -526,7 +494,7 @@ var containers = {
 			});
 			evt.preventDefault();
 		}
-	} //onSaveFlow
+	} // onSaveFlow
 	
 	app.onAddFlow = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -558,7 +526,7 @@ var containers = {
 			toast('Flow has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
-	} //onAddFlow
+	} // onAddFlow
 
 	app.onSaveSnippet = function(evt) {
 		var snippet_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
@@ -595,7 +563,7 @@ var containers = {
 			});
 			evt.preventDefault();
 		}
-	} //onSaveSnippet
+	} // onSaveSnippet
 	
 	app.onAddSnippet = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -627,7 +595,7 @@ var containers = {
 			toast('Snippet has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
-	} //onAddSnippet
+	} // onAddSnippet
 	
 	app.onSaveDashboard = function(evt) {
 		var dashboard_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
@@ -662,7 +630,7 @@ var containers = {
 			});
 			evt.preventDefault();
 		}
-	} //onSaveDashboard
+	} // onSaveDashboard
 	
 	app.onAddDashboard = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -692,17 +660,18 @@ var containers = {
 			toast('Dashboard has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
-	} //onAddDashboard
+	} // onAddDashboard
 	
 	app.refreshButtonsSelectors = function() {
 		if ( componentHandler ) componentHandler.upgradeDom();
 		buttons = {
-			//signin_button
-			//logout_button
+			// signin_button
+			// logout_button
 			notification: document.querySelector('button#notification'),
 
 			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
 			status: document.querySelectorAll('.statusButton'),
+			settings: document.querySelectorAll('.settingsButton'),
 			docs: document.querySelectorAll('.docsButton'),
 			terms: document.querySelectorAll('.termsButton'),
 				
@@ -767,7 +736,7 @@ var containers = {
 	app.nl2br = function (str, isXhtml) {
 		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
 		return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-	}; //nl2br
+	}; // nl2br
 
 	app.setExpandAction = function() {
 		componentHandler.upgradeDom();
@@ -787,14 +756,14 @@ var containers = {
 				}, false);
 			}
 		}
-	}; //setExpandAction
+	}; // setExpandAction
 	
 	app.setSection = function(section) {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
 		if ( section === 'public-object' ) {
-			var urlParams = new URLSearchParams(window.location.search); //.toString();
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
 			var params = {};
 			if ( Array.from(urlParams).length > -1 ) {
 				for (let p of urlParams) {
@@ -807,7 +776,7 @@ var containers = {
 				}
 			}
 		} else if ( section === 'object' ) {
-			var urlParams = new URLSearchParams(window.location.search); //.toString();
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
 			var params = {};
 			if ( Array.from(urlParams).length > -1 ) {
 				for (let p of urlParams) {
@@ -819,7 +788,7 @@ var containers = {
 				}
 			}
 		} else if ( section === 'edit-object' ) {
-			var urlParams = new URLSearchParams(window.location.search); //.toString();
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
 			var params = {};
 			if ( Array.from(urlParams).length > -1 ) {
 				for (let p of urlParams) {
@@ -860,7 +829,7 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("end of setSection: "+section);
 		}
-	}; //setSection
+	}; // setSection
 
 	app.setItemsClickAction = function(type) {
 		if ( app.debug === true ) {
@@ -903,7 +872,7 @@ var containers = {
 				}, {passive: false,});
 			}
 		}
-	}; //setItemsClickAction
+	}; // setItemsClickAction
 	
 	function fetchStatusHandler(response) {
 		if ( response.headers.get('X-RateLimit-Limit') && response.headers.get('X-RateLimit-Remaining') ) {
@@ -919,7 +888,7 @@ var containers = {
 		} else {
 			throw new Error(response.statusText);
 		}
-	}; //fetchStatusHandler
+	}; // fetchStatusHandler
 	
 	app.showModal = function() {
 		dialog.style.display = 'block';
@@ -1124,7 +1093,7 @@ var containers = {
 		} else if ( type == 'mqtts' ) {
 			// TODO
 		}
-	} //setListActions
+	} // setListActions
 
 	app.displayPublicObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
@@ -1249,7 +1218,7 @@ var containers = {
 					});
 					var popup = new ol.Overlay({
 						element: document.getElementById('popup'),
-						//positioning: 'top',
+						// positioning: 'top',
 						stopEvent: false
 					});
 					var map = new ol.Map({
@@ -1269,7 +1238,7 @@ var containers = {
 				}
 
 				app.setExpandAction();
-				//app.setSection('object');
+				// app.setSection('object');
 			}
 		})
 		.catch(function (error) {
@@ -1278,7 +1247,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	} //displayPublicObject
+	} // displayPublicObject
 
 	app.displayObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
@@ -1336,24 +1305,24 @@ var containers = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( isEdit==true ) {
 					var description = object.attributes.description;
-					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
-					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', isEdit: isEdit});
+					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
+					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', id: 'Description', isEdit: isEdit});
 				}
 				if ( object.attributes.type || isEdit==true ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', isEdit: isEdit, id: 'Type', options: app.types });
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', isEdit: isEdit, id: 'Type', options: app.types });
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
+					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
 				}
 				if ( object.attributes.ipv6 || isEdit==true ) {
-					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
+					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: isEdit});
+					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 				} else {
-					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: isEdit});
+					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -1374,13 +1343,13 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					if ( object.attributes.longitude ) {
-						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', isEdit: isEdit, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
+						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', id: 'Longitude', isEdit: isEdit, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
 					}
 					if ( object.attributes.latitude ) {
-						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', isEdit: isEdit, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
+						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', id: 'Latitude', isEdit: isEdit, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
 					}
 					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', isEdit: isEdit, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
+						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', id: 'Position', isEdit: isEdit, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
 					}
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
@@ -1390,40 +1359,44 @@ var containers = {
 				}
 				
 				if ( isEdit ) {
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
-					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>View</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				} else {
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
-					node += "	<div class='mdl-cell--4-col pull-left'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col'>";
+					node += "	<div class='mdl-cell--1-col-phone'>";
 					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				}
 
@@ -1436,7 +1409,9 @@ var containers = {
 					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
 				} else {
 					buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
-					//buttons.deleteObject2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
+					// buttons.deleteObject2.addEventListener('click',
+					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
+					// }, false);
 					buttons.editObject2.addEventListener('click', function(evt) { app.displayObject(object.id, true); evt.preventDefault(); }, false);
 				}
 				
@@ -1465,7 +1440,7 @@ var containers = {
 					});
 					var popup = new ol.Overlay({
 						element: document.getElementById('popup'),
-						//positioning: 'top',
+						// positioning: 'top',
 						stopEvent: false
 					});
 					var map = new ol.Map({
@@ -1494,7 +1469,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	}; //displayObject
+	}; // displayObject
 	
 	app.getSubtitle = function(subtitle) {
 		var node = "<section class='mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky' role='heading'>";
@@ -1514,11 +1489,11 @@ var containers = {
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
-		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), {type: 'textarea', isEdit: true});
+		node += app.getField(app.icons.description, 'Description', app.nl2br(object.attributes.description), {type: 'textarea', id: 'Description', isEdit: true});
 		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
-		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: true, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
-		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: true, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
-		node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', isEdit: true});
+		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: true, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
+		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: true, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
+		node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -1539,19 +1514,21 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
-		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+object.id+"'>";
-		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
+		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "		</button>";
 		node += "	</div>";
-		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
+		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
 		(containers.object_add).querySelector('.page-content').innerHTML = node;
@@ -1582,7 +1559,7 @@ var containers = {
 		});
 		var popup = new ol.Overlay({
 			element: document.getElementById('popup'),
-			//positioning: 'top',
+			// positioning: 'top',
 			stopEvent: false
 		});
 		var map = new ol.Map({
@@ -1606,7 +1583,7 @@ var containers = {
 
 		app.setExpandAction();
 		app.setSection('object_add');
-	}; //displayAddObject
+	}; // displayAddObject
 	
 	app.getUnits = function() {
 		if ( app.units.length == 0 ) {
@@ -1664,19 +1641,21 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
-		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
-		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "		</button>";
 		node += "	</div>";
-		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
+		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
 		(containers.flow_add).querySelector('.page-content').innerHTML = node;
@@ -1688,7 +1667,7 @@ var containers = {
 
 		app.setExpandAction();
 		app.setSection('flow_add');
-	}; //displayAddFlow
+	}; // displayAddFlow
 	
 	app.displayAddDashboard = function(dashboard) {
 		var node = "";
@@ -1710,19 +1689,21 @@ var containers = {
 		node += "	</ul>";
 		node += "</div>";
 		
-		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
-		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "		</button>";
 		node += "	</div>";
-		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
+		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 		
 		node += "</section>";
@@ -1737,10 +1718,10 @@ var containers = {
 
 		app.setExpandAction();
 		app.setSection('dashboard_add');
-	}; //displayAddDashboard
+	}; // displayAddDashboard
 
 	app.displayAddRule = function(rule) {
-	}; //displayAddRule
+	}; // displayAddRule
 
 	app.displayAddSnippet = function(snippet) {
 		var node = "";
@@ -1770,19 +1751,21 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
-		node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
-		node += "	<div class='mdl-cell--6-col pull-left'>";
+		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "		</button>";
 		node += "	</div>";
-		node += "	<div class='mdl-cell--6-col pull-right'>";
+		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
+		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
 		(containers.snippet_add).querySelector('.page-content').innerHTML = node;
@@ -1794,7 +1777,7 @@ var containers = {
 
 		app.setExpandAction();
 		app.setSection('snippet_add');
-	}; //displayAddSnippet
+	}; // displayAddSnippet
 	
 	app.getCard = function(card) {
 		var output = "";
@@ -1828,7 +1811,7 @@ var containers = {
 		output += "		</div>";
 		output += "</div>";
 		return output;
-	} //getCard
+	} // getCard
 
 	app.displayFlow = function(id, isEdit) {
 		window.scrollTo(0, 0);
@@ -1862,19 +1845,21 @@ var containers = {
 					node += "	</div>";
 					node += "</section>";
 					
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+id+"'>";
-					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>View</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 					
 				} else {
@@ -2003,25 +1988,27 @@ var containers = {
 					node +=	"	</div>";
 					node +=	"</div>";
 
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
-					node += "	<div class='mdl-cell--4-col pull-left'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col'>";
+					node += "	<div class='mdl-cell--1-col-phone'>";
 					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				}
 				
@@ -2037,7 +2024,9 @@ var containers = {
 					buttons.saveFlow.addEventListener('click', function(evt) { app.onSaveFlow(evt); }, false);
 				} else {
 					buttons.listFlow.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
-					//buttons.deleteFlow2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
+					// buttons.deleteFlow2.addEventListener('click',
+					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
+					// }, false);
 					buttons.editFlow2.addEventListener('click', function(evt) { app.displayFlow(flow.id, true); evt.preventDefault(); }, false);
 				}
 				
@@ -2052,7 +2041,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	}; //displayFlow
+	}; // displayFlow
 
 	app.displayDashboard = function(id, isEdit) {
 		window.scrollTo(0, 0);
@@ -2073,59 +2062,61 @@ var containers = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var dashboard = response.data[i];
 				var node;
-				if ( !isEdit ) {
-					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += "		<div class=\"mdl-list__item\">";
-					node += "			<span class='mdl-list__item-primary-content'>";
-					node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
-					node += "			</span>";
-					node += "			<span class='mdl-list__item-secondary-action'>";
-					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
-					node += "					<i class='material-icons'>expand_more</i>";
-					node += "				</button>";
-					node += "			</span>";
-					node += "		</div>";
-					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-					if ( dashboard.attributes.description ) {
-						var description = app.nl2br(dashboard.attributes.description);
-						node += app.getField(null, null, description, {type: 'textarea', isEdit: false});
-					}
-					if ( dashboard.attributes.meta.created ) {
-						node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
-					}
-					if ( dashboard.attributes.meta.updated ) {
-						node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
-					}
-					if ( dashboard.attributes.meta.revision ) {
-						node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, {type: 'text', isEdit: false});
-					}
-					node += "		</div>";
-					node += "	</div>";
-					node += "</section>";
+				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-list__item\">";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
+				node += "			</span>";
+				node += "			<span class='mdl-list__item-secondary-action'>";
+				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+				node += "					<i class='material-icons'>expand_more</i>";
+				node += "				</button>";
+				node += "			</span>";
+				node += "		</div>";
+				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+				if ( dashboard.attributes.description ) {
+					var description = app.nl2br(dashboard.attributes.description);
+					node += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+				}
+				if ( dashboard.attributes.meta.created ) {
+					node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
+				}
+				if ( dashboard.attributes.meta.updated ) {
+					node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
+				}
+				if ( dashboard.attributes.meta.revision ) {
+					node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, {type: 'text', isEdit: false});
+				}
+				node += "		</div>";
+				node += "	</div>";
+				node += "</section>";
 
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
-					node += "	<div class='mdl-cell--4-col pull-left'>";
+				if ( !isEdit ) {
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col'>";
+					node += "	<div class='mdl-cell--1-col-phone'>";
 					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				} else {
-					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', isEdit: isEdit, id: 'Name', pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
 					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', isEdit: isEdit, id: 'Description'});
@@ -2143,19 +2134,21 @@ var containers = {
 					node += "	</ul>";
 					node += "</div>";
 					
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+id+"'>";
-					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>View</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>"
 				}
 				(containers.dashboard).querySelector('.page-content').innerHTML = node;
@@ -2168,7 +2161,9 @@ var containers = {
 					buttons.saveDashboard.addEventListener('click', function(evt) { app.onSaveDashboard(evt); }, false);
 				} else {
 					buttons.listDashboard.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
-					//buttons.deleteDashboard2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
+					// buttons.deleteDashboard2.addEventListener('click',
+					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
+					// }, false);
 					buttons.editDashboard2.addEventListener('click', function(evt) { app.displayDashboard(dashboard.id, true); evt.preventDefault(); }, false);
 				}
 
@@ -2185,7 +2180,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	}; //displayDashboard
+	}; // displayDashboard
 
 	app.displaySnippet = function(id, isEdit) {
 		window.scrollTo(0, 0);
@@ -2264,9 +2259,10 @@ var containers = {
 					node += "		</div>";
 					node += "		<div class='mdl-list mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
 					for ( i=0; i<snippet.attributes.flows.length; i++ ) {
-						//node += "		<a href=\"#\" onclick=\";\" class=\"mdl-list__item mdl-cell--12-col\">";
+						// node += " <a href=\"#\" onclick=\";\"
+						// class=\"mdl-list__item mdl-cell--12-col\">";
 						node += app.getField(null, snippet.attributes.flows[i], null, false, {type: 'text', action: function() {app.displayFlow(snippet.attributes.flows[i])}, isEdit: false });
-						//node += "		</a>";
+						// node += " </a>";
 					}
 					node += "		</div>";
 					node += "	</div>";
@@ -2274,40 +2270,44 @@ var containers = {
 				}
 				
 				if ( isEdit ) {
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+id+"'>";
-					node += "	<div class='mdl-cell--6-col pull-left'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>View</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--6-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>"
 				} else {
-					node += "<section class='mdl-grid mdl-cell--12-col mdl-card__actions mdl-card--border fixedActionButtons' data-id='"+flow.id+"'>";
-					node += "	<div class='mdl-cell--4-col pull-left'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col'>";
+					node += "	<div class='mdl-cell--1-col-phone'>";
 					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--4-col pull-right'>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				}
 
@@ -2321,7 +2321,9 @@ var containers = {
 					buttons.saveSnippet.addEventListener('click', function(evt) { app.onSaveSnippet(evt); }, false);
 				} else {
 					buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
-					//buttons.deleteSnippet2.addEventListener('click', function(evt) { console.log('SHOW MODAL AND CONFIRM!'); }, false);
+					// buttons.deleteSnippet2.addEventListener('click',
+					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
+					// }, false);
 					buttons.editSnippet2.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, true); evt.preventDefault(); }, false);
 				}
 				
@@ -2334,7 +2336,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	}; //displaySnippet
+	}; // displaySnippet
 
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
@@ -2366,7 +2368,7 @@ var containers = {
 		element += "</div>";
 		
 		return element;
-	} //displayListItem
+	} // displayListItem
 
 	app.fetchItems = function(type, filter) {
 		let promise = new Promise((resolve, reject) => {
@@ -2392,7 +2394,19 @@ var containers = {
 				}
 				var title = 'My Objects';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}; // ,
+																																																															// action:
+																																																															// {id:
+																																																															// 'login',
+																																																															// label:
+																																																															// 'Sign-In'},
+																																																															// secondaryaction:
+																																																															// {id:
+																																																															// 'signup',
+																																																															// label:
+																																																															// 'Create
+																																																															// an
+																																																															// account'}
 				
 			} else if (type == 'flows') {
 				var icon = app.icons.flows;
@@ -2403,7 +2417,19 @@ var containers = {
 				}
 				var title = 'My Flows';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; // ,
+																																																																			// action:
+																																																																			// {id:
+																																																																			// 'login',
+																																																																			// label:
+																																																																			// 'Sign-In'},
+																																																																			// secondaryaction:
+																																																																			// {id:
+																																																																			// 'signup',
+																																																																			// label:
+																																																																			// 'Create
+																																																																			// an
+																																																																			// account'}
 
 			} else if (type == 'dashboards') {
 				var icon = app.icons.dashboards;
@@ -2411,7 +2437,19 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 				var title = 'My Dashboards';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; // ,
+																																																// action:
+																																																// {id:
+																																																// 'login',
+																																																// label:
+																																																// 'Sign-In'},
+																																																// secondaryaction:
+																																																// {id:
+																																																// 'signup',
+																																																// label:
+																																																// 'Create
+																																																// an
+																																																// account'}
 				
 			} else if (type == 'snippets') {
 				var icon = app.icons.snippets;
@@ -2419,7 +2457,19 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
 				var title = 'My Snippets';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
+																																																									// action:
+																																																									// {id:
+																																																									// 'login',
+																																																									// label:
+																																																									// 'Sign-In'},
+																																																									// secondaryaction:
+																																																									// {id:
+																																																									// 'signup',
+																																																									// label:
+																																																									// 'Create
+																																																									// an
+																																																									// account'}
 				
 			} else if (type == 'rules') {
 				var icon = app.icons.snippets;
@@ -2427,7 +2477,19 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/rules';
 				var title = 'My Rules';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; // ,
+																																																																// action:
+																																																																// {id:
+																																																																// 'login',
+																																																																// label:
+																																																																// 'Sign-In'},
+																																																																// secondaryaction:
+																																																																// {id:
+																																																																// 'signup',
+																																																																// label:
+																																																																// 'Create
+																																																																// an
+																																																																// account'}
 				
 			} else if (type == 'mqtts') {
 				var icon = app.icons.mqtts;
@@ -2435,7 +2497,19 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
 				var title = 'My Mqtts';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
+																																																																	// action:
+																																																																	// {id:
+																																																																	// 'login',
+																																																																	// label:
+																																																																	// 'Sign-In'},
+																																																																	// secondaryaction:
+																																																																	// {id:
+																																																																	// 'signup',
+																																																																	// label:
+																																																																	// 'Create
+																																																																	// an
+																																																																	// account'}
 				
 			} else if (type == 'tokens') {
 				var icon = app.icons.tokens;
@@ -2443,7 +2517,19 @@ var containers = {
 				var url = app.baseUrl+'/'+app.api_version+'/tokens';
 				var title = 'My tokens';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: '<i class=\'material-icons\'>add</i>Add my first Token'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
+																																																																	// action:
+																																																																	// {id:
+																																																																	// 'login',
+																																																																	// label:
+																																																																	// 'Sign-In'},
+																																																																	// secondaryaction:
+																																																																	// {id:
+																																																																	// 'signup',
+																																																																	// label:
+																																																																	// 'Create
+																																																																	// an
+																																																																	// account'}
 				
 			} else if (type == 'status') {
 				var icon = app.icons.status;
@@ -2495,7 +2581,7 @@ var containers = {
 			
 		containers.spinner.setAttribute('hidden', true);
 		return promise;
-	}; //fetchItems
+	}; // fetchItems
 
 	app.fetchProfile = function() {
 		containers.spinner.removeAttribute('hidden');
@@ -2549,7 +2635,7 @@ var containers = {
 			node += "  		</ul>";
 			node += "	</div>";
 			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
-			node += "		<a href=\"#\" class=\"pull-left\"></a>";
+			// node += " <a href=\"#\" class=\"pull-left\"></a>";
 			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profile_url+"\" target=\"_blank\">Edit</a>";
 			node += "	</div>";
 			node += "</div>";
@@ -2567,7 +2653,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	}; //fetchProfile
+	}; // fetchProfile
 	
 	app.setSetting = function(name, value) {
 		localStorage.setItem(name, value);
@@ -2642,7 +2728,7 @@ var containers = {
 			setLoginAction();
 			setSignupAction();
 		}
-	} //displayLoginForm
+	} // displayLoginForm
 
 	app.fetchIndex = function() {
 		containers.spinner.removeAttribute('hidden');
@@ -2676,7 +2762,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	}; //fetchIndex
+	}; // fetchIndex
 
 	app.showAddFAB = function(type) {
 		var container;
@@ -2791,7 +2877,7 @@ var containers = {
 					var checked = value=='true'?'checked':'';
 					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label' for='switch-"+id+"' data-id='switch-"+id+"'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"' placeholder='"+label+"'>";
+					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"' value='"+value+"' placeholder='"+label+"'>";
 					if (label) field += "	<div class='mdl-switch__label'>"+label+"</div>";
 					field += "</label>";
 				} else {
@@ -2858,7 +2944,8 @@ var containers = {
 			var my_snippet = response.data[0];
 			var width = 6; // TODO: should be a parameter in the flow
 
-			//var snippet = "<section class='mdl-grid mdl-cell--12-col' id='"+my_snippet.id+"'>";
+			// var snippet = "<section class='mdl-grid mdl-cell--12-col'
+			// id='"+my_snippet.id+"'>";
 			var snippet = "";
 			if ( my_snippet.attributes.type == 'valuedisplay' ) {
 				snippet += "	<div class=\"valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
@@ -2903,10 +2990,10 @@ var containers = {
 			} else if ( my_snippet.attributes.type == 'simplerow' ) {
 				width = 12;
 				/*
-				if( !Array.isArray(my_snippet.attributes.flows.isArray) ) { // WTF
-					my_snippet.attributes.flows[0] = my_snippet.attributes.flows;
-				}
-				*/
+				 * if( !Array.isArray(my_snippet.attributes.flows.isArray) ) { //
+				 * WTF my_snippet.attributes.flows[0] =
+				 * my_snippet.attributes.flows; }
+				 */
 				for (var f=0; f<(my_snippet.attributes.flows).length; f++) {
 					var flow_id = my_snippet.attributes.flows[f];
 					snippet += "	<div class=\"simplerow tile card-simplerow material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
@@ -2922,7 +3009,7 @@ var containers = {
 					snippet += "		</span>";
 					snippet += "	</div>";
 					
-					//var flow_id = my_snippet.attributes.flows[f];
+					// var flow_id = my_snippet.attributes.flows[f];
 					var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+flow_id+'?sort=desc&limit=1';
 					fetch(url_snippet, myInit)
 					.then(
@@ -3044,9 +3131,9 @@ var containers = {
 				snippet += "	</div>";
 			}
 
-			//snippet += "</section>";
-			//var c = document.createElement('div');
-			//c.innerHTML = snippet;
+			// snippet += "</section>";
+			// var c = document.createElement('div');
+			// c.innerHTML = snippet;
 			
 			var c= document.createElement("div");
 			c.setAttribute('class','mdl-grid mdl-cell--'+width+'-col');
@@ -3143,7 +3230,7 @@ var containers = {
 				});
 			}
 			//console.log(myContainer);
-			//return snippet;
+			// return snippet;
 		})
 		.catch(function (error) {
 			if ( app.debug === true ) {
@@ -3151,7 +3238,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	} //getSnippet
+	} // getSnippet
 	
 	app.refreshFromNow = function(id, time, fromNow) {
 		if (document.getElementById(id)) {
@@ -3160,7 +3247,7 @@ var containers = {
 				document.getElementById(id).innerHTML += "<small>, " + moment(time).fromNow() + "</small>";
 			}
 		}
-	} //refreshFromNow
+	} // refreshFromNow
 
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item small-padding'>";
@@ -3173,7 +3260,7 @@ var containers = {
 		field += "		</span>";
 		field += "</div>";
 		return field;
-	} //getQrcodeImg
+	} // getQrcodeImg
 
 	app.getQrcode = function(icon, label, id) {
 		var myHeaders = new Headers();
@@ -3200,14 +3287,14 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	} //getQrcode
+	} // getQrcode
 
 	app.getMap = function(icon, id, longitude, latitude, isEditable, isActionable) {
 		var field = "<div class='mdl-list__item'>";
 		field += "	<span class='mdl-list__item-primary-content map' id='"+id+"' style='width:100%; height:400px;'></span>";
 		field += "</div>";
 		return field;
-	} //getMap
+	} // getMap
 	
 	app.authenticate = function() {
 		var myHeaders = new Headers();
@@ -3225,7 +3312,7 @@ var containers = {
 			if ( app.bearer = response.token ) {
 				app.isLogged = true;
 				app.resetSections();
-				//app.getAllUserData();
+				// app.getAllUserData();
 				app.fetchProfile();
 				if ( window.location.hash && window.location.hash.substr(1) !== 'login' ) {
 					app.setSection(window.location.hash.substr(1));
@@ -3250,7 +3337,7 @@ var containers = {
 			}
 		});
 		app.auth = {};
-	} //authenticate
+	} // authenticate
 	
 	function chainError(error) {
 		console.log(error);
@@ -3272,7 +3359,63 @@ var containers = {
 					chainError).catch(chainError),
 				chainError).catch(chainError),
 			chainError).catch(chainError);
-	} //getAllUserData
+	} // getAllUserData
+
+	app.getSettings = function() {
+		var settings = "";
+		
+		settings += app.getSubtitle('API Push');
+		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		settings += app.getField('add_circle_outline', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', isEdit: true});
+		if ( app.getSetting('settings.pushSubscription.p256dh') ) {
+			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', isEdit: true});
+			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', isEdit: true});
+			settings += app.getField('vpn_lock', 'Auth', app.getSetting('settings.pushSubscription.keys.auth'), {type: 'input', isEdit: true});
+		}
+		settings += "	</div>";
+		settings += "</section>";
+		
+		settings += app.getSubtitle('Application');
+		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
+		settings += app.getField('radio_button_checked', 'Text Orientation Left-To-Right', app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
+		settings += "	</div>";
+		settings += "</section>";
+		(containers.settings).querySelector('.page-content').innerHTML = settings;
+		
+		if ( document.getElementById('settings.fab_position') ) {
+			document.getElementById('settings.fab_position').addEventListener('change', function(e) {
+				app.setSetting('settings.fab_position', e.target.value);
+				var fabs = document.querySelectorAll('.mdl-button--fab_flinger-container');
+				if ( e.target.value == 'fab__top' ) {
+					for (var f in fabs) {
+						if ( (fabs[f]).childElementCount > -1 ) {
+							(fabs[f]).classList.add('fab__top');
+							(fabs[f]).classList.remove('fab__bottom');
+						}
+					}
+				} else {
+					for (var f in fabs) {
+						if ( (fabs[f]).childElementCount > -1 ) {
+							(fabs[f]).classList.remove('fab__top');
+							(fabs[f]).classList.add('fab__bottom');
+						}
+					}
+				}
+			});
+		}
+		if ( document.getElementById('switch-settings.isLtr') ) {
+			document.getElementById('switch-settings.isLtr').addEventListener('change', function(e) {
+				if ( document.getElementById('switch-settings.isLtr').checked == true ) {
+					app.setSetting('settings.isLtr', true);
+				} else {
+					app.setSetting('settings.isLtr', false);
+				}
+			});
+		}
+	} // getSettings
 
 	app.getStatus = function() {
 		var myHeaders = new Headers();
@@ -3353,7 +3496,7 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	} //getStatus
+	} // getStatus
 
 	app.getTerms = function() {
 		var myHeaders = new Headers();
@@ -3395,24 +3538,24 @@ var containers = {
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
-	} //getTerms
+	} // getTerms
 	
 	app.toggleElement = function(id) {
 		document.querySelector('#'+id).classList.toggle('hidden');
-	} //toggleElement
+	} // toggleElement
 	
 	app.setHiddenElement = function(id) {
 		document.querySelector('#'+id).classList.add('hidden');
-	} //setHiddenElement
+	} // setHiddenElement
 	
 	app.setVisibleElement = function(id) {
 		document.querySelector('#'+id).classList.remove('hidden');
-	} //setVisibleElement
+	} // setVisibleElement
 
 	app.showNotification = function() {
 		toast('You are offline.', {timeout:3000, type: 'warning'});
-		//app.setHiddenElement("notification");
-	} //showLatestNotification
+		// app.setHiddenElement("notification");
+	} // showLatestNotification
 	
 	app.sessionExpired = function() {
 		app.bearer = '';
@@ -3429,17 +3572,29 @@ var containers = {
 		app.refreshButtonsSelectors();
 		componentHandler.upgradeDom();
 
-		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}); //, action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}
-		//app.displayLoginForm( (containers.objects) );
+		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}); // ,
+																																																																												// action:
+																																																																												// {id:
+																																																																												// 'login',
+																																																																												// label:
+																																																																												// 'Sign-In'},
+																																																																												// secondaryaction:
+																																																																												// {id:
+																																																																												// 'signup',
+																																																																												// label:
+																																																																												// 'Create
+																																																																												// an
+																																																																												// account'}
+		// app.displayLoginForm( (containers.objects) );
 		
 		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		//app.displayLoginForm( (containers.flows) );
+		// app.displayLoginForm( (containers.flows) );
 
 		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		//app.displayLoginForm( (containers.dashboards) );
+		// app.displayLoginForm( (containers.dashboards) );
 
 		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		//app.displayLoginForm( (containers.snippets) );
+		// app.displayLoginForm( (containers.snippets) );
 		
 		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
@@ -3454,7 +3609,7 @@ var containers = {
 		app.refreshButtonsSelectors();
 		setLoginAction();
 		setSignupAction();
-	}//sessionExpired
+	}// sessionExpired
 	
 	app.resetSections = function() {
 		/* reset views to default */
@@ -3470,9 +3625,12 @@ var containers = {
 		(containers.profile).querySelector('.page-content').innerHTML = '';
 		(containers.rules).querySelector('.page-content').innerHTML = '';
 		(containers.mqtts).querySelector('.page-content').innerHTML = '';
-	} //resetSections
+	} // resetSections
 
-	/* *********************************** indexedDB *********************************** */
+	/*
+	 * *********************************** indexedDB
+	 * ***********************************
+	 */
 	var db;
 	var idbkr;
 	var objectStore;
@@ -3499,7 +3657,8 @@ var containers = {
 		var transaction = db.transaction(['jwt'], 'readwrite');
 		var store = transaction.objectStore('jwt');
 		var request = store.add(item);
-		//var request = db.transaction(["jwt"], "readwrite").objectStore("jwt").add(item);
+		// var request = db.transaction(["jwt"],
+		// "readwrite").objectStore("jwt").add(item);
 		request.onsuccess = function(event) {
 			if ( app.debug === true ) {
 				console.log("add(): onsuccess.");
@@ -3511,7 +3670,7 @@ var containers = {
 				console.log(event);
 			}
 		}
-		//return;
+		// return;
 	}
 	
 	app.searchJWT = function() {
@@ -3631,10 +3790,13 @@ var containers = {
 	}
 	
 	app.getScrollPercent = function() {
-	  return ( (document.documentElement.scrollTop || document.body.scrollTop) / ( (document.documentElement.scrollHeight || document.body.scrollHeight) - document.documentElement.clientHeight) * 100 );
+		return ( (document.documentElement.scrollTop || document.body.scrollTop) / ( (document.documentElement.scrollHeight || document.body.scrollHeight) - document.documentElement.clientHeight) * 100 );
 	}
 	
-	/* *********************************** Run the App *********************************** */
+	/*
+	 * *********************************** Run the App ***********************************
+	 */
+	app.isLtr = app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):isLtr;
 	if ( window.location.hash ) {
 		var p = window.location.hash.substr(1);
 		if ( p === 'login' ) {
@@ -3646,6 +3808,8 @@ var containers = {
 			onDocsButtonClick();
 		} else if ( p === 'status' ) {
 			onStatusButtonClick();
+		} else if ( p === 'settings' ) {
+			onSettingsButtonClick();
 		} else {
 			app.setSection(p);
 		}
@@ -3677,16 +3841,14 @@ var containers = {
 	});
 	
 	/*
-	window.addEventListener('hashchange', function() {
-		if( window.history && window.history.pushState ) {
-			history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1));
-			app.setSection(window.location.hash.substr(1));
-			if ( app.debug === true ) {
-				console.log('history+=\"', window.location.hash.substr(1), '\"');
-			}
-		}
-	}, false);
-	*/
+	 * window.addEventListener('hashchange', function() { if( window.history &&
+	 * window.history.pushState ) { history.pushState( { section:
+	 * window.location.hash.substr(1) }, window.location.hash.substr(1),
+	 * '#'+window.location.hash.substr(1));
+	 * app.setSection(window.location.hash.substr(1)); if ( app.debug === true ) {
+	 * console.log('history+=\"', window.location.hash.substr(1), '\"'); } } },
+	 * false);
+	 */
 	
 	document.getElementById('filter-exp').addEventListener('keypress', function(e) {
 		if(e.keyCode === 13) {
@@ -3706,6 +3868,12 @@ var containers = {
 		if ( buttons.status[i].childElementCount > -1 ) {
 			buttons.status[i].removeEventListener('click', onStatusButtonClick, false);
 			buttons.status[i].addEventListener('click', onStatusButtonClick, false);
+		}
+	}
+	for (var i in buttons.settings) {
+		if ( buttons.settings[i].childElementCount > -1 ) {
+			buttons.settings[i].removeEventListener('click', onSettingsButtonClick, false);
+			buttons.settings[i].addEventListener('click', onSettingsButtonClick, false);
 		}
 	}
 	for (var i in buttons.docs) {
@@ -3738,7 +3906,7 @@ var containers = {
 		}
 		return;
 	} else {
-		//registerServiceWorker();
+		// registerServiceWorker();
 		if (!('PushManager' in window)) {
 			if ( app.debug === true ) {
 				console.log('Push isn\'t supported on this browser, disable or hide UI.');
@@ -3791,7 +3959,9 @@ var containers = {
 		};
 	}
 
-	/* *********************************** Menu *********************************** */
+	/*
+	 * *********************************** Menu ***********************************
+	 */
 	var menuIconElement = document.querySelector('.mdl-layout__drawer-button');
 	var menuElement = document.getElementById('drawer');
 	var menuOverlayElement = document.querySelector('.menu__overlay');
@@ -3825,9 +3995,6 @@ var containers = {
 	app.refreshButtonsSelectors();
 	setPasswordResetAction();
 	setForgotAction();
-	settings_button.addEventListener('click', function(evt) {
-		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
-	}, false);
 	logout_button.addEventListener('click', function(evt) {
 		app.auth={};
 		app.clearJWT();
@@ -3907,7 +4074,6 @@ var containers = {
 			});
 		}
 	}
-
 	app.setDrawer();
 	
 	if ( app.tawktoid ) {
@@ -3933,14 +4099,16 @@ var containers = {
 		})(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
 	}
 
-	/* *********************************** Offline *********************************** */
+	/*
+	 * *********************************** Offline ***********************************
+	 */
 	document.addEventListener('DOMContentLoaded', function(event) {
 		if (!navigator.onLine) { updateNetworkStatus(); }
 		window.addEventListener('online', updateNetworkStatus, false);
 		window.addEventListener('offline', updateNetworkStatus, false);
 	});
 
-	//To update network status
+	// To update network status
 	function updateNetworkStatus() {
 		if (navigator.onLine) {
 			toast('You are now online...', {timeout:3000, type: 'done'});
