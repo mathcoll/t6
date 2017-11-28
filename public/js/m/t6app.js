@@ -3286,10 +3286,10 @@ var containers = {
 	app.getSettings = function() {
 		var settings = "";
 		
-		settings += app.getSubtitle('API Push');
+		settings += app.getSubtitle('API Notifications');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		settings += app.getField('add_circle_outline', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
+		settings += app.getField('notifications', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
 		if ( app.getSetting('settings.pushSubscription.keys.p256dh') ) {
 			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true});
 			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', id:'settings.pushSubscription.keys.p256dh', isEdit: true});
@@ -3301,9 +3301,10 @@ var containers = {
 		settings += app.getSubtitle('Application');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		settings += app.getField('bug_report', 'Debug', app.getSetting('settings.debug')!==undefined?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
+		settings += app.getField('room', 'Geolocalization', app.getSetting('settings.geolocalization')!==undefined?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
 		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
-		settings += app.getField('radio_button_checked', 'Align buttons to Right', app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
-		settings += app.getField('radio_button_checked', 'Debug', app.getSetting('settings.debug')!==undefined?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
+		settings += app.getField('format_align_right', 'Align buttons to Right', app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += "	</div>";
 		settings += "</section>";
 		(containers.settings).querySelector('.page-content').innerHTML = settings;
@@ -3327,6 +3328,33 @@ var containers = {
 							(fabs[f]).classList.add('fab__bottom');
 						}
 					}
+				}
+			});
+		}
+		if ( document.getElementById('switch-settings.notifications') ) {
+			document.getElementById('switch-settings.notifications').addEventListener('change', function(e) {
+				if ( document.getElementById('switch-settings.notifications').checked == true ) {
+					app.setSetting('settings.notifications', true);
+					askPermission();
+					subscribeUserToPush();
+					if ( app.debug === true ) {
+						toast('Awsome, Notifications are activated.', {timeout:3000, type: 'done'});
+					}
+				} else {
+					app.setSetting('settings.notifications', false);
+				}
+			});
+		}
+		if ( document.getElementById('switch-settings.geolocalization') ) {
+			document.getElementById('switch-settings.geolocalization').addEventListener('change', function(e) {
+				if ( document.getElementById('switch-settings.geolocalization').checked == true ) {
+					app.setSetting('settings.geolocalization', true);
+					app.getLocation();
+					if ( app.debug === true ) {
+						toast('Awsome, Geolocalization is activated.', {timeout:3000, type: 'done'});
+					}
+				} else {
+					app.setSetting('settings.geolocalization', false);
 				}
 			});
 		}
@@ -3554,8 +3582,7 @@ var containers = {
 	} // resetSections
 
 	/*
-	 * *********************************** indexedDB
-	 * ***********************************
+	 * *********************************** indexedDB ***********************************
 	 */
 	var db;
 	var idbkr;
@@ -3966,7 +3993,6 @@ var containers = {
 			menuElement.style.transform = "translateX(0)";
 		}
 	}, false);
-	
 	document.body.addEventListener('touchstart', function(event) {
 		var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab');
 		for (var f in fabs) {
