@@ -828,7 +828,7 @@ var containers = {
 		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
-		if ( !app.isLogged && ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password') ) {
+		if ( !app.isLogged && ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password' && section !== 'settings' && section !== 'docs' && section !== 'terms') ) {
 			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 		}
 		if ( app.debug === true ) {
@@ -2747,7 +2747,7 @@ var containers = {
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<input type='text' value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
-					if (label) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
+					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
@@ -2761,6 +2761,7 @@ var containers = {
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input' name='"+label+"' id='"+id+"'>"+value+"</textarea>";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
 					if (value ) field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
@@ -2770,6 +2771,7 @@ var containers = {
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'> /!\ radio "+icon+"</i>";
 					if (label) field += "	<label class='mdl-textfield__label'> /!\ radio "+label+"</label>";
+					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
@@ -2782,6 +2784,7 @@ var containers = {
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'> /!\ checkbox "+icon+"</i>";
 					if (label) field += "	<label class='mdl-list__item-sub-title'> /!\ checkbox "+label+"</label>";
+					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
@@ -2797,6 +2800,7 @@ var containers = {
 					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"' value='"+value+"' placeholder='"+label+"'>";
 					if (label) field += "	<div class='mdl-switch__label'>"+label+"</div>";
 					field += "</label>";
+					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
@@ -2815,6 +2819,7 @@ var containers = {
 					}
 					field += "	</select>";
 					if (label) field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
+					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
 					value = (options.options.filter(function(cur) {return cur.name === value}))[0].value;
@@ -3284,11 +3289,11 @@ var containers = {
 		settings += app.getSubtitle('API Push');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		settings += app.getField('add_circle_outline', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', isEdit: true});
-		if ( app.getSetting('settings.pushSubscription.p256dh') ) {
-			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', isEdit: true});
-			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', isEdit: true});
-			settings += app.getField('vpn_lock', 'Auth', app.getSetting('settings.pushSubscription.keys.auth'), {type: 'input', isEdit: true});
+		settings += app.getField('add_circle_outline', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
+		if ( app.getSetting('settings.pushSubscription.keys.p256dh') ) {
+			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true});
+			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', id:'settings.pushSubscription.keys.p256dh', isEdit: true});
+			settings += app.getField('vpn_lock', 'Auth', app.getSetting('settings.pushSubscription.keys.auth'), {type: 'input', id:'settings.pushSubscription.keys.auth', isEdit: true});
 		}
 		settings += "	</div>";
 		settings += "</section>";
@@ -3298,9 +3303,11 @@ var containers = {
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
 		settings += app.getField('radio_button_checked', 'Align buttons to Right', app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
+		settings += app.getField('radio_button_checked', 'Debug', app.getSetting('settings.debug')!==undefined?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += "	</div>";
 		settings += "</section>";
 		(containers.settings).querySelector('.page-content').innerHTML = settings;
+		componentHandler.upgradeDom();
 		
 		if ( document.getElementById('settings.fab_position') ) {
 			document.getElementById('settings.fab_position').addEventListener('change', function(e) {
@@ -3329,6 +3336,20 @@ var containers = {
 					app.setSetting('settings.isLtr', true);
 				} else {
 					app.setSetting('settings.isLtr', false);
+				}
+			});
+		}
+		if ( document.getElementById('switch-settings.debug') ) {
+			document.getElementById('switch-settings.debug').addEventListener('change', function(e) {
+				if ( document.getElementById('switch-settings.debug').checked == true ) {
+					app.setSetting('settings.debug', true);
+					app.debug = true;
+					if ( app.debug === true ) {
+						toast('Awsome, debug mode is activated.', {timeout:3000, type: 'done'});
+					}
+				} else {
+					app.setSetting('settings.debug', false);
+					app.debug = false;
 				}
 			});
 		}
@@ -3490,18 +3511,6 @@ var containers = {
 		componentHandler.upgradeDom();
 
 		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}); // ,
-																																																																												// action:
-																																																																												// {id:
-																																																																												// 'login',
-																																																																												// label:
-																																																																												// 'Sign-In'},
-																																																																												// secondaryaction:
-																																																																												// {id:
-																																																																												// 'signup',
-																																																																												// label:
-																																																																												// 'Create
-																																																																												// an
-																																																																												// account'}
 		// app.displayLoginForm( (containers.objects) );
 		
 		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
