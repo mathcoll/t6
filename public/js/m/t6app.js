@@ -375,9 +375,12 @@ var containers = {
 	}; // subscribeUserToPush
 
 /*
- * *********************************** Application functions
- * ***********************************
+ * *********************************** Application functions ***********************************
  */
+	app.isLtr = function() {
+		return app.getSetting('settings.isLtr')!==undefined?!!JSON.parse(String( app.getSetting('settings.isLtr') ).toLowerCase()):true;
+	} // isLtr
+	
 	app.onSaveObject = function(evt) {
 		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
 		if ( !object_id ) {
@@ -1357,10 +1360,10 @@ var containers = {
 					node += "	</div>";
 					node += "</section>";
 				}
-				
+
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -1373,11 +1376,11 @@ var containers = {
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				} else {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -1396,7 +1399,7 @@ var containers = {
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				}
 
@@ -1515,7 +1518,7 @@ var containers = {
 		node += "</section>";
 		
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
-		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
@@ -1528,7 +1531,7 @@ var containers = {
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
-		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
 		(containers.object_add).querySelector('.page-content').innerHTML = node;
@@ -1642,7 +1645,7 @@ var containers = {
 		node += "</section>";
 		
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
@@ -1655,7 +1658,7 @@ var containers = {
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
-		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
 		(containers.flow_add).querySelector('.page-content').innerHTML = node;
@@ -1690,7 +1693,7 @@ var containers = {
 		node += "</div>";
 		
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
@@ -1703,7 +1706,7 @@ var containers = {
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
-		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 		
 		node += "</section>";
@@ -1752,7 +1755,7 @@ var containers = {
 		node += "</section>";
 		
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-		if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
@@ -1765,7 +1768,7 @@ var containers = {
 		node += "			<label>Save</label>";
 		node += "		</button>";
 		node += "	</div>";
-		if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
 		(containers.snippet_add).querySelector('.page-content').innerHTML = node;
@@ -1846,7 +1849,7 @@ var containers = {
 					node += "</section>";
 					
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -1859,7 +1862,7 @@ var containers = {
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 					
 				} else {
@@ -1989,7 +1992,7 @@ var containers = {
 					node +=	"</div>";
 
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -2008,7 +2011,7 @@ var containers = {
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				}
 				
@@ -2094,7 +2097,7 @@ var containers = {
 
 				if ( !isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -2113,7 +2116,7 @@ var containers = {
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				} else {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
@@ -2135,7 +2138,7 @@ var containers = {
 					node += "</div>";
 					
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -2148,7 +2151,7 @@ var containers = {
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>"
 				}
 				(containers.dashboard).querySelector('.page-content').innerHTML = node;
@@ -2271,7 +2274,7 @@ var containers = {
 				
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -2284,11 +2287,11 @@ var containers = {
 					node += "			<label>Save</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>"
 				} else {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-					if( app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -2307,7 +2310,7 @@ var containers = {
 					node += "			<label>Edit</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 				}
 
@@ -3380,7 +3383,7 @@ var containers = {
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
-		settings += app.getField('radio_button_checked', 'Text Orientation Left-To-Right', app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
+		settings += app.getField('radio_button_checked', 'Align buttons to Right', app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += "	</div>";
 		settings += "</section>";
 		(containers.settings).querySelector('.page-content').innerHTML = settings;
@@ -3796,7 +3799,6 @@ var containers = {
 	/*
 	 * *********************************** Run the App ***********************************
 	 */
-	app.isLtr = app.getSetting('settings.isLtr')!==undefined?app.getSetting('settings.isLtr'):isLtr;
 	if ( window.location.hash ) {
 		var p = window.location.hash.substr(1);
 		if ( p === 'login' ) {
