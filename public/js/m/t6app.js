@@ -95,6 +95,8 @@ var app = {
 		longitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
 		latitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
 		position: '.{4,255}',
+		username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
+		password: ".{4,}",
 	}
 };
 
@@ -2600,10 +2602,6 @@ var containers = {
 
 	app.displayLoginForm = function(container) {
 		if ( app.isLogged === false ) {
-			var pattern = {
-				username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
-				password: ".{4,}",
-			};
 			var login = "<section class='content-grid mdl-grid'>" +
 			"	<div class='mdl-layout-spacer'></div>" +
 			"	<form class='signin'>" +
@@ -2614,13 +2612,13 @@ var containers = {
 			"			<div class='mdl-card__supporting-text'>" +
 			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
-			"					<input name='username' pattern=\""+pattern.username+"\" class='mdl-textfield__input' type='text'>" +
+			"					<input name='username' pattern=\""+app.patterns.username+"\" class='mdl-textfield__input' type='text'>" +
 			"					<label for='username' class='mdl-textfield__label'>Username</label>" +
 			"					<span class='mdl-textfield__error'>Username should be your email address</span>" +
 			"				</div>" +
 			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>vpn_key</i>" +
-			"					<input name='password' pattern=\""+pattern.password+"\" class='mdl-textfield__input' type='password'>" +
+			"					<input name='password' pattern=\""+app.patterns.password+"\" class='mdl-textfield__input' type='password'>" +
 			"					<label for='password' class='mdl-textfield__label'>Password</label>" +
 			"					<span class='mdl-textfield__error'>Password must be provided</span>" +
 			"				</div>" +
