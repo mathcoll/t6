@@ -217,22 +217,22 @@ div.valuedisplay .snippet-unit3 {
 	font-weight: 600;
 }
 div.valuedisplay .snippet-value1 {
-	font-size: 15vh;
+	font-size: 14vh;
 }
 div.valuedisplay .snippet-unit1 {
-	font-size: 11vh;
+	font-size: 10vh;
 }
 div.valuedisplay .snippet-value2 {
-	font-size: 9vh;
+	font-size: 8vh;
 }
 div.valuedisplay .snippet-unit2 {
-	font-size: 7vh;
+	font-size: 6vh;
 }
 div.valuedisplay .snippet-value3 {
-	font-size: 5vh;
+	font-size: 4vh;
 }
 div.valuedisplay .snippet-unit3 {
-	font-size: 3vh;
+	font-size: 2vh;
 }
 div.valuedisplay .mdl-list__item-secondary-content {
 	background: url(/img/m/snippets/valuedisplay.jpg) 50% 59%;
