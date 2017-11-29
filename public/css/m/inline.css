@@ -481,7 +481,7 @@ section#profile .subhead {
 	margin: 5px 0 !important;
 }
 .mdl-grid {
-	word-break: break-all;
+	/*word-break: break-all;*/
 }
 #terms .mdl-grid {
 	word-break: normal;
