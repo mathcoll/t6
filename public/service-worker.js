@@ -19,18 +19,6 @@ var filesToCache = [
     '/img/opl_img.jpg',
     '/img/m/welcome_card.jpg',
     '/img/m/side-nav-bg.jpg',
-
-    //CDN/javascripts
-    '//cdn.internetcollaboratif.info/js/m/vendor.min.js',
-    //'//cdn.internetcollaboratif.info/js/m/t6app.js',
-    //CDN/styles
-    '//cdn.internetcollaboratif.info/css/t6App.min.css',
-    //CDN/images
-    '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
-    '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
-    '//cdn.internetcollaboratif.info/img/opl_img.jpg',
-    '//cdn.internetcollaboratif.info/img/m/welcome_card.jpg',
-    '//cdn.internetcollaboratif.info/img/m/side-nav-bg.jpg',
 ];
 
 self.addEventListener('install', function(e) {
