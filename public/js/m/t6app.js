@@ -341,11 +341,15 @@ var containers = {
 	function registerServiceWorker() {
 		return navigator.serviceWorker.register('/service-worker.js')
 		.then(function(registration) {
-			console.log('[ServiceWorker] Registered');
+			if ( app.debug === true ) {
+				console.log('[ServiceWorker] Registered');
+			}
 		    return registration;
 		})
 		.catch(function(err) {
-			console.log('[ServiceWorker] error occured...'+ err);
+			if ( app.debug === true ) {
+				console.log('[ServiceWorker] error occured...'+ err);
+			}
 		});
 	}; // registerServiceWorker
 	
@@ -369,10 +373,15 @@ var containers = {
 				app.setSetting('settings.pushSubscription.keys.p256dh', j.keys.p256dh);
 				app.setSetting('settings.pushSubscription.keys.auth', j.keys.auth);
 			}
+			if ( app.debug === true ) {
+				console.log('pushSubscription', j);
+			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
-			console.log(subscribeUserToPush, error);
+			if ( app.debug === true ) {
+				console.log('subscribeUserToPush', error);
+			}
 		});
 	}; // subscribeUserToPush
 
@@ -1505,7 +1514,7 @@ var containers = {
 		node += app.getSubtitle('Custom Parameters');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('note', '', '', {type: '2inputs', id: '', isEdit: true});
+		node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', id: ['Name[]', 'Value[]'], isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 
@@ -1683,12 +1692,8 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
+		node += app.getSubtitle('Available Snippets');
 		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-		node += "	<div class='md-subheader-inner'>";
-		node += "		<div class='mdl-subheader-content'>";
-		node += "			<span class='ng-scope'>Available Snippets</span>";
-		node += "		</div>";
-		node += "	</div>";
 		node += "	<ul class='mdl-grid'>";
 		// dropdown from the Api getSnippets
 		node += "	</ul>";
@@ -2127,13 +2132,9 @@ var containers = {
 					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
-					
+
+					node += app.getSubtitle('Available Snippets');
 					node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-					node += "	<div class='md-subheader-inner'>";
-					node += "		<div class='mdl-subheader-content'>";
-					node += "			<span class='ng-scope'>Available Snippets</span>";
-					node += "		</div>";
-					node += "	</div>";
 					node += "	<ul class='mdl-grid'>";
 					// dropdown from the Api getSnippets
 					node += "	</ul>";
@@ -2828,6 +2829,27 @@ var containers = {
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
+			} else if ( options.type === '2inputs' ) {
+				if ( options.isEdit == true ) {
+					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important; float: left;'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id[0]+"'>"+icon+"</i>";
+
+					field += "	<input type='text' value='"+value[0]+"' class='mdl-textfield__input' name='"+id[0]+"' id='"+id[0]+"' style='width: auto;' />";
+					if (label[0]) field += "	<label class='mdl-textfield__label' for='"+id[0]+"'>"+label[0]+"</label>";
+					field += "</div>";
+
+					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important;'>";
+					field += "	<input type='text' value='"+value[1]+"' class='mdl-textfield__input' name='"+id[1]+"' id='"+id[1]+"' style='width: auto;' />";
+					if (label[1]) field += "	<label class='mdl-textfield__label' for='"+id[1]+"'>"+label[1]+"</label>";
+					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
+					field += "</div>";
+				} else {
+					value = (options.options.filter(function(cur) {return cur.name === value}))[0].value;
+					field += "<div class='mdl-list__item-sub-title'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
+					field += "</div>";
+				}
 			} else if ( options.type === 'progress-status' ) {
 				field += "<span class='mdl-progress mdl-js-progress' id='progress-status' title=''><br />"+value+"</span>";
 			}
@@ -3301,9 +3323,9 @@ var containers = {
 		settings += app.getSubtitle('Application');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
 		settings += app.getField('bug_report', 'Debug', app.getSetting('settings.debug')!==null?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('room', 'Geolocalization', app.getSetting('settings.geolocalization')!==null?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
-		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
 		settings += app.getField('format_align_right', 'Align buttons to Right', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('date_range', 'Date Format', app.getSetting('settings.date_format')!==null?app.getSetting('settings.date_format'):app.date_format, {type: 'input', id:'settings.date_format', isEdit: true});
 		settings += "	</div>";
@@ -3322,6 +3344,7 @@ var containers = {
 							(fabs[f]).classList.remove('fab__bottom');
 						}
 					}
+					toast('Floating Button are aligned Top.', {timeout:3000, type: 'done'});
 				} else {
 					for (var f in fabs) {
 						if ( (fabs[f]).childElementCount > -1 ) {
@@ -3329,6 +3352,7 @@ var containers = {
 							(fabs[f]).classList.add('fab__bottom');
 						}
 					}
+					toast('Floating Button are aligned Bottom.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
@@ -3343,6 +3367,7 @@ var containers = {
 					}
 				} else {
 					app.setSetting('settings.notifications', false);
+					toast('Notifications are disabled.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
@@ -3356,6 +3381,7 @@ var containers = {
 					}
 				} else {
 					app.setSetting('settings.geolocalization', false);
+					toast('Geolocalization is disabled.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
@@ -3363,8 +3389,10 @@ var containers = {
 			document.getElementById('switch-settings.isLtr').addEventListener('change', function(e) {
 				if ( document.getElementById('switch-settings.isLtr').checked == true ) {
 					app.setSetting('settings.isLtr', true);
+					toast('Buttons are aligned Right.', {timeout:3000, type: 'done'});
 				} else {
 					app.setSetting('settings.isLtr', false);
+					toast('Buttons are aligned Left.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
@@ -3374,11 +3402,12 @@ var containers = {
 					app.setSetting('settings.debug', true);
 					app.debug = true;
 					if ( app.debug === true ) {
-						toast('Awsome, debug mode is activated.', {timeout:3000, type: 'done'});
+						toast('Awsome, Debug mode is activated.', {timeout:3000, type: 'done'});
 					}
 				} else {
 					app.setSetting('settings.debug', false);
 					app.debug = false;
+					toast('Debug mode is disabled.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
@@ -3858,24 +3887,6 @@ var containers = {
 	};
 	for(var a in touch){document.addEventListener(a,touch[a],false);}
 	var h=function(e){console.log(e.type,e)};
-
-	if (!('serviceWorker' in navigator)) {
-		if ( app.debug === true ) {
-			console.log('Service Worker isn\'t supported on this browser, disable or hide UI.');
-		}
-		return;
-	} else {
-		// registerServiceWorker();
-		if (!('PushManager' in window)) {
-			if ( app.debug === true ) {
-				console.log('Push isn\'t supported on this browser, disable or hide UI.');
-			}
-			return;
-		} else {
-			askPermission();
-			subscribeUserToPush();
-		}
-	};
 	screen.orientation.addEventListener("change", app.showOrientation);
 	screen.orientation.unlock();
 	
@@ -4056,6 +4067,27 @@ var containers = {
 			a.appendChild(r);
 		})(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
 	}
+
+	if (!('serviceWorker' in navigator)) {
+		if ( app.debug === true ) {
+			console.log('Service Worker isn\'t supported on this browser, disable or hide UI.');
+		}
+		return;
+	} else {
+		// registerServiceWorker();
+		if (!('PushManager' in window)) {
+			if ( app.debug === true ) {
+				console.log('Push isn\'t supported on this browser, disable or hide UI.');
+			}
+			return;
+		} else {
+			if ( app.debug === true ) {
+				console.log('askPermission && subscribeUserToPush');
+			}
+			askPermission();
+			subscribeUserToPush();
+		}
+	};
 
 	/*
 	 * *********************************** Offline ***********************************
