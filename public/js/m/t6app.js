@@ -89,14 +89,15 @@ var app = {
 		rule: {id:'', attributes: {}},
 	},
 	patterns: {
-		name: '.{4,}',
+		name: '.{3,}',
 		ipv4: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}(:[0-9]{1,6})?',
 		ipv6: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$',
 		longitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
 		latitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
-		position: '.{4,255}',
+		position: '.{3,255}',
 		username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
 		password: ".{4,}",
+		cardMaxChars: "^[0-9]+$",
 	}
 };
 
@@ -3326,8 +3327,9 @@ var containers = {
 		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
 		settings += app.getField('bug_report', 'Debug', app.getSetting('settings.debug')!==null?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('room', 'Geolocalization', app.getSetting('settings.geolocalization')!==null?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
-		settings += app.getField('format_align_right', 'Align buttons to Right', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
+		settings += app.getField('format_textdirection_l_to_r', 'Align buttons to Right', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('date_range', 'Date Format', app.getSetting('settings.date_format')!==null?app.getSetting('settings.date_format'):app.date_format, {type: 'input', id:'settings.date_format', isEdit: true});
+		settings += app.getField('subject', 'Card Chars Limit', app.getSetting('settings.cardMaxChars')!==null?app.getSetting('settings.cardMaxChars'):app.cardMaxChars, {type: 'input', id:'settings.cardMaxChars', isEdit: true, pattern: app.patterns.cardMaxChars, error:'Must be an Integer.'});
 		settings += "	</div>";
 		settings += "</section>";
 		(containers.settings).querySelector('.page-content').innerHTML = settings;
@@ -3415,6 +3417,18 @@ var containers = {
 			document.getElementById('settings.date_format').addEventListener('keyup', function(e) {
 				app.setSetting('settings.date_format', document.getElementById('settings.date_format').value);
 				app.date_format = document.getElementById('settings.date_format').value;
+				toast('Date Format has been updated on '+moment().format(app.date_format), {timeout:3000, type: 'done'});
+			});
+		}
+		if ( document.getElementById('settings.cardMaxChars') ) {
+			document.getElementById('settings.cardMaxChars').addEventListener('keyup', function(e) {
+				if ( (document.getElementById('settings.cardMaxChars').value).match(app.patterns.cardMaxChars) ) {
+					app.setSetting('settings.cardMaxChars', document.getElementById('settings.cardMaxChars').value);
+					app.cardMaxChars = document.getElementById('settings.cardMaxChars').value;
+					toast('Card Limit is set to '+app.cardMaxChars+'.', {timeout:3000, type: 'done'});
+				} else {
+					toast('Card Limit remain '+app.cardMaxChars+'.', {timeout:3000, type: 'done'});
+				}
 			});
 		}
 	} // getSettings
