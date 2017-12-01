@@ -257,6 +257,13 @@ router.post('/authenticate', function (req, res) {
 	if ( !user || !email || !password ) {
         return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));
     } else {
+		var geo = geoip.lookup(req.ip);
+		if ( user.location === undefined || user.location === null ) {
+			user.location = {geo: geo, ip: req.ip,};
+		}
+		users.update(user);
+		db.save();
+    	
     	var payload = JSON.parse(JSON.stringify(user));
     	payload.permissions = undefined;
     	payload.token = undefined;
@@ -267,7 +274,7 @@ router.post('/authenticate', function (req, res) {
     	payload.token_type = "Bearer";
     	payload.scope = "Application";
     	payload.sub = '/users/'+user.id;
-    	payload.iss = req.ip+' - '+user.location.ip;
+    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
         var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
         
         // Add the refresh token to the list

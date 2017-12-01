@@ -4,6 +4,10 @@ var router	= express.Router();
 var DataSerializer = require('../serializers/data');
 var ErrorSerializer = require('../serializers/error');
 
+router.get('/m', function(req, res) {
+	res.redirect('/');
+});
+
 router.get('/', function(req, res) {
 	res.render('m/index', {
 		currentUrl: req.path,

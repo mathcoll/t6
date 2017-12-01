@@ -371,6 +371,58 @@ router.post('/token/:token([0-9a-zA-Z\.]+)', function (req, res) {
 });
 
 /**
+ * @api {post} /users/instruction Reset a password instruction
+ * @apiName Reset a password instruction
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String} email to identify the user
+ * 
+ * @apiUse 200
+ * @apiUse 404
+ * @apiUse 412
+ * @apiUse 500
+ */
+router.post('/instruction', function (req, res) {
+	if ( !req.body.email ) {
+		res.status(412).send(new ErrorSerializer({'id': 8.3,'code': 412, 'message': 'Precondition Failed'}).serialize());
+	} else {
+		var query = { 'email': req.body.email };
+		users	= db.getCollection('users');
+		var user = (users.chain().find(query).data())[0];
+		if ( user ) {
+			var token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');
+			user.token = token;
+			users.update(user);
+			db.save();
+			
+			res.render('emails/forgot-password', {user: user, token: token}, function(err, html) {
+				var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
+				var mailOptions = {
+					from: from,
+					bcc: bcc!==undefined?bcc:null,
+					to: to,
+					subject: 'Reset your password to t6',
+					text: 'Html email client is required',
+					html: html
+				};
+				transporter.sendMail(mailOptions, function(err, info){
+				    if( err ){
+						res.status(500).send({ 'code': 500, message: 'Error updating user' }); 
+				    } else {
+						events.add('t6App', 'user forgot password mail', user.id);
+						res.header('Location', '/v'+version+'/users/'+user.id);
+						res.status(200).send({ 'code': 200, message: 'Successfully updated' }); 
+				    }
+				});
+			});
+		} else {
+			res.status(404).send({ 'code': 404, message: 'Error updating user' }); 
+		}
+	}
+});
+
+/**
  * @api {put} /users/:user_id Edit a User
  * @apiName Edit a User
  * @apiGroup User
