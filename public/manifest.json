@@ -460,8 +460,8 @@
             	"sizes": "512x512",
             	"type": "image/png"
             }],
-  "scope": "/m",
-  "start_url": "/m/",
+  "scope": "/",
+  "start_url": "/",
   "display": "standalone",
   "orientation": "natural",
   "direction": "portrait",

@@ -150,8 +150,8 @@ app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
-app.use('/', www);
-app.use('/m', pwa);
+app.use('/old', www);
+app.use('/', pwa);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

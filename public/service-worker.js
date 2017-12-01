@@ -6,7 +6,7 @@ var filesToCache = [
     //local
     '/manifest.json',
     '/m/applicationStart',
-    '/m',
+    '/',
 
     //local/javascripts
     '/js/m/vendor.min.js',
