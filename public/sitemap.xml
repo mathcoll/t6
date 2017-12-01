@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="https://www.sitemaps.org/schemas/sitemap/0.9
+            https://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+<url>
+  <loc>https://api.internetcollaboratif.info/</loc>
+  <changefreq>daily</changefreq>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#docs</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#objects</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#flows</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#dashboards</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#snippets</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#rules</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#mqtts</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#status</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.70</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#terms</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.60</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#settings</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.60</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#profile</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.70</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#login</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.70</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#signup</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.70</priority>
+</url>
+<url>
+  <loc>https://api.internetcollaboratif.info/#forgot-password</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.60</priority>
+</url>
+</urlset>

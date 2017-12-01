@@ -5,5 +5,3 @@ www
 node_modules
 jspm_packages
 /stylesheets/
-sitemap.xml
-sitemap.xml.*
