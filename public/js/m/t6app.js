@@ -11,7 +11,7 @@ var app = {
 	date_format: 'DD/MM/YYYY, HH:mm',
 	cardMaxChars: 256,
 	tawktoid: '58852788bcf30e71ac141187',
-	hotjarid: 694506,
+	gtm: 'GTM-PH7923',
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
 	icons: {
 		'color': 'format_color_fill',
@@ -308,9 +308,31 @@ var containers = {
 	}; // onPasswordResetButtonClick
 	
 	function onForgotPasswordButtonClick(evt) {
-		/*
-		 * NOT YET IMPLEMENTED evt.preventDefault();
-		 */
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+		var email = myForm.querySelector("form.forgotpassword input[name='email']").value;
+		if ( email ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify({"email":email}) };
+			var url = app.baseUrl+"/"+app.api_version+"/users/instruction/";
+			
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				app.setSection('login');
+				toast('Instructions has been sent to your email.', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				toast('We can\'t process your request. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+			});
+		} else {
+			toast('We can\'t send the instructions.', {timeout:3000, type: 'warning'});
+		}
+		evt.preventDefault();
 	}; // onForgotPasswordButtonClick
 
 	function urlBase64ToUint8Array(base64String) {
@@ -2626,6 +2648,8 @@ var containers = {
 			"				</div>" +
 			"			</div>" +
 			"			<div class='mdl-card__actions mdl-card--border'>" +
+			"				<a onclick=\"app.setSection('forgot-password');\" href='#' class='mdl-button mdl-button--colored'>Password forgotten?</a>" +
+			"				<span class='mdl-layout-spacer'></span>" +
 			"				<a onclick=\"app.setSection('signup');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
 			"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
 			"					<i class='material-icons'>lock</i>Log in" +
@@ -4071,15 +4095,12 @@ var containers = {
 			s0.parentNode.insertBefore(s1,s0);
 		})();
 	}
-	if ( app.hotjarid ) {
-		(function(h,o,t,j,a,r){
-			h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-			h._hjSettings={hjid:app.hotjarid,hjsv:6};
-			a=o.getElementsByTagName('head')[0];
-			r=o.createElement('script');r.async=1;
-			r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-			a.appendChild(r);
-		})(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
+	if ( app.gtm ) {
+		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer',app.gtm);
 	}
 
 	if (!('serviceWorker' in navigator)) {

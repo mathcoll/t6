@@ -17,6 +17,11 @@ html.ltr(lang='en')
     link(rel='manifest', href='/manifest.json')
     link(rel='apple-touch-icon', href='#{baseUrlCdn}/img/m/icons/icon-152x152.png')
   body
+    //-<!-- Google Tag Manager (noscript) -->
+    noscript
+      iframe(src="//www.googletagmanager.com/ns.html?id=GTM-PH7923", height="0", width="0", style="display:none;visibility:hidden")
+      
+    //-<!-- End Google Tag Manager (noscript) -->
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
       header.mdl-layout__header.mdl-layout__header--waterfall.mdl-layout__header--waterfall-hide-top
         .mdl-layout__header-row
@@ -341,6 +346,8 @@ html.ltr(lang='en')
                       label.mdl-textfield__label(for='email') Email/Username
                       span.mdl-textfield__error Username should be your email address
                   .mdl-card__actions.mdl-card--border
+                    a.mdl-button.mdl-button--colored(onclick="app.setSection('login');", href="#") Sign In
+                    //-span.mdl-layout-spacer
                     button.forgotPassword.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons book
                       | Get instructions
