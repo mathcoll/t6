@@ -2490,37 +2490,41 @@ var containers = {
 				type=undefined;
 			}
 
-			if ( app.isLogged && type !== undefined ) {
-				fetch(url, myInit)
-				.then(
-					fetchStatusHandler
-				).then(function(fetchResponse){
-					return fetchResponse.json();
-				})
-				.then(function(response) {
-					container.innerHTML = "";
-					if ( (response.data).length == 0 ) {
-						container.innerHTML = app.getCard(defaultCard);
-						app.displayLoginForm( container );
-					} else {
-						for (var i=0; i < (response.data).length ; i++ ) {
-							container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
-						}
-						app.showAddFAB(type);
-						componentHandler.upgradeDom();
-						app.setItemsClickAction(type);
-						app.setListActions(type);
-					}
-					resolve();
-				})
-				.catch(function (error) {
-					if ( app.debug === true ) {
-						toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
-					}
-				});
+			if ( !navigator.onLine ) {
+				container.innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'});
 			} else {
-				container.innerHTML = app.getCard(defaultCard);
-				resolve();
+				if ( app.isLogged && type !== undefined ) {
+					fetch(url, myInit)
+					.then(
+						fetchStatusHandler
+					).then(function(fetchResponse){
+						return fetchResponse.json();
+					})
+					.then(function(response) {
+						container.innerHTML = "";
+						if ( (response.data).length == 0 ) {
+							container.innerHTML = app.getCard(defaultCard);
+							app.displayLoginForm( container );
+						} else {
+							for (var i=0; i < (response.data).length ; i++ ) {
+								container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
+							}
+							app.showAddFAB(type);
+							componentHandler.upgradeDom();
+							app.setItemsClickAction(type);
+							app.setListActions(type);
+						}
+						resolve();
+					})
+					.catch(function (error) {
+						if ( app.debug === true ) {
+							toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
+						}
+					});
+				} else {
+					container.innerHTML = app.getCard(defaultCard);
+					resolve();
+				}
 			}
 		});
 			
@@ -2648,7 +2652,7 @@ var containers = {
 			"				</div>" +
 			"			</div>" +
 			"			<div class='mdl-card__actions mdl-card--border'>" +
-			"				<a onclick=\"app.setSection('forgot-password');\" href='#' class='mdl-button mdl-button--colored'>Password forgotten?</a>" +
+			"				<a onclick=\"app.setSection('forgot-password');\" href='#' class='mdl-button--colored'>Password forgotten?</a>" +
 			"				<span class='mdl-layout-spacer'></span>" +
 			"				<a onclick=\"app.setSection('signup');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
 			"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
