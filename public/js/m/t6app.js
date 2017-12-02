@@ -3072,11 +3072,11 @@ var containers = {
 					var unit = data.links.unit!==undefined?response.links.unit:'';
 					var ttl = data.links.ttl;
 					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-ontime');
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-outdated');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-ontime');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-outdated');
 					} else {
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-outdated');
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.parentNode.classList.add('is-ontime');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-outdated');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-ontime');
 					}
 					var dataset = [data.data.map(function(i) {
 						return [i.attributes.timestamp, i.attributes.value];
