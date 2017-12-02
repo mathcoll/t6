@@ -89,8 +89,8 @@ html.ltr(lang='en')
             |  Mqtt Topics
 
       #drawer.mdl-layout__drawer
-        div.side-nav__header(style="height: 148px; position: relative; width: 100%; background: #795548 url(#{baseUrlCdn}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
-          img#currentUserHeader(src="", style="border-radius: 50%; width: 90px; padding: 20px 10px 10px 10px")
+        div.side-nav__header#currentUserBackground(style="height: 148px; position: relative; width: 100%; background: #795548 url(#{baseUrlCdn}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
+          img#currentUserHeader(src="", style="border-radius: 50%; width: 90px; padding: 10px 10px 10px 10px;border: 3px solid #fff;margin: 10px 10px;")
           div#currentUserName.mdl-layout-title(style="bottom:auto !important;") 
           div#currentUserEmail.mdl-layout-subheader(style="color: #ffffff;") 
         nav.mdl-navigation.menu__list
@@ -316,12 +316,18 @@ html.ltr(lang='en')
                       i.material-icons.mdl-textfield__icon(for='lastName') face 
                       input.mdl-textfield__input(type='text', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='lastName') Last Name
-                  .mdl-card__actions.mdl-card--border
-                    a.mdl-button.mdl-button--colored(onclick="app.setSection('login');", href="#")
-                      | Sign-in
+                  .mdl-card__supporting-text.mdl-grid
+                    span.mdl-layout-spacer
                     button.createUser.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons person_add
-                      | Sign-Up
+                      | Sign Up
+                  .mdl-card__actions.mdl-card--border
+                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                      | Sign In
+                    | &nbsp;or&nbsp;
+                    a.mdl-button--colored(onclick="app.setSection('forgot-password');", href="#forgot-password")
+                      | reset my password
+                    | .
               div.mdl-layout-spacer
 
         //- View My Profile
@@ -346,7 +352,7 @@ html.ltr(lang='en')
                       label.mdl-textfield__label(for='email') Email/Username
                       span.mdl-textfield__error Username should be your email address
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button.mdl-button--colored(onclick="app.setSection('login');", href="#") Sign In
+                    a.mdl-button--colored(onclick="app.setSection('login');", href="#") Sign In
                     //-span.mdl-layout-spacer
                     button.forgotPassword.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons book

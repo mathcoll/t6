@@ -2579,9 +2579,9 @@ var containers = {
 			node += "		</ul>";
 			node += "		<ul class='social-links'>"; 
 			for (var url in gravatar.urls) {
-				node += "  		<li><a href=\""+gravatar.urls[url].value+"\" target=\"_blank\"><i class=\"material-icons\">bookmark</i><span class=\"mdl-list__item-sub-title\">" + gravatar.urls[url].title + "</span></a></li>";
+				node += "		<li><a href=\""+gravatar.urls[url].value+"\" target=\"_blank\"><i class=\"material-icons\">bookmark</i><span class=\"mdl-list__item-sub-title\">" + gravatar.urls[url].title + "</span></a></li>";
 			}
-			node += "  		</ul>";
+			node += "		</ul>";
 			node += "	</div>";
 			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
 			// node += " <a href=\"#\" class=\"pull-left\"></a>";
@@ -2594,6 +2594,9 @@ var containers = {
 			localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
 			localStorage.setItem("currentUserEmail", user.attributes.email);
 			localStorage.setItem("currentUserHeader", gravatar.photos[0].value);
+			if ( gravatar.profile_background.url ) {
+				localStorage.setItem("currentUserBackground", gravatar.profile_background.url);
+			}
 			app.setDrawer();
 		})
 		.catch(function (error) {
@@ -2619,12 +2622,15 @@ var containers = {
 		else { document.getElementById("currentUserEmail").innerHTML = ""; }
 		if ( localStorage.getItem("currentUserHeader") !== null ) { document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader")) }
 		else { document.getElementById("currentUserHeader").setAttribute('src', app.baseUrlCdn+"/img/m/icons/icon-128x128.png"); }
+		if ( localStorage.getItem("currentUserBackground") !== null ) { document.getElementById("currentUserBackground").style.background="#795548 url("+localStorage.getItem("currentUserBackground")+") 50% 50% / cover" }
+		else { document.getElementById("currentUserBackground").style.background="#795548 url("+app.baseUrlCdn+"/img/m/side-nav-bg.jpg) 50% 50% / cover" }
 	}
 	
 	app.resetDrawer = function() {
 		localStorage.removeItem("currentUserName");
 		localStorage.removeItem("currentUserEmail");
 		localStorage.removeItem("currentUserHeader");
+		localStorage.removeItem("currentUserBackground");
 		app.setDrawer();
 	}
 
@@ -2651,13 +2657,16 @@ var containers = {
 			"					<span class='mdl-textfield__error'>Password must be provided</span>" +
 			"				</div>" +
 			"			</div>" +
-			"			<div class='mdl-card__actions mdl-card--border'>" +
-			"				<a onclick=\"app.setSection('forgot-password');\" href='#' class='mdl-button--colored'>Password forgotten?</a>" +
+			"			<div class='mdl-card__supporting-text mdl-grid'>" +
 			"				<span class='mdl-layout-spacer'></span>" +
-			"				<a onclick=\"app.setSection('signup');\" href='#' class='mdl-button mdl-button--colored'>Create an account</a>" +
 			"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
 			"					<i class='material-icons'>lock</i>Log in" +
 			"				</button>" +
+			"			</div>" +
+			"			<div class='mdl-card__actions mdl-card--border'>" +
+			"				<span class='mdl-layout-spacer'></span>" +
+			"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button--colored'>Create an account</a> or " +
+			"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button--colored'>reset my password</a>." +
 			"			</div>" +
 			"		</div>" +
 			"	</form>" +
