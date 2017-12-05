@@ -26,6 +26,10 @@ var tokens;
 router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var results = Array();
 	var flow_id = req.params.flow_id;
+	var size = req.query.size!==undefined?req.query.size:20;
+	var page = req.query.page!==undefined?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
 	var name = req.query.name;
 	if ( req.user !== undefined && req.user.id !== undefined ) {
 		flows	= db.getCollection('flows');
@@ -54,7 +58,16 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 				};
 			}
 		}
-		var flow = flows.find(query);
+		var flow = flows.chain().find(query).offset(offset).limit(size).data();
+		//console.log(query);
+
+		var total = flows.find(query).length;
+		flow.size = size;
+		flow.pageSelf = page;
+		flow.pageFirst = 1;
+		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
+		flow.pageLast = Math.ceil(total/size);
+		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
 		flow = flow.length>0?flow:[];
 		res.status(200).send(new FlowSerializer(flow).serialize());
 	} else {

@@ -118,6 +118,10 @@ router.get('/(:object_id([0-9a-z\-]+))?/public', function (req, res) {
 router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	var name = req.query.name;
+	var size = req.query.size!==undefined?req.query.size:20;
+	var page = req.query.page!==undefined?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
 	objects	= db.getCollection('objects');
 	var query;
 	if ( object_id !== undefined ) {
@@ -143,8 +147,17 @@ router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret
 			};
 		}
 	}
-	var json = objects.find(query);
+	var json = objects.chain().find(query).offset(offset).limit(size).data();
 	//console.log(query);
+
+	var total = objects.find(query).length;
+	json.size = size;
+	json.pageSelf = page;
+	json.pageFirst = 1;
+	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
+	json.pageLast = Math.ceil(total/size);
+	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
+	
 	json = json.length>0?json:[];
 	res.status(200).send(new ObjectSerializer(json).serialize());
 });
@@ -181,14 +194,14 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	} else {
 		var new_object = {
 			id:				uuid.v4(),
-			type:  			req.body.type!==undefined?req.body.type:'default',
+			type:			req.body.type!==undefined?req.body.type:'default',
 			name:			req.body.name!==undefined?req.body.name:'unamed',
 			description:	req.body.description!==undefined?(req.body.description).substring(0, 1024):'',
-			position: 	 	req.body.position!==undefined?req.body.position:'',
+			position:		req.body.position!==undefined?req.body.position:'',
 			longitude:		req.body.longitude!==undefined?req.body.longitude:'',
 			latitude:		req.body.latitude!==undefined?req.body.latitude:'',
 			isPublic:		req.body.isPublic!==undefined?req.body.isPublic:'false',
-			ipv4:  			req.body.ipv4!==undefined?req.body.ipv4:'',
+			ipv4:			req.body.ipv4!==undefined?req.body.ipv4:'',
 			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 			user_id:		req.user.id,
 		};

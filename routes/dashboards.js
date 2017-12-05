@@ -29,6 +29,10 @@ var tokens;
 router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var dashboard_id = req.params.dashboard_id;
 	var name = req.query.name;
+	var size = req.query.size!==undefined?req.query.size:20;
+	var page = req.query.page!==undefined?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
 	dashboards	= dbDashboards.getCollection('dashboards');
 	snippets = dbSnippets.getCollection('snippets'); // WTF ??
 	var query;
@@ -55,7 +59,16 @@ router.get('/?(:dashboard_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.se
 			};
 		}
 	}
-	var json = dashboards.find(query);
+	var json = dashboards.chain().find(query).offset(offset).limit(size).data();
+	//console.log(query);
+
+	var total = dashboards.find(query).length;
+	json.size = size;
+	json.pageSelf = page;
+	json.pageFirst = 1;
+	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
+	json.pageLast = Math.ceil(total/size);
+	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
 	json = json.length>0?json:[];
 	res.status(200).send(new DashboardSerializer(json).serialize());
 });

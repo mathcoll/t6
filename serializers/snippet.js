@@ -7,7 +7,12 @@ function SnippetTypeSerializer(snippet) {
 			keyForAttribute: 'underscore_case',
 			attributes: ['name', 'user_id', 'description', 'type', 'icon', 'color', 'flows', 'meta'],
 			topLevelLinks : {
-				parent : sprintf('%s/v%s/snippets', baseUrl_https, version)
+				parent : sprintf('%s/v%s/snippets', baseUrl_https, version),
+				self : snippet.pageSelf!==undefined?sprintf('%s/v%s/snippets/?page=%s&size=%s', baseUrl_https, version, snippet.pageSelf, snippet.size):undefined,
+				first : snippet.pageFirst!==undefined?sprintf('%s/v%s/snippets/?page=%s&size=%s', baseUrl_https, version, snippet.pageFirst, snippet.size):undefined,
+				prev : snippet.pagePrev!==undefined?sprintf('%s/v%s/snippets/?page=%s&size=%s', baseUrl_https, version, snippet.pagePrev, snippet.size):undefined,
+				last : snippet.pageLast!==undefined?sprintf('%s/v%s/snippets/?page=%s&size=%s', baseUrl_https, version, snippet.pageLast, snippet.size):undefined,
+				next : snippet.pageNext!==undefined?sprintf('%s/v%s/snippets/?page=%s&size=%s', baseUrl_https, version, snippet.pageNext, snippet.size):undefined,
 			},
 			dataLinks : {
 				self : function(snippet) {

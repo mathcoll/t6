@@ -27,6 +27,10 @@ var tokens;
 router.get('/(:snippet_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var snippet_id = req.params.snippet_id;
 	var name = req.query.name;
+	var size = req.query.size!==undefined?req.query.size:20;
+	var page = req.query.page!==undefined?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
 	snippets	= dbSnippets.getCollection('snippets');
 	var query;
 	if ( snippet_id !== undefined ) {
@@ -52,7 +56,16 @@ router.get('/(:snippet_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secre
 			};
 		}
 	}
-	var json = snippets.find(query);
+	var json = snippets.chain().find(query).offset(offset).limit(size).data();
+	//console.log(query);
+
+	var total = snippets.find(query).length;
+	json.size = size;
+	json.pageSelf = page;
+	json.pageFirst = 1;
+	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
+	json.pageLast = Math.ceil(total/size);
+	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
 	json = json.length>0?json:[];
 	res.status(200).send(new SnippetSerializer(json).serialize());
 });

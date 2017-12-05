@@ -30,6 +30,28 @@
 	<span class="label label-primary">429 Too Many Requests</span>.
 </p>
 
+<h2>Pagination</h2>
+<p>
+	Pagination is using the following parameters:
+	<ul>
+		<li><b>size</b>: the size parameter allow  to request the number of items you want to retrieve.</li>
+		<li><b>page</b>: this page parameter allows to place cursor on the selected page.</li>
+	</ul>
+	e.g.: <span class="label label-primary">https://api.internetcollaboratif.info/v2.0.1/objects/?page=2&size=20</span><br />
+	This will generate the payload listing Objects from resource cursor 21 to 41.
+</p>
+<p>
+	Additionnaly, the json payload is containing the following data:
+	<ul>
+		<li><b>parent</b>: url endpoint of the parent resource.</li>
+		<li><b>self</b>: url endpoint of the current resource.</li>
+		<li><b>first</b>: url endpoint of the first page/cursor for the current resource.</li>
+		<li><b>last</b>: url endpoint of the last page/cursor for the current resource.</li>
+		<li><b>prev</b>: url endpoint of the previous page/cursor for the current resource.</li>
+		<li><b>next</b>: url endpoint of the next page/cursor for the current resource.</li>
+	</ul>
+</p>
+
 <h2>Http Statuses</h2>
 <p>
 	<ul>
