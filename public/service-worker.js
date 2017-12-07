@@ -1,11 +1,11 @@
 
-var dataCacheName= 't6-cache-2017-11-17_2007';
-var cacheName= 't6-cache-2017-11-17_2007';
+var dataCacheName= 't6-cache-2017-12-07_2039';
+var cacheName= 't6-cache-2017-12-07_2039';
 var cacheWhitelist = ['internetcollaboratif.info', 'localhost'];
 var filesToCache = [
     //local
     '/manifest.json',
-    '/m/applicationStart',
+    '/applicationStart',
     '/',
 
     //local/javascripts

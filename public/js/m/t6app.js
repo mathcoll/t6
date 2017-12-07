@@ -10,6 +10,8 @@ var app = {
 	RateLimit : {Limit: null, Remaining: null, Used: null},
 	date_format: 'DD/MM/YYYY, HH:mm',
 	cardMaxChars: 256,
+	itemsSize: {objects: 999, flows: 999, snippets: 999, dashboards: 999, mqtts: 999, rules: 999},
+	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
 	tawktoid: '58852788bcf30e71ac141187',
 	gtm: 'GTM-PH7923',
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
@@ -343,6 +345,11 @@ var containers = {
 		for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); };
 		return outputArray;
 	}; // urlBase64ToUint8Array
+	
+	function offsetBottom(el, i) {
+		i = i || 0;
+		return $(el)[i].getBoundingClientRect().bottom;
+	}; // offsetBottom
 	
 	function askPermission() {
 		return new Promise(function(resolve, reject) {
@@ -838,7 +845,7 @@ var containers = {
 			}
 		} else {
 			window.location.hash = '#'+section;
-			app.fetchItems(section);
+			app.fetchItemsPaginated(section, undefined, app.itemsPage[section], app.itemsSize[section]);
 		}
 		window.scrollTo(0, 0);
 
@@ -2398,13 +2405,15 @@ var containers = {
 		
 		return element;
 	} // displayListItem
-
-	app.fetchItems = function(type, filter) {
+	
+	app.fetchItemsPaginated = function(type, filter, page, size) {
 		let promise = new Promise((resolve, reject) => {
 			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' ) {
 				resolve();
 				return false;
 			}
+			size = size!==undefined?size:app.itemsSize.type;
+			page = page!==undefined?page:1;
 			
 			containers.spinner.removeAttribute('hidden');
 			containers.spinner.classList.remove('hidden');
@@ -2418,8 +2427,18 @@ var containers = {
 				var icon = app.icons.objects;
 				var container = (containers.objects).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/objects';
-				if ( filter !== undefined ) {
-					url += "?name="+escape(filter);
+
+				if ( page || size || filter ) {
+					url += '?';
+					if ( filter !== undefined ) {
+						url += 'name='+escape(filter)+'&';
+					}
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
 				}
 				var title = 'My Objects';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}};
@@ -2429,8 +2448,17 @@ var containers = {
 				var icon = app.icons.flows;
 				var container = (containers.flows).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/flows';
-				if ( filter !== undefined ) {
-					url += "?name="+escape(filter);
+				if ( page || size || filter ) {
+					url += '?';
+					if ( filter !== undefined ) {
+						url += 'name='+escape(filter)+'&';
+					}
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
 				}
 				var title = 'My Flows';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
@@ -2440,6 +2468,15 @@ var containers = {
 				var icon = app.icons.dashboards;
 				var container = (containers.dashboards).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
+				if ( page || size ) {
+					url += '?';
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
+				}
 				var title = 'My Dashboards';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; // ,
@@ -2448,6 +2485,15 @@ var containers = {
 				var icon = app.icons.snippets;
 				var container = (containers.snippets).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
+				if ( page || size ) {
+					url += '?';
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
+				}
 				var title = 'My Snippets';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
@@ -2456,6 +2502,15 @@ var containers = {
 				var icon = app.icons.snippets;
 				var container = (containers.rules).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/rules';
+				if ( page || size ) {
+					url += '?';
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
+				}
 				var title = 'My Rules';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; // ,
@@ -2464,6 +2519,15 @@ var containers = {
 				var icon = app.icons.mqtts;
 				var container = (containers.mqtts).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
+				if ( page || size ) {
+					url += '?';
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
+				}
 				var title = 'My Mqtts';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
@@ -2472,6 +2536,15 @@ var containers = {
 				var icon = app.icons.tokens;
 				var container = (containers.tokens).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/tokens';
+				if ( page || size ) {
+					url += '?';
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
+				}
 				var title = 'My tokens';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: '<i class=\'material-icons\'>add</i>Add my first Token'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
@@ -2530,8 +2603,8 @@ var containers = {
 			
 		containers.spinner.setAttribute('hidden', true);
 		return promise;
-	}; // fetchItems
-
+	}; // fetchItemsPaginated
+	
 	app.fetchProfile = function() {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -2560,7 +2633,7 @@ var containers = {
 			} else {
 				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+app.baseUrlCdn+"/img/opl_img.jpg') 50% 50% !important\">";
 			}
-			node += "		<img src=\"https://gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
+			node += "		<img src=\"//secure.gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
 			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
 			if (gravatar.current_location) {
 				node += "		<div class=\"subhead\">";
@@ -3328,12 +3401,12 @@ var containers = {
 	}
 
 	app.getAllUserData = function() {
-		app.fetchItems('objects')
-			.then(app.fetchItems('flows')
-				.then(app.fetchItems('dashboards')
-					.then(app.fetchItems('snippets')
-						.then(app.fetchItems('rules')
-							.then(app.fetchItems('mqtts')
+		app.fetchItemsPaginated('objects', undefined, app.itemsPage['objects'], app.itemsSize['objects'])
+			.then(app.fetchItemsPaginated('flows', undefined, app.itemsPage['flows'], app.itemsSize['flows'])
+				.then(app.fetchItemsPaginated('dashboards', undefined, app.itemsPage['dashboards'], app.itemsSize['dashboards'])
+					.then(app.fetchItemsPaginated('snippets', undefined, app.itemsPage['snippets'], app.itemsSize['snippets'])
+						.then(app.fetchItemsPaginated('rules', undefined, app.itemsPage['rules'], app.itemsSize['rules'])
+							.then(app.fetchItemsPaginated('mqtts', undefined, app.itemsPage['mqtts'], app.itemsSize['mqtts'])
 								.then(app.fetchProfile(),
 								chainError).catch(chainError),
 							chainError).catch(chainError),
@@ -3614,6 +3687,8 @@ var containers = {
 		app.bearer = '';
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
+		app.itemsSize = {objects: 999, flows: 999, snippets: 999, dashboards: 999, mqtts: 999, rules: 999};
+		app.itemsPage = {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1};
 		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
 		app.isLogged = false;
 		app.resetDrawer();
@@ -3829,10 +3904,6 @@ var containers = {
 		}
 	}
 	
-	app.getScrollPercent = function() {
-		return ( (document.documentElement.scrollTop || document.body.scrollTop) / ( (document.documentElement.scrollHeight || document.body.scrollHeight) - document.documentElement.clientHeight) * 100 );
-	}
-	
 	/*
 	 * *********************************** Run the App ***********************************
 	 */
@@ -3894,12 +3965,15 @@ var containers = {
 			e.preventDefault();
 			var input = this.value;
 			var type = 'objects';
+			var size;
 			if ( document.querySelector('section#objects').classList.contains('is-active') ) {
 				type = 'objects';
+				size = app.itemsSize.objects;
 			} else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
 				type = 'flows';
+				size = app.itemsSize.flows;
 			}
-			app.fetchItems(type, this.value);
+			app.fetchItemsPaginated(type, this.value, 1, size);
 		}
 	});
 	
@@ -4080,6 +4154,20 @@ var containers = {
 			}
 		}
 	}, false);
+
+	/* Lazy loading */
+	var paginatedContainer = Array(Array(containers.objects, 'objects'), Array(containers.flows, 'flows'), Array(containers.snippets, 'snippets'), Array(containers.dashboards, 'dashboards'), Array(containers.mqtts, 'mqtts'), Array(containers.rules, 'rules'));
+	paginatedContainer.map(function(c) {
+		c[0].addEventListener('DOMMouseScroll', function(event) {
+			var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
+			var bottom = offsetBottom(c[0]);
+			if ( bottom <= height && c[0].classList.contains('is-active') ) {
+				//console.log("Lazy loading -->", c[0].offsetHeight, height, bottom);
+				//console.log('Lazy loading page=', ++(app.itemsPage[c[1]]));
+			}
+		});
+	}); // Lazy loading
+	
 	var pMatches = document.querySelectorAll('.passmatch');
 	for (var p in pMatches) {
 		if ( (pMatches[p]).childElementCount > -1 ) {
