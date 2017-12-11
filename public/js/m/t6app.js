@@ -12,6 +12,7 @@ var app = {
 	cardMaxChars: 256,
 	itemsSize: {objects: 999, flows: 999, snippets: 999, dashboards: 999, mqtts: 999, rules: 999},
 	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
+	currentSection: 'index',
 	tawktoid: '58852788bcf30e71ac141187',
 	gtm: 'GTM-PH7923',
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
@@ -802,7 +803,7 @@ var containers = {
 		}
 	}; // setExpandAction
 	
-	app.setSection = function(section) {
+	app.setSection = function(section, direction) {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
@@ -865,11 +866,19 @@ var containers = {
 				}
 			}
 		}
+		if ( direction == 'ltr' ) {
+			console.log(section, direction, "-120");
+			document.querySelector('#'+section).style.transform = "translateX(-120%) !important";
+		} else {
+			console.log(section, direction, "120");
+			document.querySelector('#'+section).style.transform = "translateX(120%) !important";
+		}
 		document.querySelector('#'+section).classList.remove('is-inactive');
 		document.querySelector('#'+section).classList.add('is-active');
 		if ( !app.isLogged && ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password' && section !== 'settings' && section !== 'docs' && section !== 'terms') ) {
 			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 		}
+		app.currentSection = section;
 		if ( app.debug === true ) {
 			console.log("end of setSection: "+section);
 		}
@@ -4151,6 +4160,45 @@ var containers = {
 				fabs[f].classList.remove('is-not-here');
 				fabs[f].classList.add('is-here');
 			}
+		}
+	}, false);
+	document.querySelector('.mdl-layout__content').addEventListener('touchend', function(event) {
+		if(event.handled !== true) {
+			//console.log(touchStartPoint, touchMovePoint, touchStartPoint-touchMovePoint);
+			if ( touchMovePoint < touchStartPoint && touchMovePoint-touchStartPoint < -50 ) {
+				// swipe left
+				if ( app.currentSection === 'index' ) {
+					app.setSection('objects', 'ltr');
+				} else if ( app.currentSection === 'objects' || app.currentSection === 'object' || app.currentSection === 'object_add' ) {
+					app.setSection('flows', 'ltr');
+				} else if ( app.currentSection === 'flows' || app.currentSection === 'flow' || app.currentSection === 'flow_add' ) {
+					app.setSection('dashboards', 'ltr');
+				} else if ( app.currentSection === 'dashboards' || app.currentSection === 'dashboard' || app.currentSection === 'dashboard_add' ) {
+					app.setSection('snippets', 'ltr');
+				} else if ( app.currentSection === 'snippets' || app.currentSection === 'snippet' || app.currentSection === 'snippet_add' ) {
+					app.setSection('rules', 'ltr');
+				} else if ( app.currentSection === 'rules' || app.currentSection === 'rule' || app.currentSection === 'rule_add' ) {
+					app.setSection('mqtts', 'ltr');
+				} else if ( app.currentSection === 'mqtts' || app.currentSection === 'mqtt' || app.currentSection === 'mqtt_add' ) {
+				}
+			} else if ( touchMovePoint-touchStartPoint > 50 ) {
+				// swipe right
+				if ( app.currentSection === 'index' ) {
+				} else if ( app.currentSection === 'objects' || app.currentSection === 'object' || app.currentSection === 'object_add' ) {
+					app.setSection('index', 'rtl');
+				} else if ( app.currentSection === 'flows' || app.currentSection === 'flow' || app.currentSection === 'flow_add' ) {
+					app.setSection('objects', 'rtl');
+				} else if ( app.currentSection === 'dashboards' || app.currentSection === 'dashboard' || app.currentSection === 'dashboard_add' ) {
+					app.setSection('flows', 'rtl');
+				} else if ( app.currentSection === 'snippets' || app.currentSection === 'snippet' || app.currentSection === 'snippet_add' ) {
+					app.setSection('dashboards', 'rtl');
+				} else if ( app.currentSection === 'rules' || app.currentSection === 'rule' || app.currentSection === 'rule_add' ) {
+					app.setSection('snippets', 'rtl');
+				} else if ( app.currentSection === 'mqtts' || app.currentSection === 'mqtt' || app.currentSection === 'mqtt_add' ) {
+					app.setSection('rules', 'rtl');
+				}
+			}
+			event.handled = true;
 		}
 	}, false);
 
