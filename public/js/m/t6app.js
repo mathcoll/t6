@@ -195,6 +195,8 @@ var containers = {
 	
 	function onLoginButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		
 		var username = myForm.querySelector("form.signin input[name='username']").value;
 		var password = myForm.querySelector("form.signin input[name='password']").value;
 		app.auth = {"username":username, "password":password};
@@ -250,7 +252,9 @@ var containers = {
 	}; // setForgotAction
 	
 	function onSignupButtonClick(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		myForm.querySelector("form.signup button.createUser").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		
 		var email = myForm.querySelector("form.signup input[name='email']").value;
 		var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
 		var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
@@ -281,7 +285,9 @@ var containers = {
 	}; // onSignupButtonClick
 	
 	function onPasswordResetButtonClick(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		myForm.querySelector("form.resetpassword button.setPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		
 		var password = myForm.querySelector("form.resetpassword input[name='password']").value;
 		var password2 = myForm.querySelector("form.resetpassword input[name='password2']").value;
 		var token = getParameterByName('token');
@@ -311,7 +317,9 @@ var containers = {
 	}; // onPasswordResetButtonClick
 	
 	function onForgotPasswordButtonClick(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		myForm.querySelector("form.forgotpassword button.forgotPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		
 		var email = myForm.querySelector("form.forgotpassword input[name='email']").value;
 		if ( email ) {
 			var myHeaders = new Headers();
@@ -866,17 +874,17 @@ var containers = {
 				}
 			}
 		}
-		if ( direction == 'ltr' ) {
-			console.log(section, direction, "-120");
-			document.querySelector('#'+section).style.transform = "translateX(-120%) !important";
-		} else {
-			console.log(section, direction, "120");
-			document.querySelector('#'+section).style.transform = "translateX(120%) !important";
-		}
-		document.querySelector('#'+section).classList.remove('is-inactive');
-		document.querySelector('#'+section).classList.add('is-active');
-		if ( !app.isLogged && ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password' && section !== 'settings' && section !== 'docs' && section !== 'terms') ) {
-			app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
+		if ( document.querySelector('#'+section) ) {
+			if ( direction == 'ltr' ) {
+				document.querySelector('#'+section).style.transform = "translateX(-120%) !important";
+			} else {
+				document.querySelector('#'+section).style.transform = "translateX(120%) !important";
+			}
+			document.querySelector('#'+section).classList.remove('is-inactive');
+			document.querySelector('#'+section).classList.add('is-active');
+			if ( !app.isLogged && ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password' && section !== 'settings' && section !== 'docs' && section !== 'terms') ) {
+				app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
+			}
 		}
 		app.currentSection = section;
 		if ( app.debug === true ) {
@@ -1175,7 +1183,7 @@ var containers = {
 				node += "				<h2 class=\"mdl-card__title-text\">"+object.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+object.id+"'>";
+				node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+object.id+"'>";
 				node += "					<i class='material-icons'>expand_more</i>";
 				node += "				</button>";
 				node += "			</span>";
@@ -1329,7 +1337,7 @@ var containers = {
 				node += "				<h2 class=\"mdl-card__title-text\">"+object.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+object.id+"'>";
+				node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+object.id+"'>";
 				node += "					<i class='material-icons'>expand_more</i>";
 				node += "				</button>";
 				node += "			</span>";
@@ -1919,7 +1927,7 @@ var containers = {
 					node += "				<h2 class=\"mdl-card__title-text\">"+flow.attributes.name+"</h2>";
 					node += "			</span>";
 					node += "			<span class='mdl-list__item-secondary-action'>";
-					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
 					node += "					<i class='material-icons'>expand_more</i>";
 					node += "				</button>";
 					node += "			</span>";
@@ -2003,7 +2011,7 @@ var containers = {
 						datapoints += "				Data Points";
 						datapoints += "			</span>";
 						datapoints += "			<span class='mdl-list__item-secondary-action'>";
-						datapoints += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='datapoints-"+flow.id+"'>";
+						datapoints += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='datapoints-"+flow.id+"'>";
 						datapoints += "					<i class='material-icons'>expand_more</i>";
 						datapoints += "				</button>";
 						datapoints += "			</span>";
@@ -2118,7 +2126,7 @@ var containers = {
 				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
-				node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+				node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
 				node += "					<i class='material-icons'>expand_more</i>";
 				node += "				</button>";
 				node += "			</span>";
@@ -2141,30 +2149,7 @@ var containers = {
 				node += "	</div>";
 				node += "</section>";
 
-				if ( !isEdit ) {
-					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
-					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-					node += "		<button class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
-					node += "			<i class='material-icons'>chevron_left</i>";
-					node += "			<label>List</label>";
-					node += "		</button>";
-					node += "	</div>";
-					node += "	<div class='mdl-cell--1-col-phone'>";
-					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
-					node += "			<i class='material-icons'>delete</i>";
-					node += "			<label>Delete</label>";
-					node += "		</button>";
-					node += "	</div>";
-					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-					node += "		<button class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
-					node += "			<i class='material-icons'>edit</i>";
-					node += "			<label>Edit</label>";
-					node += "		</button>";
-					node += "	</div>";
-					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
-					node += "</section>";
-				} else {
+				if ( isEdit ) {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
@@ -2204,12 +2189,6 @@ var containers = {
 				if ( isEdit ) {
 					buttons.backDashboard.addEventListener('click', function(evt) { app.displayDashboard(dashboard.id, false); }, false);
 					buttons.saveDashboard.addEventListener('click', function(evt) { app.onSaveDashboard(evt); }, false);
-				} else {
-					buttons.listDashboard.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
-					// buttons.deleteDashboard2.addEventListener('click',
-					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
-					// }, false);
-					buttons.editDashboard2.addEventListener('click', function(evt) { app.displayDashboard(dashboard.id, true); evt.preventDefault(); }, false);
 				}
 
 				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
@@ -2257,7 +2236,7 @@ var containers = {
 					node += "					"+snippet.attributes.name+"</h2>";
 					node += "			</span>";
 					node += "			<span class='mdl-list__item-secondary-action'>";
-					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
 					node += "					<i class='material-icons'>expand_more</i>";
 					node += "				</button>";
 					node += "			</span>";
@@ -2297,7 +2276,7 @@ var containers = {
 					node += "				</h2>";
 					node += "			</span>";
 					node += "			<span class='mdl-list__item-secondary-action'>";
-					node += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='snippetflows-"+id+"'>";
+					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='snippetflows-"+id+"'>";
 					node += "					<i class='material-icons'>expand_more</i>";
 					node += "				</button>";
 					node += "			</span>";
@@ -2835,6 +2814,9 @@ var containers = {
 			fab += "		</span>";
 			fab += "	</button>";
 			fab += "</div>";
+			
+			// Add spacer
+			fab += "<div class='mdl-grid mdl-cell mdl-cell--12-col spacer'>&nbsp;</div>";
 			container.innerHTML += fab;
 			componentHandler.upgradeDom();
 			
@@ -3015,7 +2997,7 @@ var containers = {
 				snippet += "	<div class=\"valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
 				snippet += "			<div class='mdl-list__item-primary-content'>";
-				snippet += "				<i class='material-icons'>"+icon+"</i>";
+				snippet += "				<i class='material-icons md-48'>"+icon+"</i>";
 				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
 				snippet += "			</div>";
 				snippet += "			<div class='mdl-list__item-secondary-content'>";
@@ -3249,11 +3231,11 @@ var containers = {
 					var unit = response.links.unit!==undefined?response.links.unit:'';
 					var ttl = response.links.ttl;
 					if ( value1 == response.data[1].attributes.value ) {
-						value1 = "<i class='material-icons'>trending_flat</i> " + value1;
+						value1 = "<i class='material-icons md-48'>trending_flat</i> " + value1;
 					} else if( value1 < response.data[1].attributes.value ) {
-						value1 = "<i class='material-icons'>trending_down</i> " + value1;
+						value1 = "<i class='material-icons md-48'>trending_down</i> " + value1;
 					} else if( value1 > response.data[1].attributes.value ) {
-						value1 = "<i class='material-icons'>trending_up</i> " + value1;
+						value1 = "<i class='material-icons md-48'>trending_up</i> " + value1;
 					}
 					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
 						document.getElementById('snippet-value1-'+my_snippet.id).parentNode.parentNode.parentNode.classList.remove('is-ontime');
@@ -3576,7 +3558,7 @@ var containers = {
 			status += "				</h2>";
 			status += "			</span>";
 			status += "			<span class='mdl-list__item-secondary-action'>";
-			status += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-details'>";
+			status += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-details'>";
 			status += "					<i class='material-icons'>expand_more</i>";
 			status += "				</button>";
 			status += "			</span>";
@@ -3602,7 +3584,7 @@ var containers = {
 				status += "				</h2>";
 				status += "			</span>";
 				status += "			<span class='mdl-list__item-secondary-action'>";
-				status += "				<button class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-usage'>";
+				status += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-usage'>";
 				status += "					<i class='material-icons'>expand_more</i>";
 				status += "				</button>";
 				status += "			</span>";
