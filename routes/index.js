@@ -381,7 +381,7 @@ router.get('/index', function(req, res, next) {
 	    {
 			title: 't6 API first',
 			titlecolor: '#ffffff',
-			description: 'Live, eat, and breathe the API-first lifestyle of t6.<br />6 resources to take controle of your Objects, Flows, Dashboards, Snippets, Rules, and Mqtts topics.',
+			description: 'Live, eat, and breathe the API-first lifestyle of t6.<br />6 resources to take control of your Objects, Flows, Dashboards, Snippets, Rules, and Mqtts topics.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
 			action: {id: 'docs', label: 'Read the Doc'},
 	    },
@@ -404,7 +404,7 @@ router.get('/index', function(req, res, next) {
 			titlecolor: '#ffffff',
 			description: 'JWT Tokens allows to manage Objects & Flows API. Permissions based on access Tokens.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
-			action: {id: 'loginForm', label: 'Get Started'},
+			action: {id: 'login', label: 'Get Started'},
 	    },
 	    {
 			title: 'Dashboards',
