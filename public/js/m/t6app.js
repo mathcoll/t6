@@ -2429,7 +2429,7 @@ var containers = {
 					}
 				}
 				var title = 'My Objects';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: app.displayAddObject(app.defaultResources.object), action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}};
+				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: false, action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}; // ,
 			
 			} else if (type == 'flows') {
@@ -2449,7 +2449,7 @@ var containers = {
 					}
 				}
 				var title = 'My Flows';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: app.displayAddFlow(app.defaultResources.flow), action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
+				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: false, action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; // ,
 																																																																			// action:
 			} else if (type == 'dashboards') {
@@ -2466,7 +2466,7 @@ var containers = {
 					}
 				}
 				var title = 'My Dashboards';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: app.displayAddDashboard(app.defaultResources.dashboard), action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
+				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: false, action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting'}; // ,
 				
 			} else if (type == 'snippets') {
@@ -2483,7 +2483,7 @@ var containers = {
 					}
 				}
 				var title = 'My Snippets';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: app.displayAddSnippet(app.defaultResources.snippet), action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
+				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: false, action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
 				
 			} else if (type == 'rules') {
@@ -2500,7 +2500,7 @@ var containers = {
 					}
 				}
 				var title = 'My Rules';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: app.displayAddRule(app.defaultResources.rule), action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
+				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: false, action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; // ,
 				
 			} else if (type == 'mqtts') {
@@ -2997,7 +2997,7 @@ var containers = {
 				snippet += "	<div class=\"valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
 				snippet += "		<div class=\"contextual\">";
 				snippet += "			<div class='mdl-list__item-primary-content'>";
-				snippet += "				<i class='material-icons md-48'>"+icon+"</i>";
+				snippet += "				<i class='material-icons'>"+icon+"</i>";
 				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
 				snippet += "			</div>";
 				snippet += "			<div class='mdl-list__item-secondary-content'>";
