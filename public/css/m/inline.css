@@ -189,7 +189,10 @@ section.fixedActionButtons button.mdl-button {
 	width: 100%;
 	margin: 0 !important;
 }
-
+.spacer {
+    min-height: 68px;
+    display: block;
+}
 /* Snippets */
 div .heading {
 	font-weight: 600;
@@ -217,22 +220,22 @@ div.valuedisplay .snippet-unit3 {
 	font-weight: 600;
 }
 div.valuedisplay .snippet-value1 {
-	font-size: 14vh;
+	font-size: 12vh;
 }
 div.valuedisplay .snippet-unit1 {
-	font-size: 10vh;
-}
-div.valuedisplay .snippet-value2 {
 	font-size: 8vh;
 }
-div.valuedisplay .snippet-unit2 {
+div.valuedisplay .snippet-value2 {
 	font-size: 6vh;
 }
+div.valuedisplay .snippet-unit2 {
+	font-size: 1vh;
+}
 div.valuedisplay .snippet-value3 {
-	font-size: 4vh;
+	font-size: 2vh;
 }
 div.valuedisplay .snippet-unit3 {
-	font-size: 2vh;
+	font-size: 1vh;
 }
 div.valuedisplay .mdl-list__item-secondary-content {
 	background: url(/img/m/snippets/valuedisplay.jpg) 50% 59%;
@@ -816,6 +819,48 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	margin: 5px -150px;
 	border-radius: 2px;
 }
+@media only screen and (min-device-width: 801px) {
+	.toast__container .toast__msg {
+		width: 300px;
+	}
+	.toast__container {
+		bottom: 20px;
+		left: 50%;
+	}
+}
+@media only screen and (min-device-width: 481px) and (max-device-width: 800px) {
+	.toast__container .toast__msg {
+		margin: 0 !important;
+		width: 100%;
+	}
+	.toast__container {
+		bottom: 0;
+		right: 0;
+		left: 0;
+	}
+}
+@media only screen and (min-device-width: 351px) and (max-device-width: 480px) {
+	.toast__container .toast__msg {
+		margin: 0 !important;
+		width: 100%;
+	}
+	.toast__container {
+		bottom: 0;
+		right: 0;
+		left: 0;
+	}
+}
+@media screen and (max-width: 350px) {
+	.toast__container .toast__msg {
+		margin: 0 !important;
+		width: 100%;
+	}
+	.toast__container {
+		bottom: 0;
+		right: 0;
+		left: 0;
+	}
+}
 .toast__msg .material-icons {
 	align-self: auto !important;
 }
@@ -913,9 +958,6 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	float: none !important;
 }
 .menu__list {
-	/*width: inherit;*/
-	/*height: inherit;*/
-	
 	overflow: auto;
 	overflow-x: hidden;
 	-webkit-overflow-scrolling: touch;
