@@ -644,6 +644,13 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	-webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
 	animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
 }
+.mdl-spinner {
+	width: 24px;
+	height: 24px;
+	vertical-align: middle;
+	margin: 0 5px 0 0;
+	display: inline-block !important;
+}
 @-webkit-keyframes rotate {
 	from {
 		-webkit-transform: rotate(0);

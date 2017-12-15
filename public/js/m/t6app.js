@@ -196,6 +196,7 @@ var containers = {
 	function onLoginButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		componentHandler.upgradeDom();
 		
 		var username = myForm.querySelector("form.signin input[name='username']").value;
 		var password = myForm.querySelector("form.signin input[name='password']").value;
@@ -211,7 +212,6 @@ var containers = {
 	}; // onStatusButtonClick
 	
 	function onSettingsButtonClick(evt) {
-		app.getSettings();
 		app.setSection('settings');
 		if (evt) evt.preventDefault();
 	}; // onSettingsButtonClick
@@ -254,6 +254,7 @@ var containers = {
 	function onSignupButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		myForm.querySelector("form.signup button.createUser").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		componentHandler.upgradeDom();
 		
 		var email = myForm.querySelector("form.signup input[name='email']").value;
 		var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
@@ -287,6 +288,7 @@ var containers = {
 	function onPasswordResetButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		myForm.querySelector("form.resetpassword button.setPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		componentHandler.upgradeDom();
 		
 		var password = myForm.querySelector("form.resetpassword input[name='password']").value;
 		var password2 = myForm.querySelector("form.resetpassword input[name='password2']").value;
@@ -319,6 +321,7 @@ var containers = {
 	function onForgotPasswordButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		myForm.querySelector("form.forgotpassword button.forgotPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		componentHandler.upgradeDom();
 		
 		var email = myForm.querySelector("form.forgotpassword input[name='email']").value;
 		if ( email ) {
@@ -852,6 +855,8 @@ var containers = {
 					app.displayObject(params['id'], true);
 				}
 			}
+		} else if ( section === 'settings' ) {
+			app.getSettings();
 		} else {
 			window.location.hash = '#'+section;
 			app.fetchItemsPaginated(section, undefined, app.itemsPage[section], app.itemsSize[section]);
@@ -4109,12 +4114,17 @@ var containers = {
 	menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
 	for (var item in menuItems) {
 		if ( menuItems[item].childElementCount > -1 ) {
-			(menuItems[item]).addEventListener('click', function(evt) {app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1)); app.hideMenu()}, false);
+			(menuItems[item]).addEventListener('click', function(evt) {
+				app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
+				app.hideMenu();
+			}, false);
 		}
 	};
 	for (var item in menuTabItems) {
 		if ( menuTabItems[item].childElementCount > -1 ) {
-			(menuTabItems[item]).addEventListener('click', function(evt) {app.setSection((evt.target.parentNode.getAttribute('hash')!==null?evt.target.parentNode.getAttribute('hash'):evt.target.parentNode.getAttribute('href')).substr(1));}, false);
+			(menuTabItems[item]).addEventListener('click', function(evt) {
+				app.setSection((evt.target.parentNode.getAttribute('hash')!==null?evt.target.parentNode.getAttribute('hash'):evt.target.parentNode.getAttribute('href')).substr(1));
+			}, false);
 		}
 	};
 	document.body.addEventListener('touchstart', function(event) {
@@ -4144,6 +4154,7 @@ var containers = {
 			}
 		}
 	}, false);
+	/*
 	document.querySelector('.mdl-layout__content').addEventListener('touchend', function(event) {
 		if(event.handled !== true) {
 			//console.log(touchStartPoint, touchMovePoint, touchStartPoint-touchMovePoint);
@@ -4183,6 +4194,7 @@ var containers = {
 			event.handled = true;
 		}
 	}, false);
+	*/
 
 	/* Lazy loading */
 	var paginatedContainer = Array(Array(containers.objects, 'objects'), Array(containers.flows, 'flows'), Array(containers.snippets, 'snippets'), Array(containers.dashboards, 'dashboards'), Array(containers.mqtts, 'mqtts'), Array(containers.rules, 'rules'));
