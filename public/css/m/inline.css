@@ -18,6 +18,7 @@
 	direction: ltr;
 	-moz-font-feature-settings: 'liga';
 	-moz-osx-font-smoothing: grayscale;
+	align-self: flex-start;
 }
 * {
 	box-sizing: border-box;
@@ -47,9 +48,6 @@ a {
 #search-exp::placeholder,
 #filter-exp::placeholder {
 	color: rgba(255,255,255,.6);
-}
-.material-icons {
-	align-self: flex-start;
 }
 .mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
 	font-size: 12px !important;
@@ -155,6 +153,15 @@ div[data-type="mqtts"].removed {
 	background: linear-gradient( to right top, transparent 15%, #7d2020, #7d2020 33%, transparent 50% ) !important;
 	background-size: 2px 2px !important;
 	color: #7d2020 !important;
+}
+.is-hover {
+	-moz-transform: scale(.99);
+	-webkit-transform: scale(.99);
+	-o-transform: scale(.99);
+	-ms-transform: scale(.99);
+	transform: scale(.99);
+	transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) .3s;
+	
 }
 section.is-active .mdl-button--fab.is-not-here {
 	opacity: 0;
@@ -517,7 +524,7 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 .mdl-subheader-content {
 	color: rgb(121, 85, 72) !important;
 	font-weight: 700;
-	padding: 15px;
+	padding: 5px;
 	width: 100%;
 	position: sticky;
 	top: 0px;
@@ -627,6 +634,10 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	-webkit-flex: 1;
 	-ms-flex: 1;
 	flex: 1;
+}
+div[data-action='view'] .mdl-card__title,
+div[data-action='view'] .mdl-list__item--three-line {
+	cursor: pointer;
 }
 .loader {
 	left: 50%;
@@ -1005,6 +1016,10 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 }
 #drawer a.mdl-navigation__link {
 	color: rgb(121,85,72);
+}
+#drawer a.mdl-navigation__link .material-icons {
+	vertical-align:middle;
+	padding: 0 10px 0 0;
 }
 .mdl-layout__tab-bar a.mdl-navigation__link {
 	opacity: 1 !important;
