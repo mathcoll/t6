@@ -10,7 +10,7 @@ var app = {
 	RateLimit : {Limit: null, Remaining: null, Used: null},
 	date_format: 'DD/MM/YYYY, HH:mm',
 	cardMaxChars: 256,
-	itemsSize: {objects: 999, flows: 999, snippets: 999, dashboards: 999, mqtts: 999, rules: 999},
+	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15},
 	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
 	currentSection: 'index',
 	tawktoid: '58852788bcf30e71ac141187',
@@ -257,10 +257,10 @@ var containers = {
 		componentHandler.upgradeDom();
 		
 		var email = myForm.querySelector("form.signup input[name='email']").value;
-		var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
-		var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
-		var postData = {"email":email, "firstName":firstName, "lastName":lastName};
-		if ( email ) {
+		if ( email && email.match(app.patterns.username) ) {
+			var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
+			var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
+			var postData = {"email":email, "firstName":firstName, "lastName":lastName};
 			var myHeaders = new Headers();
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
@@ -268,7 +268,7 @@ var containers = {
 			
 			fetch(url, myInit)
 			.then(
-				fetchStatusHandler
+					fetchStatusHandler
 			).then(function(fetchResponse){
 				return fetchResponse.json();
 			})
@@ -280,7 +280,7 @@ var containers = {
 				toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 			});
 		} else {
-			toast('We can\'t process your signup.', {timeout:3000, type: 'warning'});
+			toast('We can\'t process your signup. Please check your inputs.', {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
 	}; // onSignupButtonClick
@@ -324,7 +324,7 @@ var containers = {
 		componentHandler.upgradeDom();
 		
 		var email = myForm.querySelector("form.forgotpassword input[name='email']").value;
-		if ( email ) {
+		if ( email && email.match(app.patterns.username) ) {
 			var myHeaders = new Headers();
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify({"email":email}) };
@@ -344,7 +344,7 @@ var containers = {
 				toast('We can\'t process your request. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 			});
 		} else {
-			toast('We can\'t send the instructions.', {timeout:3000, type: 'warning'});
+			toast('We can\'t send the instructions. Please check your inputs.', {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
 	}; // onForgotPasswordButtonClick
@@ -490,9 +490,6 @@ var containers = {
 			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
 			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
 		};
-		if ( app.debug === true ) {
-			console.log(JSON.stringify(body));
-		}
 
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+app.bearer);
@@ -818,6 +815,7 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
+		window.scrollTo(0, 0);
 		if ( section === 'public-object' ) {
 			var urlParams = new URLSearchParams(window.location.search); // .toString();
 			var params = {};
@@ -861,7 +859,6 @@ var containers = {
 			window.location.hash = '#'+section;
 			app.fetchItemsPaginated(section, undefined, app.itemsPage[section], app.itemsSize[section]);
 		}
-		window.scrollTo(0, 0);
 
 		app.refreshButtonsSelectors();
 		var act = document.querySelectorAll('section.is-active');
@@ -892,9 +889,6 @@ var containers = {
 			}
 		}
 		app.currentSection = section;
-		if ( app.debug === true ) {
-			console.log("end of setSection: "+section);
-		}
 	}; // setSection
 
 	app.setItemsClickAction = function(type) {
@@ -905,39 +899,86 @@ var containers = {
 		for (var i in items) {
 			if ( type == 'objects' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.target.parentNode.parentNode.parentNode;
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
 					app.displayObject(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('swl', function(evt) {
-					app.displayEditObject(item.dataset.id);
-					evt.style.left = (evt.pageX - 10) + 'px';
-					evt.preventDefault();
-				}, {passive: false,});
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('swr', function(evt) {
-					app.onDeleteObject(item.dataset.id);
+				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
+					app.displayObject(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
 			} else if ( type == 'flows' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.target.parentNode.parentNode.parentNode;
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
+					app.displayFlow(item.dataset.id, false);
+					evt.preventDefault();
+				}, {passive: false,});
+				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
 					app.displayFlow(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
 			} else if ( type == 'dashboards' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.target.parentNode.parentNode.parentNode;
-					app.displayDashboard(item.dataset.id);
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
+					app.displayDashboard(item.dataset.id, false);
+					evt.preventDefault();
+				}, {passive: false,});
+				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
+					app.displayDashboard(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
 			} else if ( type == 'snippets' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.target.parentNode.parentNode.parentNode;
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
+					app.displaySnippet(item.dataset.id, false);
+					evt.preventDefault();
+				}, {passive: false,});
+				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
 					app.displaySnippet(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
 			}
-		}
+		};
+		// swapDate
+		var swaps = document.querySelectorAll("button.swapDate");
+		for (var s in swaps) {
+			if ( (swaps[s]) !== undefined && (swaps[s]).childElementCount > -1 ) {
+				(swaps[s]).addEventListener('click', function(evt) {
+					var datasetid = evt.currentTarget.dataset.id;
+					document.querySelector("div[data-id='"+datasetid+"'] span[data-date='created']").classList.toggle('hidden');
+					document.querySelector("div[data-id='"+datasetid+"'] span[data-date='updated']").classList.toggle('hidden');
+	
+				}, {passive: false,});
+			}
+		};
+		
+		var lazys = document.querySelectorAll("button.lazyloading");
+		for (var l in lazys) {
+			if ( (lazys[l]) !== undefined && (lazys[l]).childElementCount > -1 ) {
+				(lazys[l]).addEventListener('click', function(evt) {
+					var size = evt.currentTarget.dataset.size;
+					var page = evt.currentTarget.dataset.page;
+					var type = evt.currentTarget.dataset.type;
+					
+					app.itemsPage[type] = page;
+					app.itemsSize[type] = size;
+					app.fetchItemsPaginated(type, undefined, app.itemsPage[type], app.itemsSize[type]);
+					evt.currentTarget.parentNode.remove();
+				}, {passive: false,});
+			}
+		};
 	}; // setItemsClickAction
 	
 	function fetchStatusHandler(response) {
@@ -1163,6 +1204,8 @@ var containers = {
 
 	app.displayPublicObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
+		history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+id );
+		
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
@@ -1317,6 +1360,8 @@ var containers = {
 
 	app.displayObject = function(id, isEdit) {
 		window.scrollTo(0, 0);
+		history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+id );
+
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
@@ -1375,7 +1420,7 @@ var containers = {
 					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', id: 'Description', isEdit: isEdit});
 				}
 				if ( object.attributes.type || isEdit==true ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', isEdit: isEdit, id: 'Type', options: app.types });
+					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', isEdit: isEdit, options: app.types });
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
 					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
@@ -1549,6 +1594,8 @@ var containers = {
 	}; // getSubtitle
 
 	app.displayAddObject = function(object) {
+		history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+object.id );
+		
 		var node = "";
 		object.id = object.id!==""?object.id:app.getUniqueId();
 		node += app.getSubtitle('Description');
@@ -1694,6 +1741,8 @@ var containers = {
 	}
 	
 	app.displayAddFlow = function(flow) {
+		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+flow.id );
+		
 		var node = "";
 		app.getUnits();
 		app.getDatatypes();
@@ -1736,6 +1785,8 @@ var containers = {
 	}; // displayAddFlow
 	
 	app.displayAddDashboard = function(dashboard) {
+		history.pushState( {section: 'dashboard' }, window.location.hash.substr(1), '#dashboard' );
+		
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -1786,6 +1837,8 @@ var containers = {
 	}; // displayAddRule
 
 	app.displayAddSnippet = function(snippet) {
+		history.pushState( {section: 'snippet' }, window.location.hash.substr(1), '#snippet?id='+snippet.id );
+		
 		var node = "";
 		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
@@ -1876,6 +1929,8 @@ var containers = {
 	} // getCard
 
 	app.displayFlow = function(id, isEdit) {
+		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+flow.id );
+		
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -2106,6 +2161,8 @@ var containers = {
 	}; // displayFlow
 
 	app.displayDashboard = function(id, isEdit) {
+		history.pushState( {section: 'dashboard' }, window.location.hash.substr(1), '#dashboard?id='+id );
+		
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -2164,9 +2221,9 @@ var containers = {
 
 					node += app.getSubtitle('Available Snippets');
 					node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-					node += "	<ul class='mdl-grid'>";
-					// dropdown from the Api getSnippets
-					node += "	</ul>";
+					for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
+						node += app.displaySnippetItem_asSimple({id: dashboard.attributes.snippets[i]});
+					}
 					node += "</div>";
 					
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
@@ -2185,6 +2242,11 @@ var containers = {
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>"
+				} else {
+					/* View mode */
+					for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
+						app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
+					}
 				}
 				(containers.dashboard).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
@@ -2194,10 +2256,6 @@ var containers = {
 				if ( isEdit ) {
 					buttons.backDashboard.addEventListener('click', function(evt) { app.displayDashboard(dashboard.id, false); }, false);
 					buttons.saveDashboard.addEventListener('click', function(evt) { app.onSaveDashboard(evt); }, false);
-				}
-
-				for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-					app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
 				}
 
 				app.setSection('dashboard');
@@ -2212,6 +2270,8 @@ var containers = {
 	}; // displayDashboard
 
 	app.displaySnippet = function(id, isEdit) {
+		history.pushState( {section: 'snippet' }, window.location.hash.substr(1), '#snippet?id='+id );
+		
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -2366,6 +2426,17 @@ var containers = {
 		});
 		containers.spinner.setAttribute('hidden', true);
 	}; // displaySnippet
+	
+	app.displaySnippetItem_asSimple = function(snippet) {
+		var node = "<section class='mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky' role='heading'>";
+		node += "	<div class='md-subheader-inner'>";
+		node += "		<div class='mdl-subheader-content'>";
+		node += "			<span class='ng-scope'>"+snippet.id+"</span>";
+		node += "		</div>";
+		node += "	</div>";
+		node += "</section>";
+		return node;
+	}; // displaySnippetItem_asSimple
 
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
@@ -2374,16 +2445,24 @@ var containers = {
 		var element = "";
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
 		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
-		element += "		<div class=\"mdl-card__title mdl-js-button mdl-js-ripple-effect\">";
+		element += "		<div class=\"mdl-card__title\">";
 		element += "			<i class=\"material-icons\">"+iconName+"</i>";
 		element += "			<h2 class=\"mdl-card__title-text\">"+name+"</h2>";
 		element += "		</div>";
 		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
-		element += "			<span class=\"pull-left mdl-card__date\">Created on "+moment(item.attributes.meta.created).format(app.date_format)+"</span>";
-		element += "			<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		element += "				<i class=\"material-icons\">"+app.icons.menu+"</i>";
-		element += "			</button>";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+item.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(item.attributes.meta.created).format(app.date_format) + "</span>";
+		element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(item.attributes.meta.updated).format(app.date_format) + "</span>";
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__date\">";
+		element += "				<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
 		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
 		element += "				<li class=\"mdl-menu__item\">";
 		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
@@ -2405,8 +2484,8 @@ var containers = {
 				resolve();
 				return false;
 			}
-			size = size!==undefined?size:app.itemsSize.type;
-			page = page!==undefined?page:1;
+			size = size!==undefined?size:app.itemsSize[type];
+			page = page!==undefined?page:app.itemsPage[type];
 			
 			containers.spinner.removeAttribute('hidden');
 			containers.spinner.classList.remove('hidden');
@@ -2567,7 +2646,9 @@ var containers = {
 						return fetchResponse.json();
 					})
 					.then(function(response) {
-						container.innerHTML = "";
+						if ( page==1 ) {
+							container.innerHTML = "";
+						}
 						if ( (response.data).length == 0 ) {
 							container.innerHTML = app.getCard(defaultCard);
 							app.displayLoginForm( container );
@@ -2809,19 +2890,28 @@ var containers = {
 			container = (containers.snippets).querySelector('.page-content');
 			showFAB = true;
 		}
-		if ( showFAB  && container ) {
+		if ( showFAB  && container && app.itemsPage[type]==1 ) {
 			var fabClass = app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom';
 			var fab = "<div class='mdl-button--fab_flinger-container "+fabClass+"'>";
 			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
 			fab += "		<i class='material-icons'>add</i>";
-			fab += "		<span class='mdl-button__ripple-container'>";
-			fab += "			<span class='mdl-ripple'></span>";
-			fab += "		</span>";
 			fab += "	</button>";
 			fab += "</div>";
 			
 			// Add spacer
-			fab += "<div class='mdl-grid mdl-cell mdl-cell--12-col spacer'>&nbsp;</div>";
+			var from = (parseInt(app.itemsPage[type])*parseInt(app.itemsSize[type]))+1;
+			var to = (parseInt(app.itemsPage[type])+1)*parseInt(app.itemsSize[type]);
+			var page = parseInt(app.itemsPage[type])+1;
+			var max = 5; // hardcoded! # TODO
+			//if ( to < max ) {
+				fab += "<div class='mdl-grid mdl-cell mdl-cell--12-col spacer'>";
+				fab += "	<span class='mdl-layout-spacer'></span>";
+				fab += "		<button data-size='"+parseInt(app.itemsSize[type])+"' data-page='"+page+"' data-type='"+type+"' class='lazyloading mdl-cell--12-col mdl-button mdl-js-button mdl-js-ripple-effect'>";
+				fab += "			<i class='material-icons'>expand_more</i>";
+				fab += "		</button>";
+				fab += "	<span class='mdl-layout-spacer'></span>";
+				fab += "</div>";
+			//}
 			container.innerHTML += fab;
 			componentHandler.upgradeDom();
 			
@@ -2918,6 +3008,7 @@ var containers = {
 			} else if ( options.type === 'select' ) {
 				if ( options.isEdit == true ) {
 					var isMultiple = options.isMultiple==true?'multiple':'';
+					
 					field += "<div class='mdl-selectfield mdl-js-selectfield mdl-textfield--floating-label'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"' "+isMultiple+">";
@@ -2930,7 +3021,8 @@ var containers = {
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
-					value = (options.options.filter(function(cur) {return cur.name === value}))[0].value;
+					var selectedValue = (options.options.filter(function(cur) {return cur.name === value}));
+					selectedValue = selectedValue[0]!==undefined?selectedValue[0].value:'';
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
@@ -3365,7 +3457,19 @@ var containers = {
 				app.resetSections();
 				// app.getAllUserData();
 				app.fetchProfile();
-				if ( window.location.hash && window.location.hash.substr(1) !== 'login' ) {
+				if ( window.location.hash && window.location.hash.substr(1) === 'object_add' ) {
+					app.displayAddObject(app.defaultResources.object);
+				} else if ( window.location.hash && window.location.hash.substr(1) === 'flow_add' ) {
+					app.displayAddFlow(app.defaultResources.flow);
+				} else if ( window.location.hash && window.location.hash.substr(1) === 'dashboard_add' ) {
+					app.displayAddDashboard(app.defaultResources.dashboard);
+				} else if ( window.location.hash && window.location.hash.substr(1) === 'snippet_add' ) {
+					app.displayAddSnippet(app.defaultResources.snippet);
+				} else if ( window.location.hash && window.location.hash.substr(1) === 'rule_add' ) {
+					app.displayAddRule(app.defaultResources.rule);
+				} else if ( window.location.hash && window.location.hash.substr(1) === 'mqtt_add' ) {
+					app.displayAddMqtt(app.defaultResources.mqtt);
+				} else if ( window.location.hash && window.location.hash.substr(1) !== 'login' ) {
 					app.setSection(window.location.hash.substr(1));
 				} else {
 					app.setSection('index');
@@ -3683,7 +3787,7 @@ var containers = {
 		app.bearer = '';
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
-		app.itemsSize = {objects: 999, flows: 999, snippets: 999, dashboards: 999, mqtts: 999, rules: 999};
+		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
 		app.itemsPage = {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1};
 		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
 		app.isLogged = false;
@@ -3697,20 +3801,18 @@ var containers = {
 		componentHandler.upgradeDom();
 
 		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.'}); // ,
-		// app.displayLoginForm( (containers.objects) );
-		
+		app.displayLoginForm( (containers.objects).querySelector('.page-content') );
 		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Data Flows as Time-series', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		// app.displayLoginForm( (containers.flows) );
-
+		app.displayLoginForm( (containers.flows).querySelector('.page-content') );
 		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 'Graphics, data-management, Monitoring, Reporting', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		// app.displayLoginForm( (containers.dashboards) );
-
+		app.displayLoginForm( (containers.dashboards).querySelector('.page-content') );
 		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		// app.displayLoginForm( (containers.snippets) );
-		
+		app.displayLoginForm( (containers.snippets).querySelector('.page-content') );
 		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		app.displayLoginForm( (containers.rules).querySelector('.page-content') );
 		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-
+		app.displayLoginForm( (containers.mqtts).querySelector('.page-content') );
+		
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
 		for (var i=0; i<updated.length;i++) {
 			updated[i].classList.remove('is-upgraded');
@@ -3905,10 +4007,7 @@ var containers = {
 	 */
 	if ( window.location.hash ) {
 		var p = window.location.hash.substr(1);
-		if ( p === 'login' ) {
-			app.displayLoginForm( document.querySelector('#login').querySelector('.page-content') );
-			app.setSection('login');
-		}else if ( p === 'terms' ) {
+		if ( p === 'terms' ) {
 			 onTermsButtonClick();
 		} else if ( p === 'docs' ) {
 			onDocsButtonClick();
@@ -4277,13 +4376,23 @@ var containers = {
 
 	// To update network status
 	function updateNetworkStatus() {
+		var msg = ''; var type= '';
 		if (navigator.onLine) {
-			toast('You are now online...', {timeout:3000, type: 'done'});
+			msg = 'You are now online...';
+			type: 'done';
 			app.setHiddenElement("notification");
 		}
 		else {
-			toast('You are now offline...', {timeout:3000, type: 'warning'});
+			msg = 'You are now offline...';
+			type: 'warning';
 			app.setVisibleElement("notification");
+		}
+		
+		var spacers = document.querySelectorAll(".spacer");
+		for (var s in spacers) {
+			if ( (spacers[s]).childElementCount > -1 ) {
+				spacers[s].innerHTML = msg;
+			}
 		}
 	}
 })();
