@@ -824,9 +824,10 @@ var containers = {
 					var n = p[0];
 					params[n] = p[1];
 				}
-				if ( params['id'] ) {
-					app.displayPublicObject(params['id'], false);
-					section = 'object';
+				if ( params['id'] == "" ) {
+					app.setSection('objects');
+				} else if (params['id'] ) {
+					app.displayObject(params['id'], false);
 				}
 			}
 		} else if ( section === 'object' ) {
@@ -837,10 +838,14 @@ var containers = {
 					var n = p[0];
 					params[n] = p[1];
 				}
-				if ( params['id'] ) {
+				if ( params['id'] == "" ) {
+					app.setSection('objects');
+				} else if (params['id'] ) {
 					app.displayObject(params['id'], false);
 				}
 			}
+		} else if ( section === 'object_add' ) {
+			app.displayAddObject(app.defaultResources.object);
 		} else if ( section === 'edit-object' ) {
 			var urlParams = new URLSearchParams(window.location.search); // .toString();
 			var params = {};
@@ -849,10 +854,22 @@ var containers = {
 					var n = p[0];
 					params[n] = p[1];
 				}
-				if ( params['id'] ) {
+				if ( params['id'] == "" ) {
+					app.setSection('objects');
+				} else if (params['id'] ) {
 					app.displayObject(params['id'], true);
 				}
 			}
+		} else if ( section === 'flow_add' ) {
+			app.displayAddFlow(app.defaultResources.flow);
+		} else if ( section === 'snippet_add' ) {
+			app.displayAddSnippet(app.defaultResources.snippet);
+		} else if ( section === 'dashboard_add' ) {
+			app.displayAddDashboard(app.defaultResources.dashboard);
+		} else if ( section === 'rule_add' ) {
+			app.displayAddRule(app.defaultResources.rule);
+		} else if ( section === 'mqtt_add' ) {
+			app.displayMqttRule(app.defaultResources.mqtt);
 		} else if ( section === 'settings' ) {
 			app.getSettings();
 		} else {
@@ -975,7 +992,7 @@ var containers = {
 					app.itemsPage[type] = page;
 					app.itemsSize[type] = size;
 					app.fetchItemsPaginated(type, undefined, app.itemsPage[type], app.itemsSize[type]);
-					evt.currentTarget.parentNode.remove();
+					//evt.currentTarget.parentNode.remove();
 				}, {passive: false,});
 			}
 		};
@@ -1695,7 +1712,6 @@ var containers = {
 		buttons.addObject.addEventListener('click', function(evt) { app.onAddObject(evt); }, false);
 
 		app.setExpandAction();
-		app.setSection('object_add');
 	}; // displayAddObject
 	
 	app.getUnits = function() {
@@ -1781,7 +1797,6 @@ var containers = {
 		buttons.addFlow.addEventListener('click', function(evt) { app.onAddFlow(evt); }, false);
 
 		app.setExpandAction();
-		app.setSection('flow_add');
 	}; // displayAddFlow
 	
 	app.displayAddDashboard = function(dashboard) {
@@ -1828,13 +1843,14 @@ var containers = {
 		buttons.addDashboardBack.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
 		buttons.addDashboard.addEventListener('click', function(evt) { app.onAddDashboard(evt); }, false);
 
-
 		app.setExpandAction();
-		app.setSection('dashboard_add');
 	}; // displayAddDashboard
 
 	app.displayAddRule = function(rule) {
 	}; // displayAddRule
+
+	app.displayMqttRule = function(mqtt) {
+	}; // displayMqttRule
 
 	app.displayAddSnippet = function(snippet) {
 		history.pushState( {section: 'snippet' }, window.location.hash.substr(1), '#snippet?id='+snippet.id );
@@ -1891,7 +1907,6 @@ var containers = {
 		buttons.addSnippet.addEventListener('click', function(evt) { app.onAddSnippet(evt); }, false);
 
 		app.setExpandAction();
-		app.setSection('snippet_add');
 	}; // displayAddSnippet
 	
 	app.getCard = function(card) {
@@ -2484,6 +2499,7 @@ var containers = {
 				resolve();
 				return false;
 			}
+			
 			size = size!==undefined?size:app.itemsSize[type];
 			page = page!==undefined?page:app.itemsPage[type];
 			
@@ -2916,11 +2932,11 @@ var containers = {
 			componentHandler.upgradeDom();
 			
 			app.refreshButtonsSelectors();
-			if ( buttons.createObject ) buttons.createObject.addEventListener('click', function() {app.displayAddObject(app.defaultResources.object);}, false);
-			if ( buttons.createFlow ) buttons.createFlow.addEventListener('click', function() {app.displayAddFlow(app.defaultResources.flow);}, false);
-			if ( buttons.createSnippet ) buttons.createSnippet.addEventListener('click', function() {app.displayAddSnippet(app.defaultResources.snippet);}, false);
-			if ( buttons.createDashboard ) buttons.createDashboard.addEventListener('click', function() {app.displayAddDashboard(app.defaultResources.dashboard);}, false);
-			if ( buttons.createRule ) buttons.createRule.addEventListener('click', function() {app.displayAddRule(app.defaultResources.rule);}, false);
+			if ( buttons.createObject ) buttons.createObject.addEventListener('click', function() {app.setSection('object_add');}, false);
+			if ( buttons.createFlow ) buttons.createFlow.addEventListener('click', function() {app.setSection('flow_add');}, false);
+			if ( buttons.createSnippet ) buttons.createSnippet.addEventListener('click', function() {app.setSection('snippet_add');}, false);
+			if ( buttons.createDashboard ) buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add');}, false);
+			if ( buttons.createRule ) buttons.createRule.addEventListener('click', function() {app.setSection('rule_add');}, false);
 			if ( buttons.createMqtt ) buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
 		}
 	} // showAddFAB
