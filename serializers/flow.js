@@ -1,9 +1,9 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function FlowSerializer(flow) {
 	this.serialize = function() {
-		return new JSONAPISerializer('flow', flow, {
+		return new JSONAPISerializer('flow', {
 	    	keyForAttribute: 'underscore_case',
 			attributes : [ 'name', 'unit', 'objects', 'permission', 'data_type', 'mqtt_topic', 'meta' ],
 			topLevelLinks : {
@@ -45,7 +45,7 @@ function FlowSerializer(flow) {
 					}
 				}
 			}
-		});
+		}).serialize(flow);
 	};
 }
 

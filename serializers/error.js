@@ -1,12 +1,12 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function ErrorSerializer(error) {
 	this.serialize = function() {
-		return new JSONAPISerializer('error', error, {
+		return new JSONAPISerializer('error', {
 	    	keyForAttribute: 'underscore_case',
 			attributes : [ 'code', 'message', 'details', 'stack' ],
-		});
+		}).serialize(error);
 	};
 }
 

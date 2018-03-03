@@ -1,10 +1,10 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function PermissionSerializer(user) {
 
   this.serialize = function () {
-    return new JSONAPISerializer('permission', user.permissions, {
+    return new JSONAPISerializer('permission', {
     	keyForAttribute: 'underscore_case',
     	attributes: ['flow_id', 'perm'],
 		topLevelLinks : {
@@ -15,7 +15,7 @@ function PermissionSerializer(user) {
 				return sprintf('%s/v%s/users/%s', baseUrl_https, version, user.id);
 			},
 		},
-    });
+    }).serialize(user.permissions);
   };
 }
 

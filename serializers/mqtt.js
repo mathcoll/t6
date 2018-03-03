@@ -1,10 +1,10 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function MqttTypeSerializer(mqtt) {
 
   this.serialize = function () {
-	return new JSONAPISerializer('mqtt', mqtt, {
+	return new JSONAPISerializer('mqtt', {
 		keyForAttribute: 'underscore_case',
 		attributes: ['name', 'mqtt_id'],
 		topLevelLinks : {
@@ -20,7 +20,7 @@ function MqttTypeSerializer(mqtt) {
 				return sprintf('%s/v%s/mqtts/%s', baseUrl_https, version, mqtt.id);
 			},
 		},
-    });
+    }).serialize(mqtt);
   };
 }
 

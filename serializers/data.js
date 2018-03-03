@@ -1,9 +1,9 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function DataSerializer(data) {
 	this.serialize = function() {
-		return new JSONAPISerializer('data', data, {
+		return new JSONAPISerializer('data', {
 	    	keyForAttribute: 'underscore_case',
 			attributes : [ 'id', 'flow_id', 'time', 'timestamp', 'value', 'publish', 'mqtt_topic', 'datatype' ],
 			topLevelLinks : {
@@ -21,7 +21,7 @@ function DataSerializer(data) {
 				self	:  sprintf('%s/v%s/data/%s/%s', baseUrl_https, version, data.flow_id, data.id)//TODO: this is too buggy
 				
 			},
-		});
+		}).serialize(data);
 	};
 }
 

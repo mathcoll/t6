@@ -1,9 +1,9 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function SnippetTypeSerializer(snippet) {
 	this.serialize = function () {
-		return new JSONAPISerializer('snippet', snippet, {
+		return new JSONAPISerializer('snippet', {
 			keyForAttribute: 'underscore_case',
 			attributes: ['name', 'user_id', 'description', 'type', 'icon', 'color', 'flows', 'meta'],
 			topLevelLinks : {
@@ -26,7 +26,7 @@ function SnippetTypeSerializer(snippet) {
 					}
 				}
 			},
-		});
+		}).serialize(snippet);
 	};
 }
 

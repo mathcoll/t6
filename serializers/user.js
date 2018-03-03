@@ -1,9 +1,9 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function UserSerializer(user) {
   this.serialize = function () {
-    return new JSONAPISerializer('user', user, {
+    return new JSONAPISerializer('user', {
     	keyForAttribute: 'underscore_case',
     	attributes: ['firstName', 'lastName', 'login', 'email', 'subscription_date', 'update_date', 'permissions', 'gravatar'],
 		topLevelLinks : {
@@ -14,7 +14,7 @@ function UserSerializer(user) {
 				return sprintf('%s/v%s/users/%s', baseUrl_https, version, user.id);
 			},
 		},
-    });
+    }).serialize(user);
   };
 }
 

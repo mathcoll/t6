@@ -1,10 +1,10 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function DashboardTypeSerializer(dashboard) {
 
   this.serialize = function () {
-    return new JSONAPISerializer('dashboard', dashboard, {
+    return new JSONAPISerializer('dashboard', {
     	keyForAttribute: 'underscore_case',
     	attributes: ['name', 'user_id', 'description', 'meta', 'snippets'],
 		topLevelLinks : {
@@ -27,7 +27,7 @@ function DashboardTypeSerializer(dashboard) {
 				}
 			}
 		},
-    });
+    }).serialize(dashboard);
   };
 }
 

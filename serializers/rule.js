@@ -1,10 +1,10 @@
 'use strict';
-var JSONAPISerializer = require('jsonapi-serializer');
+var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function RuleTypeSerializer(rule) {
 
   this.serialize = function () {
-    return new JSONAPISerializer('rule', rule, {
+    return new JSONAPISerializer('rule', {
     	keyForAttribute: 'underscore_case',
     	attributes: ['name', 'rule_id'],
 		topLevelLinks : {
@@ -20,7 +20,7 @@ function RuleTypeSerializer(rule) {
 				return sprintf('%s/v%s/rules/%s', baseUrl_https, version, rule.id);
 			},
 		},
-    });
+    }).serialize(rule);
   };
 }
 
