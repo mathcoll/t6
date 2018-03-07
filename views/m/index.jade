@@ -358,12 +358,18 @@ html.ltr(lang='en')
                       input.mdl-textfield__input(type='text', name='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='email') Email/Username
                       span.mdl-textfield__error Username should be your email address
-                  .mdl-card__actions.mdl-card--border
-                    a.mdl-button--colored(onclick="app.setSection('login');", href="#") Sign In
-                    //-span.mdl-layout-spacer
+                  .mdl-card__supporting-text.mdl-grid
+                    span.mdl-layout-spacer
                     button.forgotPassword.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons book
                       | Get instructions
+                  .mdl-card__actions.mdl-card--border
+                    a.mdl-button--colored(onclick="app.setSection('signup');", href="#signup")
+                      | Create an account
+                    | &nbsp;or&nbsp;
+                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                      | Sign In
+                    | .
               div.mdl-layout-spacer
           
         section#reset-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
