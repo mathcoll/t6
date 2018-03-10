@@ -2757,8 +2757,8 @@ var containers = {
 			localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
 			localStorage.setItem("currentUserEmail", user.attributes.email);
 			localStorage.setItem("currentUserHeader", gravatar.photos[0].value);
-			if ( gravatar.profile_background.url ) {
-				localStorage.setItem("currentUserBackground", gravatar.profile_background.url);
+			if ( gravatar.profileBackground.url ) {
+				localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
 			}
 			app.setDrawer();
 		})
