@@ -2802,8 +2802,8 @@ var containers = {
 			var login = "<section class='content-grid mdl-grid'>" +
 			"	<div class='mdl-layout-spacer'></div>" +
 			"	<form class='signin'>" +
-			"		<div class='mdl-card mdl-shadow--2dp'>" +
-			"			<div class='mdl-card__supporting-text'>" +
+			"		<div class='mdl-card mdl-card__title mdl-shadow--2dp'>" +
+			"			<div class='mdl-card__title'>" +
 			"				Connect your Objects to collect their data and show your own Dashboards." +
 			"			</div>" +
 			"			<div class='mdl-card__supporting-text'>" +

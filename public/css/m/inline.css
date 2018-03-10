@@ -804,8 +804,16 @@ div[data-action='view'] .mdl-list__item--three-line {
 .mdl-card {
 	min-height: auto !important;
 	overflow: visible !important;
-	/*width: 100%;*/
+	width: 100%;
 }
+
+form.signin > div,
+form.signup > div,
+form.forgotpassword > div,
+form.resetpassword > div {
+	max-width: 500px;
+}
+
 .toast__container {
 	position: fixed;
 	bottom: 20px;

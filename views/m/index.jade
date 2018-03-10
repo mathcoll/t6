@@ -307,8 +307,8 @@ html.ltr(lang='en')
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
               form.signup
-                .mdl-card.mdl-shadow--2dp
-                  .mdl-card__supporting-text You will receive an email to setup your password securely.
+                .mdl-card.mdl-card__title.mdl-shadow--2dp
+                  .mdl-card__title You will receive an email to setup your password securely.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='email') email
@@ -350,8 +350,8 @@ html.ltr(lang='en')
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
               form.forgotpassword
-                .mdl-card.mdl-shadow--2dp
-                  .mdl-card__supporting-text Enter your Email address below and we'll send you password reset instructions.
+                .mdl-card.mdl-card__title.mdl-shadow--2dp
+                  .mdl-card__title Enter your Email address below and we'll send you password reset instructions.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='email') email
@@ -379,9 +379,9 @@ html.ltr(lang='en')
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
               form.resetpassword
-                .mdl-card.mdl-shadow--2dp
-                  .mdl-card__supporting-text Set you new password to connect your t6 account.
-                  .mdl-card__supporting-text Password must contains lower cases, upper cases, digits, special characters; and must be longer than 8 characters.
+                .mdl-card.mdl-card__title.mdl-shadow--2dp
+                  .mdl-card__title Set you new password to connect your t6 account.
+                  .mdl-card__title Password must contains lower cases, upper cases, digits, special characters; and must be longer than 8 characters.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon(for='password') lock 
@@ -393,10 +393,16 @@ html.ltr(lang='en')
                       input.mdl-textfield__input.passmatch#p2(type='password', name='password2')
                       label.mdl-textfield__label(for='password2') Password Verification
                       span.mdl-textfield__error Password does not match
-                  .mdl-card__actions.mdl-card--border
+                  .mdl-card__supporting-text.mdl-grid
+                    span.mdl-layout-spacer
                     button.setPassword.mdl-button.mdl-js-button.mdl-js-ripple-effect
                       i.material-icons lock_open
-                      | Reset my password 
+                      | Reset my password
+                  .mdl-card__actions.mdl-card--border
+                    | &nbsp;or&nbsp;
+                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                      | Sign In
+                    | .
               div.mdl-layout-spacer
 
         //- View Settings
