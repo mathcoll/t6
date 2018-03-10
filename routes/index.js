@@ -278,11 +278,13 @@ router.post('/authenticate', function (req, res) {
         var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
         
         // Add the refresh token to the list
+        /*
     	tokens	= db.getCollection('tokens');
     	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
     	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
     	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
-        return res.status(200).json( {status: 'ok', token: token, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp} );
+    	*/
+        return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
     }
 });
 
