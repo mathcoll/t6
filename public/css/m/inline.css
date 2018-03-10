@@ -804,7 +804,7 @@ div[data-action='view'] .mdl-list__item--three-line {
 .mdl-card {
 	min-height: auto !important;
 	overflow: visible !important;
-	width: 100%;
+	/*width: 100%;*/
 }
 .toast__container {
 	position: fixed;
