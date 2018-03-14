@@ -2788,7 +2788,7 @@ var containers = {
 		if ( localStorage.getItem("currentUserBackground") !== null ) { document.getElementById("currentUserBackground").style.background="#795548 url("+localStorage.getItem("currentUserBackground")+") 50% 50% / cover" }
 		else { document.getElementById("currentUserBackground").style.background="#795548 url("+app.baseUrlCdn+"/img/m/side-nav-bg.jpg) 50% 50% / cover" }
 	}
-	
+
 	app.resetDrawer = function() {
 		localStorage.removeItem("currentUserName");
 		localStorage.removeItem("currentUserEmail");
@@ -2803,6 +2803,7 @@ var containers = {
 			"	<div class='mdl-layout-spacer'></div>" +
 			"	<form class='signin'>" +
 			"		<div class='mdl-card mdl-card__title mdl-shadow--2dp'>" +
+			"			<img src='data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA='>" +
 			"			<div class='mdl-card__title'>" +
 			"				Connect your Objects to collect their data and show your own Dashboards." +
 			"			</div>" +
@@ -4037,6 +4038,10 @@ var containers = {
 	}
 	app.fetchIndex('index');
 
+	// TODO OO OO OO OO OO OO OO OO
+	//localStorage.removeItem("currentUserName");
+	//if ( localStorage.getItem("currentUserName") !== null ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
+
 	if( !app.bearer || app.auth.username == null ) {
 		app.sessionExpired();
 	} else if( app.auth.username && app.auth.password ) {
@@ -4061,15 +4066,16 @@ var containers = {
 		}
 	});
 	
-	/*
-	 * window.addEventListener('hashchange', function() { if( window.history &&
-	 * window.history.pushState ) { history.pushState( { section:
-	 * window.location.hash.substr(1) }, window.location.hash.substr(1),
-	 * '#'+window.location.hash.substr(1));
-	 * app.setSection(window.location.hash.substr(1)); if ( app.debug === true ) {
-	 * console.log('history+=\"', window.location.hash.substr(1), '\"'); } } },
-	 * false);
-	 */
+	window.addEventListener('hashchange', function() {
+		if( window.history && window.history.pushState ) {
+			history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
+			app.setSection(window.location.hash.substr(1));
+			localStorage.setItem("currentPage", window.location.hash.substr(1));
+			if ( app.debug === true ) {
+				console.log('history+=\"', window.location.hash.substr(1), '\"');
+			}
+		}
+	}, false);
 	
 	document.getElementById('filter-exp').addEventListener('keypress', function(e) {
 		if(e.keyCode === 13) {
@@ -4362,14 +4368,14 @@ var containers = {
 
 	if (!('serviceWorker' in navigator)) {
 		if ( app.debug === true ) {
-			console.log('Service Worker isn\'t supported on this browser, disable or hide UI.');
+			console.log('Service Worker isn\'t supported on this browser.');
 		}
 		return;
 	} else {
 		// registerServiceWorker();
 		if (!('PushManager' in window)) {
 			if ( app.debug === true ) {
-				console.log('Push isn\'t supported on this browser, disable or hide UI.');
+				console.log('Push isn\'t supported on this browser.');
 			}
 			return;
 		} else {

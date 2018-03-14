@@ -807,11 +807,28 @@ div[data-action='view'] .mdl-list__item--three-line {
 	width: 100%;
 }
 
-form.signin > div,
-form.signup > div,
-form.forgotpassword > div,
-form.resetpassword > div {
+form.signin > div.mdl-shadow--2dp,
+form.signup > div.mdl-shadow--2dp,
+form.forgotpassword > div.mdl-shadow--2dp,
+form.resetpassword > div.mdl-shadow--2dp {
 	max-width: 500px;
+	margin-top: 80px;
+}
+
+form.signin > div.mdl-shadow--2dp img,
+form.signup > div.mdl-shadow--2dp img,
+form.forgotpassword > div.mdl-shadow--2dp img,
+form.resetpassword > div.mdl-shadow--2dp img {
+	max-width: 500px;
+	margin-top: 80px;
+	border-radius: 50%;
+	height: 130px;
+	width: 130px;
+	border: 5px solid #fff;
+	margin: -60px 0px 0px 0px;
+	background: url(/img/opl_img.jpg);
+    background-size: auto auto;
+    background-size: 130px 130px;
 }
 
 .toast__container {
