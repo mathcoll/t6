@@ -2803,7 +2803,7 @@ var containers = {
 			"	<div class='mdl-layout-spacer'></div>" +
 			"	<form class='signin'>" +
 			"		<div class='mdl-card mdl-card__title mdl-shadow--2dp'>" +
-			"			<img src='data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA='>" +
+			"			<img src='"+app.baseUrlCdn+"/img/opl_img.jpg'>" +
 			"			<div class='mdl-card__title'>" +
 			"				Connect your Objects to collect their data and show your own Dashboards." +
 			"			</div>" +
@@ -4035,6 +4035,14 @@ var containers = {
 		} else {
 			app.setSection(p);
 		}
+	} else {
+		if ( app.debug === true ) {
+			toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
+		}
+		var currentPage = localStorage.getItem("currentPage");
+		if ( currentPage ) {
+			app.setSection(currentPage);
+		}
 	}
 	app.fetchIndex('index');
 
@@ -4071,6 +4079,11 @@ var containers = {
 			history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
 			app.setSection(window.location.hash.substr(1));
 			localStorage.setItem("currentPage", window.location.hash.substr(1));
+			if ( id = getParameterByName('id') ) {
+				localStorage.setItem("currentResourceId", id);
+			} else {
+				localStorage.setItem("currentResourceId", null);
+			}
 			if ( app.debug === true ) {
 				console.log('history+=\"', window.location.hash.substr(1), '\"');
 			}
