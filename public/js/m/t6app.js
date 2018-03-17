@@ -481,7 +481,7 @@ var containers = {
 			};
 	
 			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
 			var url = app.baseUrl+'/'+app.api_version+'/objects/'+object_id;
@@ -520,7 +520,7 @@ var containers = {
 		};
 
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
 		var url = app.baseUrl+'/'+app.api_version+'/objects/';
@@ -554,7 +554,7 @@ var containers = {
 			};
 	
 			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
 			var url = app.baseUrl+'/'+app.api_version+'/flows/'+flow_id;
@@ -589,7 +589,7 @@ var containers = {
 			console.log(JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
 		var url = app.baseUrl+'/'+app.api_version+'/flows/';
@@ -623,7 +623,7 @@ var containers = {
 			};
 	
 			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
 			var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
@@ -658,7 +658,7 @@ var containers = {
 			console.log(JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/';
@@ -690,7 +690,7 @@ var containers = {
 			};
 	
 			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
 			var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+dashboard_id;
@@ -723,7 +723,7 @@ var containers = {
 			console.log(JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
 		var url = app.baseUrl+'/'+app.api_version+'/dashboards/';
@@ -1075,7 +1075,7 @@ var containers = {
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						app.hideModal();
 						var myHeaders = new Headers();
-						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 						myHeaders.append("Content-Type", "application/json");
 						var myInit = { method: 'DELETE', headers: myHeaders };
 						var url = app.baseUrl+'/'+app.api_version+'/objects/'+myId;
@@ -1121,7 +1121,7 @@ var containers = {
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						app.hideModal();
 						var myHeaders = new Headers();
-						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 						myHeaders.append("Content-Type", "application/json");
 						var myInit = { method: 'DELETE', headers: myHeaders };
 						var url = app.baseUrl+'/'+app.api_version+'/flows/'+myId;
@@ -1167,7 +1167,7 @@ var containers = {
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						app.hideModal();
 						var myHeaders = new Headers();
-						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 						myHeaders.append("Content-Type", "application/json");
 						var myInit = { method: 'DELETE', headers: myHeaders };
 						var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+myId;
@@ -1213,7 +1213,7 @@ var containers = {
 					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
 						app.hideModal();
 						var myHeaders = new Headers();
-						myHeaders.append("Authorization", "Bearer "+app.bearer);
+						myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 						myHeaders.append("Content-Type", "application/json");
 						var myInit = { method: 'DELETE', headers: myHeaders };
 						var url = app.baseUrl+'/'+app.api_version+'/snippets/'+myId;
@@ -1255,7 +1255,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/objects/'+id+'/public';
@@ -1411,7 +1411,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/objects/'+id;
@@ -1979,7 +1979,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/flows/'+id;
@@ -2211,7 +2211,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+id;
@@ -2320,7 +2320,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+id;
@@ -2535,7 +2535,7 @@ var containers = {
 			containers.spinner.removeAttribute('hidden');
 			containers.spinner.classList.remove('hidden');
 			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer "+app.bearer);
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'GET', headers: myHeaders };
 			var defaultCard = {};
@@ -2680,6 +2680,7 @@ var containers = {
 				type=undefined;
 			}
 
+			//console.log("localStorage bearer:"+localStorage.getItem('bearer'));
 			if ( !navigator.onLine ) {
 				container.innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'});
 			} else {
@@ -2728,7 +2729,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var container = (containers.profile).querySelector('.page-content');
@@ -2883,7 +2884,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var container = (containers.index).querySelector('.page-content');
@@ -3117,7 +3118,7 @@ var containers = {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var myContainer = container!=null?container:(containers.dashboard).querySelector('.page-content');
@@ -3453,7 +3454,7 @@ var containers = {
 
 	app.getQrcode = function(icon, label, id) {
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+app.bearer);
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = app.baseUrl+"/"+app.api_version+"/objects/"+id+"/qrcode/18/H";
@@ -3498,7 +3499,8 @@ var containers = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			if ( app.bearer = response.token ) {
+			if ( response.token ) {
+				localStorage.setItem('bearer', response.token)
 				app.isLogged = true;
 				app.resetSections();
 				// app.getAllUserData();
@@ -3524,7 +3526,7 @@ var containers = {
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
-				app.addJWT(app.bearer);
+				//app.addJWT(localStorage.getItem('bearer'));
 			} else {
 				if ( app.debug === true ) {
 					toast('Auth internal error', {timeout:3000, type: 'error'});
@@ -3830,7 +3832,7 @@ var containers = {
 	} // showLatestNotification
 	
 	app.sessionExpired = function() {
-		app.bearer = '';
+		localStorage.setItem('bearer', null);
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
@@ -3948,7 +3950,7 @@ var containers = {
 				if ( app.debug == true ) {
 					console.log('Using JWT expiring on '+moment(parseInt(cursor.value['exp']*1000)).format(app.date_format));
 				}
-				app.bearer = jwt;
+				localStorage.setItem('bearer', jwt);
 				app.resetSections();
 				// // //app.getAllUserData();
 				app.setSection('index');
@@ -4051,6 +4053,9 @@ var containers = {
 	/*
 	 * *********************************** Run the App ***********************************
 	 */
+	if ( localStorage.getItem("bearer") !== null ) {
+		app.isLogged = true;
+	}
 	if ( window.location.hash ) {
 		var p = window.location.hash.substr(1);
 		if ( p === 'terms' ) {
@@ -4065,21 +4070,17 @@ var containers = {
 			app.setSection(p);
 		}
 	} else {
-		if ( app.debug === true ) {
-			toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
-		}
 		var currentPage = localStorage.getItem("currentPage");
 		if ( currentPage ) {
+			if ( app.debug === true ) {
+				toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
+			}
 			app.setSection(currentPage);
 		}
 	}
 	app.fetchIndex('index');
 
-	// TODO OO OO OO OO OO OO OO OO
-	//localStorage.removeItem("currentUserName");
-	//if ( localStorage.getItem("currentUserName") !== null ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
-
-	if( !app.bearer || app.auth.username == null ) {
+	if( localStorage.getItem('bearer') === null || localStorage.getItem('bearer') === undefined || app.auth.username === null ) {
 		app.sessionExpired();
 	} else if( app.auth.username && app.auth.password ) {
 		// // //app.getAllUserData();
