@@ -16,6 +16,34 @@ var app = {
 	tawktoid: '58852788bcf30e71ac141187',
 	gtm: 'GTM-PH7923',
 	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
+	defaultPageTitle: 't6 IoT App',
+	sectionsPageTitles: {
+		'index': 't6 IoT App',
+		'profile': 't6 profile',
+		'object': 'Object %s',
+		'object_add': 'Add Object to t6',
+		'objects': 't6 Objects',
+		'flow': 'Flow %s',
+		'flows': 't6 Flows',
+		'flow_add': 'Add Flow to t6',
+		'dashboard': 'Dashboard %s',
+		'dashboards': 't6 Dashboards',
+		'dashboard_add': 'Add Dashboard to t6',
+		'snippet': 'Snippet %s',
+		'snippets': 't6 Snippets',
+		'snippet_add': 'Add Snippet to t6',
+		'rule': 'Rule %s',
+		'rules': 't6 Rules',
+		'rule_add': 'Add Rule to t6',
+		'settings': 't6 Settings',
+		'signin': 'Signin to t6',
+		'login': 'Signin to t6',
+		'signup': 'Signup to t6',
+		'forgot-password': 'Forgot your t6 password?',
+		'reset-password': 'Reset your password',
+		'status': 't6 Api status',
+		'terms': 'Terms of Service and License Agreement',
+	},
 	icons: {
 		'color': 'format_color_fill',
 		'dashboards': 'dashboards',
@@ -815,6 +843,7 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
+		document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 		window.scrollTo(0, 0);
 		if ( section === 'public-object' ) {
 			var urlParams = new URLSearchParams(window.location.search); // .toString();
@@ -4079,6 +4108,7 @@ var containers = {
 			history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
 			app.setSection(window.location.hash.substr(1));
 			localStorage.setItem("currentPage", window.location.hash.substr(1));
+			var id;
 			if ( id = getParameterByName('id') ) {
 				localStorage.setItem("currentResourceId", id);
 			} else {
