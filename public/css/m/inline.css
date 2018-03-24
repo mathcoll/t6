@@ -811,8 +811,8 @@ form.signin > div.mdl-shadow--2dp,
 form.signup > div.mdl-shadow--2dp,
 form.forgotpassword > div.mdl-shadow--2dp,
 form.resetpassword > div.mdl-shadow--2dp {
-	max-width: 500px;
-	margin-top: 80px;
+	max-width: 600px;
+	margin-top: 30px;
 }
 
 form.signin > div.mdl-shadow--2dp img,
