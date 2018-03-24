@@ -35,6 +35,9 @@ var app = {
 		'rule': 'Rule %s',
 		'rules': 't6 Rules',
 		'rule_add': 'Add Rule to t6',
+		'mqtt': 'Mqtt topic %s',
+		'mqtts': 't6 Mqtt topics',
+		'mqtt_add': 'Add Mqtt topic to t6',
 		'settings': 't6 Settings',
 		'signin': 'Signin to t6',
 		'login': 'Signin to t6',
@@ -42,7 +45,8 @@ var app = {
 		'forgot-password': 'Forgot your t6 password?',
 		'reset-password': 'Reset your password',
 		'status': 't6 Api status',
-		'terms': 'Terms of Service and License Agreement',
+		'terms': 't6 Terms of Service and License Agreement',
+		'docs': 't6 Api first documentation',
 	},
 	icons: {
 		'color': 'format_color_fill',
@@ -899,6 +903,8 @@ var containers = {
 			app.displayAddRule(app.defaultResources.rule);
 		} else if ( section === 'mqtt_add' ) {
 			app.displayMqttRule(app.defaultResources.mqtt);
+		} else if ( section === 'profile' ) {
+			app.fetchProfile();
 		} else if ( section === 'settings' ) {
 			app.getSettings();
 		} else {
@@ -2748,22 +2754,22 @@ var containers = {
 			var node = "";
 			node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 			node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
-			if (gravatar.profile_background) {
-				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profile_background.url+"') 50% 50% !important\">";
+			if (gravatar.profileBackground) {
+				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profileBackground.url+"') 50% 50% !important\">";
 			} else {
 				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+app.baseUrlCdn+"/img/opl_img.jpg') 50% 50% !important\">";
 			}
 			node += "		<img src=\"//secure.gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
 			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
-			if (gravatar.current_location) {
+			if (gravatar.currentLocation) {
 				node += "		<div class=\"subhead\">";
-				node += 			gravatar.current_location;
+				node += 			gravatar.currentLocation;
 				node += "		</div>";
 			}
 			node += "	</div>";
 			node += "	<div class=\"card-body\">";
-			for (var phone in gravatar.phone_numbers) {
-				node += app.getField('phone', gravatar.phone_numbers[phone].type, gravatar.phone_numbers[phone].value, {type: 'text', isEdit: false});
+			for (var phone in gravatar.phoneNumbers) {
+				node += app.getField('phone', gravatar.phoneNumbers[phone].type, gravatar.phoneNumbers[phone].value, {type: 'text', isEdit: false});
 			}
 			node += "		<ul class=\"social-links\">";
 			for (var account in gravatar.accounts) {
@@ -2778,7 +2784,7 @@ var containers = {
 			node += "	</div>";
 			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
 			// node += " <a href=\"#\" class=\"pull-left\"></a>";
-			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profile_url+"\" target=\"_blank\">Edit</a>";
+			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profileUrl+"\" target=\"_blank\">Edit</a>";
 			node += "	</div>";
 			node += "</div>";
 			container.innerHTML = node;
@@ -4055,17 +4061,24 @@ var containers = {
 	 */
 	if ( localStorage.getItem("bearer") !== null ) {
 		app.isLogged = true;
+		app.setHiddenElement("signin_button"); 
+		app.setVisibleElement("logout_button");
 	}
 	if ( window.location.hash ) {
 		var p = window.location.hash.substr(1);
 		if ( p === 'terms' ) {
-			 onTermsButtonClick();
+			onTermsButtonClick();
 		} else if ( p === 'docs' ) {
 			onDocsButtonClick();
 		} else if ( p === 'status' ) {
 			onStatusButtonClick();
 		} else if ( p === 'settings' ) {
 			onSettingsButtonClick();
+		} else if ( p === 'login' ) {
+			app.isLogged = false;
+			localStorage.setItem("bearer", null);
+			app.displayLoginForm( document.querySelector('#login').querySelector('.page-content') );
+			app.setSection(p);
 		} else {
 			app.setSection(p);
 		}
