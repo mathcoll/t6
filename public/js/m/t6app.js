@@ -3365,7 +3365,7 @@ var containers = {
 					}
 				});
 			} else if ( my_snippet.attributes.type == 'valuedisplay' ) {
-				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=3';
+				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=4';
 				fetch(url_snippet, myInit)
 				.then(
 					fetchStatusHandler
@@ -3413,6 +3413,13 @@ var containers = {
 					var value3 = response.data[2].attributes.value;
 					var unit = response.links.unit!==undefined?response.links.unit:'';
 					var ttl = response.links.ttl;
+					if ( value3 == response.data[3].attributes.value ) {
+						value3 = "<i class='material-icons'>trending_flat</i> " + value3;
+					} else if( value3 < response.data[3].attributes.value ) {
+						value3 = "<i class='material-icons'>trending_down</i> " + value3;
+					} else if( value3 > response.data[3].attributes.value ) {
+						value3 = "<i class='material-icons'>trending_up</i> " + value3;
+					}
 					document.getElementById('snippet-value3-'+my_snippet.id).innerHTML = value3;
 					document.getElementById('snippet-unit3-'+my_snippet.id).innerHTML = unit;
 										
