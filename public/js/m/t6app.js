@@ -1954,7 +1954,7 @@ var containers = {
 		} else {
 			output += "	<div class=\"mdl-card__title\">";
 		}
-		output += "			<h2 class=\"mdl-card__title-text\" style=\"color:"+card.titlecolor+";\">" + card.title + "</h2>";
+		output += "			<h3 class=\"mdl-card__title-text\" style=\"color:"+card.titlecolor+";\">" + card.title + "</h3>";
 		output += "		</div>";
 		output += "  	<div class=\"mdl-card__supporting-text mdl-card--expand\">" + card.description + "</div>";
 		if ( card.url || card.secondaryaction || card.action ) {
@@ -2497,7 +2497,7 @@ var containers = {
 		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 		element += "		<div class=\"mdl-card__title\">";
 		element += "			<i class=\"material-icons\">"+iconName+"</i>";
-		element += "			<h2 class=\"mdl-card__title-text\">"+name+"</h2>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
 		element += "		</div>";
 		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
@@ -3003,6 +3003,7 @@ var containers = {
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (label) field += "	<label class='mdl-textfield__label'>"+label+"</label>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
