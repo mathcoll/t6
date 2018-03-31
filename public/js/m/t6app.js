@@ -2839,7 +2839,7 @@ var containers = {
 			"	<div class='mdl-layout-spacer'></div>" +
 			"	<form class='signin'>" +
 			"		<div class='mdl-card mdl-card__title mdl-shadow--2dp'>" +
-			"			<img src='"+app.baseUrlCdn+"/img/opl_img.jpg'>" +
+			"			<img src='"+app.baseUrlCdn+"/img/opl_img.jpg' alt='t6 Connect your Objects' aria-hidden='true'>" +
 			"			<div class='mdl-card__title'>" +
 			"				Connect your Objects to collect their data and show your own Dashboards." +
 			"			</div>" +
@@ -4126,11 +4126,11 @@ var containers = {
 	
 	window.addEventListener('hashchange', function() {
 		if( window.history && window.history.pushState ) {
-			history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
+			//history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
 			app.setSection(window.location.hash.substr(1));
 			localStorage.setItem("currentPage", window.location.hash.substr(1));
-			var id;
-			if ( id = getParameterByName('id') ) {
+			var id = getParameterByName('id');
+			if ( id ) {
 				localStorage.setItem("currentResourceId", id);
 			} else {
 				localStorage.setItem("currentResourceId", null);

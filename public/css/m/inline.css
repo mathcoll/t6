@@ -45,6 +45,10 @@ html {
 a {
 	text-decoration: none;
 }
+h1.page_title {
+	color: #fff;
+	font-size: 14px;
+}
 #search-exp::placeholder,
 #filter-exp::placeholder {
 	color: rgba(255,255,255,.6);
