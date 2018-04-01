@@ -20,22 +20,22 @@ var app = {
 	sectionsPageTitles: {
 		'index': 't6 IoT App',
 		'profile': 't6 profile',
-		'object': 'Object %s',
+		'object': 't6 Object %s',
 		'object_add': 'Add Object to t6',
 		'objects': 't6 Objects',
-		'flow': 'Flow %s',
+		'flow': 't6 Flow %s',
 		'flows': 't6 Flows',
 		'flow_add': 'Add Flow to t6',
-		'dashboard': 'Dashboard %s',
+		'dashboard': 't6 Dashboard %s',
 		'dashboards': 't6 Dashboards',
 		'dashboard_add': 'Add Dashboard to t6',
-		'snippet': 'Snippet %s',
+		'snippet': 't6 Snippet %s',
 		'snippets': 't6 Snippets',
 		'snippet_add': 'Add Snippet to t6',
-		'rule': 'Rule %s',
+		'rule': 't6 Rule %s',
 		'rules': 't6 Rules',
 		'rule_add': 'Add Rule to t6',
-		'mqtt': 'Mqtt topic %s',
+		'mqtt': 't6 Mqtt topic %s',
 		'mqtts': 't6 Mqtt topics',
 		'mqtt_add': 'Add Mqtt topic to t6',
 		'settings': 't6 Settings',
@@ -43,7 +43,7 @@ var app = {
 		'login': 'Signin to t6',
 		'signup': 'Signup to t6',
 		'forgot-password': 'Forgot your t6 password?',
-		'reset-password': 'Reset your password',
+		'reset-password': 'Reset your t6 password',
 		'status': 't6 Api status',
 		'terms': 't6 Terms of Service and License Agreement',
 		'docs': 't6 Api first documentation',
@@ -847,7 +847,6 @@ var containers = {
 		if ( app.debug === true ) {
 			console.log("setSection: "+section);
 		}
-		document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 		window.scrollTo(0, 0);
 		if ( section === 'public-object' ) {
 			var urlParams = new URLSearchParams(window.location.search); // .toString();
@@ -908,6 +907,7 @@ var containers = {
 		} else if ( section === 'settings' ) {
 			app.getSettings();
 		} else {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.fetchItemsPaginated(section, undefined, app.itemsPage[section], app.itemsSize[section]);
 		}
@@ -1430,6 +1430,7 @@ var containers = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var object = response.data[i];
+				document.title = (app.sectionsPageTitles['object']).replace(/%s/g, object.attributes.name);
 				var node = "";
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -1997,6 +1998,7 @@ var containers = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var flow = response.data[i];
+				document.title = (app.sectionsPageTitles['flow']).replace(/%s/g, flow.attributes.name);
 				((containers.flow).querySelector('.page-content')).innerHTML = '';
 				var datapoints = "";
 				
@@ -2229,6 +2231,8 @@ var containers = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var dashboard = response.data[i];
+				document.title = (app.sectionsPageTitles['dashboard']).replace(/%s/g, dashboard.attributes.name);
+				
 				var node;
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -2338,6 +2342,7 @@ var containers = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var snippet = response.data[i];
+				document.title = (app.sectionsPageTitles['snippet']).replace(/%s/g, snippet.attributes.name);
 				var node = "";
 				
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
