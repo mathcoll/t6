@@ -55,6 +55,7 @@ h1.page_title {
 }
 .mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
 	font-size: 12px !important;
+	color: #0009;
 }
 .mdl-list__item--three-line,
 .mdl-list__item--three-line .mdl-list__item-secondary-content,
@@ -380,6 +381,7 @@ section#profile .mdl-card--small .mdl-card__title {
 .mdl-card__date {
     font-size: 1rem;
     padding: 8px;
+    color: #0000004d;
 }
 section#profile .mdl-card--small .mdl-card__image {
 	border-radius: 1px 0 0 1px;
