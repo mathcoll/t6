@@ -1946,7 +1946,6 @@ var containers = {
 	
 	app.getCard = function(card) {
 		var output = "";
-		card.titlecolor!==null?card.titlecolor: '#ffffff';
 		output += "<div class=\"mdl-grid mdl-cell\">";
 		output += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 		if( card.image ) {
@@ -1954,7 +1953,7 @@ var containers = {
 		} else {
 			output += "	<div class=\"mdl-card__title\">";
 		}
-		output += "			<h3 class=\"mdl-card__title-text\" style=\"color:"+card.titlecolor+";\">" + card.title + "</h3>";
+		output += "			<h3 class=\"mdl-card__title-text\">" + card.title + "</h3>";
 		output += "		</div>";
 		output += "  	<div class=\"mdl-card__supporting-text mdl-card--expand\">" + card.description + "</div>";
 		if ( card.url || card.secondaryaction || card.action ) {
@@ -2846,14 +2845,14 @@ var containers = {
 			"			<div class='mdl-card__supporting-text'>" +
 			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
-			"					<input name='username' pattern=\""+app.patterns.username+"\" class='mdl-textfield__input' type='text'>" +
-			"					<label for='username' class='mdl-textfield__label'>Username</label>" +
+			"					<input name='username' pattern=\""+app.patterns.username+"\" class='mdl-textfield__input' type='text' id='signin.username'>" +
+			"					<label for='signin.username' class='mdl-textfield__label'>Username</label>" +
 			"					<span class='mdl-textfield__error'>Username should be your email address</span>" +
 			"				</div>" +
 			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>vpn_key</i>" +
-			"					<input name='password' pattern=\""+app.patterns.password+"\" class='mdl-textfield__input' type='password'>" +
-			"					<label for='password' class='mdl-textfield__label'>Password</label>" +
+			"					<input name='password' pattern=\""+app.patterns.password+"\" class='mdl-textfield__input' type='password' id='signin.password'>" +
+			"					<label for='signin.password' class='mdl-textfield__label'>Password</label>" +
 			"					<span class='mdl-textfield__error'>Password must be provided</span>" +
 			"				</div>" +
 			"			</div>" +
