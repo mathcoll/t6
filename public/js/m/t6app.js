@@ -50,7 +50,7 @@ var app = {
 	},
 	icons: {
 		'color': 'format_color_fill',
-		'dashboards': 'dashboards',
+		'dashboards': 'dashboard',
 		'datapoints': 'filter_center_focus',
 		'datatypes': 'build',
 		'date': 'event',
