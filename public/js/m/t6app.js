@@ -1548,7 +1548,7 @@ var containers = {
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--1-col-phone'>";
+					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
 					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
@@ -2164,7 +2164,7 @@ var containers = {
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--1-col-phone'>";
+					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
 					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
@@ -2438,7 +2438,7 @@ var containers = {
 					node += "			<label>List</label>";
 					node += "		</button>";
 					node += "	</div>";
-					node += "	<div class='mdl-cell--1-col-phone'>";
+					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
 					node += "		<button class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
@@ -2502,6 +2502,9 @@ var containers = {
 		element += "		<div class=\"mdl-card__title\">";
 		element += "			<i class=\"material-icons\">"+iconName+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		if ( item.attributes.is_public == 'true' ) {
+			element += "			<span class='isPublic'><i class='material-icons md-32'>visibility</i></span>";	
+		}
 		element += "		</div>";
 		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
@@ -2518,7 +2521,7 @@ var containers = {
 		element += "				</button>";
 		element += "			</span>";
 		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
-		element += "				<li class=\"mdl-menu__item\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
 		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
 		element += "				</li>";
 		element += "				<li class=\"mdl-menu__item\">";
