@@ -53,6 +53,10 @@ h1.page_title {
 #filter-exp::placeholder {
 	color: rgba(255,255,255,.6);
 }
+li.delete-button:hover {
+	background-color: #e74c3c !important;
+	color: #fff !important;
+}
 .mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
 	font-size: 12px !important;
 	color: #0009;
