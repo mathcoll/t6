@@ -2502,6 +2502,9 @@ var containers = {
 		element += "		<div class=\"mdl-card__title\">";
 		element += "			<i class=\"material-icons\">"+iconName+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		if ( item.attributes.is_public == 'true' ) {
+			element += "			<span class='isPublic'><i class='material-icons md-32'>visibility</i></span>";	
+		}
 		element += "		</div>";
 		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
