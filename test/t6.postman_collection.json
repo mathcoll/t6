@@ -1,10 +1,8 @@
 {
-	"variables": [],
 	"info": {
+		"_postman_id": "f31f497e-f493-7ba1-aeb3-ac86ca206a80",
 		"name": "t6",
-		"_postman_id": "d20f1fae-3e02-629a-0f25-67aa671fddfd",
-		"description": "",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
@@ -26,20 +24,27 @@
 						}
 					],
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\"username\": \"{{username}}\", \"password\": \"{{password}}\"}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"authenticate"
+							]
+						}
 					},
 					"response": []
 				},
@@ -58,68 +63,99 @@
 						}
 					],
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/status",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/status",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"status"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "datatypes",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"datatypes",
+								""
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "units",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"units",
+								""
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "index - PWA index cards",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/index/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/index/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"index",
+								""
+							]
+						}
 					},
 					"response": []
 				}
@@ -128,7 +164,260 @@
 		{
 			"name": "Admin_User",
 			"description": "",
-			"item": []
+			"item": [
+				{
+					"name": "Add a unit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"units",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get unit",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"units",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a unit",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/31c38904-2482-4cce-b0de-6dc9efbc2d33",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"units",
+								"31c38904-2482-4cce-b0de-6dc9efbc2d33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add a datatype",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"geo\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"datatypes",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get datatypes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"datatypes",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a datatype",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/7fea96e4-38ec-4c6f-8dd2-e9df96f7dedd",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"datatypes",
+								"7fea96e4-38ec-4c6f-8dd2-e9df96f7dedd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/list",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								"list"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "User",
@@ -149,20 +438,27 @@
 						}
 					],
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/users",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"firstName\": \"\",\n\t\"lastName\": \"\",\n\t\"email\": \"\"\n}"
+							"raw": "{\n  \"firstName\": \"\",\n  \"lastName\": \"\",\n  \"email\": \"\"\n}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users"
+							]
+						}
 					},
 					"response": []
 				},
@@ -181,30 +477,36 @@
 						}
 					],
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/users/",
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"firstName\": \"\",\n\t\"lastName\": \"\",\n\t\"email\": \"\"\n}"
+							"raw": "{\n  \"firstName\": \"\",\n  \"lastName\": \"\",\n  \"email\": \"\"\n}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								""
+							]
+						}
 					},
 					"response": []
 				},
@@ -223,27 +525,34 @@
 						}
 					],
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/users/me/token",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/me/token",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								"me",
+								"token"
+							]
+						}
 					},
 					"response": []
 				}
@@ -259,173 +568,221 @@
 			"description": "",
 			"item": [
 				{
-					"name": "objects",
+					"name": "Get Objects",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/objects/32ca94b5-4a2f-4049-bf88-3a792b9b01f5/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/?page=1&size=20",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"objects",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Get Object Custom Parameter",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/objects/32ca94b5-4a2f-4049-bf88-3a792b9b01f5/foo",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/54663ca2-619c-49ac-b9ac-cff4ffed8777/ActivationDateOnGuruplug",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"objects",
+								"54663ca2-619c-49ac-b9ac-cff4ffed8777",
+								"ActivationDateOnGuruplug"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Set Object Custom Parameter",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/objects/32ca94b5-4a2f-4049-bf88-3a792b9b01f5/foo",
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": \"foo\",\n    \"value\": \"bar2\",\n    \"type\": \"String\"\n}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/32ca94b5-4a2f-4049-bf88-3a792b9b01f5/foo",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"objects",
+								"32ca94b5-4a2f-4049-bf88-3a792b9b01f5",
+								"foo"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Add an object",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/objects/",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"description\": \"My object description\",\n    \"ipv4\": \"127.0.0.1\",\n    \"ipv6\": \"2001:0db8:0000:85a3:0000:0000:ac1f:8001\",\n    \"name\": \"My Object\",\n    \"position\": \"LivingRoom\",\n    \"type\": \"phone\",\n    \"longitude\": \"\",\n    \"latitude\": \"\",\n    \"is_public\": \"false\"\n}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"objects",
+								""
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Edit an object",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/objects/7983e13a-7986-4403-a011-2304d1a87968",
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"description\": \"My object updated description\",\n    \"ipv4\": \"127.0.0.2\",\n    \"ipv6\": \"2001:0db8:0000:85a3:0000:0000:ac1f:8001\",\n    \"name\": \"My Object updated\",\n    \"position\": \"BedRoom\",\n    \"type\": \"phone\",\n    \"longitude\": \"\",\n    \"latitude\": \"\",\n    \"is_public\": \"true\"\n}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/7983e13a-7986-4403-a011-2304d1a87968",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"objects",
+								"7983e13a-7986-4403-a011-2304d1a87968"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Delete an object",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/objects/c14b7cdd-3244-495e-a8da-7b580b9ac7d3",
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/c14b7cdd-3244-495e-a8da-7b580b9ac7d3",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"objects",
+								"c14b7cdd-3244-495e-a8da-7b580b9ac7d3"
+							]
+						}
 					},
 					"response": []
 				}
@@ -436,116 +793,150 @@
 			"description": "",
 			"item": [
 				{
-					"name": "flows",
+					"name": "Get Flows",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/flows/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/flows/?page=1&size=20",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"flows",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Create a flow",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/flows/",
 						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": \"New Flow\",\n    \"data_type\": \"\",\n    \"unit\": \"\",\n    \"mqtt_topic\": \"123\",\n    \"permission\": \"600\",\n    \"objects\": []\n}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/flows/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"flows",
+								""
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Edit a flow",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/flows/14480f34-c97a-4830-bfae-3a3061f4ecad",
 						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\n    \"name\": \"New Flow updated\",\n    \"data_type\": \"\",\n    \"unit\": \"\",\n    \"mqtt_topic\": \"123456\",\n    \"permission\": \"600\",\n    \"objects\": []\n}"
 						},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/flows/14480f34-c97a-4830-bfae-3a3061f4ecad",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"flows",
+								"14480f34-c97a-4830-bfae-3a3061f4ecad"
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Delete a flow",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/flows/14480f34-c97a-4830-bfae-3a3061f4ecad",
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/flows/14480f34-c97a-4830-bfae-3a3061f4ecad",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"flows",
+								"14480f34-c97a-4830-bfae-3a3061f4ecad"
+							]
+						}
 					},
 					"response": []
 				}
@@ -556,56 +947,78 @@
 			"description": "",
 			"item": [
 				{
-					"name": "dashboards",
+					"name": "Get Dashboards",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/dashboards/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/dashboards/?page=1&size=20",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"dashboards",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Delete a dashboard",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/dashboards/e85a67d2-7840-4878-b647-112b304c9506",
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/dashboards/e85a67d2-7840-4878-b647-112b304c9506",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"dashboards",
+								"e85a67d2-7840-4878-b647-112b304c9506"
+							]
+						}
 					},
 					"response": []
 				}
@@ -616,56 +1029,78 @@
 			"description": "",
 			"item": [
 				{
-					"name": "snippets",
+					"name": "Get Snippets",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/?page=1&size=20",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"snippets",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
 					},
 					"response": []
 				},
 				{
 					"name": "Delete a snippet",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/e85a67d2-7840-4878-b647-112b304c9506",
 						"method": "DELETE",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/e85a67d2-7840-4878-b647-112b304c9506",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"snippets",
+								"e85a67d2-7840-4878-b647-112b304c9506"
+							]
+						}
 					},
 					"response": []
 				}
@@ -676,29 +1111,45 @@
 			"description": "",
 			"item": [
 				{
-					"name": "rules",
+					"name": "Get Rules",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/rules/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules/?page=1&size=20",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"rules",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
 					},
 					"response": []
 				}
@@ -709,29 +1160,45 @@
 			"description": "",
 			"item": [
 				{
-					"name": "mqtts",
+					"name": "Get Mqtts",
 					"request": {
-						"url": "{{ENDPOINT}}/v{{API_VERSION}}/mqtts/",
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Accept",
-								"value": "application/json",
-								"description": ""
+								"value": "application/json"
 							},
 							{
 								"key": "Authorization",
-								"value": "{{token}}",
-								"description": ""
+								"value": "{{token}}"
 							}
 						],
 						"body": {},
-						"description": ""
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/mqtts/?page=1&size=20",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"mqtts",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "size",
+									"value": "20"
+								}
+							]
+						}
 					},
 					"response": []
 				}
