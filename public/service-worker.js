@@ -1,6 +1,6 @@
 
-var dataCacheName= 't6-cache-2017-12-19_2039';
-var cacheName= 't6-cache-2017-12-19_2039';
+var dataCacheName= 't6-cache-2018-04-02_1141';
+var cacheName= dataCacheName;
 var cacheWhitelist = ['internetcollaboratif.info', 'localhost'];
 var filesToCache = [
     //local
