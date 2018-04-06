@@ -3,7 +3,6 @@ var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 
 function ObjectTypeSerializer(object) {
 	this.serialize = function () {
-		//console.log(object);
 		return new JSONAPISerializer('object', {
 			keyForAttribute: 'underscore_case',
 			attributes: ['name', 'user_id', 'type', 'description', 'position', 'ipv4', 'ipv6', 'isPublic', 'longitude', 'latitude', 'meta', 'parameters'],
