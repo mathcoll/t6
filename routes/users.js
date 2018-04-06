@@ -142,6 +142,27 @@ router.get('/changePassword', expressJwt({secret: jwtsettings.secret}), function
 });
 
 /**
+ * @api {get} /users/list Get Users list
+ * @apiName Get Users list
+ * @apiGroup 7. Admin User
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 401
+ */
+router.get('/list', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role == 'admin' ) {
+		users	= db.getCollection('users');
+		console.log(users);
+		res.status(200).send(new UserSerializer(users.find()).serialize());
+		
+	} else {
+		res.status(401).send(new ErrorSerializer({'id': 502, 'code': 401, 'message': 'Unauthorized'}).serialize());
+	}
+});
+
+/**
  * @api {get} /users/:user_id Get User
  * @apiName Get User
  * @apiGroup User
@@ -493,86 +514,5 @@ router.delete('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret})
 		res.status(403).send(new ErrorSerializer({'id': 5,'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
-
-function bearerAuth(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.user = (users.find({'token': { '$eq': req.token }}))[0];
-		next();
-	} else {
-		res.status(403).send(new ErrorSerializer({'id': 4,'code': 403, 'message': 'Forbidden'}).serialize());
-	}
-}
-
-function bearerAuthToken(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	tokens	= db.getCollection('tokens');
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' || req.session.bearer ) {
-		if ( req.session && !bearerHeader ) { // Login using the session
-			req.user = req.session.user;
-			req.token = req.session.token;
-			req.bearer = req.session.bearer;
-		} else {
-			var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-			bearerToken = bearer[1];
-			req.token = bearerToken;
-			req.bearer = tokens.findOne(
-				{ '$and': [
-		           {'token': { '$eq': req.token }},
-		           {'expiration': { '$gte': moment().format('x') }},
-				]}
-			);
-		}
-
-		if ( !req.bearer ) {
-			res.status(403).send(new ErrorSerializer({'id': 3, 'code': 403, 'message': 'Forbidden'}).serialize());
-		} else {
-			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) { // TODO: in case of Session, should be removed !
-				req.user.permissions = req.bearer.permissions;
-				next();
-			} else {
-				res.status(404).send(new ErrorSerializer({'id': 2, 'code': 404, 'message': 'Not Found'}).serialize());
-			}
-		}
-	} else {
-		res.status(401).send(new ErrorSerializer({'id': 1, 'code': 401, 'message': 'Unauthorized'}).serialize());
-	}
-}
-
-function bearerAdmin(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	tokens	= db.getCollection('tokens');
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.bearer = tokens.findOne(
-			{ '$and': [
-	           {'token': { '$eq': req.token, }},
-	           {'expiration': { '$gte': moment().format('x'), }}
-			]}
-		);
-		if ( !req.bearer ) {
-			res.status(403).send(new ErrorSerializer({'id': 22, 'code': 431, 'message': 'Forbidden'}).serialize());
-		} else {
-			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }, 'role': 'admin'}) ) {
-				next();
-			} else {
-				res.status(404).send(new ErrorSerializer({'id': 23, 'code': 404, 'message': 'Not Found'}).serialize());
-			}
-		}
-	} else {
-		res.status(401).send(new ErrorSerializer({'id': 24, 'code': 401, 'message': 'Unauthorized'}).serialize());
-	}
-}
 
 module.exports = router;
