@@ -46,8 +46,8 @@ router.get('/(:datatype_id([0-9a-z\-]+))?', function (req, res) {
  * 
  * @apiUse 401
  */
-router.post('/', bearerAdmin, function (req, res) {
-	if ( req.token ) {
+router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role == 'admin' ) {
 		datatypes	= db.getCollection('datatypes');
 		var new_datatype = {
 			id:			uuid.v4(),
@@ -75,8 +75,8 @@ router.post('/', bearerAdmin, function (req, res) {
  * 
  * @apiUse 401
  */
-router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
-	if ( req.token ) {
+router.put('/:datatype_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role == 'admin' ) {
 		var datatype_id = req.params.datatype_id;
 		datatypes	= db.getCollection('datatypes');
 		var result;
@@ -109,8 +109,8 @@ router.put('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
  * @apiUse 401
  * @apiUse 404
  */
-router.delete('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
-	if ( req.token ) {
+router.delete('/:datatype_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role == 'admin' ) {
 		var datatype_id = req.params.datatype_id;
 		datatypes	= db.getCollection('datatypes');
 		var d = datatypes.find({'id': { '$eq': datatype_id }});
@@ -125,34 +125,5 @@ router.delete('/:datatype_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
 		res.status(401).send(new ErrorSerializer({'id': 52, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}
 });
-
-function bearerAdmin(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	tokens	= db.getCollection('tokens');
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.bearer = tokens.findOne(
-			{ '$and': [
-	           {'token': { '$eq': req.token }},
-	           {'expiration': { '$gte': moment().format('x') }},
-			]}
-		);
-		if ( !req.bearer ) {
-			res.status(403).send(new ErrorSerializer({'id': 53, 'code': 403, 'message': 'Forbidden'}).serialize());
-		} else {
-			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }, 'role': 'admin'}) ) {
-				next();
-			} else {
-				res.status(404).send(new ErrorSerializer({'id': 54, 'code': 404, 'message': 'Not Found'}).serialize());
-			}
-		}
-	} else {
-		res.status(401).send(new ErrorSerializer({'id': 55, 'code': 401, 'message': 'Unauthorized'}).serialize());
-	}
-}
 
 module.exports = router;

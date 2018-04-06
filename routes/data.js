@@ -642,43 +642,4 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 	};
 });
 
-function bearerAuthToken(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	tokens	= db.getCollection('tokens');
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' || req.session.bearer ) {
-		if ( req.session && !bearerHeader ) { // Login using the session
-			req.user = req.session.user;
-			req.token = req.session.token;
-			req.bearer = req.session.bearer;
-			req.bearer.user_id = req.session.user.id;
-			req.bearer.permissions = req.session.user.permissions;
-		} else {
-			var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-			bearerToken = bearer[1];
-			req.token = bearerToken;
-			req.bearer = tokens.findOne(
-				{ '$and': [
-		           {'token': { '$eq': req.token }},
-		           {'expiration': { '$gte': moment().format('x') }},
-				]}
-			);
-		}
-		
-		if ( !req.bearer ) {
-			res.status(403).send(new ErrorSerializer({'id': 66, 'code': 403, 'message': 'Forbidden'}).serialize());
-		} else {
-			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }}) ) { // TODO: in case of Session, should be removed !
-				req.user.permissions = req.bearer.permissions;
-				next();
-			} else {
-				res.status(404).send(new ErrorSerializer({'id': 67, 'code': 404, 'message': 'Not Found'}).serialize());
-			}
-		}
-	} else {
-		res.status(401).send(new ErrorSerializer({'id': 68, 'code': 401, 'message': 'Unauthorized'}).serialize());
-	}
-}
-
 module.exports = router;
