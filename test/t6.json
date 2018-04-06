@@ -24,7 +24,7 @@
                         {
                         	"request": "POST /v2.0.1/users",
                             "params": {
-                                "email": "m.lory@free.fr",
+                                "email": "m.lory+{{$run_id}}@free.fr",
                                 "firstName": "My FirstName {{$run_id}}",
                                 "lastName": "My LastName"
                             },
@@ -38,43 +38,6 @@
                                 "saved.username": "body.user.data.attributes.email"
                             },
                             "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a Token for that User from API Key/Secret",
-                    "description": "create a Token for that User from API Key/Secret",
-                    "api_calls": [
-                        {
-                        	"request": "POST /v2.0.1/users/me/token",
-                            "params": {
-                                "key": "{{saved.key}}",
-                                "secret": "{{saved.secret}}"
-                            },
-                            "save": {
-                                "saved.bearerFromKS": "body.token"
-                            },
-                            "status": "200"
-                        }
-                    ]
-                },
-                {
-                	"name": "set password to that User",
-                    "description": "set password",
-                    "api_calls": [
-                        {
-                        	"request": "PUT /v2.0.1/users/{{saved.user_id}}",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearerFromKS}}"
-                            },
-                            "params": {
-                                "password": "{{$run_id}}"
-                            },
-                            "status": "200",
-                            "assert": {
-        	                    "select": "body.message",
-        	                    "equal": "Successfully updated"
-        	                }
                         }
                     ]
                 },
@@ -105,7 +68,7 @@
                                 "Authorization": "Bearer {{saved.bearerFromKS}}"
                             },
                             "params": {
-                                "email": "myemail+{{$run_id}}@domain.tld",
+                                "email": "myUpdatedEmail+{{$run_id}}@domain.tld",
                                 "firstName": "My Updated FirstName",
                                 "lastName": "My Updated LastName"
                             },
