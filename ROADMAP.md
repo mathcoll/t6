@@ -4,7 +4,7 @@ t6 is a platform to connect physical Objects with realtime-timeseries DB.
 
 Roadmap
 ===========================
-# :heavy_check_mark: Milestone 4: Implement additional snippets
+# Milestone 4: Implement additional snippets
 Graphs snippets.
 Maps snippets, that could help for a geolocalization/geotracing.
 
