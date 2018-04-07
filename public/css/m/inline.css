@@ -74,6 +74,10 @@ li.delete-button:hover {
 	min-height: 70px !important;
 	padding: 5px 16px !important;
 }
+.meddium-padding {
+	min-height: auto !important;
+	padding: 5px 16px !important;
+}
 body {
 	display: -webkit-box;
 	display: -webkit-flex;
@@ -649,12 +653,14 @@ div[data-action='view'] .mdl-card__title,
 div[data-action='view'] .mdl-list__item--three-line {
 	cursor: pointer;
 }
-div:not([data-action='view']) .mdl-card__title h3.mdl-card__title-text {
+div:not([data-action='view']) .mdl-card__title h3.mdl-card__title-text,
+div:not([data-action='nothing']) .mdl-card__title h3.mdl-card__title-text {
 	background: #0000004d;
 	padding: 0 10px;
 	color: #fff !important;
 }
-div[data-action='view'] .mdl-card__title h3.mdl-card__title-text {
+div[data-action='view'] .mdl-card__title h3.mdl-card__title-text,
+div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	background: none !important;
 	color: #000 !important;
 }

@@ -47,6 +47,7 @@ var app = {
 		'status': 't6 Api status',
 		'terms': 't6 Terms of Service and License Agreement',
 		'docs': 't6 Api first documentation',
+		'users-list': 't6 Users Accounts',
 	},
 	icons: {
 		'color': 'format_color_fill',
@@ -159,6 +160,7 @@ var containers = {
 	status: document.querySelector('section#status'),
 	terms: document.querySelector('section#terms'),
 	docs: document.querySelector('section#docs'),
+	usersList: document.querySelector('section#users-list'),
 };
 
 (function (exports) {
@@ -857,7 +859,7 @@ var containers = {
 					params[n] = p[1];
 				}
 				if ( params['id'] == "" ) {
-					app.setSection('objects');
+					app.setSection('objects'); // TODO, recursive?
 				} else if (params['id'] ) {
 					app.displayObject(params['id'], false);
 				}
@@ -871,7 +873,7 @@ var containers = {
 					params[n] = p[1];
 				}
 				if ( params['id'] == "" ) {
-					app.setSection('objects');
+					app.setSection('objects'); // TODO, recursive?
 				} else if (params['id'] ) {
 					app.displayObject(params['id'], false);
 				}
@@ -887,7 +889,7 @@ var containers = {
 					params[n] = p[1];
 				}
 				if ( params['id'] == "" ) {
-					app.setSection('objects');
+					app.setSection('objects'); // TODO, recursive?
 				} else if (params['id'] ) {
 					app.displayObject(params['id'], true);
 				}
@@ -906,6 +908,8 @@ var containers = {
 			app.fetchProfile();
 		} else if ( section === 'settings' ) {
 			app.getSettings();
+		} else if ( section === 'users-list' ) {
+			app.getUsersList();
 		} else {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
@@ -2738,6 +2742,74 @@ var containers = {
 		return promise;
 	}; // fetchItemsPaginated
 	
+	app.getUsersList = function() {
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var container = (containers.usersList).querySelector('.page-content');
+		var url = app.baseUrl+'/'+app.api_version+'/users/list';
+		var title = 'Users List';
+
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			var usersList = "";
+			document.title = app.sectionsPageTitles['users-list'];
+			for (var i=0; i < (response.data).length ; i++ ) {
+				var user = response.data[i];
+				var num = i+1;
+				usersList += "<div class=\"mdl-grid mdl-cell\" data-action=\"nothing\" data-type=\"user\" data-id=\""+user.id+"\">";
+				usersList += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+				usersList += "		<div class=\"mdl-card__title\">";
+				usersList += "			<i class=\"material-icons\">perm_identity</i>";
+				usersList += "			<h3 class=\"mdl-card__title-text\">"+num+". "+user.attributes.first_name + " " + user.attributes.last_name+"</h3>";
+				usersList += "		</div>";
+				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>card_membership</i><span class='mdl-list__item-sub-title'>"+user.id+"</span></div>";
+				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>mail</i><span class='mdl-list__item-sub-title'>"+user.attributes.email+"</span></div>";
+				if ( user.attributes.location ) {
+					if ( user.attributes.location.geo ) {
+						usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>dns</i><span class='mdl-list__item-sub-title'>"+user.attributes.location.geo.city+" ("+user.attributes.location.geo.country+")</span></div>";
+					}
+					if ( user.attributes.location.ip ) {
+						usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>dns</i><span class='mdl-list__item-sub-title'>"+user.attributes.location.ip+"</span></div>";
+					}
+				}
+				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>contact_mail</i><span class='mdl-list__item-sub-title' title='Password last update'>"+moment((user.attributes.password_last_updated)/1).format(app.date_format)+"</span></div>";
+				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>contact_mail</i><span class='mdl-list__item-sub-title' title='Reminder Email'>"+moment((user.attributes.reminder_mail)/1).format(app.date_format)+"</span></div>";
+				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>change_history</i><span class='mdl-list__item-sub-title' title='Password reset request'>"+moment((user.attributes.change_password_mail)/1).format(app.date_format)+"</span></div>";
+				
+				usersList += "		<div class=\"mdl-card__actions mdl-card--border\">";
+				usersList += "			<span class=\"pull-left mdl-card__date\">";
+				usersList += "				<button data-id=\""+user.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+				usersList += "					<i class=\"material-icons\">update</i>";
+				usersList += "				</button>";
+				usersList += "				<span data-date=\"created\" class=\"visible\">Subscribed on "+moment((user.attributes.subscription_date)/1).format(app.date_format) + "</span>";
+				usersList += "				<span data-date=\"updated\" class=\"hidden\">Password last update on "+moment((user.attributes.password_last_updated)/1).format(app.date_format) + "</span>";
+				usersList += "			</span>";
+				usersList += "		</div>";
+				usersList += "	</div>";
+				usersList += "</div>";
+			}
+			container.innerHTML = usersList;
+			
+			componentHandler.upgradeDom();
+			app.setItemsClickAction('usersList');
+		})
+		.catch(function (error) {
+			if ( app.debug === true ) {
+				toast('getUsersList error out...' + error, {timeout:3000, type: 'error'});
+			}
+		});
+		containers.spinner.setAttribute('hidden', true);
+	} // getUsersList
+	
 	app.fetchProfile = function() {
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
@@ -2804,6 +2876,9 @@ var containers = {
 				localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
 			}
 			app.setDrawer();
+			if ( user.attributes.role == 'admin' ) {
+				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
+			}
 		})
 		.catch(function (error) {
 			if ( app.debug === true ) {
@@ -3569,6 +3644,27 @@ var containers = {
 		return Promise.reject(error)
 	}
 
+	app.addMenuItem = function(title, icon, link, position) {
+		var menuElt = document.createElement("a");
+			menuElt.setAttribute('href', link);
+			menuElt.setAttribute('class', 'mdl-navigation__link');
+		var iconElt = document.createElement("i");
+			iconElt.setAttribute('class', 'material-icons');
+			iconElt.appendChild(document.createTextNode(icon));
+		menuElt.appendChild(iconElt);
+		menuElt.appendChild(document.createTextNode(title));
+		menuElt.addEventListener('click', function(evt) {
+			app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
+			app.hideMenu();
+		}, false);
+		
+		if ( position && position > -1 ) {
+			
+		} else {
+			document.querySelector('#drawer nav.mdl-navigation.menu__list').appendChild(menuElt);
+		}
+	}
+	
 	app.getAllUserData = function() {
 		app.fetchItemsPaginated('objects', undefined, app.itemsPage['objects'], app.itemsSize['objects'])
 			.then(app.fetchItemsPaginated('flows', undefined, app.itemsPage['flows'], app.itemsSize['flows'])

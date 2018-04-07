@@ -154,8 +154,7 @@ router.get('/changePassword', expressJwt({secret: jwtsettings.secret}), function
 router.get('/list', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == 'admin' ) {
 		users	= db.getCollection('users');
-		console.log(users);
-		res.status(200).send(new UserSerializer(users.find()).serialize());
+		res.status(200).send(new UserSerializer(users.chain().find().simplesort('subscription_date').data()).serialize());
 		
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 502, 'code': 401, 'message': 'Unauthorized'}).serialize());
