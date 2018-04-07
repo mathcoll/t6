@@ -2764,7 +2764,7 @@ var containers = {
 			document.title = app.sectionsPageTitles['users-list'];
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var user = response.data[i];
-				var num = i+1;
+				var num = (response.data).length-i;
 				usersList += "<div class=\"mdl-grid mdl-cell\" data-action=\"nothing\" data-type=\"user\" data-id=\""+user.id+"\">";
 				usersList += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 				usersList += "		<div class=\"mdl-card__title\">";
