@@ -375,20 +375,20 @@ router.get('/status', function(req, res, next) {
 router.get('/index', function(req, res, next) {
 	var index = [
  	    {
-			title: 'Mobile-first & progressive web app',
+			title: 'Mobile-first & PWA',
 			titlecolor: '#000000',
-			description: 'Mobile & tablet designs works on all devices, browsers & resolutions. Designs adjust and fit to the screen size on Dashboard website.',
+			description: 'Mobile & tablet designs works on all devices – browsers & resolutions – thanks to progressive web app (PWA). Designs adjust and fit to the screen size on Dashboard website.',
 			image: '//cdn.internetcollaboratif.info/img/phone.jpg',
 	    },
 	    {
 			title: 't6 API first',
 			titlecolor: '#ffffff',
-			description: 'Live, eat, and breathe the API-first lifestyle of t6.<br />6 resources to take control of your Objects, Flows, Dashboards, Snippets, Rules, and Mqtts topics.',
+			description: 'Live, eat, and breathe the API-first lifestyle of t6. Easy to Use api.<br />6 resources to take control of your Objects, Flows, Dashboards, Snippets, Rules, and Mqtts topics.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
 			action: {id: 'docs', label: 'Read the Doc'},
 	    },
 	    {
-			title: 'Data Flows as Time-series',
+			title: 'Time-series Datapoints',
 			titlecolor: '#ffffff',
 			description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
@@ -397,21 +397,21 @@ router.get('/index', function(req, res, next) {
 	    {
 			title: 'Connected Objects',
 			titlecolor: '#ffffff',
-			description: 'Embedded, Automatization, Domotic, Sensors, any Objects can be connected and communicate to t6 via API.',
+			description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
 			action: {id: 'objects', label: 'List Objects'},
 	    },
 	    {
 			title: 'Tokens for security',
 			titlecolor: '#ffffff',
-			description: 'JWT Tokens allows to manage Objects & Flows API. Permissions based on access Tokens.',
+			description: 't6 supports JWT Access Token based authentication. Any of your resources are protected using JWT authentication. Access Token are Short-Live to improve security level. Fine grade permissions bare planned in the roadmap to manage and share resources.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
 			action: {id: 'login', label: 'Get Started'},
 	    },
 	    {
 			title: 'Dashboards',
 			titlecolor: '#ffffff',
-			description: 'Graphics, data-management, Monitoring, Reporting',
+			description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
 			action: {id: 'dashboards', label: 'List Dashboards'},
 	    },
