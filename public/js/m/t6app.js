@@ -592,7 +592,7 @@ var containers = {
 			unit: myForm.querySelector("select[name='Unit']").value,
 		};
 		if ( app.debug === true ) {
-			console.log(JSON.stringify(body));
+			console.log('onAddFlow', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -661,7 +661,7 @@ var containers = {
 			color: myForm.querySelector("input[name='Color']").value,
 		};
 		if ( app.debug === true ) {
-			console.log(JSON.stringify(body));
+			console.log('onAddSnippet', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -726,7 +726,7 @@ var containers = {
 			description: myForm.querySelector("textarea[name='Description']").value,
 		};
 		if ( app.debug === true ) {
-			console.log(JSON.stringify(body));
+			console.log('onAddDashboard', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -846,8 +846,9 @@ var containers = {
 	}; // setExpandAction
 	
 	app.setSection = function(section, direction) {
+		section = section.split("?")[0];
 		if ( app.debug === true ) {
-			console.log("setSection: "+section);
+			console.log('setSection', section);
 		}
 		window.scrollTo(0, 0);
 		if ( section === 'public-object' ) {
@@ -949,7 +950,7 @@ var containers = {
 
 	app.setItemsClickAction = function(type) {
 		if ( app.debug === true ) {
-			console.log('setItemsClickAction');
+			console.log('setItemsClickAction', type);
 		}
 		var items = document.querySelectorAll("[data-action='view']");
 		for (var i in items) {
@@ -3147,7 +3148,7 @@ var containers = {
 					
 					field += "<div class='mdl-selectfield mdl-js-selectfield mdl-textfield--floating-label'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<select class='mdl-selectfield__select' name='"+label+"' id='"+id+"' "+isMultiple+">";
+					field += "	<select class='mdl-textfield__input mdl-selectfield__select' name='"+label+"' id='"+id+"' "+isMultiple+">";
 					for (var n=0; n<options.options.length; n++) {
 						var selected = value==options.options[n].name?'selected':'';
 						field += "	<option "+selected+" value='"+options.options[n].name+"'>"+options.options[n].value+"</option>";
@@ -4302,7 +4303,7 @@ var containers = {
 	
 	if (!('indexedDB' in window)) {
 		if ( app.debug === true ) {
-			console.log('This browser doesn\'t support IndexedDB.');
+			console.log('indexedDB', 'This browser doesn\'t support IndexedDB.');
 		}
 	} else {
 		db = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -4536,19 +4537,19 @@ var containers = {
 
 	if (!('serviceWorker' in navigator)) {
 		if ( app.debug === true ) {
-			console.log('Service Worker isn\'t supported on this browser.');
+			console.log('serviceWorker', 'Service Worker isn\'t supported on this browser.');
 		}
 		return;
 	} else {
 		// registerServiceWorker();
 		if (!('PushManager' in window)) {
 			if ( app.debug === true ) {
-				console.log('Push isn\'t supported on this browser.');
+				console.log('PushManager', 'Push isn\'t supported on this browser.');
 			}
 			return;
 		} else {
 			if ( app.debug === true ) {
-				console.log('askPermission && subscribeUserToPush');
+				console.log('PushManager', 'askPermission && subscribeUserToPush');
 			}
 			askPermission();
 			subscribeUserToPush();
