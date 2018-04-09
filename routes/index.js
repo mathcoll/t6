@@ -404,7 +404,7 @@ router.get('/index', function(req, res, next) {
 	    {
 			title: 'Tokens for security',
 			titlecolor: '#ffffff',
-			description: 't6 supports JWT Access Token based authentication. Any of your resources are protected using JWT authentication. Access Token are Short-Live to improve security level. Fine grade permissions bare planned in the roadmap to manage and share resources.',
+			description: 't6 supports JWT Access Token based authentication. Any of your resources are protected using JWT authentication. Access Token are Short-Live to improve security level. Fine grade permissions are planned in the roadmap to manage and share resources.',
 			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
 			action: {id: 'login', label: 'Get Started'},
 	    },
