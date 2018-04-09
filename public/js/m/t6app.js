@@ -1772,6 +1772,7 @@ var containers = {
 					var u = response.data[i];
 					app.units.push( {name: u.id, value:u.attributes.type+' '+u.attributes.name} );
 				}
+				localStorage.setItem('units', JSON.stringify(app.units));
 			});
 		}
 	}
@@ -1793,23 +1794,31 @@ var containers = {
 					var d = response.data[i];
 					app.datatypes.push( {name: d.id, value:d.attributes.name} );
 				}
+				localStorage.setItem('datatypes', JSON.stringify(app.datatypes));
 			});
 		}
 	}
 	
 	app.displayAddFlow = function(flow) {
 		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+flow.id );
+
+		if ( !localStorage.getItem('units') ) {
+			// retrieve units
+		}
+		var allUnits = JSON.parse(localStorage.getItem('units'));
+
+		if ( !localStorage.getItem('datatypes') ) {
+			// retrieve datatypes
+		}
+		var allDatatypes = JSON.parse(localStorage.getItem('datatypes'));
 		
 		var node = "";
-		app.getUnits();
-		app.getDatatypes();
-		
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true});
 		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
-		node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, id: 'Unit', options: app.units });
-		node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', id: 'DataType', isEdit: true, id: 'DataType', options: app.datatypes });
+		node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, id: 'Unit', options: allUnits });
+		node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', id: 'DataType', isEdit: true, id: 'DataType', options: allDatatypes });
 		node += "	</div>";
 		node += "</section>";
 		
@@ -3597,7 +3606,7 @@ var containers = {
 		})
 		.then(function(response) {
 			if ( response.token ) {
-				localStorage.setItem('bearer', response.token)
+				localStorage.setItem('bearer', response.token);
 				app.isLogged = true;
 				app.resetSections();
 				// app.getAllUserData();
@@ -3623,6 +3632,8 @@ var containers = {
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
+				app.getUnits();
+				app.getDatatypes();
 				//app.addJWT(localStorage.getItem('bearer'));
 			} else {
 				if ( app.debug === true ) {
@@ -4175,6 +4186,8 @@ var containers = {
 		app.isLogged = true;
 		app.setHiddenElement("signin_button"); 
 		app.setVisibleElement("logout_button");
+		app.getUnits();
+		app.getDatatypes();
 	}
 	if ( window.location.hash ) {
 		var p = window.location.hash.substr(1);
