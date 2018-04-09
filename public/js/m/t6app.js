@@ -3089,7 +3089,6 @@ var containers = {
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<input type='text' value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
-					if (true) field += "	<button><i class='material-icons mdl-textfield__icon'>help</i></button>";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
