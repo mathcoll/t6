@@ -142,12 +142,14 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
 	color: #dadada !important;
 	position: absolute !important;
 }
-
 .mdl-textfield.is-invalid .mdl-textfield__icon {
 	color: #de3226 !important;
 }
 .mdl-switch.is-upgraded {
 	padding-left: 0px !important;
+}
+.mdl-selectfield {
+	padding: 20px 0;
 }
 
 div[data-type="objects"].removed,
