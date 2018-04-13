@@ -2157,6 +2157,9 @@ var containers = {
 						dtps.innerHTML = datapoints;
 						((containers.flow).querySelector('.page-content')).appendChild(dtps);
 						
+						componentHandler.upgradeDom();
+						app.setExpandAction();
+						
 					})
 					.catch(function (error) {
 						if (error == 'Error: Not Found') {
@@ -4528,7 +4531,7 @@ var containers = {
 	}
 	app.setDrawer();
 	
-	if ( app.tawktoid ) {
+	if ( app.tawktoid && navigator.onLine ) {
 		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 		(function(){
 			var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
