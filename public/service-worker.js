@@ -18,6 +18,11 @@ var filesToCache = [
     '/img/opl_img.jpg',
     '/img/m/welcome_card.jpg',
     '/img/m/side-nav-bg.jpg',
+    //cdn/javascripts
+    'https://cdn.internetcollaboratif.info/js/m/vendor.min.js',
+    'https://cdn.internetcollaboratif.info/js/m/t6app.js',
+    //cdn/styles
+    'https://cdn.internetcollaboratif.info/css/t6App.min.css',
     //cdn/images
     'https://cdn.internetcollaboratif.info/img/opl_img3.jpg',
     'https://cdn.internetcollaboratif.info/img/opl_img2.jpg',
