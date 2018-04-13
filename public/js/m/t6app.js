@@ -135,6 +135,8 @@ var app = {
 		username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
 		password: ".{4,}",
 		cardMaxChars: "^[0-9]+$",
+		customAttributeName: "^[a-zA-Z0-9_]+$",
+		customAttributeValue: "^.*?$",
 	}
 };
 
@@ -1672,7 +1674,7 @@ var containers = {
 		node += app.getSubtitle('Custom Parameters');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', id: ['Name[]', 'Value[]'], isEdit: true});
+		node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ['Name should not contains any space nor special char.', 'Value is free.'], id: ['Name[]', 'Value[]'], isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 
@@ -3238,18 +3240,22 @@ var containers = {
 					field += "</div>";
 				}
 			} else if ( options.type === '2inputs' ) {
+				var pattern = new Array();
+					pattern[0] = options.pattern[0]!==undefined?"pattern='"+options.pattern[0]+"'":"";
+					pattern[1] = options.pattern[1]!==undefined?"pattern='"+options.pattern[1]+"'":"";
 				if ( options.isEdit == true ) {
-					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important; float: left;'>";
+					field += "<div class='half mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important;'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id[0]+"'>"+icon+"</i>";
 
-					field += "	<input type='text' value='"+value[0]+"' class='mdl-textfield__input' name='"+id[0]+"' id='"+id[0]+"' style='width: auto;' />";
+					field += "	<input type='text' value='"+value[0]+"'"+pattern[0]+" class='mdl-textfield__input' name='"+id[0]+"' id='"+id[0]+"' />";
 					if (label[0]) field += "	<label class='mdl-textfield__label' for='"+id[0]+"'>"+label[0]+"</label>";
+					if (options.error[0]) field += "	<span class='mdl-textfield__error'>"+options.error[0]+"</span>";
 					field += "</div>";
 
-					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important;'>";
-					field += "	<input type='text' value='"+value[1]+"' class='mdl-textfield__input' name='"+id[1]+"' id='"+id[1]+"' style='width: auto;' />";
+					field += "<div class='half mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important;'>";
+					field += "	<input type='text' value='"+value[1]+"'"+pattern[1]+" class='mdl-textfield__input' name='"+id[1]+"' id='"+id[1]+"' />";
 					if (label[1]) field += "	<label class='mdl-textfield__label' for='"+id[1]+"'>"+label[1]+"</label>";
-					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
+					if (options.error[1]) field += "	<span class='mdl-textfield__error'>"+options.error[1]+"</span>";
 					field += "</div>";
 				} else {
 					value = (options.options.filter(function(cur) {return cur.name === value}))[0].value;
