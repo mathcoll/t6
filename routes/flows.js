@@ -6,6 +6,8 @@ var ErrorSerializer = require('../serializers/error');
 var flows;
 var users;
 var tokens;
+var datatypes;
+var units;
 
 /**
  * @api {get} /flows/:flow_id Get Flow(s)
@@ -51,16 +53,11 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 					]
 				};
 			} else {
-				query = {
-				'$and': [
-						{ 'user_id' : req.user.id },
-					]
-				};
+				query = { 'user_id' : req.user.id };
 			}
 		}
 		var flow = flows.chain().find(query).offset(offset).limit(size).data();
-		//console.log(query);
-
+		
 		var total = flows.find(query).length;
 		flow.size = size;
 		flow.pageSelf = page;
@@ -68,7 +65,9 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
-		flow = flow.length>0?flow:[];
+		
+		console.log('flow', flow);
+		
 		res.status(200).send(new FlowSerializer(flow).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 37, 'code': 401, 'message': 'Unauthorized'}).serialize());
@@ -232,20 +231,5 @@ router.delete('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret})
 		res.status(404).send(new ErrorSerializer({'id': 43, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
-
-function bearerAuth(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
-		var bearer = bearerHeader.split(" ");
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.user = (users.find({'token': { '$eq': req.token }}))[0];
-		next();
-	} else {
-		res.status(403).send(new ErrorSerializer({'id': 44, 'code': 403, 'message': 'Forbidden'}).serialize());
-	}
-}
 
 module.exports = router;
