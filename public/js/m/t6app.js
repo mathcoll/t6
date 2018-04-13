@@ -117,6 +117,7 @@ var app = {
 	],
 	units: [],
 	datatypes: [],
+	flows: [],
 	defaultResources: {
 		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: '', latitude: '', position: ''}},
 		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
@@ -417,13 +418,13 @@ var containers = {
 	function registerServiceWorker() {
 		return navigator.serviceWorker.register('/service-worker.js')
 		.then(function(registration) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('[ServiceWorker] Registered');
 			}
 		    return registration;
 		})
 		.catch(function(err) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('[ServiceWorker] error occured...'+ err);
 			}
 		});
@@ -449,13 +450,13 @@ var containers = {
 				app.setSetting('settings.pushSubscription.keys.p256dh', j.keys.p256dh);
 				app.setSetting('settings.pushSubscription.keys.auth', j.keys.auth);
 			}
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('pushSubscription', j);
 			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('subscribeUserToPush', error);
 			}
 		});
@@ -591,7 +592,7 @@ var containers = {
 			data_type: myForm.querySelector("select[name='DataType']").value,
 			unit: myForm.querySelector("select[name='Unit']").value,
 		};
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('onAddFlow', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
@@ -626,6 +627,7 @@ var containers = {
 				type: myForm.querySelector("select[name='Type']").value,
 				icon: myForm.querySelector("select[name='Icon']").value,
 				color: myForm.querySelector("input[name='Color']").value,
+				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 			};
 	
 			var myHeaders = new Headers();
@@ -659,8 +661,9 @@ var containers = {
 			type: myForm.querySelector("select[name='Type']").value,
 			icon: myForm.querySelector("select[name='Icon']").value,
 			color: myForm.querySelector("input[name='Color']").value,
+			flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 		};
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('onAddSnippet', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
@@ -725,7 +728,7 @@ var containers = {
 			name: myForm.querySelector("input[name='Name']").value,
 			description: myForm.querySelector("textarea[name='Description']").value,
 		};
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('onAddDashboard', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
@@ -847,7 +850,7 @@ var containers = {
 	
 	app.setSection = function(section, direction) {
 		section = section.split("?")[0];
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('setSection', section);
 		}
 		window.scrollTo(0, 0);
@@ -949,7 +952,7 @@ var containers = {
 	}; // setSection
 
 	app.setItemsClickAction = function(type) {
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('setItemsClickAction', type);
 		}
 		var items = document.querySelectorAll("[data-action='view']");
@@ -1073,10 +1076,10 @@ var containers = {
 			for (var d=0;d<buttons.deleteObject.length;d++) {
 				buttons.deleteObject[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Object';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>'; //
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"?</p>'; //
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
-					var myId = evt.currentTarget.dataset.id;
+					var myId = evt.target.parentNode.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
@@ -1119,10 +1122,10 @@ var containers = {
 				//console.log(buttons.deleteFlow[d]);
 				buttons.deleteFlow[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Flow';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all datapoints in the flow and can\'t be recovered.</p>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"? This action will remove all datapoints in the flow and can\'t be recovered.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
-					var myId = evt.currentTarget.dataset.id;
+					var myId = evt.target.parentNode.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
@@ -1165,10 +1168,10 @@ var containers = {
 				//console.log(buttons.deleteDashboard[d]);
 				buttons.deleteDashboard[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Dashboard';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"?</p>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
-					var myId = evt.currentTarget.dataset.id;
+					var myId = evt.target.parentNode.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
@@ -1208,13 +1211,12 @@ var containers = {
 			}
 		} else if ( type == 'snippets' ) {
 			for (var d=0;d<buttons.deleteSnippet.length;d++) {
-				//console.log(buttons.deleteSnippet[d]);
 				buttons.deleteSnippet[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Snippet';
-					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.currentTarget.dataset.name+'\"? This action will remove all reference to the Snippet in Dashboards.</p>';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"? This action will remove all reference to the Snippet in Dashboards.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
 					app.showModal();
-					var myId = evt.currentTarget.dataset.id;
+					var myId = evt.target.parentNode.dataset.id;
 					evt.preventDefault();
 					
 					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
@@ -1246,7 +1248,6 @@ var containers = {
 				});
 			}
 			for (var s=0;s<buttons.editSnippet.length;s++) {
-				//console.log(buttons.editSnippet[s]);
 				buttons.editSnippet[s].addEventListener('click', function(evt) {
 					app.displaySnippet(evt.currentTarget.dataset.id, true);
 					evt.preventDefault();
@@ -1408,7 +1409,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1633,7 +1634,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -1777,6 +1778,32 @@ var containers = {
 		}
 	}
 	
+	app.getFlows = function() {
+		// IN TEST
+		if ( app.flows.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'GET', headers: myHeaders };
+			var url = app.baseUrl+'/'+app.api_version+'/flows/?size=99999';
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				for (var i=0; i < (response.data).length ; i++ ) {
+					var f = response.data[i];
+					app.flows.push( {id: f.id, name:f.attributes.name, type: 'flows'} );
+				}
+				localStorage.setItem('flows', JSON.stringify(app.flows));
+			});
+		}
+	}
+	
 	app.getDatatypes = function() {
 		if ( app.datatypes.length == 0 ) {
 			var myHeaders = new Headers();
@@ -1913,23 +1940,17 @@ var containers = {
 		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: true, options: app.types });
 		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: true});
 		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: true });
-		node += "	</div>";
-		node += "</section>";
-		
-		node += app.getSubtitle('Flows');
 
-		node += "<section class='mdl-grid mdl-cell--12-col'>";
-		node += "	<div class='mdl-cell--12-col mdl-grid mdl-card mdl-shadow--2dp'>";
-		node += "		<div class='mdl-cell mdl-cell--10-col'>";
-		node += app.getField(app.icons.flows, 'Flows', snippet.attributes.icon, {type: 'select', id: 'Flows', options: [{name: 'uuid', value:'? Flow Name'}, {name: 'uuid', value:'? Flow Name'}, {name: 'uuid', value:'? Flow Name'}], isMultiple: true, isEdit: true });
-		node += "		</div>";
-		node += "		<div class='mdl-cell mdl-cell--2-col'>";
-		node += "			<button class='mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
-		node += "				<i class='material-icons'>add</i>";
-		node += "				<label>Add</label>";
-		node += "			</button>";
+		var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
+			return {value: flow.name, name: flow.id};
+		});
+		node += app.getField(app.icons.flows, 'Flows', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+		
+		node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
+		node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
 		node += "		</div>";
 		node += "	</div>";
+		
 		node += "</section>";
 		
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
@@ -1951,6 +1972,14 @@ var containers = {
 
 		(containers.snippet_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
+		document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+			console.log(evt.target);
+			var id = evt.target.getAttribute('data-value');
+			var name = evt.target.innerText;
+			console.log({name: name, id: id, type: 'flows'});
+			app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
+			evt.preventDefault();
+		}, false);
 		
 		app.refreshButtonsSelectors();
 		buttons.addSnippetBack.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
@@ -2165,7 +2194,7 @@ var containers = {
 						if (error == 'Error: Not Found') {
 							toast('No data found, graph remain empty.', {timeout:3000, type: 'warning'});
 						} else {
-							if ( app.debug === true ) {
+							if ( localStorage.getItem('settings.debug') == 'true' ) {
 								toast('displayFlow error out...' + error, {timeout:3000, type: 'error'});
 							}
 						}
@@ -2221,7 +2250,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('displayFlow error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -2332,7 +2361,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -2399,54 +2428,11 @@ var containers = {
 				node += "	</div>";
 				node +=	"</section>";
 				
-				app.getSnippet(app.icons.snippets, snippet.id, (containers.snippet).querySelector('.page-content'));
 
 				if ( !isEdit ) {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += "		<div class=\"mdl-list__item\">";
-					node += "			<span class='mdl-list__item-primary-content'>";
-					node += "				<h2 class=\"mdl-card__title-text\">";
-					node += "					<i class=\"material-icons\">"+app.icons.flows+"</i>";
-					node += "					Flows";
-					node += "				</h2>";
-					node += "			</span>";
-					node += "			<span class='mdl-list__item-secondary-action'>";
-					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='snippetflows-"+id+"'>";
-					node += "					<i class='material-icons'>expand_more</i>";
-					node += "				</button>";
-					node += "			</span>";
-					node += "		</div>";
-					node += "		<div class='mdl-list mdl-cell mdl-cell--12-col hidden' id='snippetflows-"+id+"'>";
-					for ( i=0; i<snippet.attributes.flows.length; i++ ) {
-						// node += " <a href=\"#\" onclick=\";\"
-						// class=\"mdl-list__item mdl-cell--12-col\">";
-						node += app.getField(null, snippet.attributes.flows[i], null, false, {type: 'text', action: function() {app.displayFlow(snippet.attributes.flows[i])}, isEdit: false });
-						// node += " </a>";
-					}
-					node += "		</div>";
-					node += "	</div>";
-					node +=	"</section>";
-				}
-				
-				if ( isEdit ) {
-					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
-					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
-					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
-					node += "			<i class='material-icons'>chevron_left</i>";
-					node += "			<label>View</label>";
-					node += "		</button>";
-					node += "	</div>";
-					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
-					node += "			<i class='material-icons'>save</i>";
-					node += "			<label>Save</label>";
-					node += "		</button>";
-					node += "	</div>";
-					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
-					node += "</section>"
-				} else {
+					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
@@ -2469,6 +2455,49 @@ var containers = {
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
+					//Snippet preview
+					app.getSnippet(app.icons.snippets, snippet.id, (containers.snippet).querySelector('.page-content'));
+					
+				} else if ( isEdit ) {
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+
+					node += "		<div class='mdl-list__item'>";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<h2 class=\"mdl-card__title-text\">";
+					node += "					<i class=\"material-icons\">"+app.icons.flows+"</i>Flows";
+					node += "				</h2>";
+					node += "			</span>";
+					node += "		</div>";
+					
+					var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
+						return {value: flow.name, name: flow.id};
+					});
+					node += app.getField(app.icons.flows, 'Flows', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+					
+					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
+					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
+					node += "		</div>";
+					node += "	</div>";
+					
+					node +=	"</section>";
+					
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>View</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
+					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>save</i>";
+					node += "			<label>Save</label>";
+					node += "		</button>";
+					node += "	</div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "</section>"
 				}
 
 				(containers.snippet).querySelector('.page-content').innerHTML = node;
@@ -2479,6 +2508,15 @@ var containers = {
 				if ( isEdit ) {
 					buttons.backSnippet.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, false); }, false);
 					buttons.saveSnippet.addEventListener('click', function(evt) { app.onSaveSnippet(evt); }, false);
+
+					document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+						console.log(evt.target);
+						var id = evt.target.getAttribute('data-value');
+						var name = evt.target.innerText;
+						console.log({name: name, id: id, type: 'flows'});
+						app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
+						evt.preventDefault();
+					}, false);
 				} else {
 					buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
 					// buttons.deleteSnippet2.addEventListener('click',
@@ -2491,12 +2529,28 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
 		containers.spinner.setAttribute('hidden', true);
 	}; // displaySnippet
+	
+	app.displayChip = function(chip) {
+		var chipElt = document.createElement('div');
+			chipElt.setAttribute('class', 'mdl-chip');
+			chipElt.setAttribute('data-id', chip.id);
+			chipElt.innerHTML = "<i class='material-icons md-18'>"+app.icons[chip.type]+"</i>"+chip.name+"<i class='material-icons close'>close</i>";
+			chipElt.querySelector('i.close').addEventListener('click', function(evt) {
+				evt.preventDefault();
+				evt.target.parentNode.remove();
+			}, false);
+		return chipElt;
+	}; // displayChip
+	
+	app.addChipTo = function(container, chip) {
+		document.getElementById(container).append(app.displayChip(chip));
+	}; // addChipTo
 	
 	app.displaySnippetItem_asSimple = function(snippet) {
 		var node = "<section class='mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky' role='heading'>";
@@ -2703,7 +2757,7 @@ var containers = {
 				app.getStatus();
 				
 			} else {
-				if ( app.debug === true ) {
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
 					console.log('Error no Type defined: '+type);
 					toast('Error no Type defined.', {timeout:3000, type: 'error'});
 				}
@@ -2740,7 +2794,7 @@ var containers = {
 						resolve();
 					})
 					.catch(function (error) {
-						if ( app.debug === true ) {
+						if ( localStorage.getItem('settings.debug') == 'true' ) {
 							toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
 						}
 					});
@@ -2816,7 +2870,7 @@ var containers = {
 			app.setItemsClickAction('usersList');
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('getUsersList error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -2894,7 +2948,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -3008,7 +3062,7 @@ var containers = {
 		.catch(function (error) {
 			container.innerHTML = app.getCard( {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)'} );
 			app.displayLoginForm(container);
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -3328,7 +3382,7 @@ var containers = {
 						setInterval(function() {app.refreshFromNow('snippet-time-'+flow_id, time)}, 10000);
 					})
 					.catch(function (error) {
-						if ( app.debug === true ) {
+						if ( localStorage.getItem('settings.debug') == 'true' ) {
 							toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
 						}
 					});
@@ -3395,7 +3449,7 @@ var containers = {
 					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(dataset[0][0][0]).format(app.date_format) + ", " + moment(dataset[0][0][0]).fromNow();
 				})
 				.catch(function (error) {
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
 					}
 				});
@@ -3456,7 +3510,7 @@ var containers = {
 					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
 				.catch(function (error) {
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
 					}
 				});
@@ -3523,7 +3577,7 @@ var containers = {
 					setInterval(function() {app.refreshFromNow('snippet-time-'+my_snippet.id, time)}, 10000);
 				})
 				.catch(function (error) {
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
 					}
 				});
@@ -3532,7 +3586,7 @@ var containers = {
 			// return snippet;
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -3581,7 +3635,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -3613,6 +3667,7 @@ var containers = {
 				app.isLogged = true;
 				app.resetSections();
 				// app.getAllUserData();
+				app.getFlows();
 				app.fetchProfile();
 				if ( window.location.hash && window.location.hash.substr(1) === 'object_add' ) {
 					app.displayAddObject(app.defaultResources.object);
@@ -3639,14 +3694,14 @@ var containers = {
 				app.getDatatypes();
 				//app.addJWT(localStorage.getItem('bearer'));
 			} else {
-				if ( app.debug === true ) {
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
 					toast('Auth internal error', {timeout:3000, type: 'error'});
 				}
 				app.resetDrawer();
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
 			}
 		});
@@ -3754,7 +3809,7 @@ var containers = {
 					app.setSetting('settings.notifications', true);
 					askPermission();
 					subscribeUserToPush();
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('Awsome, Notifications are activated.', {timeout:3000, type: 'done'});
 					}
 				} else {
@@ -3768,7 +3823,7 @@ var containers = {
 				if ( document.getElementById('switch-settings.geolocalization').checked == true ) {
 					app.setSetting('settings.geolocalization', true);
 					app.getLocation();
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('Awsome, Geolocalization is activated.', {timeout:3000, type: 'done'});
 					}
 				} else {
@@ -3793,7 +3848,7 @@ var containers = {
 				if ( document.getElementById('switch-settings.debug').checked == true ) {
 					app.setSetting('settings.debug', true);
 					app.debug = true;
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('Awsome, Debug mode is activated.', {timeout:3000, type: 'done'});
 					}
 				} else {
@@ -3897,7 +3952,7 @@ var containers = {
 			app.setExpandAction();
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('Can\'t display Status...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -3939,7 +3994,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('Can\'t display Terms...' + error, {timeout:3000, type: 'error'});
 			}
 		});
@@ -3965,6 +4020,7 @@ var containers = {
 	
 	app.sessionExpired = function() {
 		localStorage.setItem('bearer', null);
+		localStorage.setItem('flows', null);
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
@@ -4007,7 +4063,7 @@ var containers = {
 	
 	app.resetSections = function() {
 		/* reset views to default */
-		if (app.debug === true) { console.log('resetSections()'); }
+		if (localStorage.getItem('settings.debug') == 'true') { console.log('resetSections()'); }
 		(containers.objects).querySelector('.page-content').innerHTML = '';
 		(containers.object).querySelector('.page-content').innerHTML = '';
 		(containers.flows).querySelector('.page-content').innerHTML = '';
@@ -4053,12 +4109,12 @@ var containers = {
 		// var request = db.transaction(["jwt"],
 		// "readwrite").objectStore("jwt").add(item);
 		request.onsuccess = function(event) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log("add(): onsuccess.");
 			}
 		}
 		request.onerror = function(event) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log("add(): onerror.");
 				console.log(event);
 			}
@@ -4088,7 +4144,7 @@ var containers = {
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
-				if ( app.debug === true ) {
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
 					console.log("Autologin completed. Using JWT:");
 					console.log(jwt);
 				}
@@ -4099,23 +4155,23 @@ var containers = {
 			}
 		}
 		tx.onabort = function() {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log("searchJWT(): tx onerror.");
 				console.log(tx.error);
 			}
 		}
 		request.openCursor(range, 'prev').onerror = function(e) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log("openCursor: onerror.");
 			}
 		}
 		request.onsuccess = function(event) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log("searchJWT(): onsuccess.");
 			}
 		};
 		request.onerror = function(event) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log("searchJWT(): onerror.");
 				console.log(event);
 			}
@@ -4124,7 +4180,7 @@ var containers = {
 	}
 
 	app.showOrientation = function() {
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			toast("Orientation: " + screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
 		}
 	}
@@ -4132,7 +4188,7 @@ var containers = {
 	function setPosition(position) {
 		app.defaultResources.object.attributes.longitude = position.coords.longitude;
 		app.defaultResources.object.attributes.latitude = position.coords.latitude;
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			toast("Geolocation (Accuracy="+position.coords.accuracy+") is set to: L"+position.coords.longitude+" - l"+position.coords.latitude, {timeout:3000, type: 'info'});
 		}
 	}
@@ -4140,31 +4196,31 @@ var containers = {
 	function setPositionError(error) {
 		switch (error.code) {
 			case error.TIMEOUT:
-				if ( app.debug === true ) {
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
 					toast("Browser geolocation error !\n\nTimeout.", {timeout:3000, type: 'error'});
 				}
 				break;
 			case error.POSITION_UNAVAILABLE:
 				// dirty hack for safari
 				if(error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) {
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast("Origin does not have permission to use Geolocation service - no fallback.", {timeout:3000, type: 'error'});
 					}
 				} else {
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast("Browser geolocation error !\n\nPosition unavailable.", {timeout:3000, type: 'error'});
 					}
 				}
 				break;
 			case error.PERMISSION_DENIED:
 				if(error.message.indexOf("Only secure origins are allowed") == 0) {
-					if ( app.debug === true ) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast("Only secure origins are allowed - no fallback.", {timeout:3000, type: 'error'});
 					}
 				}
 				break;
 			case error.UNKNOWN_ERROR:
-				if ( app.debug === true ) {
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
 					toast("Can't find your position - no fallback.", {timeout:3000, type: 'error'});
 				}
 				break;
@@ -4176,7 +4232,7 @@ var containers = {
 			var options = { enableHighAccuracy: false, timeout: 200000, maximumAge: 500000 };
 			navigator.geolocation.getCurrentPosition(setPosition, setPositionError, options);
 		} else {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast("Geolocation is not supported by this browser.", {timeout:3000, type: 'warning'});
 			}
 		}
@@ -4213,7 +4269,7 @@ var containers = {
 	} else {
 		var currentPage = localStorage.getItem("currentPage");
 		if ( currentPage ) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
 			}
 			app.setSection(currentPage);
@@ -4230,7 +4286,7 @@ var containers = {
 	app.refreshButtonsSelectors();
 	if ( document.querySelector('.sticky') ) {
 		if (!window.getComputedStyle(document.querySelector('.sticky')).position.match('sticky')) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast("Your browser does not support 'position: sticky'!!.", {timeout:3000, type: 'info'});
 			}
 		}
@@ -4239,7 +4295,7 @@ var containers = {
 		if(e.keyCode === 13) {
 			e.preventDefault();
 			var input = this.value;
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				alert("Searching for "+input);
 			}
 		}
@@ -4256,7 +4312,7 @@ var containers = {
 			} else {
 				localStorage.setItem("currentResourceId", null);
 			}
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('history+=\"', window.location.hash.substr(1), '\"');
 			}
 		}
@@ -4318,7 +4374,7 @@ var containers = {
 	screen.orientation.unlock();
 	
 	if (!('indexedDB' in window)) {
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('indexedDB', 'This browser doesn\'t support IndexedDB.');
 		}
 	} else {
@@ -4331,13 +4387,13 @@ var containers = {
 			}
 		});
 		request.onerror = function(event) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				alert('Database is on-error: ' + event.target.errorCode);
 			}
 		};
 		request.onsuccess = function(event) {
 			db = request.result;
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('Database is on-success');
 				console.log('searchJWT(): ');
 			}
@@ -4349,7 +4405,7 @@ var containers = {
 			db = event.target.result;
 			objectStore = db.createObjectStore("jwt", {keyPath: "exp", autoIncrement: true});
 			objectStore.createIndex("exp", "exp", { unique: false, autoIncrement: true });
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('Database is on-upgrade-needed');
 				//console.log('searchJWT(): '+ app.searchJWT());
 			}
@@ -4552,19 +4608,19 @@ var containers = {
 	}
 
 	if (!('serviceWorker' in navigator)) {
-		if ( app.debug === true ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('serviceWorker', 'Service Worker isn\'t supported on this browser.');
 		}
 		return;
 	} else {
 		// registerServiceWorker();
 		if (!('PushManager' in window)) {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('PushManager', 'Push isn\'t supported on this browser.');
 			}
 			return;
 		} else {
-			if ( app.debug === true ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('PushManager', 'askPermission && subscribeUserToPush');
 			}
 			askPermission();

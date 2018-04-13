@@ -104,6 +104,35 @@ body {
 	align-content: stretch;
 	background: #ececec;
 }
+.mdl-chips {
+	margin: 0 0 8px 0;;
+	outline: none;
+	width: 100%;
+	min-height: 40px;
+}
+.mdl-chip {
+    display: inline-block;
+    height: 32px;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgba(0,0,0,0.6);
+    line-height: 32px;
+    padding: 0 12px;
+    border-radius: 16px;
+    background-color: #e4e4e4;
+    margin-bottom: 5px;
+    margin-right: 5px;
+}
+.mdl-chip .material-icons.md-18 {
+    margin: 2px;
+    vertical-align: middle;
+}
+.mdl-chip .close {
+    cursor: pointer;
+    font-size: 16px;
+    padding-left: 8px;
+    vertical-align: middle;
+}
 .mdl-textfield {
 	width: calc(100% - 48px) !important;
 }
@@ -149,7 +178,7 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
 	padding-left: 0px !important;
 }
 .mdl-selectfield {
-	padding: 20px 0;
+	padding: 0;
 }
 
 div[data-type="objects"].removed,
@@ -1552,6 +1581,26 @@ section > button {
     overflow: hidden;
     cursor: pointer
 }
+.mdl-chips__arrow-down__container {
+	position: absolute;
+	margin-top: 28px;
+	right: 24px;
+	height: 5px;
+	outline: 0;
+	padding-left: 7px;
+	padding-right: 7px;
+}
+.mdl-chips__arrow-down__container .mdl-chips__arrow-down {
+	position: absolute;
+	margin-top: 8px;
+	right: 8px;
+	height: 5px;
+	outline: 0;
+	user-select: none;
+	cursor: default;
+	padding-left: 7px;
+	padding-right: 7px;
+}
 
 .mdl-selectfield__box>.mdl-selectfield__arrow-down__container {
     position: absolute;
@@ -1623,7 +1672,7 @@ section > button {
     right: 8px;
     display: none;
     background: rgb(255, 255, 255);
-    margin: -55px 0 0 0;
+    margin: -56px 0 0 0;
     padding: 0;
     border: none;
     border-radius: 2px;
@@ -1635,6 +1684,15 @@ section > button {
     max-height: 300px;
     overflow-x: hidden;
     overflow-y: auto
+}
+.mdl-selectfield__list-option-box:focus,
+.mdl-selectfield__list-option-box.is-visible {
+	opacity: 1;
+	display: block;
+}
+.mdl-selectfield__list-option-box.is-hidden {
+	opacity: 0;
+	display: none;
 }
 
 .mdl-selectfield__list-option-box ul {
