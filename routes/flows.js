@@ -57,7 +57,6 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 			}
 		}
 		var flow = flows.chain().find(query).offset(offset).limit(size).data();
-		
 		var total = flows.find(query).length;
 		flow.size = size;
 		flow.pageSelf = page;
@@ -65,9 +64,8 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
-		
-		console.log('flow', flow);
-		
+		//flow.unit = (join.data())[0].right.name;
+				
 		res.status(200).send(new FlowSerializer(flow).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 37, 'code': 401, 'message': 'Unauthorized'}).serialize());

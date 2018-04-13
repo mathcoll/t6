@@ -129,8 +129,8 @@ var app = {
 		name: '.{3,}',
 		ipv4: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}(:[0-9]{1,6})?',
 		ipv6: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$',
-		longitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
-		latitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,6}$',
+		longitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,7}$',
+		latitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,7}$',
 		position: '.{3,255}',
 		username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
 		password: ".{4,}",
@@ -499,11 +499,11 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				var objectContainer = document.querySelector("section#objects div[data-id='"+object_id+"']");
 				app.setSection('objects');
-				objectContainer.querySelector("h2").innerHTML = body.name;
-				objectContainer.querySelector("div.mdl-list__item--three-line.small-padding span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
 				toast('Object has been saved.', {timeout:3000, type: 'done'});
+				//var objectContainer = document.querySelector("section#objects div[data-id='"+object_id+"']");
+				//objectContainer.querySelector("h2").innerHTML = body.name;
+				//objectContainer.querySelector("div.mdl-list__item--three-line.small-padding span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
 			})
 			.catch(function (error) {
 				toast('Object has not been saved.', {timeout:3000, type: 'error'});
@@ -572,10 +572,10 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				var objectContainer = document.querySelector("section#flows div[data-id='"+flow_id+"']");
 				app.setSection('flows');
-				objectContainer.querySelector("h2").innerHTML = body.name;
 				toast('Flow has been saved.', {timeout:3000, type: 'done'});
+				//var flowContainer = document.querySelector("section#flows div[data-id='"+flow_id+"']");
+				//flowContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
 				toast('Flow has not been saved.', {timeout:3000, type: 'error'});
@@ -627,7 +627,7 @@ var containers = {
 				type: myForm.querySelector("select[name='Type']").value,
 				icon: myForm.querySelector("select[name='Icon']").value,
 				color: myForm.querySelector("input[name='Color']").value,
-				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
+				/* THIS SEEMS BUGGY ?? */ flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 			};
 	
 			var myHeaders = new Headers();
@@ -642,10 +642,10 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				var snippetContainer = document.querySelector("section#snippets div[data-id='"+snippet_id+"']");
 				app.setSection('snippets');
-				snippetContainer.querySelector("h2").innerHTML = body.name;
 				toast('Snippet has been saved.', {timeout:3000, type: 'done'});
+				//var snippetContainer = document.querySelector("section#snippets div[data-id='"+snippet_id+"']");
+				//snippetContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
 				toast('Snippet has not been saved.', {timeout:3000, type: 'error'});
@@ -710,10 +710,10 @@ var containers = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				var dashboardContainer = document.querySelector("section#dashboards div[data-id='"+dashboard_id+"']");
 				app.setSection('dashboards');
-				dashboardContainer.querySelector("h2").innerHTML = body.name;
 				toast('Dashboard has been saved.', {timeout:3000, type: 'done'});
+				//var dashboardContainer = document.querySelector("section#dashboards div[data-id='"+dashboard_id+"']");
+				//dashboardContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
 				toast('Dashboard has not been saved.', {timeout:3000, type: 'error'});
@@ -2498,6 +2498,7 @@ var containers = {
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>"
+
 				}
 
 				(containers.snippet).querySelector('.page-content').innerHTML = node;
@@ -2513,10 +2514,15 @@ var containers = {
 						console.log(evt.target);
 						var id = evt.target.getAttribute('data-value');
 						var name = evt.target.innerText;
-						console.log({name: name, id: id, type: 'flows'});
 						app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
 						evt.preventDefault();
 					}, false);
+
+					snippet.attributes.flows.map(function(s) {
+						//Flows list
+						var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == s; });
+						app.addChipTo('flowsChips', {name: theFlow.name, id: s, type: 'flows'});
+					});
 				} else {
 					buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
 					// buttons.deleteSnippet2.addEventListener('click',
