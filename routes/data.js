@@ -113,6 +113,8 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 				query.field('time, valueTime');
 			} else if ( datatype == 'float' ) {
 				query.field('time, valueFloat');
+			} else if ( datatype == 'geo' ) {
+				query.field('time, valueString');
 			} else {
 				query.field('time, value');
 			}
@@ -158,6 +160,8 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 							d.value = d.valueTime;
 						} else if ( datatype == 'float' ) {
 							d.value = parseFloat(d.valueFloat);
+						} else if ( datatype == 'geo' ) {
+							d.value = d.valueString;
 						} else {
 							d.value = d.value;
 						}
@@ -409,6 +413,8 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
 				query.field('time, valueTime');
 			} else if ( datatype == 'float' ) {
 				query.field('time, valueFloat');
+			} else if ( datatype == 'geo' ) {
+				query.field('time, valueString');
 			} else {
 				query.field('time, value');
 			}
@@ -437,6 +443,8 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
 							d.value = d.valueTime;
 						} else if ( datatype == 'float' ) {
 							d.value = parseFloat(d.valueFloat);
+						} else if ( datatype == 'geo' ) {
+							d.value = d.valueString;
 						} else {
 							d.value = d.value;
 						}
@@ -575,6 +583,9 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 		} else if ( datatype == 'float' ) {
 			value = parseFloat(value);
 			fields[0] = {time:time, valueFloat: value,};
+		} else if ( datatype == 'geo' ) {
+			value = ""+value;
+			fields[0] = {time:time, valueString: value,};
 		} else {
 			value = ""+value;
 			fields[0] = {time:time, valueString: value,};
