@@ -1499,33 +1499,26 @@ var containers = {
 				node += "	</div>";
 				node += "</section>";
 
-				if ( object.attributes.parameters && object.attributes.parameters.length > -1 ) { 
+				if ( isEdit || (object.attributes.parameters !== undefined && object.attributes.parameters.length > -1 ) ) {
 					node += app.getSubtitle('Custom Parameters');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var i in object.attributes.parameters ) {
 						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text', id: object.attributes.parameters[i].name, isEdit: isEdit});
 					}
+					node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ['Name should not contains any space nor special char.', 'Value is free.'], id: ['Name[]', 'Value[]'], isEdit: true});
 					node += "	</div>";
 					node += "</section>";
 				}
 
-				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
+				if ( isEdit || (object.attributes.longitude || object.attributes.latitude || object.attributes.position) ) {
 					node += app.getSubtitle('Localization');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					if ( object.attributes.longitude ) {
-						node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', id: 'Longitude', isEdit: isEdit, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
-					}
-					if ( object.attributes.latitude ) {
-						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', id: 'Latitude', isEdit: isEdit, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
-					}
-					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', id: 'Position', isEdit: isEdit, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
-					}
-					if ( object.attributes.longitude && object.attributes.latitude ) {
-						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
-					}
+					node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', id: 'Longitude', isEdit: isEdit, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
+					node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', id: 'Latitude', isEdit: isEdit, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
+					node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', id: 'Position', isEdit: isEdit, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
+					node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
 					node += "	</div>";
 					node += "</section>";
 				}

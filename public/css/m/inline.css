@@ -153,7 +153,6 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
 #status label.mdl-textfield__label {
 	top:0;
 	position: relative;
-	/*width: calc(100% - 48px) !important;*/
 	width: 40% !important;
 	display: inline-block;
 }
