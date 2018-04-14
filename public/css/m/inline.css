@@ -144,7 +144,11 @@ body {
 .mdl-textfield.is-disabled .mdl-textfield__icon {
 	color: rgba(0, 0, 0, 0.26) !important;
 }
-div .mdl-textfield__icon ~ select, .mdl-textfield__icon ~ label {
+.mdl-switch__label {
+	display: block;
+}
+div .mdl-textfield__icon ~ select,
+.mdl-textfield__icon ~ label {
 	width: calc(100% - 48px) !important;
 }
 div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__icon ~ label {
@@ -158,26 +162,6 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
 }
 #status .mdl-list__item-primary-content {
 	width: 33%;
-}
-.mdl-textfield__icon ~ * {
-	margin-left: 48px !important;
-}
-.mdl-progress {
-	display: inline-block !important;
-}
-.mdl-switch__label {
-	left: 40px !important;
-	color: #dadada !important;
-	position: absolute !important;
-}
-.mdl-textfield.is-invalid .mdl-textfield__icon {
-	color: #de3226 !important;
-}
-.mdl-switch.is-upgraded {
-	padding-left: 0px !important;
-}
-.mdl-selectfield {
-	padding: 0;
 }
 
 div[data-type="objects"].removed,
@@ -1485,6 +1469,14 @@ section > button {
 
 
 // mdl-selectfield
+
+/*
+.mdl-selectfield.is-dirty .mdl-selectfield__label,
+.mdl-selectfield.is-focused .mdl-selectfield__label {
+	visibility: visible !important;
+}
+*/
+
 .mdl-selectfield {
     position: relative;
     display: inline-block;
@@ -1498,7 +1490,6 @@ section > button {
     padding: 20px 0;
     z-index: inherit
 }
-
 .mdl-selectfield__select {
     visibility: visible;
     font-size: 16px;
@@ -1507,37 +1498,6 @@ section > button {
     width: 100%
 }
 
-.mdl-selectfield__label {
-    vertical-align: middle;
-	bottom: 0;
-	font-size: 16px;
-	left: 0;
-	right: 0;
-	pointer-events: none;
-	position: relative;
-	display: block;
-	top: -26px !important;
-	width: 100%;
-	overflow: hidden;
-	white-space: nowrap;
-	text-align: left;
-	color: #795548;
-	font-size: 12px;
-	top: 4px;
-	visibility: visible !important;
-}
-.mdl-selectfield__label::after {
-    background-color: #795548;
-    bottom: 20px;
-    content: '';
-    height: 2px;
-    left: 45%;
-    position: absolute;
-    transition-duration: .2s;
-    transition-timing-function: cubic-bezier(.4,0,.2,1);
-    visibility: hidden;
-    width: 10px;
-}
 .mdl-textfield.half .mdl-textfield__label::after,
 .mdl-textfield.half input.mdl-textfield__input,
 .mdl-textfield__input.half,
@@ -1718,7 +1678,7 @@ section > button {
 .mdl-selectfield__list-option-box ul {
     margin: 0;
     padding: 5px 0;
-    list-style: none
+    list-style: none;
 }
 
 .mdl-selectfield__list-option-box ul>li {
@@ -1730,7 +1690,7 @@ section > button {
     transition: background-color cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     outline: none;
-    box-sizing: content-box
+    box-sizing: content-box;
 }
 
 .mdl-selectfield__list-option-box ul>li:hover,
@@ -1741,13 +1701,54 @@ section > button {
 .mdl-selectfield__list-option-box ul>li.is-disabled {
     color: rgba(0, 0, 0, 0.26);
     background-color: rgb(255, 255, 255);
-    cursor: default
+    cursor: default;
 }
 
 .mdl-selectfield.is-focused .mdl-selectfield__list-option-box {
     display: block;
     opacity: 1;
     z-index: 9999;
+}
+
+textarea ~ .mdl-textfield__label,
+input ~ .mdl-textfield__label,
+input ~ .mdl-selectfield__label,
+input ~ .mdl-switch__label {
+	position: absolute !important;
+}
+.mdl-textfield__label,
+.mdl-selectfield__label,
+.mdl-switch__label {
+	position: initial;
+	display: block;
+    text-align: left;
+	font-size: 12px;
+	visibility: visible !important;
+	color: rgba(0,0,0,.26);
+	cursor: pointer;
+	line-height: 24px;
+}
+.mdl-switch__label {
+    left: 48px;
+}
+.mdl-selectfield__label {
+	position: initial;
+	top: -26px !important;
+}
+.mdl-textfield__icon ~ * {
+	margin-left: 48px !important;
+}
+.mdl-progress {
+	display: inline-block !important;
+}
+.mdl-textfield.is-invalid .mdl-textfield__icon {
+	color: #de3226 !important;
+}
+.mdl-switch.is-upgraded {
+	padding-left: 0px !important;
+}
+.mdl-selectfield {
+	padding: 0;
 }
 
 /*# sourceMappingURL=mdl-selectfield.min.css.map */

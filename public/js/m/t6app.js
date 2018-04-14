@@ -1506,7 +1506,7 @@ var containers = {
 					for ( var i in object.attributes.parameters ) {
 						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text', id: object.attributes.parameters[i].name, isEdit: isEdit});
 					}
-					node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ['Name should not contains any space nor special char.', 'Value is free.'], id: ['Name[]', 'Value[]'], isEdit: true});
+					if ( isEdit ) node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ['Name should not contains any space nor special char.', 'Value is free.'], id: ['Name[]', 'Value[]'], isEdit: true});
 					node += "	</div>";
 					node += "</section>";
 				}
@@ -3178,6 +3178,7 @@ var containers = {
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (label) field += "	<label class='mdl-radio__label'>"+label+"</label>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
@@ -3191,21 +3192,22 @@ var containers = {
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (label) field += "	<label class='mdl-checkbox__label'>"+label+"</label>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
 			} else if ( options.type === 'switch' ) {
 				if ( options.isEdit == true ) {
-					var checked = value=='true'?'checked':'';
 					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label' for='switch-"+id+"' data-id='switch-"+id+"'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' "+checked+" name='"+label+"' value='"+value+"' placeholder='"+label+"'>";
+					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' name='"+label+"' value='"+value+"' placeholder='"+label+"'>";
 					if (label) field += "	<div class='mdl-switch__label'>"+label+"</div>";
 					field += "</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (label) field += "	<label class='mdl-switch__label'>"+label+"</label>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
@@ -3215,13 +3217,13 @@ var containers = {
 					
 					field += "<div class='mdl-selectfield mdl-js-selectfield mdl-textfield--floating-label'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+					if (label) field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
 					field += "	<select class='mdl-textfield__input mdl-selectfield__select' name='"+label+"' id='"+id+"' "+isMultiple+">";
 					for (var n=0; n<options.options.length; n++) {
 						var selected = value==options.options[n].name?'selected':'';
 						field += "	<option "+selected+" value='"+options.options[n].name+"'>"+options.options[n].value+"</option>";
 					}
 					field += "	</select>";
-					if (label) field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
@@ -3229,6 +3231,7 @@ var containers = {
 					selectedValue = selectedValue[0]!==undefined?selectedValue[0].value:'';
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
+					if (label) field += "	<label class='mdl-selectfield__label'>"+label+"</label>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
@@ -3610,8 +3613,8 @@ var containers = {
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item small-padding'>";
 		field += "		<span class='mdl-list__item-primary-content'>";
-		field += "			<i class='material-icons'>link</i>";
-		field += "			<span class=\"heading\">QR Code<sup>TM</sup></span>";
+		field += "			<i class='material-icons mdl-textfield__icon'>link</i>";
+		field += "			<label class=\"mdl-switch__label\">QR Code<sup>TM</sup></label>";
 		field += "		</span>";
 		field += "		<span class='mdl-list__item-secondary-content'>";
 		field += "			<img src='' id='qr-"+id+"' class='img-responsive' style='margin:0 auto;' />";
