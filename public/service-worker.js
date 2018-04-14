@@ -66,7 +66,7 @@ self.addEventListener('fetch', function(e) {
 
 self.addEventListener('fetch', function(e) {
 	console.log('[ServiceWorker] The service worker is serving the asset.');
-	if (e.request.url.indexOf('authenticate') > -1) {
+	if (e.request.url.indexOf('authenticate') > -1 || e.request.url.indexOf('users/me/token') > -1) {
 		console.log('[ServiceWorker] Not cacheable.');
 		// We should get the policy from server
 		e.respondWith(fromServer(e.request));

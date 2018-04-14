@@ -754,6 +754,32 @@ var containers = {
 		evt.preventDefault();
 	} // onAddDashboard
 	
+	app.onSaveProfileButtonClick = function(evt) {
+		var firstName = document.getElementById("firstName").value;
+		var lastName = document.getElementById("lastName").value;
+
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify({"firstName":firstName, "lastName":lastName}) };
+		var url = app.baseUrl+"/"+app.api_version+"/users/"+localStorage.getItem('currentUserId');
+		
+		fetch(url, myInit)
+		.then(
+				fetchStatusHandler
+		).then(function(fetchResponse){
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			localStorage.setItem('currentUserName', firstName+" "+lastName);
+			app.setDrawer();
+			toast('Your details have been updated.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			toast('We can\'t process your modifications. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+		});
+	}; // onSaveProfileButtonClick
+	
 	app.refreshButtonsSelectors = function() {
 		if ( componentHandler ) componentHandler.upgradeDom();
 		buttons = {
@@ -2914,6 +2940,20 @@ var containers = {
 				node += "		</div>";
 			}
 			node += "	</div>";
+			
+			node += "	<div class=\"card-body\">";
+			node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
+			node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
+			node += app.getField('lock', 'Email', user.attributes.email, {type: 'text', id:'email', isEdit: false});
+			node += "	</div>";
+			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
+			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" id=\"saveProfileButton\"><i class=\"material-icons\">edit</i>Save t6 profile</a>";
+			node += "	</div>";
+			node += "</div>";
+			node += "</section>";
+
+			node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+			node += "<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
 			node += "	<div class=\"card-body\">";
 			for (var phone in gravatar.phoneNumbers) {
 				node += app.getField('phone', gravatar.phoneNumbers[phone].type, gravatar.phoneNumbers[phone].value, {type: 'text', isEdit: false});
@@ -2930,17 +2970,22 @@ var containers = {
 			node += "		</ul>";
 			node += "	</div>";
 			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
-			// node += " <a href=\"#\" class=\"pull-left\"></a>";
-			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profileUrl+"\" target=\"_blank\">Edit</a>";
+			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profileUrl+"\" target=\"_blank\"><i class=\"material-icons\">launch</i>Edit my gravatar</a>";
 			node += "	</div>";
 			node += "</div>";
 			container.innerHTML = node;
+
+			componentHandler.upgradeDom();
+			document.getElementById('saveProfileButton').addEventListener('click', function(e) {
+				app.onSaveProfileButtonClick();
+			});
 			
 			// Profile Storage
+			localStorage.setItem('currentUserId', user.id);
 			localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
 			localStorage.setItem("currentUserEmail", user.attributes.email);
 			localStorage.setItem("currentUserHeader", gravatar.photos[0].value);
-			if ( gravatar.profileBackground.url ) {
+			if ( gravatar.profileBackground && gravatar.profileBackground.url ) {
 				localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
 			}
 			app.setDrawer();
@@ -3343,11 +3388,6 @@ var containers = {
 				
 			} else if ( my_snippet.attributes.type == 'simplerow' ) {
 				width = 12;
-				/*
-				 * if( !Array.isArray(my_snippet.attributes.flows.isArray) ) { //
-				 * WTF my_snippet.attributes.flows[0] =
-				 * my_snippet.attributes.flows; }
-				 */
 				for (var f=0; f<(my_snippet.attributes.flows).length; f++) {
 					var flow_id = my_snippet.attributes.flows[f];
 					snippet += "	<div class=\"simplerow tile card-simplerow material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
@@ -4029,6 +4069,10 @@ var containers = {
 	app.sessionExpired = function() {
 		localStorage.setItem('bearer', null);
 		localStorage.setItem('flows', null);
+		localStorage.setItem('currentUserId', null);
+		localStorage.setItem('currentUserName', null);
+		localStorage.setItem('currentUserEmail', null);
+		localStorage.setItem('currentUserHeader', null);
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};

@@ -466,18 +466,24 @@ router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 	} else {
 		users	= db.getCollection('users');
 		if ( req.user.id == user_id ) {
-			var item = users.findOne( {'id': user_id} );
-			item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
-			item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
-			item.email			= req.body.email!==undefined?req.body.email:item.email;
-			item.update_date	= moment().format('x');
-			if ( req.body.password ) {
-				item.password = md5(req.body.password);
-			}
-			users.update(item);
+			var result;
+			users.findAndUpdate(
+				function(i){return i.id==user_id},
+				function(item){
+					item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
+					item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
+					item.email			= req.body.email!==undefined?req.body.email:item.email;
+					item.update_date	= moment().format('x');
+					if ( req.body.password ) {
+						item.password = md5(req.body.password);
+					}
+					result = item;
+				}
+			);
+			db.save();
 			
 			res.header('Location', '/v'+version+'/users/'+user_id);
-			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(item).serialize() });
+			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(result).serialize() });
 		} else {
 			res.status(403).send(new ErrorSerializer({'id': 7,'code': 403, 'message': 'Forbidden'}).serialize());
 		}
