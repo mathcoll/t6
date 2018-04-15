@@ -2607,6 +2607,13 @@ var containers = {
 			element += "		<i class='material-icons md-48'>"+item.attributes.icon+"</i>";
 			element += "	</span>";
 			element += "</div>";
+		} else if ( type == 'objects' ) {
+			element += "<div class='mdl-list__item--three-line small-padding  mdl-card--expand'>";
+			element += "	<span class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-48'>"+item.attributes.type+"</i>";
+			element += "	</span>";
+			element += "</div>";
+			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		} else {
 			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		}
