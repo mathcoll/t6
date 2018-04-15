@@ -629,7 +629,7 @@ var containers = {
 				type: myForm.querySelector("select[name='Type']").value,
 				icon: myForm.querySelector("select[name='Icon']").value,
 				color: myForm.querySelector("input[name='Color']").value,
-				/* THIS SEEMS BUGGY ?? */ flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
+				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 			};
 	
 			var myHeaders = new Headers();
@@ -861,20 +861,22 @@ var containers = {
 		app.refreshButtonsSelectors();
 		for (var i in buttons.expandButtons) {
 			if ( (buttons.expandButtons[i]).childElementCount > -1 ) {
-				(buttons.expandButtons[i]).addEventListener('click', function(evt) {
-					var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
-					if ( id != null ) {
-						document.getElementById(id).classList.toggle('hidden');
-						if ( evt.target.parentElement.querySelector('i.material-icons').innerHTML == 'expand_more' ) {
-							evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_less';
-						} else {
-							evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_more';
-						}
-					}
-				}, false);
+				(buttons.expandButtons[i]).addEventListener('click', app.expand, false);
 			}
 		}
 	}; // setExpandAction
+	
+	app.expand = function(evt) {
+		var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
+		if ( id != null ) {
+			document.getElementById(id).classList.toggle('hidden');
+			if ( evt.target.parentElement.querySelector('i.material-icons').innerHTML == 'expand_more' ) {
+				evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_less';
+			} else {
+				evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_more';
+			}
+		}
+	}; // expand
 	
 	app.setSection = function(section, direction) {
 		section = section.split("?")[0];
@@ -1327,7 +1329,7 @@ var containers = {
 				node += app.getField(app.icons.objects, 'Id', object.id, {type: 'input'});
 				if ( object.attributes.description || isEdit!=true ) {
 					var description = app.nl2br(object.attributes.description);
-					node += app.getField(null, null, description, {type: 'textarea'});
+					node += app.getField(app.icons.description, 'Description', description, {type: 'text'});
 				}
 				if ( object.attributes.meta.created ) {
 					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), {type: 'text'});
@@ -2145,7 +2147,7 @@ var containers = {
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 					node += "			<span class='mdl-list__item-primary-content'>";
-					node +=	"				<span>"+flow.attributes.name+" ("+flow.attributes.unit+")</span>";
+					node +=	"				<span>"+flow.attributes.name+" ("+unit+"/"+datatype+")</span>";
 					node +=	"				<span class='mdl-list__item-sub-title' id='flow-graph-time-"+flow.id+"'></span>";
 					node +=	"			</span>";
 					node +=	"		</span>";
@@ -2315,7 +2317,7 @@ var containers = {
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
 				if ( dashboard.attributes.description ) {
 					var description = app.nl2br(dashboard.attributes.description);
-					node += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+					node += app.getField(app.icons.description, 'Description', description, {type: 'text', isEdit: false});
 				}
 				if ( dashboard.attributes.meta.created ) {
 					node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
@@ -2482,19 +2484,12 @@ var containers = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 
-					node += "		<div class='mdl-list__item'>";
-					node += "			<span class='mdl-list__item-primary-content'>";
-					node += "				<h2 class=\"mdl-card__title-text\">";
-					node += "					<i class=\"material-icons\">"+app.icons.flows+"</i>Flows";
-					node += "				</h2>";
-					node += "			</span>";
-					node += "		</div>";
-					
-					var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
-						return {value: flow.name, name: flow.id};
-					});
-					node += app.getField(app.icons.flows, 'Flows', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
-					
+					if ( localStorage.getItem('flows') ) {
+						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
+							return {value: flow.name, name: flow.id};
+						});
+						node += app.getField(app.icons.flows, 'Flows', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+					}
 					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
 					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
 					node += "		</div>";
@@ -2531,18 +2526,21 @@ var containers = {
 					buttons.saveSnippet.addEventListener('click', function(evt) { app.onSaveSnippet(evt); }, false);
 
 					document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-						console.log(evt.target);
 						var id = evt.target.getAttribute('data-value');
 						var name = evt.target.innerText;
 						app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
 						evt.preventDefault();
 					}, false);
 
-					snippet.attributes.flows.map(function(s) {
-						//Flows list
-						var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == s; });
-						app.addChipTo('flowsChips', {name: theFlow.name, id: s, type: 'flows'});
-					});
+					console.log(snippet.attributes.flows);
+					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 ) {
+						snippet.attributes.flows.map(function(s) {
+							//Flows list, we put the index not the flow_id into the selector:
+							var n=0;
+							var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { storedF.index = n++; return storedF.id == s; });
+							app.addChipTo('flowsChips', {name: theFlow.name, id: theFlow.index, type: 'flows'});
+						});
+					}
 				} else {
 					buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
 					// buttons.deleteSnippet2.addEventListener('click',
@@ -2603,7 +2601,15 @@ var containers = {
 			element += "			<span class='isPublic'><i class='material-icons md-32'>visibility</i></span>";	
 		}
 		element += "		</div>";
-		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		if ( type == 'snippets' ) {
+			element += "<div class='mdl-list__item--three-line small-padding  mdl-card--expand'>";
+			element += "	<span class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-48'>"+item.attributes.icon+"</i>";
+			element += "	</span>";
+			element += "</div>";
+		} else {
+			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		}
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		element += "			<span class=\"pull-left mdl-card__date\">";
 		element += "				<button data-id=\""+item.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
@@ -2790,7 +2796,6 @@ var containers = {
 				type=undefined;
 			}
 
-			//console.log("localStorage bearer:"+localStorage.getItem('bearer'));
 			if ( !navigator.onLine ) {
 				container.innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'});
 			} else {
