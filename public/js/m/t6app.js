@@ -2607,6 +2607,19 @@ var containers = {
 			element += "		<i class='material-icons md-48'>"+item.attributes.icon+"</i>";
 			element += "	</span>";
 			element += "</div>";
+		} else if ( type == 'flows' ) {
+			element += "<div class='mdl-list__item--three-line small-padding  mdl-card--expand'>";
+			if ( item.attributes.unit ) {
+				element += "	<div class='mdl-list__item-sub-title'>";
+				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == item.attributes.unit; }).value;
+				element += "	</div>";
+			}
+			if ( item.attributes.data_type ) {
+				element += "	<div class='mdl-list__item-sub-title'>";
+				element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == item.attributes.data_type; }).value;
+				element += "	</div>";
+			}
+			element += "</div>";
 		} else if ( type == 'objects' ) {
 			element += "<div class='mdl-list__item--three-line small-padding  mdl-card--expand'>";
 			element += "	<span class='mdl-list__item-sub-title'>";

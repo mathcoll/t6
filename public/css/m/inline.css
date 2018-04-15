@@ -19,6 +19,7 @@
 	-moz-font-feature-settings: 'liga';
 	-moz-osx-font-smoothing: grayscale;
 	align-self: flex-start;
+	vertical-align: middle;
 }
 * {
 	box-sizing: border-box;
@@ -60,6 +61,14 @@ li.delete-button:hover {
 .mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
 	font-size: 12px !important;
 	color: #0009;
+}
+.mdl-list__item-sub-title {
+	text-transform: capitalize;
+	line-height: 12px;
+	line-height: 28px;
+}
+.mdl-list__item-sub-title .material-icons {
+	margin-right: 10px;
 }
 .mdl-list__item--three-line,
 .mdl-list__item--three-line .mdl-list__item-secondary-content,
