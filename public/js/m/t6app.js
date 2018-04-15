@@ -1484,7 +1484,7 @@ var containers = {
 				node += app.getField(app.icons.objects, 'Id', object.id, {type: 'text'});
 				if ( object.attributes.description && isEdit!=true ) {
 					var description = app.nl2br(object.attributes.description);
-					node += app.getField(null, null, description, {type: 'textarea'});
+					node += app.getField(app.icons.description, 'Description', description, {type: 'text'});
 				}
 				if ( object.attributes.meta.created ) {
 					node += app.getField(app.icons.date, 'Created', moment(object.attributes.meta.created).format(app.date_format), {type: 'text'});
@@ -2131,13 +2131,12 @@ var containers = {
 						node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', id: 'TTL', isEdit: isEdit});
 					}
 					if ( flow.attributes.unit ) {
-						node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: isEdit, id: 'Unit', options: app.units });
+						var unit = JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; }).value;
+						node += app.getField(app.icons.units, 'Unit', unit, {type: 'select', id: 'Unit', isEdit: isEdit, options: app.units });
 					}
 					if ( flow.attributes.data_type ) {
-						node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: isEdit, id: 'DataType', options: app.datatypes });
-					}
-					if ( flow.attributes.permission ) {
-						node += app.getField('visibility', 'Permission', flow.attributes.permission, {type: 'text', id: 'Permission', isEdit: isEdit});
+						var datatype = JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
+						node += app.getField(app.icons.datatypes, 'DataType', datatype, {type: 'select', id: 'DataType', isEdit: isEdit, options: app.datatypes });
 					}
 					node += "	</div>";
 					node += "</div>";
