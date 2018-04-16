@@ -4314,6 +4314,23 @@ var containers = {
 		}
 	}
 	
+	app.getCookie = function(cname) {
+		var name = cname + "=";
+		console.log('cookieconsent cname', cname);
+		console.log('cookieconsent document', document.cookie);
+		var ca = document.cookie.split(';');
+		for(var i = 0; i < ca.length; i++) {
+			var c = ca[i];
+			while (c.charAt(0) == ' ') {
+				c = c.substring(1);
+			}
+			if (c.indexOf(name) == 0) {
+				return c.substring(name.length, c.length);
+			}
+		}
+		return "";
+	}
+	
 	/*
 	 * *********************************** Run the App ***********************************
 	 */
@@ -4486,6 +4503,20 @@ var containers = {
 				//console.log('searchJWT(): '+ app.searchJWT());
 			}
 		};
+	}
+	
+	/* Cookie Consent */
+	document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
+		document.getElementById('cookieconsent').classList.add('hidden');
+		var d = new Date();
+		    d.setTime(d.getTime() + (30 * 24*60*60*1000));
+		    document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+		evt.preventDefault();
+	}, false);
+	if( app.getCookie('cookieconsent') !== "true" ){
+		document.getElementById('cookieconsent').classList.add('is-visible');
+	} else {
+		document.getElementById('cookieconsent').classList.add('hidden');
 	}
 
 	/*
