@@ -524,6 +524,17 @@ html.ltr(lang='en')
 
       .menu__overlay
       .toast__container
-
+      
+      #cookieconsent.mdl-card__actions.mdl-card--border
+        #cookieconsent_wrapper
+          h4#cookieconsent_header This website uses cookies
+          | This website uses cookies to improve user experience. By using our website you consent to all cookies in accordance with our Cookie Policy.
+          br
+          #cookieconsent_buttons
+            #cookieconsent_readmore
+              a(href='/#terms') Read more
+            #cookieconsent_accept
+              a(href='#', id='cookieconsent.agree') I agree
+        
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/vendor.min.js')
       script(type='application/javascript', src='/js/m/t6app.js')

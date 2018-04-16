@@ -1761,3 +1761,75 @@ input ~ .mdl-switch__label {
 }
 
 /*# sourceMappingURL=mdl-selectfield.min.css.map */
+
+/*cookieconsent*/
+#cookieconsent {
+	background-color: rgb(238, 238, 238);
+	z-index: 999999;
+	opacity: 1;
+	position: fixed;
+	padding: 0;
+	width: 100%;
+	left: 0px;
+	font-size: 13px;
+	font-weight: normal;
+	text-align: left;
+	letter-spacing: normal;
+	color: rgb(0, 0, 0);
+	font-family: Arial, sans-serif;
+	bottom: 0px;
+}
+#cookieconsent_wrapper {
+	width: 100%;
+	margin: 0px auto;
+	font-size: 13px;
+	font-weight: normal;
+	text-align: center;
+	color: rgb(0, 0, 0);
+	font-family: Arial, sans-serif;
+	line-height: 18px;
+	letter-spacing: normal;
+}
+h4#cookieconsent_header {
+    background-color: rgb(238, 238, 238);
+    z-index: 999999;
+    padding: 0px 0px 7px;
+    text-align: center;
+    color: rgb(0, 0, 0);
+    font-family: Arial, sans-serif;
+    display: block;
+    font-size: 15px;
+    font-weight: bold;
+    margin: 0px;
+}
+div#cookieconsent_buttons {
+    margin: 10px auto;
+    font-size: 13px;
+    font-weight: normal;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+div#cookieconsent_accept, div#cookieconsent_accept a {
+    border-radius: 5px;
+    border: 0px none;
+    padding: 6px 10px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    margin: 5px 10px;
+    background-color: rgb(91, 183, 91);
+    color: #fff;
+    display: inline;
+}
+div#cookieconsent_readmore, div#cookieconsent_readmore a {
+    border-radius: 5px;
+    border: 0px none;
+    padding: 6px 10px;
+    font-weight: bold;
+    font-size: 13px;
+    cursor: pointer;
+    margin: 5px 10px;
+    background-color: rgb(105, 118, 119);
+    color: #fff;
+    display: inline;
+}
