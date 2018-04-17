@@ -4513,6 +4513,11 @@ var containers = {
 		    document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
 		evt.preventDefault();
 	}, false);
+	document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
+		app.getTerms();
+		app.setSection('terms');
+		evt.preventDefault();
+	}, false);
 	if( app.getCookie('cookieconsent') !== "true" ){
 		document.getElementById('cookieconsent').classList.add('is-visible');
 	} else {
