@@ -118,6 +118,7 @@ var app = {
 	units: [],
 	datatypes: [],
 	flows: [],
+	snippets: [],
 	defaultResources: {
 		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: '', latitude: '', position: ''}},
 		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
@@ -698,8 +699,11 @@ var containers = {
 			var body = {
 				name: myForm.querySelector("input[name='Name']").value,
 				description: myForm.querySelector("textarea[name='Description']").value,
+				snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
 			};
-	
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
+				console.log('onAddDashboard', JSON.stringify(body));
+			}
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
@@ -729,6 +733,7 @@ var containers = {
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
 			description: myForm.querySelector("textarea[name='Description']").value,
+			snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
 		};
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('onAddDashboard', JSON.stringify(body));
@@ -1802,13 +1807,10 @@ var containers = {
 	}
 	
 	app.getFlows = function() {
-		// IN TEST
 		if ( app.flows.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
 			var myHeaders = new Headers();
 			myHeaders.append("Content-Type", "application/json");
-			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
-			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'GET', headers: myHeaders };
 			var url = app.baseUrl+'/'+app.api_version+'/flows/?size=99999';
 			fetch(url, myInit)
@@ -1823,6 +1825,29 @@ var containers = {
 					app.flows.push( {id: f.id, name:f.attributes.name, type: 'flows'} );
 				}
 				localStorage.setItem('flows', JSON.stringify(app.flows));
+			});
+		}
+	}
+	
+	app.getSnippets = function() {
+		if ( app.snippets.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			var myInit = { method: 'GET', headers: myHeaders };
+			var url = app.baseUrl+'/'+app.api_version+'/snippets/?size=99999';
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				for (var i=0; i < (response.data).length ; i++ ) {
+					var s = response.data[i];
+					app.snippets.push( {id: s.id, name:s.attributes.name, sType:s.attributes.type, type: 'snippets'} );
+				}
+				localStorage.setItem('snippets', JSON.stringify(app.snippets));
 			});
 		}
 	}
@@ -1907,15 +1932,17 @@ var containers = {
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: true});
 		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: true});
+
+		var snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
+			return {value: snippet.name, name: snippet.id, sType: snippet.sType};
+		});
+		node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
+		
+		node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='snippetsChips'>";
+		node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
+		node += "		</div>";
 		node += "	</div>";
 		node += "</section>";
-		
-		node += app.getSubtitle('Available Snippets');
-		node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-		node += "	<ul class='mdl-grid'>";
-		// dropdown from the Api getSnippets
-		node += "	</ul>";
-		node += "</div>";
 		
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -1933,11 +1960,21 @@ var containers = {
 		node += "	</div>";
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
-		
-		node += "</section>";
 
 		(containers.dashboard_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
+		document.getElementById('snippetsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+			var id = evt.target.getAttribute('data-value');
+			var n=0;
+			var s = JSON.parse(localStorage.getItem('snippets')).find(function(snippet) {
+				if ( n == id ) return snippet;
+			else n++;
+			});
+			var sType = s.sType;
+			var name = evt.target.innerText;
+			app.addChipSnippetTo('snippetsChips', {name: name, id: id, sType: sType, type: 'snippets'});
+			evt.preventDefault();
+		}, false);
 		
 		app.refreshButtonsSelectors();
 		buttons.addDashboardBack.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
@@ -1967,7 +2004,7 @@ var containers = {
 		var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
 			return {value: flow.name, name: flow.id};
 		});
-		node += app.getField(app.icons.flows, 'Flows', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+		node += app.getField(app.icons.flows, 'Flows to add', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
 		
 		node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
 		node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
@@ -2337,15 +2374,19 @@ var containers = {
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
 					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
+
+					if ( localStorage.getItem('snippets') ) {
+						var snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
+							return {value: snippet.name, name: snippet.id, sType: snippet.sType};
+						});
+						node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
+					}
+					
+					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='snippetsChips'>";
+					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
+					node += "		</div>";
 					node += "	</div>";
 					node += "</section>";
-
-					node += app.getSubtitle('Available Snippets');
-					node += "<div class='md-primary md-subheader _md md-altTheme-theme'>";
-					for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-						node += app.displaySnippetItem_asSimple({id: dashboard.attributes.snippets[i]});
-					}
-					node += "</div>";
 					
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -2377,6 +2418,28 @@ var containers = {
 				if ( isEdit ) {
 					buttons.backDashboard.addEventListener('click', function(evt) { app.displayDashboard(dashboard.id, false); }, false);
 					buttons.saveDashboard.addEventListener('click', function(evt) { app.onSaveDashboard(evt); }, false);
+
+					document.getElementById('snippetsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+						var id = evt.target.getAttribute('data-value');
+						var n=0;
+						var s = JSON.parse(localStorage.getItem('snippets')).find(function(snippet) {
+							if ( n == id ) return snippet;
+							else n++;
+						});
+						var sType = s.sType;
+						var name = evt.target.innerText; // == s.name
+						app.addChipSnippetTo('snippetsChips', {name: s.name, id: id, sType: s.sType, type: 'snippets'});
+						evt.preventDefault();
+					}, false);
+
+					if ( dashboard.attributes.snippets && dashboard.attributes.snippets.length > -1 ) {
+						dashboard.attributes.snippets.map(function(s) {
+							//Snippet list, we put the index not the snippet_id into the selector:
+							var n=0;
+							var theSnippet = (JSON.parse(localStorage.getItem('snippets'))).find(function(storedS) { storedS.index = n++; return storedS.id == s; });
+							app.addChipSnippetTo('snippetsChips', {name: theSnippet.name, id: theSnippet.index, sType: theSnippet.sType, type: 'snippets'});
+						});
+					}
 				}
 
 				app.setSection('dashboard');
@@ -2438,18 +2501,20 @@ var containers = {
 					if ( snippet.attributes.meta.revision ) {
 						node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text'});
 					}
+					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
+					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
+					node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
 				} else {
 					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
+					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
+					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
 				}
-				node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
-				node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-				node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
-				node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
 				
 				node += "		</div>";
 				node += "	</div>";
 				node +=	"</section>";
-				
 
 				if ( !isEdit ) {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
@@ -2488,7 +2553,7 @@ var containers = {
 						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
 							return {value: flow.name, name: flow.id};
 						});
-						node += app.getField(app.icons.flows, 'Flows', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+						node += app.getField(app.icons.flows, 'Flows to add', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
 					}
 					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
 					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
@@ -2532,7 +2597,6 @@ var containers = {
 						evt.preventDefault();
 					}, false);
 
-					console.log(snippet.attributes.flows);
 					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 ) {
 						snippet.attributes.flows.map(function(s) {
 							//Flows list, we put the index not the flow_id into the selector:
@@ -2576,16 +2640,23 @@ var containers = {
 		document.getElementById(container).append(app.displayChip(chip));
 	}; // addChipTo
 	
-	app.displaySnippetItem_asSimple = function(snippet) {
-		var node = "<section class='mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky' role='heading'>";
-		node += "	<div class='md-subheader-inner'>";
-		node += "		<div class='mdl-subheader-content'>";
-		node += "			<span class='ng-scope'>"+snippet.id+"</span>";
-		node += "		</div>";
-		node += "	</div>";
-		node += "</section>";
-		return node;
-	}; // displaySnippetItem_asSimple
+	app.displayChipSnippet = function(chipSnippet) {
+		var displayChipSnippet = document.createElement('div');
+		displayChipSnippet.setAttribute('class', 'mdl-chip mdl-list__item');
+		displayChipSnippet.setAttribute('style', 'width: 100%;');
+		displayChipSnippet.setAttribute('data-id', chipSnippet.id);
+		displayChipSnippet.setAttribute('data-stype', chipSnippet.sType);
+		displayChipSnippet.innerHTML = "<i class='material-icons md-48'>"+app.icons[chipSnippet.type]+"</i>"+chipSnippet.name+" ("+chipSnippet.sType+")<i class='material-icons close'>close</i>";
+		displayChipSnippet.querySelector('i.close').addEventListener('click', function(evt) {
+				evt.preventDefault();
+				evt.target.parentNode.remove();
+			}, false);
+		return displayChipSnippet;
+	}; // displayChipSnippet
+	
+	app.addChipSnippetTo = function(container, chipSnippet) {
+		document.getElementById(container).append(app.displayChipSnippet(chipSnippet));
+	}; // addChipSnippetTo
 
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
@@ -2602,13 +2673,13 @@ var containers = {
 		}
 		element += "		</div>";
 		if ( type == 'snippets' ) {
-			element += "<div class='mdl-list__item--three-line small-padding  mdl-card--expand'>";
+			element += "<div class='mdl-list__item--three-line small-padding'>";
 			element += "	<span class='mdl-list__item-sub-title'>";
 			element += "		<i class='material-icons md-48'>"+item.attributes.icon+"</i>";
 			element += "	</span>";
 			element += "</div>";
 		} else if ( type == 'flows' ) {
-			element += "<div class='mdl-list__item--three-line small-padding  mdl-card--expand'>";
+			element += "<div class='mdl-list__item--three-line small-padding mdl-card--expand'>";
 			if ( item.attributes.unit ) {
 				element += "	<div class='mdl-list__item-sub-title'>";
 				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == item.attributes.unit; }).value;
@@ -2621,7 +2692,7 @@ var containers = {
 			}
 			element += "</div>";
 		} else if ( type == 'objects' ) {
-			element += "<div class='mdl-list__item--three-line small-padding  mdl-card--expand'>";
+			element += "<div class='mdl-list__item--three-line small-padding'>";
 			element += "	<span class='mdl-list__item-sub-title'>";
 			element += "		<i class='material-icons md-48'>"+item.attributes.type+"</i>";
 			element += "	</span>";
@@ -3290,7 +3361,7 @@ var containers = {
 					field += "	<select class='mdl-textfield__input mdl-selectfield__select' name='"+label+"' id='"+id+"' "+isMultiple+">";
 					for (var n=0; n<options.options.length; n++) {
 						var selected = value==options.options[n].name?'selected':'';
-						field += "	<option "+selected+" value='"+options.options[n].name+"'>"+options.options[n].value+"</option>";
+						field += "	<option "+selected+" value='"+options.options[n].name+"' data-stype='"+options.options[n].sType+"'>"+options.options[n].value+"</option>";
 					}
 					field += "	</select>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
@@ -3739,7 +3810,6 @@ var containers = {
 				app.isLogged = true;
 				app.resetSections();
 				// app.getAllUserData();
-				app.getFlows();
 				app.fetchProfile();
 				if ( window.location.hash && window.location.hash.substr(1) === 'object_add' ) {
 					app.displayAddObject(app.defaultResources.object);
@@ -3764,7 +3834,8 @@ var containers = {
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
 				app.getUnits();
 				app.getDatatypes();
-				//app.addJWT(localStorage.getItem('bearer'));
+				app.getFlows();
+				app.getSnippets();
 			} else {
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
 					toast('Auth internal error', {timeout:3000, type: 'error'});
