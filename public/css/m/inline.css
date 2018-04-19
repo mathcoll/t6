@@ -309,14 +309,14 @@ div.mdl-list__item-primary-content span.heading {
 @media only screen and (min-device-width: 801px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		width: 80%;
+		/*width: 80%;*/
 		display: inline-block;
 	}
 }
 @media only screen and (min-device-width: 481px) and (max-device-width: 800px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		width: 70%;
+		/*width: 70%;*/
 		display: inline-block;
 	}
 }
@@ -334,14 +334,14 @@ div.mdl-list__item-primary-content span.heading {
 	}
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		width: 70%;
+		/*width: 70%;*/
 		display: inline-block;
 	}
 }
 @media screen and (max-width: 350px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		width: 50%;
+		/*width: 50%;*/
 		display: inline-block;
 	}
 }

@@ -2474,11 +2474,74 @@ var containers = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var snippet = response.data[i];
 				document.title = (app.sectionsPageTitles['snippet']).replace(/%s/g, snippet.attributes.name);
-				var node = "";
+				var node;
 				
-				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
-				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				if ( !isEdit ) {
+				if ( isEdit ) {
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
+					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
+					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
+
+					if ( localStorage.getItem('flows') ) {
+						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
+							return {value: flow.name, name: flow.id};
+						});
+						node += app.getField(app.icons.flows, 'Flows to add', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+					}
+					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
+					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
+					node += "		</div>";
+					node += "	</div>"; // mdl-shadow--2dp
+					
+					node +=	"</section>";
+
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>View</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
+					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>save</i>";
+					node += "			<label>Save</label>";
+					node += "		</button>";
+					node += "	</div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "</section>";
+					
+					(containers.snippet).querySelector('.page-content').innerHTML = node;
+					componentHandler.upgradeDom();
+					app.setExpandAction();
+					
+					app.refreshButtonsSelectors();
+					buttons.backSnippet.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, false); }, false);
+					buttons.saveSnippet.addEventListener('click', function(evt) { app.onSaveSnippet(evt); }, false);
+
+					document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+						var id = evt.target.getAttribute('data-value');
+						var name = evt.target.innerText;
+						app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
+						evt.preventDefault();
+					}, false);
+
+					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 ) {
+						snippet.attributes.flows.map(function(s) {
+							//Flows list, we put the index not the flow_id into the selector:
+							var n=0;
+							var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { storedF.index = n++; return storedF.id == s; });
+							app.addChipTo('flowsChips', {name: theFlow.name, id: theFlow.index, type: 'flows'});
+						});
+					}
+						
+				} else {
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += "		<div class=\"mdl-list__item\">";
 					node += "			<span class='mdl-list__item-primary-content'>";
 					node += "				<h2 class=\"mdl-card__title-text\">";
@@ -2505,21 +2568,10 @@ var containers = {
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
 					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
 					node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
-				} else {
-					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Should be longer than 4 chars.'});
-					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
-					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
-				}
-				
-				node += "		</div>";
-				node += "	</div>";
-				node +=	"</section>";
 
-				if ( !isEdit ) {
-					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-
+					node += "	</div>"; // mdl-shadow--2dp
+					node +=	"</section>";
+					
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
@@ -2542,77 +2594,23 @@ var containers = {
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
+
+					node += "<section class='mdl-grid mdl-cell--12-col snippetPreview'>";
 					//Snippet preview
 					app.getSnippet(app.icons.snippets, snippet.id, (containers.snippet).querySelector('.page-content'));
+					node += "</section>";
 					
-				} else if ( isEdit ) {
-					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-
-					if ( localStorage.getItem('flows') ) {
-						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
-							return {value: flow.name, name: flow.id};
-						});
-						node += app.getField(app.icons.flows, 'Flows to add', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
-					}
-					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
-					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
-					node += "		</div>";
-					node += "	</div>";
+					(containers.snippet).querySelector('.page-content').innerHTML = node;
+					componentHandler.upgradeDom();
+					app.setExpandAction();
 					
-					node +=	"</section>";
-					
-					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
-					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
-					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-					node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
-					node += "			<i class='material-icons'>chevron_left</i>";
-					node += "			<label>View</label>";
-					node += "		</button>";
-					node += "	</div>";
-					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-					node += "		<button class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
-					node += "			<i class='material-icons'>save</i>";
-					node += "			<label>Save</label>";
-					node += "		</button>";
-					node += "	</div>";
-					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
-					node += "</section>"
-
-				}
-
-				(containers.snippet).querySelector('.page-content').innerHTML = node;
-				app.setExpandAction();
-				componentHandler.upgradeDom();
-				
-				app.refreshButtonsSelectors();
-				if ( isEdit ) {
-					buttons.backSnippet.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, false); }, false);
-					buttons.saveSnippet.addEventListener('click', function(evt) { app.onSaveSnippet(evt); }, false);
-
-					document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-						var id = evt.target.getAttribute('data-value');
-						var name = evt.target.innerText;
-						app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
-						evt.preventDefault();
-					}, false);
-
-					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 ) {
-						snippet.attributes.flows.map(function(s) {
-							//Flows list, we put the index not the flow_id into the selector:
-							var n=0;
-							var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { storedF.index = n++; return storedF.id == s; });
-							app.addChipTo('flowsChips', {name: theFlow.name, id: theFlow.index, type: 'flows'});
-						});
-					}
-				} else {
+					app.refreshButtonsSelectors();
 					buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
 					// buttons.deleteSnippet2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
 					buttons.editSnippet2.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, true); evt.preventDefault(); }, false);
 				}
-				
 				app.setSection('snippet');
 			}
 		})
