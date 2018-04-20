@@ -2692,6 +2692,9 @@ var containers = {
 		if ( item.attributes.is_public == 'true' ) {
 			element += "			<span class='isPublic'><i class='material-icons md-32'>visibility</i></span>";	
 		}
+		if ( (item.attributes.longitude && item.attributes.latitude) || item.attributes.position ) {
+			element += "			<span class='isLocalized'><i class='material-icons md-32'>location_on</i></span>";	
+		}
 		element += "		</div>";
 		if ( type == 'snippets' ) {
 			element += "<div class='mdl-list__item--three-line small-padding'>";
@@ -4179,7 +4182,6 @@ var containers = {
 
 	app.showNotification = function() {
 		toast('You are offline.', {timeout:3000, type: 'warning'});
-		// app.setHiddenElement("notification");
 	} // showLatestNotification
 	
 	app.sessionExpired = function() {
