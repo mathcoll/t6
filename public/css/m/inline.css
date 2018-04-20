@@ -137,7 +137,8 @@ body {
     margin: 2px;
     vertical-align: middle;
 }
-.mdl-chip .close {
+.mdl-chip .close,
+.mdl-chip .edit {
     cursor: pointer;
     font-size: 16px;
     padding-left: 8px;
@@ -683,11 +684,13 @@ div:not([data-action='nothing']) .mdl-card__title h3.mdl-card__title-text {
 	background: #0000004d;
 	padding: 0 10px;
 	color: #fff !important;
+	white-space: nowrap;
 }
 div[data-action='view'] .mdl-card__title h3.mdl-card__title-text,
 div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	background: none !important;
 	color: #000 !important;
+	white-space: nowrap;
 }
 .loader {
 	left: 50%;

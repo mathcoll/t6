@@ -2644,17 +2644,29 @@ var containers = {
 		displayChipSnippet.setAttribute('style', 'width: 100%;');
 		displayChipSnippet.setAttribute('data-id', chipSnippet.id);
 		displayChipSnippet.setAttribute('data-stype', chipSnippet.sType);
-		displayChipSnippet.innerHTML = "<i class='material-icons md-48'>"+app.icons[chipSnippet.type]+"</i>"+chipSnippet.name+" ("+chipSnippet.sType+")<i class='material-icons close'>close</i>";
+		displayChipSnippet.innerHTML = "<i class='material-icons md-48'>"+app.icons[chipSnippet.type]+"</i>" +
+				chipSnippet.name+" ("+chipSnippet.sType+") " +
+				"<i class='material-icons edit'>edit</i>" +
+				"<i class='material-icons close'>close</i> ";
 		displayChipSnippet.querySelector('i.close').addEventListener('click', function(evt) {
 				evt.preventDefault();
 				evt.target.parentNode.remove();
 			}, false);
+		displayChipSnippet.querySelector('i.edit').addEventListener('click', function(evt) {
+			evt.preventDefault();
+			app.displaySnippet(app.getSnippetIdFromIndex(evt.target.parentNode.getAttribute('data-id')), true);
+		}, false);
 		return displayChipSnippet;
 	}; // displayChipSnippet
 	
 	app.addChipSnippetTo = function(container, chipSnippet) {
 		document.getElementById(container).append(app.displayChipSnippet(chipSnippet));
 	}; // addChipSnippetTo
+	
+	app.getSnippetIdFromIndex = function(index) {
+		return ((JSON.parse(localStorage.getItem('snippets')))[index]).id;
+		//
+	}; // getSnippetIdFromIndex
 
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
