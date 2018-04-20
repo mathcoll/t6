@@ -4408,8 +4408,6 @@ var containers = {
 	
 	app.getCookie = function(cname) {
 		var name = cname + "=";
-		console.log('cookieconsent cname', cname);
-		console.log('cookieconsent document', document.cookie);
 		var ca = document.cookie.split(';');
 		for(var i = 0; i < ca.length; i++) {
 			var c = ca[i];
