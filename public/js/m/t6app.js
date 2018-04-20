@@ -2641,13 +2641,13 @@ var containers = {
 	app.displayChipSnippet = function(chipSnippet) {
 		var displayChipSnippet = document.createElement('div');
 		displayChipSnippet.setAttribute('class', 'mdl-chip mdl-list__item');
-		displayChipSnippet.setAttribute('style', 'width: 100%;');
+		displayChipSnippet.setAttribute('style', 'width: 100%; text-overflow: ellipsis;');
 		displayChipSnippet.setAttribute('data-id', chipSnippet.id);
 		displayChipSnippet.setAttribute('data-stype', chipSnippet.sType);
 		displayChipSnippet.innerHTML = "<i class='material-icons md-48'>"+app.icons[chipSnippet.type]+"</i>" +
-				chipSnippet.name+" ("+chipSnippet.sType+") " +
+				"<i class='material-icons close'>close</i> " +
 				"<i class='material-icons edit'>edit</i>" +
-				"<i class='material-icons close'>close</i> ";
+				"<span>"+chipSnippet.name+" ("+chipSnippet.sType+")</span>";
 		displayChipSnippet.querySelector('i.close').addEventListener('click', function(evt) {
 				evt.preventDefault();
 				evt.target.parentNode.remove();

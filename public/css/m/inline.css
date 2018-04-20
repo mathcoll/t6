@@ -118,7 +118,6 @@ body {
 	outline: none;
 	width: 100%;
 	min-height: 40px;
-	padding-bottom: 50px !important;
 }
 .mdl-chip {
     display: inline-block;
@@ -141,7 +140,7 @@ body {
 .mdl-chip .edit {
     cursor: pointer;
     font-size: 16px;
-    padding-left: 8px;
+    padding: 8px 4px;
     vertical-align: middle;
 }
 .mdl-textfield {
@@ -225,6 +224,7 @@ section.fixedActionButtons {
 	position: fixed;
 	z-index: 9999;
 	bottom: 0;
+	margin-bottom: 0;
 	height: 50px;
 	background: rgb(121,85,72);
 }
@@ -531,7 +531,7 @@ section#profile .subhead {
 	margin: 5px 0 !important;
 }
 .mdl-grid {
-	/*word-break: break-all;*/
+	margin-bottom: 30px;
 }
 #terms .mdl-grid {
 	word-break: normal;
@@ -571,33 +571,6 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	z-index: 2;
 	font-variant: small-caps;
 }
-/*
-@media (min-width: 1px) and (max-width: 479px) {
-	.mdl-cell {
-	    width: 100% !important;
-	}
-}
-@media (min-width: 480px) and (max-width: 839px) {
-	.mdl-cell {
-	    width: 50% !important;
-	}
-}
-@media (min-width: 840px) and (max-width: 1023px) {
-	.mdl-cell {
-	    width: 33% !important;
-	}
-}
-@media (min-width: 1024px) and (max-width: 1279px) {
-	.mdl-cell {
-		width: 25% !important;
-	}
-}
-@media (min-width: 1280px) {
-	.mdl-cell {
-	    width: 12.5% !important;
-	}
-}
-*/
 .sticky {
 	position: -webkit-sticky;
 	position: -moz-sticky;
@@ -605,6 +578,7 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	position: -ms-sticky;
 	position: sticky;
 	top: 0;
+	margin-bottom: 0px;
 	z-index: 2;
 	background: #ececec;
 }
@@ -659,12 +633,6 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 	border: none;
 	outline: none;
 	cursor: pointer;
-}
-.header #butRefresh {
-	background: url(/images/ic_refresh_white_24px.svg) center center no-repeat;
-}
-.header #butAdd {
-	background: url(/images/ic_add_white_24px.svg) center center no-repeat;
 }
 .header__title {
 	font-weight: 400;
