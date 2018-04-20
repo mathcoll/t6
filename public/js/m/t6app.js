@@ -1052,8 +1052,19 @@ var containers = {
 			if ( (swaps[s]) !== undefined && (swaps[s]).childElementCount > -1 ) {
 				(swaps[s]).addEventListener('click', function(evt) {
 					var datasetid = evt.currentTarget.dataset.id;
-					document.querySelector("div[data-id='"+datasetid+"'] span[data-date='created']").classList.toggle('hidden');
-					document.querySelector("div[data-id='"+datasetid+"'] span[data-date='updated']").classList.toggle('hidden');
+					var createdElement = document.querySelector("div[data-id='"+datasetid+"'] span[data-date='created']").classList;
+					var updatedElement = document.querySelector("div[data-id='"+datasetid+"'] span[data-date='updated']").classList;
+					if ( createdElement.contains("visible") ) {
+						createdElement.add('hidden');
+						createdElement.remove('visible');
+						updatedElement.add('visible');
+						updatedElement.remove('hidden');
+					} else {
+						createdElement.add('visible');
+						createdElement.remove('hidden');
+						updatedElement.add('hidden');
+						updatedElement.remove('visible');
+					}
 	
 				}, {passive: false,});
 			}
@@ -2082,7 +2093,7 @@ var containers = {
 	} // getCard
 
 	app.displayFlow = function(id, isEdit) {
-		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+flow.id );
+		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+id );
 		
 		window.scrollTo(0, 0);
 		containers.spinner.removeAttribute('hidden');
@@ -2107,7 +2118,7 @@ var containers = {
 				
 				var node = "";
 				if ( isEdit ) {
-					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					//node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true});
 					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
@@ -2180,7 +2191,7 @@ var containers = {
 					node += "	</div>";
 					node += "</div>";
 				
-					node += "<div class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
+					node += "<div class='mdl-card mdl-cell mdl-cell--12-col' id='"+flow.id+"'>";
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 					node += "			<span class='mdl-list__item-primary-content'>";
@@ -2719,7 +2730,7 @@ var containers = {
 		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(item.attributes.meta.created).format(app.date_format) + "</span>";
 		element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(item.attributes.meta.updated).format(app.date_format) + "</span>";
 		element += "			</span>";
-		element += "			<span class=\"pull-right mdl-card__date\">";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
 		element += "				<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
 		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
 		element += "				</button>";

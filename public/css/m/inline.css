@@ -415,6 +415,20 @@ section#profile .mdl-card--small .mdl-card__title {
     font-size: 1rem;
     padding: 8px;
     color: #0000004d;
+    width: calc(100% - 48px);
+}
+.mdl-card__date span.visible {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    width: calc(100% - 36px);
+    display: inline-block;
+    vertical-align: middle;
+}
+.mdl-card__menuaction {
+    font-size: 1rem;
+    padding: 8px;
+    color: #0000004d;
 }
 section#profile .mdl-card--small .mdl-card__image {
 	border-radius: 1px 0 0 1px;
