@@ -465,6 +465,10 @@ var containers = {
 		});
 	}; // subscribeUserToPush
 
+	var preloadImage = function(img) {
+		img.setAttribute('src', img.getAttribute('data-src'));
+	} // preloadImage
+
 /*
  * *********************************** Application functions ***********************************
  */
@@ -4774,6 +4778,33 @@ var containers = {
 			}
 		});
 	}); // Lazy loading
+	
+	/* Lazy loading on images */
+	if (!('IntersectionObserver' in window)) {
+		var LL = document.querySelectorAll('img.lazyloading');
+		for (var image in LL) {
+			if ( (LL[image]).childElementCount > -1 ) {
+				preloadImage(LL[image]);
+			}
+		}
+	} else {
+		var io = new IntersectionObserver(
+			entries => {
+				entries.map(function(IOentry) {
+					if (IOentry.intersectionRatio > 0) {
+						io.unobserve(IOentry.target);
+						preloadImage(IOentry.target);
+					}
+				});
+			}, {}
+		);
+		var LL = document.querySelectorAll('img.lazyloading');
+		for (var image in LL) {
+			if ( (LL[image]).childElementCount > -1 ) {
+				io.observe(LL[image]);
+			}
+		}
+	} // Lazy loading on images
 	
 	var pMatches = document.querySelectorAll('.passmatch');
 	for (var p in pMatches) {
