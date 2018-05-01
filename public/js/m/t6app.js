@@ -92,7 +92,7 @@ var app = {
 		{name: 'keyboard', value:'Keyboard'},
 		{name: 'keyboard_voice', value:'Keyboard Voice'},
 		{name: 'laptop', value:'Laptop'},
-		{name: 'laptop_chromeboo', value:'Laptop Chromebook'},
+		{name: 'laptop_chromebook', value:'Laptop Chromebook'},
 		{name: 'laptop_mac', value:'Laptop Mac'},
 		{name: 'laptop_windows', value:'Laptop Windows'},
 		{name: 'memory', value:'Memory'},
@@ -1557,8 +1557,14 @@ var containers = {
 					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 4 chars length.'});
 					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', id: 'Description', isEdit: isEdit});
 				}
-				if ( object.attributes.type || isEdit==true ) {
-					node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', isEdit: isEdit, options: app.types });
+				if ( object.attributes.type ) {
+					var d = app.types.find( function(type) { return type.name == object.attributes.type; });
+					d = d!==undefined?d:'';
+					if ( isEdit==true ) {
+						node += app.getField(app.icons.type, 'Type', d.name, {type: 'select', id: 'Type', isEdit: isEdit, options: app.types });
+					} else {
+						node += app.getField(app.icons.type, 'Type', d.value, {type: 'select', id: 'Type', isEdit: isEdit, options: app.types });
+					}
 				}
 				if ( object.attributes.ipv4 || isEdit==true ) {
 					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
@@ -2777,7 +2783,8 @@ var containers = {
 			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 			element += "<div class='mdl-list__item--three-line small-padding'>";
 			if ( item.attributes.type ) {
-				var d = app.types.find( function(d) { return d.name == item.attributes.type; }); 
+				var d = app.types.find( function(type) { return type.name == item.attributes.type; });
+				d = d!==undefined?d:'';
 				element += "	<span class='type' id='"+item.id+"-type'><i class='material-icons md-32'>"+d.name+"</i></span>";
 				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-type'>"+d.value+"</div>";
 			}
@@ -3009,7 +3016,7 @@ var containers = {
 					})
 					.catch(function (error) {
 						if ( localStorage.getItem('settings.debug') == 'true' ) {
-							toast('fetchItems '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
+							toast('fetchItemsPaginated '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
 						}
 					});
 				} else {
