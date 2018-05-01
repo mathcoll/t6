@@ -3326,6 +3326,7 @@ var containers = {
 			var fab = "<div class='mdl-button--fab_flinger-container "+fabClass+"'>";
 			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
 			fab += "		<i class='material-icons'>add</i>";
+			fab += "		<div class='mdl-tooltip mdl-tooltip--top' for='"+id+"'>Add a new "+type.slice(0, -1)+"</label>";
 			fab += "	</button>";
 			fab += "</div>";
 			

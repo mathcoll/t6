@@ -414,7 +414,7 @@ section#profile .mdl-card--small .mdl-card__title {
 .mdl-card__date {
     font-size: 1rem;
     padding: 8px;
-    color: #0000004d;
+    color: rgba(121, 85, 72, .5);
     width: calc(100% - 48px);
 }
 .mdl-card__date span.visible {
@@ -1023,7 +1023,7 @@ form.resetpassword > div.mdl-shadow--2dp img {
 	opacity: 1;
 }
 .mdl-layout__header-row {
-	padding: 0 10px 0 50px !important;
+	padding: 10px 10px 0 50px !important;
 }
 .margin-5 {
 	margin: 0 5px;
