@@ -1085,7 +1085,6 @@ var containers = {
 					app.itemsPage[type] = page;
 					app.itemsSize[type] = size;
 					app.fetchItemsPaginated(type, undefined, app.itemsPage[type], app.itemsSize[type]);
-					//evt.currentTarget.parentNode.remove();
 				}, {passive: false,});
 			}
 		};
@@ -4616,8 +4615,10 @@ var containers = {
 	}, false);
 	if( app.getCookie('cookieconsent') !== "true" ){
 		document.getElementById('cookieconsent').classList.add('is-visible');
+		document.getElementById('cookieconsent').classList.remove('hidden');
 	} else {
 		document.getElementById('cookieconsent').classList.add('hidden');
+		document.getElementById('cookieconsent').classList.remove('is-visible');
 	}
 
 	/*
@@ -4801,6 +4802,7 @@ var containers = {
 		var LL = document.querySelectorAll('img.lazyloading');
 		for (var image in LL) {
 			if ( (LL[image]).childElementCount > -1 ) {
+				(LL[image]).src = app.baseUrlCdn + '/img/m/side-nav-bg.jpg';
 				io.observe(LL[image]);
 			}
 		}

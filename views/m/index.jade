@@ -503,7 +503,7 @@ html.ltr(lang='en')
                       | 
                   h4.mdl-typography--headline General Structure and scenario
                   p
-                    img.img-responsive(src="//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
+                    img.lazyloading.img-responsive(data-src="//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
                     
                   h4.mdl-typography--headline Technical documentation
                   p
@@ -525,7 +525,7 @@ html.ltr(lang='en')
       .menu__overlay
       .toast__container
       
-      #cookieconsent.mdl-card__actions.mdl-card--border
+      #cookieconsent.mdl-card__actions.mdl-card--border.hidden
         #cookieconsent_wrapper
           h4#cookieconsent_header This website uses cookies
           | This website uses cookies to improve user experience. By using our website you consent to all cookies in accordance with our Cookie Policy.
@@ -537,4 +537,4 @@ html.ltr(lang='en')
               a(href='#', id='cookieconsent.agree') I agree
         
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/vendor.min.js')
-      script(type='application/javascript', src='/js/m/t6app.js')
+      script(type='application/javascript', src='#{baseUrlCdn}/js/m/t6app.js')
