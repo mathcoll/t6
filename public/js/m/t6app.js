@@ -2245,7 +2245,15 @@ var containers = {
 						datapoints += "		</div>";
 						datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
 						var dataset = [data.data.map(function(i) {
-							datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), i.attributes.value+flow.attributes.unit, {type: 'text', isEdit: false});
+							var value;
+							if( datatype == 'geo' ) {
+								var geoPosition = {longitude: '', latitude: ''};
+								[geoPosition.longitude, geoPosition.latitude] = (i.attributes.value).split(';');
+								value = geoPosition.longitude + ", " + geoPosition.latitude;
+							} else {
+								value = i.attributes.value + " " + unit;
+							}
+							datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), value, {type: 'text', isEdit: false});
 							return [i.attributes.timestamp, i.attributes.value];
 					    })];
 						componentHandler.upgradeDom();
