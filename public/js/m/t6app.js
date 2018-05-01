@@ -2753,12 +2753,6 @@ var containers = {
 		element += "		<div class=\"mdl-card__title\">";
 		element += "			<i class=\"material-icons\">"+iconName+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
-		if ( item.attributes.is_public == 'true' ) {
-			element += "			<span class='isPublic'><i class='material-icons md-32'>visibility</i></span>";	
-		}
-		if ( (item.attributes.longitude && item.attributes.latitude) || item.attributes.position ) {
-			element += "			<span class='isLocalized'><i class='material-icons md-32'>location_on</i></span>";	
-		}
 		element += "		</div>";
 		if ( type == 'snippets' ) {
 			element += "<div class='mdl-list__item--three-line small-padding'>";
@@ -2780,12 +2774,22 @@ var containers = {
 			}
 			element += "</div>";
 		} else if ( type == 'objects' ) {
-			element += "<div class='mdl-list__item--three-line small-padding'>";
-			element += "	<span class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-48'>"+item.attributes.type+"</i>";
-			element += "	</span>";
-			element += "</div>";
 			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+			element += "<div class='mdl-list__item--three-line small-padding'>";
+			if ( item.attributes.type ) {
+				var d = app.types.find( function(d) { return d.name == item.attributes.type; }); 
+				element += "	<span class='type' id='"+item.id+"-type'><i class='material-icons md-32'>"+d.name+"</i></span>";
+				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-type'>"+d.value+"</div>";
+			}
+			if ( item.attributes.is_public == 'true' ) {
+				element += "	<span class='isPublic' id='"+item.id+"-isPublic'><i class='material-icons md-32'>visibility</i></span>";
+				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-isPublic'>Public</div>";
+			}
+			if ( (item.attributes.longitude && item.attributes.latitude) || item.attributes.position ) {
+				element += "	<span class='isLocalized' id='"+item.id+"-isLocalized'><i class='material-icons md-32'>location_on</i></span>";
+				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-isLocalized'>Localized</div>";	
+			}
+			element += "</div>";
 		} else {
 			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
 		}
