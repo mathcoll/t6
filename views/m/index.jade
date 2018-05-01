@@ -438,79 +438,88 @@ html.ltr(lang='en')
         //- Docs
         section#docs.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Api first documentation
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            section.mdl-grid.mdl-cell--12-col
-              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-grid
-                  h3.mdl-typography--headline t6 API first: Live, eat, and breathe the API-first lifestyle of t6.
-                div.mdl-card__supporting-text.no-padding
-                  h4.mdl-typography--headline Physical World
-                  p Physical World are composed by your sensors and actuators. Physical Objects require a virtual Object in t6 and then, they could add Data to Flows. Sample nodeMCU and Arduino scripts are available in the sensors repositories.
-                  p Physical Objects require a virtual Object in t6 and then, they could add Data to Flows.
-                  h4.mdl-typography--headline Resources available on t6
-                  ol.mdl-list(style="padding:0px;line-height:24px;")
-                    li.mdl-list__item-primary-content
-                      div.mdl-grid
-                        div.mdl-layout-spacer
-                        div.mdl-cell--12-col
-                          i.material-icons.md-48 devices_other
-                        div.mdl-layout-spacer
-                      strong Objects, sensors and actuators:
-                      |  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
-                      | Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
-                    li.mdl-list__item-primary-content
-                      div.mdl-grid
-                        div.mdl-layout-spacer
-                        div.mdl-cell--12-col
-                          i.material-icons.md-48 settings_input_component
-                        div.mdl-layout-spacer
-                      strong Flows & DataPoints:
-                      |  Flows are datastore to save time/values (DataPoints). Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
-                      | Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.
-                      | Objects are sending their Data to Flow-containers using the API.
-                    li.mdl-list__item-primary-content
-                      div.mdl-grid
-                        div.mdl-layout-spacer
-                        div.mdl-cell--12-col
-                          i.material-icons.md-48 dashboard
-                        div.mdl-layout-spacer
-                      strong Dashboards to graph, draw, and monitor:
-                      | Dashboard include one or multiple Snippets. Dashboards allows to visualize your data as graphs and data values.
-                    li.mdl-list__item-primary-content
-                      div.mdl-grid
-                        div.mdl-layout-spacer
-                        div.mdl-cell--12-col
-                          i.material-icons.md-48 widgets
-                        div.mdl-layout-spacer
-                      strong Snippets
-                      | 
-                    li.mdl-list__item-primary-content
-                      div.mdl-grid
-                        div.mdl-layout-spacer
-                        div.mdl-cell--12-col
-                          i.material-icons.md-48 call_split
-                        div.mdl-layout-spacer
-                      strong Rules, to Alert and Notify
-                      | 
-                    li.mdl-list__item-primary-content
-                      div.mdl-grid
-                        div.mdl-layout-spacer
-                        div.mdl-cell--12-col
-                          i.material-icons.md-48 volume_down
-                        div.mdl-layout-spacer
-                      strong Mqtt, to communicate
-                      | 
-                  h4.mdl-typography--headline General Structure and scenario
-                  p
-                    img.lazyloading.img-responsive(data-src="//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
-                    
-                  h4.mdl-typography--headline Technical documentation
-                  p
-                    | Api first in a Rest api ; including security (JWT tokens) and quotas.
-                    a.mdl-button.mdl-js-button(href="/docs", target='_blank', rel='noopener') Explore the full Api documentation
-                      i.material-icons chevron_right
-                  p &nbsp;
+            h2.mdl-card__title-text.mdl-subheader-content Api first documentation: Live, eat, and breathe the API-first lifestyle of t6.
+              
+          .mdl-grid.mdl-cell--12-col
+            div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+              div.mdl-grid
+                h3.mdl-typography--headline Physical World
+                p Physical World are composed by your sensors and actuators. Physical Objects require a virtual Object in t6 and then, they could add Data to Flows. Sample nodeMCU and Arduino scripts are available in the sensors repositories.
+                p Physical Objects require a virtual Object in t6 and then, they could add Data to Flows.
+              
+          .mdl-grid.mdl-cell--12-col
+            div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+              div.mdl-grid
+                h3.mdl-typography--headline Resources available on t6
+                ol.mdl-list(style="padding:0px;line-height:24px;")
+                  li.mdl-list__item-primary-content
+                    div.mdl-grid
+                      div.mdl-layout-spacer
+                      div.mdl-cell--12-col
+                        i.material-icons.md-48 devices_other
+                      div.mdl-layout-spacer
+                    strong Objects, sensors and actuators:
+                    |  Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
+                    | Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
+                  li.mdl-list__item-primary-content
+                    div.mdl-grid
+                      div.mdl-layout-spacer
+                      div.mdl-cell--12-col
+                        i.material-icons.md-48 settings_input_component
+                      div.mdl-layout-spacer
+                    strong Flows & DataPoints:
+                    |  Flows are datastore to save time/values (DataPoints). Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
+                    | Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.
+                    | Objects are sending their Data to Flow-containers using the API.
+                  li.mdl-list__item-primary-content
+                    div.mdl-grid
+                      div.mdl-layout-spacer
+                      div.mdl-cell--12-col
+                        i.material-icons.md-48 dashboard
+                      div.mdl-layout-spacer
+                    strong Dashboards to graph, draw, and monitor:
+                    | Dashboard include one or multiple Snippets. Dashboards allows to visualize your data as graphs and data values.
+                  li.mdl-list__item-primary-content
+                    div.mdl-grid
+                      div.mdl-layout-spacer
+                      div.mdl-cell--12-col
+                        i.material-icons.md-48 widgets
+                      div.mdl-layout-spacer
+                    strong Snippets
+                    | 
+                  li.mdl-list__item-primary-content
+                    div.mdl-grid
+                      div.mdl-layout-spacer
+                      div.mdl-cell--12-col
+                        i.material-icons.md-48 call_split
+                      div.mdl-layout-spacer
+                    strong Rules, to Alert and Notify
+                    | 
+                  li.mdl-list__item-primary-content
+                    div.mdl-grid
+                      div.mdl-layout-spacer
+                      div.mdl-cell--12-col
+                        i.material-icons.md-48 volume_down
+                      div.mdl-layout-spacer
+                    strong Mqtt, to communicate
+                    | 
+              
+          .mdl-grid.mdl-cell--12-col
+            div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+              div.mdl-grid
+                h3.mdl-typography--headline General Structure and scenario
+                p
+                  img.lazyloading.img-responsive(data-src="//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
+                  
+          .mdl-grid.mdl-cell--12-col
+            div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+              div.mdl-grid
+                h3.mdl-typography--headline Technical documentation
+                p
+                  | Api first in a Rest api ; including security (JWT tokens) and quotas.
+                  a.mdl-button.mdl-js-button(href="/docs", target='_blank', rel='noopener') Explore the full Api documentation
+                    i.material-icons chevron_right
+                p &nbsp;
           
         //- View users-list
         section#users-list.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
