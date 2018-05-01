@@ -1557,7 +1557,7 @@ var containers = {
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 				} else {
-					node += app.getField('visibility_off', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
+					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -3408,10 +3408,11 @@ var containers = {
 					field += "</div>";
 				}
 			} else if ( options.type === 'switch' ) {
+				var isChecked = value=='true'?' checked':'';
 				if ( options.isEdit == true ) {
 					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label' for='switch-"+id+"' data-id='switch-"+id+"'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' name='"+label+"' value='"+value+"' placeholder='"+label+"'>";
+					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' name='"+label+"' value='"+value+"' placeholder='"+label+"' "+isChecked+">";
 					if (label) field += "	<div class='mdl-switch__label'>"+label+"</div>";
 					field += "</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
