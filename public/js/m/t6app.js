@@ -1601,7 +1601,7 @@ var containers = {
 					node += "		<button id='"+btnId[1]+"' class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save change to Object</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save changes to Object</label>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";

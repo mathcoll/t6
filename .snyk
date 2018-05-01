@@ -21,14 +21,18 @@ ignore:
   'npm:hoek:20180212':
     - express-jwt > jsonwebtoken > joi > hoek:
         reason: None given
-        expires: '2018-04-02T13:29:43.429Z'
+        expires: '2018-05-31T16:26:49.610Z'
     - express-jwt > jsonwebtoken > joi > topo > hoek:
         reason: None given
-        expires: '2018-04-02T13:29:43.429Z'
+        expires: '2018-05-31T16:26:49.610Z'
   'npm:mqtt:20171225':
     - mqtt:
         reason: None given
         expires: '2018-04-02T13:29:43.429Z'
+  'npm:clean-css:20180306':
+    - jade > clean-css:
+        reason: None given
+        expires: '2018-05-31T16:26:49.610Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
