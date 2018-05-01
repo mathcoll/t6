@@ -938,18 +938,32 @@ var containers = {
 				}
 			}
 		} else if ( section === 'flow_add' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.displayAddFlow(app.defaultResources.flow);
 		} else if ( section === 'snippet_add' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.displayAddSnippet(app.defaultResources.snippet);
 		} else if ( section === 'dashboard_add' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.displayAddDashboard(app.defaultResources.dashboard);
 		} else if ( section === 'rule_add' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.displayAddRule(app.defaultResources.rule);
 		} else if ( section === 'mqtt_add' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.displayMqttRule(app.defaultResources.mqtt);
 		} else if ( section === 'profile' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.fetchProfile();
 		} else if ( section === 'settings' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.getSettings();
 		} else if ( section === 'users-list' ) {
 			app.getUsersList();
@@ -1717,8 +1731,6 @@ var containers = {
 	}; // getSubtitle
 
 	app.displayAddObject = function(object) {
-		history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+object.id );
-		
 		var node = "";
 		object.id = object.id!==""?object.id:app.getUniqueId();
 		node += app.getSubtitle('Description');
@@ -1840,7 +1852,7 @@ var containers = {
 				localStorage.setItem('units', JSON.stringify(app.units));
 			});
 		}
-	}
+	} // getUnits
 	
 	app.getFlows = function() {
 		if ( app.flows.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
@@ -1863,7 +1875,7 @@ var containers = {
 				localStorage.setItem('flows', JSON.stringify(app.flows));
 			});
 		}
-	}
+	} // getFlows
 	
 	app.getSnippets = function() {
 		if ( app.snippets.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
@@ -1886,7 +1898,7 @@ var containers = {
 				localStorage.setItem('snippets', JSON.stringify(app.snippets));
 			});
 		}
-	}
+	} // getSnippets
 	
 	app.getDatatypes = function() {
 		if ( app.datatypes.length == 0 ) {
@@ -1908,11 +1920,9 @@ var containers = {
 				localStorage.setItem('datatypes', JSON.stringify(app.datatypes));
 			});
 		}
-	}
+	} // getDatatypes
 	
 	app.displayAddFlow = function(flow) {
-		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+flow.id );
-
 		if ( !localStorage.getItem('units') ) {
 			// retrieve units
 		}
@@ -1961,8 +1971,6 @@ var containers = {
 	}; // displayAddFlow
 	
 	app.displayAddDashboard = function(dashboard) {
-		history.pushState( {section: 'dashboard' }, window.location.hash.substr(1), '#dashboard' );
-		
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -2026,8 +2034,6 @@ var containers = {
 	}; // displayMqttRule
 
 	app.displayAddSnippet = function(snippet) {
-		history.pushState( {section: 'snippet' }, window.location.hash.substr(1), '#snippet?id='+snippet.id );
-		
 		var node = "";
 		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
