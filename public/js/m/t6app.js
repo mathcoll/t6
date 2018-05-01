@@ -1003,12 +1003,16 @@ var containers = {
 					app.displayObject(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
-				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.displayObject(item.dataset.id, false);
-					evt.preventDefault();
-				}, {passive: false,});
+				
+				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
+				Array.from(divs).forEach(div => {
+					(div).addEventListener('click', function(evt) {
+						var item = evt.currentTarget.parentNode.parentNode;
+						item.classList.add('is-hover');
+						app.displayObject(item.dataset.id, false);
+						evt.preventDefault();
+					}, {passive: false,});
+				});
 			} else if ( type == 'flows' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.currentTarget.parentNode.parentNode;
@@ -1016,12 +1020,16 @@ var containers = {
 					app.displayFlow(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
-				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.displayFlow(item.dataset.id, false);
-					evt.preventDefault();
-				}, {passive: false,});
+				
+				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
+				Array.from(divs).forEach(div => {
+					(div).addEventListener('click', function(evt) {
+						var item = evt.currentTarget.parentNode.parentNode;
+						item.classList.add('is-hover');
+						app.displayFlow(item.dataset.id, false);
+						evt.preventDefault();
+					}, {passive: false,});
+				});
 			} else if ( type == 'dashboards' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.currentTarget.parentNode.parentNode;
@@ -1029,12 +1037,16 @@ var containers = {
 					app.displayDashboard(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
-				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.displayDashboard(item.dataset.id, false);
-					evt.preventDefault();
-				}, {passive: false,});
+				
+				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
+				Array.from(divs).forEach(div => {
+					(div).addEventListener('click', function(evt) {
+						var item = evt.currentTarget.parentNode.parentNode;
+						item.classList.add('is-hover');
+						app.displayDashboard(item.dataset.id, false);
+						evt.preventDefault();
+					}, {passive: false,});
+				});
 			} else if ( type == 'snippets' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
 				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
 					var item = evt.currentTarget.parentNode.parentNode;
@@ -1042,12 +1054,16 @@ var containers = {
 					app.displaySnippet(item.dataset.id, false);
 					evt.preventDefault();
 				}, {passive: false,});
-				((items[i]).querySelector("div.mdl-list__item--three-line")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.displaySnippet(item.dataset.id, false);
-					evt.preventDefault();
-				}, {passive: false,});
+				
+				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
+				Array.from(divs).forEach(div => {
+					(div).addEventListener('click', function(evt) {
+						var item = evt.currentTarget.parentNode.parentNode;
+						item.classList.add('is-hover');
+						app.displaySnippet(item.dataset.id, false);
+						evt.preventDefault();
+					}, {passive: false,});
+				});
 			}
 		};
 		// swapDate
