@@ -1762,18 +1762,21 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
+		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Objects</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Object</label>";
 		node += "		</button>";
 		node += "	</div>";
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -1943,18 +1946,21 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
+		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Flows</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Flow</label>";
 		node += "		</button>";
 		node += "	</div>";
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -1988,18 +1994,21 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		
+		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Dashboards</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Dashboard</label>";
 		node += "		</button>";
 		node += "	</div>";
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -2052,21 +2061,23 @@ var containers = {
 		node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
 		node += "		</div>";
 		node += "	</div>";
-		
 		node += "</section>";
 		
+		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Snippets</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Snippet</label>";
 		node += "		</button>";
 		node += "	</div>";
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
