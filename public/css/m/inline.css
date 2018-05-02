@@ -43,6 +43,10 @@ html > *:target {
 html {
 	overflow: hidden;
 }
+::-moz-selection {
+	background: rgb(121,85,72,.6);
+	color: #fff;
+}
 a {
 	text-decoration: none;
 }
@@ -1808,18 +1812,6 @@ div#cookieconsent_accept, div#cookieconsent_accept a {
     cursor: pointer;
     margin: 5px 10px;
     background-color: rgb(91, 183, 91);
-    color: #fff;
-    display: inline;
-}
-div#cookieconsent_readmore, div#cookieconsent_readmore a {
-    border-radius: 5px;
-    border: 0px none;
-    padding: 6px 10px;
-    font-weight: bold;
-    font-size: 13px;
-    cursor: pointer;
-    margin: 5px 10px;
-    background-color: rgb(105, 118, 119);
     color: #fff;
     display: inline;
 }

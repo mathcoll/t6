@@ -10,6 +10,7 @@ var app = {
 	RateLimit : {Limit: null, Remaining: null, Used: null},
 	date_format: 'DD/MM/YYYY, HH:mm',
 	cardMaxChars: 256,
+	cookieconsent: 30,
 	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15},
 	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
 	currentSection: 'index',
@@ -4675,11 +4676,17 @@ var containers = {
 	}
 	
 	/* Cookie Consent */
+	var d = new Date();
+	d.setTime(d.getTime() + (app.cookieconsent * 24*60*60*1000));
 	document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
 		document.getElementById('cookieconsent').classList.add('hidden');
-		var d = new Date();
-		    d.setTime(d.getTime() + (30 * 24*60*60*1000));
-		    document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+	    document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+		evt.preventDefault();
+	}, false);
+	document.getElementById('cookieconsent.noGTM').addEventListener('click', function(evt) {
+		document.getElementById('cookieconsent').classList.add('hidden');
+	    document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+	    document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
 		evt.preventDefault();
 	}, false);
 	document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
@@ -4687,7 +4694,7 @@ var containers = {
 		app.setSection('terms');
 		evt.preventDefault();
 	}, false);
-	if( app.getCookie('cookieconsent') !== "true" ){
+	if ( app.getCookie('cookieconsent') !== "true" ) {
 		document.getElementById('cookieconsent').classList.add('is-visible');
 		document.getElementById('cookieconsent').classList.remove('hidden');
 	} else {
@@ -4910,12 +4917,15 @@ var containers = {
 			s0.parentNode.insertBefore(s1,s0);
 		})();
 	}
-	if ( app.gtm ) {
+	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" ) {
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 			'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 			})(window,document,'script','dataLayer',app.gtm);
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
+			console.log('gtm', 'gtm.start');
+		}
 	}
 
 	if (!('serviceWorker' in navigator)) {

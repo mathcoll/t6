@@ -537,13 +537,16 @@ html.ltr(lang='en')
       #cookieconsent.mdl-card__actions.mdl-card--border.hidden
         #cookieconsent_wrapper
           h4#cookieconsent_header This website uses cookies
-          | This website uses cookies to improve user experience. By using our website you consent to all cookies in accordance with our Cookie Policy.
+          span This website uses cookies to improve user experience. By using our website you consent to all cookies in accordance with our Cookie Policy. 
+          span#cookieconsent_readmore
+            a(href='/#terms', id='cookieconsent.read') Read more
+            | .
           br
           #cookieconsent_buttons
-            #cookieconsent_readmore
-              a(href='/#terms', id='cookieconsent.read') Read more
-            #cookieconsent_accept
-              a(href='#', id='cookieconsent.agree') I agree
+            #cookieconsent_noGTM.mdl-button
+              a(href='#', id='cookieconsent.noGTM') Deny Marketing cookies 
+            #cookieconsent_accept.mdl-button
+              a(href='#', id='cookieconsent.agree') Got it!
         
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/vendor.min.js')
       script(type='application/javascript', src='#{baseUrlCdn}/js/m/t6app.js')
