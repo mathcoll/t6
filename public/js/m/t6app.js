@@ -4975,7 +4975,7 @@ var containers = {
 	}
 	app.setDrawer();
 	
-	if ( app.tawktoid && navigator.onLine ) {
+	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" ) {
 		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 		(function(){
 			var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
