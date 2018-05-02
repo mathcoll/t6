@@ -548,8 +548,8 @@ section#profile .subhead {
 .mdl-cell {
 	margin: 5px 0 !important;
 }
-.mdl-grid {
-	margin-bottom: 30px;
+div.page-content {
+	margin-bottom: 50px;
 }
 #terms .mdl-grid {
 	word-break: normal;

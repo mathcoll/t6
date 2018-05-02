@@ -4218,20 +4218,20 @@ var containers = {
 		})
 		.then(function(response) {
 			var terms = "";
-			terms += "<section class=\"mdl-grid mdl-cell--12-col\">";
-			terms += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 			for (var i=0; i < (response).length ; i++ ) {
+				terms += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				terms += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if( response[i].title ) {
 					terms += "	<div class=\"mdl-grid\">";
 					terms += "		<h3 class=\"mdl-typography--headline\">"+response[i].title+"</h3>";
 					terms += "	</div>";
 				}
-				terms += "	<div class=\"mdl-card__supporting-text no-padding\">";
+				terms += "		<div class=\"mdl-card__supporting-text no-padding\">";
 				terms += response[i].description;
+				terms += "		</div>";
 				terms += "	</div>";
+				terms += "</section>";
             }
-			terms += "	</div>";
-			terms += "</section>";
 
 			(containers.terms).querySelector('.page-content').innerHTML = terms;
 			if ( !app.isLogged ) {
