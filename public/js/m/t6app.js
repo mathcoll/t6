@@ -938,22 +938,92 @@ var containers = {
 					app.displayObject(params['id'], true);
 				}
 			}
+		} else if ( section === 'flow' ) {
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] == "" ) {
+					app.setSection('flows'); // TODO, recursive?
+				} else if (params['id'] ) {
+					app.displayFlow(params['id'], false);
+				}
+			}
 		} else if ( section === 'flow_add' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.displayAddFlow(app.defaultResources.flow);
+		} else if ( section === 'snippet' ) {
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] == "" ) {
+					app.setSection('snippets'); // TODO, recursive?
+				} else if (params['id'] ) {
+					app.displayDashboard(params['id'], false);
+				}
+			}
 		} else if ( section === 'snippet_add' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.displayAddSnippet(app.defaultResources.snippet);
+		} else if ( section === 'dashboard' ) {
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] == "" ) {
+					app.setSection('dashboards'); // TODO, recursive?
+				} else if (params['id'] ) {
+					app.displayDashboard(params['id'], false);
+				}
+			}
 		} else if ( section === 'dashboard_add' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.displayAddDashboard(app.defaultResources.dashboard);
+		} else if ( section === 'rule' ) {
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] == "" ) {
+					app.setSection('rules'); // TODO, recursive?
+				} else if (params['id'] ) {
+					app.displayDashboard(params['id'], false);
+				}
+			}
 		} else if ( section === 'rule_add' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.displayAddRule(app.defaultResources.rule);
+		} else if ( section === 'mqtt' ) {
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] == "" ) {
+					app.setSection('mqtts'); // TODO, recursive?
+				} else if (params['id'] ) {
+					app.displayDashboard(params['id'], false);
+				}
+			}
 		} else if ( section === 'mqtt_add' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
@@ -2411,7 +2481,7 @@ var containers = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var dashboard = response.data[i];
 				document.title = (app.sectionsPageTitles['dashboard']).replace(/%s/g, dashboard.attributes.name);
-				
+
 				var node;
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
