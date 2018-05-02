@@ -434,6 +434,9 @@ section#profile .mdl-card--small .mdl-card__title {
     padding: 8px;
     color: #0000004d;
 }
+.mdl-menu__item:hover {
+    background-color: rgb(121,85,72,.6);
+}
 section#profile .mdl-card--small .mdl-card__image {
 	border-radius: 1px 0 0 1px;
 	left: 0;
