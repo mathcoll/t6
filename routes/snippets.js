@@ -151,7 +151,7 @@ router.put('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret})
 				}
 		var snippet = snippets.findOne( query );
 		if ( snippet ) {
-			if ( req.body.meta && req.body.meta.revision && (req.body.attributes.meta.revision - snippet.meta.revision) != 0 ) {
+			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - snippet.meta.revision) != 0 ) {
 				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
 				var result;
@@ -163,6 +163,7 @@ router.put('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret})
 							item.icon		= req.body.icon!==undefined?req.body.icon:item.icon;
 							item.color		= req.body.color!==undefined?req.body.color:item.color;
 							item.flows		= req.body.flows!==undefined?req.body.flows:item.flows;
+							item.meta.revision = ++(req.body.meta.revision);
 							result = item;
 						}
 				);

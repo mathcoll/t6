@@ -149,7 +149,7 @@ router.put('/:dashboard_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret
 				}
 		var dashboard = dashboards.findOne( query );
 		if ( dashboard ) {
-			if ( req.body.meta && req.body.meta.revision && (req.body.attributes.meta.revision - dashboard.meta.revision) != 0 ) {
+			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - dashboard.meta.revision) != 0 ) {
 				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
 				var result;
@@ -159,6 +159,7 @@ router.put('/:dashboard_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret
 							item.name		= req.body.name!==undefined?req.body.name:item.name;
 							item.description= req.body.description!==undefined?req.body.description:item.description;
 							item.snippets	= req.body.snippets!==undefined?req.body.snippets:item.snippets;
+							item.meta.revision = ++(req.body.meta.revision);
 							result = item;
 						}
 				);

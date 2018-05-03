@@ -181,7 +181,7 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 					}
 			var flow = flows.findOne( query );
 			if ( flow ) {
-				if ( req.body.meta && req.body.meta.revision && (req.body.attributes.meta.revision - flow.meta.revision) != 0 ) {
+				if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - flow.meta.revision) != 0 ) {
 					res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 				} else {
 					var result;
@@ -194,10 +194,10 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 								item.permission	= permission!==undefined?permission:item.permission;
 								item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
 								item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
+								item.meta.revision = ++(req.body.meta.revision);
 								result = item;
 							}
 					);
-					//console.log(flows);
 					if ( result !== undefined ) {
 						db.save();
 						
