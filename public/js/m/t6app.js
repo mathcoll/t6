@@ -139,6 +139,7 @@ var app = {
 		cardMaxChars: "^[0-9]+$",
 		customAttributeName: "^[a-zA-Z0-9_]+$",
 		customAttributeValue: "^.*?$",
+		meta_revision: "^[0-9]{1,}$",
 	}
 };
 
@@ -493,6 +494,7 @@ var containers = {
 				ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
 				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
 				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
 			var myHeaders = new Headers();
@@ -566,6 +568,7 @@ var containers = {
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 				data_type: myForm.querySelector("select[name='DataType']").value,
 				unit: myForm.querySelector("select[name='Unit']").value,
+				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
 			var myHeaders = new Headers();
@@ -636,6 +639,7 @@ var containers = {
 				icon: myForm.querySelector("select[name='Icon']").value,
 				color: myForm.querySelector("input[name='Color']").value,
 				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
+				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
 			var myHeaders = new Headers();
@@ -705,6 +709,7 @@ var containers = {
 				name: myForm.querySelector("input[name='Name']").value,
 				description: myForm.querySelector("textarea[name='Description']").value,
 				snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
+				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('onAddDashboard', JSON.stringify(body));
@@ -1199,6 +1204,9 @@ var containers = {
 		}
 		if (response.status === 200 || response.status === 201) {
 			return response;
+		} else if (response.status === 400) {
+			toast('meta.revision is conflictual.', {timeout:3000, type: 'error'});
+			throw new Error('meta.revision is conflictual.');
 		} else if (response.status === 401 || response.status === 403) {
 			app.sessionExpired();
 			throw new Error(response.statusText);
@@ -1622,6 +1630,7 @@ var containers = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( isEdit==true ) {
 					var description = object.attributes.description;
+					node += app.getField(null, 'meta.revision', object.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.description, 'Description', description, {type: 'textarea', id: 'Description', isEdit: isEdit});
 				}
@@ -2237,6 +2246,7 @@ var containers = {
 				if ( isEdit ) {
 					//node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(null, 'meta.revision', flow.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
 					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, options: app.units });
@@ -2514,6 +2524,7 @@ var containers = {
 				if ( isEdit ) {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(null, 'meta.revision', dashboard.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
 
@@ -2624,6 +2635,7 @@ var containers = {
 					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(null, 'meta.revision', snippet.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
@@ -3441,11 +3453,13 @@ var containers = {
 	} // getUniqueId
 	
 	app.getField = function(icon, label, value, options) {
-		var hidden = options.isVisible!==false?"":" hidden";
+		if ( options.type === 'hidden' ) {
+			options.isVisible = false;
+		}
+		var hidden = options.isVisible!==false?"":" hidden111111111111111111111111111111111111";
 		var expand = options.isExpand===false?"":" mdl-card--expand";
 		var field = "";
 		field += "<div class='mdl-list__item--three-line small-padding "+hidden+expand+"'>";
-
 		if ( typeof options === 'object' ) {
 			var id = options.id!==null?options.id:app.getUniqueId();
 			
@@ -3465,6 +3479,14 @@ var containers = {
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}
+			} else if ( options.type === 'hidden' ) {
+				var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
+				field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
+				if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+				field += "	<input type='hidden111111111111111111111111111111111111' value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+				if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+				if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
+				field += "</div>";
 			} else if ( options.type === 'textarea' ) {
 				if ( options.isEdit == true ) {
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
