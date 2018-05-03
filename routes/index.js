@@ -32,7 +32,7 @@ var users;
 
 /**
  * @apiDefine 400
- * @apiError 400 Require a Bearer Authentication.
+ * @apiError 400 Bad Request, require a Bearer Authentication or revision is incorrect.
  * @apiErrorExample 400 Response
  *     HTTP/1.1 400 Bad Request
  *     {

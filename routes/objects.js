@@ -233,8 +233,10 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [ipv6] Object IP v6
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * @apiParam {Boolean} [is_public=false] Alias of isPublic
+ * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
+ * @apiUse 400
  * @apiUse 401
  * @apiUse 404
  */
@@ -250,27 +252,31 @@ router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}),
 			}
 	var object = objects.findOne( query );
 	if ( object ) {
-		var result;
-		req.body.isPublic = req.body.isPublic!==undefined?req.body.isPublic:req.body.is_public!==undefined?req.body.is_public:undefined;
-		objects.chain().find({ 'id': object_id }).update(function(item) {
-			item.type				= req.body.type!==undefined?req.body.type:item.type;
-			item.name				= req.body.name!==undefined?req.body.name:item.name;
-			item.description		= req.body.description!==undefined?(req.body.description).substring(0, 1024):item.description;
-			item.position			= req.body.position!==undefined?req.body.position:item.position;
-			item.longitude			= req.body.longitude!==undefined?req.body.longitude:item.longitude;
-			item.latitude			= req.body.latitude!==undefined?req.body.latitude:item.latitude;
-			item.isPublic			= req.body.isPublic!==undefined?req.body.isPublic:item.isPublic;
-			item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
-			item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
-			result = item;
-		});
-		if ( result !== undefined ) {
-			db.save();
-			
-			res.header('Location', '/v'+version+'/objects/'+object_id);
-			res.status(200).send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() });
+		if ( req.body.meta && req.body.meta.revision && (req.body.attributes.meta.revision - object.meta.revision) != 0 ) {
+			res.status(400).send(new ErrorSerializer({'id': 40.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+			var result;
+			req.body.isPublic = req.body.isPublic!==undefined?req.body.isPublic:req.body.is_public!==undefined?req.body.is_public:undefined;
+			objects.chain().find({ 'id': object_id }).update(function(item) {
+				item.type				= req.body.type!==undefined?req.body.type:item.type;
+				item.name				= req.body.name!==undefined?req.body.name:item.name;
+				item.description		= req.body.description!==undefined?(req.body.description).substring(0, 1024):item.description;
+				item.position			= req.body.position!==undefined?req.body.position:item.position;
+				item.longitude			= req.body.longitude!==undefined?req.body.longitude:item.longitude;
+				item.latitude			= req.body.latitude!==undefined?req.body.latitude:item.latitude;
+				item.isPublic			= req.body.isPublic!==undefined?req.body.isPublic:item.isPublic;
+				item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
+				item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
+				result = item;
+			});
+			if ( result !== undefined ) {
+				db.save();
+				
+				res.header('Location', '/v'+version+'/objects/'+object_id);
+				res.status(200).send({ 'code': 200, message: 'Successfully updated', object: new ObjectSerializer(result).serialize() });
+			} else {
+				res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+			}
 		}
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());

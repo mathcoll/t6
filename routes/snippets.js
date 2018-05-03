@@ -128,6 +128,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [icon] Snippet Icon
  * @apiParam {String} [color] Snippet Color
  * @apiParam {String[]} [flows] List of Flow Ids
+ * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
  * @apiUse 400
@@ -150,26 +151,30 @@ router.put('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret})
 				}
 		var snippet = snippets.findOne( query );
 		if ( snippet ) {
-			var result;
-			snippets.findAndUpdate(
-				function(i){return i.id==snippet_id},
-				function(item){
-					item.name		= req.body.name!==undefined?req.body.name:item.name;
-					item.type		= req.body.type!==undefined?req.body.type:item.type;
-					item.icon		= req.body.icon!==undefined?req.body.icon:item.icon;
-					item.color		= req.body.color!==undefined?req.body.color:item.color;
-					item.flows		= req.body.flows!==undefined?req.body.flows:item.flows;
-					result = item;
-				}
-			);
-			//console.log(snippets);
-			if ( result !== undefined ) {
-				dbSnippets.save();
-				
-				res.header('Location', '/v'+version+'/snippets/'+snippet_id);
-				res.status(200).send({ 'code': 200, message: 'Successfully updated', snippet: new SnippetSerializer(result).serialize() });
+			if ( req.body.meta && req.body.meta.revision && (req.body.attributes.meta.revision - snippet.meta.revision) != 0 ) {
+				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
-				res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+				var result;
+				snippets.findAndUpdate(
+						function(i){return i.id==snippet_id},
+						function(item){
+							item.name		= req.body.name!==undefined?req.body.name:item.name;
+							item.type		= req.body.type!==undefined?req.body.type:item.type;
+							item.icon		= req.body.icon!==undefined?req.body.icon:item.icon;
+							item.color		= req.body.color!==undefined?req.body.color:item.color;
+							item.flows		= req.body.flows!==undefined?req.body.flows:item.flows;
+							result = item;
+						}
+				);
+				//console.log(snippets);
+				if ( result !== undefined ) {
+					dbSnippets.save();
+					
+					res.header('Location', '/v'+version+'/snippets/'+snippet_id);
+					res.status(200).send({ 'code': 200, message: 'Successfully updated', snippet: new SnippetSerializer(result).serialize() });
+				} else {
+					res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+				}
 			}
 		} else {
 			res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());

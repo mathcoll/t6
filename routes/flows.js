@@ -57,6 +57,19 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
 			}
 		}
 		var flow = flows.chain().find(query).offset(offset).limit(size).data();
+		/*
+		units	= db.getCollection('units');
+		var flow = flows.chain().find(query).offset(offset).limit(size);
+		var join = flow.eqJoin(units.chain(), 'unit', 'id');
+		
+		console.log('query', query);
+		console.log('offset', offset);
+		console.log('size', size);
+		console.log('flow', flow.data()[0].left);
+		console.log('join', join.data()[0].left);
+		flow = (join.data()).length>0?join.data()[0].left:[];
+		*/
+		
 		var total = flows.find(query).length;
 		flow.size = size;
 		flow.pageSelf = page;
@@ -138,10 +151,10 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [name] Flow Name
  * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
  * @apiParam {String} [unit] Flow Unit
- * @apiParam {String} [theme]] Flow theme, deprecated
  * @apiParam {String} [mqtt_topic]] Mqtt topic
  * @apiParam {Object[]} [permission]
  * @apiParam {String[]} [objects] List of Object Ids
+ * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
  * @apiUse 400
@@ -168,27 +181,31 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 					}
 			var flow = flows.findOne( query );
 			if ( flow ) {
-				var result;
-				flows.findAndUpdate(
-					function(i){return i.id==flow_id},
-					function(item){
-						item.name		= req.body.name!==undefined?req.body.name:item.name;
-						item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
-						item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
-						item.permission	= permission!==undefined?permission:item.permission;
-						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
-						item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
-						result = item;
-					}
-				);
-				//console.log(flows);
-				if ( result !== undefined ) {
-					db.save();
-					
-					res.header('Location', '/v'+version+'/flows/'+flow_id);
-					res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
+				if ( req.body.meta && req.body.meta.revision && (req.body.attributes.meta.revision - flow.meta.revision) != 0 ) {
+					res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 				} else {
-					res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+					var result;
+					flows.findAndUpdate(
+							function(i){return i.id==flow_id},
+							function(item){
+								item.name		= req.body.name!==undefined?req.body.name:item.name;
+								item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
+								item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
+								item.permission	= permission!==undefined?permission:item.permission;
+								item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
+								item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
+								result = item;
+							}
+					);
+					//console.log(flows);
+					if ( result !== undefined ) {
+						db.save();
+						
+						res.header('Location', '/v'+version+'/flows/'+flow_id);
+						res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
+					} else {
+						res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+					}
 				}
 			} else {
 				res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());

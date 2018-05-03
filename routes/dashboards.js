@@ -126,6 +126,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [name=unamed] Dashboard Name
  * @apiParam {String} [description] Dashboard Description
  * @apiParam {String[]} [snippets] List of Snippets Ids
+ * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
  * @apiUse 400
@@ -148,24 +149,28 @@ router.put('/:dashboard_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret
 				}
 		var dashboard = dashboards.findOne( query );
 		if ( dashboard ) {
-			var result;
-			dashboards.findAndUpdate(
-				function(i){return i.id==dashboard_id},
-				function(item){
-					item.name		= req.body.name!==undefined?req.body.name:item.name;
-					item.description= req.body.description!==undefined?req.body.description:item.description;
-					item.snippets	= req.body.snippets!==undefined?req.body.snippets:item.snippets;
-					result = item;
-				}
-			);
-			//console.log(dashboards);
-			if ( result !== undefined ) {
-				dbDashboards.save();
-				
-				res.header('Location', '/v'+version+'/dashboards/'+dashboard_id);
-				res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new DashboardSerializer(result).serialize() });
+			if ( req.body.meta && req.body.meta.revision && (req.body.attributes.meta.revision - dashboard.meta.revision) != 0 ) {
+				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
-				res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+				var result;
+				dashboards.findAndUpdate(
+						function(i){return i.id==dashboard_id},
+						function(item){
+							item.name		= req.body.name!==undefined?req.body.name:item.name;
+							item.description= req.body.description!==undefined?req.body.description:item.description;
+							item.snippets	= req.body.snippets!==undefined?req.body.snippets:item.snippets;
+							result = item;
+						}
+				);
+				//console.log(dashboards);
+				if ( result !== undefined ) {
+					dbDashboards.save();
+					
+					res.header('Location', '/v'+version+'/dashboards/'+dashboard_id);
+					res.status(200).send({ 'code': 200, message: 'Successfully updated', flow: new DashboardSerializer(result).serialize() });
+				} else {
+					res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+				}
 			}
 		} else {
 			res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());
