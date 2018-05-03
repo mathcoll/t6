@@ -185,19 +185,16 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 					res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 				} else {
 					var result;
-					flows.findAndUpdate(
-							function(i){return i.id==flow_id},
-							function(item){
-								item.name		= req.body.name!==undefined?req.body.name:item.name;
-								item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
-								item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
-								item.permission	= permission!==undefined?permission:item.permission;
-								item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
-								item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
-								item.meta.revision = ++(req.body.meta.revision);
-								result = item;
-							}
-					);
+					flows.chain().find({ 'id': flow_id }).update(function(item) {
+						item.name		= req.body.name!==undefined?req.body.name:item.name;
+						item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
+						item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
+						item.permission	= permission!==undefined?permission:item.permission;
+						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
+						item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
+						item.meta.revision = ++(req.body.meta.revision);
+						result = item;
+					});
 					if ( result !== undefined ) {
 						db.save();
 						

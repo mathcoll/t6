@@ -155,19 +155,15 @@ router.put('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret})
 				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
 				var result;
-				snippets.findAndUpdate(
-						function(i){return i.id==snippet_id},
-						function(item){
-							item.name		= req.body.name!==undefined?req.body.name:item.name;
-							item.type		= req.body.type!==undefined?req.body.type:item.type;
-							item.icon		= req.body.icon!==undefined?req.body.icon:item.icon;
-							item.color		= req.body.color!==undefined?req.body.color:item.color;
-							item.flows		= req.body.flows!==undefined?req.body.flows:item.flows;
-							item.meta.revision = ++(req.body.meta.revision);
-							result = item;
-						}
-				);
-				//console.log(snippets);
+				snippets.chain().find({ 'id': snippet_id }).update(function(item) {
+					item.name		= req.body.name!==undefined?req.body.name:item.name;
+					item.type		= req.body.type!==undefined?req.body.type:item.type;
+					item.icon		= req.body.icon!==undefined?req.body.icon:item.icon;
+					item.color		= req.body.color!==undefined?req.body.color:item.color;
+					item.flows		= req.body.flows!==undefined?req.body.flows:item.flows;
+					item.meta.revision = ++(req.body.meta.revision);
+					result = item;
+				});
 				if ( result !== undefined ) {
 					dbSnippets.save();
 					

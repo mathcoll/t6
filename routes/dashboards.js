@@ -153,17 +153,13 @@ router.put('/:dashboard_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret
 				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
 				var result;
-				dashboards.findAndUpdate(
-						function(i){return i.id==dashboard_id},
-						function(item){
-							item.name		= req.body.name!==undefined?req.body.name:item.name;
-							item.description= req.body.description!==undefined?req.body.description:item.description;
-							item.snippets	= req.body.snippets!==undefined?req.body.snippets:item.snippets;
-							item.meta.revision = ++(req.body.meta.revision);
-							result = item;
-						}
-				);
-				//console.log(dashboards);
+				dashboards.chain().find({ 'id': dashboard_id }).update(function(item) {
+					item.name		= req.body.name!==undefined?req.body.name:item.name;
+					item.description= req.body.description!==undefined?req.body.description:item.description;
+					item.snippets	= req.body.snippets!==undefined?req.body.snippets:item.snippets;
+					item.meta.revision = ++(req.body.meta.revision);
+					result = item;
+				});
 				if ( result !== undefined ) {
 					dbDashboards.save();
 					
