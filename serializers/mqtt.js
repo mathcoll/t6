@@ -6,7 +6,7 @@ function MqttTypeSerializer(mqtt) {
   this.serialize = function () {
 	return new JSONAPISerializer('mqtt', {
 		keyForAttribute: 'underscore_case',
-		attributes: ['name', 'mqtt_id'],
+		attributes: ['name', 'mqtt_id', 'meta'],
 		topLevelLinks : {
 			parent : sprintf('%s/v%s/mqtts', baseUrl_https, version),
 			self : mqtt.pageSelf!==undefined?sprintf('%s/v%s/mqtts/?page=%s&size=%s', baseUrl_https, version, mqtt.pageSelf, mqtt.size):undefined,
