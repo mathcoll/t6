@@ -3456,7 +3456,7 @@ var containers = {
 		if ( options.type === 'hidden' ) {
 			options.isVisible = false;
 		}
-		var hidden = options.isVisible!==false?"":" hidden111111111111111111111111111111111111";
+		var hidden = options.isVisible!==false?"":" hidden";
 		var expand = options.isExpand===false?"":" mdl-card--expand";
 		var field = "";
 		field += "<div class='mdl-list__item--three-line small-padding "+hidden+expand+"'>";
@@ -3483,7 +3483,7 @@ var containers = {
 				var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 				field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 				if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-				field += "	<input type='hidden111111111111111111111111111111111111' value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+				field += "	<input type='hidden' value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
 				if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
 				if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 				field += "</div>";
