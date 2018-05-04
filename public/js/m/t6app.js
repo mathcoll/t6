@@ -4355,6 +4355,7 @@ var containers = {
 	app.sessionExpired = function() {
 		localStorage.setItem('bearer', null);
 		localStorage.setItem('flows', null);
+		localStorage.setItem('snippets', null);
 		localStorage.setItem('currentUserId', null);
 		localStorage.setItem('currentUserName', null);
 		localStorage.setItem('currentUserEmail', null);
