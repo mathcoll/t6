@@ -1933,7 +1933,7 @@ var containers = {
 			.then(function(response) {
 				for (var i=0; i < (response.data).length ; i++ ) {
 					var u = response.data[i];
-					app.units.push( {name: u.id, value:u.attributes.type+' '+u.attributes.name} );
+					app.units.push( {name: u.id, value:u.attributes.type+' '+u.attributes.name, format: u.attributes.format} );
 				}
 				localStorage.setItem('units', JSON.stringify(app.units));
 			});
@@ -2310,8 +2310,8 @@ var containers = {
 						node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', id: 'TTL', isEdit: isEdit});
 					}
 					if ( flow.attributes.unit ) {
-						var unit = JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; }).value;
-						node += app.getField(app.icons.units, 'Unit', unit, {type: 'select', id: 'Unit', isEdit: isEdit, options: app.units });
+						var unit = JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; });
+						node += app.getField(app.icons.units, 'Unit', unit.value, {type: 'select', id: 'Unit', isEdit: isEdit, options: app.units });
 					}
 					if ( flow.attributes.data_type ) {
 						var datatype = JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
@@ -2324,7 +2324,7 @@ var containers = {
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 					node += "			<span class='mdl-list__item-primary-content'>";
-					node +=	"				<span>"+flow.attributes.name+" ("+unit+"/"+datatype+")</span>";
+					node +=	"				<span>"+flow.attributes.name+" ("+unit.value+"/"+datatype+")</span>";
 					node +=	"				<span class='mdl-list__item-sub-title' id='flow-graph-time-"+flow.id+"'></span>";
 					node +=	"			</span>";
 					node +=	"		</span>";
@@ -2377,7 +2377,7 @@ var containers = {
 								[geoPosition.longitude, geoPosition.latitude] = (i.attributes.value).split(';');
 								value = geoPosition.longitude + ", " + geoPosition.latitude;
 							} else {
-								value = i.attributes.value + " " + unit;
+								value = (unit.format).replace(/%s/g, i.attributes.value);
 							}
 							datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), value, {type: 'text', isEdit: false});
 							return [i.attributes.timestamp, i.attributes.value];
@@ -4655,10 +4655,13 @@ var containers = {
 	
 	window.addEventListener('hashchange', function() {
 		if( window.history && window.history.pushState ) {
+			console.log('history', 'hashchange');
+			
 			//history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
 			app.setSection(window.location.hash.substr(1));
 			localStorage.setItem("currentPage", window.location.hash.substr(1));
 			var id = getParameterByName('id');
+			var id2 = window.location.hash;
 			if ( id ) {
 				localStorage.setItem("currentResourceId", id);
 			} else {
@@ -4666,7 +4669,7 @@ var containers = {
 			}
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('history', '\"'+window.location.hash.substr(1)+'\"');
-				console.log('history resource id', id);
+				console.log('history resource id', id2);
 			}
 		}
 	}, false);
