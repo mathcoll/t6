@@ -287,12 +287,13 @@ div.valuedisplay .snippet-unit3 {
 	font-size: 1vh;
 }
 div.valuedisplay .mdl-list__item-secondary-content {
-	background: url(/img/m/snippets/valuedisplay.jpg) 50% 59%;
+	background: url(/img/m/snippets/valuedisplay.jpg) 50% 60%;
 	width: 100% !important;
 	min-height: 190px;
 	text-align: center;
 	display: block;
 	padding-top: 50px;
+	margin-top: 10px;
 	position: relative;
 }
 div.valuedisplay .snippet-value {
@@ -304,11 +305,11 @@ div.valuedisplay .snippet-unit {
 	vertical-align: super;
 }
 div.mdl-list__item-primary-content span.heading {
-	width: calc(100% - 24px);
-	display: inline-block;
+	/*width: calc(100% - 24px);
+	float: right;*/
+	display: inline;
 	overflow: auto;
 	white-space: nowrap;
-	float: right;
 }
 
 @media only screen and (min-device-width: 801px) {

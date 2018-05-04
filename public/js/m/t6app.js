@@ -3638,6 +3638,11 @@ var containers = {
 				snippet += "			<div class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
 				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet += "				<span class=\"heading pull-right\">";
+				snippet += "					<button data-snippet-id=\""+my_snippet.id+"\" class=\"edit-snippet mdl-button mdl-js-button mdl-button--icon\">";
+				snippet += "						<i class='material-icons'>settings</i>";
+				snippet += "					</button>";
+				snippet += "				</span>";
 				snippet += "			</div>";
 				snippet += "			<div class='mdl-list__item-secondary-content'>";
 				snippet += "				<span class='snippet-value1' id='snippet-value1-"+my_snippet.id+"'>-</span>";
@@ -3728,6 +3733,11 @@ var containers = {
 				snippet += "			<div class='mdl-list__item-primary-content'>";
 				snippet += "				<i class='material-icons'>"+icon+"</i>";
 				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
+				snippet += "				<span class=\"heading pull-right\">";
+				snippet += "					<button data-snippet-id=\""+my_snippet.id+"\" class=\"edit-snippet mdl-button mdl-js-button mdl-button--icon\">";
+				snippet += "						<i class='material-icons'>settings</i>";
+				snippet += "					</button>";
+				snippet += "				</span>";
 				snippet += "			</div>";
 				snippet += "		</div>";
 				snippet += "		<div class='mdl-list__item-primary-content'>";
@@ -3917,7 +3927,19 @@ var containers = {
 					}
 				});
 			}
-			//console.log(myContainer);
+			
+			// Set the buttons on edit Snippets
+			var editSnippetButtons = document.querySelectorAll('.edit-snippet');
+			for (var b in editSnippetButtons) {
+				if ( (editSnippetButtons[b]).childElementCount > -1 ) {
+					(editSnippetButtons[b]).addEventListener('click', function(evt) {
+						app.displaySnippet(evt.target.getAttribute('data-snippet-id'), true);
+						evt.preventDefault();
+					});
+				}
+			}
+			
+			// console.log(myContainer);
 			// return snippet;
 		})
 		.catch(function (error) {
