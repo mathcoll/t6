@@ -52,6 +52,7 @@ var app = {
 	},
 	icons: {
 		'color': 'format_color_fill',
+		'copy': 'content_copy',
 		'dashboards': 'dashboard',
 		'datapoints': 'filter_center_focus',
 		'datatypes': 'build',
@@ -1226,10 +1227,46 @@ var containers = {
 		dialog.style.display = 'none';
 		dialog.style.zIndex = '-9999';
 	}; // hideModal
+	
+	app.copyTextToClipboard = function(text, evt) {
+		if ( !navigator.clipboard ) {
+			var copyTextarea = evt.currentTarget.parentNode.querySelector('.copytextarea');
+				copyTextarea.focus();
+				copyTextarea.select();
+			if ( document.execCommand('copy') ) {
+				toast(text+' has been copied to clipboard.', {timeout:3000, type: 'done'});
+				return true;
+			} else {
+				toast('Could not copy text: '+text, {timeout:5000, type: 'warning'});
+				return false;
+			}
+		} else {
+			navigator.clipboard.writeText(text).then(function() {
+				toast(text+' has been copied to clipboard.', {timeout:3000, type: 'done'});
+				return true;
+			}, function(err) {
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
+					console.log('clipboard', 'Could not copy text: ', err);
+				}
+				toast('Could not copy text: '+text, {timeout:5000, type: 'warning'});
+				return false;
+			});
+		}
+	} // copyTextToClipboard
 
 	app.setListActions = function(type) {
 		app.refreshButtonsSelectors();
 		var dialog = document.getElementById('dialog');
+		var copyButtons = document.querySelectorAll('.copy-button');
+		
+		for (var c=0;c<copyButtons.length;c++) {
+			copyButtons[c].addEventListener('click', function(evt) {
+				var myId = evt.currentTarget.dataset.id;
+				app.copyTextToClipboard(myId, evt);
+				evt.preventDefault();
+			});
+		}
+		
 		if ( type == 'objects' ) {
 			for (var d=0;d<buttons.deleteObject.length;d++) {
 				buttons.deleteObject[d].addEventListener('click', function(evt) {
@@ -2899,6 +2936,9 @@ var containers = {
 		element += "				</li>";
 		element += "				<li class=\"mdl-menu__item\">";
 		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+item.id+"</textarea>Copy ID to clipboard</a>";
 		element += "				</li>";
 		element += "			</ul>";
 		element += "		</div>";

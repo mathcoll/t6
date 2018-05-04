@@ -54,6 +54,13 @@ h1.page_title {
 	color: #fff;
 	font-size: 14px;
 }
+textarea.copytextarea {
+	width: 0;
+	height: 0;
+	position: absolute !important;
+	left: -100px !important;
+	right: -100px !important;
+}
 #search-exp::placeholder,
 #filter-exp::placeholder {
 	color: rgba(255,255,255,.6);
