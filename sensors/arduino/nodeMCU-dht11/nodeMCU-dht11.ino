@@ -192,12 +192,9 @@ int16_t getAverage(struct sAverage *ave) {
 }
 
 /*******************************************************
- setup
+ wifi
  *******************************************************/
-void setup() {
-  Serial.begin(115200);
-  delay(10);
-
+void wifi() {
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
@@ -212,11 +209,16 @@ void setup() {
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+  delay(2000);
+}
 
+/*******************************************************
+ setup
+ *******************************************************/
+void setup() {
+  Serial.begin(115200);
+  delay(100);
   dht.begin();
-  readSample();
-
-  getJWToken(); //get authorization key
 }
 
 /*******************************************************
@@ -226,7 +228,7 @@ void pleaseGoToBed() {
     Serial.println();
     Serial.println();
     Serial.println("Sleeping in few seconds...");
-    delay(2000);
+    delay(500);
     ESP.deepSleep(SLEEP_DELAY_IN_SECONDS * 1000000, WAKE_RF_DEFAULT);
 }
 
@@ -236,7 +238,10 @@ void pleaseGoToBed() {
 void loop() {
   readSample();
   
+  wifi();
+  
   if(WiFi.status()== WL_CONNECTED) {
+    getJWToken(); //get authorization key
     if ( !privateKey || authorized == false ) {
       //getJWToken();
     }
@@ -307,6 +312,6 @@ void loop() {
     // ------------------------------------------------------------ END HUMIDITY
   }
 
-  delay(15000);
+  delay(6000); // to get the answer
   pleaseGoToBed();
 }
