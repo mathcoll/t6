@@ -320,6 +320,7 @@ router.post('/', function (req, res) {
  * 
  * @apiParam {String{128}} [memo] Free memo string
  * 
+ * @apiUse Auth
  * @apiUse 201
  * @apiUse 403
  * @apiUse 412
