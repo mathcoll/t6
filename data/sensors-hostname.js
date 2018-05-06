@@ -6,7 +6,9 @@ var defaultAPI = 'http://127.0.0.1:3000/v2.0.1/';
 
 var config = {
 	/* JWT Auth */
-	auth: { "username": "", "password": "" },
+		auth: { "api_key": "xxxxxxxxx", "api_secret": "xxxxxxxxx", "grant_type": "access_token" },
+		// either you can also use our own credentials 
+		//auth: { "username": "", "password": "", "grant_type": "password" },
 	sensors: {
 		'config-name-1': {
 			'api': defaultAPI,
