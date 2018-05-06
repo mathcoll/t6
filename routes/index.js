@@ -228,23 +228,28 @@ router.all('*', function (req, res, next) {
 
 
 /**
- * @api {post} /authenticate Create a JWT Token
- * @apiName Create a JWT Token
+ * @api {post} /authenticate Authenticate to create a JWT Token
+ * @apiName Authenticate to create a JWT Token
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
+ * @apiParam {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
  * @apiParam {String} username Your own username
  * @apiParam {String} password Your own password
+ * @apiParam {String} api_key In "access_token" context, Client Api Key
+ * @apiParam {String} api_secret In "access_token" context, Client Api Secret
+ * @apiParam {String} refresh_token The refresh_token you want to use in order to get a new token
  * @apiUse 200
+ * @apiUse 400
  * @apiUse 401
  * @apiUse 403
  * @apiUse 500
  */
 router.post('/authenticate', function (req, res) {
-	var email = req.body.username;
-	var password = req.body.password;
-	
-	if ( email && password ) {
+	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === 'password') ) {
+		var email = req.body.username;
+		var password = req.body.password;
+		
 		var queryU = {
 		'$and': [
 					{ 'email': email },
@@ -253,39 +258,95 @@ router.post('/authenticate', function (req, res) {
 				]
 		};
 		var user = users.findOne(queryU);
-	}
-	if ( !user || !email || !password ) {
-        return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));
-    } else {
-		var geo = geoip.lookup(req.ip);
-		if ( user.location === undefined || user.location === null ) {
-			user.location = {geo: geo, ip: req.ip,};
+		if ( !user || !email || !password ) {
+	        return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));
+	    } else {
+			var geo = geoip.lookup(req.ip);
+			if ( user.location === undefined || user.location === null ) {
+				user.location = {geo: geo, ip: req.ip,};
+			}
+			users.update(user);
+			db.save();
+	    	
+	    	var payload = JSON.parse(JSON.stringify(user));
+	    	payload.permissions = undefined;
+	    	payload.token = undefined;
+	    	payload.password = undefined;
+	    	payload.gravatar = undefined;
+	    	payload.meta = undefined;
+	    	payload.$loki = undefined;
+	    	payload.token_type = "Bearer";
+	    	payload.scope = "Application";
+	    	payload.sub = '/users/'+user.id;
+	    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
+	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+	        
+	        // Add the refresh token to the list
+	        /*
+	    	tokens	= db.getCollection('tokens');
+	    	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
+	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+	    	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
+	    	*/
+	        return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
+	    }
+	} else if ( ( req.body.api_key && req.body.api_secret ) && req.body.grant_type === 'access_token' ) {
+		var tokens	= db.getCollection('tokens');
+		var queryT = {
+		'$and': [
+					{ 'key': req.body.api_key },
+					{ 'secret': req.body.api_secret },
+				]
+		};
+		var user = users.findOne({ 'id': tokens.findOne(queryT).user_id });
+		if ( !user ) {
+	        return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}));
+	    } else {
+			var geo = geoip.lookup(req.ip);
+			if ( user.location === undefined || user.location === null ) {
+				user.location = {geo: geo, ip: req.ip,};
+			}
+			users.update(user);
+			db.save();
+	    	
+	    	var payload = JSON.parse(JSON.stringify(user));
+	    	payload.permissions = undefined;
+	    	payload.token = undefined;
+	    	payload.password = undefined;
+	    	payload.gravatar = undefined;
+	    	payload.meta = undefined;
+	    	payload.$loki = undefined;
+	    	payload.token_type = "Bearer";
+	    	payload.scope = "ClientApi";
+	    	payload.sub = '/users/'+user.id;
+	    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
+	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+	        
+	        // Add the refresh token to the list
+	        /*
+	    	tokens	= db.getCollection('tokens');
+	    	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
+	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+	    	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
+	    	*/
+	        return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
+	    }
+		return res.status(500).send(new ErrorSerializer({'id': 102.2, 'code': 500, 'message': 'Not implemented'}));
+	}  else if ( req.body.refresh_token && req.body.grant_type === 'refresh_token' ) {
+		// TODO
+		// Get the refresh_token and check its content
+		/*
+		if ( refresh_token is valid ) {
+			// Sign a new token
+		} else {
+			return res.status(400).send(new ErrorSerializer({'id': 102.4, 'code': 400, 'message': 'Invalid Refresh Token'}));
 		}
-		users.update(user);
-		db.save();
-    	
-    	var payload = JSON.parse(JSON.stringify(user));
-    	payload.permissions = undefined;
-    	payload.token = undefined;
-    	payload.password = undefined;
-    	payload.gravatar = undefined;
-    	payload.meta = undefined;
-    	payload.$loki = undefined;
-    	payload.token_type = "Bearer";
-    	payload.scope = "Application";
-    	payload.sub = '/users/'+user.id;
-    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
-        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-        
-        // Add the refresh token to the list
-        /*
-    	tokens	= db.getCollection('tokens');
-    	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
-    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
-    	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
-    	*/
-        return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
-    }
+		*/
+		return res.status(500).send(new ErrorSerializer({'id': 102.2, 'code': 500, 'message': 'Not implemented'}));
+	} else {
+		// TODO
+        return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}));
+	}
 });
 
 

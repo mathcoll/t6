@@ -188,45 +188,6 @@ router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 });
 
 /**
- * @api {post} /users/me/token Create New Token DEPRECATED
- * @apiName Create New Token DEPRECATED
- * @apiGroup User
- * @apiVersion 2.0.1
- * @apiDescription DEPRECATED. Please use (#User:Create a JWT Token)
- * 
- * @apiParam {String} key API_KEY.
- * @apiParam {String} secret API_SECRET.
- * 
- * @apiUse 201
- * @apiUse 400
- * @apiUse 403
- * @apiUse 429
- */
-router.post('/me/token', function (req, res) {
-	var API_KEY		= req.params.key!==undefined?req.params.key:req.body.key;
-	var API_SECRET	= req.params.secret!==undefined?req.params.secret:req.body.secret;
-	if ( API_KEY && API_SECRET ) {
-		var queryU = {
-		'$and': [
-					{ 'key': API_KEY },
-					{ 'secret': API_SECRET },
-				]
-		};
-		users = db.getCollection('users');
-		var user = users.findOne(queryU);
-		//console.log(users);
-		if ( user ) {
-			var token = jwt.sign(user, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-			return res.status(200).json( {status: 'ok', token: token} );
-		} else {
-			res.status(404).send(new ErrorSerializer({'id': 11,'code': 404, 'message': 'Not Found'}).serialize());
-		}
-	} else {
-		res.status(403).send(new ErrorSerializer({'id': 12,'code': 403, 'message': 'Forbidden'}).serialize());
-	}	
-});
-
-/**
  * @api {get} /users/me/token Get self Current Token
  * @apiName Get self Current Token
  * @apiGroup User
@@ -348,6 +309,51 @@ router.post('/', function (req, res) {
 
 		res.header('Location', '/v'+version+'/users/'+new_user.id);
 		res.status(201).send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token }); // TODO: missing serializer
+	}
+});
+
+/**
+ * @api {post} /users/generateKeySecret Generate Key+Secret
+ * @apiName Generate Key+Secret
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {String{128}} [memo] Free memo string
+ * 
+ * @apiUse 201
+ * @apiUse 403
+ * @apiUse 412
+ * @apiUse 429
+ */
+router.post('/generateKeySecret', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user !== undefined ) {
+		if ( !req.user.id ) {
+			res.status(412).send(new ErrorSerializer({'id': 203,'code': 412, 'message': 'Precondition Failed'}).serialize());
+		} else {
+			var new_token = {
+				user_id:			req.user.id,
+				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
+				memo:				(req.body.memo).substring(0, 128),
+		        expiration:			moment().add(24, 'hours').format('X'),
+			};
+			var tokens	= db.getCollection('tokens');
+			var expired = tokens.find(
+				{ '$and': [
+			           {'user_id' : req.user.id},
+			           { 'expiration' : { '$lt': moment().format('x') } },
+			           { 'expiration' : { '$ne': '' } },
+				]}
+			);
+			if ( expired ) {
+				tokens.remove(expired);
+				db.save();
+			}
+			tokens.insert(new_token);
+			res.status(201).send({ 'code': 201, message: 'Created', token: new_token });
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 204,'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
 

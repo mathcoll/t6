@@ -284,6 +284,7 @@ pre code.sample-request-response-json {
   padding: 16px 20px 10px 20px;
   background-color: #F5F5F5;
   z-index: 11;
+  top: 60px;
 }
 
 .sidenav-search .search {
