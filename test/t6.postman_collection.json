@@ -2,6 +2,7 @@
 	"info": {
 		"_postman_id": "f31f497e-f493-7ba1-aeb3-ac86ca206a80",
 		"name": "t6",
+		"description": "t6 API first: Live, eat, and breathe the API-first lifestyle of t6.\n\nt6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -10,7 +11,7 @@
 			"description": "",
 			"item": [
 				{
-					"name": "authenticate",
+					"name": "authenticate with Credentials",
 					"event": [
 						{
 							"listen": "test",
@@ -33,7 +34,46 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"username\": \"{{username}}\", \"password\": \"{{password}}\"}"
+							"raw": "{\"username\": \"{{username}}\", \"password\": \"{{password}}\", \"grant_type\": \"password\"}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authenticate, Client Api Key",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"api_key\": \"{{api_key}}\", \"api_secret\": \"{{api_secret}}\", \"grant_type\": \"access_token\"}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
@@ -463,6 +503,104 @@
 					"response": []
 				},
 				{
+					"name": "Generate Access Tokens",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d9939ada-c477-47f3-a94a-6a89acef0865",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"api_key\", response.accessToken.data.attributes.key);",
+									"postman.setEnvironmentVariable(\"api_secret\", response.accessToken.data.attributes.secret);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"memo\": \"12313213\"}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/accessTokens",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								"accessTokens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Access Tokens",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c0c195e-3247-4b1d-ac4f-50f6e4ea02b7",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"memo\": \"this is a memo\"}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/accessTokens",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								"accessTokens"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Edit User",
 					"event": [
 						{
@@ -561,14 +699,106 @@
 		{
 			"name": "DataPoint",
 			"description": "",
-			"item": []
+			"item": [
+				{
+					"name": "Create a DataPoint",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "12f584aa-6882-4851-b29a-760e179acfd0",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"value\": \"48.126;2.3096\",\n  \"publish\": \"false\",\n  \"save\": \"true\",\n  \"unit\": \"\",\n  \"mqtt_topic\": \"\",\n  \"text\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"data",
+								"cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Datapoints",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/ce40b2f3-56bc-4946-910d-8d8b2835a177?limit=100&sort=desc",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"data",
+								"ce40b2f3-56bc-4946-910d-8d8b2835a177"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100"
+								},
+								{
+									"key": "sort",
+									"value": "desc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
 			"name": "Object",
 			"description": "",
 			"item": [
 				{
-					"name": "Get Objects",
+					"name": "Get objects list",
 					"request": {
 						"method": "GET",
 						"header": [
@@ -605,6 +835,39 @@
 									"key": "size",
 									"value": "20"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get an object",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/fbbc628f-ef61-47ae-88cc-1ec3b13fed0a",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"objects",
+								"fbbc628f-ef61-47ae-88cc-1ec3b13fed0a"
 							]
 						}
 					},
@@ -737,17 +1000,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"description\": \"My object updated description\",\n    \"ipv4\": \"127.0.0.2\",\n    \"ipv6\": \"2001:0db8:0000:85a3:0000:0000:ac1f:8001\",\n    \"name\": \"My Object updated\",\n    \"position\": \"BedRoom\",\n    \"type\": \"phone\",\n    \"longitude\": \"\",\n    \"latitude\": \"\",\n    \"is_public\": \"true\"\n}"
+							"raw": "{\n    \"name\": \"Localized Object\",\n    \"user_id\": \"dd3a09d6-54b3-4336-a147-1971a3b3261b\",\n    \"type\": \"smartphone\",\n    \"description\": \"This object is localized\",\n    \"position\": \"\",\n    \"ipv4\": \"\",\n    \"ipv6\": \"\",\n    \"is_public\": \"false\",\n    \"longitude\": \"\",\n    \"latitude\": \"\",\n    \"meta\": {\n        \"revision\": 5\n    }\n}"
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/7983e13a-7986-4403-a011-2304d1a87968",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/fbbc628f-ef61-47ae-88cc-1ec3b13fed0a",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
 								"objects",
-								"7983e13a-7986-4403-a011-2304d1a87968"
+								"fbbc628f-ef61-47ae-88cc-1ec3b13fed0a"
 							]
 						}
 					},
@@ -1072,6 +1335,42 @@
 					"response": []
 				},
 				{
+					"name": "Edit a Snippet",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"My Simple Clock\",\n    \"user_id\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\",\n    \"type\": \"clock\",\n    \"icon\": \"fa fa-bullhorn\",\n    \"color\": \"#ffffff\",\n    \"flows\": []\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/5d6c49dc-5ca0-4b72-8ffa-3a8f2b307fd2",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"snippets",
+								"5d6c49dc-5ca0-4b72-8ffa-3a8f2b307fd2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete a snippet",
 					"request": {
 						"method": "DELETE",
@@ -1203,6 +1502,28 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "0575d412-2ed4-491d-84be-eff76747d167",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "3acebc4c-eb3e-46d8-89ca-d196f99e859f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
