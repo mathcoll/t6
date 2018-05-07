@@ -4,6 +4,7 @@ var router = express.Router();
 var UserSerializer = require('../serializers/user');
 var PermissionSerializer = require('../serializers/permission');
 var ErrorSerializer = require('../serializers/error');
+var AccessTokenSerializer = require('../serializers/accessToken');
 var users;
 var tokens;
 
@@ -134,7 +135,7 @@ router.get('/changePassword', expressJwt({secret: jwtsettings.secret}), function
 			});
 			res.status(200).send(new UserSerializer(json).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
+			res.status(200).send(new UserSerializer(users.chain().find().simplesort('subscription_date', true).data()).serialize());
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());
@@ -158,6 +159,28 @@ router.get('/list', expressJwt({secret: jwtsettings.secret}), function (req, res
 		
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 502, 'code': 401, 'message': 'Unauthorized'}).serialize());
+	}
+});
+
+/**
+ * @api {get} /users/accessTokens Get Key+Secret list
+ * @apiName Get Key+Secret list
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiUse 201
+ * @apiUse 403
+ * @apiUse 412
+ * @apiUse 429
+ */
+router.get('/accessTokens', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user !== undefined ) {
+		tokens	= db.getCollection('tokens');
+		var accessTokens = tokens.chain().find({'user_id': req.user.id}).simplesort('expiration', true).data();
+		res.status(200).send(new AccessTokenSerializer(accessTokens).serialize());
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 204,'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
 
@@ -313,8 +336,8 @@ router.post('/', function (req, res) {
 });
 
 /**
- * @api {post} /users/generateKeySecret Generate Key+Secret
- * @apiName Generate Key+Secret
+ * @api {post} /users/accessTokens Generate Access Tokens
+ * @apiName Generate Access Tokens
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -326,7 +349,7 @@ router.post('/', function (req, res) {
  * @apiUse 412
  * @apiUse 429
  */
-router.post('/generateKeySecret', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post('/accessTokens', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user !== undefined ) {
 		if ( !req.user.id ) {
 			res.status(412).send(new ErrorSerializer({'id': 203,'code': 412, 'message': 'Precondition Failed'}).serialize());
@@ -336,9 +359,11 @@ router.post('/generateKeySecret', expressJwt({secret: jwtsettings.secret}), func
 				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				memo:				(req.body.memo).substring(0, 128),
-		        expiration:			moment().add(24, 'hours').format('X'),
+		        expiration:			moment().add(24, 'hours').format('x'),
 			};
 			var tokens	= db.getCollection('tokens');
+			tokens.insert(new_token);
+			db.save();
 			var expired = tokens.find(
 				{ '$and': [
 			           {'user_id' : req.user.id},
@@ -350,8 +375,7 @@ router.post('/generateKeySecret', expressJwt({secret: jwtsettings.secret}), func
 				tokens.remove(expired);
 				db.save();
 			}
-			tokens.insert(new_token);
-			res.status(201).send({ 'code': 201, message: 'Created', token: new_token });
+			res.status(201).send({ 'code': 201, 'id': 201.1, message: 'Created', accessToken: new AccessTokenSerializer(new_token).serialize() });
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 204,'code': 403, 'message': 'Forbidden'}).serialize());

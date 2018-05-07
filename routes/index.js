@@ -298,40 +298,42 @@ router.post('/authenticate', function (req, res) {
 					{ 'secret': req.body.api_secret },
 				]
 		};
-		var user = users.findOne({ 'id': tokens.findOne(queryT).user_id });
-		if ( !user ) {
-	        return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}));
-	    } else {
+		if ( tokens.findOne(queryT) ) {
+			var user = users.findOne({ 'id': tokens.findOne(queryT).user_id });
 			var geo = geoip.lookup(req.ip);
+			
 			if ( user.location === undefined || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			users.update(user);
 			db.save();
-	    	
-	    	var payload = JSON.parse(JSON.stringify(user));
-	    	payload.permissions = undefined;
-	    	payload.token = undefined;
-	    	payload.password = undefined;
-	    	payload.gravatar = undefined;
-	    	payload.meta = undefined;
-	    	payload.$loki = undefined;
-	    	payload.token_type = "Bearer";
-	    	payload.scope = "ClientApi";
-	    	payload.sub = '/users/'+user.id;
-	    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
-	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-	        
-	        // Add the refresh token to the list
-	        /*
+			
+			var payload = JSON.parse(JSON.stringify(user));
+			payload.permissions = undefined;
+			payload.token = undefined;
+			payload.password = undefined;
+			payload.gravatar = undefined;
+			payload.meta = undefined;
+			payload.$loki = undefined;
+			payload.token_type = "Bearer";
+			payload.scope = "ClientApi";
+			payload.sub = '/users/'+user.id;
+			if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			
+			// Add the refresh token to the list
+			/*
 	    	tokens	= db.getCollection('tokens');
 	    	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
 	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
 	    	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
-	    	*/
-	        return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
-	    }
-		return res.status(500).send(new ErrorSerializer({'id': 102.2, 'code': 500, 'message': 'Not implemented'}));
+			 */
+			return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
+			
+		} else {
+			return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}).serialize());
+			
+		}
 	}  else if ( req.body.refresh_token && req.body.grant_type === 'refresh_token' ) {
 		// TODO
 		// Get the refresh_token and check its content
@@ -339,13 +341,13 @@ router.post('/authenticate', function (req, res) {
 		if ( refresh_token is valid ) {
 			// Sign a new token
 		} else {
-			return res.status(400).send(new ErrorSerializer({'id': 102.4, 'code': 400, 'message': 'Invalid Refresh Token'}));
+			return res.status(400).send(new ErrorSerializer({'id': 102.4, 'code': 400, 'message': 'Invalid Refresh Token'}).serialize());
 		}
 		*/
-		return res.status(500).send(new ErrorSerializer({'id': 102.2, 'code': 500, 'message': 'Not implemented'}));
+		return res.status(500).send(new ErrorSerializer({'id': 102.2, 'code': 500, 'message': 'Not implemented'}).serialize());
 	} else {
 		// TODO
-        return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}));
+        return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}).serialize());
 	}
 });
 
