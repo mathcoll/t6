@@ -95,6 +95,7 @@ var units			= require('./routes/units');
 var datatypes		= require('./routes/datatypes');
 var www				= require('./routes/www');
 var pwa				= require('./routes/pwa');
+var notifications	= require('./routes/notifications');
 var app				= express();
 
 /* Logging */
@@ -150,6 +151,7 @@ app.use('/v'+version+'/flows', flows);
 app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
+app.use('/v'+version+'/notifications', notifications);
 app.use('/old', www);
 app.use('/', pwa);
 
@@ -167,12 +169,7 @@ app.use(function(req, res, next) {
 });
 
 if (app.get('env') === 'development') {
-	// development error handler
 	app.use(function(err, req, res, next) {
-		//var token = req.headers.authorization.split(" ")[1];
-		//console.log("token === "+token);
-		//console.log("decode === "+jwt.decode(token, jwtsettings.secret));
-		//console.log("verify === "+jwt.verify(token, jwtsettings.secret));
 		if (err.name === 'UnauthorizedError') {
 			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token...'+err.message, 'stack': err.stack }).end();
 		} else if (err.name === 'TokenExpiredError') {
@@ -186,7 +183,6 @@ if (app.get('env') === 'development') {
 		}
 	});
 } else {
-	// production error handler
 	app.use(function(err, req, res, next) {
 		if (err.name === 'UnauthorizedError') {
 			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token' }).end();
