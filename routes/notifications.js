@@ -28,19 +28,25 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 	   	           {'subscription_date': { '$lte': moment().subtract(7, 'days') }},
 	 	           {'reminderMail': undefined},
 	 	           {'token': null},
-	 	           //  List-Unsubscribe-Post: List-Unsubscribe=One-Click
+	   	           {'unsubscription.reminder': undefined},
 	 			]};
 		var json = users.find( query );
+		
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
 			json.forEach(function(user) {
-				//console.log(user.firstName+' '+user.lastName+' <'+user.email+'>');
 				res.render('emails/reminder', {user: user}, function(err, html) {
 					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
 					var mailOptions = {
 						from: from,
 						bcc: bcc,
 						to: to,
+						list: {
+					        unsubscribe: {
+					            url: baseUrl_https+'/mail/'+to+'/unsubscribe/reminder',
+					            comment: 'Unsubscribe from this notification'
+					        },
+						},
 						subject: 't6 Reminder',
 						text: 'Html email client is required',
 						html: html

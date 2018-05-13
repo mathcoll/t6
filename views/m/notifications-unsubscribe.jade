@@ -1,0 +1,10 @@
+-if ( list != null )
+  p Email 
+    strong #{mail} 
+    | have successfully been removed from the list 
+    strong #{list}
+    | .
+  p Unsubscribe Date: #{moment(user.unsubscription.reminder*1).format('DD/MM/YYYY, HH:mm')} (#{user.unsubscription.reminder})
+-else
+  p Something goes wrong. Your request have not been taken into account.
+-endif
