@@ -43,7 +43,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 						to: to,
 						list: {
 					        unsubscribe: {
-					            url: baseUrl_https+'/mail/'+to+'/unsubscribe/reminder',
+					            url: baseUrl_https+'/mail/'+to+'/unsubscribe/reminder/',
 					            comment: 'Unsubscribe from this notification'
 					        },
 						},

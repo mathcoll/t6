@@ -16,15 +16,16 @@ router.get('/', function(req, res) {
 	});
 });
 
-router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)", function(req, res) {
+router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
 	
-	if ( list == 'listName' || list == 'reminder' ) {
+	if ( list == 'listName' || list == 'reminder' ) {
 		users	= db.getCollection('users');
 		var result;
 		
 		users.chain().find({ 'email': mail }).update(function(user) {
+			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:new Array();
 			user.unsubscription[list] = moment().format('x');
 			result = user;
 		});
@@ -60,6 +61,16 @@ router.get('/networkError', function(req, res) {
 		currentUrl: req.path,
 		user: req.session.user
 	});
+});
+
+router.get('/debug-notifications/:mail', expressJwt({secret: jwtsettings.secret}), function(req, res) {
+	var mail = req.params.mail;
+	if ( req.user.role === 'admin' ) {
+		res.render('emails/'+mail, {
+			currentUrl: req.path,
+			user: req.user
+		});
+	}
 });
 
 
