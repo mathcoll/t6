@@ -21,14 +21,14 @@ var tokens;
  * @apiUse 404
  */
 router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role === 'admin' && process.env.NODE_ENV === 'production' ) {
+	if ( req.user.role === 'admin' && process.env.NODE_ENV === 'development' ) {
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
 		var query = { '$and': [
 	   	           {'subscription_date': { '$lte': moment().subtract(7, 'days') }},
 	 	           {'reminderMail': undefined},
 	 	           {'token': null},
-	   	           {'unsubscription.reminder': undefined},
+	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.reminder': undefined}] },
 	 			]};
 		var json = users.find( query );
 		
@@ -43,7 +43,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 						to: to,
 						list: {
 					        unsubscribe: {
-					            url: baseUrl_https+'/mail/'+to+'/unsubscribe/reminder/',
+					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/reminder/',
 					            comment: 'Unsubscribe from this notification'
 					        },
 						},
@@ -51,26 +51,31 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 						text: 'Html email client is required',
 						html: html
 					};
-					transporter.sendMail(mailOptions, function(err, info){
-					    if( err ){
-							var err = new Error('Internal Error');
-							err.status = 500;
-							res.status(err.status || 500).render(err.status, {
-								title : 'Internal Error'+app.get('env'),
-								user: req.session.user,
-								currentUrl: req.path,
-								err: err
-							});
-					    } else {
-							users.findAndUpdate(
-								function(i){return i.id==user.id;},
-								function(item){
-									item.reminderMail = parseInt(moment().format('x'));
-								}
-							);
-							db.save();
-					    }
-					});
+					if ( process.env.NODE_ENV === 'production' ) {
+						transporter.sendMail(mailOptions, function(err, info){
+						    if( err ){
+								var err = new Error('Internal Error');
+								err.status = 500;
+								res.status(err.status || 500).render(err.status, {
+									title : 'Internal Error'+app.get('env'),
+									user: req.session.user,
+									currentUrl: req.path,
+									err: err
+								});
+						    } else {
+								users.findAndUpdate(
+									function(i){return i.id==user.id;},
+									function(item){
+										item.reminderMail = parseInt(moment().format('x'));
+									}
+								);
+								db.save();
+						    }
+						});
+					} else {
+						mailOptions.html = null;
+						console.log("DEBUG for development", mailOptions);
+					}
 				});
 			});
 			res.status(200).send(new UserSerializer(json).serialize());
