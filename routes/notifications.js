@@ -194,7 +194,7 @@ router.post('/resetAllUsersTokens', expressJwt({secret: jwtsettings.secret}), fu
 	if ( req.user.role === 'admin' ) {
 		users	= db.getCollection('users');
 		users.chain().find().update(function(user) {
-			user.unsubscription_token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');;
+			user.unsubscription_token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
 		});
 		db.save();
 		res.status(200).send({'status': 'done'});
