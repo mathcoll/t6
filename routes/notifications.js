@@ -8,6 +8,16 @@ var AccessTokenSerializer = require('../serializers/accessToken');
 var users;
 var tokens;
 
+router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(req, res) {
+	var mail = req.params.mail;
+	if ( req.user.role === 'admin' ) {
+		res.render('emails/'+mail, {
+			currentUrl: req.path,
+			user: req.user
+		});
+	}
+});
+
 /**
  * @api {get} /notifications/mail/reminder Send reminder Email to Users
  * @apiName Send reminder Email to Users
@@ -107,6 +117,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 		           {'$or': [{'passwordLastUpdated': { '$lte': moment().subtract(3, 'months') }}, {passwordLastUpdated: undefined}]},
 	 	           {'changePasswordMail': { '$lte': moment().subtract(3, 'months') }},
 	 	           {'token': null},
+	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.changePassword': undefined}] },
 	 			]};
 		var json = users.find( query );
 		if ( json.length > 0 ) {
@@ -119,30 +130,41 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 						from: from,
 						bcc: bcc,
 						to: to,
+						list: {
+					        unsubscribe: {
+					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/changePassword/',
+					            comment: 'Unsubscribe from this notification'
+					        },
+						},
 						subject: 't6 Password Expiration',
 						text: 'Html email client is required',
 						html: html
 					};
-					transporter.sendMail(mailOptions, function(err, info){
-					    if( err ){
-							var err = new Error('Internal Error');
-							err.status = 500;
-							res.status(err.status || 500).render(err.status, {
-								title : 'Internal Error'+app.get('env'),
-								user: req.session.user,
-								currentUrl: req.path,
-								err: err
-							});
-					    } else {
-							users.findAndUpdate(
-								function(i){return i.id==user.id;},
-								function(item){
-									item.changePasswordMail = parseInt(moment().format('x'));
-								}
-							);
-							db.save();
-					    }
-					});
+					if ( process.env.NODE_ENV === 'production' ) {
+						transporter.sendMail(mailOptions, function(err, info){
+						    if( err ){
+								var err = new Error('Internal Error');
+								err.status = 500;
+								res.status(err.status || 500).render(err.status, {
+									title : 'Internal Error'+app.get('env'),
+									user: req.session.user,
+									currentUrl: req.path,
+									err: err
+								});
+						    } else {
+								users.findAndUpdate(
+									function(i){return i.id==user.id;},
+									function(item){
+										item.changePasswordMail = parseInt(moment().format('x'));
+									}
+								);
+								db.save();
+						    }
+						});
+					} else {
+						mailOptions.html = null;
+						console.log("DEBUG for development", mailOptions);
+					}
 				});
 			});
 			res.status(200).send(new UserSerializer(json).serialize());

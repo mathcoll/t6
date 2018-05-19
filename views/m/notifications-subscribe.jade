@@ -1,7 +1,7 @@
 -if ( list != null )
   p Email 
     strong #{mail} 
-    | have successfully been removed from the list 
+    | have successfully been added to the list 
     strong #{list}
     | .
   p Your subscriptions:
@@ -23,7 +23,7 @@
       -endif
       
       li Security notification related to your account
-      
+
 -else
   p Something goes wrong. Your request have not been taken into account.
 -endif
