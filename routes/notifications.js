@@ -15,6 +15,8 @@ router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(re
 			currentUrl: req.path,
 			user: req.user
 		});
+	} else {
+		res.status(403).send({'error': 'You should be an Admin!'});
 	}
 });
 
@@ -53,7 +55,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 						to: to,
 						list: {
 					        unsubscribe: {
-					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/reminder/',
+					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/reminder/'+user.unsubscription_token+'/',
 					            comment: 'Unsubscribe from this notification'
 					        },
 						},
@@ -132,7 +134,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 						to: to,
 						list: {
 					        unsubscribe: {
-					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/changePassword/',
+					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/changePassword/'+user.unsubscription_token+'/',
 					            comment: 'Unsubscribe from this notification'
 					        },
 						},
@@ -171,6 +173,31 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 		} else {
 			res.status(200).send(new UserSerializer(users.chain().find().simplesort('subscription_date', true).data()).serialize());
 		}
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
+ * @api {post} /notifications/resetAllUsersTokens Reset tokens for all users
+ * @apiName Reset tokens for all users
+ * @apiGroup 8. Notifications to Users
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post('/resetAllUsersTokens', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role === 'admin' ) {
+		users	= db.getCollection('users');
+		users.chain().find().update(function(user) {
+			user.unsubscription_token = passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.');;
+		});
+		db.save();
+		res.status(200).send({'status': 'done'});
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());
 	}

@@ -31,15 +31,16 @@ router.get('/networkError', function(req, res) {
 });
 
 
-router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/", function(req, res) {
+router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
+	var unsubscription_token = req.params.unsubscription_token;
 	
 	if ( list == 'changePassword' || list == 'reminder' ) {
 		users	= db.getCollection('users');
 		var result;
-		
-		users.chain().find({ 'email': mail }).update(function(user) {
+
+		users.chain().find({ 'email': mail, 'unsubscription_token': unsubscription_token }).update(function(user) {
 			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:new Array();
 			user.unsubscription[list] = moment().format('x');
 			result = user;
@@ -53,26 +54,19 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/", function(req, 
 			list: list,
 			moment: moment,
 		});
-	} else {
-		res.render('m/notifications-unsubscribe', {
-			currentUrl: req.path,
-			user: null,
-			mail: mail,
-			list: null,
-			moment: moment,
-		});
 	}
 });
 
-router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/", function(req, res) {
+router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
+	var unsubscription_token = req.params.unsubscription_token;
 	
 	if ( list == 'changePassword' || list == 'reminder' ) {
 		users	= db.getCollection('users');
 		var result;
 		
-		users.chain().find({ 'email': mail }).update(function(user) {
+		users.chain().find({ 'email': mail, 'unsubscription_token': unsubscription_token }).update(function(user) {
 			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:new Array();
 			user.unsubscription[list] = null;
 			result = user;
@@ -84,14 +78,6 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/", function(req, re
 			user: result,
 			mail: mail,
 			list: list,
-			moment: moment,
-		});
-	} else {
-		res.render('m/notifications-subscribe', {
-			currentUrl: req.path,
-			user: null,
-			mail: mail,
-			list: null,
 			moment: moment,
 		});
 	}

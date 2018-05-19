@@ -6,20 +6,20 @@
     | .
   p Your subscriptions:
     ul
-      -if ( user.unsubscription.reminder > 0 )
+      -if ( user && user.unsubscription.reminder > 0 )
         li Reminder Welcome email - 
-          a(href="../../subscribe/reminder/") Subscribe
+          a(href="../../../subscribe/reminder/#{user.unsubscription_token}/") Subscribe
       -else
         li Reminder Welcome email - 
-          a(href="../../unsubscribe/reminder/") Unsubscribe
+          a(href="../../../unsubscribe/reminder/#{user.unsubscription_token}/") Unsubscribe
       -endif
       
-      -if ( user.unsubscription.changePassword > 0 )
+      -if ( user && user.unsubscription.changePassword > 0 )
         li Reminder to change Password - 
-          a(href="../../subscribe/changePassword/") Subscribe
+          a(href="../../../subscribe/changePassword/#{user.unsubscription_token}/") Subscribe
       -else
         li Reminder to change Password - 
-          a(href="../../unsubscribe/changePassword/") Unsubscribe
+          a(href="../../../unsubscribe/changePassword/#{user.unsubscription_token}/") Unsubscribe
       -endif
       
       li Security notification related to your account
