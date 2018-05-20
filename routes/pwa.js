@@ -41,10 +41,11 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 		var result;
 
 		users.chain().find({ 'email': mail, 'unsubscription_token': unsubscription_token }).update(function(user) {
-			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:new Array();
-			user.unsubscription[list] = moment().format('x');
+			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:{};
+			user.unsubscription[''+list] = moment().format('x');
 			result = user;
 		});
+		
 		db.save();
 		
 		res.render('m/notifications-unsubscribe', {
@@ -65,10 +66,10 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 	if ( list == 'changePassword' || list == 'reminder' ) {
 		users	= db.getCollection('users');
 		var result;
-		
+
 		users.chain().find({ 'email': mail, 'unsubscription_token': unsubscription_token }).update(function(user) {
-			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:new Array();
-			user.unsubscription[list] = null;
+			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:{};
+			user.unsubscription[''+list] = null;
 			result = user;
 		});
 		db.save();

@@ -22,7 +22,6 @@ router.get('/list', expressJwt({secret: jwtsettings.secret}), function (req, res
 	if ( req.user.role == 'admin' ) {
 		users	= db.getCollection('users');
 		res.status(200).send(new UserSerializer(users.chain().find().simplesort('subscription_date', true).data()).serialize());
-		
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 502, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}
@@ -104,7 +103,6 @@ router.get('/me/token', expressJwt({secret: jwtsettings.secret}), function (req,
 			} else {
 				req.user.gravatar = {};
 			}
-
 			var json = new UserSerializer(req.user).serialize();
 			if ( json !== undefined ) {
 				res.status(200).send(json);

@@ -16,7 +16,29 @@ router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(re
 			user: req.user
 		});
 	} else {
-		res.status(403).send({'error': 'You should be an Admin!'});
+		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden, You should be an Admin!'}).serialize());
+
+	}
+});
+
+/**
+ * @api {get} /notifications/list/unsubscribed Get list of unsubscribed notifications
+ * @apiName Get list of unsubscribed notifications
+ * @apiGroup 8. Notifications to Users
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ */
+router.get('/list/unsubscribed', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var user_id = req.user.id;
+	if ( req.user && user_id ) {
+		users	= db.getCollection('users');
+		var json = users.findOne( { id: user_id } );
+		console.log(json.unsubscription);
+		res.status(200).send({unsubscription: json.unsubscription, unsubscription_token: json.unsubscription_token });
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
 
@@ -33,14 +55,14 @@ router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(re
  * @apiUse 404
  */
 router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role === 'admin' && process.env.NODE_ENV === 'development' ) {
+	if ( req.user.role === 'admin' ) {
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
 		var query = { '$and': [
 	   	           {'subscription_date': { '$lte': moment().subtract(7, 'days') }},
 	 	           {'reminderMail': undefined},
 	 	           {'token': null},
-	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.reminder': undefined}] },
+	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.reminder': undefined}, {'unsubscription.reminder': null}] },
 	 			]};
 		var json = users.find( query );
 		
@@ -112,20 +134,20 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
  * @apiUse 404
  */
 router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role === 'admin' && process.env.NODE_ENV === 'production' ) {
+	if ( req.user.role === 'admin' ) {
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
 		var query = { '$and': [
 		           {'$or': [{'passwordLastUpdated': { '$lte': moment().subtract(3, 'months') }}, {passwordLastUpdated: undefined}]},
 	 	           {'changePasswordMail': { '$lte': moment().subtract(3, 'months') }},
 	 	           {'token': null},
-	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.changePassword': undefined}] },
+	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.changePassword': undefined}, {'unsubscription.changePassword': null}] },
 	 			]};
 		var json = users.find( query );
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
 			json.forEach(function(user) {
-				//console.log(user.firstName+' '+user.lastName+' <'+user.email+'>' + ' --> ' + user.changePasswordMail + moment(user.changePasswordMail).format('DD/MM/YYYY, HH:mm'));
+				console.log(user.firstName+' '+user.lastName+' <'+user.email+'>' + ' --> ' + user.changePasswordMail + moment(user.changePasswordMail).format('DD/MM/YYYY, HH:mm'));
 				res.render('emails/change-password', {user: user}, function(err, html) {
 					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
 					var mailOptions = {
@@ -171,7 +193,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 			});
 			res.status(200).send(new UserSerializer(json).serialize());
 		} else {
-			res.status(200).send(new UserSerializer(users.chain().find().simplesort('subscription_date', true).data()).serialize());
+			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());

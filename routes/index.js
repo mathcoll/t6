@@ -269,15 +269,17 @@ router.post('/authenticate', function (req, res) {
 			db.save();
 	    	
 	    	var payload = JSON.parse(JSON.stringify(user));
-	    	payload.permissions = undefined;
-	    	payload.token = undefined;
-	    	payload.password = undefined;
-	    	payload.gravatar = undefined;
-	    	payload.meta = undefined;
-	    	payload.$loki = undefined;
-	    	payload.token_type = "Bearer";
-	    	payload.scope = "Application";
-	    	payload.sub = '/users/'+user.id;
+		    	payload.unsubscription = user.unsubscription;
+		    	payload.permissions = undefined;
+		    	payload.token = undefined;
+		    	payload.password = undefined;
+		    	payload.gravatar = undefined;
+		    	payload.meta = undefined;
+		    	payload.$loki = undefined;
+		    	payload.token_type = "Bearer";
+		    	payload.scope = "Application";
+		    	payload.sub = '/users/'+user.id;
+	    	
 	    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
 	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 	        

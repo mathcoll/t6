@@ -844,6 +844,9 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	min-height: 150px;
 	margin: 0 0 1em 0;
 }
+.card-user .card-header {
+	margin: 0 0 1em 0;
+}
 .demo-card-wide.mdl-card {
 	margin: .5em;
 	float: left;

@@ -1037,6 +1037,7 @@ var containers = {
 		} else if ( section === 'profile' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
+			(containers.profile).querySelector('.page-content').innerHTML = "";
 			app.fetchProfile();
 		} else if ( section === 'settings' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
@@ -3254,7 +3255,8 @@ var containers = {
 				node += "		</div>";
 			}
 			node += "	</div>";
-			
+
+			node += "	<div class=\"card-header heading-left\"></div>";
 			node += "	<div class=\"card-body\">";
 			node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
 			node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
@@ -3266,8 +3268,10 @@ var containers = {
 			node += "</div>";
 			node += "</section>";
 
+			node += app.getSubtitle('Gravatar contacts');
 			node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 			node += "<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
+			node += "	<div class=\"card-header heading-left\"></div>";
 			node += "	<div class=\"card-body\">";
 			for (var phone in gravatar.phoneNumbers) {
 				node += app.getField('phone', gravatar.phoneNumbers[phone].type, gravatar.phoneNumbers[phone].value, {type: 'text', isEdit: false});
@@ -3287,9 +3291,11 @@ var containers = {
 			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profileUrl+"\" target=\"_blank\"><i class=\"material-icons\">launch</i>Edit my gravatar</a>";
 			node += "	</div>";
 			node += "</div>";
+			node += "</section>";
+			
 			container.innerHTML = node;
-
 			componentHandler.upgradeDom();
+			
 			document.getElementById('saveProfileButton').addEventListener('click', function(e) {
 				app.onSaveProfileButtonClick();
 			});
@@ -3303,6 +3309,9 @@ var containers = {
 				localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
 			}
 			app.setDrawer();
+			app.fetchUnsubscriptions();
+			app.displayUnsubscriptions((containers.profile).querySelector('.page-content'));
+			
 			if ( user.attributes.role == 'admin' ) {
 				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
 			}
@@ -3314,6 +3323,54 @@ var containers = {
 		});
 		containers.spinner.setAttribute('hidden', true);
 	}; // fetchProfile
+	
+	app.fetchUnsubscriptions = function() {
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+'/'+app.api_version+'/notifications/list/unsubscribed';
+		
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			var notifications = response.unsubscription!==undefined?response.unsubscription:{};
+			localStorage.setItem("notifications.unsubscribed", JSON.stringify(notifications));
+		})
+		.catch(function (error) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
+				toast('fetchUnsubscriptions error' + error, {timeout:3000, type: 'error'});
+			}
+		});
+	} // fetchUnsubscriptions
+	
+	app.displayUnsubscriptions = function(container) {
+		var notifications = JSON.parse(app.getSetting('notifications.unsubscribed'));
+		var node = "";
+		node += app.getSubtitle('Email Notifications');
+		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		node += "<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
+		node += "	<div class=\"card-header heading-left\"></div>";
+		node += "	<div class=\"card-body\">";
+		var value;
+		var isEdit = false;
+		value = notifications.reminder!==null?'false':'true';
+		node += app.getField('mail_outline', 'Reminder Welcome email', value, {type: 'switch', id:'notifications.reminder', isEdit: isEdit});
+		
+		value = notifications.changePassword!==null?'false':'true';
+		node += app.getField('mail_outline', 'Reminder to change Password', value, {type: 'switch', id:'notifications.changePassword', isEdit: isEdit});
+		
+		node += app.getField('mail_outline', 'Security notification related to your account', true, {type: 'switch', id:'notifications.security'});
+		node += "	</div>";
+		node += "</section>";
+		
+		container.innerHTML += node;
+		componentHandler.upgradeDom();
+	} // displayUnsubscriptions
 	
 	app.setSetting = function(name, value) {
 		localStorage.setItem(name, value);
@@ -4068,8 +4125,8 @@ var containers = {
 				localStorage.setItem('bearer', response.token);
 				app.isLogged = true;
 				app.resetSections();
-				// app.getAllUserData();
 				app.fetchProfile();
+				app.fetchUnsubscriptions();
 				if ( window.location.hash && window.location.hash.substr(1) === 'object_add' ) {
 					app.displayAddObject(app.defaultResources.object);
 				} else if ( window.location.hash && window.location.hash.substr(1) === 'flow_add' ) {
@@ -4109,12 +4166,6 @@ var containers = {
 		});
 		app.auth = {};
 	} // authenticate
-	
-	function chainError(error) {
-		console.log(error);
-		throw(error);
-		return Promise.reject(error)
-	}
 
 	app.addMenuItem = function(title, icon, link, position) {
 		var menuElt = document.createElement("a");
@@ -4135,23 +4186,7 @@ var containers = {
 		} else {
 			document.querySelector('#drawer nav.mdl-navigation.menu__list').appendChild(menuElt);
 		}
-	}
-	
-	app.getAllUserData = function() {
-		app.fetchItemsPaginated('objects', undefined, app.itemsPage['objects'], app.itemsSize['objects'])
-			.then(app.fetchItemsPaginated('flows', undefined, app.itemsPage['flows'], app.itemsSize['flows'])
-				.then(app.fetchItemsPaginated('dashboards', undefined, app.itemsPage['dashboards'], app.itemsSize['dashboards'])
-					.then(app.fetchItemsPaginated('snippets', undefined, app.itemsPage['snippets'], app.itemsSize['snippets'])
-						.then(app.fetchItemsPaginated('rules', undefined, app.itemsPage['rules'], app.itemsSize['rules'])
-							.then(app.fetchItemsPaginated('mqtts', undefined, app.itemsPage['mqtts'], app.itemsSize['mqtts'])
-								.then(app.fetchProfile(),
-								chainError).catch(chainError),
-							chainError).catch(chainError),
-						chainError).catch(chainError),
-					chainError).catch(chainError),
-				chainError).catch(chainError),
-			chainError).catch(chainError);
-	} // getAllUserData
+	} // addMenuItem
 
 	app.getSettings = function() {
 		var settings = "";
@@ -4427,6 +4462,8 @@ var containers = {
 		localStorage.setItem('currentUserName', null);
 		localStorage.setItem('currentUserEmail', null);
 		localStorage.setItem('currentUserHeader', null);
+		localStorage.setItem('notifications.unsubscribed', null);
+		(containers.profile).querySelector('.page-content').innerHTML = "";
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
@@ -4546,7 +4583,6 @@ var containers = {
 				}
 				localStorage.setItem('bearer', jwt);
 				app.resetSections();
-				// // //app.getAllUserData();
 				app.setSection('index');
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
@@ -4700,8 +4736,6 @@ var containers = {
 
 	if( localStorage.getItem('bearer') === null || localStorage.getItem('bearer') === undefined || app.auth.username === null ) {
 		app.sessionExpired();
-	} else if( app.auth.username && app.auth.password ) {
-		// // //app.getAllUserData();
 	}
 	
 	app.refreshButtonsSelectors();
