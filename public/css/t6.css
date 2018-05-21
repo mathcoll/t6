@@ -405,6 +405,9 @@ a:focus {
     -o-transition: all 0.4s ease;
     transition: all 0.4s ease;
 }
+.dropdown-menu {
+	left: auto !important;
+}
 .dropdown ul.dropdown-menu {
     border-radius:4px;
     box-shadow:none;
@@ -487,7 +490,7 @@ a:focus {
 }
 .cnrflash-inner
 {
-    /*Set position, make larger then 			container and rotate 45 degrees*/
+    /*Set position, make larger then container and rotate 45 degrees*/
     position: absolute;
     bottom: 0;
     right: 0;

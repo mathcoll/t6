@@ -17,6 +17,14 @@ p {
   color: #808080;
 }
 
+li {
+  line-height: 26px;
+}
+
+.sidenav li {
+  line-height: 10px;
+}
+
 h1 {
   font-weight: normal;
   font-size: 44px;
