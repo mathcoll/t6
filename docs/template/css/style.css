@@ -172,7 +172,7 @@ pre.language-html {
 
 .type {
   font-weight: 600;
-  font-size: 15px;
+  font-size: 11px;
   display: inline-block;
   margin: 0 0 5px 0;
   padding: 4px 5px;
@@ -180,6 +180,7 @@ pre.language-html {
   text-transform: uppercase;
   background-color: #3387CC;
   color: #ffffff;
+  vertical-align: middle;
 }
 
 .type__get {

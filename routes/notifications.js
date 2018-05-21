@@ -8,6 +8,19 @@ var AccessTokenSerializer = require('../serializers/accessToken');
 var users;
 var tokens;
 
+
+/**
+ * @api {get} /notifications/debug/:mail Get html of email
+ * @apiName Get html of email
+ * @apiGroup 8. Notifications (email)
+ * @apiVersion 2.0.1
+ * @apiHeader {String} [Content-Type] text/html
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ */
 router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(req, res) {
 	var mail = req.params.mail;
 	if ( req.user.role === 'admin' ) {
@@ -24,7 +37,7 @@ router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(re
 /**
  * @api {get} /notifications/list/unsubscribed Get list of unsubscribed notifications
  * @apiName Get list of unsubscribed notifications
- * @apiGroup 8. Notifications to Users
+ * @apiGroup 8. Notifications (email)
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -35,7 +48,7 @@ router.get('/list/unsubscribed', expressJwt({secret: jwtsettings.secret}), funct
 	if ( req.user && user_id ) {
 		users	= db.getCollection('users');
 		var json = users.findOne( { id: user_id } );
-		console.log(json.unsubscription);
+		//console.log(json.unsubscription);
 		res.status(200).send({unsubscription: json.unsubscription, unsubscription_token: json.unsubscription_token });
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden'}).serialize());
@@ -45,7 +58,7 @@ router.get('/list/unsubscribed', expressJwt({secret: jwtsettings.secret}), funct
 /**
  * @api {get} /notifications/mail/reminder Send reminder Email to Users
  * @apiName Send reminder Email to Users
- * @apiGroup 8. Notifications to Users
+ * @apiGroup 8. Notifications (email)
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -124,7 +137,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 /**
  * @api {get} /notifications/mail/changePassword Send Password Expiration Email to Users
  * @apiName Send Password Expiration Email to Users
- * @apiGroup 8. Notifications to Users
+ * @apiGroup 8. Notifications (email)
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -203,7 +216,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 /**
  * @api {post} /notifications/resetAllUsersTokens Reset tokens for all users
  * @apiName Reset tokens for all users
- * @apiGroup 8. Notifications to Users
+ * @apiGroup 8. Notifications (email)
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

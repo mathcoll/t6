@@ -228,8 +228,8 @@ router.all('*', function (req, res, next) {
 
 
 /**
- * @api {post} /authenticate Authenticate to create a JWT Token
- * @apiName Authenticate to create a JWT Token
+ * @api {post} /authenticate Authenticate a user and create a JWT Token
+ * @apiName Authenticate a user and create a JWT Token
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
@@ -410,8 +410,8 @@ router.post('/refresh', function (req, res) {
 });
 
 /**
- * @api {get} /status API Status
- * @apiName API Status
+ * @api {get} /status Get API Status
+ * @apiName Get API Status
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
@@ -430,8 +430,8 @@ router.get('/status', function(req, res, next) {
 
 
 /**
- * @api {get} /index PWA index cards
- * @apiName API Cards Index
+ * @api {get} /index Get Cards Index for PWA
+ * @apiName Get Cards Index for PWA
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
@@ -500,8 +500,8 @@ router.get('/index', function(req, res, next) {
 
 
 /**
- * @api {get} /terms PWA Terms & Privacy
- * @apiName API Get Terms & Privacy
+ * @api {get} /terms Get Terms & Privacy for PWA
+ * @apiName Get Terms & Privacy for PWA
  * @apiGroup General
  * @apiVersion 2.0.1
  * 

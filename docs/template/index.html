@@ -74,7 +74,7 @@
         {{/if}}
       {{else}}
         <li class="{{#if hidden}}hide {{/if}}" data-group="{{group}}" data-name="{{name}}" data-version="{{version}}">
-          <a href="#api-{{group}}-{{name}}" class="nav-list-item">{{title}}</a>
+          <a href="#api-{{group}}-{{name}}" class="nav-list-item"><span class="type type__{{toLowerCase type}}">{{toLowerCase type}}</span> {{title}}</a>
         </li>
       {{/if}}
     {{/if}}
