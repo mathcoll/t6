@@ -30,7 +30,20 @@ router.get('/networkError', function(req, res) {
 	});
 });
 
-
+/**
+ * @api {get} /mail/:mail/unsubscribe/:list/:unsubscription_token/ Unsubscribe from a Notification list
+ * @apiName Unsubscribe from a Notification list
+ * @apiGroup 8. Notifications (email)
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {string} mail Email address from the user
+ * @apiParam {string} list List to unsubscribe
+ * @apiParam {string} unsubscription_token Uniq token to approve the transaction
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ */
 router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
@@ -58,6 +71,21 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 	}
 });
 
+
+/**
+ * @api {get} /mail/:mail/subscribe/:list/:unsubscription_token/ Subscribe from a Notification list
+ * @apiName Subscribe from a Notification list
+ * @apiGroup 8. Notifications (email)
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {string} mail Email address from the user
+ * @apiParam {string} list List to subscribe
+ * @apiParam {string} unsubscription_token Uniq token to approve the transaction
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ */
 router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;

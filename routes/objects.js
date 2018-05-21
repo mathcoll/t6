@@ -163,8 +163,8 @@ router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret
 });
 
 /**
- * @api {post} /objects Add an Object
- * @apiName Add an Object
+ * @api {post} /objects Create an Object
+ * @apiName Create an Object
  * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
