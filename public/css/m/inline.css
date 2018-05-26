@@ -1757,6 +1757,8 @@ input ~ .mdl-switch__label {
 }
 .mdl-progress {
 	display: inline-block !important;
+	width: 100% !important;
+	height: 10px !important;
 }
 .mdl-textfield.is-invalid .mdl-textfield__icon {
 	color: #de3226 !important;
