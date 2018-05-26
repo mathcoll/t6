@@ -33,6 +33,47 @@ ignore:
     - jade > clean-css:
         reason: None given
         expires: '2018-05-31T16:26:49.610Z'
+  'npm:base64url:20180511':
+    - base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.701Z'
+    - ecdsa-sig-formatter > base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.701Z'
+    - express-jwt > jsonwebtoken > jws > base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.701Z'
+    - express-jwt > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.701Z'
+    - express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.701Z'
+    - jwt-express > jsonwebtoken > jws > base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.701Z'
+    - jwt-express > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.702Z'
+    - jwt-express > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
+        reason: None given
+        expires: '2018-06-20T14:34:31.702Z'
+  'npm:constantinople:20180421':
+    - jade > constantinople:
+        reason: None given
+        expires: '2018-06-20T14:34:31.702Z'
+  'npm:open:20180512':
+    - snyk > open:
+        reason: None given
+        expires: '2018-06-20T14:34:31.702Z'
+  'npm:squel:20180322':
+    - squel:
+        reason: None given
+        expires: '2018-06-20T14:34:31.702Z'
+  'npm:stringstream:20180511':
+    - request > stringstream:
+        reason: None given
+        expires: '2018-06-20T14:34:31.702Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
