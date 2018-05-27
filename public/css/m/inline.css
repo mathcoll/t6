@@ -1755,7 +1755,7 @@ input ~ .mdl-switch__label {
     text-align: left;
 	font-size: 12px;
 	visibility: visible !important;
-	color: rgba(0,0,0,.26);
+	color: rgb(121,85,72);
 	cursor: pointer;
 	line-height: 24px;
 }
