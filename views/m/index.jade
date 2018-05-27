@@ -323,18 +323,17 @@ html.ltr(lang='en')
                       i.material-icons.mdl-textfield__icon email
                       input.mdl-textfield__input(type='text', name='email', id='signup.email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='signup.email') Email/Username
-                      span.mdl-textfield__error Username should be your email address
+                      span.mdl-textfield__error Username is your email address, so should looks like an email address. :-)
                     .half.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon face 
-                      input.mdl-textfield__input(type='text', id='signup.firstName', name='firstName', pattern='.{1,}')
+                      input.mdl-textfield__input(type='text', id='signup.firstName', name='firstName', pattern='.{2,}')
                       label.mdl-textfield__label(for='signup.firstName') First Name
-                      span.mdl-textfield__error Firstname is optional, but if any, it should be longer than 1 character.
+                      span.mdl-textfield__error It is optional, but if any, it should be longer than 1 character.
                     .half.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
-                      input.mdl-textfield__input(type='text', id='signup.lastName', name='lastName', pattern='.{1,}')
+                      input.mdl-textfield__input(type='text', id='signup.lastName', name='lastName', pattern='.{2,}')
                       label.mdl-textfield__label(for='signup.lastName') Last Name
-                      span.mdl-textfield__error Lastname is optional, but if any, it should be longer than 1 character.
+                      span.mdl-textfield__error It is optional, but if any, it should be longer than 1 character.
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
-                      i.material-icons.mdl-textfield__icon business_center 
                       label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='signup.terms')
                         input.mdl-checkbox__input(type='checkbox', id='signup.terms', name='terms', pattern='true')
                         span.mdl-checkbox__label I agree the 

@@ -1769,6 +1769,9 @@ input ~ .mdl-switch__label {
 .mdl-textfield__icon ~ * {
 	margin-left: 48px !important;
 }
+.mdl-textfield__error {
+    line-height: 16px;
+}
 .mdl-progress {
 	display: inline-block !important;
 	width: 100% !important;
