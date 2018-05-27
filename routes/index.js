@@ -539,7 +539,7 @@ router.get('/terms', function(req, res, next) {
 	    },
  	    {
 			title: 'Update',
-			description: 'This Privacy Policy was last updated on: Saturday, November 04th, 2017. Should we update, amend or make any changes to our privacy policy, those changes will be posted here.',
+			description: 'This Privacy Policy was last updated on: May 24th, 2018. Should we update, amend or make any changes to our privacy policy, those changes will be posted here.',
 	    },
 	];
 	res.status(200).send(terms);
