@@ -3411,7 +3411,10 @@ var containers = {
 		else { document.getElementById("currentUserName").innerHTML = "t6 IoT App"; }
 		if ( localStorage.getItem("currentUserEmail") !== null ) { document.getElementById("currentUserEmail").innerHTML = localStorage.getItem("currentUserEmail") }
 		else { document.getElementById("currentUserEmail").innerHTML = ""; }
-		if ( localStorage.getItem("currentUserHeader") !== null ) { document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader")) }
+		if ( localStorage.getItem("currentUserHeader") !== null ) {
+			document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader"));
+			document.getElementById("imgIconMenu").outerHTML = "<img id=\"imgIconMenu\" src=\""+localStorage.getItem("currentUserHeader")+"\" alt=\"Current user avatar\" style=\"border-radius: 50%; width: 30px; padding: 0px;border: 1px solid #fff;margin: 0px 0px;\">";
+		}
 		else { document.getElementById("currentUserHeader").setAttribute('src', app.baseUrlCdn+"/img/m/icons/icon-128x128.png"); }
 		if ( localStorage.getItem("currentUserBackground") !== null ) { document.getElementById("currentUserBackground").style.background="#795548 url("+localStorage.getItem("currentUserBackground")+") 50% 50% / cover" }
 		else { document.getElementById("currentUserBackground").style.background="#795548 url("+app.baseUrlCdn+"/img/m/side-nav-bg.jpg) 50% 50% / cover" }
@@ -3422,6 +3425,7 @@ var containers = {
 		localStorage.removeItem("currentUserEmail");
 		localStorage.removeItem("currentUserHeader");
 		localStorage.removeItem("currentUserBackground");
+		document.getElementById("imgIconMenu").outerHTML = "<i id=\"imgIconMenu\" class=\"material-icons\">menu</i>";
 		app.setDrawer();
 	}
 
@@ -4770,6 +4774,9 @@ var containers = {
 	app.refreshButtonsSelectors();
 	setLoginAction();
 	setSignupAction();
+	app.refreshButtonsSelectors();
+	setPasswordResetAction();
+	setForgotAction();
 
 	if( localStorage.getItem('bearer') === null || localStorage.getItem('bearer') === undefined || app.auth.username === null ) {
 		app.sessionExpired();
@@ -5002,9 +5009,6 @@ var containers = {
 		}
 	}
 	
-	app.refreshButtonsSelectors();
-	setPasswordResetAction();
-	setForgotAction();
 	logout_button.addEventListener('click', function(evt) {
 		app.auth={};
 		app.clearJWT();
@@ -5030,6 +5034,7 @@ var containers = {
 	app.setHiddenElement("notification");
 
 	menuIconElement.addEventListener('click', app.showMenu, false);
+	menuIconElement.querySelector('i.material-icons').setAttribute('id', 'imgIconMenu');
 	menuOverlayElement.addEventListener('click', app.hideMenu, false);
 	menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
 	for (var item in menuItems) {
