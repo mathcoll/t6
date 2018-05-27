@@ -318,21 +318,28 @@ html.ltr(lang='en')
               form.signup
                 .mdl-card.mdl-card__title.mdl-shadow--2dp
                   img(src='#{baseUrlCdn}/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
-                  .mdl-card__title Fill your Email address to create your account. You will receive a link to setup your password securely.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon email
                       input.mdl-textfield__input(type='text', name='email', id='signup.email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='signup.email') Email/Username
                       span.mdl-textfield__error Username should be your email address
-                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+                    .half.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon face 
                       input.mdl-textfield__input(type='text', id='signup.firstName', name='firstName', pattern='.{1,}')
                       label.mdl-textfield__label(for='signup.firstName') First Name
-                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
-                      i.material-icons.mdl-textfield__icon face 
+                      span.mdl-textfield__error Firstname is optional, but if any, it should be longer than 1 character.
+                    .half.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       input.mdl-textfield__input(type='text', id='signup.lastName', name='lastName', pattern='.{1,}')
                       label.mdl-textfield__label(for='signup.lastName') Last Name
+                      span.mdl-textfield__error Lastname is optional, but if any, it should be longer than 1 character.
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+                      i.material-icons.mdl-textfield__icon business_center 
+                      label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='signup.terms')
+                        input.mdl-checkbox__input(type='checkbox', id='signup.terms', name='terms', pattern='true')
+                        span.mdl-checkbox__label I agree the 
+                          a(href='/#terms', target='_blank') Terms & Condition 
+                          | and I will manage my preferences related to privacy policy in a step forward.
                   .mdl-card__supporting-text.mdl-grid
                     span.mdl-layout-spacer
                     button.createUser.mdl-button.mdl-js-button.mdl-js-ripple-effect
@@ -352,6 +359,34 @@ html.ltr(lang='en')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content My Profile
           .page-content.mdl-grid.mdl-grid--no-spacing
+
+        //- Manage Notifications
+        section#manage_notifications.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-grid.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content Manage Notifications
+          .page-content.mdl-grid.mdl-grid--no-spacing
+            section.content-grid.mdl-grid
+              div.mdl-layout-spacer
+              form.notifications
+                .mdl-card.mdl-card__title.mdl-shadow--2dp
+                  img(src='#{baseUrlCdn}/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
+                  .mdl-card__title Manage your Email notification & subscriptions.
+                  .mdl-card__supporting-text
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+                      label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='notifications.reminder')
+                        input.mdl-checkbox__input(checked, type='checkbox', id='notifications.reminder', name='reminder')
+                        span.mdl-checkbox__label(style='position: absolute;') Reminder email.
+                          | This notification will be sent only once, the week after your subscription.
+                  .mdl-card__supporting-text
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+                      label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='notifications.changePassword')
+                        input.mdl-checkbox__input(checked, type='checkbox', id='notifications.changePassword', name='changePassword')
+                        span.mdl-checkbox__label(style='position: absolute;') Notification to remind you to change your password regularly.
+                  .mdl-card__actions.mdl-card--border
+                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                      | Skip this step
+                    | (I will do it later).
+              div.mdl-layout-spacer
           
         section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col

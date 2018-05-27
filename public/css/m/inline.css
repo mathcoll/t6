@@ -511,6 +511,10 @@ section#profile .subhead {
 	width: 100% !important;
 	line-height: 1.7em;
 }
+.mdl-checkbox {
+	height: auto !important;
+	min-height: 48px;
+}
 .mdl-dialog {
 	border: none;
 	box-shadow: 0 9px 46px 8px rgba(0, 0, 0, 0.14), 0 11px 15px -7px rgba(0, 0, 0, 0.12), 0 24px 38px 3px rgba(0, 0, 0, 0.2);
@@ -870,6 +874,7 @@ form.resetpassword > div.mdl-shadow--2dp {
 
 form.signin > div.mdl-shadow--2dp img,
 form.signup > div.mdl-shadow--2dp img,
+form.notifications > div.mdl-shadow--2dp img,
 form.forgotpassword > div.mdl-shadow--2dp img,
 form.resetpassword > div.mdl-shadow--2dp img {
 	max-width: 500px;
@@ -1515,11 +1520,20 @@ section > button {
     width: 100%
 }
 
-.mdl-textfield.half .mdl-textfield__label::after,
+.half {
+	width: 50% !important;
+}
+
+.mdl-textfield.is-focused input#signup\.firstName + label::after,
 .mdl-textfield.half input.mdl-textfield__input,
 .mdl-textfield__input.half,
 .half input.mdl-textfield__input {
-	width: calc(100% - 96px) !important;
+	width: calc(100% - 66px) !important;
+}
+
+input#signup\.lastName::after,
+input#signup\.lastName {
+	width: calc(100% - 16px) !important;
 }
 
 .mdl-selectfield.is-dirty .mdl-selectfield__label,

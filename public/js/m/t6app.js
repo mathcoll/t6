@@ -298,30 +298,39 @@ var containers = {
 		componentHandler.upgradeDom();
 		
 		var email = myForm.querySelector("form.signup input[name='email']").value;
+		var terms = myForm.querySelector("form.signup input[name='terms']").checked;
 		if ( email && email.match(app.patterns.username) ) {
-			var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
-			var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
-			var postData = {"email":email, "firstName":firstName, "lastName":lastName};
-			var myHeaders = new Headers();
-			myHeaders.append("Content-Type", "application/json");
-			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
-			var url = app.baseUrl+"/"+app.api_version+"/users";
-			
-			fetch(url, myInit)
-			.then(
-					fetchStatusHandler
-			).then(function(fetchResponse){
-				return fetchResponse.json();
-			})
-			.then(function(response) {
-				app.setSection('login');
-				toast('Welcome, you should have received an email to set your password.', {timeout:3000, type: 'done'});
-			})
-			.catch(function (error) {
-				toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
-			});
+			if ( terms ) {
+				var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
+				var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
+				var postData = {"email":email, "firstName":firstName, "lastName":lastName};
+				var myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+				var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
+				var url = app.baseUrl+"/"+app.api_version+"/users";
+				
+				fetch(url, myInit)
+				.then(
+						fetchStatusHandler
+				).then(function(fetchResponse){
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					app.setSetting('notifications.email', response.user.data.attributes.email);
+					app.setSetting('notifications.unsubscription_token', response.user.data.attributes.unsubscription_token);
+					toast('Welcome, you should have received an email to set your password.', {timeout:3000, type: 'done'});
+					app.setSection('manage_notifications');
+				})
+				.catch(function (error) {
+					toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+				});
+			} else {
+				toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', {timeout:3000, type: 'warning'});
+				document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+			}
 		} else {
 			toast('We can\'t process your signup. Please check your inputs.', {timeout:3000, type: 'warning'});
+			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 		}
 		evt.preventDefault();
 	}; // onSignupButtonClick
@@ -355,6 +364,7 @@ var containers = {
 			});
 		} else {
 			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
+			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 		}
 		evt.preventDefault();
 	}; // onPasswordResetButtonClick
@@ -386,6 +396,7 @@ var containers = {
 			});
 		} else {
 			toast('We can\'t send the instructions. Please check your inputs.', {timeout:3000, type: 'warning'});
+			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 		}
 		evt.preventDefault();
 	}; // onForgotPasswordButtonClick
@@ -782,7 +793,7 @@ var containers = {
 		
 		fetch(url, myInit)
 		.then(
-				fetchStatusHandler
+			fetchStatusHandler
 		).then(function(fetchResponse){
 			return fetchResponse.json();
 		})
@@ -800,7 +811,7 @@ var containers = {
 		if ( componentHandler ) componentHandler.upgradeDom();
 		buttons = {
 			// signin_button
-			// logout_button
+			// _button
 			notification: document.querySelector('button#notification'),
 
 			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
@@ -808,6 +819,7 @@ var containers = {
 			settings: document.querySelectorAll('.settingsButton'),
 			docs: document.querySelectorAll('.docsButton'),
 			terms: document.querySelectorAll('.termsButton'),
+			notifications: document.querySelectorAll('form.notifications input.mdl-checkbox__input'),
 				
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
 			user_create: document.querySelectorAll('form.signup button.createUser'),
@@ -1043,6 +1055,10 @@ var containers = {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.getSettings();
+		}  else if ( section === 'login' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
+			app.displayLoginForm( document.querySelector('#login').querySelector('.page-content') );
 		} else if ( section === 'users-list' ) {
 			app.getUsersList();
 		} else {
@@ -1075,7 +1091,17 @@ var containers = {
 			}
 			document.querySelector('#'+section).classList.remove('is-inactive');
 			document.querySelector('#'+section).classList.add('is-active');
-			if ( !app.isLogged && ( !document.querySelector('#'+section).querySelector('.page-content form.signin') && section !== 'signup' && section !== 'reset-password' && section !== 'forgot-password' && section !== 'settings' && section !== 'docs' && section !== 'terms') ) {
+			if ( !app.isLogged && (
+					!document.querySelector('#'+section).querySelector('.page-content form.signin') &&
+					section !== 'signup' &&
+					section !== 'reset-password' &&
+					section !== 'forgot-password' &&
+					section !== 'settings' &&
+					section !== 'docs' &&
+					section !== 'terms' &&
+					section !== 'manage_notifications'
+				)
+			) {
 				app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );
 			}
 		}
@@ -3256,7 +3282,7 @@ var containers = {
 			}
 			node += "	</div>";
 
-			node += "	<div class=\"card-header heading-left\"></div>";
+			node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 			node += "	<div class=\"card-body\">";
 			node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
 			node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
@@ -3271,7 +3297,7 @@ var containers = {
 			node += app.getSubtitle('Gravatar contacts');
 			node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 			node += "<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
-			node += "	<div class=\"card-header heading-left\"></div>";
+			node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 			node += "	<div class=\"card-body\">";
 			for (var phone in gravatar.phoneNumbers) {
 				node += app.getField('phone', gravatar.phoneNumbers[phone].type, gravatar.phoneNumbers[phone].value, {type: 'text', isEdit: false});
@@ -3354,7 +3380,7 @@ var containers = {
 		node += app.getSubtitle('Email Notifications');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
-		node += "	<div class=\"card-header heading-left\"></div>";
+		node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 		node += "	<div class=\"card-body\">";
 		var value;
 		var isEdit = false;
@@ -3400,6 +3426,12 @@ var containers = {
 	}
 
 	app.displayLoginForm = function(container) {
+		container.querySelectorAll('form.signin').forEach(function(e) {
+			if (e) {
+				e.parentNode.remove();
+			}
+		});
+		
 		if ( app.isLogged === false ) {
 			var login = "<section class='content-grid mdl-grid'>" +
 			"	<div class='mdl-layout-spacer'></div>" +
@@ -4162,6 +4194,7 @@ var containers = {
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
+				document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 			}
 		});
 		app.auth = {};
@@ -4194,6 +4227,7 @@ var containers = {
 		settings += app.getSubtitle('API Notifications');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 		settings += app.getField('notifications', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
 		if ( app.getSetting('settings.pushSubscription.keys.p256dh') ) {
 			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true});
@@ -4206,6 +4240,7 @@ var containers = {
 		settings += app.getSubtitle('Application');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
 		settings += app.getField('bug_report', 'Debug', app.getSetting('settings.debug')!==null?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('room', 'Geolocalization', app.getSetting('settings.geolocalization')!==null?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
@@ -4718,7 +4753,6 @@ var containers = {
 		} else if ( p === 'login' ) {
 			app.isLogged = false;
 			localStorage.setItem("bearer", null);
-			app.displayLoginForm( document.querySelector('#login').querySelector('.page-content') );
 			app.setSection(p);
 		} else {
 			app.setSection(p);
@@ -4737,6 +4771,40 @@ var containers = {
 	if( localStorage.getItem('bearer') === null || localStorage.getItem('bearer') === undefined || app.auth.username === null ) {
 		app.sessionExpired();
 	}
+	
+	for (var i in buttons.notifications) {
+		if ( buttons.notifications[i].childElementCount > -1 ) {
+			buttons.notifications[i].addEventListener('click', function(e) {
+				if ( app.getSetting('notifications.email') && app.getSetting('notifications.unsubscription_token') ) {
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: 'GET', headers: myHeaders };
+					var type = e.target.parentNode.classList.contains('is-checked')?'unsubscribe': 'subscribe';
+					var url = app.baseUrl+'/mail/'+app.getSetting('notifications.email')+'/'+type+'/'+e.target.getAttribute('name')+'/'+app.getSetting('notifications.unsubscription_token')+'/';
+					fetch(url, myInit)
+					.then(
+						fetchStatusHandler
+					).then(function(fetchResponse){ 
+						return fetchResponse.json();
+					})
+					.then(function(response) {
+						console.log(response);
+						toast('Settings updated.', {timeout:3000, type: 'done'});
+					})
+					.catch(function (error) {
+						if ( localStorage.getItem('settings.debug') == 'true' ) {
+							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+						}
+					});
+				} else {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
+						toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+					}
+				}
+			}, false);
+		}
+	} // Notifications
 	
 	app.refreshButtonsSelectors();
 	if ( document.querySelector('.sticky') ) {
@@ -4761,7 +4829,7 @@ var containers = {
 			console.log('history', 'hashchange');
 			
 			//history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
-			app.setSection(window.location.hash.substr(1));
+			//app.setSection(window.location.hash.substr(1));
 			localStorage.setItem("currentPage", window.location.hash.substr(1));
 			var id = getParameterByName('id');
 			var id2 = window.location.hash;
@@ -4943,7 +5011,8 @@ var containers = {
 		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash')!==null?evt.currentTarget.querySelector('a').getAttribute('hash'):evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
 	}, false);
 	signin_button.addEventListener('click', function(evt) {
-		app.auth={}; app.setSection('login');
+		app.auth={};
+		app.setSection('login');
 	}, false);
 	buttons.notification.addEventListener('click', function(evt) {
 		app.showNotification();

@@ -58,7 +58,6 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 			user.unsubscription[''+list] = moment().format('x');
 			result = user;
 		});
-		
 		db.save();
 		
 		res.render('m/notifications-unsubscribe', {

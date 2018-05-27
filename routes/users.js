@@ -151,7 +151,8 @@ router.post('/', function (req, res) {
 			email:				req.body.email!==undefined?req.body.email:'',
 			role:				'free', // no admin creation from the API
 			subscription_date:  moment().format('x'),
-			token:				token
+			token:				token,
+			unsubscription_token: passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'),
 			//key:				new_token.key,
 			//secret:				new_token.secret
 		};
