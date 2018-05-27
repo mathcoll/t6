@@ -4767,6 +4767,9 @@ var containers = {
 		}
 	}
 	app.fetchIndex('index');
+	app.refreshButtonsSelectors();
+	setLoginAction();
+	setSignupAction();
 
 	if( localStorage.getItem('bearer') === null || localStorage.getItem('bearer') === undefined || app.auth.username === null ) {
 		app.sessionExpired();
