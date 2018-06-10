@@ -522,16 +522,12 @@ router.get('/terms', function(req, res, next) {
 			description: '<a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> uses cookies to store information about visitors\' preferences, to record user-specific information on which pages the site visitor accesses or visits, and to personalize or customize our web page content based upon visitors\' browser type or other information that the visitor sends via their browser. <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> has no access to or control over these cookies that are used by third-party advertisers.<br /><br /><b>Strictly Necessary Cookies</b><br />These cookies (connect.sid, cookieconsent, datatypes, flows, units) are necessary for the website to function and cannot be switched off in our systems. They are usually only set in response to actions made by you which amount to a request for services, such as setting your privacy preferences, logging in or filling in forms. You can set your browser to block or alert you about these cookies, but some parts of the site will not then work. These cookies do not store any personally identifiable information.<br /><br /><b>Performance Cookies</b><br />These cookies (Google Analytics) allow us to count visits and traffic sources so we can measure and improve the performance of our site. They help us to know which pages are the most and least popular and see how visitors move around the site.<br /><br />All information these cookies collect is aggregated and therefore anonymous. If you do not allow these cookies we will not know when you have visited our site, and will not be able to monitor its performance.',
  	    },
  	    {
-			title: 'Third Party Privacy Policies',
-			description: 'You should consult the respective privacy policies of these third-party ad servers for more detailed information on their practices as well as for instructions about how to opt-out of certain practices. <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a>\'s privacy policy does not apply to, and we cannot control the activities of, such other advertisers or web sites. You may find a comprehensive listing of these privacy policies and their links here: <a href="http://www.privacypolicyonline.com/privacy-policy-links" title="Privacy Policy Links" rel="noopener" target="_blank">Privacy Policy Links</a>. If you wish to disable cookies, you may do so through your individual browser options. More detailed information about cookie management with specific web browsers can be found at the browsers\' respective websites. <a href="http://www.privacypolicyonline.com/what-are-cookies" rel="noopener" target="_blank">What Are Cookies?</a>',
-	    },
- 	    {
 			title: 'Children\'s Information',
 			description: 'We believe it is important to provide added protection for children online. We encourage parents and guardians to spend time online with their children to observe, participate in and/or monitor and guide their online activity. <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> does not knowingly collect any personally identifiable information from children under the age of 13. If a parent or guardian believes that <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> has in its database the personally-identifiable information of a child under the age of 13, please contact us immediately (using the contact in the first paragraph) and we will use our best efforts to promptly remove such information from our records.',
 	    },
  	    {
 			title: 'Online Privacy Policy Only',
-			description: 'This privacy policy applies only to our online activities and is valid for visitors to our website and regarding information shared and/or collected there. This policy does not apply to any information collected offline or via channels other than this website.',
+			description: 'This privacy policy applies only to our online activities and is valid for visitors to our website and regarding information shared and/or collected there. This policy does not apply to any information collected offline or via channels other than this website.<br />Additionally, t6 also honors the <b>Do Not Track</b> header. This means that if you have the <b>Do Not Track</b> header set on your browser settings, t6 will not track you.',
 	    },
  	    {
 			title: 'Consent',
@@ -539,7 +535,7 @@ router.get('/terms', function(req, res, next) {
 	    },
  	    {
 			title: 'Update',
-			description: 'This Privacy Policy was last updated on: May 24th, 2018. Should we update, amend or make any changes to our privacy policy, those changes will be posted here.',
+			description: 'This Privacy Policy was last updated on: Jun 10th, 2018. Should we update, amend or make any changes to our privacy policy, those changes will be posted here.',
 	    },
 	];
 	res.status(200).send(terms);

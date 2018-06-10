@@ -4251,6 +4251,7 @@ var containers = {
 		settings += app.getField('format_textdirection_l_to_r', 'Align buttons to Right', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('date_range', 'Date Format', app.getSetting('settings.date_format')!==null?app.getSetting('settings.date_format'):app.date_format, {type: 'input', id:'settings.date_format', isEdit: true});
 		settings += app.getField('subject', 'Card Chars Limit', app.getSetting('settings.cardMaxChars')!==null?app.getSetting('settings.cardMaxChars'):app.cardMaxChars, {type: 'input', id:'settings.cardMaxChars', isEdit: true, pattern: app.patterns.cardMaxChars, error:'Must be an Integer.'});
+		settings += app.getField('voice_over_off', 'Do Not Track header', navigator.doNotTrack?"Active, this can be updated from your browser settings.":"Inactive, this can be updated from your browser settings.", {type: 'switch', isEdit: false});
 		settings += "	</div>";
 		settings += "</section>";
 		(containers.settings).querySelector('.page-content').innerHTML = settings;
@@ -5180,7 +5181,7 @@ var containers = {
 	}
 	app.setDrawer();
 	
-	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" ) {
+	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" && !navigator.doNotTrack ) {
 		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 		(function(){
 			var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
@@ -5192,7 +5193,7 @@ var containers = {
 			s0.parentNode.insertBefore(s1,s0);
 		})();
 	}
-	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" ) {
+	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && !navigator.doNotTrack ) {
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
