@@ -3321,11 +3321,6 @@ var containers = {
 			
 			container.innerHTML = node;
 			componentHandler.upgradeDom();
-			
-			document.getElementById('saveProfileButton').addEventListener('click', function(e) {
-				app.onSaveProfileButtonClick();
-			});
-			
 			// Profile Storage
 			localStorage.setItem('currentUserId', user.id);
 			localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
@@ -3337,6 +3332,11 @@ var containers = {
 			app.setDrawer();
 			app.fetchUnsubscriptions();
 			app.displayUnsubscriptions((containers.profile).querySelector('.page-content'));
+			
+			document.getElementById("saveProfileButton").addEventListener("click", function(evt) {
+				app.onSaveProfileButtonClick();
+				evt.preventDefault();
+			});
 			
 			if ( user.attributes.role == 'admin' ) {
 				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
@@ -4383,12 +4383,14 @@ var containers = {
 			status += "				</button>";
 			status += "			</span>";
 			status += "		</div>";
-			status += "		<div class='mdl-cell--12-col' id='status-details'>";
+			status += "		<div class=\"card-body\">";
+			status += "			<div class='mdl-list__item--three-line small-padding  mdl-card--expand' id='status-details'>";
 			status += app.getField('thumb_up', 'Name', response.appName, {type: 'text', isEdit: false});
 			status += app.getField('verified_user', 'Version', response.version, {type: 'text', isEdit: false});
 			status += app.getField(app.icons.status, 'Status', response.status, {type: 'text', isEdit: false});
 			status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, {type: 'text', isEdit: false});
 			status += app.getField('alarm', 'Last Update', response.started_at, {type: 'text', isEdit: false});
+			status += "			</div>";
 			status += "		</div>";
 			status += "	</div>";
 			status += "</section>";

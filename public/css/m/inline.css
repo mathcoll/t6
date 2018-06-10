@@ -175,15 +175,6 @@ div .mdl-textfield__icon ~ select,
 div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__icon ~ label {
 	width: 100% !important;
 }
-#status label.mdl-textfield__label {
-	top:0;
-	position: relative;
-	width: 40% !important;
-	display: inline-block;
-}
-#status .mdl-list__item-primary-content {
-	width: 33%;
-}
 
 div[data-type="objects"].removed,
 div[data-type="flows"].removed,
@@ -377,6 +368,7 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 .mdl-layout__drawer-button {
 	height: 50px !important;
 	margin: 0 !important;
+	line-height: 46px;
 }
 .mdl-layout__header {
     min-height: 50px !important;
@@ -1049,7 +1041,7 @@ form.resetpassword > div.mdl-shadow--2dp img {
 	opacity: 1;
 }
 .mdl-layout__header-row {
-	padding: 10px 10px 0 50px !important;
+	padding-left: 50px !important;
 }
 .margin-5 {
 	margin: 0 5px;
