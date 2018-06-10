@@ -5180,7 +5180,7 @@ var containers = {
 	}
 	app.setDrawer();
 	
-	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" ) {
+	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" && !navigator.doNotTrack ) {
 		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 		(function(){
 			var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
@@ -5192,7 +5192,7 @@ var containers = {
 			s0.parentNode.insertBefore(s1,s0);
 		})();
 	}
-	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" ) {
+	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && !navigator.doNotTrack ) {
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
