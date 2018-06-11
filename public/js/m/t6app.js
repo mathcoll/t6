@@ -3546,7 +3546,7 @@ var containers = {
 			showFAB = true;
 		}
 		if ( showFAB  && container && app.itemsPage[type]==1 ) {
-			var fabClass = app.getSetting('settings.fab_position')!==undefined?app.getSetting('settings.fab_position'):'fab__bottom';
+			var fabClass = app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom';
 			var fab = "<div class='mdl-button--fab_flinger-container "+fabClass+"'>";
 			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
 			fab += "		<i class='material-icons'>add</i>";
