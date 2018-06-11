@@ -477,17 +477,24 @@ html.ltr(lang='en')
           .page-content.mdl-grid.mdl-grid--no-spacing
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-grid
-                  h3.mdl-typography--headline Physical World
-                div.mdl-card__supporting-text.no-padding Physical World are composed by your sensors and actuators. Physical Objects require a virtual Object in t6 and then, they could add Data to Flows. Sample nodeMCU and Arduino scripts are available in the sensors repositories.
-                div.mdl-card__supporting-text.no-padding Physical Objects require a virtual Object in t6 and then, they could add Data to Flows.
+                div.mdl-card__title
+                  i.material-icons.md-48 code
+                  span.mdl-typography--headline Physical World
+                div.mdl-card__supporting-text.no-padding Physical World are composed by your sensors and actuators. Physical Objects require a virtual Object in t6 and then, they could add Data to Flows. Sample nodeMCU and Arduino scripts are available in the 
+                  a(href='//github.com/mathcoll/t6/tree/master/sensors', target='_blank', rel='noopener') sensors repositories.
+                div.mdl-card__supporting-text.no-padding An additional script can be  runned periodically (crontab rule necessary) and performe the required action from the settings:
+                  br/
+                  span.code $> nodejs sensor.js --run "{{sensor_id}}" > /dev/null 2>&1
+                div.mdl-card__supporting-text.no-padding This kind of Virtual sensors are capable of getting direct data from a linux bash command (e.g. Getting HDD temperature: '/usr/sbin/hddtemp -u C -n -q /dev/sda')
+                div.mdl-card__supporting-text.no-padding Physical Objects require a "virtual" Object declared on t6 before adding DataPoints to Flows. Meaning a Flow container help the Api to find your data and graph them on the Snippets.
                 
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-grid
-                  h3.mdl-typography--headline Resources available on t6
+                div.mdl-card__title
+                  i.material-icons.md-48 code
+                  span.mdl-typography--headline Resources available on t6
                 div.mdl-card__supporting-text.no-padding 
-                  ol.mdl-list(style="padding:0px;line-height:24px;")
+                  ol.mdl-list(style="margin:0;padding:0px;line-height:24px;")
                     li.mdl-list__item-primary-content
                       div.mdl-grid
                         div.mdl-layout-spacer
@@ -542,19 +549,22 @@ html.ltr(lang='en')
                   
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-grid
-                  h3.mdl-typography--headline General Structure and scenario
+                div.mdl-card__title
+                  i.material-icons.md-48 code
+                  span.mdl-typography--headline General Structure and scenario
                 div.mdl-card__supporting-text.no-padding 
                   img.lazyloading.img-responsive(data-src="//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
                   
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-grid
-                  h3.mdl-typography--headline Technical documentation
+                div.mdl-card__title
+                  i.material-icons.md-48 code
+                  span.mdl-typography--headline Technical documentation
                 div.mdl-card__supporting-text.no-padding 
-                  | Api first in a Rest api ; including security (JWT tokens) and quotas.
-                  a.mdl-button.mdl-js-button(href="/docs", target='_blank', rel='noopener') Explore the full Api documentation
-                    i.material-icons chevron_right
+                  | Api first in a Rest api ; including security (JWT tokens) and quotas. It contains dedicated endpoint to easily manipulate your resources: Objects, Flows, Dashboards, Snippets & Rules.
+                  p
+                    a.mdl-button.mdl-js-button(href="/docs", target='_blank', rel='noopener') Explore the full Api documentation
+                      i.material-icons chevron_right
             
         //- View users-list
         section#users-list.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive

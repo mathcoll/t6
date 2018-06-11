@@ -4492,8 +4492,9 @@ var containers = {
 				terms += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				terms += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if( response[i].title ) {
-					terms += "	<div class=\"mdl-grid\">";
-					terms += "		<h3 class=\"mdl-typography--headline\">"+response[i].title+"</h3>";
+					terms += "	<div class=\"mdl-card__title\">";
+					terms += "		<span class=\"mdl-typography--headline\">";
+					terms += "			<i class=\"material-icons\">business_center</i>"+response[i].title+"</span>";
 					terms += "	</div>";
 				}
 				terms += "		<div class=\"mdl-card__supporting-text no-padding\">";
