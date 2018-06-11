@@ -2950,7 +2950,11 @@ var containers = {
 		element += "					<i class=\"material-icons\">update</i>";
 		element += "				</button>";
 		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(item.attributes.meta.created).format(app.date_format) + "</span>";
-		element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(item.attributes.meta.updated).format(app.date_format) + "</span>";
+		if ( item.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(item.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
 		element += "			</span>";
 		element += "			<span class=\"pull-right mdl-card__menuaction\">";
 		element += "				<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
