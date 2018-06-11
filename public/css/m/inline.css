@@ -54,6 +54,13 @@ h1.page_title {
 	color: #fff;
 	font-size: 14px;
 }
+h4 {
+    display: inline;
+	margin: 0 0 0 5px;
+	vertical-align: middle;
+	line-height: 48px;
+	font-size: 22px;
+}
 textarea.copytextarea {
 	width: 0;
 	height: 0;
