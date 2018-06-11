@@ -724,7 +724,7 @@ var containers = {
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('onAddDashboard', JSON.stringify(body));
+				console.log('onSaveDashboard', JSON.stringify(body));
 			}
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -1567,7 +1567,7 @@ var containers = {
 						node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text'});
 					}
 					if ( object.attributes.position ) {
-						node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text'});
+						node += app.getField('pin_drop', 'Position/Localization (should be descriptive)', object.attributes.position, {type: 'text'});
 					}
 					if ( object.attributes.longitude && object.attributes.latitude ) {
 						node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
@@ -1880,6 +1880,9 @@ var containers = {
 	app.displayAddObject = function(object) {
 		var node = "";
 		object.id = object.id!==""?object.id:app.getUniqueId();
+		object.attributes.longitude = parseFloat(object.attributes.longitude!==''?object.attributes.longitude:0).toFixed(6);
+		object.attributes.latitude = parseFloat(object.attributes.latitude!==''?object.attributes.latitude:0).toFixed(6);
+		
 		node += app.getSubtitle('Description');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -1904,7 +1907,7 @@ var containers = {
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', id: 'Longitude', isEdit: true, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
 		node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', id: 'Latitude', isEdit: true, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
-		node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', id: 'Position', isEdit: true, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
+		node += app.getField('pin_drop', 'Position/Localization (should be descriptive)', object.attributes.position, {type: 'text', id: 'Position', isEdit: true, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
 		node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
 		node += "	</div>";
 		node += "</section>";
@@ -1935,7 +1938,7 @@ var containers = {
 		app.getLocation();
 		/* Localization Map */
 		var iconFeature = new ol.Feature({
-			geometry: new ol.geom.Point(new ol.proj.transform([parseFloat(app.defaultResources.object.attributes.longitude), parseFloat(app.defaultResources.object.attributes.latitude)], 'EPSG:4326', 'EPSG:3857')),
+			geometry: new ol.geom.Point(new ol.proj.transform([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)], 'EPSG:4326', 'EPSG:3857')),
 			name: '',
 			position: '',
 		});
@@ -1960,6 +1963,7 @@ var containers = {
 			// positioning: 'top',
 			stopEvent: false
 		});
+
 		var map = new ol.Map({
 			layers: [
 				new ol.layer.Tile({ source: new ol.source.OSM() }),
