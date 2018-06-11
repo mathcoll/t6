@@ -2696,8 +2696,36 @@ var containers = {
 				var node;
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
-					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+snippet.id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-list__item\">";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<i class=\"material-icons\">"+app.icons.snippets+"</i>";
+					node += "				<h2 class=\"mdl-card__title-text\">"+snippet.attributes.name+"</h2>";
+					node += "			</span>";
+					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+snippet.id+"'>";
+					node += "					<i class='material-icons'>expand_more</i>";
+					node += "				</button>";
+					node += "			</span>";
+					node += "		</div>";
+					node += "		<div class='mdl-cell--12-col hidden' id='description-"+snippet.id+"'>";
+
+					node += app.getField(app.icons.snippets, 'Id', snippet.id, {type: 'text'});
+					if ( snippet.attributes.meta.created ) {
+						node += app.getField(app.icons.date, 'Created', moment(snippet.attributes.meta.created).format(app.date_format), {type: 'text'});
+					}
+					if ( snippet.attributes.meta.updated ) {
+						node += app.getField(app.icons.date, 'Updated', moment(snippet.attributes.meta.updated).format(app.date_format), {type: 'text'});
+					}
+					if ( snippet.attributes.meta.revision ) {
+						node += app.getField(app.icons.update, 'Revision', snippet.attributes.meta.revision, {type: 'text'});
+					}
+					node += "	</div>";
+					node += "</section>";
 					
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, 'meta.revision', snippet.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
