@@ -1,7 +1,8 @@
 
-var dataCacheName= 't6-cache-2018-04-02_1141';
+var dataCacheName= 't6-cache-2018-06-11_2147';
 var cacheName= dataCacheName;
-var cacheWhitelist = ['internetcollaboratif.info', 'localhost'];
+var cacheWhitelist = ['internetcollaboratif.info', 'localhost', 'css', 'img', 'js'];
+var cacheBlacklist = ['v2', 'authenticate', 'users/me/token'];
 var filesToCache = [
     //local
     '/manifest.json',
@@ -19,64 +20,31 @@ var filesToCache = [
     '/img/m/welcome_card.jpg',
     '/img/m/side-nav-bg.jpg',
     //cdn/javascripts
-    'https://cdn.internetcollaboratif.info/js/m/vendor.min.js',
-    'https://cdn.internetcollaboratif.info/js/m/t6app.js',
+    '//cdn.internetcollaboratif.info/js/m/vendor.min.js',
+    '//cdn.internetcollaboratif.info/js/m/t6app.js',
     //cdn/styles
-    'https://cdn.internetcollaboratif.info/css/t6App.min.css',
+    '//cdn.internetcollaboratif.info/css/t6App.min.css',
     //cdn/images
-    'https://cdn.internetcollaboratif.info/img/opl_img3.jpg',
-    'https://cdn.internetcollaboratif.info/img/opl_img2.jpg',
-    'https://cdn.internetcollaboratif.info/img/opl_img.jpg',
-    'https://cdn.internetcollaboratif.info/img/m/welcome_card.jpg',
-    'https://cdn.internetcollaboratif.info/img/m/side-nav-bg.jpg',
-    'https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png',
+    '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
+    '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
+    '//cdn.internetcollaboratif.info/img/opl_img.jpg',
+    '//cdn.internetcollaboratif.info/img/m/welcome_card.jpg',
+    '//cdn.internetcollaboratif.info/img/m/side-nav-bg.jpg',
+    '//cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png',
 ];
 
-self.addEventListener('install', function(e) {
-	console.log('[ServiceWorker] Install.');
-	/*
-	e.waitUntil(
-		caches.open(cacheName).then(function(cache) {
-			console.log('[ServiceWorker] Caching app shell.');
-			return cache.addAll(filesToCache);
-		})
-	);
-	*/
-	e.waitUntil(precache().then(function() {
-		console.log('[ServiceWorker] Skip waiting on install');
-		return self.skipWaiting();
-	}));
-});
-
-self.addEventListener('activate', function(e) {
-	console.log('[ServiceWorker] Activate.');
-	console.log('[ServiceWorker] Claiming clients for current page');
-	return self.clients.claim();
-});
-
-self.addEventListener('fetch', function(e) {
-	console.log('The service worker is serving the asset.'+ e.request.url);
-	if (cacheWhitelist.indexOf(e.request.url) !== -1) {
-		e.respondWith(fromCache(e.request).catch(fromServer(e.request)));
-		e.waitUntil(update(e.request));
-	} else {
-		e.respondWith(fromServer(e.request));
-	}
-});
-
-self.addEventListener('fetch', function(e) {
-	console.log('[ServiceWorker] The service worker is serving the asset.');
-	if (e.request.url.indexOf('authenticate') > -1 || e.request.url.indexOf('users/me/token') > -1) {
-		console.log('[ServiceWorker] Not cacheable.');
-		// We should get the policy from server
-		e.respondWith(fromServer(e.request));
-	} else {
-		e.respondWith(fromCache(e.request));
-		e.waitUntil(
-			update(e.request).then(refresh)
-		);
-	}
-});
+function refresh(response) {
+	return self.clients.matchAll().then(function(clients) {
+		clients.forEach(function(client) {
+			var message = {
+				type : 'refresh',
+				url : response.url,
+				eTag : response.headers.get('ETag')
+			};
+			client.postMessage(JSON.stringify(message));
+		});
+	});
+}
 
 function precache() {
 	return caches.open(cacheName).then(function (cache) {
@@ -104,9 +72,56 @@ function update(request) {
 }
 
 function fromServer(request){
-	//this is the fallback if it is not in the cahche to go to the server and get it
-	return fetch(request).then(function(response){ return response})
+	//this is the fallback if it is not in the cache to go to the server and get it
+	return fetch(request).then(function(response){ return response; });
 }
+
+self.addEventListener('install', function(e) {
+	console.log('[ServiceWorker] Install.');
+	/*
+	e.waitUntil(
+		caches.open(cacheName).then(function(cache) {
+			console.log('[ServiceWorker] Caching app shell.', cache, cacheName);
+			return cache.addAll(filesToCache);
+		})
+	);
+	e.waitUntil(precache().then(function() {
+		console.log('[ServiceWorker] Skip waiting on install');
+		return self.skipWaiting();
+	}));
+	*/
+});
+
+self.addEventListener('activate', function(e) {
+	console.log('[ServiceWorker] Activate.');
+	console.log('[ServiceWorker] Claiming clients for current page', self.clients.claim());
+	return self.clients.claim();
+});
+
+function matchInArray(string, expressions) {
+    var len = expressions.length,
+        i = 0;
+    for (; i < len; i++) {
+        if (string.match(expressions[i])) {
+            return true;
+        }
+    }
+    return false;
+};
+
+self.addEventListener('fetch', function(e) {
+	if ( matchInArray(e.request.url, cacheBlacklist) ) {
+		console.log('[ServiceWorker] Serving the asset from server (Blacklisted).', e.request.url);
+		e.respondWith(fromServer(e.request));
+	} else if ( matchInArray(e.request.url, cacheWhitelist) ) {
+		console.log('[ServiceWorker] Serving the asset from cache (Whitelisted).', e.request.url);
+		e.respondWith(fromCache(e.request).catch(fromServer(e.request)));
+		e.waitUntil(update(e.request));
+	} else {
+		console.log('[ServiceWorker] from server directly.', e.request.url);
+		fromServer(e.request);
+	}
+});
 
 self.addEventListener('push', function(event) {
 	//console.log('[ServiceWorker] Push Received.');
