@@ -3361,6 +3361,8 @@ var containers = {
 			localStorage.setItem('currentUserId', user.id);
 			localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
 			localStorage.setItem("currentUserEmail", user.attributes.email);
+			localStorage.setItem("notifications.email", user.attributes.email);
+			localStorage.setItem("notifications.unsubscription_token", user.attributes.unsubscription_token);
 			localStorage.setItem("currentUserHeader", gravatar.photos[0].value);
 			if ( gravatar.profileBackground && gravatar.profileBackground.url ) {
 				localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
@@ -3419,19 +3421,87 @@ var containers = {
 		node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 		node += "	<div class=\"card-body\">";
 		var value;
-		var isEdit = false;
+		var isEdit = true;
 		value = notifications.reminder!==null?'false':'true';
-		node += app.getField('mail_outline', 'Reminder Welcome email', value, {type: 'switch', id:'notifications.reminder', isEdit: isEdit});
+		node += app.getField('mail_outline', 'Reminder Welcome email', value, {type: 'switch', id:'profile.notifications.reminder', isEdit: isEdit});
 		
 		value = notifications.changePassword!==null?'false':'true';
-		node += app.getField('mail_outline', 'Reminder to change Password', value, {type: 'switch', id:'notifications.changePassword', isEdit: isEdit});
+		node += app.getField('mail_outline', 'Reminder to change Password', value, {type: 'switch', id:'profile.notifications.changePassword', isEdit: isEdit});
 		
-		node += app.getField('mail_outline', 'Security notification related to your account', true, {type: 'switch', id:'notifications.security'});
+		node += app.getField('mail_outline', 'Security notification related to your account', true, {type: 'switch', id:'profile.notifications.security', isEdit: false});
 		node += "	</div>";
 		node += "</section>";
 		
 		container.innerHTML += node;
 		componentHandler.upgradeDom();
+
+		var element1 = document.getElementById('switch-profile.notifications.reminder').parentNode;
+		if ( element1 ) {
+			element1.addEventListener('change', function(e) {
+				if ( app.getSetting('notifications.email') && app.getSetting('notifications.unsubscription_token') ) {
+					var name = 'reminder';
+					var type = element1.classList.contains('is-checked')!==false?'subscribe': 'unsubscribe';
+					var myHeaders = new Headers();
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: 'GET', headers: myHeaders };
+					var url = app.baseUrl+'/mail/'+app.getSetting('notifications.email')+'/'+type+'/'+name+'/'+app.getSetting('notifications.unsubscription_token')+'/';
+					
+					fetch(url, myInit)
+					.then(
+						fetchStatusHandler
+					).then(function(response) {
+						toast('Subscription '+name+' ('+type+') updated.', {timeout:3000, type: 'done'});
+					})
+					.catch(function (error) {
+						if ( localStorage.getItem('settings.debug') == 'true' ) {
+							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+						}
+					});
+				} else {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
+						toast('Error occured on saving Notifications...', {timeout:3000, type: 'error'});
+					}
+				}
+			});
+		}
+
+		var element2 = document.getElementById('switch-profile.notifications.changePassword').parentNode;
+		if ( element2 ) {
+			element2.addEventListener('change', function(e) {
+				if ( app.getSetting('notifications.email') && app.getSetting('notifications.unsubscription_token') ) {
+					var name = 'changePassword';
+					var type = element2.classList.contains('is-checked')!==false?'subscribe': 'unsubscribe';
+					var myHeaders = new Headers();
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: 'GET', headers: myHeaders };
+					var url = app.baseUrl+'/mail/'+app.getSetting('notifications.email')+'/'+type+'/'+name+'/'+app.getSetting('notifications.unsubscription_token')+'/';
+					
+					fetch(url, myInit)
+					.then(
+						fetchStatusHandler
+					).then(function(response) {
+						/*
+						if (type == 'unsubscribe') {
+							app.setSetting('notifications.unsubscribed', {'reminder': app.getSetting('notifications.unsubscribed.reminder'), 'changePassword': 1234});
+						} else {
+							app.setSetting('notifications.unsubscribed.changePassword', {'reminder': app.getSetting('notifications.unsubscribed.reminder'), 'changePassword': null});
+						}
+						*/
+						toast('Subscription '+name+' ('+type+') updated.', {timeout:3000, type: 'done'});
+					})
+					.catch(function (error) {
+						if ( localStorage.getItem('settings.debug') == 'true' ) {
+							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+						}
+					});
+				} else {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
+						toast('Error occured on saving Notifications...', {timeout:3000, type: 'error'});
+					}
+				}
+			});
+		}
+		
 	} // displayUnsubscriptions
 	
 	app.setSetting = function(name, value) {
@@ -4287,7 +4357,7 @@ var containers = {
 		settings += app.getField('format_textdirection_l_to_r', 'Align buttons to Right', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('date_range', 'Date Format', app.getSetting('settings.date_format')!==null?app.getSetting('settings.date_format'):app.date_format, {type: 'input', id:'settings.date_format', isEdit: true});
 		settings += app.getField('subject', 'Card Chars Limit', app.getSetting('settings.cardMaxChars')!==null?app.getSetting('settings.cardMaxChars'):app.cardMaxChars, {type: 'input', id:'settings.cardMaxChars', isEdit: true, pattern: app.patterns.cardMaxChars, error:'Must be an Integer.'});
-		settings += app.getField('voice_over_off', 'Do Not Track header', navigator.doNotTrack?"Active, this can be updated from your browser settings.":"Inactive, this can be updated from your browser settings.", {type: 'switch', isEdit: false});
+		settings += app.getField('voice_over_off', 'Do Not Track (DNT) header', navigator.doNotTrack=='1'?"Active, this can be updated from your browser settings.":"Inactive, this can be updated from your browser settings.", {type: 'switch', isEdit: false});
 		settings += "	</div>";
 		settings += "</section>";
 		(containers.settings).querySelector('.page-content').innerHTML = settings;
@@ -4542,6 +4612,8 @@ var containers = {
 		localStorage.setItem('currentUserEmail', null);
 		localStorage.setItem('currentUserHeader', null);
 		localStorage.setItem('notifications.unsubscribed', null);
+		localStorage.setItem('notifications.unsubscription_token', null);
+		localStorage.setItem('notifications.email', null);
 		(containers.profile).querySelector('.page-content').innerHTML = "";
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
