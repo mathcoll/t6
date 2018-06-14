@@ -311,7 +311,7 @@ var containers = {
 				
 				fetch(url, myInit)
 				.then(
-						fetchStatusHandler
+					fetchStatusHandlerOnUser
 				).then(function(fetchResponse){
 					return fetchResponse.json();
 				})
@@ -322,7 +322,7 @@ var containers = {
 					app.setSection('manage_notifications');
 				})
 				.catch(function (error) {
-					toast('We can\'t process your signup. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+					toast('We can\'t process your signup. Please resubmit the form later! '+error, {timeout:3000, type: 'warning'});
 				});
 			} else {
 				toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', {timeout:3000, type: 'warning'});
@@ -1233,15 +1233,33 @@ var containers = {
 		if (response.status === 200 || response.status === 201) {
 			return response;
 		} else if (response.status === 400) {
-			toast('meta.revision is conflictual.', {timeout:3000, type: 'error'});
-			throw new Error('meta.revision is conflictual.');
+			toast('Bad Request.', {timeout:3000, type: 'error'});
+			throw new Error('Bad Request.');
 		} else if (response.status === 401 || response.status === 403) {
 			app.sessionExpired();
 			throw new Error(response.statusText);
+		} else if (response.status === 409) {
+			toast('Revision is conflictual.', {timeout:3000, type: 'error'});
+			throw new Error('Revision is conflictual.');
 		} else {
 			throw new Error(response.statusText);
 		}
 	}; // fetchStatusHandler
+	
+	function fetchStatusHandlerOnUser(response) {
+		if ( response.headers.get('X-RateLimit-Limit') && response.headers.get('X-RateLimit-Remaining') ) {
+			app.RateLimit.Limit = response.headers.get('X-RateLimit-Limit');
+			app.RateLimit.Remaining = response.headers.get('X-RateLimit-Remaining');
+			app.RateLimit.Used = app.RateLimit.Limit - app.RateLimit.Remaining;
+		}
+		if (response.status === 200 || response.status === 201) {
+			return response;
+		} else if (response.status === 409) {
+			throw new Error('Email already exists on t6, please Sign in.');
+		} else {
+			throw new Error(response.statusText);
+		}
+	}; // fetchStatusHandlerOnUser
 	
 	app.showModal = function() {
 		dialog.style.display = 'block';
