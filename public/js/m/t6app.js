@@ -4582,7 +4582,7 @@ var containers = {
 				if( response[i].title ) {
 					terms += "	<div class=\"mdl-card__title\">";
 					terms += "		<span class=\"mdl-typography--headline\">";
-					terms += "			<i class=\"material-icons\">business_center</i>"+response[i].title+"</span>";
+					terms += "			<i class=\"material-icons md-48\">business_center</i>"+response[i].title+"</span>";
 					terms += "	</div>";
 				}
 				terms += "		<div class=\"mdl-card__supporting-text no-padding\">";
