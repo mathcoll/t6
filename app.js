@@ -32,6 +32,7 @@ fs					= require('fs');
 util				= require('util');
 geoip				= require('geoip-lite');
 device				= require('device');
+useragent			= require('useragent');
 strength			= require('strength');
 events				= require('./events');
 events.setMeasurement('events');
@@ -77,6 +78,12 @@ dbDashboards	= new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()
 //dbDashboards.loadDatabase(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'));
 if ( dbDashboards === null ) console.log('db Dashboards is failing');
 if ( dbDashboards.getCollection('dashboards') === null ) console.log('Collection Dashboards is failing');
+
+/* Tokens settings */
+dbTokens	= new loki(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+//dbTokens.loadDatabase(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'));
+if ( dbTokens === null ) console.log('db Tokens is failing');
+if ( dbTokens.getCollection('tokens') === null ) console.log('Collection Tokens is failing');
 
 client.on("connect", function () {
 	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)"}), {retain: false});

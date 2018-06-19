@@ -48,7 +48,8 @@
     "sprintf-js": "~1.0.3",
     "squel": "~4.2.3",
     "strength": "^0.1.4",
-    "striptags": "^2.1.1"
+    "striptags": "^2.1.1",
+    "useragent": "^2.3.0"
   },
   "readmeFilename": "README.md",
   "devDependencies": {},

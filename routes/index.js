@@ -254,7 +254,6 @@ router.post('/authenticate', function (req, res) {
 		'$and': [
 					{ 'email': email },
 					{ 'password': md5(password) },
-					// TODO: expiration !! {'expiration': { '$gte': moment().format('x') }},
 				]
 		};
 		var user = users.findOne(queryU);
@@ -283,17 +282,38 @@ router.post('/authenticate', function (req, res) {
 	    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
 	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 	        
-	        // Add the refresh token to the list
-	        /*
-	    	tokens	= db.getCollection('tokens');
-	    	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
+	    	tokens	= dbTokens.getCollection('tokens');
+	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
 	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
-	    	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
-	    	*/
-	        return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
+
+	    	var mydevice = device(req.headers['user-agent']);
+	    	var agent = useragent.parse(req.headers['user-agent']);
+	    	var type = mydevice.is('desktop')!==false?'desktop':
+	    		mydevice.is('tv')!==false?'tv':
+	    			mydevice.is('tablet')!==false?'tablet':
+	    				mydevice.is('phone')!==false?'phone':
+	    					mydevice.is('bot')!==false?'bot':
+		    					mydevice.is('car')!==false?'car':
+			    					mydevice.is('console')!==false?'console':'unknown';
+	    	var t = {
+	    		user_id: user.id,
+	    		refresh_token: refreshPayload,
+	    		expiration: refreshTokenExp,
+	    		'user-agent': {
+	    			'agent': agent.toAgent(),
+	    			'string': agent.toString(),
+	    			'version': agent.toVersion(),
+	    			'os': agent.os.toString(),
+	    			'osVersion': agent.os.toVersion(),
+	    		},
+	    		'device-type': type,
+	    	};
+	    	tokens.insert(t);
+	    	
+	    	var refresh_token = user.id + '.' + refreshPayload;
+	        return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 	    }
 	} else if ( ( req.body.api_key && req.body.api_secret ) && req.body.grant_type === 'access_token' ) {
-		var tokens	= db.getCollection('tokens');
 		var queryT = {
 		'$and': [
 					{ 'key': req.body.api_key },
@@ -320,36 +340,120 @@ router.post('/authenticate', function (req, res) {
 			payload.token_type = "Bearer";
 			payload.scope = "ClientApi";
 			payload.sub = '/users/'+user.id;
+			
 			if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-			
-			// Add the refresh token to the list
-			/*
-	    	tokens	= db.getCollection('tokens');
-	    	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
+	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+	        
+	    	tokens	= dbTokens.getCollection('tokens');
+	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
 	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
-	    	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
-			 */
-			return res.status(200).json( {status: 'ok', token: token/*, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp*/} );
-			
+
+	    	var mydevice = device(req.headers['user-agent']);
+	    	var agent = useragent.parse(req.headers['user-agent']);
+	    	var type = mydevice.is('desktop')!==false?'desktop':
+	    		mydevice.is('tv')!==false?'tv':
+	    			mydevice.is('tablet')!==false?'tablet':
+	    				mydevice.is('phone')!==false?'phone':
+	    					mydevice.is('bot')!==false?'bot':
+		    					mydevice.is('car')!==false?'car':
+			    					mydevice.is('console')!==false?'console':'unknown';
+	    	var t = {
+	    		user_id: user.id,
+	    		refresh_token: refreshPayload,
+	    		expiration: refreshTokenExp,
+	    		'user-agent': {
+	    			'agent': agent.toAgent(),
+	    			'string': agent.toString(),
+	    			'version': agent.toVersion(),
+	    			'os': agent.os.toString(),
+	    			'osVersion': agent.os.toVersion(),
+	    		},
+	    		'device-type': type,
+	    	};
+	    	tokens.insert(t);
+	    	
+	    	var refresh_token = user.id + '.' + refreshPayload;
+	        return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}).serialize());
-			
 		}
-	}  else if ( req.body.refresh_token && req.body.grant_type === 'refresh_token' ) {
-		// TODO
-		// Get the refresh_token and check its content
-		/*
-		if ( refresh_token is valid ) {
+	} else if ( req.body.refresh_token && req.body.grant_type === 'refresh_token' ) {
+		var user_id = req.body.refresh_token.split('.')[0];
+		var token = req.body.refresh_token.split('.')[1];
+		tokens	= dbTokens.getCollection('tokens');
+		
+		var queryT = {
+				'$and': [
+							{ 'user_id': user_id },
+							{ 'refresh_token': token },
+							{ 'expiration': { '$gte': moment().format('X') } },
+						]
+				};
+		if ( user_id && token && tokens.findOne(queryT) ) {
 			// Sign a new token
+			var user = users.findOne({ 'id': user_id });
+			var geo = geoip.lookup(req.ip);
+			
+			if ( user.location === undefined || user.location === null ) {
+				user.location = {geo: geo, ip: req.ip,};
+			}
+			users.update(user);
+			db.save();
+			
+			var payload = JSON.parse(JSON.stringify(user));
+			payload.permissions = undefined;
+			payload.token = undefined;
+			payload.password = undefined;
+			payload.gravatar = undefined;
+			payload.meta = undefined;
+			payload.$loki = undefined;
+			payload.token_type = "Bearer";
+			payload.scope = "ClientApi";
+			payload.sub = '/users/'+user.id;
+			
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
+	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+
+	    	var mydevice = device(req.headers['user-agent']);
+	    	var agent = useragent.parse(req.headers['user-agent']);
+	    	var type = mydevice.is('desktop')!==false?'desktop':
+	    		mydevice.is('tv')!==false?'tv':
+	    			mydevice.is('tablet')!==false?'tablet':
+	    				mydevice.is('phone')!==false?'phone':
+	    					mydevice.is('bot')!==false?'bot':
+		    					mydevice.is('car')!==false?'car':
+			    					mydevice.is('console')!==false?'console':'unknown';
+	    	var t = {
+	    		user_id: user.id,
+	    		refresh_token: refreshPayload,
+	    		expiration: refreshTokenExp,
+	    		'user-agent': {
+	    			'agent': agent.toAgent(),
+	    			'string': agent.toString(),
+	    			'version': agent.toVersion(),
+	    			'os': agent.os.toString(),
+	    			'osVersion': agent.os.toVersion(),
+	    		},
+	    		'device-type': type,
+	    	};
+	    	tokens.insert(t);
+	    	
+	    	var refresh_token = user.id + '.' + refreshPayload;
+	        
+			return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(400).send(new ErrorSerializer({'id': 102.4, 'code': 400, 'message': 'Invalid Refresh Token'}).serialize());
 		}
-		*/
-		return res.status(500).send(new ErrorSerializer({'id': 102.2, 'code': 500, 'message': 'Not implemented'}).serialize());
 	} else {
 		// TODO
         return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}).serialize());
+	}
+	tokens	= dbTokens.getCollection('tokens');
+	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('x') } } );
+	if ( expired ) {
+		tokens.remove(expired);
+		db.save();
 	}
 });
 
