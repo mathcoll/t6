@@ -1,5 +1,5 @@
 
-var dataCacheName= 't6-cache-2018-06-13';
+var dataCacheName= 't6-cache-2018-06-15';
 var cacheName= dataCacheName;
 var cacheWhitelist = ['internetcollaboratif.info', 'localhost', 'css', 'img', 'js', 'gravatar'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token'];
@@ -29,6 +29,8 @@ var filesToCache = [
     '//cdn.internetcollaboratif.info/img/m/welcome_card.jpg',
     '//cdn.internetcollaboratif.info/img/m/side-nav-bg.jpg',
     '//cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png',
+    //external/fonts
+    '//fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2'
 ];
 
 function refresh(response) {
