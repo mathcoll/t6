@@ -246,6 +246,12 @@ router.all('*', function (req, res, next) {
  * @apiUse 500
  */
 router.post('/authenticate', function (req, res) {
+	tokens	= dbTokens.getCollection('tokens');
+	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('x') } } );
+	if ( expired ) {
+		tokens.remove(expired);
+		db.save();
+	}
 	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === 'password') ) {
 		var email = req.body.username;
 		var password = req.body.password;
@@ -282,7 +288,6 @@ router.post('/authenticate', function (req, res) {
 	    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
 	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 	        
-	    	tokens	= dbTokens.getCollection('tokens');
 	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
 	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
 
@@ -344,7 +349,6 @@ router.post('/authenticate', function (req, res) {
 			if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
 	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 	        
-	    	tokens	= dbTokens.getCollection('tokens');
 	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
 	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
 
@@ -380,7 +384,6 @@ router.post('/authenticate', function (req, res) {
 	} else if ( req.body.refresh_token && req.body.grant_type === 'refresh_token' ) {
 		var user_id = req.body.refresh_token.split('.')[0];
 		var token = req.body.refresh_token.split('.')[1];
-		tokens	= dbTokens.getCollection('tokens');
 		
 		var queryT = {
 				'$and': [
@@ -448,12 +451,6 @@ router.post('/authenticate', function (req, res) {
 	} else {
 		// TODO
         return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}).serialize());
-	}
-	tokens	= dbTokens.getCollection('tokens');
-	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('x') } } );
-	if ( expired ) {
-		tokens.remove(expired);
-		db.save();
 	}
 });
 
