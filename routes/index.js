@@ -247,11 +247,6 @@ router.all('*', function (req, res, next) {
  */
 router.post('/authenticate', function (req, res) {
 	tokens	= dbTokens.getCollection('tokens');
-	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('x') } } );
-	if ( expired ) {
-		tokens.remove(expired);
-		db.save();
-	}
 	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === 'password') ) {
 		var email = req.body.username;
 		var password = req.body.password;
@@ -392,6 +387,11 @@ router.post('/authenticate', function (req, res) {
 							{ 'expiration': { '$gte': moment().format('X') } },
 						]
 				};
+		console.log("HERE");
+		console.log(user_id);
+		console.log(token);
+		console.log(queryT);
+		console.log(tokens);
 		if ( user_id && token && tokens.findOne(queryT) ) {
 			// Sign a new token
 			var user = users.findOne({ 'id': user_id });
@@ -451,6 +451,11 @@ router.post('/authenticate', function (req, res) {
 	} else {
 		// TODO
         return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}).serialize());
+	}
+	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('x') } } );
+	if ( expired ) {
+		tokens.remove(expired);
+		db.save();
 	}
 });
 

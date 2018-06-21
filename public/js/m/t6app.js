@@ -11,6 +11,7 @@ var app = {
 	date_format: 'DD/MM/YYYY, HH:mm',
 	cardMaxChars: 256,
 	cookieconsent: 30,
+	refreshExpiresInSeconds: 280000,
 	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15},
 	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
 	currentSection: 'index',
@@ -3549,7 +3550,7 @@ var containers = {
 		localStorage.removeItem("currentUserEmail");
 		localStorage.removeItem("currentUserHeader");
 		localStorage.removeItem("currentUserBackground");
-		document.getElementById("imgIconMenu").outerHTML = "<i id=\"imgIconMenu\" class=\"material-icons\">menu</i>";
+		if (document.getElementById("imgIconMenu")) document.getElementById("imgIconMenu").outerHTML = "<i id=\"imgIconMenu\" class=\"material-icons\">menu</i>";
 		app.setDrawer();
 	}
 
@@ -4281,8 +4282,10 @@ var containers = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			if ( response.token ) {
+			if ( response.token && response.refresh_token && response.refreshTokenExp ) {
 				localStorage.setItem('bearer', response.token);
+				localStorage.setItem('refresh_token', response.refresh_token);
+				localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
 				app.isLogged = true;
 				app.resetSections();
 				app.fetchProfile();
@@ -4308,6 +4311,7 @@ var containers = {
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
+				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
 				app.getDatatypes();
 				app.getFlows();
@@ -4327,6 +4331,48 @@ var containers = {
 		});
 		app.auth = {};
 	} // authenticate
+	
+	app.refreshAuthenticate = function() {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		var refreshPOST = {"grant_type": "refresh_token", "refresh_token": localStorage.getItem('refresh_token')};
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(refreshPOST) };
+		var url = app.baseUrl+"/"+app.api_version+"/authenticate";
+		
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			if ( response.token && response.refresh_token && response.refreshTokenExp ) {
+				localStorage.setItem('bearer', response.token);
+				localStorage.setItem('refresh_token', response.refresh_token);
+				localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
+				
+				app.isLogged = true;
+				app.resetSections();
+
+				app.setHiddenElement("signin_button"); 
+				app.setVisibleElement("logout_button");
+				app.setHiddenElement("signin_button"); 
+				app.setVisibleElement("logout_button");
+			} else {
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
+					toast('Auth internal error', {timeout:3000, type: 'error'});
+				}
+				app.resetDrawer();
+			}
+		})
+		.catch(function (error) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
+				toast('We can\'t process your identification. Please resubmit your credentials on login page!', {timeout:3000, type: 'warning'});
+				document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+			}
+		});
+		app.auth = {};
+	} // refreshAuthenticate
 
 	app.addMenuItem = function(title, icon, link, position) {
 		var menuElt = document.createElement("a");
@@ -4591,7 +4637,7 @@ var containers = {
 				terms += "	</div>";
 				terms += "</section>";
             }
-
+			
 			(containers.terms).querySelector('.page-content').innerHTML = terms;
 			if ( !app.isLogged ) {
 				app.displayLoginForm( (containers.terms).querySelector('.page-content') );
@@ -4623,6 +4669,8 @@ var containers = {
 	
 	app.sessionExpired = function() {
 		localStorage.setItem('bearer', null);
+		localStorage.setItem('refresh_token', null);
+		localStorage.setItem('refreshTokenExp', null);
 		localStorage.setItem('flows', null);
 		localStorage.setItem('snippets', null);
 		localStorage.setItem('currentUserId', null);
@@ -4867,38 +4915,33 @@ var containers = {
 	/*
 	 * *********************************** Run the App ***********************************
 	 */
-	if ( localStorage.getItem("bearer") !== null ) {
+	if ( localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix() ) {
 		app.isLogged = true;
-		app.setHiddenElement("signin_button"); 
-		app.setVisibleElement("logout_button");
-		app.getUnits();
-		app.getDatatypes();
 	}
+	
+	var currentPage = localStorage.getItem("currentPage");
 	if ( window.location.hash ) {
-		var p = window.location.hash.substr(1);
-		if ( p === 'terms' ) {
+		currentPage = window.location.hash.substr(1);
+		if ( currentPage === 'terms' ) {
 			onTermsButtonClick();
-		} else if ( p === 'docs' ) {
+		} else if ( currentPage === 'docs' ) {
 			onDocsButtonClick();
-		} else if ( p === 'status' ) {
+		} else if ( currentPage === 'status' ) {
 			onStatusButtonClick();
-		} else if ( p === 'settings' ) {
+		} else if ( currentPage === 'settings' ) {
 			onSettingsButtonClick();
-		} else if ( p === 'login' ) {
+		} else if ( currentPage === 'login' ) {
 			app.isLogged = false;
 			localStorage.setItem("bearer", null);
-			app.setSection(p);
+			app.setSection(currentPage);
 		} else {
-			app.setSection(p);
-		}
-	} else {
-		var currentPage = localStorage.getItem("currentPage");
-		if ( currentPage ) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
-			}
 			app.setSection(currentPage);
 		}
+	} else if ( currentPage ) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
+			toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
+		}
+		app.setSection(currentPage);
 	}
 	app.fetchIndex('index');
 	app.refreshButtonsSelectors();
@@ -4907,9 +4950,19 @@ var containers = {
 	app.refreshButtonsSelectors();
 	setPasswordResetAction();
 	setForgotAction();
+	
+	if( !app.isLogged || app.auth.username === undefined ) {
+		if ( localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix() ) {
+			app.refreshAuthenticate();
 
-	if( localStorage.getItem('bearer') === null || localStorage.getItem('bearer') === undefined || app.auth.username === null ) {
-		app.sessionExpired();
+			app.setHiddenElement("signin_button");
+			app.setVisibleElement("logout_button");
+			app.getUnits();
+			app.getDatatypes();
+			setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
+		} else {
+			app.sessionExpired();
+		}
 	}
 	
 	for (var i in buttons.notifications) {
