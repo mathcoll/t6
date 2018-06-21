@@ -1,26 +1,27 @@
 
-var dataCacheName= 't6-cache-2018-06-15';
+var dataCacheName= 't6-cache-2018-06-21';
 var cacheName= dataCacheName;
-var cacheWhitelist = ['internetcollaboratif.info', 'localhost', 'css', 'img', 'js', 'gravatar'];
+var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar', 'gstatic'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token'];
 var filesToCache = [
     //local
-    '/manifest.json',
-    '/applicationStart',
     '/',
-    //local/styles
+    '/manifest.json',
     '/css/t6App.min.css',
-    //local/images
     '/img/opl_img3.jpg',
     '/img/opl_img2.jpg',
     '/img/opl_img.jpg',
     '/img/m/welcome_card.jpg',
     '/img/m/side-nav-bg.jpg',
+    '/img/m/icons/icon-128x128.png',
+    //external/fonts
+    /*
+    '/fonts/Material-Icons.woff2',
     //cdn/javascripts
-    '//cdn.internetcollaboratif.info/js/m/vendor.min.js',
     '//cdn.internetcollaboratif.info/js/m/t6app.js',
     //cdn/styles
     '//cdn.internetcollaboratif.info/css/t6App.min.css',
+    '//cdn.internetcollaboratif.info/js/m/vendor.min.js',
     //cdn/images
     '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
     '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
@@ -28,9 +29,8 @@ var filesToCache = [
     '//cdn.internetcollaboratif.info/img/phone.jpg',
     '//cdn.internetcollaboratif.info/img/m/welcome_card.jpg',
     '//cdn.internetcollaboratif.info/img/m/side-nav-bg.jpg',
-    '//cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png',
-    //external/fonts
-    '//fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2'
+    '//cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png'
+    */
 ];
 
 function refresh(response) {
@@ -78,10 +78,9 @@ function fromServer(request){
 
 self.addEventListener('install', function(e) {
 	console.log('[ServiceWorker] Install.');
-	/*
 	e.waitUntil(
 		caches.open(cacheName).then(function(cache) {
-			console.log('[ServiceWorker] Caching app shell.', cache, cacheName);
+			console.log('[ServiceWorker] Caching app shell.', cacheName);
 			return cache.addAll(filesToCache);
 		})
 	);
@@ -89,7 +88,6 @@ self.addEventListener('install', function(e) {
 		console.log('[ServiceWorker] Skip waiting on install');
 		return self.skipWaiting();
 	}));
-	*/
 });
 
 self.addEventListener('activate', function(e) {
