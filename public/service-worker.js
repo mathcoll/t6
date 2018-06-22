@@ -17,6 +17,8 @@ var filesToCache = [
     //external/fonts
     /*
     '/fonts/Material-Icons.woff2',
+    '/img/m/icons/icon-128x128.png',
+    /*
     //cdn/javascripts
     '//cdn.internetcollaboratif.info/js/m/t6app.js',
     //cdn/styles
