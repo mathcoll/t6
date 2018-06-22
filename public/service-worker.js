@@ -2,7 +2,7 @@
 var dataCacheName= 't6-cache-2018-06-21';
 var cacheName= dataCacheName;
 var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar', 'gstatic'];
-var cacheBlacklist = ['v2', 'authenticate', 'users/me/token'];
+var cacheBlacklist = ['v2', 'authenticate', 'users/me/token', '/mail/'];
 var filesToCache = [
     //local
     '/',
@@ -78,22 +78,22 @@ function fromServer(request){
 }
 
 self.addEventListener('install', function(e) {
-	console.log('[ServiceWorker] Install.');
+	console.log('[ServiceWorker]', 'Install.');
 	e.waitUntil(
 		caches.open(cacheName).then(function(cache) {
-			console.log('[ServiceWorker] Caching app shell.', cacheName);
+			console.log('[ServiceWorker]', 'Caching app shell.', cacheName);
 			return cache.addAll(filesToCache);
 		})
 	);
 	e.waitUntil(precache().then(function() {
-		console.log('[ServiceWorker] Skip waiting on install');
+		console.log('[ServiceWorker]', 'Skip waiting on install');
 		return self.skipWaiting();
 	}));
 });
 
 self.addEventListener('activate', function(e) {
-	console.log('[ServiceWorker] Activate.');
-	console.log('[ServiceWorker] Claiming clients for current page', self.clients.claim());
+	console.log('[ServiceWorker]', 'Activate.');
+	console.log('[ServiceWorker]', 'Claiming clients for current page', self.clients.claim());
 	return self.clients.claim();
 });
 
@@ -110,21 +110,21 @@ function matchInArray(string, expressions) {
 
 self.addEventListener('fetch', function(e) {
 	if ( matchInArray(e.request.url, cacheBlacklist) ) {
-		console.log('[ServiceWorker] Serving the asset from server (Blacklisted).', e.request.url);
+		console.log('[ServiceWorker]', 'Serving the asset from server (Blacklisted).', e.request.url);
 		e.respondWith(fromServer(e.request));
 	} else if ( matchInArray(e.request.url, cacheWhitelist) ) {
-		console.log('[ServiceWorker] Serving the asset from cache (Whitelisted).', e.request.url);
+		console.log('[ServiceWorker]', 'Serving the asset from cache (Whitelisted).', e.request.url);
 		e.respondWith(fromCache(e.request).catch(fromServer(e.request)));
 		e.waitUntil(update(e.request));
 	} else {
-		console.log('[ServiceWorker] from server directly.', e.request.url);
+		console.log('[ServiceWorker]', 'Serving the asset from server directly.', e.request.url);
 		fromServer(e.request);
 	}
 });
 
 self.addEventListener('push', function(event) {
-	//console.log('[ServiceWorker] Push Received.');
-	//console.log('[ServiceWorker] Push had this data: ', event);
+	//console.log('[pushSubscription]', 'Push Received.');
+	//console.log('[pushSubscription]', 'Push had this data: ', event);
 	if( event.data && event.data.text() ) {
 		var notif = JSON.parse(event.data.text());
 		const title = notif.title!==null?notif.title:'t6 notification';
@@ -135,7 +135,7 @@ self.addEventListener('push', function(event) {
 		if ( notif.type == 'message' ) {
 			event.waitUntil(self.registration.showNotification(title, options));
 		} else {
-			console.log(notif);
+			console.log('[pushSubscription]', notif);
 		}
 	}
 });

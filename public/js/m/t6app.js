@@ -1,3 +1,16 @@
+/*
+ * Debug console filters
+ * DEBUG
+ * [gtm]
+ * [indexedDB]
+ * [JWT]
+ * [History]
+ * [Orientation]
+ * [pushSubscription]
+ * [ServiceWorker]
+ * [setSection]
+ */
+
 var app = {
 	api_version: 'v2.0.1',
 	debug: false,
@@ -469,13 +482,13 @@ var containers = {
 				app.setSetting('settings.pushSubscription.keys.auth', j.keys.auth);
 			}
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('pushSubscription', j);
+				console.log('[pushSubscription]', j);
 			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('subscribeUserToPush', error);
+				console.log('[pushSubscription]', 'subscribeUserToPush'+error);
 			}
 		});
 	}; // subscribeUserToPush
@@ -617,7 +630,7 @@ var containers = {
 			unit: myForm.querySelector("select[name='Unit']").value,
 		};
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('onAddFlow', JSON.stringify(body));
+			console.log('DEBUG onAddFlow', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -689,7 +702,7 @@ var containers = {
 			flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 		};
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('onAddSnippet', JSON.stringify(body));
+			console.log('DEBUG onAddSnippet', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -725,7 +738,7 @@ var containers = {
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('onSaveDashboard', JSON.stringify(body));
+				console.log('DEBUG onSaveDashboard', JSON.stringify(body));
 			}
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -759,7 +772,7 @@ var containers = {
 			snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
 		};
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('onAddDashboard', JSON.stringify(body));
+			console.log('DEBUG onAddDashboard', JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -910,7 +923,7 @@ var containers = {
 	app.setSection = function(section, direction) {
 		section = section.split("?")[0];
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('setSection', section);
+			console.log('[setSection]', section);
 		}
 		window.scrollTo(0, 0);
 		if ( section === 'public-object' ) {
@@ -1111,7 +1124,7 @@ var containers = {
 
 	app.setItemsClickAction = function(type) {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('setItemsClickAction', type);
+			console.log('DEBUG setItemsClickAction', type);
 		}
 		var items = document.querySelectorAll("[data-action='view']");
 		for (var i in items) {
@@ -1292,7 +1305,7 @@ var containers = {
 				return true;
 			}, function(err) {
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					console.log('clipboard', 'Could not copy text: ', err);
+					console.log('DEBUG clipboard', 'Could not copy text: ', err);
 				}
 				toast('Could not copy text: '+text, {timeout:5000, type: 'warning'});
 				return false;
@@ -3182,7 +3195,7 @@ var containers = {
 				
 			} else {
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					console.log('Error no Type defined: '+type);
+					console.log('DEBUG Error no Type defined: '+type);
 					toast('Error no Type defined.', {timeout:3000, type: 'error'});
 				}
 				type=undefined;
@@ -4726,7 +4739,7 @@ var containers = {
 	
 	app.resetSections = function() {
 		/* reset views to default */
-		if (localStorage.getItem('settings.debug') == 'true') { console.log('resetSections()'); }
+		if (localStorage.getItem('settings.debug') == 'true') { console.log('DEBUG resetSections()'); }
 		(containers.objects).querySelector('.page-content').innerHTML = '';
 		(containers.object).querySelector('.page-content').innerHTML = '';
 		(containers.flows).querySelector('.page-content').innerHTML = '';
@@ -4769,20 +4782,17 @@ var containers = {
 		var transaction = db.transaction(['jwt'], 'readwrite');
 		var store = transaction.objectStore('jwt');
 		var request = store.add(item);
-		// var request = db.transaction(["jwt"],
-		// "readwrite").objectStore("jwt").add(item);
 		request.onsuccess = function(event) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("add(): onsuccess.");
+				console.log("DEBUG add(): onsuccess.");
 			}
 		}
 		request.onerror = function(event) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("add(): onerror.");
+				console.log("DEBUG add(): onerror.");
 				console.log(event);
 			}
 		}
-		// return;
 	}
 	
 	app.searchJWT = function() {
@@ -4791,13 +4801,11 @@ var containers = {
 		var request = tx.objectStore("jwt").index("exp");
 
 		var toDate = moment().unix();
-		//console.log(toDate);
 		var range = idbkr.upperBound(""+toDate, false);
 		request.openCursor(range, 'prev').onsuccess = function(e) {
 			var cursor = e.target.result;
 			if(cursor && cursor.value['token']) {
 				jwt = cursor.value['token'];
-				//console.log(parseInt(cursor.value['exp']));
 				if ( app.debug == true ) {
 					console.log('Using JWT expiring on '+moment(parseInt(cursor.value['exp']*1000)).format(app.date_format));
 				}
@@ -4807,34 +4815,33 @@ var containers = {
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					console.log("Autologin completed. Using JWT:");
+					console.log("[JWT]", "Autologin completed. Using JWT:");
 					console.log(jwt);
 				}
 				toast('Still here! :-)', {timeout:3000, type: 'done'});
 				
 				return jwt;
-				//cursor.continue();
 			}
 		}
 		tx.onabort = function() {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("searchJWT(): tx onerror.");
+				console.log("[JWT]", "searchJWT(): tx onerror.");
 				console.log(tx.error);
 			}
 		}
 		request.openCursor(range, 'prev').onerror = function(e) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("openCursor: onerror.");
+				console.log("[JWT]", "openCursor: onerror.");
 			}
 		}
 		request.onsuccess = function(event) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("searchJWT(): onsuccess.");
+				console.log("[JWT]", "searchJWT(): onsuccess.");
 			}
 		};
 		request.onerror = function(event) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("searchJWT(): onerror.");
+				console.log("[JWT]", "searchJWT(): onerror.");
 				console.log(event);
 			}
 		}
@@ -4843,7 +4850,7 @@ var containers = {
 
 	app.showOrientation = function() {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			toast("Orientation: " + screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
+			toast("[Orientation]", screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
 		}
 	}
 	
@@ -5022,10 +5029,6 @@ var containers = {
 	
 	window.addEventListener('hashchange', function() {
 		if( window.history && window.history.pushState ) {
-			console.log('history', 'hashchange');
-			
-			//history.pushState( { section: window.location.hash.substr(1) }, window.location.hash.substr(1), '#'+window.location.hash.substr(1) );
-			//app.setSection(window.location.hash.substr(1));
 			localStorage.setItem("currentPage", window.location.hash.substr(1));
 			var id = getParameterByName('id');
 			var id2 = window.location.hash;
@@ -5035,8 +5038,9 @@ var containers = {
 				localStorage.setItem("currentResourceId", null);
 			}
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('history', '\"'+window.location.hash.substr(1)+'\"');
-				console.log('history resource id', id2);
+				console.log('[History]', 'hashchange');
+				console.log('[History]', window.location.hash.substr(1));
+				console.log('[History]', 'resource id', id2);
 			}
 		}
 	}, false);
@@ -5098,7 +5102,7 @@ var containers = {
 	
 	if (!('indexedDB' in window)) {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('indexedDB', 'This browser doesn\'t support IndexedDB.');
+			console.log('[indexedDB]', 'This browser doesn\'t support IndexedDB.');
 		}
 	} else {
 		db = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
@@ -5111,14 +5115,14 @@ var containers = {
 		});
 		request.onerror = function(event) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				alert('Database is on-error: ' + event.target.errorCode);
+				console.log('[indexedDB]', 'Database is on-error: ' + event.target.errorCode);
 			}
 		};
 		request.onsuccess = function(event) {
 			db = request.result;
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('Database is on-success');
-				console.log('searchJWT(): ');
+				console.log('[indexedDB]', 'Database is on-success');
+				console.log('[indexedDB]', 'searchJWT(): ');
 			}
 			if ( app.autologin === true ) {
 				app.searchJWT();
@@ -5129,8 +5133,7 @@ var containers = {
 			objectStore = db.createObjectStore("jwt", {keyPath: "exp", autoIncrement: true});
 			objectStore.createIndex("exp", "exp", { unique: false, autoIncrement: true });
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('Database is on-upgrade-needed');
-				//console.log('searchJWT(): '+ app.searchJWT());
+				console.log('[indexedDB]', 'Database is on-upgrade-needed');
 			}
 		};
 	}
@@ -5383,25 +5386,24 @@ var containers = {
 			'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 			})(window,document,'script','dataLayer',app.gtm);
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('gtm', 'gtm.start');
+			console.log('[gtm]', 'gtm.start');
 		}
 	}
 
 	if (!('serviceWorker' in navigator)) {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('serviceWorker', 'Service Worker isn\'t supported on this browser.');
+			console.log('[ServiceWorker]', 'Service Worker isn\'t supported on this browser.');
 		}
 		return;
 	} else {
-		// registerServiceWorker();
 		if (!('PushManager' in window)) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('PushManager', 'Push isn\'t supported on this browser.');
+				console.log('[pushSubscription]', 'Push isn\'t supported on this browser.');
 			}
 			return;
 		} else {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('PushManager', 'askPermission && subscribeUserToPush');
+				console.log('[pushSubscription]', 'askPermission && subscribeUserToPush');
 			}
 			askPermission();
 			subscribeUserToPush();
@@ -5416,8 +5418,6 @@ var containers = {
 		window.addEventListener('online', updateNetworkStatus, false);
 		window.addEventListener('offline', updateNetworkStatus, false);
 	});
-
-	// To update network status
 	function updateNetworkStatus() {
 		var msg = ''; var type= '';
 		if (navigator.onLine) {
