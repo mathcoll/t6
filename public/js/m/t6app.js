@@ -4398,11 +4398,25 @@ var containers = {
 	app.getSettings = function() {
 		var settings = "";
 		
+		settings += app.getSubtitle('Application settings');
+		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
+		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top position'}, {name: 'fab__bottom', value:'Bottom position'} ], isEdit: true });
+		settings += app.getField('format_textdirection_l_to_r', 'Action buttons', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'select', id: 'settings.isLtr', options: [ {name: 'true', value:'Aligned to the right'}, {name: 'false', value:'Aligned to the left'} ], isEdit: true });
+		settings += app.getField('bug_report', 'Debug', app.getSetting('settings.debug')!==null?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
+		settings += app.getField('room', 'Geolocalization', app.getSetting('settings.geolocalization')!==null?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
+		settings += app.getField('date_range', 'Date Format', app.getSetting('settings.date_format')!==null?app.getSetting('settings.date_format'):app.date_format, {type: 'input', id:'settings.date_format', isEdit: true});
+		settings += app.getField('subject', 'Card Chars Limit', app.getSetting('settings.cardMaxChars')!==null?app.getSetting('settings.cardMaxChars'):app.cardMaxChars, {type: 'input', id:'settings.cardMaxChars', isEdit: true, pattern: app.patterns.cardMaxChars, error:'Must be an Integer.'});
+		settings += app.getField('voice_over_off', 'Do Not Track (DNT) header', navigator.doNotTrack=='1'?"Enabled, you are not being tracked. This setting is customized on your browser.":"Disabled, you are tracked :-) and it can be customized on your browser settings.", {type: 'switch', isEdit: false});
+		settings += "	</div>";
+		settings += "</section>";
+		
 		settings += app.getSubtitle('API Notifications');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
-		settings += app.getField('notifications', 'Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
+		settings += app.getField('notifications', 'Allow Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
 		if ( app.getSetting('settings.pushSubscription.keys.p256dh') ) {
 			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true});
 			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', id:'settings.pushSubscription.keys.p256dh', isEdit: true});
@@ -4411,19 +4425,6 @@ var containers = {
 		settings += "	</div>";
 		settings += "</section>";
 		
-		settings += app.getSubtitle('Application');
-		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
-		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
-		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top'}, {name: 'fab__bottom', value:'Bottom'} ], isEdit: true });
-		settings += app.getField('bug_report', 'Debug', app.getSetting('settings.debug')!==null?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
-		settings += app.getField('room', 'Geolocalization', app.getSetting('settings.geolocalization')!==null?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
-		settings += app.getField('format_textdirection_l_to_r', 'Align buttons to Right', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'switch', id: 'settings.isLtr', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
-		settings += app.getField('date_range', 'Date Format', app.getSetting('settings.date_format')!==null?app.getSetting('settings.date_format'):app.date_format, {type: 'input', id:'settings.date_format', isEdit: true});
-		settings += app.getField('subject', 'Card Chars Limit', app.getSetting('settings.cardMaxChars')!==null?app.getSetting('settings.cardMaxChars'):app.cardMaxChars, {type: 'input', id:'settings.cardMaxChars', isEdit: true, pattern: app.patterns.cardMaxChars, error:'Must be an Integer.'});
-		settings += app.getField('voice_over_off', 'Do Not Track (DNT) header', navigator.doNotTrack=='1'?"Active, this can be updated from your browser settings.":"Inactive, this can be updated from your browser settings.", {type: 'switch', isEdit: false});
-		settings += "	</div>";
-		settings += "</section>";
 		(containers.settings).querySelector('.page-content').innerHTML = settings;
 		componentHandler.upgradeDom();
 		
@@ -4447,6 +4448,19 @@ var containers = {
 						}
 					}
 					toast('Floating Button are aligned Bottom.', {timeout:3000, type: 'done'});
+				}
+			});
+		}
+		if ( document.getElementById('settings.isLtr') ) {
+			document.getElementById('settings.isLtr').addEventListener('change', function(e) {
+				app.setSetting('settings.isLtr', e.target.value);
+				var fabs = document.querySelectorAll('.mdl-button--fab_flinger-container');
+				if ( e.target.value == 'true' ) {
+					app.setSetting('settings.isLtr', true);
+					toast('Action buttons are aligned to the right.', {timeout:3000, type: 'done'});
+				} else {
+					app.setSetting('settings.isLtr', false);
+					toast('Action buttons are aligned to the left.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
@@ -4476,17 +4490,6 @@ var containers = {
 				} else {
 					app.setSetting('settings.geolocalization', false);
 					toast('Geolocalization is disabled.', {timeout:3000, type: 'done'});
-				}
-			});
-		}
-		if ( document.getElementById('switch-settings.isLtr') ) {
-			document.getElementById('switch-settings.isLtr').addEventListener('change', function(e) {
-				if ( document.getElementById('switch-settings.isLtr').checked == true ) {
-					app.setSetting('settings.isLtr', true);
-					toast('Buttons are aligned Right.', {timeout:3000, type: 'done'});
-				} else {
-					app.setSetting('settings.isLtr', false);
-					toast('Buttons are aligned Left.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
