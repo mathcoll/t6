@@ -22,5 +22,18 @@
   "template": {
   	"withCompare": true,
   	"withGenerator": true
-  }
+  },
+  "order": [
+    "User",
+	"0 Datapoint",
+	"1 Object",
+	"2 Flow",
+	"3 Dashboard",
+	"4 Snippet",
+	"5 Rule",
+	"6 Mqtt",
+	"7 Admin User",
+	"8 Notifications email",
+	"General"
+  ]
 }

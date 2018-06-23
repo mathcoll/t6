@@ -230,7 +230,7 @@ router.all('*', function (req, res, next) {
 /**
  * @api {post} /authenticate Authenticate a user and create a JWT Token
  * @apiName Authenticate a user and create a JWT Token
- * @apiGroup General
+ * @apiGroup User
  * @apiVersion 2.0.1
  * 
  * @apiParam {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
@@ -387,11 +387,6 @@ router.post('/authenticate', function (req, res) {
 							{ 'expiration': { '$gte': moment().format('X') } },
 						]
 				};
-		console.log("HERE");
-		console.log(user_id);
-		console.log(token);
-		console.log(queryT);
-		console.log(tokens);
 		if ( user_id && token && tokens.findOne(queryT) ) {
 			// Sign a new token
 			var user = users.findOne({ 'id': user_id });
@@ -463,7 +458,7 @@ router.post('/authenticate', function (req, res) {
 /**
  * @api {post} /refresh Refresh a JWT Token
  * @apiName Refresh a JWT Token
- * @apiGroup General
+ * @apiGroup User
  * @apiVersion 2.0.1
  * 
  * @apiHeader {String} Authorization Bearer &lt;Token&gt;

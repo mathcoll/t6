@@ -238,7 +238,7 @@ router.post('/', function (req, res) {
  * @apiName Generate Access Tokens
  * @apiGroup User
  * @apiVersion 2.0.1
- * @apiIgnore use now (#General:Authenticate).
+ * @apiIgnore use now (#User:Authenticate).
  * 
  * @apiParam {String{128}} [memo] Free memo string
  * 
