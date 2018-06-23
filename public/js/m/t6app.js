@@ -5335,7 +5335,7 @@ var containers = {
 		var io = new IntersectionObserver(
 			entries => {
 				entries.map(function(IOentry) {
-					if (IOentry.intersectionRatio > 0) {
+					if (IOentry.intersectionRatio > 0 && navigator.onLine) {
 						io.unobserve(IOentry.target);
 						preloadImage(IOentry.target);
 					}
