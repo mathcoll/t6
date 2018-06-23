@@ -452,7 +452,7 @@ router.post('/authenticate', function (req, res) {
 		// TODO
         return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}).serialize());
 	}
-	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('x') } } );
+	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('X') } } );
 	if ( expired ) {
 		tokens.remove(expired);
 		db.save();

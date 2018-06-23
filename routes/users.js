@@ -5,6 +5,7 @@ var UserSerializer = require('../serializers/user');
 var PermissionSerializer = require('../serializers/permission');
 var ErrorSerializer = require('../serializers/error');
 var AccessTokenSerializer = require('../serializers/accessToken');
+var refreshTokenSerializer = require('../serializers/refreshToken');
 var users;
 var tokens;
 
@@ -32,6 +33,7 @@ router.get('/list', expressJwt({secret: jwtsettings.secret}), function (req, res
  * @apiName Get Key+Secret list
  * @apiGroup User
  * @apiVersion 2.0.1
+ * @apiIgnore use now (#User:Get_User_active_sessions_list).
  * 
  * @apiUse Auth
  * @apiUse 201
@@ -69,9 +71,35 @@ router.get('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 	var user_id = req.params.user_id;
 	if ( req.user.id == user_id ) {
 		users	= db.getCollection('users');
-		res.status(200).send(new UserSerializer(users.find({'id': { '$eq': user_id }})).serialize());
+		res.status(200).send(new UserSerializer(users.find({'id': { '$eq': user_id }}).simplesort('expiration', true).data()).serialize());
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 16, 'code': 403, 'message': 'Forbidden'}).serialize());
+	}
+});
+
+/**
+ * @api {get} /users/me/sessions Get User active sessions list
+ * @apiName Get User active sessions list
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 500
+ */
+router.get('/me/sessions', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.id ) {
+		tokens	= dbTokens.getCollection('tokens');
+		var expired = tokens.find( { 'expiration' : { '$lt': moment().format('X') } } );
+		if ( expired ) {
+			tokens.remove(expired);
+			db.save();
+		}
+		res.status(200).send(new refreshTokenSerializer(tokens.find({'user_id': { '$eq': req.user.id }})).serialize());
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 17, 'code': 403, 'message': 'Forbidden'}).serialize());
 	}
 });
 
@@ -210,6 +238,7 @@ router.post('/', function (req, res) {
  * @apiName Generate Access Tokens
  * @apiGroup User
  * @apiVersion 2.0.1
+ * @apiIgnore use now (#General:Authenticate).
  * 
  * @apiParam {String{128}} [memo] Free memo string
  * 
