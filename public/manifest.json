@@ -23,6 +23,10 @@
             	"src": "/img/m/icons/icon-256x256.png",
             	"sizes": "256x256",
             	"type": "image/png"
+            }, {
+            	"src": "/img/m/icons/icon-256x256.png",
+            	"sizes": "512x512",
+            	"type": "image/png"
             }],
   "scope": "/",
   "start_url": "/",
