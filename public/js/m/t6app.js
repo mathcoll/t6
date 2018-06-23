@@ -4417,10 +4417,10 @@ var containers = {
 		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 		settings += app.getField('radio_button_checked', 'Floating Action Buttons', app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom', {type: 'select', id: 'settings.fab_position', options: [ {name: 'fab__top', value:'Top position'}, {name: 'fab__bottom', value:'Bottom position'} ], isEdit: true });
 		settings += app.getField('format_textdirection_l_to_r', 'Action buttons', app.getSetting('settings.isLtr')!==null?app.getSetting('settings.isLtr'):true, {type: 'select', id: 'settings.isLtr', options: [ {name: 'true', value:'Aligned to the right'}, {name: 'false', value:'Aligned to the left'} ], isEdit: true });
-		settings += app.getField('bug_report', 'Debug', app.getSetting('settings.debug')!==null?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
-		settings += app.getField('room', 'Geolocalization', app.getSetting('settings.geolocalization')!==null?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
 		settings += app.getField('date_range', 'Date Format', app.getSetting('settings.date_format')!==null?app.getSetting('settings.date_format'):app.date_format, {type: 'input', id:'settings.date_format', isEdit: true});
 		settings += app.getField('subject', 'Card Chars Limit', app.getSetting('settings.cardMaxChars')!==null?app.getSetting('settings.cardMaxChars'):app.cardMaxChars, {type: 'input', id:'settings.cardMaxChars', isEdit: true, pattern: app.patterns.cardMaxChars, error:'Must be an Integer.'});
+		settings += app.getField('room', app.getSetting('settings.geolocalization')!='false'?"Geolocalization is enabled":"Geolocalization is disabled", app.getSetting('settings.geolocalization')!==null?app.getSetting('settings.geolocalization'):true, {type: 'switch', id:'settings.geolocalization', isEdit: true});
+		settings += app.getField('bug_report', app.getSetting('settings.debug')!='false'?"Debug is enabled":"Debug is disabled", app.getSetting('settings.debug')!==null?app.getSetting('settings.debug'):app.debug, {type: 'switch', id: 'settings.debug', options: [ {name: 'true', value:'True'}, {name: 'false', value:'False'} ], isEdit: true });
 		settings += app.getField('voice_over_off', 'Do Not Track (DNT) header', navigator.doNotTrack=='1'?"Enabled, you are not being tracked. This setting is customized on your browser.":"Disabled, you are tracked :-) and it can be customized on your browser settings.", {type: 'switch', isEdit: false});
 		settings += "	</div>";
 		settings += "</section>";
@@ -4429,7 +4429,7 @@ var containers = {
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
-		settings += app.getField('notifications', 'Allow Notifications', app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
+		settings += app.getField('notifications', app.getSetting('settings.notifications')!='false'?"Notifications are enabled":"Notifications are disabled", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
 		if ( app.getSetting('settings.pushSubscription.keys.p256dh') ) {
 			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true});
 			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', id:'settings.pushSubscription.keys.p256dh', isEdit: true});
@@ -4479,14 +4479,17 @@ var containers = {
 		}
 		if ( document.getElementById('switch-settings.notifications') ) {
 			document.getElementById('switch-settings.notifications').addEventListener('change', function(e) {
+				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
 				if ( document.getElementById('switch-settings.notifications').checked == true ) {
 					app.setSetting('settings.notifications', true);
 					askPermission();
 					subscribeUserToPush();
+					label.innerText = "Notifications are enabled";
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('Awsome, Notifications are activated.', {timeout:3000, type: 'done'});
+						toast('Awsome, Notifications are enabled.', {timeout:3000, type: 'done'});
 					}
 				} else {
+					label.innerText = "Notifications are disabled";
 					app.setSetting('settings.notifications', false);
 					toast('Notifications are disabled.', {timeout:3000, type: 'done'});
 				}
@@ -4494,28 +4497,34 @@ var containers = {
 		}
 		if ( document.getElementById('switch-settings.geolocalization') ) {
 			document.getElementById('switch-settings.geolocalization').addEventListener('change', function(e) {
+				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
 				if ( document.getElementById('switch-settings.geolocalization').checked == true ) {
 					app.setSetting('settings.geolocalization', true);
+					label.innerText = "Geolocalization is enabled";
 					app.getLocation();
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('Awsome, Geolocalization is activated.', {timeout:3000, type: 'done'});
+						toast('Awsome, Geolocalization is enabled.', {timeout:3000, type: 'done'});
 					}
 				} else {
 					app.setSetting('settings.geolocalization', false);
+					label.innerText = "Geolocalization is disabled";
 					toast('Geolocalization is disabled.', {timeout:3000, type: 'done'});
 				}
 			});
 		}
 		if ( document.getElementById('switch-settings.debug') ) {
 			document.getElementById('switch-settings.debug').addEventListener('change', function(e) {
+				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
 				if ( document.getElementById('switch-settings.debug').checked == true ) {
 					app.setSetting('settings.debug', true);
+					label.innerText = "Debug is enabled";
 					app.debug = true;
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('Awsome, Debug mode is activated.', {timeout:3000, type: 'done'});
 					}
 				} else {
 					app.setSetting('settings.debug', false);
+					label.innerText = "Debug is disabled";
 					app.debug = false;
 					toast('Debug mode is disabled.', {timeout:3000, type: 'done'});
 				}
