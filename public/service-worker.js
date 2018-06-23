@@ -1,7 +1,7 @@
 
-var dataCacheName= 't6-cache-2018-06-21';
+var dataCacheName= 't6-cache-2018-06-23';
 var cacheName= dataCacheName;
-var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar', 'gstatic'];
+var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token', '/mail/'];
 var filesToCache = [
     //local
