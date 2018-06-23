@@ -1,5 +1,5 @@
 uglifyjs \
-	../public/js/vendor/jquery.min.js \
+	../public/js/vendor/jquery-3.3.1.min.js \
 	../public/js/sortable/sortable.min-1.4.2.js \
 	../public/js/bootstrap.js \
 	../public/js/t6.js \
@@ -20,7 +20,7 @@ echo Stylesheet minify: Completed
 uglifyjs \
 	../public/js/m/material.js \
 	../public/js/m/mdl-selectfield.min.js \
-	../public/js/vendor/jquery.min.js \
+	../public/js/vendor/jquery-3.3.1.min.js \
 	../public/js/flot/jquery.flot.js \
 	../public/js/flot/jquery.flot.time.min.js \
 	../public/js/m/moment.min-2.22.2.js \
