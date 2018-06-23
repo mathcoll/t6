@@ -113,9 +113,18 @@ self.addEventListener('fetch', function(e) {
 		console.log('[ServiceWorker]', 'Serving the asset from server (Blacklisted).', e.request.url);
 		e.respondWith(fromServer(e.request));
 	} else if ( matchInArray(e.request.url, cacheWhitelist) ) {
-		console.log('[ServiceWorker]', 'Serving the asset from cache (Whitelisted).', e.request.url);
-		e.respondWith(fromCache(e.request).catch(fromServer(e.request)));
-		e.waitUntil(update(e.request));
+		//e.respondWith(fromCache(e.request).catch(fromServer(e.request)));
+		e.respondWith(
+			caches.match(e.request).then(function(resp) {
+				console.log('[ServiceWorker]', 'Serving the asset from cache (Whitelisted & found).', e.request.url);
+				return resp || fetch(e.request)
+			})
+			.catch(function() {
+				console.log('[ServiceWorker]', 'Serving the asset from server (Whitelisted but not found).', e.request.url);
+				return fromServer(e.request);
+			})
+		);
+		//e.waitUntil(update(e.request));
 	} else {
 		console.log('[ServiceWorker]', 'Serving the asset from server directly.', e.request.url);
 		fromServer(e.request);
