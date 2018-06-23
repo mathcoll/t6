@@ -23,7 +23,7 @@ uglifyjs \
 	../public/js/vendor/jquery.min.js \
 	../public/js/flot/jquery.flot.js \
 	../public/js/flot/jquery.flot.time.min.js \
-	../public/js/m/moment.min-2.18.1.js \
+	../public/js/m/moment.min-2.22.2.js \
 	../public/js/OpenLayers/ol-4.1.1.min.js \
 	-o ../public/js/m/vendor.min.js \
 	-p 5 -m -c warnings=false
