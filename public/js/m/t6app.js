@@ -2166,9 +2166,15 @@ var containers = {
 		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: true});
 
-		var snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
-			return {value: snippet.name, name: snippet.id, sType: snippet.sType};
-		});
+		var snippets;
+		if (JSON.parse(localStorage.getItem('snippets')) === null || JSON.parse(localStorage.getItem('snippets')).length == 0) {
+			toast('You should add a Snippet first, it seems you don\' have any yet.', {timeout:3000, type: 'warning'});
+			snippets = [{value: 'undefined', name: 'undefined', sType: 'undefined'}];
+		} else {
+			snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
+				return {value: snippet.name, name: snippet.id, sType: snippet.sType};
+			});
+		}
 		node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
 		
 		node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='snippetsChips'>";
@@ -2697,6 +2703,9 @@ var containers = {
 					}
 				}
 
+				var sn = document.querySelectorAll('#snippetsChips .mdl-chip');
+				[].forEach.call(sn, addDnDHandlers);
+				
 				app.setSection('dashboard');
 			}
 		})
@@ -2930,23 +2939,86 @@ var containers = {
 	app.displayChipSnippet = function(chipSnippet) {
 		var displayChipSnippet = document.createElement('div');
 		displayChipSnippet.setAttribute('class', 'mdl-chip mdl-list__item');
-		displayChipSnippet.setAttribute('style', 'width: 100%; text-overflow: ellipsis;');
+		displayChipSnippet.setAttribute('style', 'width: 100%; text-overflow: ellipsis; display: flex;');
+		displayChipSnippet.setAttribute('draggable', true);
 		displayChipSnippet.setAttribute('data-id', chipSnippet.id);
 		displayChipSnippet.setAttribute('data-stype', chipSnippet.sType);
-		displayChipSnippet.innerHTML = "<i class='material-icons md-48'>"+app.icons[chipSnippet.type]+"</i>" +
-				"<i class='material-icons close'>close</i> " +
-				"<i class='material-icons edit'>edit</i>" +
-				"<span>"+chipSnippet.name+" ("+chipSnippet.sType+")</span>";
+		displayChipSnippet.innerHTML = "<i class='md-36 grippy'></i>" +
+				"<i class='material-icons md-36' id='type-"+chipSnippet.id+"'>"+app.icons[chipSnippet.type]+"</i> <div class='mdl-tooltip mdl-tooltip--top' for='type-"+chipSnippet.id+"'>"+chipSnippet.type+" ("+chipSnippet.sType+")</div>" +
+				"<span>"+chipSnippet.name+" ("+chipSnippet.sType+")</span>" +
+				"<i class='material-icons close mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect' id='remove-"+chipSnippet.id+"'>close</i> <div class='mdl-tooltip mdl-tooltip--top' for='remove-"+chipSnippet.id+"'>Remove this "+chipSnippet.type+"</div>" +
+				"<i class='material-icons edit mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect' id='edit-"+chipSnippet.id+"'>edit</i> <div class='mdl-tooltip mdl-tooltip--top' for='edit-"+chipSnippet.id+"'>Edit this "+chipSnippet.type+"</div>";
 		displayChipSnippet.querySelector('i.close').addEventListener('click', function(evt) {
-				evt.preventDefault();
-				evt.target.parentNode.remove();
-			}, false);
+			evt.preventDefault();
+			evt.target.parentNode.parentNode.remove();
+		}, false);
 		displayChipSnippet.querySelector('i.edit').addEventListener('click', function(evt) {
 			evt.preventDefault();
 			app.displaySnippet(app.getSnippetIdFromIndex(evt.target.parentNode.getAttribute('data-id')), true);
 		}, false);
+			
 		return displayChipSnippet;
 	}; // displayChipSnippet
+	
+	/* Sort Snippets */
+		var dragSrcEl = null;
+		function handleDragStart(e) {
+		  // Target (this) element is the source node.
+		  dragSrcEl = this;
+		  e.dataTransfer.effectAllowed = 'move';
+		  e.dataTransfer.setData('text/html', this.outerHTML);
+		  this.classList.add('dragElem');
+		}
+		function handleDragOver(e) {
+		  if (e.preventDefault) {
+		    e.preventDefault(); // Necessary. Allows us to drop.
+		  }
+		  this.classList.add('over');
+		  e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
+		  return false;
+		}
+		function handleDragEnter(e) {
+		  // this / e.target is the current hover target.
+		}
+		function handleDragLeave(e) {
+		  this.classList.remove('over');  // this / e.target is previous target element.
+		}
+		function handleDrop(e) {
+		  // this/e.target is current target element.
+		  if (e.stopPropagation) {
+		    e.stopPropagation(); // Stops some browsers from redirecting.
+		  }
+		  // Don't do anything if dropping the same column we're dragging.
+		  if (dragSrcEl != this) {
+		    // Set the source column's HTML to the HTML of the column we dropped on.
+		    //alert(this.outerHTML);
+		    //dragSrcEl.innerHTML = this.innerHTML;
+		    //this.innerHTML = e.dataTransfer.getData('text/html');
+		    this.parentNode.removeChild(dragSrcEl);
+		    var dropHTML = e.dataTransfer.getData('text/html');
+		    this.insertAdjacentHTML('beforebegin',dropHTML);
+		    var dropElem = this.previousSibling;
+		    addDnDHandlers(dropElem);
+		  }
+		  this.classList.remove('over');
+		  return false;
+		}
+		function handleDragEnd(e) {
+		  // this/e.target is the source node.
+		  this.classList.remove('over');
+		  /*[].forEach.call(cols, function (col) {
+		    col.classList.remove('over');
+		  });*/
+		}
+		function addDnDHandlers(elem) {
+		  elem.addEventListener('dragstart', handleDragStart, false);
+		  elem.addEventListener('dragenter', handleDragEnter, false)
+		  elem.addEventListener('dragover', handleDragOver, false);
+		  elem.addEventListener('dragleave', handleDragLeave, false);
+		  elem.addEventListener('drop', handleDrop, false);
+		  elem.addEventListener('dragend', handleDragEnd, false);
+		}
+	/* END Sorting */
 	
 	app.addChipSnippetTo = function(container, chipSnippet) {
 		document.getElementById(container).append(app.displayChipSnippet(chipSnippet));
@@ -4367,8 +4439,6 @@ var containers = {
 				app.isLogged = true;
 				app.resetSections();
 
-				app.setHiddenElement("signin_button"); 
-				app.setVisibleElement("logout_button");
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
 			} else {

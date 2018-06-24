@@ -18,7 +18,7 @@
 	direction: ltr;
 	-moz-font-feature-settings: 'liga';
 	-moz-osx-font-smoothing: grayscale;
-	align-self: flex-start;
+	/*align-self: flex-start;*/
 	vertical-align: middle;
 }
 * {
@@ -154,12 +154,36 @@ body {
     margin: 2px;
     vertical-align: middle;
 }
+.mdl-chip .grippy {
+	padding: 8px 4px;
+	cursor: grab;
+	margin: 0;
+	line-height: 1;
+	font-size: 12px;
+	width: 20px;
+	height: 50px;
+	display: inline-block;
+	position: relative;
+}
+.mdl-chip .grippy::before {
+	content: '.';
+	text-shadow: 0    0 #000, 0    5px #000, 0    10px #000, 0    15px #000, 0    20px #000,
+				 5px  0 #000, 5px  5px #000, 5px  10px #000, 5px  15px #000, 5px  20px #000,
+				 10px 0 #000, 10px 5px #000, 10px 10px #000, 10px 15px #000, 10px 20px #000
+}
 .mdl-chip .close,
 .mdl-chip .edit {
     cursor: pointer;
     font-size: 16px;
     padding: 8px 4px;
     vertical-align: middle;
+    position: absolute;
+}
+.mdl-chip .close {
+    right: 25px;
+}
+.mdl-chip .edit {
+    right: 60px;
 }
 .mdl-textfield {
 	width: calc(100% - 48px) !important;
@@ -181,6 +205,22 @@ div .mdl-textfield__icon ~ select,
 }
 div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__icon ~ label {
 	width: 100% !important;
+}
+
+[draggable] {
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	/* Required to make elements draggable in old WebKit */
+	-khtml-user-drag: element;
+	-webkit-user-drag: element;
+}
+.mdl-chip.dragElem {
+	opacity: 0.4;
+}
+.mdl-chip.over {
+	border-top: 2px solid blue;
 }
 
 div[data-type="objects"].removed,
