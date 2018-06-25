@@ -1,5 +1,5 @@
 
-var dataCacheName= 't6-cache-2018-06-23';
+var dataCacheName= 't6-cache-2018-06-25';
 var cacheName= dataCacheName;
 var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token', '/mail/'];
@@ -11,6 +11,7 @@ var filesToCache = [
     '/img/opl_img3.jpg',
     '/img/opl_img2.jpg',
     '/img/opl_img.jpg',
+    '/img/m/placeholder.png',
     '/img/m/welcome_card.jpg',
     '/img/m/side-nav-bg.jpg',
     '/img/m/icons/icon-128x128.png',

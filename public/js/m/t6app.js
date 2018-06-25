@@ -5443,7 +5443,7 @@ var containers = {
 		var LL = document.querySelectorAll('img.lazyloading');
 		for (var image in LL) {
 			if ( (LL[image]).childElementCount > -1 ) {
-				(LL[image]).src = app.baseUrlCdn + '/img/m/side-nav-bg.jpg';
+				(LL[image]).src = app.baseUrlCdn + '/img/m/placeholder.png';
 				io.observe(LL[image]);
 			}
 		}
