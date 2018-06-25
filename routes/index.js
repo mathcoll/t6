@@ -227,6 +227,43 @@ router.all('*', function (req, res, next) {
 });
 
 
+function checkForTooManyFailure(req, res, email) {
+	// Invalid Credentials
+	var query = squel.select()
+		.field('count(*)')
+		.from(events.getMeasurement())
+		.where('what=?', 'user login failure')
+		.where('who=?', email)
+		.where('time>now() - 1h')
+		.toString()
+		;
+	dbInfluxDB.query(query).then(data => {
+		console.log(data[0]);
+		if( data[0].count_who > 2 && data[0].count_who < 4 ) {
+			// when >4, then we should block the account and maybe ban the IP address
+			var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
+			geo.ip = req.ip;
+			res.render('emails/loginfailure', {device: device(req.headers['user-agent']), geoip: geo}, function(err, html) {
+				var to = email;
+				var mailOptions = {
+					from: from,
+					bcc: bcc!==undefined?bcc:null,
+					to: to,
+					subject: 't6 warning notification',
+					text: 'Html email client is required',
+					html: html
+				};
+				transporter.sendMail(mailOptions, function(err, info){
+				    if( err ){ }
+				});
+			});
+		}
+	}).catch(err => {
+		console.log(err);
+	});
+	events.add('t6App', 'user login failure', email);
+}
+
 /**
  * @api {post} /authenticate Authenticate a user and create a JWT Token
  * @apiName Authenticate a user and create a JWT Token
@@ -259,7 +296,12 @@ router.post('/authenticate', function (req, res) {
 		};
 		var user = users.findOne(queryU);
 		if ( !user || !email || !password ) {
-	        return res.status(403).send(new ErrorSerializer({'id': 102, 'code': 403, 'message': 'Forbidden'}));
+			if ( email && users.findOne({ 'email': email }) ) {
+				checkForTooManyFailure(req, res, email);
+		        return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}));
+			} else {
+				return res.status(403).send(new ErrorSerializer({'id': 102.2, 'code': 403, 'message': 'Forbidden'}));
+			}
 	    } else {
 			var geo = geoip.lookup(req.ip);
 			if ( user.location === undefined || user.location === null ) {
@@ -436,9 +478,7 @@ router.post('/authenticate', function (req, res) {
 	    		'device-type': type,
 	    	};
 	    	tokens.insert(t);
-	    	
 	    	var refresh_token = user.id + '.' + refreshPayload;
-	        
 			return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(400).send(new ErrorSerializer({'id': 102.4, 'code': 400, 'message': 'Invalid Refresh Token'}).serialize());
