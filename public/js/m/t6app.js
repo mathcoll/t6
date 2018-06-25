@@ -142,6 +142,7 @@ var app = {
 		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
 		rule: {id:'', attributes: {}},
 	},
+	offlineCard: {},
 	patterns: {
 		name: '.{3,}',
 		ipv4: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}(:[0-9]{1,6})?',
@@ -157,6 +158,7 @@ var app = {
 		meta_revision: "^[0-9]{1,}$",
 	}
 };
+app.offlineCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'};
 
 var buttons = {}; // see function app.refreshButtonsSelectors()
 var containers = {
@@ -3274,7 +3276,7 @@ var containers = {
 			}
 
 			if ( !navigator.onLine ) {
-				container.innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'});
+				container.innerHTML = app.getCard(app.offlineCard);
 			} else {
 				if ( app.isLogged && type !== undefined ) {
 					fetch(url, myInit)
@@ -3403,85 +3405,89 @@ var containers = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			var user = response.data;
-			var gravatar = user.attributes.gravatar.entry[0];
-			var node = "";
-			node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-			node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
-			if (gravatar.profileBackground) {
-				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profileBackground.url+"') 50% 50% !important\">";
+			if ( !navigator.onLine ) {
+				container.innerHTML = app.getCard(app.offlineCard);
 			} else {
-				node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+app.baseUrlCdn+"/img/opl_img.jpg') 50% 50% !important\">";
-			}
-			node += "		<img src=\"//secure.gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
-			node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
-			if (gravatar.currentLocation) {
-				node += "		<div class=\"subhead\">";
-				node += 			gravatar.currentLocation;
-				node += "		</div>";
-			}
-			node += "	</div>";
-
-			node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
-			node += "	<div class=\"card-body\">";
-			node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
-			node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
-			node += app.getField('lock', 'Email', user.attributes.email, {type: 'text', id:'email', isEdit: false});
-			node += "	</div>";
-			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
-			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" id=\"saveProfileButton\"><i class=\"material-icons\">edit</i>Save t6 profile</a>";
-			node += "	</div>";
-			node += "</div>";
-			node += "</section>";
-
-			node += app.getSubtitle('Gravatar contacts');
-			node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-			node += "<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
-			node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
-			node += "	<div class=\"card-body\">";
-			for (var phone in gravatar.phoneNumbers) {
-				node += app.getField('phone', gravatar.phoneNumbers[phone].type, gravatar.phoneNumbers[phone].value, {type: 'text', isEdit: false});
-			}
-			node += "		<ul class=\"social-links\">";
-			for (var account in gravatar.accounts) {
-				node += "		<li><a href=\""+gravatar.accounts[account].url+"\"><i class=\"material-icons mdl-textfield__icon\">link</i><span class=\"mdl-list__item-sub-title\">" + gravatar.accounts[account].shortname + "</span></a></li>";
-			}
-			node += "		</ul>";
-			node += "		<ul class='social-links'>"; 
-			for (var url in gravatar.urls) {
-				node += "		<li><a href=\""+gravatar.urls[url].value+"\" target=\"_blank\"><i class=\"material-icons\">bookmark</i><span class=\"mdl-list__item-sub-title\">" + gravatar.urls[url].title + "</span></a></li>";
-			}
-			node += "		</ul>";
-			node += "	</div>";
-			node += "	<div class=\"mdl-card__actions mdl-card--border\">";
-			node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profileUrl+"\" target=\"_blank\"><i class=\"material-icons\">launch</i>Edit my gravatar</a>";
-			node += "	</div>";
-			node += "</div>";
-			node += "</section>";
-			
-			container.innerHTML = node;
-			componentHandler.upgradeDom();
-			// Profile Storage
-			localStorage.setItem('currentUserId', user.id);
-			localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
-			localStorage.setItem("currentUserEmail", user.attributes.email);
-			localStorage.setItem("notifications.email", user.attributes.email);
-			localStorage.setItem("notifications.unsubscription_token", user.attributes.unsubscription_token);
-			localStorage.setItem("currentUserHeader", gravatar.photos[0].value);
-			if ( gravatar.profileBackground && gravatar.profileBackground.url ) {
-				localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
-			}
-			app.setDrawer();
-			app.fetchUnsubscriptions();
-			app.displayUnsubscriptions((containers.profile).querySelector('.page-content'));
-			
-			document.getElementById("saveProfileButton").addEventListener("click", function(evt) {
-				app.onSaveProfileButtonClick();
-				evt.preventDefault();
-			});
-			
-			if ( user.attributes.role == 'admin' ) {
-				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
+				var user = response.data;
+				var gravatar = user.attributes.gravatar.entry[0];
+				var node = "";
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
+				if (gravatar.profileBackground) {
+					node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+gravatar.profileBackground.url+"') 50% 50% !important\">";
+				} else {
+					node += "	<div class=\"card-heading heading-left\" style=\"background: url('"+app.baseUrlCdn+"/img/opl_img.jpg') 50% 50% !important\">";
+				}
+				node += "		<img src=\"//secure.gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\">";
+				node += "		<h3 class=\"card-title text-color-white\">"+user.attributes.first_name+" "+user.attributes.last_name+"</h3>";
+				if (gravatar.currentLocation) {
+					node += "		<div class=\"subhead\">";
+					node += 			gravatar.currentLocation;
+					node += "		</div>";
+				}
+				node += "	</div>";
+				
+				node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
+				node += "	<div class=\"card-body\">";
+				node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
+				node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
+				node += app.getField('lock', 'Email', user.attributes.email, {type: 'text', id:'email', isEdit: false});
+				node += "	</div>";
+				node += "	<div class=\"mdl-card__actions mdl-card--border\">";
+				node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" id=\"saveProfileButton\"><i class=\"material-icons\">edit</i>Save t6 profile</a>";
+				node += "	</div>";
+				node += "</div>";
+				node += "</section>";
+				
+				node += app.getSubtitle('Gravatar contacts');
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				node += "<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp card card-user\">";
+				node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
+				node += "	<div class=\"card-body\">";
+				for (var phone in gravatar.phoneNumbers) {
+					node += app.getField('phone', gravatar.phoneNumbers[phone].type, gravatar.phoneNumbers[phone].value, {type: 'text', isEdit: false});
+				}
+				node += "		<ul class=\"social-links\">";
+				for (var account in gravatar.accounts) {
+					node += "		<li><a href=\""+gravatar.accounts[account].url+"\"><i class=\"material-icons mdl-textfield__icon\">link</i><span class=\"mdl-list__item-sub-title\">" + gravatar.accounts[account].shortname + "</span></a></li>";
+				}
+				node += "		</ul>";
+				node += "		<ul class='social-links'>"; 
+				for (var url in gravatar.urls) {
+					node += "		<li><a href=\""+gravatar.urls[url].value+"\" target=\"_blank\"><i class=\"material-icons\">bookmark</i><span class=\"mdl-list__item-sub-title\">" + gravatar.urls[url].title + "</span></a></li>";
+				}
+				node += "		</ul>";
+				node += "	</div>";
+				node += "	<div class=\"mdl-card__actions mdl-card--border\">";
+				node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" href=\""+gravatar.profileUrl+"\" target=\"_blank\"><i class=\"material-icons\">launch</i>Edit my gravatar</a>";
+				node += "	</div>";
+				node += "</div>";
+				node += "</section>";
+				
+				container.innerHTML = node;
+				componentHandler.upgradeDom();
+				// Profile Storage
+				localStorage.setItem('currentUserId', user.id);
+				localStorage.setItem("currentUserName", user.attributes.first_name+" "+user.attributes.last_name);
+				localStorage.setItem("currentUserEmail", user.attributes.email);
+				localStorage.setItem("notifications.email", user.attributes.email);
+				localStorage.setItem("notifications.unsubscription_token", user.attributes.unsubscription_token);
+				localStorage.setItem("currentUserHeader", gravatar.photos[0].value);
+				if ( gravatar.profileBackground && gravatar.profileBackground.url ) {
+					localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
+				}
+				app.setDrawer();
+				app.fetchUnsubscriptions();
+				app.displayUnsubscriptions((containers.profile).querySelector('.page-content'));
+				
+				document.getElementById("saveProfileButton").addEventListener("click", function(evt) {
+					app.onSaveProfileButtonClick();
+					evt.preventDefault();
+				});
+				
+				if ( user.attributes.role == 'admin' ) {
+					app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
+				}
 			}
 		})
 		.catch(function (error) {
@@ -4633,67 +4639,71 @@ var containers = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			var status = "";
-			status += "<section class=\"mdl-grid mdl-cell--12-col\">";
-			status += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-			status += "		<div class=\"mdl-list__item\">";
-			status += "			<span class='mdl-list__item-primary-content'>";
-			status += "				<h2 class=\"mdl-card__title-text\">";
-			status += "					<i class=\"material-icons\">"+app.icons.status+"</i>";
-			status += "					API Status";
-			status += "				</h2>";
-			status += "			</span>";
-			status += "			<span class='mdl-list__item-secondary-action'>";
-			status += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-details'>";
-			status += "					<i class='material-icons'>expand_more</i>";
-			status += "				</button>";
-			status += "			</span>";
-			status += "		</div>";
-			status += "		<div class=\"card-body\">";
-			status += "			<div class='mdl-list__item--three-line small-padding  mdl-card--expand' id='status-details'>";
-			status += app.getField('thumb_up', 'Name', response.appName, {type: 'text', isEdit: false});
-			status += app.getField('verified_user', 'Version', response.version, {type: 'text', isEdit: false});
-			status += app.getField(app.icons.status, 'Status', response.status, {type: 'text', isEdit: false});
-			status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, {type: 'text', isEdit: false});
-			status += app.getField('alarm', 'Last Update', response.started_at, {type: 'text', isEdit: false});
-			status += "			</div>";
-			status += "		</div>";
-			status += "	</div>";
-			status += "</section>";
-			
-			if ( app.RateLimit.Limit && app.RateLimit.Remaining ) {
+			if ( !navigator.onLine ) {
+				(containers.status).querySelector('.page-content').innerHTML = app.getCard(app.offlineCard);
+			} else {
+				var status = "";
 				status += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				status += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				status += "		<div class=\"mdl-list__item\">";
 				status += "			<span class='mdl-list__item-primary-content'>";
 				status += "				<h2 class=\"mdl-card__title-text\">";
-				status += "					<i class=\"material-icons\">crop_free</i>";
-				status += "					API Usage";
+				status += "					<i class=\"material-icons\">"+app.icons.status+"</i>";
+				status += "					API Status";
 				status += "				</h2>";
 				status += "			</span>";
 				status += "			<span class='mdl-list__item-secondary-action'>";
-				status += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-usage'>";
+				status += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-details'>";
 				status += "					<i class='material-icons'>expand_more</i>";
 				status += "				</button>";
 				status += "			</span>";
 				status += "		</div>";
-				status += "		<div class='mdl-cell--12-col' id='status-usage'>";
-				if ( app.RateLimit.Used && app.RateLimit.Limit ) {
-					status += app.getField('center_focus_weak', 'Used', app.RateLimit.Used + '/' +app.RateLimit.Limit, {type: 'progress-status', isEdit: false});
-				}
+				status += "		<div class=\"card-body\">";
+				status += "			<div class='mdl-list__item--three-line small-padding  mdl-card--expand' id='status-details'>";
+				status += app.getField('thumb_up', 'Name', response.appName, {type: 'text', isEdit: false});
+				status += app.getField('verified_user', 'Version', response.version, {type: 'text', isEdit: false});
+				status += app.getField(app.icons.status, 'Status', response.status, {type: 'text', isEdit: false});
+				status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, {type: 'text', isEdit: false});
+				status += app.getField('alarm', 'Last Update', response.started_at, {type: 'text', isEdit: false});
+				status += "			</div>";
 				status += "		</div>";
 				status += "	</div>";
 				status += "</section>";
+				
+				if ( app.RateLimit.Limit && app.RateLimit.Remaining ) {
+					status += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					status += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					status += "		<div class=\"mdl-list__item\">";
+					status += "			<span class='mdl-list__item-primary-content'>";
+					status += "				<h2 class=\"mdl-card__title-text\">";
+					status += "					<i class=\"material-icons\">crop_free</i>";
+					status += "					API Usage";
+					status += "				</h2>";
+					status += "			</span>";
+					status += "			<span class='mdl-list__item-secondary-action'>";
+					status += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='status-usage'>";
+					status += "					<i class='material-icons'>expand_more</i>";
+					status += "				</button>";
+					status += "			</span>";
+					status += "		</div>";
+					status += "		<div class='mdl-cell--12-col' id='status-usage'>";
+					if ( app.RateLimit.Used && app.RateLimit.Limit ) {
+						status += app.getField('center_focus_weak', 'Used', app.RateLimit.Used + '/' +app.RateLimit.Limit, {type: 'progress-status', isEdit: false});
+					}
+					status += "		</div>";
+					status += "	</div>";
+					status += "</section>";
+				}
+				
+				(containers.status).querySelector('.page-content').innerHTML = status;
+				if ( app.RateLimit.Used && app.RateLimit.Limit ) {
+					var rate = Math.ceil((app.RateLimit.Used * 100 / app.RateLimit.Limit)/10)*10;
+					document.querySelector('#progress-status').addEventListener('mdl-componentupgraded', function() {
+						this.MaterialProgress.setProgress(rate);
+					});
+				}
+				app.setExpandAction();
 			}
-
-			(containers.status).querySelector('.page-content').innerHTML = status;
-			if ( app.RateLimit.Used && app.RateLimit.Limit ) {
-				var rate = Math.ceil((app.RateLimit.Used * 100 / app.RateLimit.Limit)/10)*10;
-				document.querySelector('#progress-status').addEventListener('mdl-componentupgraded', function() {
-					this.MaterialProgress.setProgress(rate);
-				});
-			}
-			app.setExpandAction();
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
