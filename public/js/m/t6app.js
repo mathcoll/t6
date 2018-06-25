@@ -3705,36 +3705,45 @@ var containers = {
 	} // displayLoginForm
 
 	app.fetchIndex = function() {
+		var node = "";
+		var container = (containers.index).querySelector('.page-content');
 		containers.spinner.removeAttribute('hidden');
 		containers.spinner.classList.remove('hidden');
-		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
-		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: 'GET', headers: myHeaders };
-		var container = (containers.index).querySelector('.page-content');
-		var url = app.baseUrl+'/'+app.api_version+'/index';
-		var title = '';
-
-		fetch(url, myInit)
-		.then(
-			fetchStatusHandler
-		).then(function(fetchResponse){ 
-			return fetchResponse.json();
-		})
-		.then(function(response) {
-			var node = "";
-			for (var i=0; i < (response).length ; i++ ) {
-				node += app.getCard(response[i]);
+		if ( !localStorage.getItem('index') ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'GET', headers: myHeaders };
+			var url = app.baseUrl+'/'+app.api_version+'/index';
+			var title = '';
+	
+			fetch(url, myInit)
+			.then(
+				fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				for (var i=0; i < (response).length ; i++ ) {
+					node += app.getCard(response[i]);
+	            }
+				localStorage.setItem('index', JSON.stringify(response));
+				container.innerHTML = node;
+			})
+			.catch(function (error) {
+				container.innerHTML = app.getCard( {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)'} );
+				app.displayLoginForm(container);
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
+					toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
+				}
+			});
+		} else {
+			var index = JSON.parse(localStorage.getItem('index'));
+			for (var i=0; i < index.length ; i++ ) {
+				node += app.getCard(index[i]);
             }
 			container.innerHTML = node;
-		})
-		.catch(function (error) {
-			container.innerHTML = app.getCard( {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)'} );
-			app.displayLoginForm(container);
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
-			}
-		});
+		}
 		containers.spinner.setAttribute('hidden', true);
 	}; // fetchIndex
 
