@@ -163,7 +163,7 @@ router.post('/', function (req, res) {
 	} else {
 		users	= db.getCollection('users');
 		
-		if ( users.find({'email': { '$eq': req.body.email }}) ) {
+		if ( users.find({'email': { '$eq': req.body.email }}).length > 0 ) {
 			res.status(409).send(new ErrorSerializer({'id': 9.5,'code': 409, 'message': 'Conflict: User email already exists'}).serialize());
 		} else {
 			var my_id = uuid.v4();
