@@ -1748,11 +1748,11 @@ var containers = {
 					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
+					node += app.getField('visibility', object.attributes.is_public=='true'?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 				} else {
-					node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
+					node += app.getField('visibility', object.attributes.is_public=='true'?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -1836,6 +1836,14 @@ var containers = {
 				if ( isEdit ) {
 					buttons.backObject.addEventListener('click', function(evt) { app.displayObject(object.id, false); }, false);
 					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
+					
+					var element = document.getElementById('switch-Visibility').parentNode;
+					if ( element ) {
+						element.addEventListener('change', function(e) {
+							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
+							label.innerText = element.classList.contains('is-checked')!==false?"Object is having a public url":"Object is only visible to you";
+						});
+					}
 				} else {
 					buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
 					// buttons.deleteObject2.addEventListener('click',
@@ -1925,7 +1933,7 @@ var containers = {
 		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
 		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: true, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
 		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: true, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
-		node += app.getField('visibility', 'Visibility', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: true});
+		node += app.getField('visibility', 'Object is only visible to you', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -2017,6 +2025,13 @@ var containers = {
 		buttons.addObjectBack.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
 		buttons.addObject.addEventListener('click', function(evt) { app.onAddObject(evt); }, false);
 
+		var element = document.getElementById('switch-Visibility').parentNode;
+		if ( element ) {
+			element.addEventListener('change', function(e) {
+				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
+				label.innerText = element.classList.contains('is-checked')!==false?"Object is having a public url":"Object is only visible to you";
+			});
+		}
 		app.setExpandAction();
 	}; // displayAddObject
 	
