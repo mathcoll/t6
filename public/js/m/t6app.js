@@ -131,6 +131,7 @@ var app = {
 		{name: 'videogame_asset', value:'Videogame Asset'},
 		{name: 'watch', value:'Watch'},
 	],
+	snippetsTypes: [{name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'cardchart', value:'Card Chart'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'}],
 	units: [],
 	datatypes: [],
 	flows: [],
@@ -252,7 +253,8 @@ var containers = {
 	
 	function onLoginButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		//myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		myForm.querySelector("form.signin button.login_button i.material-icons").textContent = "cached";
 		componentHandler.upgradeDom();
 		
 		var username = myForm.querySelector("form.signin input[name='username']").value;
@@ -2256,7 +2258,7 @@ var containers = {
 		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: true, options: app.types });
 		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: true});
-		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: true });
+		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: true });
 
 		var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
 			return {value: flow.name, name: flow.id};
@@ -2793,7 +2795,7 @@ var containers = {
 					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: isEdit });
 
 					if ( localStorage.getItem('flows') ) {
 						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
@@ -2878,7 +2880,7 @@ var containers = {
 					}
 					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: [ {name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'} ], isEdit: isEdit });
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: isEdit });
 					node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
 
 					node += "	</div>"; // mdl-shadow--2dp
@@ -3363,19 +3365,19 @@ var containers = {
 				usersList += "			<i class=\"material-icons\">perm_identity</i>";
 				usersList += "			<h3 class=\"mdl-card__title-text\">"+num+". "+user.attributes.first_name + " " + user.attributes.last_name+"</h3>";
 				usersList += "		</div>";
-				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>card_membership</i><span class='mdl-list__item-sub-title'>"+user.id+"</span></div>";
-				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>mail</i><span class='mdl-list__item-sub-title'>"+user.attributes.email+"</span></div>";
+				usersList += app.getField('card_membership', 'User id', user.id, {type: 'text', isEdit: false });
+				usersList += app.getField('mail', 'Email', user.attributes.email, {type: 'text', isEdit: false });
 				if ( user.attributes.location ) {
 					if ( user.attributes.location.geo ) {
-						usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>dns</i><span class='mdl-list__item-sub-title'>"+user.attributes.location.geo.city+" ("+user.attributes.location.geo.country+")</span></div>";
+						usersList += app.getField('dns', 'Location', user.attributes.location.geo.city+" ("+user.attributes.location.geo.country+")", {type: 'text', isEdit: false });
 					}
 					if ( user.attributes.location.ip ) {
-						usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>dns</i><span class='mdl-list__item-sub-title'>"+user.attributes.location.ip+"</span></div>";
+						usersList += app.getField('dns', 'IP address', user.attributes.location.ip, {type: 'text', isEdit: false });
 					}
 				}
-				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>contact_mail</i><span class='mdl-list__item-sub-title' title='Password last update'>"+moment((user.attributes.password_last_updated)/1).format(app.date_format)+"</span></div>";
-				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>contact_mail</i><span class='mdl-list__item-sub-title' title='Reminder Email'>"+moment((user.attributes.reminder_mail)/1).format(app.date_format)+"</span></div>";
-				usersList += "		<div class='mdl-list__item--three-line meddium-padding'><i class='material-icons mdl-textfield__icon'>change_history</i><span class='mdl-list__item-sub-title' title='Password reset request'>"+moment((user.attributes.change_password_mail)/1).format(app.date_format)+"</span></div>";
+				usersList += app.getField('contact_mail', 'Password last update', moment((user.attributes.password_last_updated)/1).format(app.date_format), {type: 'text', isEdit: false });
+				usersList += app.getField('contact_mail', 'Reminder Email', moment((user.attributes.reminder_mail)/1).format(app.date_format), {type: 'text', isEdit: false });
+				usersList += app.getField('change_history', 'Password reset request', moment((user.attributes.change_password_mail)/1).format(app.date_format), {type: 'text', isEdit: false });
 				
 				usersList += "		<div class=\"mdl-card__actions mdl-card--border\">";
 				usersList += "			<span class=\"pull-left mdl-card__date\">";
@@ -4192,6 +4194,75 @@ var containers = {
 				snippet += "		</span>";
 				snippet += "	</div>";
 				setInterval(function() {app.refreshFromNow('snippet-clock-'+my_snippet.id, moment(), null)}, 3600);
+			} else if ( my_snippet.attributes.type == 'cardchart' ) {
+				snippet += "	<div class='card card-chart'>";
+				if (my_snippet.attributes.color) snippet += "		<div class='card-header' style='background: "+my_snippet.attributes.color+"'>";
+				else snippet += "		<div class='card-header' style='background: linear-gradient(60deg,#66bb6a,#66bb6a);'>";
+				snippet += " 	 	 <div class='ct-chart' id='dailySalesChart'></div>";
+				snippet += "		</div>";
+				snippet += "		<div class='card-body'>";
+				if (my_snippet.attributes.icon) snippet += "		<i class='material-icons'>"+my_snippet.attributes.icon+"</i>";
+				snippet += " 			<h4 class='card-title'>"+my_snippet.attributes.name+"</h4>";
+				snippet += "			<p class='card-category'>Subtitle</p>";
+				snippet += "		</div>";
+				snippet += "		<div class='card-footer'>";
+				snippet += "  		<div class='stats'>";
+				snippet += "  			<i class='material-icons' id='snippet-time-"+my_snippet.id+"'>access_time</i> Last";
+				snippet += "  		</div>";
+				snippet += "	</div>";
+				snippet += "</div>";
+				
+				var my_snippet_data_url = app.baseUrl+'/'+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?limit=100&sort=desc';
+				fetch(my_snippet_data_url, myInit)
+				.then(
+					fetchStatusHandler
+				).then(function(fetchResponse){ 
+					return fetchResponse.json();
+				})
+				.then(function(data) {
+					var id = data.data[0].attributes.id;
+					var time = data.data[0].attributes.time;
+					var value = data.data[0].attributes.value;
+					var unit = data.links.unit!==undefined?response.links.unit:'';
+					var ttl = data.links.ttl;
+					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-ontime');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-outdated');
+					} else {
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-outdated');
+						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-ontime');
+					}
+					var dataset = [data.data.map(function(i) {
+						return [i.attributes.timestamp, i.attributes.value];
+					})];
+					
+
+		            var dataDailySalesChart = {
+	                    //labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+	                    series: [ dataset ]
+	                };
+	                var optionsDailySalesChart = {
+	                    lineSmooth: Chartist.Interpolation.cardinal({
+	                        tension: 0
+	                    }),
+	                    low: 0,
+	                    high: 50,
+	                    chartPadding: {
+	                        top: 0,
+	                        right: 0,
+	                        bottom: 0,
+	                        left: 0
+	                    },
+	                }
+	                var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
+					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(dataset[0][0][0]).format(app.date_format) + ", " + moment(dataset[0][0][0]).fromNow();
+				})
+				.catch(function (error) {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
+						toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
+					}
+				});
+				
 			} else {
 				snippet += "	<div class=\" tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
 				snippet += "		<span class='mdl-list__item-secondary-content'>";
@@ -4237,6 +4308,8 @@ var containers = {
 						toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
 					}
 				});
+			} else if ( my_snippet.attributes.type == 'cardchart' ) {
+				
 			} else if ( my_snippet.attributes.type == 'valuedisplay' ) {
 				var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?sort=desc&limit=4';
 				fetch(url_snippet, myInit)
@@ -4448,6 +4521,7 @@ var containers = {
 	} // authenticate
 	
 	app.refreshAuthenticate = function() {
+		//console.log("DEBUG", "refreshAuthenticate");
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 		var refreshPOST = {"grant_type": "refresh_token", "refresh_token": localStorage.getItem('refresh_token')};
@@ -5130,15 +5204,36 @@ var containers = {
 			}
 		}
 	}
-	document.getElementById('search-exp').addEventListener('keypress', function(e) {
-		if(e.keyCode === 13) {
-			e.preventDefault();
-			var input = this.value;
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				alert("Searching for "+input);
+	if ( document.getElementById('search-exp') ) {
+		document.getElementById('search-exp').addEventListener('keypress', function(e) {
+			if(e.keyCode === 13) {
+				e.preventDefault();
+				var input = this.value;
+				if ( localStorage.getItem('settings.debug') == 'true' ) {
+					alert("Searching for "+input);
+				}
 			}
-		}
-	});
+		});
+	}
+
+	if ( document.getElementById('filter-exp') ) {
+		document.getElementById('filter-exp').addEventListener('keypress', function(e) {
+			if(e.keyCode === 13) {
+				e.preventDefault();
+				var input = this.value;
+				var type = 'objects';
+				var size;
+				if ( document.querySelector('section#objects').classList.contains('is-active') ) {
+					type = 'objects';
+					size = app.itemsSize.objects;
+				} else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
+					type = 'flows';
+					size = app.itemsSize.flows;
+				}
+				app.fetchItemsPaginated(type, this.value, 1, size);
+			}
+		});
+	}
 	
 	window.addEventListener('hashchange', function() {
 		if( window.history && window.history.pushState ) {
@@ -5157,23 +5252,6 @@ var containers = {
 			}
 		}
 	}, false);
-	
-	document.getElementById('filter-exp').addEventListener('keypress', function(e) {
-		if(e.keyCode === 13) {
-			e.preventDefault();
-			var input = this.value;
-			var type = 'objects';
-			var size;
-			if ( document.querySelector('section#objects').classList.contains('is-active') ) {
-				type = 'objects';
-				size = app.itemsSize.objects;
-			} else if ( document.querySelector('section#flows').classList.contains('is-active') ) {
-				type = 'flows';
-				size = app.itemsSize.flows;
-			}
-			app.fetchItemsPaginated(type, this.value, 1, size);
-		}
-	});
 	
 	for (var i in buttons.status) {
 		if ( buttons.status[i].childElementCount > -1 ) {

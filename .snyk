@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.10.2
+version: v1.12.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:minimatch:20160620':
@@ -32,48 +32,70 @@ ignore:
   'npm:clean-css:20180306':
     - jade > clean-css:
         reason: None given
-        expires: '2018-05-31T16:26:49.610Z'
+        expires: '2018-09-18T09:18:00.063Z'
   'npm:base64url:20180511':
     - base64url:
         reason: None given
-        expires: '2018-06-20T14:34:31.701Z'
+        expires: '2018-09-18T09:18:00.063Z'
     - ecdsa-sig-formatter > base64url:
         reason: None given
-        expires: '2018-06-20T14:34:31.701Z'
+        expires: '2018-09-18T09:18:00.063Z'
     - express-jwt > jsonwebtoken > jws > base64url:
         reason: None given
-        expires: '2018-06-20T14:34:31.701Z'
+        expires: '2018-09-18T09:18:00.063Z'
     - express-jwt > jsonwebtoken > jws > jwa > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
+      jwt-express > jsonwebtoken > jws > base64url:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
     - express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
+      express-jwt > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
     - jwt-express > jsonwebtoken > jws > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
+      jwt-express > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
     - jwt-express > jsonwebtoken > jws > jwa > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.702Z'
+      express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
     - jwt-express > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
-        expires: '2018-06-20T14:34:31.702Z'
+        expires: '2018-09-18T09:18:00.063Z'
   'npm:constantinople:20180421':
     - jade > constantinople:
         reason: None given
-        expires: '2018-06-20T14:34:31.702Z'
+        expires: '2018-09-18T09:18:00.063Z'
   'npm:open:20180512':
     - snyk > open:
         reason: None given
-        expires: '2018-06-20T14:34:31.702Z'
+        expires: '2018-09-18T09:18:00.064Z'
   'npm:squel:20180322':
     - squel:
         reason: None given
-        expires: '2018-06-20T14:34:31.702Z'
+        expires: '2018-09-18T09:18:00.064Z'
   'npm:stringstream:20180511':
     - request > stringstream:
         reason: None given
         expires: '2018-06-20T14:34:31.702Z'
+  'npm:extend:20180424':
+    - glob-stream > extend:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
+    - help-me > glob-stream > extend:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
+    - mqtt > help-me > glob-stream > extend:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
@@ -93,3 +115,8 @@ patch:
         patched: '2017-06-05T13:18:24.845Z'
     - jwt-express > jsonwebtoken > ms:
         patched: '2017-12-07T21:46:12.695Z'
+  'npm:hoek:20180212':
+    - express-jwt > jsonwebtoken > joi > topo > hoek:
+        patched: '2018-08-19T09:16:36.671Z'
+    - express-jwt > jsonwebtoken > joi > hoek:
+        patched: '2018-08-19T09:16:36.671Z'

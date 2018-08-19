@@ -41,7 +41,7 @@
     "passgen": "^1.0.1",
     "path": "~0.12.7",
     "qrcode-npm": "0.0.3",
-    "request": "^2.82.0",
+    "request": "^2.87.0",
     "serve-favicon": "^2.4.5",
     "session-file-store": "^0.2.0",
     "snyk": "^1.70.2",
