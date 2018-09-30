@@ -32,56 +32,68 @@ ignore:
   'npm:clean-css:20180306':
     - jade > clean-css:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
   'npm:base64url:20180511':
     - base64url:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.412Z'
     - ecdsa-sig-formatter > base64url:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.412Z'
     - express-jwt > jsonwebtoken > jws > base64url:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.412Z'
     - express-jwt > jsonwebtoken > jws > jwa > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
       jwt-express > jsonwebtoken > jws > base64url:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
     - express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
       express-jwt > jsonwebtoken > jws > jwa > base64url:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
     - jwt-express > jsonwebtoken > jws > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
       jwt-express > jsonwebtoken > jws > jwa > base64url:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
     - jwt-express > jsonwebtoken > jws > jwa > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.702Z'
       express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
     - jwt-express > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
+        reason: None given
+        expires: '2018-10-30T11:51:31.413Z'
+    - jwt-express > jsonwebtoken > jws > base64url:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
+    - express-jwt > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
+    - jwt-express > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-09-18T09:18:00.063Z'
+    - express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
         expires: '2018-09-18T09:18:00.063Z'
   'npm:constantinople:20180421':
     - jade > constantinople:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
   'npm:open:20180512':
     - snyk > open:
         reason: None given
-        expires: '2018-09-18T09:18:00.064Z'
+        expires: '2018-10-30T11:51:31.413Z'
   'npm:squel:20180322':
     - squel:
         reason: None given
-        expires: '2018-09-18T09:18:00.064Z'
+        expires: '2018-10-30T11:51:31.413Z'
   'npm:stringstream:20180511':
     - request > stringstream:
         reason: None given
@@ -89,13 +101,13 @@ ignore:
   'npm:extend:20180424':
     - glob-stream > extend:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
     - help-me > glob-stream > extend:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
     - mqtt > help-me > glob-stream > extend:
         reason: None given
-        expires: '2018-09-18T09:18:00.063Z'
+        expires: '2018-10-30T11:51:31.413Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
