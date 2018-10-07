@@ -46,27 +46,15 @@ ignore:
     - express-jwt > jsonwebtoken > jws > jwa > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
-      jwt-express > jsonwebtoken > jws > base64url:
-        reason: None given
-        expires: '2018-10-30T11:51:31.413Z'
     - express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
-      express-jwt > jsonwebtoken > jws > jwa > base64url:
-        reason: None given
-        expires: '2018-10-30T11:51:31.413Z'
     - jwt-express > jsonwebtoken > jws > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.701Z'
-      jwt-express > jsonwebtoken > jws > jwa > base64url:
-        reason: None given
-        expires: '2018-10-30T11:51:31.413Z'
     - jwt-express > jsonwebtoken > jws > jwa > base64url:
         reason: None given
         expires: '2018-06-20T14:34:31.702Z'
-      express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
-        reason: None given
-        expires: '2018-10-30T11:51:31.413Z'
     - jwt-express > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
         expires: '2018-10-30T11:51:31.413Z'
@@ -82,6 +70,18 @@ ignore:
     - express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
         reason: None given
         expires: '2018-09-18T09:18:00.063Z'
+    - jwt-express > jsonwebtoken > jws > base64url:
+        reason: None given
+        expires: '2018-10-30T11:51:31.413Z'
+    - express-jwt > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-10-30T11:51:31.413Z'
+    - jwt-express > jsonwebtoken > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-10-30T11:51:31.413Z'
+    - express-jwt > jsonwebtoken > jws > jwa > ecdsa-sig-formatter > base64url:
+        reason: None given
+        expires: '2018-10-30T11:51:31.413Z'
   'npm:constantinople:20180421':
     - jade > constantinople:
         reason: None given

@@ -24,6 +24,9 @@ h1, h2, h3, h4, h5, h6 {
 a.white {
 	color: #fff;
 }
+.animatedIcon {
+	animation: rotate 1s ease-in-out infinite;
+}
 .form-signin {
     margin: 0 auto;
     max-width: 330px;

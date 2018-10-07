@@ -255,6 +255,7 @@ var containers = {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.signin button.login_button i.material-icons").textContent = "cached";
+		myForm.querySelector("form.signin button.login_button i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
 		
 		var username = myForm.querySelector("form.signin input[name='username']").value;
@@ -312,7 +313,9 @@ var containers = {
 	
 	function onSignupButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.signup button.createUser").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		//myForm.querySelector("form.signup button.createUser").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		myForm.querySelector("form.signup button.createUser i.material-icons").textContent = "cached";
+		myForm.querySelector("form.signup button.createUser i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
 		
 		var email = myForm.querySelector("form.signup input[name='email']").value;
@@ -355,7 +358,9 @@ var containers = {
 	
 	function onPasswordResetButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.resetpassword button.setPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		//myForm.querySelector("form.resetpassword button.setPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		myForm.querySelector("form.resetpassword button.setPassword i.material-icons").textContent = "cached";
+		myForm.querySelector("form.resetpassword button.setPassword i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
 		
 		var password = myForm.querySelector("form.resetpassword input[name='password']").value;
@@ -389,7 +394,9 @@ var containers = {
 	
 	function onForgotPasswordButtonClick(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.forgotpassword button.forgotPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		//myForm.querySelector("form.forgotpassword button.forgotPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
+		myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").textContent = "cached";
+		myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
 		
 		var email = myForm.querySelector("form.forgotpassword input[name='email']").value;

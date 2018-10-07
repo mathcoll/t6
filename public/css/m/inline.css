@@ -4701,6 +4701,10 @@ tbody.collapse.show {
 	animation: a 1s linear infinite
 }
 
+.animatedIcon {
+	animation: rotate 1s ease-in-out infinite;
+}
+
 .media {
 	display: flex;
 	align-items: flex-start
