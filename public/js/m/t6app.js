@@ -5341,13 +5341,14 @@ var containers = {
 	d.setTime(d.getTime() + (app.cookieconsent * 24*60*60*1000));
 	document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
 		document.getElementById('cookieconsent').classList.add('hidden');
-	    document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+		document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+		document.cookie = "cookieconsentNoGTM=false;expires=" + d.toUTCString() + ";path=/";
 		evt.preventDefault();
 	}, false);
 	document.getElementById('cookieconsent.noGTM').addEventListener('click', function(evt) {
 		document.getElementById('cookieconsent').classList.add('hidden');
-	    document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
-	    document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
+		document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+		document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
 		evt.preventDefault();
 	}, false);
 	document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
@@ -5565,7 +5566,7 @@ var containers = {
 	}
 	app.setDrawer();
 	
-	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" && !navigator.doNotTrack ) {
+	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" ) {
 		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 		(function(){
 			var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
