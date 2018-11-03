@@ -6,7 +6,8 @@ baseUrlCdn			= "//cdn.domain.tld";
 
 /* Mqtt settings */
 client				= mqtt.connect('mqtt://localhost:1883'); // Your Mqtt server to connect to
-mqtt_info			= 't6/'+os.hostname()+'/api'; // Mqtt topic for t6 api basic logs
+mqtt_root			= 't6/'+os.hostname()+'/'; // Mqtt root
+mqtt_info			= mqtt_root+'api'; // Mqtt topic for t6 api basic logs
 
 /* Session settings */
 session				= require('express-session');

@@ -13,6 +13,10 @@ function str2bool(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
 }
 
+router.get('/1234/test/mqtt', function (req, res) {
+	t6mqtt.publish('FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c', 'testTopic', {"dtepoch":1499103302768, "value":"superValue", "flow":"FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8"}, false);
+	res.status(200).send({message: "OK"});
+});
 /**
  * @api {get} /data/:flow_id Get DataPoint List
  * @apiName Get DataPoint List
@@ -627,9 +631,9 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 
 		if( publish == true && mqtt_topic !== "" ) {
 			if ( text !== "" ) {
-				client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text, flow: flow_id, environment: process.env.NODE_ENV, }), {retain: true,});
+				t6mqtt.publish(req.user.id, mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text, flow: flow_id}), true);
 			} else {
-				client.publish(mqtt_topic, JSON.stringify({dtepoch:time, value:value, flow: flow_id, environment: process.env.NODE_ENV, }), {retain: true,});
+				t6mqtt.publish(req.user.id, mqtt_topic, JSON.stringify({dtepoch:time, value:value, flow: flow_id}), true);
 			};
 		};
 

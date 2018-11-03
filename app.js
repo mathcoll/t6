@@ -37,6 +37,8 @@ strength			= require('strength');
 events				= require('./events');
 events.setMeasurement('events');
 events.setRP('autogen');
+decisionrules		= require('./decisionrules/module');
+t6mqtt				= require('./t6mqtt');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
@@ -205,5 +207,6 @@ if (app.get('env') === 'development') {
 	});
 }
 
+//decisionrules.test('123');
 events.add('t6App', 'start', 'self');
 module.exports = app;
