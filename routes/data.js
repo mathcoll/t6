@@ -14,7 +14,8 @@ function str2bool(v) {
 }
 
 router.get('/1234/test/mqtt', function (req, res) {
-	t6mqtt.publish('FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c', 'testTopic', {"dtepoch":1499103302768, "value":"superValue", "flow":"FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8"}, false);
+	//t6mqtt.publish('FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8', 'testTopic', {"dtepoch":1499103302768, "value":"superValue", "flow":"FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8"}, false);
+	decisionrules.actionTest('FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8', {'dtepoch': 1499103302768, 'value': "superValue", 'text': null, 'flow': 'FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c'}, true, 'testTopic');
 	res.status(200).send({message: "OK"});
 });
 /**
@@ -559,7 +560,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 		datatypes	= db.getCollection('datatypes');
 		var f = flows.chain().find({id: ""+flow_id,}).limit(1);
 		var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
-		if ( !mqtt_topic && (f.data())[0].mqtt_topic ) {
+		if ( !mqtt_topic && (f.data())[0] && (f.data())[0].mqtt_topic ) {
 			mqtt_topic = (f.data())[0].mqtt_topic;
 		}
 		var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
@@ -612,7 +613,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 					
 				}).catch(err => {
 					console.error('ERROR ===> Error writting to influxDb:\n'+err);
-			    });
+				});
 			}
 			if ( db_type.sqlite3 == true ) {
 				/* sqlite3 database */
@@ -629,13 +630,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 			};
 		}
 
-		if( publish == true && mqtt_topic !== "" ) {
-			if ( text !== "" ) {
-				t6mqtt.publish(req.user.id, mqtt_topic, JSON.stringify({dtepoch:time, value:value, text:text, flow: flow_id}), true);
-			} else {
-				t6mqtt.publish(req.user.id, mqtt_topic, JSON.stringify({dtepoch:time, value:value, flow: flow_id}), true);
-			};
-		};
+		decisionrules.actionTest(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id}, publish, mqtt_topic);
 
 		fields.flow_id = flow_id;
 		fields.id = time*1000000;

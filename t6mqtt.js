@@ -3,8 +3,10 @@ var t6mqtt = module.exports = {};
 
 t6mqtt.publish = function(user_id, topic, payload, retain) {
 	topic = !topic.startsWith("/", 0)?"/"+topic:topic;
-	payload.environment = process.env.NODE_ENV;
-	client.publish(mqtt_root+user_id+topic, JSON.stringify(payload), {retain: retain});
+	if (JSON.parse(payload) && !JSON.parse(payload).environment) {
+		JSON.parse(payload).environment = process.env.NODE_ENV;
+	}
+	client.publish(mqtt_root+user_id+topic, payload, {retain: retain});
 	/*
 	console.log(mqtt_root, user_id, topic, payload);
 	console.log("Message sent.");

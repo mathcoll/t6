@@ -88,7 +88,7 @@ if ( dbTokens === null ) console.log('db Tokens is failing');
 if ( dbTokens.getCollection('tokens') === null ) console.log('Collection Tokens is failing');
 
 client.on("connect", function () {
-	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)"}), {retain: false});
+	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
 });
 
 var index			= require('./routes/index');
@@ -207,6 +207,5 @@ if (app.get('env') === 'development') {
 	});
 }
 
-//decisionrules.test('123');
 events.add('t6App', 'start', 'self');
 module.exports = app;
