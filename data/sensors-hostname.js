@@ -15,7 +15,7 @@ var config = {
 			'flow_id': '<ADD_HERE-YOUR-FLOW_ID>',
 			'publish': true,
 			'save': true,
-			'mqtt_topic': ''+os.hostname()+'/freespace',
+			'mqtt_topic': '/freespace',
 			'unit': 'byte',
 			'exec': 'df | grep \'dev/root\' | tail -1 | cut -d: -f2 | awk \'{ print $4}\' ORS=\'\''
 		},
@@ -24,7 +24,7 @@ var config = {
 			'flow_id': '<ADD_HERE-YOUR-FLOW_ID>',
 			'publish': true,
 			'save': true,
-			'mqtt_topic': ''+os.hostname()+'/hddtemp',
+			'mqtt_topic': '/hddtemp',
 			'unit': 'Float',
 			'exec': '/usr/sbin/hddtemp -u C -n -q /dev/sda'
 		},
@@ -33,7 +33,7 @@ var config = {
 			'flow_id': '<ADD_HERE-YOUR-FLOW_ID>',
 			'publish': true,
 			'save': true,
-			'mqtt_topic': ''+os.hostname()+'/memory_usage',
+			'mqtt_topic': '/memory_usage',
 			'unit': '%',
 			'exec': 'ps aux | awk \'{sum +=$4}; END {print sum}\''
 		},
@@ -42,7 +42,7 @@ var config = {
 			'flow_id': '<ADD_HERE-YOUR-FLOW_ID>',
 			'publish': true,
 			'save': true,
-			'mqtt_topic': ''+os.hostname()+'/load_average',
+			'mqtt_topic': '/load_average',
 			'unit': '%',
 			'exec': 'uptime | awk -F\'load average:\' \'{ print $2}\'| awk -F\' \' \'{ print $3}\''
 		},
@@ -60,7 +60,7 @@ var config = {
 			'flow_id': '<ADD_HERE-YOUR-FLOW_ID>',
 			'publish': true,
 			'save': true,
-			'mqtt_topic': ''+os.hostname()+'/cpu_usage',
+			'mqtt_topic': '/cpu_usage',
 			'unit': '%',
 			'exec': 'ps aux | awk \'{sum +=$3}; END {print sum}\''
 		},
@@ -78,7 +78,7 @@ var config = {
 			'flow_id': '<ADD_HERE-YOUR-FLOW_ID>',
 			'publish': true,
 			'save': true,
-			'mqtt_topic': ''+os.hostname()+'/auth_log',
+			'mqtt_topic': '/auth_log',
 			'unit': '',
 			'exec': './authlogs.sh'
 		},
@@ -87,7 +87,7 @@ var config = {
 			'flow_id': '<ADD_HERE-YOUR-FLOW_ID>',
 			'publish': true,
 			'save': true,
-			'mqtt_topic': ''+os.hostname()+'/checkNetwork',
+			'mqtt_topic': '/checkNetwork',
 			'unit': 'Boolean',
 			'exec': sprintf('ping %s -c 1', argv._[0]) // nodejs sensor.js --run "7" 192.168.0.100
 		},
