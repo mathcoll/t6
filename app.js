@@ -37,8 +37,9 @@ strength			= require('strength');
 events				= require('./events');
 events.setMeasurement('events');
 events.setRP('autogen');
-decisionrules		= require('./decisionrules/module');
+t6decisionrules		= require('./t6decisionrules');
 t6mqtt				= require('./t6mqtt');
+t6mailer			= require('./t6mailer');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
@@ -105,7 +106,7 @@ var datatypes		= require('./routes/datatypes');
 var www				= require('./routes/www');
 var pwa				= require('./routes/pwa');
 var notifications	= require('./routes/notifications');
-var app				= express();
+app				= express();
 
 /* Logging */
 console.log('Setting Access Logs to', logAccessFile);
@@ -161,7 +162,6 @@ app.use('/v'+version+'/data', data);
 app.use('/v'+version+'/units', units);
 app.use('/v'+version+'/datatypes', datatypes);
 app.use('/v'+version+'/notifications', notifications);
-app.use('/old', www);
 app.use('/', pwa);
 
 // catch 404 and forward to error handler
@@ -207,5 +207,5 @@ if (app.get('env') === 'development') {
 	});
 }
 
-events.add('t6App', 'start', 'self');
+t6events.add('t6App', 'start', 'self');
 module.exports = app;

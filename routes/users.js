@@ -174,7 +174,7 @@ router.post('/', function (req, res) {
 				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				token:				token,
-		        expiration:			'',
+				expiration:			'',
 			};
 			var new_user = {
 				id:					my_id,
@@ -188,7 +188,7 @@ router.post('/', function (req, res) {
 				//key:				new_token.key,
 				//secret:				new_token.secret
 			};
-			events.add('t6Api', 'user add', new_user.id);
+			t6events.add('t6Api', 'user add', new_user.id);
 			users.insert(new_user);
 			
 			//var tokens	= db.getCollection('tokens'); // should be useless with JWT ??
@@ -206,7 +206,7 @@ router.post('/', function (req, res) {
 					html: html
 				};
 				transporter.sendMail(mailOptions, function(err, info){
-				    if( err ){
+					if( err ){
 						var err = new Error('Internal Error');
 						err.status = 500;
 						res.status(err.status || 500).render(err.status, {
@@ -215,15 +215,15 @@ router.post('/', function (req, res) {
 							currentUrl: req.path,
 							err: err,
 						});
-				    } else {
-				    	events.add('t6App', 'user welcome mail', new_user.id);
-				    	res.render('account/login', {
+					} else {
+						t6events.add('t6App', 'user welcome mail', new_user.id);
+						res.render('account/login', {
 							title : 'Login to t6',
 							user: req.session.user,
 							currentUrl: req.path,
 							message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
 						});
-				    };
+					};
 				});
 			});
 	
@@ -310,7 +310,7 @@ router.post('/token/:token([0-9a-zA-Z\.]+)', function (req, res) {
 			user.token = null;
 			users.update(user);
 			db.save();
-			events.add('t6App', 'user reset password', user.id);
+			t6events.add('t6App', 'user reset password', user.id);
 			res.header('Location', '/v'+version+'/users/'+user.id);
 			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(user).serialize() }); 
 			
@@ -357,13 +357,13 @@ router.post('/instruction', function (req, res) {
 					html: html
 				};
 				transporter.sendMail(mailOptions, function(err, info){
-				    if( err ){
+					if( err ){
 						res.status(500).send({ 'code': 500, message: 'Error updating user' }); 
-				    } else {
-						events.add('t6App', 'user forgot password mail', user.id);
+					} else {
+						t6events.add('t6App', 'user forgot password mail', user.id);
 						res.header('Location', '/v'+version+'/users/'+user.id);
 						res.status(200).send({ 'code': 200, message: 'Successfully updated' }); 
-				    }
+					}
 				});
 			});
 		} else {

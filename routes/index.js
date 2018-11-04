@@ -189,7 +189,7 @@ router.all('*', function (req, res, next) {
 			res.header('Cache-Control', 'no-cache, max-age=360, private, must-revalidate, proxy-revalidate');
 			
 			if( (req.user && i >= limit) ) {
-				events.add('t6Api', 'api 429', req.user!==null?req.user.id:'');
+				t6events.add('t6Api', 'api 429', req.user!==null?req.user.id:'');
 				res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 			} else {
 				if ( db_type.influxdb == true ) {
@@ -205,7 +205,7 @@ router.all('*', function (req, res, next) {
 						//console.error('OK ===>'+err);
 						//console.log(tags);
 						//console.log(fields);
-						events.add('t6Api', 'api call', req.user!==null?req.user.id:'');
+						t6events.add('t6Api', 'api call', req.user!==null?req.user.id:'');
 						next();
 					}).catch(err => {
 						//console.error('ERROR ===> Error writting logs for quota:\n'+err);
@@ -261,7 +261,7 @@ function checkForTooManyFailure(req, res, email) {
 	}).catch(err => {
 		console.log(err);
 	});
-	events.add('t6App', 'user login failure', email);
+	t6events.add('t6App', 'user login failure', email);
 }
 
 /**

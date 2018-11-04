@@ -1,15 +1,19 @@
 'use strict';
-var decisionrules = module.exports = {};
+var t6decisionrules = module.exports = {};
 var SunCalc	= require("suncalc");
 var Engine = require('json-rules-engine').Engine;
 var rules;
 
-decisionrules.checkRulesFromUser = function(user_id, payload) {
+t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	payload.user_id = user_id;
 	/* TODO */
 		//rules = dbRules.getCollection('rules');
 		//var r = rules.chain().find({'user_id': { '$eq': user_id }}).data();
 		//console.log('getRulesFromUser', r);
+	
+	//conditions.facts = [user_id, environment, dtepoch, value, flow, datetime]
+	//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
+	//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
 	
 	var hardcodedRule = {
 			conditions: {
@@ -24,22 +28,55 @@ decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}]
 			},
 			event: {
-				type: 'mqttPublish',
+				type: 'mqttPublish', //mqttPublish, email, sms, httpWebhook, Ifttt, serial, slackMessage
 				params: {
 					message: '',
 					mqtt_topic: ''
 				}
 			},
 			priority: 1,
+			onSuccess: function (event, almanac) { engine.stop(); /* Stop engine after success */ console.log("rule onSuccess", event); },
+			//onFailure: function (event, almanac) { console.log("rule onFailure", event); },
+	};
+	var hardcodedRule2 = {
+			conditions: {
+				all: [{
+					fact: 'user_id',
+					operator: 'equal',
+					value: '44800701-d6de-48f7-9577-4b3ea1fab81a'
+				}, {
+					fact: 'environment',
+					operator: 'equal',
+					value: 'development'
+				}, {
+					fact: 'flow',
+					operator: 'equal',
+					value: 'cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f'
+				}]
+			},
+			event: {
+				type: 'email',
+				params: {
+					from: "m.lory@free.fr",
+					//bcc: "mathieu.lory+bcc@free.fr",
+					to: 'mathieu@internetcollaboratif.info',
+					subject: 'Event on t6 Flow cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f',
+					text: 'Html email client is required',
+					html: '<h1>Hello</h1>TEST from event.'
+				}
+			},
+			priority: 2,
+			onSuccess: function (event, almanac) {  },
+			//onFailure: function (event, almanac) { console.log("rule onFailure", event); },
 	};
 	
-	//console.log('payload', payload);
 	let engine = new Engine();
 	engine.addRule(hardcodedRule);
+	engine.addRule(hardcodedRule2);
 	
 	engine.addOperator('isDayTime', (factValue, jsonValue) => {
 		/* return a Boolean according to current date: day(1) or night(0) */
-		var factLatitude = payload.latitude?payload.latitude:localization.latitude;
+		var factLatitude = payload.latitude?payload.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
 		var factLongitude = payload.longitude?payload.longitude:localization.longitude;
 		//console.log("isDayTime factLatitude", factLatitude);
 		//console.log("isDayTime factLongitude", factLongitude);
@@ -79,7 +116,15 @@ decisionrules.checkRulesFromUser = function(user_id, payload) {
 				t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify({dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow}), true);
 			};
 		} else if ( event.type == 'email' ) {
-			
+			var envelope = {
+				from:		event.params.from,
+				bcc:		event.params.bcc?event.params.bcc:bcc,
+				to:			event.params.to,
+				subject:	event.params.subject?event.params.subject:'',
+				text:		event.params.text?event.params.text:'Html email client is required',
+				html:		event.params.html
+			};
+			t6mailer.sendMail(envelope);
 		} else if ( event.type == 'sms' ) {
 			
 		} else if ( event.type == 'httpWebhook' ) {
@@ -99,7 +144,7 @@ decisionrules.checkRulesFromUser = function(user_id, payload) {
 
 
 /* This is for testing : */
-decisionrules.action = function(user_id, p, publish, mqtt_topic) {
+t6decisionrules.action = function(user_id, p, publish, mqtt_topic) {
 	if ( !p.environment ) {
 		p.environment = process.env.NODE_ENV;
 	}
@@ -109,10 +154,10 @@ decisionrules.action = function(user_id, p, publish, mqtt_topic) {
 	if ( !user_id ) {
 		user_id = "unknown_user";
 	} else {
-		decisionrules.checkRulesFromUser(user_id, p);
+		t6decisionrules.checkRulesFromUser(user_id, p);
 	}
 };
 
 
 
-module.exports = decisionrules;
+module.exports = t6decisionrules;

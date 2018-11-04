@@ -205,7 +205,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 			user_id:		req.user.id,
 		};
-		events.add('t6Api', 'object add', new_object.id);
+		t6events.add('t6Api', 'object add', new_object.id);
 		objects.insert(new_object);
 		//console.log(objects);
 		

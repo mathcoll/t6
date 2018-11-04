@@ -1,21 +1,21 @@
 'use strict';
-var events = module.exports = {};
+var t6events = module.exports = {};
 var measurement = 'events';
 var retention = 'autogen';
 
-events.setMeasurement = function(m) {
+t6events.setMeasurement = function(m) {
 	measurement = m;
 };
 
-events.getMeasurement = function() {
+t6events.getMeasurement = function() {
 	return measurement;
 };
 
-events.setRP = function(rp) {
+t6events.setRP = function(rp) {
 	retention = rp;
 };
 
-events.add = function(where, what, who) {
+t6events.add = function(where, what, who) {
 	var tags = {what: what, where: where};
 	var fields = {who: who};
 	dbInfluxDB.writePoints([{
@@ -26,7 +26,7 @@ events.add = function(where, what, who) {
 		return true;
 	}).catch(err => {
 		console.error('ERROR ===> Error writting event to influxDb:\n'+err);
-    });
+	});
 };
 
-module.exports = events;
+module.exports = t6events;

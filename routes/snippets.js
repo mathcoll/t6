@@ -106,7 +106,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 				color:  	req.body.color!==undefined?req.body.color:'',
 				flows:		req.body.flows!==undefined?req.body.flows:new Array(),
 			};
-			events.add('t6Api', 'snippet add', new_snippet.id);
+			t6events.add('t6Api', 'snippet add', new_snippet.id);
 			snippets.insert(new_snippet);
 			//console.log(snippets);
 			

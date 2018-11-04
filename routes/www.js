@@ -41,7 +41,9 @@ router.all('*', function (req, res, next) {
 });
 
 router.get('/', function(req, res) {
-	if ( req.session.user !== undefined ) events.add('t6App', 'get/', req.session.user.id);
+	if ( req.session.user !== undefined ) {
+		t6events.add('t6App', 'get/', req.session.user.id);
+	}
 	res.render('index', {
 		title : 't6, IoT platform and API',
 		currentUrl: req.path,
@@ -1036,11 +1038,11 @@ router.post('/account/register', function(req, res) {
 		};
 		if ( new_user.email && new_user.id ) {
 			users.insert(new_user);
-			events.add('t6App', 'user register', new_user.id);
+			t6events.add('t6App', 'user register', new_user.id);
 			var new_token = {
 					user_id:			new_user.id,
 					token:				token,
-			        expiration:			'',
+					expiration:			'',
 			};
 			//var tokens	= db.getCollection('tokens');
 			//tokens.insert(new_token);
@@ -1066,15 +1068,15 @@ router.post('/account/register', function(req, res) {
 							currentUrl: req.path,
 							err: err,
 						});
-				    } else {
-				    	events.add('t6App', 'user welcome mail', new_user.id);
-				    	res.render('account/login', {
+					} else {
+						t6events.add('t6App', 'user welcome mail', new_user.id);
+						res.render('account/login', {
 							title : 'Login to t6',
 							user: req.session.user,
 							currentUrl: req.path,
 							message: {type: 'success', value: 'Account created successfully. Please, check your inbox!'}
 						});
-				    };
+					};
 				});
 			});
 			
@@ -1141,7 +1143,7 @@ router.post('/account/reset-password/:token([0-9a-z\-\.]+)', function(req, res) 
 		user.token = null;
 		users.update(user);
 		db.save();
-		events.add('t6App', 'user reset password', user.id);
+		t6events.add('t6App', 'user reset password', user.id);
 		req.session.message = {type: 'success', value: 'Password has been changed! Please sign-in with your new password.'};
 		res.redirect('/account/login');
 	} else {
@@ -1185,19 +1187,19 @@ router.post('/account/forgot-password', function(req, res) {
 						currentUrl: req.path,
 						err: err
 					});
-			    } else {
-					events.add('t6App', 'user forgot password mail', user.id);
-			    	res.render('account/login', {
-					title : 'Login to t6',
-					user: user,
-					currentUrl: req.path,
-					message: {type: 'success', value: 'Instructions has been sent to your email. Please, check your inbox!'}
+				} else {
+					t6events.add('t6App', 'user forgot password mail', user.id);
+					res.render('account/login', {
+						title : 'Login to t6',
+						user: user,
+						currentUrl: req.path,
+						message: {type: 'success', value: 'Instructions has been sent to your email. Please, check your inbox!'}
 				});
-			    }
+				}
 			});
 		});
 	} else {
-    	res.render('account/forgot-password', {
+		res.render('account/forgot-password', {
 			title : 'Forgot your password',
 			user: req.session.user,
 			currentUrl: req.path,
@@ -1215,7 +1217,7 @@ router.get('/account/logout', function(req, res) {
 
 router.post('/account/login', Auth, function(req, res) {
 	if ( req.session.user ) {
-		events.add('t6App', 'user POST login', req.session.user.id);
+		t6events.add('t6App', 'user POST login', req.session.user.id);
 		// Set geoIP to User
 		var geo = geoip.lookup(req.ip);
 		
@@ -2522,15 +2524,15 @@ function Auth(req, res, next) {
 							html: html
 						};
 						transporter.sendMail(mailOptions, function(err, info){
-						    if( err ){ }
+							if( err ){ }
 						});
 					});
 				}
 			}).catch(err => {
 				console.log(err);
 				//
-		    });
-			events.add('t6App', 'user login failure', req.body.email);
+			});
+			t6events.add('t6App', 'user login failure', req.body.email);
 			res.redirect('/unauthorized');
 		}
 	} else {
