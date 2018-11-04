@@ -35,7 +35,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			},
 			priority: 1,
-			onSuccess: function (event, almanac) { engine.stop(); /* Stop engine after success */ console.log("rule onSuccess", event); },
+			onSuccess: function (event, almanac) {  },
 			//onFailure: function (event, almanac) { console.log("rule onFailure", event); },
 	};
 	var hardcodedRule2 = {
@@ -66,7 +66,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			},
 			priority: 2,
-			onSuccess: function (event, almanac) {  },
+			onSuccess: function (event, almanac) { engine.stop(); /* Stop engine after success */  },
 			//onFailure: function (event, almanac) { console.log("rule onFailure", event); },
 	};
 	
@@ -75,11 +75,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	engine.addRule(hardcodedRule2);
 	
 	engine.addOperator('isDayTime', (factValue, jsonValue) => {
-		/* return a Boolean according to current date: day(1) or night(0) */
 		var factLatitude = payload.latitude?payload.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
 		var factLongitude = payload.longitude?payload.longitude:localization.longitude;
-		//console.log("isDayTime factLatitude", factLatitude);
-		//console.log("isDayTime factLongitude", factLongitude);
 		
 		var times = SunCalc.getTimes(new Date(), factLatitude, factLongitude);
 		if ( moment().isAfter(times.sunrise) && moment().isBefore(times.sunset) ) {
@@ -92,8 +89,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	});
 
 	engine.on('success', function(event, almanac, ruleResult) {
-		//console.log('event success', event.type);
-		//console.log('event payload', payload);
 		// ruleResult.result == true
 		
 		if ( !payload.mqtt_topic ) {
@@ -141,9 +136,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	engine.run(payload);
 };
 
-
-
-/* This is for testing : */
 t6decisionrules.action = function(user_id, p, publish, mqtt_topic) {
 	if ( !p.environment ) {
 		p.environment = process.env.NODE_ENV;
