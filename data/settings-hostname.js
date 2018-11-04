@@ -55,3 +55,6 @@ quota = {
 	'user': {price: '2.99', currency:'€', objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 9, calls: 99},
 	'free': {price: '0.00', currency:'€', objects: 1, flows: 1, rules: 1, tokens: 1, snippets: 2, dashboards: 1, calls: 49}
 };
+
+/* Localization settings */
+localization = {latitude: 39.800327, longitude: 6.343530};

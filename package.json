@@ -34,6 +34,7 @@
     "geoip-lite": "^1.2.1",
     "influx": "^5.0.0-alpha.4",
     "jade": "^1.11.0",
+    "json-rules-engine": "^2.3.0",
     "jsonapi-serializer": "^3.4.2",
     "lokijs": "^1.5.3",
     "md5": "^2.1.0",
@@ -53,6 +54,7 @@
     "squel": "~4.2.3",
     "strength": "^0.1.4",
     "striptags": "^2.1.1",
+    "suncalc": "^1.8.0",
     "useragent": "^2.3.0"
   },
   "readmeFilename": "README.md",

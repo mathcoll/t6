@@ -528,8 +528,10 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiParam {Boolean} [publish=false] Flag to publish to Mqtt Topic
  * @apiParam {Boolean} [save =false] Flag to store in database the Value
  * @apiParam {String} [unit] Unit of the Value (optional)
- * @apiParam {String} [mqtt_topic] Mqtt Topic to publish value to 
+ * @apiParam {String} [mqtt_topic] Mqtt Topic to publish value
  * @apiParam {String} [text] Optional text to qualify Value
+ * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. this is only used for rule specific operator)
+ * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. this is only used for rule specific operator)
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
@@ -546,6 +548,8 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 	var save		= req.body.save!==undefined?JSON.parse(req.body.save):true;
 	var unit		= req.body.unit!==undefined?req.body.unit:"";
 	var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"";
+	var latitude	= req.body.latitude!==undefined?req.body.latitude:"";
+	var longitude	= req.body.longitude!==undefined?req.body.longitude:"";
 	var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
 
 	if ( !flow_id ) {
@@ -630,7 +634,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 			};
 		}
 
-		decisionrules.actionTest(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id}, publish, mqtt_topic);
+		decisionrules.action(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
 
 		fields.flow_id = flow_id;
 		fields.id = time*1000000;
