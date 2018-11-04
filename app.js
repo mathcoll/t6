@@ -34,12 +34,13 @@ geoip				= require('geoip-lite');
 device				= require('device');
 useragent			= require('useragent');
 strength			= require('strength');
-events				= require('./events');
-events.setMeasurement('events');
-events.setRP('autogen');
+
 t6decisionrules		= require('./t6decisionrules');
 t6mqtt				= require('./t6mqtt');
 t6mailer			= require('./t6mailer');
+t6events			= require('./t6events');
+t6events.setMeasurement('events');
+t6events.setRP('autogen');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));

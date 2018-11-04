@@ -231,7 +231,7 @@ function checkForTooManyFailure(req, res, email) {
 	// Invalid Credentials
 	var query = squel.select()
 		.field('count(*)')
-		.from(events.getMeasurement())
+		.from(t6events.getMeasurement())
 		.where('what=?', 'user login failure')
 		.where('who=?', email)
 		.where('time>now() - 1h')
@@ -254,7 +254,7 @@ function checkForTooManyFailure(req, res, email) {
 					html: html
 				};
 				transporter.sendMail(mailOptions, function(err, info){
-				    if( err ){ }
+					if( err ){ }
 				});
 			});
 		}

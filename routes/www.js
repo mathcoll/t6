@@ -2502,7 +2502,7 @@ function Auth(req, res, next) {
 			// Invalid Credentials
 			var query = squel.select()
 				.field('count(*)')
-				.from(events.getMeasurement())
+				.from(t6events.getMeasurement())
 				.where('what=?', 'user login failure')
 				.where('who=?', req.body.email)
 				.where('time>now() - 1h')
