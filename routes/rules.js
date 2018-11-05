@@ -3,6 +3,7 @@ var express = require('express');
 var router = express.Router();
 var RuleSerializer = require('../serializers/rule');
 var ErrorSerializer = require('../serializers/error');
+var rules;
 
 /**
  * @api {get} /rules/:rule_id Get Rule(s)
@@ -28,9 +29,35 @@ router.get('/?(:rule_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 	var page = req.query.page!==undefined?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
+	rules = dbRules.getCollection('rules');
+	var query;
+	if ( rule_id !== undefined ) {
+		query = {
+		'$and': [
+				{ 'user_id' : req.user.id },
+				{ 'id' : rule_id },
+			]
+		};
+	} else {
+		if ( name !== undefined ) {
+			query = {
+			'$and': [
+					{ 'user_id' : req.user.id },
+					{ 'name': { '$regex': [name, 'i'] } }
+				]
+			};
+		} else {
+			query = {
+			'$and': [
+					{ 'user_id' : req.user.id },
+				]
+			};
+		}
+	}
+	var json = rules.chain().find(query).offset(offset).limit(size).data();
+	//console.log(query);
 
-	var json = {};
-	var total = 0;//rules.find(query).length;
+	var total = rules.find(query).length;
 	json.size = size;
 	json.pageSelf = page;
 	json.pageFirst = 1;

@@ -4,9 +4,9 @@ var JSONAPISerializer = require('jsonapi-serializer').Serializer;
 function RuleTypeSerializer(rule) {
 
   this.serialize = function () {
-    return new JSONAPISerializer('rule', {
-    	keyForAttribute: 'underscore_case',
-    	attributes: ['name', 'rule_id', 'meta'],
+	return new JSONAPISerializer('rule', {
+		keyForAttribute: 'underscore_case',
+		attributes: ['name', 'user_id', 'id', 'rule', 'meta'],
 		topLevelLinks : {
 			parent : sprintf('%s/v%s/rules', baseUrl_https, version),
 			self : rule.pageSelf!==undefined?sprintf('%s/v%s/rules/?page=%s&size=%s', baseUrl_https, version, rule.pageSelf, rule.size):undefined,
@@ -16,11 +16,11 @@ function RuleTypeSerializer(rule) {
 			next : rule.pageNext!==undefined?sprintf('%s/v%s/rules/?page=%s&size=%s', baseUrl_https, version, rule.pageNext, rule.size):undefined,
 		},
 		dataLinks : {
-			self : function(dashboard) {
+			self : function(rule) {
 				return sprintf('%s/v%s/rules/%s', baseUrl_https, version, rule.id);
 			},
 		},
-    }).serialize(rule);
+	}).serialize(rule);
   };
 }
 

@@ -2,77 +2,29 @@
 var t6decisionrules = module.exports = {};
 var SunCalc	= require("suncalc");
 var Engine = require('json-rules-engine').Engine;
+var Rule = require('json-rules-engine').Rule;
 var rules;
+
+t6decisionrules.export = function(rule) {
+	console.dir(JSON.stringify(rule));
+};
 
 t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	payload.user_id = user_id;
-	/* TODO */
-		//rules = dbRules.getCollection('rules');
-		//var r = rules.chain().find({'user_id': { '$eq': user_id }}).data();
-		//console.log('getRulesFromUser', r);
+	rules = dbRules.getCollection('rules');
+	var r = rules.chain().find({'user_id': { '$eq': user_id }}).data();
+	
+	let engine = new Engine();
+	if ( r.length > 0 ) {
+		r.forEach(function(theRule) {
+			//console.log('theRule', theRule.name);
+			engine.addRule(new Rule(theRule.rule));
+		});
+	}
 	
 	//conditions.facts = [user_id, environment, dtepoch, value, flow, datetime]
 	//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
 	//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
-	
-	var hardcodedRule = {
-			conditions: {
-				all: [{
-					fact: 'user_id',
-					operator: 'equal',
-					value: '44800701-d6de-48f7-9577-4b3ea1fab81a'
-				}, {
-					fact: 'environment',
-					operator: 'equal',
-					value: 'production'
-				}]
-			},
-			event: {
-				type: 'mqttPublish', //mqttPublish, email, sms, httpWebhook, Ifttt, serial, slackMessage
-				params: {
-					message: '',
-					mqtt_topic: ''
-				}
-			},
-			priority: 1,
-			onSuccess: function (event, almanac) {  },
-			//onFailure: function (event, almanac) { console.log("rule onFailure", event); },
-	};
-	var hardcodedRule2 = {
-			conditions: {
-				all: [{
-					fact: 'user_id',
-					operator: 'equal',
-					value: '44800701-d6de-48f7-9577-4b3ea1fab81a'
-				}, {
-					fact: 'environment',
-					operator: 'equal',
-					value: 'development'
-				}, {
-					fact: 'flow',
-					operator: 'equal',
-					value: 'cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f'
-				}]
-			},
-			event: {
-				type: 'email',
-				params: {
-					from: "m.lory@free.fr",
-					//bcc: "mathieu.lory+bcc@free.fr",
-					to: 'mathieu@internetcollaboratif.info',
-					subject: 'Event on t6 Flow cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f',
-					text: 'Html email client is required',
-					html: '<h1>Hello</h1>TEST from event.'
-				}
-			},
-			priority: 2,
-			onSuccess: function (event, almanac) { engine.stop(); /* Stop engine after success */  },
-			//onFailure: function (event, almanac) { console.log("rule onFailure", event); },
-	};
-	
-	let engine = new Engine();
-	engine.addRule(hardcodedRule);
-	engine.addRule(hardcodedRule2);
 	
 	engine.addOperator('isDayTime', (factValue, jsonValue) => {
 		var factLatitude = payload.latitude?payload.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
@@ -86,6 +38,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			//console.log("isDayTime", "(false) night.");
 			return false;
 		}
+	});
+	engine.addOperator('anormalityChange', (factValue, jsonValue) => {
+		
+	});
+	
+	engine.addOperator('diffFromPrevious', (factValue, jsonValue) => {
+		
 	});
 
 	engine.on('success', function(event, almanac, ruleResult) {
