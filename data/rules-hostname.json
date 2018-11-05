@@ -1,960 +1,128 @@
 {
-   "filename": "",
-   "collections": [
-      {
-         "name": "rules",
-         "data": [
-            {
-               "name": "Alert on Threshold",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 1,
-               "mqtt_topic": "couleurs/yoctovoc/voc",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/yoctovoc/voc"
-                           },
-                           {
-                              "id": "deltaValue",
-                              "field": "deltaValue",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater",
-                              "value": "1234"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "ceda166a-df25-4bc4-ae77-3823f63193f9",
-               "meta": {
-                  "revision": 6,
-                  "created": 1465818172007,
-                  "version": 0,
-                  "updated": 1465916462827
-               },
-               "$loki": 1
-            },
-            {
-               "name": "auth_log",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 2,
-               "mqtt_topic": "couleurs/guruplug/auth_log",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/guruplug/auth_log"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater",
-                              "value": "0"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater",
-                              "value": "123"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "74996963-ac6e-4ba5-badf-1e1c4705e99b",
-               "meta": {
-                  "revision": 3,
-                  "created": 1465818172008,
-                  "version": 0,
-                  "updated": 1465916458961
-               },
-               "$loki": 2
-            },
-            {
-               "name": "Big COV Alert",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 3,
-               "mqtt_topic": "couleurs/yoctovoc/voc",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/yoctovoc/voc"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "2500"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "5f8f89a5-f36b-458a-97ef-195cb4eba330",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172009,
-                  "version": 0,
-                  "updated": 1465916455142
-               },
-               "$loki": 3
-            },
-            {
-               "name": "Check for runningProcess",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 4,
-               "mqtt_topic": "couleurs/guruplug/runningProcess",
-               "on": false,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/guruplug/runningProcess"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "6ba39a63-6dc5-4093-89ea-59b78df1bb62",
-               "meta": {
-                  "revision": 3,
-                  "created": 1465818172009,
-                  "version": 0,
-                  "updated": 1465916678790
-               },
-               "$loki": 4
-            },
-            {
-               "name": "checkNetwork for IP on LAN",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 5,
-               "mqtt_topic": "couleurs/guruplug/checkNetwork",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "begins_with",
-                              "value": "couleurs/guruplug/checkNetwork"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "29626a4f-cb65-4b8c-9454-670bf0a5bd7a",
-               "meta": {
-                  "revision": 3,
-                  "created": 1465818172009,
-                  "version": 0,
-                  "updated": 1465916449598
-               },
-               "$loki": 5
-            },
-            {
-               "name": "cpu_usage",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 6,
-               "mqtt_topic": "couleurs/guruplug/cpu_usage",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/guruplug/cpu_usage"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "10"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "e6e6d190-bfc4-48e3-ac42-d4a6aa4b5198",
-               "meta": {
-                  "revision": 3,
-                  "created": 1465818172010,
-                  "version": 0,
-                  "updated": 1465916446242
-               },
-               "$loki": 6
-            },
-            {
-               "name": "Filter for Green color",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 7,
-               "mqtt_topic": "couleurs/yoctovoc/voc",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "development"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/yoctovoc/voc"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "less_or_equal",
-                              "value": "600"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "e42fe91a-372c-4f2e-80ff-afa88098e247",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172010,
-                  "version": 0,
-                  "updated": 1465916443345
-               },
-               "$loki": 7
-            },
-            {
-               "name": "Filter for Red color",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 16,
-               "mqtt_topic": "couleurs/yoctovoc/voc",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "development"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/yoctovoc/voc"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "1800"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "1a2b9561-8f00-4e83-8f6a-6230d2656226",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172011,
-                  "version": 0,
-                  "updated": 1465916393641
-               },
-               "$loki": 8
-            },
-            {
-               "name": "Filter for Temperature",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 9,
-               "mqtt_topic": "couleurs/yahoo/temperature",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "development"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/yahoo/temperature"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "5ce9fff1-d4ae-47fb-8f66-e395afc36240",
-               "meta": {
-                  "revision": 3,
-                  "created": 1465818172012,
-                  "version": 0,
-                  "updated": 1465916437077
-               },
-               "$loki": 9
-            },
-            {
-               "name": "Filter for Yellow color",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 10,
-               "mqtt_topic": "couleurs/yoctovoc/voc",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "development"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/yoctovoc/voc"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "between",
-                              "value": [
-                                 "600",
-                                 "1800"
-                              ]
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "4f0d21a5-63e4-4155-be33-f45e2ac1ad37",
-               "meta": {
-                  "revision": 4,
-                  "created": 1465818172012,
-                  "version": 0,
-                  "updated": 1465916433689
-               },
-               "$loki": 10
-            },
-            {
-               "name": "Freespace on guru",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 11,
-               "mqtt_topic": "couleurs/guruplug/freespace",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/guruplug/freespace"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "less_or_equal",
-                              "value": "5000"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "4fd04ac4-0293-4a73-ae59-5e54c652a841",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172012,
-                  "version": 0,
-                  "updated": 1465916430153
-               },
-               "$loki": 11
-            },
-            {
-               "name": "High Temperature",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 12,
-               "mqtt_topic": "couleurs/yahoo/temperature",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/yahoo/temperature"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "35"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "eea78549-3694-4dae-a5f0-38017b5a3c7b",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172013,
-                  "version": 0,
-                  "updated": 1465916416122
-               },
-               "$loki": 12
-            },
-            {
-               "name": "load_average",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 13,
-               "mqtt_topic": "couleurs/guruplug/load_average",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/guruplug/load_average"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "5"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "976031df-84c9-429a-a371-d09fa7655ed2",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172014,
-                  "version": 0,
-                  "updated": 1465916412609
-               },
-               "$loki": 13
-            },
-            {
-               "name": "memory_usage",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 14,
-               "mqtt_topic": "couleurs/guruplug/memory_usage",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/guruplug/memory_usage"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "70"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "c1ba135d-16c1-457c-af01-9707f063f474",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172014,
-                  "version": 0,
-                  "updated": 1465916409950
-               },
-               "$loki": 14
-            },
-            {
-               "name": "nodeMCU humidity",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 8,
-               "mqtt_topic": "couleurs/nodeMCU/humidity",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/nodeMCU/humidity"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "55"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "535f64b6-a23a-4f9b-babb-0e250d8d9258",
-               "meta": {
-                  "revision": 6,
-                  "created": 1465818172015,
-                  "version": 0,
-                  "updated": 1465916440091
-               },
-               "$loki": 15
-            },
-            {
-               "name": "nodeMCU temperature",
-               "user_id": "44800701-d6de-48f7-9577-4b3ea1fab81a",
-               "priority": 15,
-               "mqtt_topic": "couleurs/nodeMCU/temperature",
-               "on": true,
-               "condition": {
-                  "condition": "AND",
-                  "rules": [
-                     {
-                        "id": "environment",
-                        "field": "environment",
-                        "type": "string",
-                        "input": "select",
-                        "operator": "equal",
-                        "value": "production"
-                     },
-                     {
-                        "condition": "AND",
-                        "rules": [
-                           {
-                              "id": "mqtt_topic",
-                              "field": "mqtt_topic",
-                              "type": "string",
-                              "input": "text",
-                              "operator": "equal",
-                              "value": "couleurs/nodeMCU/temperature"
-                           },
-                           {
-                              "id": "isDayTime",
-                              "field": "isDayTime",
-                              "type": "integer",
-                              "input": "radio",
-                              "operator": "equal",
-                              "value": "1"
-                           },
-                           {
-                              "id": "value",
-                              "field": "value",
-                              "type": "double",
-                              "input": "text",
-                              "operator": "greater_or_equal",
-                              "value": "35"
-                           }
-                        ]
-                     }
-                  ]
-               },
-               "consequence": {},
-               "id": "c7321747-74c6-49f8-bcf8-0c7731173044",
-               "meta": {
-                  "revision": 2,
-                  "created": 1465818172015,
-                  "version": 0,
-                  "updated": 1465916406846
-               },
-               "$loki": 16
-            }
-         ],
-         "idIndex": [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12,
-            13,
-            14,
-            15,
-            16
-         ],
-         "binaryIndices": {},
-         "constraints": null,
-         "uniqueNames": [],
-         "transforms": {},
-         "objType": "rules",
-         "dirty": true,
-         "cachedIndex": null,
-         "cachedBinaryIndex": null,
-         "cachedData": null,
-         "transactional": false,
-         "cloneObjects": false,
-         "cloneMethod": "parse-stringify",
-         "asyncListeners": false,
-         "disableChangesApi": true,
-         "autoupdate": false,
-         "ttl": {
-            "age": null,
-            "ttlInterval": null,
-            "daemon": null
-         },
-         "maxId": 16,
-         "DynamicViews": [],
-         "events": {
-            "insert": [
-               null
+
+    "filename":"/media/Documents/Projets/2016/internetcollaboratif.info/app/API/t6/data/rules-bleu.json",
+    "collections":[
+        {
+            "name":"rules",
+            "data":[
+                {
+                    "name":"mqttPublish on any data posted",
+                    "rule":"{\"conditions\":{\"all\":[{\"fact\":\"user_id\",\"operator\":\"equal\",\"value\":\"44800701-d6de-48f7-9577-4b3ea1fab81a\"},{\"fact\":\"environment\",\"operator\":\"equal\",\"value\":\"production\"}]},\"event\":{\"type\":\"mqttPublish\",\"params\":{\"message\":\"\",\"mqtt_topic\":\"\"}},\"priority\":1}",
+                    "user_id":"44800701-d6de-48f7-9577-4b3ea1fab81a",
+                    "id":"b829d2ec-d2d7-4f0f-b781-032703c5d2c8",
+                    "meta":{
+                        "revision":1,
+                        "created":1465818172007,
+                        "version":0,
+                        "updated":1466187043106
+                    },
+                    "$loki":1
+                },
+                {
+                    "name":"Email alert",
+                    "rule":"{\"conditions\":{\"all\":[{\"fact\":\"user_id\",\"operator\":\"equal\",\"value\":\"44800701-d6de-48f7-9577-4b3ea1fab81a\"},{\"fact\":\"environment\",\"operator\":\"equal\",\"value\":\"development\"},{\"fact\":\"flow\",\"operator\":\"equal\",\"value\":\"cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f\"}]},\"event\":{\"type\":\"email\",\"params\":{\"from\":\"m.lory@free.fr\",\"to\":\"mathieu@internetcollaboratif.info\",\"subject\":\"Event on t6 Flow cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f\",\"text\":\"Html email client is required\",\"html\":\"<h1>Hello</h1>TEST from event.\"}},\"priority\":2}",
+                    "user_id":"44800701-d6de-48f7-9577-4b3ea1fab81a",
+                    "id":"0770cab1-84df-470f-9af9-9fc7ba587bf3",
+                    "meta":{
+                        "revision":1,
+                        "created":1465818172007,
+                        "version":0,
+                        "updated":1466187043106
+                    },
+                    "$loki":2
+                }
             ],
-            "update": [
-               null
+            "idIndex":[
+                1,
+                2
             ],
-            "pre-insert": [],
-            "pre-update": [],
-            "close": [],
-            "flushbuffer": [],
-            "error": [],
-            "delete": [
-               null
+            "binaryIndices":{
+            },
+            "constraints":null,
+            "uniqueNames":[
             ],
-            "warning": [
-               null
+            "transforms":{
+            },
+            "objType":"rules",
+            "dirty":false,
+            "cachedIndex":null,
+            "cachedBinaryIndex":null,
+            "cachedData":null,
+            "adaptiveBinaryIndices":false,
+            "transactional":false,
+            "cloneObjects":false,
+            "cloneMethod":"parse-stringify",
+            "asyncListeners":false,
+            "disableChangesApi":true,
+            "disableDeltaChangesApi":true,
+            "autoupdate":false,
+            "serializableIndices":true,
+            "ttl":null,
+            "maxId":2,
+            "DynamicViews":[
+            ],
+            "events":{
+                "insert":[
+                    null
+                ],
+                "update":[
+                    null
+                ],
+                "pre-insert":[
+                ],
+                "pre-update":[
+                ],
+                "close":[
+                ],
+                "flushbuffer":[
+                ],
+                "error":[
+                ],
+                "delete":[
+                    null
+                ],
+                "warning":[
+                    null
+                ]
+            },
+            "changes":[
             ]
-         },
-         "changes": []
-      }
-   ],
-   "databaseVersion": 1.1,
-   "engineVersion": 1.1,
-   "autosave": true,
-   "autosaveInterval": 5000,
-   "autosaveHandle": null,
-   "options": {
-      "autoload": true,
-      "autosave": true
-   },
-   "persistenceMethod": "fs",
-   "persistenceAdapter": null,
-   "verbose": false,
-   "events": {
-      "init": [
-         null
-      ],
-      "loaded": [],
-      "flushChanges": [],
-      "close": [],
-      "changes": [],
-      "warning": []
-   },
-   "ENV": "NODEJS"
+        }
+    ],
+    "databaseVersion":1.5,
+    "engineVersion":1.5,
+    "autosave":true,
+    "autosaveInterval":5000,
+    "autosaveHandle":null,
+    "throttledSaves":true,
+    "options":{
+        "autoload":true,
+        "autosave":true,
+        "serializationMethod":"normal",
+        "destructureDelimiter":"$<\n",
+        "recursiveWait":true,
+        "recursiveWaitLimit":false,
+        "recursiveWaitLimitDuration":2000,
+        "started":1521984011018
+    },
+    "persistenceMethod":"fs",
+    "persistenceAdapter":null,
+    "verbose":false,
+    "events":{
+        "init":[
+            null
+        ],
+        "loaded":[
+        ],
+        "flushChanges":[
+        ],
+        "close":[
+        ],
+        "changes":[
+        ],
+        "warning":[
+        ]
+    },
+    "ENV":"NODEJS"
+
 }
