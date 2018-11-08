@@ -7,6 +7,9 @@ function RuleTypeSerializer(rule) {
 	return new JSONAPISerializer('rule', {
 		keyForAttribute: 'underscore_case',
 		attributes: ['name', 'user_id', 'id', 'rule', 'meta'],
+		rule: {
+			attributes: ['conditions', 'event', 'priority'],
+		},
 		topLevelLinks : {
 			parent : sprintf('%s/v%s/rules', baseUrl_https, version),
 			self : rule.pageSelf!==undefined?sprintf('%s/v%s/rules/?page=%s&size=%s', baseUrl_https, version, rule.pageSelf, rule.size):undefined,

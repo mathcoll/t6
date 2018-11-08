@@ -71,9 +71,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			};
 		} else if ( event.type == 'email' ) {
 			var envelope = {
-				from:		event.params.from,
+				from:		event.params.from?event.params.from:from,
 				bcc:		event.params.bcc?event.params.bcc:bcc,
-				to:			event.params.to,
+				to:			event.params.to?event.params.to:bcc,
 				subject:	event.params.subject?event.params.subject:'',
 				text:		event.params.text?event.params.text:'Html email client is required',
 				html:		event.params.html

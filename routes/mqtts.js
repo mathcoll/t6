@@ -5,7 +5,7 @@ var MqttSerializer = require('../serializers/mqtt');
 var ErrorSerializer = require('../serializers/error');
 
 /**
- * @api {get} /rules/:rule_id Get Mqtt(s)
+ * @api {get} /mqtts/:mqtt_id Get Mqtt(s)
  * @apiName Get Mqtt(s)
  * @apiGroup 6. Mqtt
  * @apiVersion 2.0.1
@@ -22,7 +22,7 @@ var ErrorSerializer = require('../serializers/error');
  * @apiUse 500
  */
 router.get('/?(:mqtt_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var rule_id = req.params.mqtt_id;
+	var mqtt_id = req.params.mqtt_id;
 	var name = req.query.name;
 	var size = req.query.size!==undefined?req.query.size:20;
 	var page = req.query.page!==undefined?req.query.page:1;
