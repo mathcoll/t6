@@ -8,18 +8,65 @@
 	"item": [
 		{
 			"name": "General",
-			"description": "",
 			"item": [
 				{
-					"name": "authenticate with Credentials",
+					"name": "authenticate with username+password",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "36cb7443-f248-4993-8a50-893af82b65ad",
 								"type": "text/javascript",
 								"exec": [
 									"var response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);"
+									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);",
+									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"username\": \"{{usernameAdmin}}\", \"password\": \"{{password}}\", \"grant_type\": \"password\"}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"authenticate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "authenticate with refresh token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d371d3ca-a8c8-44fe-b7ee-9188defc400f",
+								"type": "text/javascript",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);",
+									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);"
 								]
 							}
 						}
@@ -34,7 +81,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"username\": \"{{username}}\", \"password\": \"{{password}}\", \"grant_type\": \"password\"}"
+							"raw": "{\"username\": \"{{usernameAdmin}}\", \"grant_type\": \"refresh_token\", \"refresh_token\": \"{{refresh_token}}\"}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
@@ -202,266 +249,7 @@
 			]
 		},
 		{
-			"name": "Admin_User",
-			"description": "",
-			"item": [
-				{
-					"name": "Add a unit",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"units",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get unit",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"units",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete a unit",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/31c38904-2482-4cce-b0de-6dc9efbc2d33",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"units",
-								"31c38904-2482-4cce-b0de-6dc9efbc2d33"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Add a datatype",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"geo\"\n}"
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"datatypes",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get datatypes",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"datatypes",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete a datatype",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/7fea96e4-38ec-4c6f-8dd2-e9df96f7dedd",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"datatypes",
-								"7fea96e4-38ec-4c6f-8dd2-e9df96f7dedd"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get user list",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/list",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"users",
-								"list"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "User",
-			"description": "",
 			"item": [
 				{
 					"name": "Create New User",
@@ -503,7 +291,7 @@
 					"response": []
 				},
 				{
-					"name": "Generate Access Tokens",
+					"name": "(Deprecated) Generate Access Tokens",
 					"event": [
 						{
 							"listen": "test",
@@ -601,6 +389,55 @@
 					"response": []
 				},
 				{
+					"name": "Get User active sessions list",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8c0c195e-3247-4b1d-ac4f-50f6e4ea02b7",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"memo\": \"this is a memo\"}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/me/sessions",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								"me",
+								"sessions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Edit User",
 					"event": [
 						{
@@ -649,15 +486,60 @@
 					"response": []
 				},
 				{
+					"name": "Get a user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0dbb1756-7f36-4aff-a883-2b87f67f28b7",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/44800701-d6de-48f7-9577-4b3ea1fab81a",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								"44800701-d6de-48f7-9577-4b3ea1fab81a"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Get self Current Token",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
+								"id": "0dbb1756-7f36-4aff-a883-2b87f67f28b7",
 								"type": "text/javascript",
 								"exec": [
-									"var response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);"
+									""
 								]
 							}
 						}
@@ -697,8 +579,7 @@
 			]
 		},
 		{
-			"name": "DataPoint",
-			"description": "",
+			"name": "0 DataPoint",
 			"item": [
 				{
 					"name": "Create a DataPoint",
@@ -732,7 +613,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"value\": \"48.126;2.3096\",\n  \"publish\": \"false\",\n  \"save\": \"true\",\n  \"unit\": \"\",\n  \"mqtt_topic\": \"\",\n  \"text\": \"\"\n}"
+							"raw": "{\n  \"value\": \"1000\",\n  \"publish\": \"true\",\n  \"save\": \"false\",\n  \"unit\": \"\",\n  \"mqtt_topic\": \"\",\n  \"latitude\": \"39.800327\",\n  \"longitude\": \"6.343530\",\n  \"text\": \"\"\n}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f",
@@ -790,12 +671,46 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "TEST MQTT",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/1234/test/mqtt",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"data",
+								"1234",
+								"test",
+								"mqtt"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "Object",
-			"description": "",
+			"name": "1 Object",
 			"item": [
 				{
 					"name": "Get objects list",
@@ -1052,8 +967,7 @@
 			]
 		},
 		{
-			"name": "Flow",
-			"description": "",
+			"name": "2 Flow",
 			"item": [
 				{
 					"name": "Get Flows",
@@ -1206,8 +1120,7 @@
 			]
 		},
 		{
-			"name": "Dashboard",
-			"description": "",
+			"name": "3 Dashboard",
 			"item": [
 				{
 					"name": "Get Dashboards",
@@ -1288,8 +1201,7 @@
 			]
 		},
 		{
-			"name": "Snippet",
-			"description": "",
+			"name": "4 Snippet",
 			"item": [
 				{
 					"name": "Get Snippets",
@@ -1371,6 +1283,42 @@
 					"response": []
 				},
 				{
+					"name": "Add a Snippet",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Temperature Indoor\",\n    \"user_id\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\",\n    \"type\": \"valuedisplay\",\n    \"icon\": \"developer_board\",\n    \"color\": \"#ffffff\",\n    \"flows\": [\n        \"6d844fbf-29c0-4a41-8c6a-0e9f3336cea3\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"snippets",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete a snippet",
 					"request": {
 						"method": "DELETE",
@@ -1390,14 +1338,14 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/e85a67d2-7840-4878-b647-112b304c9506",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/76296935-8476-45a0-9b73-9805862354a2",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
 								"snippets",
-								"e85a67d2-7840-4878-b647-112b304c9506"
+								"76296935-8476-45a0-9b73-9805862354a2"
 							]
 						}
 					},
@@ -1406,8 +1354,7 @@
 			]
 		},
 		{
-			"name": "Rule",
-			"description": "",
+			"name": "5 Rule",
 			"item": [
 				{
 					"name": "Get Rules",
@@ -1429,14 +1376,13 @@
 						],
 						"body": {},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules/?page=1&size=20",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules?page=1&size=20",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
-								"rules",
-								""
+								"rules"
 							],
 							"query": [
 								{
@@ -1451,12 +1397,118 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Edit a Rule",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"conditions\": {\n        \"all\": [\n            {\n                \"fact\": \"user_id\",\n                \"operator\": \"equal\",\n                \"value\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\"\n            },\n            {\n                \"fact\": \"environment\",\n                \"operator\": \"equal\",\n                \"value\": \"development\"\n            },\n            {\n                \"operator\": \"isDayTime\",\n\t            \"params\": {\n\t\t\t\t  \"latitude\": \"39.800327\",\n\t\t\t\t  \"longitude\": \"6.343530\"\n\t            }\n            }\n]\n    },\n        \"event\": {\n            \"type\": \"mqttPublish\",\n            \"params\": {\n                \"message\": \"\",\n                \"mqtt_topic\": \"devRuleTest\"\n            }\n        },\n    \"priority\": 2,\n    \"meta\": {\n        \"revision\": 0,\n        \"created\": 1541708621529,\n        \"version\": 0\n    }\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules/f09fbdf9-472b-4023-9b43-708afadcebfb",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"rules",
+								"f09fbdf9-472b-4023-9b43-708afadcebfb"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a Rule",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules/5aae4fc2-6a22-4624-beee-c19ee3179195",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"rules",
+								"5aae4fc2-6a22-4624-beee-c19ee3179195"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add a Rule",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Email alert 2\",\n    \"user_id\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\",\n    \"rule\": {\n        \"conditions\": {\n            \"all\": [\n                {\n                    \"fact\": \"user_id\",\n                    \"operator\": \"equal\",\n                    \"value\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\"\n                },\n                {\n                    \"fact\": \"environment\",\n                    \"operator\": \"equal\",\n                    \"value\": \"development\"\n                },\n                {\n                    \"fact\": \"flow\",\n                    \"operator\": \"equal\",\n                    \"value\": \"cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f\"\n                }\n            ]\n        },\n            \"event\": {\n                \"type\": \"mqttPublish\",\n                \"params\": {\n                    \"message\": \"\",\n                    \"mqtt_topic\": \"\"\n                }\n            },\n        \"priority\": 2\n    }\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"rules"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "Mqtt",
-			"description": "",
+			"name": "6 Mqtt",
 			"item": [
 				{
 					"name": "Get Mqtts",
@@ -1500,6 +1552,502 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "7 Admin User",
+			"item": [
+				{
+					"name": "Add a unit",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"units",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get unit",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"units",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a unit",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/31c38904-2482-4cce-b0de-6dc9efbc2d33",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"units",
+								"31c38904-2482-4cce-b0de-6dc9efbc2d33"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add a datatype",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"geo\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"datatypes",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get datatypes",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"datatypes",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a datatype",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/7fea96e4-38ec-4c6f-8dd2-e9df96f7dedd",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"datatypes",
+								"7fea96e4-38ec-4c6f-8dd2-e9df96f7dedd"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/list",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"users",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset tokens for all users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/resetAllUsersTokens",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"resetAllUsersTokens"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "8 Notifications (email)",
+			"item": [
+				{
+					"name": "Get (Html) Welcome reminder email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/reminder",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"debug",
+								"reminder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get (Html) changePassword email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/change-password",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"debug",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notifications unsubscription list",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/list/unsubscribed",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"list",
+								"unsubscribed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send (email) reminder",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/reminder",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"mail",
+								"reminder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send (email) changePassword",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/changePassword",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"mail",
+								"changePassword"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "62957f3a-e5d7-43d3-b30a-b51ab1691387",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "17c9ac6f-0fb7-4888-bdaf-339c058b9036",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		}
