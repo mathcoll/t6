@@ -67,11 +67,12 @@ router.get('/?(:rule_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
 	json = json.length>0?json:[];
 
-	
+	/*
 	json.forEach(function(theRule) {
 		console.log(theRule);
 		//if (theRule.rule) theRule.rule = JSON.parse(theRule.rule);
 	});
+	*/
 	
 	res.status(200).send(new RuleSerializer(json).serialize());
 });
@@ -85,6 +86,7 @@ router.get('/?(:rule_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
  * @apiUse Auth
  * @apiParam {String} [name=unamed] Rule Name
  * @apiParam {String} [rule] Rule
+ * @apiParam {Boolean} [active] Status of the rule
  * 
  * @apiUse 201
  * @apiUse 400
@@ -104,6 +106,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 				id:			rule_id,
 				user_id:	req.user.id,
 				name: 		req.body.name!==undefined?req.body.name:'unamed',
+				active: 	req.body.active!==undefined?req.body.active:true,
 				rule:		req.body.rule!==undefined?req.body.rule:null,
 			};
 			t6events.add('t6Api', 'rule add', new_rule.id);
@@ -126,6 +129,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {uuid-v4} [rule_id] Rule Id
  * @apiParam {String} [name=unamed] Rule Name
  * @apiParam {String} [rule] Rule
+ * @apiParam {Boolean} [active] Status of the rule
  * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
@@ -149,8 +153,8 @@ router.put('/:rule_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 				}
 		var rule = rules.findOne( query );
 		if ( rule ) {
-			console.log(req.body.meta.revision, rule.meta.revision);
-			console.log((req.body.meta.revision - rule.meta.revision));
+			//console.log(req.body.meta.revision, rule.meta.revision);
+			//console.log((req.body.meta.revision - rule.meta.revision));
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) != 0 ) {
 				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
@@ -158,6 +162,7 @@ router.put('/:rule_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 				rules.chain().find({ 'id': rule_id }).update(function(item) {
 					item.name		= req.body.name!==undefined?req.body.name:item.name;
 					item.rule		= req.body.rule!==undefined?req.body.rule:item.rule;
+					item.active		= req.body.active!==undefined?req.body.active:item.active;
 					item.meta.revision = ++(req.body.meta.revision);
 					result = item;
 				});

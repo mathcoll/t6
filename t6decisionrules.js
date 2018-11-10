@@ -12,7 +12,14 @@ t6decisionrules.export = function(rule) {
 t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	payload.user_id = user_id;
 	rules = dbRules.getCollection('rules');
-	var r = rules.chain().find({'user_id': { '$eq': user_id }}).data();
+	
+	var query = {
+		'$and': [
+				{ 'user_id': { '$eq': user_id } },
+				{ 'active': true },
+			]
+		}
+	var r = rules.chain().find(query).data();
 	
 	let engine = new Engine();
 	if ( r.length > 0 ) {
@@ -62,7 +69,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				payload.message = event.params.message;
 			}
 		}
-		
+
 		if( event.type == 'mqttPublish' ) {
 			if ( payload.text !== "" ) {
 				t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify({dtepoch:payload.dtepoch, value:payload.value, text:payload.text, message:payload.message, flow: payload.flow}), true);
@@ -82,7 +89,28 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		} else if ( event.type == 'sms' ) {
 			
 		} else if ( event.type == 'httpWebhook' ) {
-			
+			var options = {
+				url: event.params.url,
+				port: event.params.port,
+				method: event.params.method,
+				strictSSL: event.params.strictSSL,
+				headers: event.params.headers?event.params.headers:{'Content-Type': 'application/json'},
+				body: JSON.stringify(event.params.body)
+			};
+			options.url = options.url.replace(/^\s*|\s*$/g, '');
+			request(options,
+				function (error, response, body) {
+					var statusCode = response ? response.statusCode : null
+							body = body || null
+							console.log('Request sent - Server responded with:', statusCode)
+					
+					if ( error ) {
+						return console.error('HTTP failed: ', error, options.url, statusCode, body)
+					}
+					
+					console.log('success', options.url, statusCode, body);
+				}
+			)
 		} else if ( event.type == 'Ifttt' ) {
 			
 		} else if ( event.type == 'serial' ) {

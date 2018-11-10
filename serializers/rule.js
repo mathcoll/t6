@@ -6,7 +6,7 @@ function RuleTypeSerializer(rule) {
   this.serialize = function () {
 	return new JSONAPISerializer('rule', {
 		keyForAttribute: 'underscore_case',
-		attributes: ['name', 'user_id', 'id', 'rule', 'meta'],
+		attributes: ['name', 'user_id', 'id', 'rule', 'active', 'meta'],
 		rule: {
 			attributes: ['conditions', 'event', 'priority'],
 		},
