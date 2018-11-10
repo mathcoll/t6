@@ -56,38 +56,47 @@ if( db_type.influxdb == true ) {
 	console.log('Activating influxdb: '+dbString);
 }
 
+/* Logging */
+console.log('Setting Access Logs to', logAccessFile);
+console.log('Setting Error Logs to', logErrorFile);
+var error = fs.createWriteStream(logErrorFile, { flags: 'a' });
+process.stdout.write = process.stderr.write = error.write.bind(error);
+process.on('uncaughtException', function(err) {
+	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), (err && err.stack) ? err.stack : err);
+});
+
 /* Main Database settings */
 db	= new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 //db.loadDatabase(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'));
-if ( db === null ) console.log('db is failing');
-if ( db.getCollection('objects') === null ) console.log('Collection Objects is failing');
-if ( db.getCollection('flows') === null ) console.log('Collection Flows is failing');
-if ( db.getCollection('users') === null ) console.log('Collection Users is failing');
-if ( db.getCollection('tokens') === null ) console.log('Collection Keys is failing');
+if ( db === null ) console.error('db is failing');
+if ( db.getCollection('objects') === null ) console.error('Collection Objects is failing');
+if ( db.getCollection('flows') === null ) console.error('Collection Flows is failing');
+if ( db.getCollection('users') === null ) console.error('Collection Users is failing');
+if ( db.getCollection('tokens') === null ) console.error('Collection Keys is failing');
 
 /* Rules settings */
 dbRules	= new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 //dbRules.loadDatabase(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'));
 if ( dbRules === null ) console.log('db Rules is failing');
-if ( dbRules.getCollection('rules') === null ) console.log('Collection Rules is failing');
+if ( dbRules.getCollection('rules') === null ) console.error('Collection Rules is failing');
 
 /* Snippets settings */
 dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 //dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
-if ( dbSnippets === null ) console.log('db Snippets is failing');
-if ( dbSnippets.getCollection('snippets') === null ) console.log('Collection Snippets is failing');
+if ( dbSnippets === null ) console.error('db Snippets is failing');
+if ( dbSnippets.getCollection('snippets') === null ) console.error('Collection Snippets is failing');
 
 /* Dashboards settings */
 dbDashboards	= new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 //dbDashboards.loadDatabase(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'));
 if ( dbDashboards === null ) console.log('db Dashboards is failing');
-if ( dbDashboards.getCollection('dashboards') === null ) console.log('Collection Dashboards is failing');
+if ( dbDashboards.getCollection('dashboards') === null ) console.error('Collection Dashboards is failing');
 
 /* Tokens settings */
 dbTokens	= new loki(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 //dbTokens.loadDatabase(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'));
 if ( dbTokens === null ) console.log('db Tokens is failing');
-if ( dbTokens.getCollection('tokens') === null ) console.log('Collection Tokens is failing');
+if ( dbTokens.getCollection('tokens') === null ) console.error('Collection Tokens is failing');
 
 client.on("connect", function () {
 	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
@@ -108,15 +117,6 @@ var www				= require('./routes/www');
 var pwa				= require('./routes/pwa');
 var notifications	= require('./routes/notifications');
 app				= express();
-
-/* Logging */
-console.log('Setting Access Logs to', logAccessFile);
-console.log('Setting Error Logs to', logErrorFile);
-var error = fs.createWriteStream(logErrorFile, { flags: 'a' });
-process.stdout.write = process.stderr.write = error.write.bind(error);
-process.on('uncaughtException', function(err) {
-	console.error((err && err.stack) ? err.stack : err);
-});
 
 var CrossDomain = function(req, res, next) {
 	if (req.method == 'OPTIONS') {
@@ -209,4 +209,5 @@ if (app.get('env') === 'development') {
 }
 
 t6events.add('t6App', 'start', 'self');
+console.log(sprintf('t6App %s started at %s', VERSION, moment().format('MMMM Do YYYY, H:mm:ss')));
 module.exports = app;
