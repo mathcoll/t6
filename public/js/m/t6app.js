@@ -132,6 +132,7 @@ var app = {
 		{name: 'watch', value:'Watch'},
 	],
 	snippetsTypes: [{name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'cardchart', value:'Card Chart'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'}],
+	EventTypes: [{name: 'mqttPublish', value:'mqtt Publish'}, {name: 'email', value:'Email'}, {name: 'httpWebhook', value:'http(s) Webhook'}, {name: 'sms', value:'Sms/Text message'}],
 	units: [],
 	datatypes: [],
 	flows: [],
@@ -141,7 +142,7 @@ var app = {
 		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
 		dashboard: {id:'', attributes: {name: '', description: ''}},
 		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
-		rule: {id:'', attributes: {}},
+		rule: {id:'', active: true, attributes: {name: '', priority: 1, event: {type:'email', conditions: '{"all":[ { "fact":"environment", "operator":"equal", "value":"production" }]}', parameters: '{}'}}},
 	},
 	offlineCard: {},
 	patterns: {
@@ -156,6 +157,7 @@ var app = {
 		cardMaxChars: "^[0-9]+$",
 		customAttributeName: "^[a-zA-Z0-9_]+$",
 		customAttributeValue: "^.*?$",
+		integerNotNegative: '[1-999]+',
 		meta_revision: "^[0-9]{1,}$",
 	}
 };
@@ -180,6 +182,8 @@ var containers = {
 	profile: document.querySelector('section#profile'),
 	settings: document.querySelector('section#settings'),
 	rules: document.querySelector('section#rules'),
+	rule: document.querySelector('section#rule'),
+	rule_add: document.querySelector('section#rule_add'),
 	mqtts: document.querySelector('section#mqtts'),
 	status: document.querySelector('section#status'),
 	terms: document.querySelector('section#terms'),
@@ -805,6 +809,46 @@ var containers = {
 		});
 		evt.preventDefault();
 	} // onAddDashboard
+
+	app.onSaveRule = function(evt) {
+	} // onSaveRule
+	
+	app.onAddRule = function(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var body = {
+			name: myForm.querySelector("input[name='Name']").value,
+			priority: myForm.querySelector("input[name='Priority']").value,
+			active: myForm.querySelector("input[id='switch-active']").checked?myForm.querySelector("input[id='switch-active']").checked:true,
+			event: {
+				conditions: JSON.parse(myForm.querySelector("textarea[name='Event Conditions']").value),
+				type: myForm.querySelector("select[name='Event Type']").value,
+				parameters: JSON.parse(myForm.querySelector("textarea[name='Event Parameters']").value),
+			},
+			active: true
+		};
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
+			console.log('DEBUG onAddRule', JSON.stringify(body));
+		}
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+'/'+app.api_version+'/rules/';
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			app.setSection('rules');
+			toast('Rule has been added.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			toast('Flow has not been added.', {timeout:3000, type: 'error'});
+		});
+		evt.preventDefault();
+	} // onAddRule
 	
 	app.onSaveProfileButtonClick = function(evt) {
 		var firstName = document.getElementById("firstName").value;
@@ -897,6 +941,12 @@ var containers = {
 			deleteRule: document.querySelectorAll('#rules .delete-button'),
 			editRule: document.querySelectorAll('#rules .edit-button'),
 			createRule: document.querySelector('#rules button#createRule'),
+			addRule: document.querySelector('#rule_add section.fixedActionButtons button.add-button'),
+			addRuleBack: document.querySelector('#rule_add section.fixedActionButtons button.back-button'),
+			backRule: document.querySelector('#rule section.fixedActionButtons button.back-button'),
+			saveRule: document.querySelector('#rule section.fixedActionButtons button.save-button'),
+			listRule: document.querySelector('#rule section.fixedActionButtons button.list-button'),
+			editRule2: document.querySelector('#rule section.fixedActionButtons button.edit-button'),
 			
 			deleteMqtt: document.querySelectorAll('#mqtts .delete-button'),
 			editMqtt: document.querySelectorAll('#mqtts .edit-button'),
@@ -1204,6 +1254,23 @@ var containers = {
 						var item = evt.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.displaySnippet(item.dataset.id, false);
+						evt.preventDefault();
+					}, {passive: false,});
+				});
+			} else if ( type == 'rules' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
+				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
+					app.displayRule(item.dataset.id, false);
+					evt.preventDefault();
+				}, {passive: false,});
+				
+				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
+				Array.from(divs).forEach(div => {
+					(div).addEventListener('click', function(evt) {
+						var item = evt.currentTarget.parentNode.parentNode;
+						item.classList.add('is-hover');
+						app.displayRule(item.dataset.id, false);
 						evt.preventDefault();
 					}, {passive: false,});
 				});
@@ -1519,7 +1586,50 @@ var containers = {
 				});
 			}
 		} else if ( type == 'rules' ) {
-			// TODO
+			for (var d=0;d<buttons.deleteRule.length;d++) {
+				buttons.deleteRule[d].addEventListener('click', function(evt) {
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete rule';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"? This action will remove all reference to the Rule in t6.</p>';
+					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
+					
+					app.showModal();
+					var myId = evt.target.parentNode.dataset.id;
+					evt.preventDefault();
+					
+					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
+						app.hideModal();
+						evt.preventDefault();
+					});
+					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
+						app.hideModal();
+						var myHeaders = new Headers();
+						myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'DELETE', headers: myHeaders };
+						var url = app.baseUrl+'/'+app.api_version+'/rules/'+myId;
+						fetch(url, myInit)
+						.then(
+							fetchStatusHandler
+						).then(function(fetchResponse){ 
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
+							toast('Rule has been deleted.', {timeout:3000, type: 'done'});
+						})
+						.catch(function (error) {
+							toast('Rule has not been deleted.', {timeout:3000, type: 'error'});
+						});
+						evt.preventDefault();
+					});
+				});
+			}
+			for (var s=0;s<buttons.editRule.length;s++) {
+				buttons.editRule[s].addEventListener('click', function(evt) {
+					app.displayRule(evt.currentTarget.dataset.id, true);
+					evt.preventDefault();
+				});
+			}
 		} else if ( type == 'mqtts' ) {
 			// TODO
 		}
@@ -2252,6 +2362,58 @@ var containers = {
 	}; // displayAddDashboard
 
 	app.displayAddRule = function(rule) {
+		var node = "";
+		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField(app.icons.rules, 'Name', rule.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
+		node += app.getField('swap_vert', 'Priority', rule.attributes.priority, {type: 'text', id: 'Priority', isEdit: true, pattern: app.patterns.integerNotNegative, error:'Should be a positive integer.'});
+		node += app.getField(app.icons.description, 'Event Conditions', app.nl2br(rule.attributes.event.conditions), {type: 'textarea', id: 'EventConditions', isEdit: true});
+		node += app.getField('add_circle_outline', 'Event Type', rule.attributes.event.type, {type: 'select', id: 'EventType', options: app.EventTypes, isEdit: true });
+		node += app.getField(app.icons.description, 'Event Parameters', app.nl2br(rule.attributes.event.parameters), {type: 'textarea', id: 'EventParams', isEdit: true});
+		node += app.getField('traffic', rule.attributes.active!='false'?"Rule is active":"Rule is disabled", rule.attributes.active!==undefined?rule.attributes.active:'true', {type: 'switch', id:'active', isEdit: true});
+		node += "	</div>";
+		node += "</section>";
+		
+		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
+		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+rule.id+"'>";
+		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>chevron_left</i>";
+		node += "			<label>List</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Rules</label>";
+		node += "		</button>";
+		node += "	</div>";
+		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "			<i class='material-icons'>edit</i>";
+		node += "			<label>Save</label>";
+		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Rule</label>";
+		node += "		</button>";
+		node += "	</div>";
+		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+		node += "</section>";
+
+		(containers.rule_add).querySelector('.page-content').innerHTML = node;
+		componentHandler.upgradeDom();
+		
+		app.refreshButtonsSelectors();
+		
+		if ( document.getElementById('switch-active') ) {
+			document.getElementById('switch-active').addEventListener('change', function(e) {
+				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
+				if ( document.getElementById('switch-active').checked == true ) {
+					label.innerText = "Rule is active";
+				} else {
+					label.innerText = "Rule is disabled";
+				}
+			});
+		}
+		
+		buttons.addRuleBack.addEventListener('click', function(evt) { app.setSection('rules'); evt.preventDefault(); }, false);
+		buttons.addRule.addEventListener('click', function(evt) { app.onAddRule(evt); }, false);
+
+		app.setExpandAction();
 	}; // displayAddRule
 
 	app.displayMqttRule = function(mqtt) {
@@ -3054,6 +3216,162 @@ var containers = {
 		return ((JSON.parse(localStorage.getItem('snippets')))[index]).id;
 		//
 	}; // getSnippetIdFromIndex
+	
+	app.displayRule = function(id, isEdit) {
+		history.pushState( {section: 'rule' }, window.location.hash.substr(1), '#rule?id='+id );
+		
+		window.scrollTo(0, 0);
+		containers.spinner.removeAttribute('hidden');
+		containers.spinner.classList.remove('hidden');
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+'/'+app.api_version+'/rules/'+id;
+		fetch(url, myInit)
+		.then(
+			fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			for (var i=0; i < (response.data).length ; i++ ) {
+				var rule = response.data[i];
+				document.title = (app.sectionsPageTitles['rule']).replace(/%s/g, rule.attributes.name);
+				var node;
+				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
+				if ( isEdit ) {
+
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-list__item\">";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<i class=\"material-icons\">"+app.icons.rules+"</i>";
+					node += "				<h2 class=\"mdl-card__title-text\">"+rule.attributes.name+"</h2>";
+					node += "			</span>";
+					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+rule.id+"'>";
+					node += "					<i class='material-icons'>expand_more</i>";
+					node += "				</button>";
+					node += "			</span>";
+					node += "		</div>";
+					node += "		<div class='mdl-cell--12-col hidden' id='description-"+rule.id+"'>";
+
+					node += app.getField(app.icons.rules, 'Id', rule.id, {type: 'text'});
+					if ( rule.attributes.meta.created ) {
+						node += app.getField(app.icons.date, 'Created', moment(rule.attributes.meta.created).format(app.date_format), {type: 'text'});
+					}
+					if ( rule.attributes.meta.updated ) {
+						node += app.getField(app.icons.date, 'Updated', moment(rule.attributes.meta.updated).format(app.date_format), {type: 'text'});
+					}
+					if ( rule.attributes.meta.revision ) {
+						rule += app.getField(app.icons.update, 'Revision', rule.attributes.meta.revision, {type: 'text'});
+					}
+					node += "	</div>";
+					node += "</section>";
+					
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+					node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>View</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>View Rule</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
+					node += "		<button id='"+btnId[1]+"' class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
+					node += "			<i class='material-icons'>save</i>";
+					node += "			<label>Save</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save changes to Rule</label>";
+					node += "		</button>";
+					node += "	</div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "</section>";
+					
+					(containers.rule).querySelector('.page-content').innerHTML = node;
+					componentHandler.upgradeDom();
+					app.setExpandAction();
+					
+					app.refreshButtonsSelectors();
+					buttons.backRule.addEventListener('click', function(evt) { app.displayRule(rule.id, false); }, false);
+					buttons.saveRule.addEventListener('click', function(evt) { app.onSaveRule(evt); }, false);
+						
+				} else {
+					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<div class=\"mdl-list__item\">";
+					node += "			<span class='mdl-list__item-primary-content'>";
+					node += "				<h2 class=\"mdl-card__title-text\">";
+					node += "					<i class=\"material-icons\">"+app.icons.rules+"</i>";
+					node += "					"+rule.attributes.name+"</h2>";
+					node += "			</span>";
+					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
+					node += "					<i class='material-icons'>expand_more</i>";
+					node += "				</button>";
+					node += "			</span>";
+					node += "		</div>";
+					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+					if ( rule.attributes.meta.created ) {
+						node += app.getField(app.icons.date, 'Created', moment(rule.attributes.meta.created).format(app.date_format), {type: 'text'});
+					}
+					if ( rule.attributes.meta.updated ) {
+						node += app.getField(app.icons.date, 'Updated', moment(rule.attributes.meta.updated).format(app.date_format), {type: 'text'});
+					}
+					if ( rule.attributes.meta.revision ) {
+						node += app.getField(app.icons.update, 'Revision', rule.attributes.meta.revision, {type: 'text'});
+					}
+					node += "	</div>"; // mdl-shadow--2dp
+					node +=	"</section>";
+					
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+					node += "		<button id='"+btnId[0]+"' class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>chevron_left</i>";
+					node += "			<label>List</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Rules</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
+					node += "		<button id='"+btnId[1]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>delete</i>";
+					node += "			<label>Delete</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Delete Rule</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
+					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "			<i class='material-icons'>edit</i>";
+					node += "			<label>Edit</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Rule</label>";
+					node += "		</button>";
+					node += "	</div>";
+					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					node += "</section>";
+
+					(containers.rule).querySelector('.page-content').innerHTML = node;
+					componentHandler.upgradeDom();
+					app.setExpandAction();
+					
+					app.refreshButtonsSelectors();
+					buttons.listRule.addEventListener('click', function(evt) { app.setSection('rules'); evt.preventDefault(); }, false);
+					// buttons.deleteRule2.addEventListener('click',
+					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
+					// }, false);
+					buttons.editRule2.addEventListener('click', function(evt) { app.displayRule(rule.id, true); evt.preventDefault(); }, false);
+				}
+				app.setSection('rule');
+			}
+		})
+		.catch(function (error) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
+				toast('displayRule error occured...' + error, {timeout:3000, type: 'error'});
+			}
+		});
+		containers.spinner.setAttribute('hidden', true);
+	} //displayRule
 
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
@@ -3792,6 +4110,11 @@ var containers = {
 		if( type == 'snippets' ) {
 			var id = 'createSnippet';
 			container = (containers.snippets).querySelector('.page-content');
+			showFAB = true;
+		}
+		if( type == 'rules' ) {
+			var id = 'createRule';
+			container = (containers.rules).querySelector('.page-content');
 			showFAB = true;
 		}
 		if ( showFAB  && container && app.itemsPage[type]==1 ) {
@@ -5296,8 +5619,7 @@ var containers = {
 	for(var a in touch){document.addEventListener(a,touch[a],false);}
 	var h=function(e){console.log(e.type,e)};
 	screen.orientation.addEventListener("change", app.showOrientation);
-	screen.orientation.unlock();
-	
+	//screen.orientation.unlock();
 	if (!('indexedDB' in window)) {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('[indexedDB]', 'This browser doesn\'t support IndexedDB.');

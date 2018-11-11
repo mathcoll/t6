@@ -114,7 +114,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		} else if ( event.type == 'Ifttt' ) {
 			
 		} else if ( event.type == 'serial' ) {
-			
+			serialport = new SerialPort(event.params.serialPort?event.params.serialPort:'/dev/ttyUSB0', { baudRate:event.params.baudRate?event.params.baudRate:9600 })
+			serialport.write('~5@1433018784:1477ppm!YELLOW;')
 		} else if ( event.type == 'slackMessage' ) {
 			
 		}
