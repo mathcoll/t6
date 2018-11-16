@@ -58,8 +58,8 @@ if( db_type.influxdb == true ) {
 }
 
 /* Logging */
-console.log('Setting Access Logs to', logAccessFile);
-console.log('Setting Error Logs to', logErrorFile);
+console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Setting Access Logs to', logAccessFile);
+console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Setting Error Logs to', logErrorFile);
 var error = fs.createWriteStream(logErrorFile, { flags: 'a' });
 process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on('uncaughtException', function(err) {
