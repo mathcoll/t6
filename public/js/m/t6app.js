@@ -817,14 +817,15 @@ var containers = {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
-			priority: myForm.querySelector("input[name='Priority']").value,
-			active: myForm.querySelector("input[id='switch-active']").checked?myForm.querySelector("input[id='switch-active']").checked:true,
-			event: {
+			active: !myForm.querySelector("input[id='switch-active']").parentNode.classList.contains('is-checked')?false:true,
+			rule: {
+				priority: myForm.querySelector("input[name='Priority']").value,
 				conditions: JSON.parse(myForm.querySelector("textarea[name='Event Conditions']").value),
-				type: myForm.querySelector("select[name='Event Type']").value,
-				parameters: JSON.parse(myForm.querySelector("textarea[name='Event Parameters']").value),
-			},
-			active: true
+				event: {
+					type: myForm.querySelector("select[name='Event Type']").value,
+					params: JSON.parse(myForm.querySelector("textarea[name='Event Parameters']").value),
+				}
+			}
 		};
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('DEBUG onAddRule', JSON.stringify(body));
