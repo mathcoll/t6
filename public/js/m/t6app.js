@@ -4872,7 +4872,7 @@ var containers = {
 				localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
 				
 				app.isLogged = true;
-				app.resetSections();
+				//app.resetSections();
 
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
