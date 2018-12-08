@@ -22,6 +22,9 @@
 	/*align-self: flex-start;*/
 	vertical-align: middle;
 }
+.animatedIcon {
+	animation: rotate 1s ease-in-out infinite;
+}
 * {
 	box-sizing: border-box;
 }
@@ -145,7 +148,7 @@ body {
     font-weight: 500;
     color: rgba(0,0,0,0.6);
     line-height: 32px;
-    padding: 0 12px;
+    padding:0 30px 0 12px;
     border-radius: 16px;
     background-color: #e4e4e4;
     margin-bottom: 5px;
@@ -180,15 +183,23 @@ body {
     vertical-align: middle;
     position: absolute;
 }
-.mdl-chip .close {
+.mdl-chip .close,
+.mdl-chip .edit {
+    display:none;
+}
+.mdl-chip[draggable="true"] .close {
     right: 25px;
+}
+.mdl-chip:hover .close,
+.mdl-chip:hover .edit {
+    display:inline;
 }
 .mdl-chip .edit {
     right: 60px;
 }
 .mdl-textfield {
 	width: calc(100% - 48px) !important;
-	padding: 28px 0 !important;
+	/*padding: 28px 0 !important;*/
 }
 .mdl-textfield__icon {
 	width: 32px;
