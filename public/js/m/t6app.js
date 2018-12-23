@@ -2364,14 +2364,28 @@ var containers = {
 
 	app.displayAddRule = function(rule) {
 		var node = "";
-		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
+		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.rules, 'Name', rule.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 		node += app.getField('swap_vert', 'Priority', rule.attributes.priority, {type: 'text', id: 'Priority', isEdit: true, pattern: app.patterns.integerNotNegative, error:'Should be a positive integer.'});
-		node += app.getField(app.icons.description, 'Event Conditions', app.nl2br(rule.attributes.event.conditions), {type: 'textarea', id: 'EventConditions', isEdit: true});
 		node += app.getField('add_circle_outline', 'Event Type', rule.attributes.event.type, {type: 'select', id: 'EventType', options: app.EventTypes, isEdit: true });
-		node += app.getField(app.icons.description, 'Event Parameters', app.nl2br(rule.attributes.event.parameters), {type: 'textarea', id: 'EventParams', isEdit: true});
 		node += app.getField('traffic', rule.attributes.active!='false'?"Rule is active":"Rule is disabled", rule.attributes.active!==undefined?rule.attributes.active:'true', {type: 'switch', id:'active', isEdit: true});
+		node += "	</div>";
+		node += "</section>";
+
+
+		node += app.getSubtitle('Event Conditions');
+		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField(app.icons.description, 'Event Conditions', app.nl2br(rule.attributes.event.conditions), {type: 'textarea', id: 'EventConditions', isEdit: true});
+		node += "	</div>";
+		node += "</section>";
+		
+		node += app.getSubtitle('Event Parameters');
+		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ['Name should not contains any space nor special char.', 'Value is free.'], id: ['Name[]', 'Value[]'], isEdit: true});
+		node += app.getField(app.icons.description, 'Event Parameters', app.nl2br(rule.attributes.event.parameters), {type: 'textarea', id: 'EventParams', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -4277,7 +4291,7 @@ var containers = {
 					pattern[0] = options.pattern[0]!==undefined?"pattern='"+options.pattern[0]+"'":"";
 					pattern[1] = options.pattern[1]!==undefined?"pattern='"+options.pattern[1]+"'":"";
 				if ( options.isEdit == true ) {
-					field += "<div class='half mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important;'>";
+					field += "<div class='half mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: calc(50% - 20px) !important;'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id[0]+"'>"+icon+"</i>";
 
 					field += "	<input type='text' value='"+value[0]+"'"+pattern[0]+" class='mdl-textfield__input' name='"+id[0]+"' id='"+id[0]+"' />";
@@ -4285,11 +4299,16 @@ var containers = {
 					if (options.error[0]) field += "	<span class='mdl-textfield__error'>"+options.error[0]+"</span>";
 					field += "</div>";
 
-					field += "<div class='half mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 50% !important;'>";
+					field += "<div class='half mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: calc(50% - 20px) !important;'>";
 					field += "	<input type='text' value='"+value[1]+"'"+pattern[1]+" class='mdl-textfield__input' name='"+id[1]+"' id='"+id[1]+"' />";
 					if (label[1]) field += "	<label class='mdl-textfield__label' for='"+id[1]+"'>"+label[1]+"</label>";
 					if (options.error[1]) field += "	<span class='mdl-textfield__error'>"+options.error[1]+"</span>";
 					field += "</div>";
+					
+					field += "<div class='half mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title' style='width: 40px !important;'>";
+					field += "	<button class='mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' style='position: absolute; bottom: -10px;'><i class='material-icons'>add</i></button>";
+					field += "</div>";
+					
 				} else {
 					value = (options.options.filter(function(cur) {return cur.name === value}))[0].value;
 					field += "<div class='mdl-list__item-sub-title'>";

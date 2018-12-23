@@ -67,37 +67,38 @@ process.on('uncaughtException', function(err) {
 });
 
 /* Main Database settings */
-db	= new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-//db.loadDatabase(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'));
-if ( db === null ) console.error('db is failing');
-if ( db.getCollection('objects') === null ) console.error('Collection Objects is failing');
-if ( db.getCollection('flows') === null ) console.error('Collection Flows is failing');
-if ( db.getCollection('users') === null ) console.error('Collection Users is failing');
-if ( db.getCollection('tokens') === null ) console.error('Collection Keys is failing');
+db = new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 
 /* Rules settings */
-dbRules	= new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-//dbRules.loadDatabase(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'));
-if ( dbRules === null ) console.log('db Rules is failing');
-if ( dbRules.getCollection('rules') === null ) console.error('Collection Rules is failing');
+dbRules = new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 
 /* Snippets settings */
-dbSnippets	= new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-//dbSnippets.loadDatabase(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'));
-if ( dbSnippets === null ) console.error('db Snippets is failing');
-if ( dbSnippets.getCollection('snippets') === null ) console.error('Collection Snippets is failing');
+dbSnippets = new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 
 /* Dashboards settings */
-dbDashboards	= new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-//dbDashboards.loadDatabase(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'));
-if ( dbDashboards === null ) console.log('db Dashboards is failing');
-if ( dbDashboards.getCollection('dashboards') === null ) console.error('Collection Dashboards is failing');
+dbDashboards = new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
 
 /* Tokens settings */
-dbTokens	= new loki(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-//dbTokens.loadDatabase(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'));
+dbTokens = new loki(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+
+console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Initializing Database...');
+if ( db === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'db is failing');
+if ( db.getCollection('objects') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Objects is failing');
+if ( db.getCollection('flows') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Flows is failing');
+if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Users is failing');
+if ( db.getCollection('tokens') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Keys is failing');
+if ( db.getCollection('units') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Units is failing');
+if ( db.getCollection('datatypes') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Datatypes is failing');
+if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Users is failing');
+if ( dbRules === null ) console.log('db Rules is failing');
+if ( dbRules.getCollection('rules') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Rules is failing');
+if ( dbSnippets === null ) console.error('db Snippets is failing');
+if ( dbSnippets.getCollection('snippets') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Snippets is failing');
+if ( dbDashboards === null ) console.log('db Dashboards is failing');
+if ( dbDashboards.getCollection('dashboards') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Dashboards is failing');
 if ( dbTokens === null ) console.log('db Tokens is failing');
-if ( dbTokens.getCollection('tokens') === null ) console.error('Collection Tokens is failing');
+if ( dbTokens.getCollection('tokens') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'Collection Tokens is failing');
+
 
 client.on("connect", function () {
 	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
@@ -117,7 +118,7 @@ var datatypes		= require('./routes/datatypes');
 var www				= require('./routes/www');
 var pwa				= require('./routes/pwa');
 var notifications	= require('./routes/notifications');
-app				= express();
+app					= express();
 
 var CrossDomain = function(req, res, next) {
 	if (req.method == 'OPTIONS') {
@@ -180,6 +181,7 @@ app.use(function(req, res, next) {
 });
 
 if (app.get('env') === 'development') {
+	request.debug = true;
 	app.use(function(err, req, res, next) {
 		if (err.name === 'UnauthorizedError') {
 			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token...'+err.message, 'stack': err.stack }).end();

@@ -1803,6 +1803,11 @@ input ~ .mdl-selectfield__label,
 input ~ .mdl-switch__label {
 	position: absolute !important;
 }
+.half .mdl-textfield__label::after,
+.half .mdl-selectfield__label::after,
+.half .mdl-switch__label::after {
+	width: calc(100% - 66px) !important;
+}
 .mdl-textfield__label,
 .mdl-selectfield__label,
 .mdl-switch__label {
