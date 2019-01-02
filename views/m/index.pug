@@ -1,5 +1,5 @@
 doctype html
-html.ltr(lang='en')
+html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
   head
     if process.env.NODE_ENV === 'development'
       title DEV t6 IoT App
@@ -12,30 +12,30 @@ html.ltr(lang='en')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
     meta(name='apple-mobile-web-app-title', content='t6 IoT App')
-    meta(name='msapplication-TileImage', content='#{baseUrlCdn}/img/m/icons/icon-152x152.png')
-    link(rel='apple-touch-startup-image', href='#{baseUrlCdn}/img/m/splash/launch-640x1136.png', media='(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
+    meta(name='msapplication-TileImage', content=baseUrlCdn + '/img/m/icons/icon-152x152.png')
+    link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-640x1136.png', media='(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
     //-
-      link(rel='apple-touch-startup-image', href='#{baseUrlCdn}/img/m/splash/launch-750x1294.png', media='(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href='#{baseUrlCdn}/img/m/splash/launch-1242x2148.png', media='(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href='#{baseUrlCdn}/img/m/splash/launch-1125x2436.png', media='(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href='#{baseUrlCdn}/img/m/splash/launch-1536x2048.png', media='(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href='#{baseUrlCdn}/img/m/splash/launch-1668x2224.png', media='(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href='#{baseUrlCdn}/img/m/splash/launch-2048x2732.png', media='(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
+      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-750x1294.png', media='(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
+      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1242x2148.png', media='(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)')
+      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1125x2436.png', media='(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)')
+      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1536x2048.png', media='(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
+      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1668x2224.png', media='(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
+      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-2048x2732.png', media='(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
 
     meta(name='msapplication-TileColor', content='#795548')
     meta(name='theme-color', content='#795548')
 
     if process.env.NODE_ENV === 'development'
-      link(rel='stylesheet', href='#{baseUrlCdn}/css/material-design-lite/1.3.0/material.brown-blue.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel='stylesheet', href='#{baseUrlCdn}/css/m/inline.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel='stylesheet', href='#{baseUrlCdn}/css/OpenLayers/ol-4.1.1.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/material-design-lite/1.3.0/material.brown-blue.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/m/inline.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/OpenLayers/ol-4.1.1.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       //-link(rel='stylesheet', href='//demos.creative-tim.com/material-dashboard/assets/css/material-dashboard.min.css?v=2.1.0', type='text/css', data-integrity='', data-crossorigin='anonymous')
       //-script(src='//demos.creative-tim.com/material-dashboard/assets/js/material-dashboard.min.js?v=2.1.0', type='text/javascript')
     else
-      link(rel='stylesheet', href='#{baseUrlCdn}/css/t6App.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/t6App.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
 
     link(rel='manifest', href='/manifest.json')
-    link(rel='apple-touch-icon', href='#{baseUrlCdn}/img/m/icons/icon-152x152.png')
+    link(rel='apple-touch-icon', href=baseUrlCdn + '/img/m/icons/icon-152x152.png')
   body
     //-<!-- Google Tag Manager (noscript) -->
     noscript
@@ -109,7 +109,7 @@ html.ltr(lang='en')
             |  Mqtt Topics
 
       #drawer.mdl-layout__drawer
-        div.side-nav__header#currentUserBackground(style="height: 148px; position: relative; width: 100%; background: #795548 url(#{baseUrlCdn}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
+        div.side-nav__header#currentUserBackground(style="height: 148px; position: relative; width: 100%; background: #795548 url(${baseUrlCdn}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
           img#currentUserHeader(src="", alt="Current user avatar", style="border-radius: 50%; width: 90px; padding: 10px 10px 10px 10px;border: 3px solid #fff;margin: 10px 10px;")
           div#currentUserName.mdl-layout-title(style="bottom:auto !important;") 
           div#currentUserEmail.mdl-layout-subheader(style="color: #ffffff;") 
@@ -328,7 +328,7 @@ html.ltr(lang='en')
               div.mdl-layout-spacer
               form.signup
                 .mdl-card.mdl-card__title.mdl-shadow--2dp
-                  img(src='#{baseUrlCdn}/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
+                  img(src=baseUrlCdn + '/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon email
@@ -379,7 +379,7 @@ html.ltr(lang='en')
               div.mdl-layout-spacer
               form.notifications
                 .mdl-card.mdl-card__title.mdl-shadow--2dp
-                  img(src='#{baseUrlCdn}/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
+                  img(src=baseUrlCdn + '/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
                   .mdl-card__title Manage your Email notification & subscriptions.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
@@ -406,7 +406,7 @@ html.ltr(lang='en')
               div.mdl-layout-spacer
               form.forgotpassword
                 .mdl-card.mdl-card__title.mdl-shadow--2dp
-                  img(src='#{baseUrlCdn}/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
+                  img(src=baseUrlCdn + '/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
                   .mdl-card__title Enter your Email address below and we'll send you password reset instructions securely.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
@@ -436,7 +436,7 @@ html.ltr(lang='en')
               div.mdl-layout-spacer
               form.resetpassword
                 .mdl-card.mdl-card__title.mdl-shadow--2dp
-                  img(src='#{baseUrlCdn}/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
+                  img(src=baseUrlCdn + '/img/opl_img.jpg', alt='t6 Connect your Objects', aria-hidden='true') 
                   .mdl-card__title Set you new password to connect your t6 account.
                   .mdl-card__title Password must contains lower cases, upper cases, digits, special characters; and must be longer than 8 characters.
                   .mdl-card__supporting-text
@@ -597,5 +597,5 @@ html.ltr(lang='en')
             #cookieconsent_accept.mdl-button
               a(href='#', id='cookieconsent.agree') Got it!
         
-      script(type='application/javascript', src='#{baseUrlCdn}/js/m/vendor.min.js')
-      script(type='application/javascript', src='#{baseUrlCdn}/js/m/t6app.js')
+      script(type='application/javascript', src=baseUrlCdn + '/js/m/vendor.min.js')
+      script(type='application/javascript', src=baseUrlCdn + '/js/m/t6app.js')

@@ -8,7 +8,7 @@ var morgan			= require('morgan');
 var cookieParser	= require('cookie-parser');
 var bodyParser		= require('body-parser');
 var bearer			= require('bearer');
-var jade			= require('jade');
+var pug				= require('pug');
 var compression		= require('compression');
 var VERSION			= require("./package.json").version;
 expressJwt			= require('express-jwt');
@@ -150,7 +150,7 @@ app.use(timeout(timeoutDuration));
 app.use(favicon(__dirname + '/public/img/favicon.ico'));
 app.disable('x-powered-by');
 app.set('views', path.join(__dirname, '/views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 app.use(session(sessionSettings));
 app.use(express.static(path.join(__dirname, '/public'), staticOptions));
 app.use(express.static(path.join(__dirname, '/docs'), staticOptions));
@@ -172,7 +172,7 @@ app.use('/', pwa);
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
-	res.status(err.status || 500).render(err.status, {
+	res.status(err.status || 500).render("m/"+err.status, {
 		title : 'Not Found',
 		user: req.session.user,
 		currentUrl: req.path,

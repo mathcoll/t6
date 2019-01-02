@@ -579,64 +579,8 @@ router.get('/status', function(req, res, next) {
  * @apiUse 200
  */
 router.get('/index', function(req, res, next) {
-	var index = [
- 	    {
-			title: 'Mobile-first & PWA',
-			titlecolor: '#000000',
-			description: 'Mobile & tablet designs works on all devices – browsers & resolutions – thanks to progressive web app (PWA). Designs adjust and fit to the screen size on Dashboard website.',
-			image: '//cdn.internetcollaboratif.info/img/phone.jpg',
-	    },
-	    {
-			title: 't6 API first',
-			titlecolor: '#ffffff',
-			description: 'Live, eat, and breathe the API-first lifestyle of t6. Easy to Use api.<br />6 resources to take control of your Objects, Flows, Dashboards, Snippets, Rules, and Mqtts topics.',
-			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
-			action: {id: 'docs', label: 'Read the Doc'},
-	    },
-	    {
-			title: 'Time-series Datapoints',
-			titlecolor: '#ffffff',
-			description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.',
-			image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
-			action: {id: 'flows', label: 'List Flows'},
-	    },
-	    {
-			title: 'Connected Objects',
-			titlecolor: '#ffffff',
-			description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.',
-			image: '//cdn.internetcollaboratif.info/img/opl_img3.jpg',
-			action: {id: 'objects', label: 'List Objects'},
-	    },
-	    {
-			title: 'Tokens for security',
-			titlecolor: '#ffffff',
-			description: 't6 supports JWT Access Token based authentication. Any of your resources are protected using JWT authentication. Access Token are Short-Live to improve security level. Fine grade permissions are planned in the roadmap to manage and share resources.',
-			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
-			action: {id: 'login', label: 'Get Started'},
-	    },
-	    {
-			title: 'Dashboards',
-			titlecolor: '#ffffff',
-			description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.',
-			image: '//cdn.internetcollaboratif.info/img/opl_img2.jpg',
-			action: {id: 'dashboards', label: 'List Dashboards'},
-	    },
-	    {
-			title: 'Decision Rules to get smart',
-			titlecolor: '#ffffff',
-			description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.',
-			image: '//cdn.internetcollaboratif.info/img/opl_img.jpg',
-			action: {id: 'rules', label: 'List Rules'},
-	    },
-	    {
-			title: 'Sense events',
-			titlecolor: '#ffffff',
-			description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.',
-			image: '//cdn.internetcollaboratif.info/img/opl_img.jpg',
-			action: {id: 'mqtts', label: 'Get Started'},
-	    },
-	];
-	res.status(200).send(index);
+	res.set('Content-Type', 'application/json; charset=utf-8');
+	res.status(200).render('m/index-json');
 });
 
 
@@ -649,37 +593,8 @@ router.get('/index', function(req, res, next) {
  * @apiUse 200
  */
 router.get('/terms', function(req, res, next) {
-	var terms = [
- 	    {
-			title: 'T6 Privacy',
-			description: 'If you require any more information or have any questions about our privacy policy, please feel free to contact us by email at <a href="mailto:contact@internetcollaboratif.info" rel="noopener" target="_blank">Privacy</a>. At <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> we consider the privacy of our visitors to be extremely important. This privacy policy document describes in detail the types of personal information is collected and recorded by <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> and how we use it.',
-	    },
- 	    {
-			title: 'Log Files',
-			description: 'Like many other Web sites, <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> makes use of log files. These files merely logs visitors to the site - usually a standard procedure for hosting companies and a part of hosting services\'s analytics. The information inside the log files includes internet protocol (IP) addresses, browser type, Internet Service Provider (ISP), date/time stamp, referring/exit pages, and possibly the number of clicks. This information is used to analyze trends, administer the site, track user\'s movement around the site, and gather demographic information. IP addresses, and other such information are not linked to any information that is personally identifiable.',
-	    },
- 	    {
-			title: 'Cookies and Web Beacons',
-			description: '<a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> uses cookies to store information about visitors\' preferences, to record user-specific information on which pages the site visitor accesses or visits, and to personalize or customize our web page content based upon visitors\' browser type or other information that the visitor sends via their browser. <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> has no access to or control over these cookies that are used by third-party advertisers.<br /><br /><b>Strictly Necessary Cookies</b><br />These cookies (connect.sid, cookieconsent, datatypes, flows, units) are necessary for the website to function and cannot be switched off in our systems. They are usually only set in response to actions made by you which amount to a request for services, such as setting your privacy preferences, logging in or filling in forms. You can set your browser to block or alert you about these cookies, but some parts of the site will not then work. These cookies do not store any personally identifiable information.<br /><br /><b>Performance Cookies</b><br />These cookies (Google Analytics) allow us to count visits and traffic sources so we can measure and improve the performance of our site. They help us to know which pages are the most and least popular and see how visitors move around the site.<br /><br />All information these cookies collect is aggregated and therefore anonymous. If you do not allow these cookies we will not know when you have visited our site, and will not be able to monitor its performance.',
- 	    },
- 	    {
-			title: 'Children\'s Information',
-			description: 'We believe it is important to provide added protection for children online. We encourage parents and guardians to spend time online with their children to observe, participate in and/or monitor and guide their online activity. <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> does not knowingly collect any personally identifiable information from children under the age of 13. If a parent or guardian believes that <a href="https://api.internetcollaboratif.info" rel="noopener" target="_blank">T6</a> has in its database the personally-identifiable information of a child under the age of 13, please contact us immediately (using the contact in the first paragraph) and we will use our best efforts to promptly remove such information from our records.',
-	    },
- 	    {
-			title: 'Online Privacy Policy Only',
-			description: 'This privacy policy applies only to our online activities and is valid for visitors to our website and regarding information shared and/or collected there. This policy does not apply to any information collected offline or via channels other than this website.<br />Additionally, t6 also honors the <b>Do Not Track</b> header. This means that if you have the <b>Do Not Track</b> header set on your browser settings, t6 will not track you.',
-	    },
- 	    {
-			title: 'Consent',
-			description: 'By using our website T6, you hereby consent to our privacy policy and agree to its terms.',
-	    },
- 	    {
-			title: 'Update',
-			description: 'This Privacy Policy was last updated on: Jun 10th, 2018. Should we update, amend or make any changes to our privacy policy, those changes will be posted here.',
-	    },
-	];
-	res.status(200).send(terms);
+	res.set('Content-Type', 'application/json; charset=utf-8');
+	res.status(200).render('m/terms-json');
 });
 
 module.exports = router;

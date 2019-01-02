@@ -1,0 +1,17 @@
+doctype html
+html(lang='en')
+  body
+    .container-fluid
+      .row.side-body
+        .col-sm-12
+          .account-wall
+            h3.center-text.capital.f1 Something went Wrong!
+            h1#error.center-text= err.status
+              span.center-text.small= title
+              span.pull-left.fa.fa-5x.fa-code(style='margin:0 20px;')
+            -if ( settings.env == 'development' && err.stack )
+              div.clearfix= err.stack
+            -else
+              div.clearfix &nbsp;
+            -end
+            hr.featurette-divider
