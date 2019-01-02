@@ -81,9 +81,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				from:		event.params.from?event.params.from:from,
 				bcc:		event.params.bcc?event.params.bcc:bcc,
 				to:			event.params.to?event.params.to:bcc,
-				subject:	event.params.subject?event.params.subject:'',
-				text:		event.params.text?event.params.text:'Html email client is required',
-				html:		event.params.html
+				subject:	event.params.subject?stringformat(event.params.subject, payload):'',
+				text:		event.params.text?stringformat(event.params.text, payload):'Html email client is required',
+				html:		event.params.html?stringformat(event.params.html, payload):null
 			};
 			t6mailer.sendMail(envelope);
 		} else if ( event.type == 'sms' ) {
@@ -114,8 +114,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		} else if ( event.type == 'Ifttt' ) {
 			
 		} else if ( event.type == 'serial' ) {
+			// Arduino is using CmdMessenger
 			serialport = new SerialPort(event.params.serialPort?event.params.serialPort:'/dev/ttyUSB0', { baudRate:event.params.baudRate?event.params.baudRate:9600 })
-			serialport.write('~5@1433018784:1477ppm!YELLOW;')
+			// Some examples:
+			// 'kSetValue,{value};'
+			// 'kSetDtEpoch,{dtepoch};'
+			// 'kSetFlow,{flow};'
+			serialport.write(event.params.serialMessage?stringformat(event.params.serialMessage, payload):stringformat("kSetLed,{payload.value};", payload));
 		} else if ( event.type == 'slackMessage' ) {
 			
 		}

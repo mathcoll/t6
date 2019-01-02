@@ -34,6 +34,7 @@ geoip				= require('geoip-lite');
 device				= require('device');
 useragent			= require('useragent');
 strength			= require('strength');
+stringformat		= require('string-format');
 //serialport			= require('serialport');
 
 t6decisionrules		= require('./t6decisionrules');
