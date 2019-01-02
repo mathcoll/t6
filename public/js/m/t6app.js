@@ -132,7 +132,7 @@ var app = {
 		{name: 'watch', value:'Watch'},
 	],
 	snippetsTypes: [{name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'cardchart', value:'Card Chart'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'}],
-	EventTypes: [{name: 'mqttPublish', value:'mqtt Publish'}, {name: 'email', value:'Email'}, {name: 'httpWebhook', value:'http(s) Webhook'}, {name: 'sms', value:'Sms/Text message'}],
+	EventTypes: [{name: 'mqttPublish', value:'mqtt Publish'}, {name: 'email', value:'Email'}, {name: 'httpWebhook', value:'http(s) Webhook'}, {name: 'sms', value:'Sms/Text message'}, {name: 'serial', value:'Serial using Arduino CmdMessenger'}],
 	units: [],
 	datatypes: [],
 	flows: [],

@@ -1,5 +1,5 @@
 
-var dataCacheName= 't6-cache-2018-06-25';
+var dataCacheName= 't6-cache-2019-01-01';
 var cacheName= dataCacheName;
 var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token', '/mail/'];
