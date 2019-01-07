@@ -10,7 +10,6 @@ var bodyParser		= require('body-parser');
 var bearer			= require('bearer');
 var pug				= require('pug');
 var compression		= require('compression');
-var VERSION			= require("./package.json").version;
 expressJwt			= require('express-jwt');
 jwt					= require('jsonwebtoken');
 crypto				= require('crypto');
@@ -37,6 +36,7 @@ strength			= require('strength');
 stringformat		= require('string-format');
 //serialport			= require('serialport');
 
+var VERSION			= require("./package.json").version;
 t6decisionrules		= require('./t6decisionrules');
 t6mqtt				= require('./t6mqtt');
 t6mailer			= require('./t6mailer');

@@ -1,0 +1,29 @@
+-if ( user && list != null )
+  p Email 
+    strong #{mail} 
+    | have successfully been added to the list 
+    strong #{list}
+    | .
+  p Your subscriptions:
+    ul
+      -if ( user && user.unsubscription.reminder > 0 )
+        li Reminder Welcome email - 
+          a(href="/mail/#{user.email}/subscribe/reminder/#{user.unsubscription_token}/") Subscribe
+      -else
+        li Reminder Welcome email - 
+          a(href="/mail/#{user.email}/unsubscribe/reminder/#{user.unsubscription_token}/") Unsubscribe
+      -endif
+      
+      -if ( user && user.unsubscription.changePassword > 0 )
+        li Reminder to change Password - 
+          a(href="/mail/#{user.email}/subscribe/changePassword/#{user.unsubscription_token}/") Subscribe
+      -else
+        li Reminder to change Password - 
+          a(href="/mail/#{user.email}/unsubscribe/changePassword/#{user.unsubscription_token}/") Unsubscribe
+      -endif
+      
+      li Security notification related to your account
+
+-else
+  p Something goes wrong. Your request have not been taken into account.
+-endif
