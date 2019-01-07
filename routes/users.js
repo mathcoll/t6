@@ -21,8 +21,15 @@ var tokens;
  */
 router.get('/list', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == 'admin' ) {
+		var size = req.query.size!==undefined?req.query.size:20;
+		var page = req.query.page!==undefined?req.query.page:1;
+		page = page>0?page:1;
+		var offset = Math.ceil(size*(page-1));
+		
 		users	= db.getCollection('users');
-		res.status(200).send(new UserSerializer(users.chain().find().simplesort('subscription_date', true).data()).serialize());
+		var json = users.chain().find().simplesort('subscription_date', true).offset(offset).limit(size).data();
+		
+		res.status(200).send(new UserSerializer(json).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 502, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}
