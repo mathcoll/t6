@@ -243,7 +243,7 @@ function checkForTooManyFailure(req, res, email) {
 			// when >4, then we should block the account and maybe ban the IP address
 			var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 			geo.ip = req.ip;
-			res.render('emails/loginfailure', {device: device(req.headers['user-agent']), geoip: geo}, function(err, html) {
+			res.render('m/emails/loginfailure', {device: device(req.headers['user-agent']), geoip: geo}, function(err, html) {
 				var to = email;
 				var mailOptions = {
 					from: from,
