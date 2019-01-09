@@ -24,7 +24,7 @@ var tokens;
 router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(req, res) {
 	var mail = req.params.mail;
 	if ( req.user.role === 'admin' ) {
-		res.render('m/emails/'+mail, {
+		res.render('emails/'+mail, {
 			currentUrl: req.path,
 			user: req.user
 		});
@@ -82,7 +82,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
 			json.forEach(function(user) {
-				res.render('m/emails/reminder', {user: user}, function(err, html) {
+				res.render('emails/reminder', {user: user}, function(err, html) {
 					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
 					var mailOptions = {
 						from: from,
@@ -161,7 +161,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 			/* Send a Reminder Email to each users */
 			json.forEach(function(user) {
 				console.log(user.firstName+' '+user.lastName+' <'+user.email+'>' + ' --> ' + user.changePasswordMail + moment(user.changePasswordMail).format('DD/MM/YYYY, HH:mm'));
-				res.render('m/emails/change-password', {user: user}, function(err, html) {
+				res.render('emails/change-password', {user: user}, function(err, html) {
 					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
 					var mailOptions = {
 						from: from,

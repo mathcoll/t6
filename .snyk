@@ -93,7 +93,7 @@ ignore:
   'npm:squel:20180322':
     - squel:
         reason: None given
-        expires: '2018-10-30T11:51:31.413Z'
+        expires: '2019-02-08T19:17:19.761Z'
   'npm:stringstream:20180511':
     - request > stringstream:
         reason: None given
@@ -108,6 +108,10 @@ ignore:
     - mqtt > help-me > glob-stream > extend:
         reason: None given
         expires: '2018-10-30T11:51:31.413Z'
+  SNYK-JS-FLATMAPSTREAM-72637:
+    - geoip-lite > save > event-stream > flatmap-stream:
+        reason: None given
+        expires: '2019-02-07T20:31:40.524Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':

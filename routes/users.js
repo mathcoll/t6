@@ -202,7 +202,7 @@ router.post('/', function (req, res) {
 			//tokens.insert(new_token); // should be useless with JWT ??
 			
 			// TODO: Might be usefull to send the API_KEY/SECRET to the user when it's being created!
-			res.render('m/emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
+			res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
 				var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
 				var mailOptions = {
 					from: from,
@@ -353,7 +353,7 @@ router.post('/instruction', function (req, res) {
 			users.update(user);
 			db.save();
 			
-			res.render('m/emails/forgot-password', {user: user, token: token}, function(err, html) {
+			res.render('emails/forgot-password', {user: user, token: token}, function(err, html) {
 				var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
 				var mailOptions = {
 					from: from,

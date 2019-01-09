@@ -243,7 +243,7 @@ function checkForTooManyFailure(req, res, email) {
 			// when >4, then we should block the account and maybe ban the IP address
 			var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 			geo.ip = req.ip;
-			res.render('m/emails/loginfailure', {device: device(req.headers['user-agent']), geoip: geo}, function(err, html) {
+			res.render('emails/loginfailure', {device: device(req.headers['user-agent']), geoip: geo}, function(err, html) {
 				var to = email;
 				var mailOptions = {
 					from: from,
@@ -580,7 +580,7 @@ router.get('/status', function(req, res, next) {
  */
 router.get('/index', function(req, res, next) {
 	res.set('Content-Type', 'application/json; charset=utf-8');
-	res.status(200).render('m/index-json');
+	res.status(200).render('index-json');
 });
 
 
@@ -594,7 +594,7 @@ router.get('/index', function(req, res, next) {
  */
 router.get('/terms', function(req, res, next) {
 	res.set('Content-Type', 'application/json; charset=utf-8');
-	res.status(200).render('m/terms-json');
+	res.status(200).render('terms-json');
 });
 
 module.exports = router;

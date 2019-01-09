@@ -10,21 +10,21 @@ router.get('/m', function(req, res) {
 });
 
 router.get('/', function(req, res) {
-	res.render('m/index', {
+	res.render('index', {
 		currentUrl: req.path,
 		user: req.session.user
 	});
 });
 
 router.get('/applicationStart', function(req, res) {
-	res.render('m/applicationStart', {
+	res.render('applicationStart', {
 		currentUrl: req.path,
 		user: req.session.user
 	});
 });
 
 router.get('/networkError', function(req, res) {
-	res.render('m/networkError', {
+	res.render('networkError', {
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -60,7 +60,7 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 		});
 		db.save();
 		
-		res.render('m/notifications-unsubscribe', {
+		res.render('notifications-unsubscribe', {
 			currentUrl: req.path,
 			user: result,
 			mail: mail,
@@ -101,7 +101,7 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 		});
 		db.save();
 		
-		res.render('m/notifications-subscribe', {
+		res.render('notifications-subscribe', {
 			currentUrl: req.path,
 			user: result,
 			mail: mail,
