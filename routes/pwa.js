@@ -5,10 +5,6 @@ var DataSerializer = require('../serializers/data');
 var ErrorSerializer = require('../serializers/error');
 var users;
 
-router.get('/m', function(req, res) {
-	res.redirect('/');
-});
-
 router.get('/', function(req, res) {
 	res.render('index', {
 		currentUrl: req.path,

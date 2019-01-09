@@ -36,7 +36,8 @@ strength			= require('strength');
 stringformat		= require('string-format');
 //serialport			= require('serialport');
 
-var VERSION			= require("./package.json").version;
+VERSION				= require("./package.json").version;
+appName				= require("./package.json").name;
 t6decisionrules		= require('./t6decisionrules');
 t6mqtt				= require('./t6mqtt');
 t6mailer			= require('./t6mailer');
@@ -116,7 +117,6 @@ var data			= require('./routes/data');
 var flows			= require('./routes/flows');
 var units			= require('./routes/units');
 var datatypes		= require('./routes/datatypes');
-var www				= require('./routes/www');
 var pwa				= require('./routes/pwa');
 var notifications	= require('./routes/notifications');
 app					= express();
@@ -172,7 +172,7 @@ app.use('/', pwa);
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
-	res.status(err.status || 500).render("m/"+err.status, {
+	res.status(err.status || 500).render(err.status, {
 		title : 'Not Found',
 		user: req.session.user,
 		currentUrl: req.path,
