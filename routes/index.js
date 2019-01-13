@@ -149,13 +149,12 @@ router.all('*', function (req, res, next) {
 	var o = {
 		key:		req.user!==undefined?req.user.key:'',
 		secret:		req.user!==undefined?req.user.secret:null,
-		user_id:	req.user!==undefined?req.user.id:'anonymous',
+		user_id:	req.user!==undefined,
 		session_id:	req.user!==undefined?req.user.session_id:null,
 		verb:		req.method,
 		url:		req.originalUrl,
 		date:		moment().format('x')
 	};
-
 	if ( req.headers.authorization ) {
 		if ( !req.user ) {
 			var jwtdecoded = jwt.decode(req.headers.authorization.split(' ')[1]);
@@ -171,10 +170,11 @@ router.all('*', function (req, res, next) {
 		var query = squel.select()
 			.field('count(url)')
 			.from('quota7d.requests')
-			.where('user_id=?', o.user_id!==null?o.user_id:'')
+			.where('user_id=?', req.user.id!==undefined?req.user.id:o.user_id)
 			.where('time>now() - 7d')
 			.limit(1)
 			.toString();
+
 		dbInfluxDB.query(query).then(data => {
 			//console.log(query);
 			//console.log(data[0].count);
@@ -189,11 +189,11 @@ router.all('*', function (req, res, next) {
 			res.header('Cache-Control', 'no-cache, max-age=360, private, must-revalidate, proxy-revalidate');
 			
 			if( (req.user && i >= limit) ) {
-				t6events.add('t6Api', 'api 429', req.user!==null?req.user.id:'');
+				t6events.add('t6Api', 'api 429', req.user.id!==undefined?req.user.id:o.user_id);
 				res.status(429).send(new ErrorSerializer({'id': 99, 'code': 429, 'message': 'Too Many Requests'}));
 			} else {
 				if ( db_type.influxdb == true ) {
-					var tags = {user_id: o.user_id, session_id: o.session_id!==undefined?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+					var tags = {user_id: req.user.id!==undefined?req.user.id:o.user_id, session_id: o.session_id!==undefined?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 					var fields = {url: o.url};
 					//CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATION 1d
 					dbInfluxDB.writePoints([{
