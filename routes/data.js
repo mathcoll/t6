@@ -605,18 +605,22 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 			if ( db_type.influxdb == true ) {
 				/* InfluxDB database */
 				var tags = {};
+				var timestamp = time*1000000;
 				if (flow_id!== "") tags.flow_id = flow_id;
 				tags.user_id = req.user.id;
 				if (text!== "") fields[0].text = text;
+
 				dbInfluxDB.writePoints([{
 					measurement: 'data',
 					tags: tags,
 					fields: fields[0],
-					timestamp: time*1000000,
+					timestamp: timestamp,
 				}], { retentionPolicy: 'autogen', }).then(err => {
-					console.error('ERROR ===> Error on writePoints to influxDb:\n'+err);
+					if (err) console.log({'message': 'Error on writePoints to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+					//else console.log({'message': 'Success on writePoints to influxDb', 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
 				}).catch(err => {
-					console.error('ERROR ===> Error writting to influxDb:\n'+err);
+					console.log({'message': 'Error catched on writting to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+					console.error('Error catched on writting to influxDb:\n'+err);
 				});
 			}
 			if ( db_type.sqlite3 == true ) {
