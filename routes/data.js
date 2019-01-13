@@ -573,31 +573,31 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 		var fields = [];
 		if ( datatype == 'boolean' ) {
 			value = str2bool(value);
-			fields[0] = {time:time, valueBoolean: value,};
+			fields[0] = {time:""+time, valueBoolean: value,};
 		} else if ( datatype == 'date' ) {
 			value = value;
-			fields[0] = {time:time, valueDate: value,};
+			fields[0] = {time:""+time, valueDate: value,};
 		} else if ( datatype == 'integer' ) {
 			value = parseInt(value);
-			fields[0] = {time:time, valueInteger: value+'i',};
+			fields[0] = {time:""+time, valueInteger: value+'i',};
 		} else if ( datatype == 'json' ) {
 			value = {value:value,};
-			fields[0] = {time:time, valueJson: value,};
+			fields[0] = {time:""+time, valueJson: value,};
 		} else if ( datatype == 'string' ) {
 			value = ""+value;
-			fields[0] = {time:time, valueString: value,};
+			fields[0] = {time:""+time, valueString: value,};
 		} else if ( datatype == 'time' ) {
 			value = value;
-			fields[0] = {time:time, valueTime: value,};
+			fields[0] = {time:""+time, valueTime: value,};
 		} else if ( datatype == 'float' ) {
 			value = parseFloat(value);
-			fields[0] = {time:time, valueFloat: value,};
+			fields[0] = {time:""+time, valueFloat: value,};
 		} else if ( datatype == 'geo' ) {
 			value = ""+value;
-			fields[0] = {time:time, valueString: value,};
+			fields[0] = {time:""+time, valueString: value,};
 		} else {
 			value = ""+value;
-			fields[0] = {time:time, valueString: value,};
+			fields[0] = {time:""+time, valueString: value,};
 		}
 		// End casting
 		
@@ -614,7 +614,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 					fields: fields[0],
 					timestamp: time*1000000,
 				}], { retentionPolicy: 'autogen', }).then(err => {
-					
+					console.error('ERROR ===> Error on writePoints to influxDb:\n'+err);
 				}).catch(err => {
 					console.error('ERROR ===> Error writting to influxDb:\n'+err);
 				});
