@@ -44,27 +44,33 @@ if ( config.exec ) {
 	    		},
 	    		body: auth
 	    	}, function (error, response, body) {
-	    		bearer = body.token;
-	    		if ( bearer && !error ) {
-	    			var body = {flow_id: config.flow_id, value: stdout, timestamp: timestamp, publish: config.publish, save: config.save, unit: config.unit, mqtt_topic: config.mqtt_topic, };
-	    	    	request({
-	    	    		url: config.api+'data/',
-	    	    		method: 'POST',
-	    	    		json: true,
-	    	    		headers: {
-	    	    			'User-Agent': "t6 javascript file "+argv.run,
-	    	    			'Accept': 'application/json',
-	    	    			'Content-Type': 'application/json',
-	    	    			'Authorization': 'Bearer '+bearer,
-	    	    		},
-	    	    		body: body
-	    	    	}, function (error, response, body){
-	    	    		console.log(response.headers.location);
-	    	    	});
+	    		if ( body ) {
+	    			bearer = body.token!==undefined?body.token:null;
+		    		if ( bearer && !error ) {
+		    			var body = {flow_id: config.flow_id, value: stdout, timestamp: timestamp, publish: config.publish, save: config.save, unit: config.unit, mqtt_topic: config.mqtt_topic, };
+		    	    	request({
+		    	    		url: config.api+'data/',
+		    	    		method: 'POST',
+		    	    		json: true,
+		    	    		headers: {
+		    	    			'User-Agent': "t6 javascript file "+argv.run,
+		    	    			'Accept': 'application/json',
+		    	    			'Content-Type': 'application/json',
+		    	    			'Authorization': 'Bearer '+bearer,
+		    	    		},
+		    	    		body: body
+		    	    	}, function (error, response, body){
+		    	    		console.log(response.headers.location);
+		    	    		console.log(response.body);
+		    	    	});
+		    		} else {
+		    	    	console.log('JWT error: ' + bearer);
+		    	    	process.exit(1);
+		    	    }
 	    		} else {
-	    	    	console.log('JWT error: ' + bearer);
+	    	    	console.log('There is no Body');
 	    	    	process.exit(1);
-	    	    }
+	    		}
 	    	});
 	    } else {
 	    	console.log('exec error: ' + error + stderr);
