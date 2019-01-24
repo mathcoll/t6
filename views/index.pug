@@ -14,17 +14,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
     meta(name='apple-mobile-web-app-title', content='t6 IoT App')
     meta(name='msapplication-TileImage', content=baseUrlCdn + '/img/m/icons/icon-152x152.png')
     link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-640x1136.png', media='(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
-    //-
-      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-750x1294.png', media='(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1242x2148.png', media='(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1125x2436.png', media='(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1536x2048.png', media='(min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-1668x2224.png', media='(min-device-width: 834px) and (max-device-width: 834px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
-      link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-2048x2732.png', media='(min-device-width: 1024px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) and (orientation: portrait)')
-
     meta(name='msapplication-TileColor', content='#795548')
     meta(name='theme-color', content='#795548')
-
+    meta(name='Description' content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
     if process.env.NODE_ENV === 'development'
       link(rel='stylesheet', href=baseUrlCdn + '/css/material-design-lite/1.3.0/material.brown-blue.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       link(rel='stylesheet', href=baseUrlCdn + '/css/m/inline.css', type='text/css', data-integrity='', data-crossorigin='anonymous')

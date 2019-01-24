@@ -29,7 +29,11 @@
             	"type": "image/png"
             }],
   "scope": "/",
-  "start_url": "/",
+  "start_url": "/#index",
+  "serviceworker": {
+    "src": "/service-worker.js",
+    "scope": "/"
+  },
   "display": "standalone",
   "orientation": "natural",
   "direction": "portrait",

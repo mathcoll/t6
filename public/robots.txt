@@ -5,4 +5,4 @@ Allow: /manifest.json
 Allow: /sitemap.xml
 Allow: /sitemap.xml.gz
 
-Sitemap: /sitemap.xml
+Sitemap: https://api.internetcollaboratif.info/sitemap.xml

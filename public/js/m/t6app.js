@@ -163,6 +163,7 @@ var app = {
 };
 app.offlineCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'};
 
+var Tawk_API;
 var buttons = {}; // see function app.refreshButtonsSelectors()
 var containers = {
 	spinner: document.querySelector('section#loading-spinner'),
@@ -4849,6 +4850,10 @@ var containers = {
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
+				Tawk_API.setAttributes({
+					'name' : localStorage.getItem('currentUserName')?localStorage.getItem('currentUserName'):null,
+					'email': localStorage.getItem('currentUserEmail')?localStorage.getItem('currentUserEmail'):null
+				}, function (error) {});
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
 				app.getDatatypes();
@@ -5189,7 +5194,7 @@ var containers = {
 				terms += "		</div>";
 				terms += "	</div>";
 				terms += "</section>";
-            }
+			}
 			
 			(containers.terms).querySelector('.page-content').innerHTML = terms;
 			if ( !app.isLogged ) {
@@ -5234,6 +5239,10 @@ var containers = {
 		localStorage.setItem('notifications.unsubscription_token', null);
 		localStorage.setItem('notifications.email', null);
 		(containers.profile).querySelector('.page-content').innerHTML = "";
+		Tawk_API.setAttributes({
+			'name' : null,
+			'email': null
+		}, function (error) {});
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
@@ -5908,19 +5917,7 @@ var containers = {
 	}
 	app.setDrawer();
 	
-	if ( app.tawktoid && navigator.onLine && app.getCookie('cookieconsentNoGTM') !== "true" ) {
-		var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-		(function(){
-			var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-			s1.async=true;
-			s1.async='async';
-			s1.src='//embed.tawk.to/'+app.tawktoid+'/default';
-			s1.charset='UTF-8';
-			s1.setAttribute('crossorigin','*');
-			s0.parentNode.insertBefore(s1,s0);
-		})();
-	}
-	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && !navigator.doNotTrack ) {
+	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" ) {
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
