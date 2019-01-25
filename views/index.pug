@@ -101,7 +101,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
             |  Mqtt Topics
 
       #drawer.mdl-layout__drawer
-        div.side-nav__header#currentUserBackground(style="height: 148px; position: relative; width: 100%; background: #795548 url(${baseUrlCdn}/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
+        div.side-nav__header#currentUserBackground(style="height: 148px; position: relative; width: 100%; background: #795548 url(" + baseUrlCdn + "/img/m/side-nav-bg.jpg) repeat scroll 0 0 / cover ;")
           img#currentUserHeader(src="", alt="Current user avatar", style="border-radius: 50%; width: 90px; padding: 10px 10px 10px 10px;border: 3px solid #fff;margin: 10px 10px;")
           div#currentUserName.mdl-layout-title(style="bottom:auto !important;") 
           div#currentUserEmail.mdl-layout-subheader(style="color: #ffffff;") 
@@ -348,10 +348,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       i.material-icons person_add
                       | Sign Up
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button(onclick="app.setSection('login');", href="#login")
                       | Sign In
                     | &nbsp;or&nbsp;
-                    a.mdl-button--colored(onclick="app.setSection('forgot-password');", href="#forgot-password")
+                    a.mdl-button(onclick="app.setSection('forgot-password');", href="#forgot-password")
                       | reset my password
                     | .
               div.mdl-layout-spacer
@@ -385,7 +385,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                         input.mdl-checkbox__input(checked, type='checkbox', id='notifications.changePassword', name='changePassword')
                         span.mdl-checkbox__label(style='position: absolute;') Notification to remind you to change your password regularly.
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button(onclick="app.setSection('login');", href="#login")
                       | Skip this step
                     | (I will do it later).
               div.mdl-layout-spacer
@@ -412,10 +412,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       i.material-icons book
                       | Get instructions
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button--colored(onclick="app.setSection('signup');", href="#signup")
+                    a.mdl-button(onclick="app.setSection('signup');", href="#signup")
                       | Create an account
                     | &nbsp;or&nbsp;
-                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button(onclick="app.setSection('login');", href="#login")
                       | Sign In
                     | .
               div.mdl-layout-spacer
@@ -449,7 +449,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       | Reset my password
                   .mdl-card__actions.mdl-card--border
                     | &nbsp;or&nbsp;
-                    a.mdl-button--colored(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button(onclick="app.setSection('login');", href="#login")
                       | Sign In
                     | .
               div.mdl-layout-spacer
@@ -580,7 +580,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
           h4#cookieconsent_header This website uses cookies
           span This website uses cookies to improve user experience. By using our website you consent to all cookies in accordance with our Cookie Policy. 
           span#cookieconsent_readmore
-            a(href='/#terms', id='cookieconsent.read') Read more
+            a(href='/#terms', id='cookieconsent.read').mdl-button Read more
             | .
           br
           #cookieconsent_buttons
