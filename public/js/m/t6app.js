@@ -4041,8 +4041,8 @@ var containers = {
 			"			</div>" +
 			"			<div class='mdl-card__actions mdl-card--border'>" +
 			"				<span class='mdl-layout-spacer'></span>" +
-			"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button--colored'>Create an account</a> or " +
-			"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button--colored'>reset my password</a>." +
+			"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button'>Create an account</a> or " +
+			"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button'>reset my password</a>." +
 			"			</div>" +
 			"		</div>" +
 			"	</form>" +
@@ -4850,10 +4850,12 @@ var containers = {
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
-				Tawk_API.setAttributes({
-					'name' : localStorage.getItem('currentUserName')?localStorage.getItem('currentUserName'):null,
-					'email': localStorage.getItem('currentUserEmail')?localStorage.getItem('currentUserEmail'):null
-				}, function (error) {});
+				if (Tawk_API) {
+					Tawk_API.setAttributes({
+						'name' : localStorage.getItem('currentUserName')?localStorage.getItem('currentUserName'):null,
+						'email': localStorage.getItem('currentUserEmail')?localStorage.getItem('currentUserEmail'):null
+					}, function (error) {});
+				}
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
 				app.getDatatypes();
@@ -5239,10 +5241,12 @@ var containers = {
 		localStorage.setItem('notifications.unsubscription_token', null);
 		localStorage.setItem('notifications.email', null);
 		(containers.profile).querySelector('.page-content').innerHTML = "";
-		Tawk_API.setAttributes({
-			'name' : null,
-			'email': null
-		}, function (error) {});
+		if (Tawk_API) {
+			Tawk_API.setAttributes({
+				'name' : null,
+				'email': null
+			}, function (error) {});
+		}
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};

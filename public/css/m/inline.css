@@ -54,12 +54,15 @@ html {
 a {
 	text-decoration: none;
 }
+.mdl-button a {
+	color: rgb(43, 51, 87);
+}
 h1.page_title {
 	color: #fff;
 	font-size: 14px;
 }
 h4 {
-    display: inline;
+	display: inline;
 	margin: 0 0 0 5px;
 	vertical-align: middle;
 	line-height: 48px;
@@ -261,6 +264,9 @@ div[data-type="mqtts"].removed {
 	transform: scale(.99);
 	transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) .3s;
 	
+}
+.mdl-button {
+	background-color: #fff;
 }
 section.is-active .mdl-button--fab.is-not-here {
 	opacity: 0;
