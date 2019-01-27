@@ -12,13 +12,13 @@ t6mqtt.publish = function(user_id, topic, payload, retain) {
 			payload.datetime = moment((payload.dtepoch/1000)*1000).format('MMMM Do YYYY, H:mm:ss');
 		}
 	}
-	client.publish(mqtt_root+user_id+topic, JSON.stringify(payload), {retain: retain});
+	mqtt_client.publish(mqtt_root+user_id+topic, JSON.stringify(payload), {retain: retain});
 	/*
 	console.log(mqtt_root, user_id, topic, payload);
 	console.log("Message sent.");
-	console.log("clientId", client.options.clientId);
-	console.log("host", client.options.host);
-	console.log("port", client.options.port);
+	console.log("clientId", mqtt_client.options.clientId);
+	console.log("host", mqtt_client.options.host);
+	console.log("port", mqtt_client.options.port);
 	*/
 };
 

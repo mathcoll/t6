@@ -265,9 +265,6 @@ div[data-type="mqtts"].removed {
 	transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) .3s;
 	
 }
-.mdl-button {
-	background-color: #fff;
-}
 section.is-active .mdl-button--fab.is-not-here {
 	opacity: 0;
 	transform: scale(0);
@@ -1911,7 +1908,7 @@ div#cookieconsent_accept, div#cookieconsent_accept a {
     font-size: 13px;
     cursor: pointer;
     margin: 5px 10px;
-    background-color: rgb(91, 183, 91);
+    background-color: rgb(12, 167, 12);
     color: #fff;
     display: inline;
 }

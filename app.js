@@ -65,43 +65,56 @@ process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on('uncaughtException', function(err) {
 	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), (err && err.stack) ? err.stack : err);
 });
-console.log(sprintf('%s Starting %s', moment().format('MMMM Do YYYY, H:mm:ss'), appName));
+console.log(sprintf('%s Starting %s v%s', moment().format('MMMM Do YYYY, H:mm:ss'), appName, VERSION));
 console.log(sprintf('%s Using node v%s', moment().format('MMMM Do YYYY, H:mm:ss'), process.versions.node));
 console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Setting Access Logs to', logAccessFile);
 console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Setting Error Logs to', logErrorFile);
 
+console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Initializing Database...');
 /* Main Database settings */
 db = new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+db.loadDatabase({}, function() {
+	if ( db.getCollection('objects') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Objects is failing');
+	if ( db.getCollection('flows') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Flows is failing');
+	if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Users is failing');
+	if ( db.getCollection('tokens') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Keys is failing');
+	if ( db.getCollection('units') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Units is failing');
+	if ( db.getCollection('datatypes') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Datatypes is failing');
+	if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Users is failing');
+	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Main is loaded');
+});
 
 /* Rules settings */
 dbRules = new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbRules.loadDatabase({}, function() {
+	if ( dbRules === null ) console.log('db Rules is failing');
+	if ( dbRules.getCollection('rules') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Rules is failing');
+	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Rules is loaded');
+});
 
 /* Snippets settings */
 dbSnippets = new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbSnippets.loadDatabase({}, function() {
+	if ( dbSnippets === null ) console.error('db Snippets is failing');
+	if ( dbSnippets.getCollection('snippets') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Snippets is failing');
+	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Snippets is loaded');
+});
 
 /* Dashboards settings */
 dbDashboards = new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
+dbDashboards.loadDatabase({}, function() {
+	if ( dbDashboards === null ) console.log('db Dashboards is failing');
+	if ( dbDashboards.getCollection('dashboards') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Dashboards is failing');
+	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Dashboards is loaded');
+});
 
 /* Tokens settings */
 dbTokens = new loki(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-
-console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Initializing Database...');
-if ( db === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), 'db is failing');
-if ( db.getCollection('objects') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Objects is failing');
-if ( db.getCollection('flows') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Flows is failing');
-if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Users is failing');
-if ( db.getCollection('tokens') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Keys is failing');
-if ( db.getCollection('units') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Units is failing');
-if ( db.getCollection('datatypes') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Datatypes is failing');
-if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Users is failing');
-if ( dbRules === null ) console.log('db Rules is failing');
-if ( dbRules.getCollection('rules') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Rules is failing');
-if ( dbSnippets === null ) console.error('db Snippets is failing');
-if ( dbSnippets.getCollection('snippets') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Snippets is failing');
-if ( dbDashboards === null ) console.log('db Dashboards is failing');
-if ( dbDashboards.getCollection('dashboards') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Dashboards is failing');
-if ( dbTokens === null ) console.log('db Tokens is failing');
-if ( dbTokens.getCollection('tokens') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Tokens is failing');
+dbTokens.loadDatabase({}, function() {
+	if ( dbTokens === null ) console.log('db Tokens is failing');
+	if ( dbTokens.getCollection('tokens') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Tokens is failing');
+	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Tokens is loaded');
+});
 
 var index			= require('./routes/index');
 var objects			= require('./routes/objects');
@@ -169,12 +182,14 @@ app.use('/', pwa);
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
-	res.status(err.status || 500).render(err.status, {
+	console.log(err.status);
+	res.status(err.status || 500).render(""+err.status, {
 		title : 'Not Found',
 		user: req.session.user,
 		currentUrl: req.path,
-		err: app.get('env')==='development'?err:{status: err.status, stack: null}
+		err: app.get('env')==='development'?err:{status: err.status, stack: err.stack}
 	});
+	console.log(err.status);
 	//next(err);
 });
 
@@ -210,9 +225,12 @@ if (app.get('env') === 'development') {
 }
 
 t6events.add('t6App', 'start', 'self');
-console.log(sprintf('%s %s v%s has started and listening to %s', moment().format('MMMM Do YYYY, H:mm:ss'), appName, VERSION, process.env.BASE_URL_HTTPS));
+console.log(sprintf('%s %s has started and listening to %s', moment().format('MMMM Do YYYY, H:mm:ss'), appName, process.env.BASE_URL_HTTPS));
 
-client.on("connect", function () {
-	client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
+mqtt_client = mqtt.connect('mqtt://'+mqtt_host+':'+mqtt_port);
+mqtt_client.on("connect", function () {
+	mqtt_client.publish(mqtt_info, JSON.stringify({"dtepoch": moment().format('x'), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
+	console.log(sprintf('%s Connected to Mqtt broker on %s:%s - %s', moment().format('MMMM Do YYYY, H:mm:ss'), mqtt_host, mqtt_port, mqtt_root));
 });
+
 module.exports = app;
