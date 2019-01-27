@@ -182,14 +182,12 @@ app.use('/', pwa);
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
 	err.status = 404;
-	console.log(err.status);
 	res.status(err.status || 500).render(""+err.status, {
 		title : 'Not Found',
 		user: req.session.user,
 		currentUrl: req.path,
 		err: app.get('env')==='development'?err:{status: err.status, stack: err.stack}
 	});
-	console.log(err.status);
 	//next(err);
 });
 
