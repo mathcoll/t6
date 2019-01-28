@@ -348,12 +348,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       i.material-icons person_add
                       | Sign Up
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button.small(onclick="app.setSection('login');", href="#login")
                       | Sign In
                     | &nbsp;or&nbsp;
-                    a.mdl-button(onclick="app.setSection('forgot-password');", href="#forgot-password")
-                      | reset my password
-                    | .
+                    a.mdl-button.small(onclick="app.setSection('forgot-password');", href="#forgot-password")
+                      | Reset password
               div.mdl-layout-spacer
 
         //- View My Profile
@@ -385,9 +384,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                         input.mdl-checkbox__input(checked, type='checkbox', id='notifications.changePassword', name='changePassword')
                         span.mdl-checkbox__label(style='position: absolute;') Notification to remind you to change your password regularly.
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button.small(onclick="app.setSection('login');", href="#login")
                       | Skip this step
-                    | (I will do it later).
+                    | (I will do it later)
               div.mdl-layout-spacer
           
         section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -412,12 +411,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       i.material-icons book
                       | Get instructions
                   .mdl-card__actions.mdl-card--border
-                    a.mdl-button(onclick="app.setSection('signup');", href="#signup")
-                      | Create an account
+                    a.mdl-button.small(onclick="app.setSection('signup');", href="#signup")
+                      | Sign Up
                     | &nbsp;or&nbsp;
-                    a.mdl-button(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button.small(onclick="app.setSection('login');", href="#login")
                       | Sign In
-                    | .
               div.mdl-layout-spacer
           
         section#reset-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -449,9 +447,8 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       | Reset my password
                   .mdl-card__actions.mdl-card--border
                     | &nbsp;or&nbsp;
-                    a.mdl-button(onclick="app.setSection('login');", href="#login")
+                    a.mdl-button.small(onclick="app.setSection('login');", href="#login")
                       | Sign In
-                    | .
               div.mdl-layout-spacer
 
         //- View Settings

@@ -57,6 +57,11 @@ a {
 .mdl-button a {
 	color: rgb(43, 51, 87);
 }
+.mdl-button.small {
+	text-transform: none !important;
+	background: #fff;
+	color: rgb(68,138,255);
+}
 h1.page_title {
 	color: #fff;
 	font-size: 14px;

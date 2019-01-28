@@ -4041,8 +4041,8 @@ var containers = {
 			"			</div>" +
 			"			<div class='mdl-card__actions mdl-card--border'>" +
 			"				<span class='mdl-layout-spacer'></span>" +
-			"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button'>Create an account</a> or " +
-			"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button'>reset my password</a>." +
+			"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button small'>Sign Up</a> or " +
+			"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button small'>Reset password</a>" +
 			"			</div>" +
 			"		</div>" +
 			"	</form>" +
