@@ -5735,6 +5735,15 @@ var containers = {
 		menuElement.classList.add('menu--show');
 		menuOverlayElement.classList.add('menu__overlay--show');
 		drawerObfuscatorElement.remove();
+		if ( dataLayer !== undefined ) {
+			dataLayer.push({
+				'eventCategory': 'Interaction',
+				'eventAction': 'change',
+				'eventLabel': 'show',
+				'eventValue': '1',
+				'event': 'Menu'
+			});
+		}
 	}
 	app.hideMenu = function() {
 		menuElement.style.transform = "translateX(-120%) !important";
@@ -5743,6 +5752,15 @@ var containers = {
 		menuOverlayElement.classList.remove('menu__overlay--show');
 		menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
 		menuElement.classList.remove('is-visible');
+		if ( dataLayer !== undefined ) {
+			dataLayer.push({
+				'eventCategory': 'Interaction',
+				'eventAction': 'change',
+				'eventLabel': 'hide',
+				'eventValue': '1',
+				'event': 'Menu'
+			});
+		}
 	}
 	app.onTransitionEnd = function() {
 		if (touchStartPoint < 10) {
@@ -5966,6 +5984,14 @@ var containers = {
 			msg = 'You are now online...';
 			type: 'done';
 			app.setHiddenElement("notification");
+			if ( self.dataLayer !== undefined ) {
+				self.dataLayer.push({
+					'eventCategory': 'navigator.onLine',
+					'eventAction': 'change',
+					'eventLabel': msg,
+					'event': true
+				});
+			}
 		}
 		else {
 			msg = 'You are now offline...';

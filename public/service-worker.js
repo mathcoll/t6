@@ -125,10 +125,17 @@ self.addEventListener('push', function(event) {
 			body: notif.body,
 			icon: notif.icon!==null?notif.icon:'/img/m/icons/icon-128x128.png',
 		};
+		console.log('[pushSubscription]', notif.type);
 		if ( notif.type == 'message' ) {
 			event.waitUntil(self.registration.showNotification(title, options));
 		} else {
 			console.log('[pushSubscription]', notif);
 		}
 	}
+});
+self.addEventListener('message', function(event){
+
+});
+self.addEventListener('notificationclick', function(event) {
+	
 });
