@@ -1,7 +1,7 @@
 
-var dataCacheName= 't6-cache-2019-01-24';
+var dataCacheName= 't6-cache-2019-02-06';
 var cacheName= dataCacheName;
-var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar'];
+var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar', 'fonts.g', 'cdn.jsdelivr.net', 'static-v.tawk.to'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token', '/mail/', 'hotjar', 'analytics', 'gtm', 'collect', 'tawk'];
 var filesToCache = [
 	'/',
@@ -17,14 +17,20 @@ var filesToCache = [
 	'/img/m/side-nav-bg.jpg',
 	'/img/m/icons/icon-128x128.png',
 	
-	'https://cdn.internetcollaboratif.info/img/opl_img3.jpg',
 	'https://cdn.internetcollaboratif.info/css/t6App.min.css',
+	'https://cdn.internetcollaboratif.info/img/opl_img3.jpg',
 	'https://cdn.internetcollaboratif.info/img/opl_img2.jpg',
 	'https://cdn.internetcollaboratif.info/img/opl_img.jpg',
 	'https://cdn.internetcollaboratif.info/img/m/placeholder.png',
 	'https://cdn.internetcollaboratif.info/img/m/welcome_card.jpg',
 	'https://cdn.internetcollaboratif.info/img/m/side-nav-bg.jpg',
-	'https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png'
+	'https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png',
+	
+	'https://fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2',
+	'https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext',
+	'https://cdn.jsdelivr.net/emojione/2.2.7/assets/css/emojione.min.css',
+	'https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js',
+	'https://static-v.tawk.to/a-v3-45/fonts/tawk-widget.ttf?yh9epr'
 ];
 function refresh(response) {
 	return self.clients.matchAll().then(function(clients) {
