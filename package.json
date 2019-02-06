@@ -52,12 +52,11 @@
     "serialport": "^7.1.4",
     "serve-favicon": "^2.4.5",
     "session-file-store": "^0.2.0",
-    "snyk": "^1.122.0",
+    "snyk": "^1.124.1",
     "sprintf-js": "^1.1.2",
     "squel": "~4.2.3",
     "strength": "^0.1.4",
     "string-format": "^2.0.0",
-    "striptags": "^2.1.1",
     "suncalc": "^1.8.0",
     "useragent": "^2.3.0"
   },

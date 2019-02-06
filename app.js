@@ -26,7 +26,6 @@ squel				= require('squel');
 uuid				= require('node-uuid');
 os					= require('os');
 qrCode				= require('qrcode-npm');
-striptags			= require('striptags');
 fs					= require('fs');
 util				= require('util');
 geoip				= require('geoip-lite');
