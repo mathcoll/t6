@@ -12,9 +12,6 @@ var users;
  * @apiSuccessExample 200 Response
  *     HTTP/1.1 200 Success
  *     {
- *       "message": "Success",
- *       "id": "",
- *       "code": 200
  *     }
  */
 
@@ -27,6 +24,15 @@ var users;
  *       "message": "Created",
  *       "id": "",
  *       "code": 201
+ *     }
+ */
+
+/**
+ * @apiDefine 202
+ * @apiSuccess 202 Accepted
+ * @apiSuccessExample 202 Response
+ *     HTTP/1.1 202 Accepted
+ *     {
  *     }
  */
 
