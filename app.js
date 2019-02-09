@@ -72,7 +72,7 @@ console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Setting Error Logs to', l
 console.log(moment().format('MMMM Do YYYY, H:mm:ss'), 'Initializing Database...');
 /* Main Database settings */
 db = new loki(path.join(__dirname, 'data', 'db-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-db.loadDatabase({}, function() {
+//db.loadDatabase({}, function() {
 	if ( db.getCollection('objects') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Objects is failing');
 	if ( db.getCollection('flows') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Flows is failing');
 	if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Users is failing');
@@ -81,39 +81,39 @@ db.loadDatabase({}, function() {
 	if ( db.getCollection('datatypes') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Datatypes is failing');
 	if ( db.getCollection('users') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Users is failing');
 	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Main is loaded');
-});
+//});
 
 /* Rules settings */
 dbRules = new loki(path.join(__dirname, 'data', 'rules-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbRules.loadDatabase({}, function() {
+//dbRules.loadDatabase({}, function() {
 	if ( dbRules === null ) console.log('db Rules is failing');
 	if ( dbRules.getCollection('rules') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Rules is failing');
 	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Rules is loaded');
-});
+//});
 
 /* Snippets settings */
 dbSnippets = new loki(path.join(__dirname, 'data', 'snippets-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbSnippets.loadDatabase({}, function() {
+//dbSnippets.loadDatabase({}, function() {
 	if ( dbSnippets === null ) console.error('db Snippets is failing');
 	if ( dbSnippets.getCollection('snippets') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Snippets is failing');
 	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Snippets is loaded');
-});
+//});
 
 /* Dashboards settings */
 dbDashboards = new loki(path.join(__dirname, 'data', 'dashboards-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbDashboards.loadDatabase({}, function() {
+//dbDashboards.loadDatabase({}, function() {
 	if ( dbDashboards === null ) console.log('db Dashboards is failing');
 	if ( dbDashboards.getCollection('dashboards') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Dashboards is failing');
 	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Dashboards is loaded');
-});
+//});
 
 /* Tokens settings */
 dbTokens = new loki(path.join(__dirname, 'data', 'tokens-'+os.hostname()+'.json'), {autoload: true, autosave: true});
-dbTokens.loadDatabase({}, function() {
+//dbTokens.loadDatabase({}, function() {
 	if ( dbTokens === null ) console.log('db Tokens is failing');
 	if ( dbTokens.getCollection('tokens') === null ) console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Collection Tokens is failing');
 	console.error(moment().format('MMMM Do YYYY, H:mm:ss'), '- Db Tokens is loaded');
-});
+//});
 
 var index			= require('./routes/index');
 var objects			= require('./routes/objects');

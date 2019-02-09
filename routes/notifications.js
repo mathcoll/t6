@@ -72,11 +72,11 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
 		var query = { '$and': [
-	   	           {'subscription_date': { '$lte': moment().subtract(7, 'days') }},
-	 	           {'reminderMail': undefined},
-	 	           {'token': null},
-	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.reminder': undefined}, {'unsubscription.reminder': null}] },
-	 			]};
+					{'subscription_date': { '$lte': moment().subtract(7, 'days') }},
+					{'reminderMail': undefined},
+					{'token': null},
+					{ '$or': [{'unsubscription': undefined}, {'unsubscription.reminder': undefined}, {'unsubscription.reminder': null}] },
+				]};
 		var json = users.find( query );
 		
 		if ( json.length > 0 ) {
@@ -89,10 +89,10 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 						bcc: bcc,
 						to: to,
 						list: {
-					        unsubscribe: {
-					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/reminder/'+user.unsubscription_token+'/',
-					            comment: 'Unsubscribe from this notification'
-					        },
+							unsubscribe: {
+								url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/reminder/'+user.unsubscription_token+'/',
+								comment: 'Unsubscribe from this notification'
+							},
 						},
 						subject: 't6 Reminder',
 						text: 'Html email client is required',
@@ -100,7 +100,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 					};
 					if ( process.env.NODE_ENV === 'production' ) {
 						transporter.sendMail(mailOptions, function(err, info){
-						    if( err ){
+							if( err ){
 								var err = new Error('Internal Error');
 								err.status = 500;
 								res.status(err.status || 500).render(err.status, {
@@ -109,7 +109,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 									currentUrl: req.path,
 									err: err
 								});
-						    } else {
+							} else {
 								users.findAndUpdate(
 									function(i){return i.id==user.id;},
 									function(item){
@@ -117,7 +117,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 									}
 								);
 								db.save();
-						    }
+							}
 						});
 					} else {
 						mailOptions.html = null;
@@ -151,16 +151,19 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
 		var query = { '$and': [
-		           {'$or': [{'passwordLastUpdated': { '$lte': moment().subtract(3, 'months') }}, {passwordLastUpdated: undefined}]},
-	 	           {'changePasswordMail': { '$lte': moment().subtract(3, 'months') }},
-	 	           {'token': null},
-	 	           { '$or': [{'unsubscription': undefined}, {'unsubscription.changePassword': undefined}, {'unsubscription.changePassword': null}] },
+					{'$or': [{'passwordLastUpdated': { '$lte': moment().subtract(3, 'months') }}, {passwordLastUpdated: undefined}]},
+					{'changePasswordMail': { '$lte': moment().subtract(3, 'months') }},
+					{'token': null},
+					{ '$or': [{'unsubscription': undefined}, {'unsubscription.changePassword': undefined}, {'unsubscription.changePassword': null}] },
 	 			]};
 		var json = users.find( query );
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
 			json.forEach(function(user) {
-				console.log(user.firstName+' '+user.lastName+' <'+user.email+'>' + ' --> ' + user.changePasswordMail + moment(user.changePasswordMail).format('DD/MM/YYYY, HH:mm'));
+				console.log(user.firstName+' '+user.lastName+' <'+user.email+'>');
+				console.log(' --> subscription_date:' + user.subscription_date + ' = ' + moment(user.subscription_date, "x").format('DD/MM/YYYY, HH:mm'));
+				console.log(' --> changePasswordMail:' + user.changePasswordMail + ' = ' + moment(user.changePasswordMail, "x").format('DD/MM/YYYY, HH:mm'));
+				console.log(' --> passwordLastUpdated:' + user.passwordLastUpdated + ' = ' + moment(user.passwordLastUpdated, "x").format('DD/MM/YYYY, HH:mm'));
 				res.render('emails/change-password', {user: user}, function(err, html) {
 					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
 					var mailOptions = {
@@ -168,10 +171,10 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 						bcc: bcc,
 						to: to,
 						list: {
-					        unsubscribe: {
-					            url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/changePassword/'+user.unsubscription_token+'/',
-					            comment: 'Unsubscribe from this notification'
-					        },
+							unsubscribe: {
+								url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/changePassword/'+user.unsubscription_token+'/',
+								comment: 'Unsubscribe from this notification'
+							},
 						},
 						subject: 't6 Password Expiration',
 						text: 'Html email client is required',
@@ -179,7 +182,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 					};
 					if ( process.env.NODE_ENV === 'production' ) {
 						transporter.sendMail(mailOptions, function(err, info){
-						    if( err ){
+							if( err ){
 								var err = new Error('Internal Error');
 								err.status = 500;
 								res.status(err.status || 500).render(err.status, {
@@ -188,7 +191,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 									currentUrl: req.path,
 									err: err
 								});
-						    } else {
+							} else {
 								users.findAndUpdate(
 									function(i){return i.id==user.id;},
 									function(item){
@@ -196,7 +199,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 									}
 								);
 								db.save();
-						    }
+							}
 						});
 					} else {
 						mailOptions.html = null;
