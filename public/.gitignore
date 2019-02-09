@@ -1,9 +1,0 @@
-# 
-
-# Dependency directories
-www
-node_modules
-jspm_packages
-/stylesheets/
-./BingSiteAuth.xml
-./google*.html

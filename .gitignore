@@ -7,6 +7,18 @@ npm-debug.log*
 data/data.db
 data/data-empty.db
 data/db.json
+data/*-bleu.json
+data/*-blanc.json
+data/*-pink.json
+data/*-guruplug.json
+data/*-bleu.js
+data/*-blanc.js
+data/*-guruplug.js
+data/*-pink.js
+
+# Website auths
+public/BingSiteAuth.xml
+public/google*.html
 
 # Runtime data
 pids
