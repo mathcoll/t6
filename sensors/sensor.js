@@ -89,7 +89,7 @@ if ( config.exec ) {
 		},
 		body: auth
 	}, function (error, response, body) {
-		bearer = body.token;
+		bearer = body!==undefined?body.token:null;
 		if ( bearer && !error ) {
 	    	request({
 	    		url: config.api_endpoint,
