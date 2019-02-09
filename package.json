@@ -61,6 +61,8 @@
     "useragent": "^2.3.0"
   },
   "readmeFilename": "README.md",
-  "devDependencies": {},
+  "devDependencies": {
+    "lighthouse": "^4.1.0"
+  },
   "snyk": true
 }
