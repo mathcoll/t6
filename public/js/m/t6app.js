@@ -388,9 +388,27 @@ var containers = {
 				toast('Your password has been reset; please login again.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'password',
+						'eventLabel': 'reset',
+						'eventValue': 'We can\'t process your password reset. Please resubmit the form later!',
+						'event': 'Error'
+					});
+				}
 				toast('We can\'t process your password reset. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 			});
 		} else {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'password',
+					'eventLabel': 'reset',
+					'eventValue': 'We can\'t process your password reset.',
+					'event': 'Error'
+				});
+			}
 			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
 			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 		}
@@ -422,6 +440,15 @@ var containers = {
 				toast('Instructions has been sent to your email.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'password',
+						'eventLabel': 'forgot',
+						'eventValue': 'We can\'t process your password reset. Please resubmit the form later!',
+						'event': 'Error'
+					});
+				}
 				toast('We can\'t process your request. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 			});
 		} else {
@@ -471,6 +498,15 @@ var containers = {
 		    return registration;
 		})
 		.catch(function(err) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'ServiceWorker',
+					'eventLabel': 'registration',
+					'eventValue': '[ServiceWorker] error occured...',
+					'event': 'Error'
+				});
+			}
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('[ServiceWorker] error occured...'+ err);
 			}
@@ -503,6 +539,15 @@ var containers = {
 			return pushSubscription;
 		})
 		.catch(function (error) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'pushSubscription',
+					'eventLabel': 'pushSubscription',
+					'eventValue': 'error',
+					'event': 'Error'
+				});
+			}
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('[pushSubscription]', 'subscribeUserToPush'+error);
 			}
@@ -558,6 +603,15 @@ var containers = {
 				//objectContainer.querySelector("div.mdl-list__item--three-line.small-padding span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
 			})
 			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'Save Object',
+						'eventLabel': 'Object has not been saved.',
+						'eventValue': '0',
+						'event': 'Error'
+					});
+				}
 				toast('Object has not been saved.', {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
@@ -594,6 +648,15 @@ var containers = {
 			toast('Object has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'Add Object',
+					'eventLabel': 'Object has not been added.',
+					'eventValue': '0',
+					'event': 'Error'
+				});
+			}
 			toast('Object has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
@@ -631,6 +694,15 @@ var containers = {
 				//flowContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'Save Flow',
+						'eventLabel': 'Flow has not been saved.',
+						'eventValue': '0',
+						'event': 'Error'
+					});
+				}
 				toast('Flow has not been saved.', {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
@@ -664,6 +736,15 @@ var containers = {
 			toast('Flow has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'Add Flow',
+					'eventLabel': 'Flow has not been added.',
+					'eventValue': '0',
+					'event': 'Error'
+				});
+			}
 			toast('Flow has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
@@ -702,6 +783,15 @@ var containers = {
 				//snippetContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'Save Snippet',
+						'eventLabel': 'Snippet has not been saved.',
+						'eventValue': '0',
+						'event': 'Error'
+					});
+				}
 				toast('Snippet has not been saved.', {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
@@ -736,6 +826,15 @@ var containers = {
 			toast('Snippet has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'Add Snippet',
+					'eventLabel': 'Snippet has not been added.',
+					'eventValue': '0',
+					'event': 'Error'
+				});
+			}
 			toast('Snippet has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
@@ -774,6 +873,15 @@ var containers = {
 				//dashboardContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'Save Dashboard',
+						'eventLabel': 'Dashboard has not been saved.',
+						'eventValue': '0',
+						'event': 'Error'
+					});
+				}
 				toast('Dashboard has not been saved.', {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
@@ -806,6 +914,15 @@ var containers = {
 			toast('Dashboard has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'Add Dashboard',
+					'eventLabel': 'Dashboard has not been added.',
+					'eventValue': '0',
+					'event': 'Error'
+				});
+			}
 			toast('Dashboard has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
@@ -847,7 +964,16 @@ var containers = {
 			toast('Rule has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
-			toast('Flow has not been added.', {timeout:3000, type: 'error'});
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'Add Rule ',
+					'eventLabel': 'Rule has not been added.',
+					'eventValue': '0',
+					'event': 'Error'
+				});
+			}
+			toast('Rule has not been added.', {timeout:3000, type: 'error'});
 		});
 		evt.preventDefault();
 	} // onAddRule
@@ -5241,12 +5367,7 @@ var containers = {
 		localStorage.setItem('notifications.unsubscription_token', null);
 		localStorage.setItem('notifications.email', null);
 		(containers.profile).querySelector('.page-content').innerHTML = "";
-		if (Tawk_API) {
-			Tawk_API.setAttributes({
-				'name' : null,
-				'email': null
-			}, function (error) {});
-		}
+		
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
