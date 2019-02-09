@@ -1,3 +1,6 @@
+
+echo Minification in progress...
+
 uglifyjs \
 	../public/js/vendor/jquery-3.3.1.min.js \
 	../public/js/sortable/sortable.min-1.4.2.js \
@@ -36,3 +39,5 @@ uglifycss \
 	> ../public/css/t6App.min.css
 echo PWA Stylesheet minify: Completed
 
+
+echo Minification Completed.

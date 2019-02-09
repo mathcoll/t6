@@ -13,8 +13,8 @@ data/*-pink.json
 data/*-guruplug.json
 data/*-bleu.js
 data/*-blanc.js
-data/*-guruplug.js
 data/*-pink.js
+data/*-guruplug.js
 
 # Website auths
 public/BingSiteAuth.xml
