@@ -266,17 +266,17 @@ function checkForTooManyFailure(req, res, email) {
 }
 
 /**
- * @api {post} /authenticate Authenticate a user and create a JWT Token
- * @apiName Authenticate a user and create a JWT Token
+ * @api {post} /authenticate Authenticate - get JWT Token
+ * @apiName Authenticate - get JWT Token
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
  * @apiParam {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
- * @apiParam {String} username Your own username
- * @apiParam {String} password Your own password
- * @apiParam {String} api_key In "access_token" context, Client Api Key
- * @apiParam {String} api_secret In "access_token" context, Client Api Secret
- * @apiParam {String} refresh_token The refresh_token you want to use in order to get a new token
+ * @apiParam {String} [username] Your own username
+ * @apiParam {String} [password] Your own password
+ * @apiParam {String} [api_key=undefined] In "access_token" context, Client Api Key
+ * @apiParam {String} [api_secret=undefined] In "access_token" context, Client Api Secret
+ * @apiParam {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
  * @apiUse 200
  * @apiUse 400
  * @apiUse 401

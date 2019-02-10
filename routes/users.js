@@ -428,7 +428,7 @@ router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 
 /**
  * @api {delete} /users/:user_id Delete a User
- * @apiName Edit a User
+ * @apiName Delete a User
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
