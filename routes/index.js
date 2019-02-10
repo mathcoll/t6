@@ -288,74 +288,70 @@ router.post('/authenticate', function (req, res) {
 	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === 'password') ) {
 		var email = req.body.username;
 		var password = req.body.password;
-		
-		var queryU = {
-		'$and': [
-					{ 'email': email },
-					{ 'password': md5(password) },
-				]
-		};
-		var user = users.findOne(queryU);
-		if ( !user || !email || !password ) {
-			if ( email && users.findOne({ 'email': email }) ) {
-				checkForTooManyFailure(req, res, email);
-		        return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}));
-			} else {
-				return res.status(403).send(new ErrorSerializer({'id': 102.2, 'code': 403, 'message': 'Forbidden'}));
-			}
-	    } else {
-			var geo = geoip.lookup(req.ip);
-			if ( user.location === undefined || user.location === null ) {
-				user.location = {geo: geo, ip: req.ip,};
-			}
-			users.update(user);
-			db.save();
-	    	
-	    	var payload = JSON.parse(JSON.stringify(user));
-		    	payload.unsubscription = user.unsubscription;
-		    	payload.permissions = undefined;
-		    	payload.token = undefined;
-		    	payload.password = undefined;
-		    	payload.gravatar = undefined;
-		    	payload.meta = undefined;
-		    	payload.$loki = undefined;
-		    	payload.token_type = "Bearer";
-		    	payload.scope = "Application";
-		    	payload.sub = '/users/'+user.id;
-	    	
-	    	if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
-	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-	        
-	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
-	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
 
-	    	var mydevice = device(req.headers['user-agent']);
-	    	var agent = useragent.parse(req.headers['user-agent']);
-	    	var type = mydevice.is('desktop')!==false?'desktop':
-	    		mydevice.is('tv')!==false?'tv':
-	    			mydevice.is('tablet')!==false?'tablet':
-	    				mydevice.is('phone')!==false?'phone':
-	    					mydevice.is('bot')!==false?'bot':
-		    					mydevice.is('car')!==false?'car':
-			    					mydevice.is('console')!==false?'console':'unknown';
-	    	var t = {
-	    		user_id: user.id,
-	    		refresh_token: refreshPayload,
-	    		expiration: refreshTokenExp,
-	    		'user-agent': {
-	    			'agent': agent.toAgent(),
-	    			'string': agent.toString(),
-	    			'version': agent.toVersion(),
-	    			'os': agent.os.toString(),
-	    			'osVersion': agent.os.toVersion(),
-	    		},
-	    		'device-type': type,
-	    	};
-	    	tokens.insert(t);
-	    	
-	    	var refresh_token = user.id + '.' + refreshPayload;
-	        return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
-	    }
+		var queryU = { '$and': [ { 'email': email } ] };
+		var user = users.findOne(queryU);
+		
+		if ( user ) {
+			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
+				var geo = geoip.lookup(req.ip);
+				if ( user.location === undefined || user.location === null ) {
+					user.location = {geo: geo, ip: req.ip,};
+				}
+				users.update(user);
+				db.save();
+				
+				var payload = JSON.parse(JSON.stringify(user));
+				payload.unsubscription = user.unsubscription;
+				payload.permissions = undefined;
+				payload.token = undefined;
+				payload.password = undefined;
+				payload.gravatar = undefined;
+				payload.meta = undefined;
+				payload.$loki = undefined;
+				payload.token_type = "Bearer";
+				payload.scope = "Application";
+				payload.sub = '/users/'+user.id;
+
+				if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
+				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+
+				var refreshPayload = crypto.randomBytes(40).toString('hex');
+				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+
+				var mydevice = device(req.headers['user-agent']);
+				var agent = useragent.parse(req.headers['user-agent']);
+				var type = mydevice.is('desktop')!==false?'desktop':
+					mydevice.is('tv')!==false?'tv':
+						mydevice.is('tablet')!==false?'tablet':
+							mydevice.is('phone')!==false?'phone':
+								mydevice.is('bot')!==false?'bot':
+									mydevice.is('car')!==false?'car':
+										mydevice.is('console')!==false?'console':'unknown';
+				var t = {
+						user_id: user.id,
+						refresh_token: refreshPayload,
+						expiration: refreshTokenExp,
+						'user-agent': {
+							'agent': agent.toAgent(),
+							'string': agent.toString(),
+							'version': agent.toVersion(),
+							'os': agent.os.toString(),
+							'osVersion': agent.os.toVersion(),
+						},
+						'device-type': type,
+				};
+				tokens.insert(t);
+
+				var refresh_token = user.id + '.' + refreshPayload;
+				return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+			} else {
+				checkForTooManyFailure(req, res, email);
+				return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}).serialize());
+			}
+		} else {
+			return res.status(403).send(new ErrorSerializer({'id': 102.2, 'code': 403, 'message': 'Forbidden'}).serialize());
+		}
 	} else if ( ( req.body.api_key && req.body.api_secret ) && req.body.grant_type === 'access_token' ) {
 		var queryT = {
 		'$and': [
@@ -385,37 +381,37 @@ router.post('/authenticate', function (req, res) {
 			payload.sub = '/users/'+user.id;
 			
 			if ( user.location && user.location.ip ) payload.iss = req.ip+' - '+user.location.ip;
-	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-	        
-	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
-	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
-	    	var mydevice = device(req.headers['user-agent']);
-	    	var agent = useragent.parse(req.headers['user-agent']);
-	    	var type = mydevice.is('desktop')!==false?'desktop':
-	    		mydevice.is('tv')!==false?'tv':
-	    			mydevice.is('tablet')!==false?'tablet':
-	    				mydevice.is('phone')!==false?'phone':
-	    					mydevice.is('bot')!==false?'bot':
-		    					mydevice.is('car')!==false?'car':
-			    					mydevice.is('console')!==false?'console':'unknown';
-	    	var t = {
-	    		user_id: user.id,
-	    		refresh_token: refreshPayload,
-	    		expiration: refreshTokenExp,
-	    		'user-agent': {
-	    			'agent': agent.toAgent(),
-	    			'string': agent.toString(),
-	    			'version': agent.toVersion(),
-	    			'os': agent.os.toString(),
-	    			'osVersion': agent.os.toVersion(),
-	    		},
-	    		'device-type': type,
-	    	};
-	    	tokens.insert(t);
-	    	
-	    	var refresh_token = user.id + '.' + refreshPayload;
-	        return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+			var refreshPayload = crypto.randomBytes(40).toString('hex');
+			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+
+			var mydevice = device(req.headers['user-agent']);
+			var agent = useragent.parse(req.headers['user-agent']);
+			var type = mydevice.is('desktop')!==false?'desktop':
+				mydevice.is('tv')!==false?'tv':
+					mydevice.is('tablet')!==false?'tablet':
+						mydevice.is('phone')!==false?'phone':
+							mydevice.is('bot')!==false?'bot':
+								mydevice.is('car')!==false?'car':
+									mydevice.is('console')!==false?'console':'unknown';
+			var t = {
+					user_id: user.id,
+					refresh_token: refreshPayload,
+					expiration: refreshTokenExp,
+					'user-agent': {
+						'agent': agent.toAgent(),
+						'string': agent.toString(),
+						'version': agent.toVersion(),
+						'os': agent.os.toString(),
+						'osVersion': agent.os.toVersion(),
+					},
+					'device-type': type,
+			};
+			tokens.insert(t);
+
+			var refresh_token = user.id + '.' + refreshPayload;
+			return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(403).send(new ErrorSerializer({'id': 102.1, 'code': 403, 'message': 'Forbidden'}).serialize());
 		}
@@ -451,42 +447,42 @@ router.post('/authenticate', function (req, res) {
 			payload.token_type = "Bearer";
 			payload.scope = "ClientApi";
 			payload.sub = '/users/'+user.id;
-			
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-	    	var refreshPayload = crypto.randomBytes(40).toString('hex');
-	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
 
-	    	var mydevice = device(req.headers['user-agent']);
-	    	var agent = useragent.parse(req.headers['user-agent']);
-	    	var type = mydevice.is('desktop')!==false?'desktop':
-	    		mydevice.is('tv')!==false?'tv':
-	    			mydevice.is('tablet')!==false?'tablet':
-	    				mydevice.is('phone')!==false?'phone':
-	    					mydevice.is('bot')!==false?'bot':
-		    					mydevice.is('car')!==false?'car':
-			    					mydevice.is('console')!==false?'console':'unknown';
-	    	var t = {
-	    		user_id: user.id,
-	    		refresh_token: refreshPayload,
-	    		expiration: refreshTokenExp,
-	    		'user-agent': {
-	    			'agent': agent.toAgent(),
-	    			'string': agent.toString(),
-	    			'version': agent.toVersion(),
-	    			'os': agent.os.toString(),
-	    			'osVersion': agent.os.toVersion(),
-	    		},
-	    		'device-type': type,
-	    	};
-	    	tokens.insert(t);
-	    	var refresh_token = user.id + '.' + refreshPayload;
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			var refreshPayload = crypto.randomBytes(40).toString('hex');
+			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+
+			var mydevice = device(req.headers['user-agent']);
+			var agent = useragent.parse(req.headers['user-agent']);
+			var type = mydevice.is('desktop')!==false?'desktop':
+				mydevice.is('tv')!==false?'tv':
+					mydevice.is('tablet')!==false?'tablet':
+						mydevice.is('phone')!==false?'phone':
+							mydevice.is('bot')!==false?'bot':
+								mydevice.is('car')!==false?'car':
+									mydevice.is('console')!==false?'console':'unknown';
+			var t = {
+					user_id: user.id,
+					refresh_token: refreshPayload,
+					expiration: refreshTokenExp,
+					'user-agent': {
+						'agent': agent.toAgent(),
+						'string': agent.toString(),
+						'version': agent.toVersion(),
+						'os': agent.os.toString(),
+						'osVersion': agent.os.toVersion(),
+					},
+					'device-type': type,
+			};
+			tokens.insert(t);
+			var refresh_token = user.id + '.' + refreshPayload;
 			return res.status(200).json( {status: 'ok', token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(400).send(new ErrorSerializer({'id': 102.4, 'code': 400, 'message': 'Invalid Refresh Token'}).serialize());
 		}
 	} else {
 		// TODO
-        return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}).serialize());
+		return res.status(400).send(new ErrorSerializer({'id': 102.3, 'code': 400, 'message': 'Required param grant_type'}).serialize());
 	}
 	var expired = tokens.find( { 'expiration' : { '$lt': moment().format('X') } } );
 	if ( expired ) {

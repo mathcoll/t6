@@ -20,6 +20,7 @@
     "prepublish": "npm run snyk-protect"
   },
   "dependencies": {
+    "bcrypt": "^3.0.4",
     "bearer": "0.0.20",
     "body-parser": "^1.18.2",
     "compression": "^1.7.1",

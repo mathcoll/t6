@@ -22,6 +22,7 @@ sprintf				= require('sprintf-js').sprintf;
 moment				= require('moment');
 passgen				= require('passgen');
 md5					= require('md5');
+bcrypt				= require('bcrypt');
 squel				= require('squel');
 uuid				= require('node-uuid');
 os					= require('os');

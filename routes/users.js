@@ -265,16 +265,16 @@ router.post('/accessTokens', expressJwt({secret: jwtsettings.secret}), function 
 				key:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				secret:				passgen.create(64, 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.'),
 				memo:				(req.body.memo).substring(0, 128),
-		        expiration:			moment().add(24, 'hours').format('x'),
+				expiration:			moment().add(24, 'hours').format('x'),
 			};
 			var tokens	= db.getCollection('tokens');
 			tokens.insert(new_token);
 			db.save();
 			var expired = tokens.find(
 				{ '$and': [
-			           {'user_id' : req.user.id},
-			           { 'expiration' : { '$lt': moment().format('x') } },
-			           { 'expiration' : { '$ne': '' } },
+					{'user_id' : req.user.id},
+					{ 'expiration' : { '$lt': moment().format('x') } },
+					{ 'expiration' : { '$ne': '' } },
 				]}
 			);
 			if ( expired ) {
@@ -312,7 +312,7 @@ router.post('/token/:token([0-9a-zA-Z\.]+)', function (req, res) {
 		//console.log({ 'token': req.params.token });
 		//console.log(users);
 		if ( user ) {
-			user.password = md5(req.body.password);
+			user.password = bcrypt.hashSync(req.body.password, 10);
 			user.passwordLastUpdated = parseInt(moment().format('x'));
 			user.token = null;
 			users.update(user);
@@ -412,13 +412,12 @@ router.put('/:user_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 					item.email			= req.body.email!==undefined?req.body.email:item.email;
 					item.update_date	= moment().format('x');
 					if ( req.body.password ) {
-						item.password = md5(req.body.password);
+						item.password = bcrypt.hashSync(req.body.password, 10);
 					}
 					result = item;
 				}
 			);
 			db.save();
-			
 			res.header('Location', '/v'+version+'/users/'+user_id);
 			res.status(200).send({ 'code': 200, message: 'Successfully updated', user: new UserSerializer(result).serialize() });
 		} else {
