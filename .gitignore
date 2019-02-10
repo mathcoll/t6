@@ -19,6 +19,9 @@ data/*-guruplug.js
 # Website auths
 public/BingSiteAuth.xml
 public/google*.html
+**/settings.lua
+**/settings.h
+test/screenshots/*
 
 # Runtime data
 pids
