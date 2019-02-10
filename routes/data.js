@@ -349,7 +349,7 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {Number} data_id DataPoint ID you want to get
+ * @apiParam {Number} [data_id] DataPoint ID you want to get
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
  * @apiSuccess {String} data.id Data point Identifier
@@ -526,12 +526,14 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiParam {uuid-v4} flow_id Flow ID you want to add Data Point to
  * @apiParam {String} value Data Point value
  * @apiParam {Boolean} [publish=false] Flag to publish to Mqtt Topic
- * @apiParam {Boolean} [save =false] Flag to store in database the Value
- * @apiParam {String} [unit] Unit of the Value (optional)
- * @apiParam {String} [mqtt_topic] Mqtt Topic to publish value
- * @apiParam {String} [text] Optional text to qualify Value
+ * @apiParam {Boolean} [save=false] Flag to store in database the Value
+ * @apiParam {String} [unit=undefined] Unit of the Value
+ * @apiParam {String} [mqtt_topic="Default value of the Flow"] Mqtt Topic to publish value
+ * @apiParam {String} [text=undefined] Optional text to qualify Value
  * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. this is only used for rule specific operator)
  * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. this is only used for rule specific operator)
+ * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
+ * @apiParam {String} [object_id=undefined] Optional When using a Signed payload, the Oject_id is required for the signature definition
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
@@ -540,124 +542,140 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiUse 500
  */
 router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
-	var time		= (req.body.timestamp!==''&&req.body.timestamp!==undefined)?parseInt(req.body.timestamp):moment().format('x');
-	if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
-	var value		= req.body.value!==undefined?req.body.value:"";
-	var publish		= req.body.publish!==undefined?JSON.parse(req.body.publish):false;
-	var save		= req.body.save!==undefined?JSON.parse(req.body.save):true;
-	var unit		= req.body.unit!==undefined?req.body.unit:"";
-	var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"";
-	var latitude	= req.body.latitude!==undefined?req.body.latitude:"";
-	var longitude	= req.body.longitude!==undefined?req.body.longitude:"";
-	var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
-
-	if ( !flow_id ) {
-		res.status(405).send(new ErrorSerializer({'id': 63, 'code': 405, 'message': 'Method Not Allowed',}).serialize());
-	}
-	
-	if ( !req.user.id ){
-		// Not Authorized because token is invalid
-		res.status(401).send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized',}).serialize());
-	} else {
-		flows		= db.getCollection('flows');
-		datatypes	= db.getCollection('datatypes');
-		var f = flows.chain().find({id: ""+flow_id,}).limit(1);
-		var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
-		if ( !mqtt_topic && (f.data())[0] && (f.data())[0].mqtt_topic ) {
-			mqtt_topic = (f.data())[0].mqtt_topic;
-		}
-		var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
-
-		// Cast value according to Flow settings
-		var fields = [];
-		if ( datatype == 'boolean' ) {
-			value = str2bool(value);
-			fields[0] = {time:""+time, valueBoolean: value,};
-		} else if ( datatype == 'date' ) {
-			value = value;
-			fields[0] = {time:""+time, valueDate: value,};
-		} else if ( datatype == 'integer' ) {
-			value = parseInt(value);
-			fields[0] = {time:""+time, valueInteger: value+'i',};
-		} else if ( datatype == 'json' ) {
-			value = {value:value,};
-			fields[0] = {time:""+time, valueJson: value,};
-		} else if ( datatype == 'string' ) {
-			value = ""+value;
-			fields[0] = {time:""+time, valueString: value,};
-		} else if ( datatype == 'time' ) {
-			value = value;
-			fields[0] = {time:""+time, valueTime: value,};
-		} else if ( datatype == 'float' ) {
-			value = parseFloat(value);
-			fields[0] = {time:""+time, valueFloat: value,};
-		} else if ( datatype == 'geo' ) {
-			value = ""+value;
-			fields[0] = {time:""+time, valueString: value,};
-		} else {
-			value = ""+value;
-			fields[0] = {time:""+time, valueString: value,};
-		}
-		// End casting
+	if ( RegExp('ey\..*\..*','g').test(req.body.signedPayload) ) {
+		var object_id = req.body.object_id;
+		var cert; // = fs.readFileSync('private.key');
+		/* We should get the private key from the Object settings */
 		
-		if ( save == true ) {
-			if ( db_type.influxdb == true ) {
-				/* InfluxDB database */
-				var tags = {};
-				var timestamp = time*1000000;
-				if (flow_id!== "") tags.flow_id = flow_id;
-				tags.user_id = req.user.id;
-				if (text!== "") fields[0].text = text;
-
-				dbInfluxDB.writePoints([{
-					measurement: 'data',
-					tags: tags,
-					fields: fields[0],
-					timestamp: timestamp,
-				}], { retentionPolicy: 'autogen', }).then(err => {
-					if (err) console.log({'message': 'Error on writePoints to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-					//else console.log({'message': 'Success on writePoints to influxDb', 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-				}).catch(err => {
-					console.log({'message': 'Error catched on writting to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-					console.error('Error catched on writting to influxDb:\n'+err);
-				});
+		jwt.verify(req.body.signedPayload, cert!==undefined?cert:jwtsettings.secret, function(err, decoded) {
+			if ( !err ) {
+				req.body = decoded;
+			} else {
+				req.body = undefined;
+				res.status(401).send(new ErrorSerializer({'id': 62.2, 'code': 401, 'message': 'Invalid Signature',}).serialize());
 			}
-			if ( db_type.sqlite3 == true ) {
-				/* sqlite3 database */
-				var query = squel.insert()
-					.into("data")
-					.set("timestamp", time)
-					.set("value", value)
-					.set("flow_id", flow_id)
-					.toString()
-				;
-				dbSQLite3.run(query, function(err) {
-					if (err) { }
-				});
-			};
+		});
+	}
+
+	if ( req.body !== undefined ) {
+		var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
+		var time		= (req.body.timestamp!==''&&req.body.timestamp!==undefined)?parseInt(req.body.timestamp):moment().format('x');
+		if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
+		var value		= req.body.value!==undefined?req.body.value:"";
+		var publish		= req.body.publish!==undefined?JSON.parse(req.body.publish):false;
+		var save		= req.body.save!==undefined?JSON.parse(req.body.save):true;
+		var unit		= req.body.unit!==undefined?req.body.unit:"";
+		var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"";
+		var latitude	= req.body.latitude!==undefined?req.body.latitude:"";
+		var longitude	= req.body.longitude!==undefined?req.body.longitude:"";
+		var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
+
+		if ( !flow_id ) {
+			res.status(405).send(new ErrorSerializer({'id': 63, 'code': 405, 'message': 'Method Not Allowed',}).serialize());
 		}
 
-		t6decisionrules.action(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
+		if ( !req.user.id ){
+			// Not Authorized because token is invalid
+			res.status(401).send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized',}).serialize());
+		} else {
+			flows		= db.getCollection('flows');
+			datatypes	= db.getCollection('datatypes');
+			var f = flows.chain().find({id: ""+flow_id,}).limit(1);
+			var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
+			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].mqtt_topic ) {
+				mqtt_topic = (f.data())[0].mqtt_topic;
+			}
+			var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
 
-		fields.flow_id = flow_id;
-		fields.id = time*1000000;
-		fields[0].flow_id = flow_id;
-		fields[0].parent;
-		fields[0].first;
-		fields[0].prev;
-		fields[0].next;
-		fields[0].id = time*1000000;
-		fields[0].time = time*1000000;
-		fields[0].timestamp = time*1000000;
-		fields[0].value = value;
-		fields[0].datatype = datatype;
-		fields[0].publish = publish;
-		fields[0].mqtt_topic = mqtt_topic;
+			// Cast value according to Flow settings
+			var fields = [];
+			if ( datatype == 'boolean' ) {
+				value = str2bool(value);
+				fields[0] = {time:""+time, valueBoolean: value,};
+			} else if ( datatype == 'date' ) {
+				value = value;
+				fields[0] = {time:""+time, valueDate: value,};
+			} else if ( datatype == 'integer' ) {
+				value = parseInt(value);
+				fields[0] = {time:""+time, valueInteger: value+'i',};
+			} else if ( datatype == 'json' ) {
+				value = {value:value,};
+				fields[0] = {time:""+time, valueJson: value,};
+			} else if ( datatype == 'string' ) {
+				value = ""+value;
+				fields[0] = {time:""+time, valueString: value,};
+			} else if ( datatype == 'time' ) {
+				value = value;
+				fields[0] = {time:""+time, valueTime: value,};
+			} else if ( datatype == 'float' ) {
+				value = parseFloat(value);
+				fields[0] = {time:""+time, valueFloat: value,};
+			} else if ( datatype == 'geo' ) {
+				value = ""+value;
+				fields[0] = {time:""+time, valueString: value,};
+			} else {
+				value = ""+value;
+				fields[0] = {time:""+time, valueString: value,};
+			}
+			// End casting
 
-		res.header('Location', '/v'+version+'/flows/'+flow_id+'/'+fields[0].id);
-		res.status(200).send(new DataSerializer(fields).serialize());
-	};
+			if ( save == true ) {
+				if ( db_type.influxdb == true ) {
+					/* InfluxDB database */
+					var tags = {};
+					var timestamp = time*1000000;
+					if (flow_id!== "") tags.flow_id = flow_id;
+					tags.user_id = req.user.id;
+					if (text!== "") fields[0].text = text;
+
+					dbInfluxDB.writePoints([{
+						measurement: 'data',
+						tags: tags,
+						fields: fields[0],
+						timestamp: timestamp,
+					}], { retentionPolicy: 'autogen', }).then(err => {
+						if (err) console.log({'message': 'Error on writePoints to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+						//else console.log({'message': 'Success on writePoints to influxDb', 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+					}).catch(err => {
+						console.log({'message': 'Error catched on writting to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+						console.error('Error catched on writting to influxDb:\n'+err);
+					});
+				}
+				if ( db_type.sqlite3 == true ) {
+					/* sqlite3 database */
+					var query = squel.insert()
+						.into("data")
+						.set("timestamp", time)
+						.set("value", value)
+						.set("flow_id", flow_id)
+						.toString();
+					dbSQLite3.run(query, function(err) {
+						if (err) { }
+					});
+				};
+			}
+
+			t6decisionrules.action(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
+
+			fields.flow_id = flow_id;
+			fields.id = time*1000000;
+			fields[0].flow_id = flow_id;
+			fields[0].parent;
+			fields[0].first;
+			fields[0].prev;
+			fields[0].next;
+			fields[0].id = time*1000000;
+			fields[0].time = time*1000000;
+			fields[0].timestamp = time*1000000;
+			fields[0].value = value;
+			fields[0].datatype = datatype;
+			fields[0].publish = publish;
+			fields[0].mqtt_topic = mqtt_topic;
+
+			res.header('Location', '/v'+version+'/flows/'+flow_id+'/'+fields[0].id);
+			res.status(200).send(new DataSerializer(fields).serialize());
+		};
+	}
 });
 
 module.exports = router;
