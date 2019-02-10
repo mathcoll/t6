@@ -4,7 +4,6 @@ var router = express.Router();
 var ErrorSerializer = require('../serializers/error');
 var tokens;
 var users;
-//var qt;
 
 /**
  * @apiDefine 200
@@ -55,6 +54,18 @@ var users;
  *     HTTP/1.1 401 Not Authorized
  *     {
  *       "message": "Not Authorized",
+ *       "id": "",
+ *       "code": 401
+ *     }
+ */
+
+/**
+ * @apiDefine 401sign
+ * @apiError 401sign Signature is invalid and required.
+ * @apiErrorExample 401sign Response
+ *     HTTP/1.1 401 Invalid Signature
+ *     {
+ *       "message": "Invalid Signature",
  *       "id": "",
  *       "code": 401
  *     }

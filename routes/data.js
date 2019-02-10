@@ -537,6 +537,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
+ * @apiUse 401sign
  * @apiUse 405
  * @apiUse 429
  * @apiUse 500
