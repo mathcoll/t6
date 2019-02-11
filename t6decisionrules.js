@@ -115,8 +115,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			
 		} else if ( event.type == 'serial' ) {
 			// Arduino is using CmdMessenger
-			console.log(serialport);
-			console.log(event);
 			serialport = new serialport(event.params.serialPort?event.params.serialPort:'/dev/ttyUSB0', { baudRate:event.params.baudRate?event.params.baudRate:9600 })
 			// Some examples:
 			// 'kSetValue,{value};'
