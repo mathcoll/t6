@@ -6,6 +6,7 @@ var ErrorSerializer = require('../serializers/error');
 var users;
 var tokens;
 var flows;
+var objects;
 var datatypes;
 var units;
 
@@ -545,15 +546,29 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
 router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( RegExp('ey\..*\..*','g').test(req.body.signedPayload) ) {
 		var object_id = req.body.object_id;
-		var cert; // = fs.readFileSync('private.key');
-		/* We should get the private key from the Object settings */
-		
-		jwt.verify(req.body.signedPayload, cert!==undefined?cert:jwtsettings.secret, function(err, decoded) {
+		var cert = jwtsettings.secret; //- fs.readFileSync('private.key');
+		objects	= db.getCollection('objects');
+
+		var query;
+		if ( object_id !== undefined ) {
+			query = {
+			'$and': [
+					{ 'user_id' : req.user.id },
+					{ 'id' : object_id },
+				]
+			};
+			var json = objects.findOne(query);
+			if ( json && json.secret_key ) {
+				cert = json.secret_key;
+			}
+		}
+
+		jwt.verify(req.body.signedPayload, cert, function(err, decoded) {
 			if ( !err ) {
 				req.body = decoded;
 			} else {
 				req.body = undefined;
-				res.status(401).send(new ErrorSerializer({'id': 62.2, 'code': 401, 'message': 'Invalid Signature',}).serialize());
+				res.status(401).send(new ErrorSerializer({'id': 62.4, 'code': 401, 'message': 'Invalid Signature '+cert,}).serialize());
 			}
 		});
 	}
