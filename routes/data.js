@@ -529,12 +529,12 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiParam {Boolean} [publish=false] Flag to publish to Mqtt Topic
  * @apiParam {Boolean} [save=false] Flag to store in database the Value
  * @apiParam {String} [unit=undefined] Unit of the Value
- * @apiParam {String} [mqtt_topic="Default value of the Flow"] Mqtt Topic to publish value
+ * @apiParam {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
  * @apiParam {String} [text=undefined] Optional text to qualify Value
- * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. this is only used for rule specific operator)
- * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. this is only used for rule specific operator)
+ * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
+ * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
- * @apiParam {String} [object_id=undefined] Optional When using a Signed payload, the Oject_id is required for the signature definition
+ * @apiParam {String} [object_id=undefined] Optional When using a Signed payload, the oject_id is required for the Symmetric-key algorithm verification; The object must be own by the user in JWT.
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
