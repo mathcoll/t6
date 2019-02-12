@@ -157,6 +157,7 @@ var app = {
 		cardMaxChars: "^[0-9]+$",
 		customAttributeName: "^[a-zA-Z0-9_]+$",
 		customAttributeValue: "^.*?$",
+		secret_key: "^.*?$",
 		integerNotNegative: '[1-999]+',
 		meta_revision: "^[0-9]{1,}$",
 	}
@@ -580,6 +581,7 @@ var containers = {
 				latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
 				ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
 				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
 				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
@@ -629,6 +631,7 @@ var containers = {
 			latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
 			ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
 			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+			secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
 			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
 		};
 
@@ -1994,6 +1997,9 @@ var containers = {
 				if ( object.attributes.ipv6 || isEdit==true ) {
 					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
+				if ( object.attributes.secret_key || isEdit==true ) {
+					node += app.getField('vpn_key', 'Secret Key', object.attributes.secret_key!==undefined?object.attributes.secret_key:'', {type: 'text', id: 'secret_key', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key, error:''});
+				}
 				if ( object.attributes.is_public == "true" && isEdit==false ) {
 					node += app.getField('visibility', object.attributes.is_public=='true'?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
@@ -2180,6 +2186,7 @@ var containers = {
 		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
 		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: true, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
 		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: true, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
+		node += app.getField('vpn_key', 'Secret Key', object.attributes.secret_key!==undefined?object.attributes.secret_key:'', {type: 'text', id: 'secret_key', style:'text-transform: none !important;', isEdit: true, pattern: app.patterns.secret_key, error:''});
 		node += app.getField('visibility', 'Object is only visible to you', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
@@ -4311,11 +4318,12 @@ var containers = {
 			var id = options.id!==null?options.id:app.getUniqueId();
 			
 			if ( options.type === 'input' || options.type === 'text' ) {
+				var style = options.style!==undefined?"style='"+options.style+"'":"";
 				if ( options.isEdit == true ) {
 					var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='text' value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+					field += "	<input type='text' "+style+" value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
@@ -4323,7 +4331,7 @@ var containers = {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
 					if (label) field += "	<label class='mdl-textfield__label'>"+label+"</label>";
-					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
+					if (value) field += "	<span class='mdl-list__item-sub-title' "+style+">"+value+"</span>";
 					field += "</div>";
 				}
 			} else if ( options.type === 'hidden' ) {
