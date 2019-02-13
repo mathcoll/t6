@@ -279,6 +279,8 @@ function checkForTooManyFailure(req, res, email) {
 /**
  * @api {post} /authenticate Authenticate - get JWT Token
  * @apiName Authenticate - get JWT Token
+ * @apiDescription The authenticate endpoint provide you an access token whi is multiple time use but expired within 5 minutes.
+ * Once it has expired an access_token can be refreshed to extend duration or you can generate a new one from this authenticate endpoint.
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -506,6 +508,8 @@ router.post('/authenticate', function (req, res) {
 /**
  * @api {post} /refresh Refresh a JWT Token
  * @apiName Refresh a JWT Token
+ * @apiDescription This endpoint allows you to extend access_token expiration date. The extension is the same (5 minutes) as the authenticate endpoint.
+ * 
  * @apiGroup User
  * @apiVersion 2.0.1
  * 

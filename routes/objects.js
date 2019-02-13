@@ -178,7 +178,8 @@ router.get('/(:object_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret
  * @apiParam {String} [ipv4] Object IP v4
  * @apiParam {String} [ipv6] Object IP v6
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
- * @apiParam {String} [secret_key] Object secret Key
+ * @apiParam {String} [secret_key] Object Secret Key in symmetric signature
+ * @apiParam {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
  * 
  * @apiUse 201
  * @apiUse 403
@@ -205,7 +206,8 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			ipv4:			req.body.ipv4!==undefined?req.body.ipv4:'',
 			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:'',
 			user_id:		req.user.id,
-			secret_key:		req.body.secret_key,
+			secret_key:		req.body.secret_key!==undefined?req.body.secret_key:'',
+			secret_key_crypt:req.body.secret_key_crypt!==undefined?req.body.secret_key_crypt:'',
 		};
 		t6events.add('t6Api', 'object add', new_object.id);
 		objects.insert(new_object);
@@ -236,7 +238,8 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * @apiParam {Boolean} [is_public=false] Alias of isPublic
  * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
- * @apiParam {String} [secret_key] Object secret Key
+ * @apiParam {String} [secret_key] Object Secret Key in symmetric signature
+ * @apiParam {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
  * 
  * @apiUse 200
  * @apiUse 400
@@ -271,6 +274,7 @@ router.put('/:object_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}),
 				item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
 				item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
 				item.secret_key			= req.body.secret_key!==undefined?req.body.secret_key:item.secret_key;
+				item.secret_key_crypt	= req.body.secret_key_crypt!==undefined?req.body.secret_key_crypt:item.secret_key_crypt;
 				result = item;
 			});
 			if ( result !== undefined ) {

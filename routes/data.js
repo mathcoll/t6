@@ -9,6 +9,7 @@ var flows;
 var objects;
 var datatypes;
 var units;
+const algorithm = 'aes-256-cbc';
 
 function str2bool(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
@@ -516,9 +517,23 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
 	};
 });
 
+function decryptPayload(encryptedPayload, sender) {
+	if ( sender && sender.secret_key_crypt ) {
+		let iv = crypto.randomBytes(16);
+		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
+		decipher.setAutoPadding(false);
+		let decryptedPayload = decipher.update(encryptedPayload, 'hex', 'utf8') + decipher.final('utf8');
+		return decryptedPayload;
+	} else {
+		return encryptedPayload;
+	}
+}
+
 /**
  * @api {post} /data/:flow_id Create a DataPoint
  * @apiName Create a DataPoint
+ * @apiDescription Create a DataPoint to t6
+ * the payload can be crypted using aes-256-cbc algorithm and optionally signed as well.
  * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
  *
@@ -534,6 +549,7 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
+ * @apiParam {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
  * @apiParam {String} [object_id=undefined] Optional When using a Signed payload, the oject_id is required for the Symmetric-key algorithm verification; The object must be own by the user in JWT.
  * @apiUse 200
  * @apiUse 201
@@ -544,8 +560,9 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
  * @apiUse 500
  */
 router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( RegExp('ey\..*\..*','g').test(req.body.signedPayload) ) {
-		var object_id = req.body.object_id;
+	let payload = req.body;
+	if ( payload.signedPayload || payload.encryptedPayload ) {
+		var object_id = payload.object_id;
 		var cert = jwtsettings.secret; //- fs.readFileSync('private.key');
 		objects	= db.getCollection('objects');
 
@@ -562,29 +579,42 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 				cert = json.secret_key;
 			}
 		}
+		
 
-		jwt.verify(req.body.signedPayload, cert, function(err, decoded) {
-			if ( !err ) {
-				req.body = decoded;
-			} else {
-				req.body = undefined;
-				res.status(401).send(new ErrorSerializer({'id': 62.4, 'code': 401, 'message': 'Invalid Signature '+cert,}).serialize());
-			}
-		});
+		if ( payload.encryptedPayload ) {
+			// The payload is encrypted
+			payload = decryptPayload(payload.encryptedPayload, json);
+		}
+
+		if ( payload.signedPayload ) {
+			// The payload is signed
+			jwt.verify(payload.signedPayload, cert, function(err, decoded) {
+				if ( !err ) {
+					payload = decoded;
+					if ( payload.encryptedPayload ) {
+						// The payload is encrypted
+						payload = decryptPayload(payload.encryptedPayload, json);
+					}
+				} else {
+					payload = undefined;
+					res.status(401).send(new ErrorSerializer({'id': 62.4, 'code': 401, 'message': 'Invalid Signature',}).serialize());
+				}
+			});
+		}
 	}
 
-	if ( req.body !== undefined ) {
-		var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:req.body.flow_id;
-		var time		= (req.body.timestamp!==''&&req.body.timestamp!==undefined)?parseInt(req.body.timestamp):moment().format('x');
+	if ( payload !== undefined ) {
+		var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:payload.flow_id;
+		var time		= (payload.timestamp!==''&&payload.timestamp!==undefined)?parseInt(payload.timestamp):moment().format('x');
 		if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
-		var value		= req.body.value!==undefined?req.body.value:"";
-		var publish		= req.body.publish!==undefined?JSON.parse(req.body.publish):false;
-		var save		= req.body.save!==undefined?JSON.parse(req.body.save):true;
-		var unit		= req.body.unit!==undefined?req.body.unit:"";
-		var mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"";
-		var latitude	= req.body.latitude!==undefined?req.body.latitude:"";
-		var longitude	= req.body.longitude!==undefined?req.body.longitude:"";
-		var text		= req.body.text!==undefined?req.body.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
+		var value		= payload.value!==undefined?payload.value:"";
+		var publish		= payload.publish!==undefined?JSON.parse(payload.publish):false;
+		var save		= payload.save!==undefined?JSON.parse(payload.save):true;
+		var unit		= payload.unit!==undefined?payload.unit:"";
+		var mqtt_topic	= payload.mqtt_topic!==undefined?payload.mqtt_topic:"";
+		var latitude	= payload.latitude!==undefined?payload.latitude:"";
+		var longitude	= payload.longitude!==undefined?payload.longitude:"";
+		var text		= payload.text!==undefined?payload.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
 
 		if ( !flow_id ) {
 			res.status(405).send(new ErrorSerializer({'id': 63, 'code': 405, 'message': 'Method Not Allowed',}).serialize());
