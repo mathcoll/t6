@@ -532,8 +532,9 @@ function decryptPayload(encryptedPayload, sender) {
 /**
  * @api {post} /data/:flow_id Create a DataPoint
  * @apiName Create a DataPoint
- * @apiDescription Create a DataPoint to t6
- * the payload can be crypted using aes-256-cbc algorithm and optionally signed as well.
+ * @apiDescription Create a DataPoint to t6. This needs to post the datapoint over a flow from your own collection.
+ * The payload can be crypted using aes-256-cbc algorithm and optionally signed as well. Using both encrypting and signature require to encrypt the payload first and then to sign the new payload as an enveloppe.
+ * On both Sign & Encrypt, it is required to claim the object_id in the body so that the symmetric Secret Key can be found on the object as well as the Crypt Secret.
  * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
  *
@@ -579,7 +580,6 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 				cert = json.secret_key;
 			}
 		}
-		
 
 		if ( payload.encryptedPayload ) {
 			// The payload is encrypted
