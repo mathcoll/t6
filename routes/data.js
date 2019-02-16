@@ -12,14 +12,14 @@ var units;
 const algorithm = 'aes-256-cbc';
 
 function str2bool(v) {
-	return ["yes", "true", "t", "1", "y", "yeah", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
+	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
 }
 
 router.get('/1234/test/mqtt', function (req, res) {
-	//t6mqtt.publish('FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8', 'testTopic', {"dtepoch":1499103302768, "value":"superValue", "flow":"FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8"}, false);
 	decisionrules.actionTest('FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8', {'dtepoch': 1499103302768, 'value': "superValue", 'text': null, 'flow': 'FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c'}, true, 'testTopic');
 	res.status(200).send({message: "OK"});
 });
+
 /**
  * @api {get} /data/:flow_id Get DataPoint List
  * @apiName Get DataPoint List
@@ -520,12 +520,15 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
 function decryptPayload(encryptedPayload, sender) {
 	if ( sender && sender.secret_key_crypt ) {
 		let iv = crypto.randomBytes(16);
-		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
+		let decipher = crypto.createDecipheriv(algorithm, Buffer.from(sender.secret_key_crypt, 'utf8'), iv);
+		//let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
 		decipher.setAutoPadding(false);
-		let decryptedPayload = decipher.update(encryptedPayload, 'hex', 'utf8') + decipher.final('utf8');
-		return decryptedPayload;
+		let decryptedPayload = decipher.update(encryptedPayload, 'base64', 'utf8') + decipher.final('utf8');
+		console.log("decryptedPayload", decryptedPayload);
+		return decryptedPayload!==""?decryptedPayload:false;
 	} else {
-		return encryptedPayload;
+		console.log("decryptPayload", "Missing secret_key_crypt");
+		return false;
 	}
 }
 
@@ -551,17 +554,21 @@ function decryptPayload(encryptedPayload, sender) {
  * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
  * @apiParam {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
- * @apiParam {String} [object_id=undefined] Optional When using a Signed payload, the oject_id is required for the Symmetric-key algorithm verification; The object must be own by the user in JWT.
+ * @apiParam {String} [object_id=undefined] Optional except when using a Signed payload, the oject_id is required for the Symmetric-key algorithm verification; The object must be own by the user in JWT.
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
  * @apiUse 401sign
  * @apiUse 405
+ * @apiUse 412
  * @apiUse 429
  * @apiUse 500
  */
 router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	let payload = req.body;
+	let isEncrypted = false;
+	let isSigned = false;
+	let prerequisite = 0;
 	if ( payload.signedPayload || payload.encryptedPayload ) {
 		var object_id = payload.object_id;
 		var cert = jwtsettings.secret; //- fs.readFileSync('private.key');
@@ -583,17 +590,28 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 
 		if ( payload.encryptedPayload ) {
 			// The payload is encrypted
-			payload = decryptPayload(payload.encryptedPayload, json);
+			console.log("payload.encryptedPayload", payload.encryptedPayload);
+			isEncrypted = true;
+			let decrypted = decryptPayload(payload.encryptedPayload, json);
+			payload = decrypted!==false?decrypted:payload;
+			console.log("payload after decryption", payload);
 		}
 
 		if ( payload.signedPayload ) {
 			// The payload is signed
+			//console.log("payload.signedPayload", payload.signedPayload);
+			isSigned = true;
 			jwt.verify(payload.signedPayload, cert, function(err, decoded) {
 				if ( !err ) {
 					payload = decoded;
+					console.log("payload.unsigned", payload);
 					if ( payload.encryptedPayload ) {
 						// The payload is encrypted
-						payload = decryptPayload(payload.encryptedPayload, json);
+						//console.log("payload.encryptedPayload", payload.encryptedPayload);
+						isEncrypted = true;
+						let decrypted = decryptPayload(payload.encryptedPayload, json);
+						payload = decrypted!==false?decrypted:payload;
+						console.log("payload after decryption", payload);
 					}
 				} else {
 					payload = undefined;
@@ -614,7 +632,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 		var mqtt_topic	= payload.mqtt_topic!==undefined?payload.mqtt_topic:"";
 		var latitude	= payload.latitude!==undefined?payload.latitude:"";
 		var longitude	= payload.longitude!==undefined?payload.longitude:"";
-		var text		= payload.text!==undefined?payload.text:""; // Right now, only meteo and checkNetwork are using this 'text' to customize tinyScreen icon displayed.
+		var text		= payload.text!==undefined?payload.text:"";
 
 		if ( !flow_id ) {
 			res.status(405).send(new ErrorSerializer({'id': 63, 'code': 405, 'message': 'Method Not Allowed',}).serialize());
@@ -633,94 +651,114 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 			}
 			var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
 
-			// Cast value according to Flow settings
-			var fields = [];
-			if ( datatype == 'boolean' ) {
-				value = str2bool(value);
-				fields[0] = {time:""+time, valueBoolean: value,};
-			} else if ( datatype == 'date' ) {
-				value = value;
-				fields[0] = {time:""+time, valueDate: value,};
-			} else if ( datatype == 'integer' ) {
-				value = parseInt(value);
-				fields[0] = {time:""+time, valueInteger: value+'i',};
-			} else if ( datatype == 'json' ) {
-				value = {value:value,};
-				fields[0] = {time:""+time, valueJson: value,};
-			} else if ( datatype == 'string' ) {
-				value = ""+value;
-				fields[0] = {time:""+time, valueString: value,};
-			} else if ( datatype == 'time' ) {
-				value = value;
-				fields[0] = {time:""+time, valueTime: value,};
-			} else if ( datatype == 'float' ) {
-				value = parseFloat(value);
-				fields[0] = {time:""+time, valueFloat: value,};
-			} else if ( datatype == 'geo' ) {
-				value = ""+value;
-				fields[0] = {time:""+time, valueString: value,};
-			} else {
-				value = ""+value;
-				fields[0] = {time:""+time, valueString: value,};
+			if ( (f.data())[0].left.require_encrypted && !isEncrypted ) {
+				//console.log("(f.data())[0].left", (f.data())[0].left);
+				prerequisite += 1;
 			}
-			// End casting
+			if ( (f.data())[0].left.require_signed && !isSigned ) {
+				//console.log("(f.data())[0].left", (f.data())[0].left);
+				prerequisite += 1;
+			}
+			console.log("flow", (f.data())[0].left);
+			console.log("isSigned", isSigned);
+			console.log("isEncrypted", isEncrypted);
+			console.log("prerequisite isSigned -", (f.data())[0].left.require_signed);
+			console.log("prerequisite isEncrypted -", (f.data())[0].left.require_encrypted);
 
-			if ( save == true ) {
-				if ( db_type.influxdb == true ) {
-					/* InfluxDB database */
-					var tags = {};
-					var timestamp = time*1000000;
-					if (flow_id!== "") tags.flow_id = flow_id;
-					tags.user_id = req.user.id;
-					if (text!== "") fields[0].text = text;
-
-					dbInfluxDB.writePoints([{
-						measurement: 'data',
-						tags: tags,
-						fields: fields[0],
-						timestamp: timestamp,
-					}], { retentionPolicy: 'autogen', }).then(err => {
-						if (err) console.log({'message': 'Error on writePoints to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-						//else console.log({'message': 'Success on writePoints to influxDb', 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-					}).catch(err => {
-						console.log({'message': 'Error catched on writting to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-						console.error('Error catched on writting to influxDb:\n'+err);
-					});
+			if ( prerequisite <= 0 ) {
+				// Cast value according to Flow settings
+				var fields = [];
+				if ( datatype == 'boolean' ) {
+					value = str2bool(value);
+					fields[0] = {time:""+time, valueBoolean: value,};
+				} else if ( datatype == 'date' ) {
+					value = value;
+					fields[0] = {time:""+time, valueDate: value,};
+				} else if ( datatype == 'integer' ) {
+					value = parseInt(value);
+					fields[0] = {time:""+time, valueInteger: value+'i',};
+				} else if ( datatype == 'json' ) {
+					value = {value:value,};
+					fields[0] = {time:""+time, valueJson: value,};
+				} else if ( datatype == 'string' ) {
+					value = ""+value;
+					fields[0] = {time:""+time, valueString: value,};
+				} else if ( datatype == 'time' ) {
+					value = value;
+					fields[0] = {time:""+time, valueTime: value,};
+				} else if ( datatype == 'float' ) {
+					value = parseFloat(value);
+					fields[0] = {time:""+time, valueFloat: value,};
+				} else if ( datatype == 'geo' ) {
+					value = ""+value;
+					fields[0] = {time:""+time, valueString: value,};
+				} else {
+					value = ""+value;
+					fields[0] = {time:""+time, valueString: value,};
 				}
-				if ( db_type.sqlite3 == true ) {
-					/* sqlite3 database */
-					var query = squel.insert()
-						.into("data")
-						.set("timestamp", time)
-						.set("value", value)
-						.set("flow_id", flow_id)
-						.toString();
-					dbSQLite3.run(query, function(err) {
-						if (err) { }
-					});
-				};
+				// End casting
+
+				if ( save == true ) {
+					if ( db_type.influxdb == true ) {
+						/* InfluxDB database */
+						var tags = {};
+						var timestamp = time*1000000;
+						if (flow_id!== "") tags.flow_id = flow_id;
+						tags.user_id = req.user.id;
+						if (text!== "") fields[0].text = text;
+	
+						dbInfluxDB.writePoints([{
+							measurement: 'data',
+							tags: tags,
+							fields: fields[0],
+							timestamp: timestamp,
+						}], { retentionPolicy: 'autogen', }).then(err => {
+							if (err) console.log({'message': 'Error on writePoints to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+							//else console.log({'message': 'Success on writePoints to influxDb', 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+						}).catch(err => {
+							console.log({'message': 'Error catched on writting to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+							console.error('Error catched on writting to influxDb:\n'+err);
+						});
+					}
+					if ( db_type.sqlite3 == true ) {
+						/* sqlite3 database */
+						var query = squel.insert()
+							.into("data")
+							.set("timestamp", time)
+							.set("value", value)
+							.set("flow_id", flow_id)
+							.toString();
+						dbSQLite3.run(query, function(err) {
+							if (err) { }
+						});
+					};
+				}
+
+				t6decisionrules.action(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
+
+				fields.flow_id = flow_id;
+				fields.id = time*1000000;
+				fields[0].flow_id = flow_id;
+				fields[0].parent;
+				fields[0].first;
+				fields[0].prev;
+				fields[0].next;
+				fields[0].id = time*1000000;
+				fields[0].time = time*1000000;
+				fields[0].timestamp = time*1000000;
+				fields[0].value = value;
+				fields[0].datatype = datatype;
+				fields[0].publish = publish;
+				fields[0].mqtt_topic = mqtt_topic;
+
+				res.header('Location', '/v'+version+'/flows/'+flow_id+'/'+fields[0].id);
+				res.status(200).send(new DataSerializer(fields).serialize());
+			} else {
+				res.status(401).send(new ErrorSerializer({'id': 64.2, 'code': 401, 'message': 'Not Authorized, you must sign and/or encrypt',}).serialize());
 			}
-
-			t6decisionrules.action(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
-
-			fields.flow_id = flow_id;
-			fields.id = time*1000000;
-			fields[0].flow_id = flow_id;
-			fields[0].parent;
-			fields[0].first;
-			fields[0].prev;
-			fields[0].next;
-			fields[0].id = time*1000000;
-			fields[0].time = time*1000000;
-			fields[0].timestamp = time*1000000;
-			fields[0].value = value;
-			fields[0].datatype = datatype;
-			fields[0].publish = publish;
-			fields[0].mqtt_topic = mqtt_topic;
-
-			res.header('Location', '/v'+version+'/flows/'+flow_id+'/'+fields[0].id);
-			res.status(200).send(new DataSerializer(fields).serialize());
 		};
+	} else {
+		res.status(412).send(new ErrorSerializer({'id': 65, 'code': 412, 'message': 'Precondition Failed',}).serialize());
 	}
 });
 

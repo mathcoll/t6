@@ -9,6 +9,10 @@ var tokens;
 var datatypes;
 var units;
 
+function str2bool(v) {
+	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
+}
+
 /**
  * @api {get} /flows/:flow_id Get Flow(s)
  * @apiName Get Flow(s)
@@ -97,6 +101,8 @@ router.get('/:flow_id([0-9a-z\-]+)?', expressJwt({secret: jwtsettings.secret}), 
  * @apiParam {String} [unit] Flow Unit
  * @apiParam {String} [theme] Flow theme, deprecated
  * @apiParam {String} [mqtt_topic]] Mqtt topic
+ * @apiParam {Boolean} [require_signed=false] require_signed
+ * @apiParam {Boolean} [require_encrypted=false] require_encrypted
  * @apiParam {Object[]} permission
  * @apiParam {String[]} [objects] List of Object Ids
  * 
@@ -127,6 +133,8 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 					theme:  	req.body.theme!==undefined?req.body.theme:'',
 					mqtt_topic:	req.body.mqtt_topic!==undefined?req.body.mqtt_topic:'',
 					permission:	permission,
+					require_signed:	req.body.require_signed!==undefined?str2bool(req.body.require_signed):false,
+					require_encrypted:	req.body.require_encrypted!==undefined?str2bool(req.body.require_encrypted):false,
 					objects:	req.body.objects!==undefined?req.body.objects:new Array(),
 				};
 				t6events.add('t6Api', 'flow add', new_flow.id);
@@ -152,6 +160,8 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
  * @apiParam {String} [unit] Flow Unit
  * @apiParam {String} [mqtt_topic]] Mqtt topic
+ * @apiParam {Boolean} [require_signed=false] require_signed
+ * @apiParam {Boolean} [require_encrypted=false] require_encrypted
  * @apiParam {Object[]} [permission]
  * @apiParam {String[]} [objects] List of Object Ids
  * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
@@ -192,6 +202,8 @@ router.put('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 						item.permission	= permission!==undefined?permission:item.permission;
 						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
 						item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
+						item.require_signed = req.body.require_signed!==undefined?str2bool(req.body.require_signed):str2bool(item.require_signed);
+						item.require_encrypted = req.body.require_encrypted!==undefined?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
 						item.meta.revision = ++(req.body.meta.revision);
 						result = item;
 					});

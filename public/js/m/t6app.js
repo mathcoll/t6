@@ -139,7 +139,7 @@ var app = {
 	snippets: [],
 	defaultResources: {
 		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: '', latitude: '', position: ''}},
-		flow: {id:'', attributes: {name: '', mqtt_topic: ''}},
+		flow: {id:'', attributes: {name: '', mqtt_topic: '', require_signed: false, require_encrypted: false}},
 		dashboard: {id:'', attributes: {name: '', description: ''}},
 		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
 		rule: {id:'', active: true, attributes: {name: '', priority: 1, event: {type:'email', conditions: '{"all":[ { "fact":"environment", "operator":"equal", "value":"production" }]}', parameters: '{}'}}},
@@ -679,6 +679,8 @@ var containers = {
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 				data_type: myForm.querySelector("select[name='DataType']").value,
 				unit: myForm.querySelector("select[name='Unit']").value,
+				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")==true?'true':'false',
+				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")==true?'true':'false',
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
@@ -722,6 +724,8 @@ var containers = {
 			mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 			data_type: myForm.querySelector("select[name='DataType']").value,
 			unit: myForm.querySelector("select[name='Unit']").value,
+			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")==true?'true':'false',
+			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")==true?'true':'false',
 		};
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('DEBUG onAddFlow', JSON.stringify(body));
@@ -767,6 +771,8 @@ var containers = {
 				type: myForm.querySelector("select[name='Type']").value,
 				icon: myForm.querySelector("select[name='Icon']").value,
 				color: myForm.querySelector("input[name='Color']").value,
+				require_signed: myForm.querySelector("select[id='require_signed']").value,
+				require_encrypted: myForm.querySelector("select[id='require_encrypted']").value,
 				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
@@ -2404,6 +2410,8 @@ var containers = {
 		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
 		node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, id: 'Unit', options: allUnits });
 		node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', id: 'DataType', isEdit: true, id: 'DataType', options: allDatatypes });
+		node += app.getField('verified_user', flow.attributes.require_signed!==false?'Does not require payload signature secret from Object':'Does not require payload signature secret from Object', flow.attributes.require_signed, {type: 'switch', id: 'add_require_signed', isEdit: true});
+		node += app.getField('vpn_key', flow.attributes.require_encrypted!==false?'Does not require payload encryption secret from Object':'Does not require payload encryption secret from Object', flow.attributes.require_encrypted, {type: 'switch', id: 'add_require_encrypted', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -2434,6 +2442,20 @@ var containers = {
 		buttons.addFlowBack.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
 		buttons.addFlow.addEventListener('click', function(evt) { app.onAddFlow(evt); }, false);
 
+		let element1 = document.getElementById('switch-add_require_signed').parentNode;
+		if ( element1 ) {
+			element1.addEventListener('change', function(e) {
+				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
+				label.innerText = element1.classList.contains('is-checked')!==false?"Require payload signature secret from Object":"Does not require payload signature secret from Object";
+			});
+		}
+		let element2 = document.getElementById('switch-add_require_encrypted').parentNode;
+		if ( element2 ) {
+			element2.addEventListener('change', function(e) {
+				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
+				label.innerText = element2.classList.contains('is-checked')!==false?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object";
+			});
+		}
 		app.setExpandAction();
 	}; // displayAddFlow
 	
@@ -2701,6 +2723,8 @@ var containers = {
 					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
 					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, options: app.units });
 					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: true, options: app.datatypes });
+					node += app.getField('verified_user', flow.attributes.require_signed==true?"Require payload signature secret from Object":"Does not require payload signature secret from Object secret", flow.attributes.require_signed, {type: 'switch', id: 'edit_require_signed', isEdit: true});
+					node += app.getField('vpn_key', flow.attributes.require_encrypted==true?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object secret", flow.attributes.require_encrypted, {type: 'switch', id: 'edit_require_encrypted', isEdit: true});
 					node += "	</div>";
 					node += "</section>";
 					
@@ -2767,6 +2791,8 @@ var containers = {
 						var datatype = JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
 						node += app.getField(app.icons.datatypes, 'DataType', datatype, {type: 'select', id: 'DataType', isEdit: isEdit, options: app.datatypes });
 					}
+					node += app.getField('verified_user', flow.attributes.require_signed==true?"Require payload signature secret from Object":"Does not require payload signature secret from Object", {type: 'switch', id: 'show_require_signed', isEdit: isEdit});
+					node += app.getField('vpn_key', flow.attributes.require_encrypted==true?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object", {type: 'switch', id: 'show_require_encrypted', isEdit: isEdit});
 					node += "	</div>";
 					node += "</div>";
 				
@@ -2879,7 +2905,7 @@ var containers = {
 					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit	 Flow</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Flow</label>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -2896,6 +2922,21 @@ var containers = {
 				if ( isEdit ) {
 					buttons.backFlow.addEventListener('click', function(evt) { app.displayFlow(flow.id, false); }, false);
 					buttons.saveFlow.addEventListener('click', function(evt) { app.onSaveFlow(evt); }, false);
+
+					let element1 = document.getElementById('switch-edit_require_signed').parentNode;
+					if ( element1 ) {
+						element1.addEventListener('change', function(e) {
+							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
+							label.innerText = element1.classList.contains('is-checked')!=='false'?"Require payload signature secret from Object":"Does not require payload signature secret from Object";
+						});
+					}
+					let element2 = document.getElementById('switch-edit_require_encrypted').parentNode;
+					if ( element2 ) {
+						element2.addEventListener('change', function(e) {
+							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
+							label.innerText = element2.classList.contains('is-checked')!=='false'?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object";
+						});
+					}
 				} else {
 					buttons.listFlow.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
 					// buttons.deleteFlow2.addEventListener('click',
@@ -4043,7 +4084,7 @@ var containers = {
 		container.innerHTML += node;
 		componentHandler.upgradeDom();
 
-		var element1 = document.getElementById('switch-profile.notifications.reminder').parentNode;
+		let element1 = document.getElementById('switch-profile.notifications.reminder').parentNode;
 		if ( element1 ) {
 			element1.addEventListener('change', function(e) {
 				if ( app.getSetting('notifications.email') && app.getSetting('notifications.unsubscription_token') ) {
@@ -4389,9 +4430,10 @@ var containers = {
 					field += "</div>";
 				}
 			} else if ( options.type === 'switch' ) {
-				var isChecked = value=='true'?' checked':'';
+				var isChecked = value==true?' checked':'';
+				var className = value==true?'is-checked':'';
 				if ( options.isEdit == true ) {
-					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label' for='switch-"+id+"' data-id='switch-"+id+"'>";
+					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label "+className+"' for='switch-"+id+"' data-id='switch-"+id+"'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' name='"+label+"' value='"+value+"' placeholder='"+label+"' "+isChecked+">";
 					if (label) field += "	<div class='mdl-switch__label'>"+label+"</div>";
