@@ -487,7 +487,18 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                   span.code $> nodejs sensor.js --run "{{sensor_id}}" > /dev/null 2>&1
                 div.mdl-card__supporting-text.no-padding This kind of Virtual sensors are capable of getting direct data from a linux bash command (e.g. Getting HDD temperature: '/usr/sbin/hddtemp -u C -n -q /dev/sda')
                 div.mdl-card__supporting-text.no-padding Physical Objects require a "virtual" Object declared on t6 before adding DataPoints to Flows. Meaning a Flow container help the Api to find your data and graph them on the Snippets.
-                
+                  
+            section.mdl-grid.mdl-cell--12-col
+              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  i.material-icons.md-48 code
+                  span.mdl-typography--headline Technical documentation
+                div.mdl-card__supporting-text.no-padding 
+                  | Api first in a Rest api ; including security (JWT tokens) and quotas. It contains dedicated endpoint to easily manipulate your resources: Objects, Flows, Dashboards, Snippets & Rules.
+                  p
+                    a.mdl-button.mdl-js-button(href="/docs", target='_blank', rel='noopener') Explore the full Api documentation
+                      i.material-icons chevron_right
+                  
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
