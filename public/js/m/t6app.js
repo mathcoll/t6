@@ -771,8 +771,6 @@ var containers = {
 				type: myForm.querySelector("select[name='Type']").value,
 				icon: myForm.querySelector("select[name='Icon']").value,
 				color: myForm.querySelector("input[name='Color']").value,
-				require_signed: myForm.querySelector("select[id='require_signed']").value,
-				require_encrypted: myForm.querySelector("select[id='require_encrypted']").value,
 				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
@@ -3177,11 +3175,13 @@ var containers = {
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
 					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: isEdit });
 
-					if ( localStorage.getItem('flows') ) {
+					if ( localStorage.getItem('flows') !== 'null' ) {
 						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
 							return {value: flow.name, name: flow.id};
 						});
 						node += app.getField(app.icons.flows, 'Flows to add', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+					} else {
+						node += app.getField(app.icons.flows, 'Flows to add (you should add some flows first)', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: {} });
 					}
 					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
 					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
@@ -3224,7 +3224,7 @@ var containers = {
 						evt.preventDefault();
 					}, false);
 
-					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 ) {
+					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 && localStorage.getItem('flows') !== 'null' ) {
 						snippet.attributes.flows.map(function(s) {
 							//Flows list, we put the index not the flow_id into the selector:
 							var n=0;
@@ -3312,6 +3312,7 @@ var containers = {
 			}
 		})
 		.catch(function (error) {
+			console.log(error);
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
 			}
@@ -3598,7 +3599,7 @@ var containers = {
 		if ( type == 'snippets' ) {
 			element += "<div class='mdl-list__item--three-line small-padding'>";
 			element += "	<span class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-48'>"+item.attributes.icon+"</i>";
+			element += "		<i class='material-icons md-28'>"+item.attributes.icon+"</i>"+app.types.find( function(t) { return t.name == item.attributes.icon; }).value;
 			element += "	</span>";
 			element += "</div>";
 		} else if ( type == 'flows' ) {

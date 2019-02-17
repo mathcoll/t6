@@ -106,11 +106,11 @@ li.delete-button:hover {
 	height: auto !important;
 }
 .mdl-layout__tab.is-active::after {
-    height: 5px !important;
-    background: #fff !important;
+	height: 5px !important;
+	background: #fff !important;
 }
 .small-padding {
-	min-height: 80px !important;
+	min-height: 50px !important;
 	padding: 5px 16px !important;
 }
 .meddium-padding {
