@@ -14,19 +14,18 @@ t6mailer.sendMail = function(envelope) {
 	if ( process.env.NODE_ENV === 'production' ) {
 		transporter.sendMail(envelope, function(err, info) {
 			if( err ){
-				var err = new Error('Internal Error');
+				return err;
 			} else {
-				return;
+				return info;
 			};
 		});
 	} else {
-		//envelope.to = bcc;
+		envelope.to = bcc;
 		transporter.sendMail(envelope, function(err, info) {
 			if( err ){
-				console.log('Email error', err);
-				var err = new Error('Internal Error');
+				return {'status': 'err', 'info': err};
 			} else {
-				return;
+				return {'status': 'info', 'info': info};
 			};
 		});
 	};

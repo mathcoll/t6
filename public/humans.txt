@@ -5,8 +5,8 @@
     From: Paris, France
 
 /* THANKS */
-   Mathieu L.
+    Mathieu L.
 
 /* TECHNOLOGY */
     HTML5, CSS3
-    jQuery, Node-js, SQLite, Express, Pug, coffee... ...
+    Node-js, SQLite, Express, Pug, coffee... ...
