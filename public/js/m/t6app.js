@@ -3613,6 +3613,16 @@ var containers = {
 				element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == item.attributes.data_type; }).value;
 				element += "	</div>";
 			}
+			if ( item.attributes.require_signed == true ) {
+				element += "	<div class='mdl-list__item-sub-title'>";
+				element += "		<i class='material-icons md-28'>verified_user</i> Require Signature Secret Key"
+				element += "	</div>";
+			}
+			if ( item.attributes.require_encrypted == true ) {
+				element += "	<div class='mdl-list__item-sub-title'>";
+				element += "		<i class='material-icons md-28'>vpn_key</i> Require Encryption Secret Key"
+				element += "	</div>";
+			}
 			element += "</div>";
 		} else if ( type == 'objects' ) {
 			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
@@ -3630,6 +3640,14 @@ var containers = {
 			if ( (item.attributes.longitude && item.attributes.latitude) || item.attributes.position ) {
 				element += "	<span class='isLocalized' id='"+item.id+"-isLocalized'><i class='material-icons md-32'>location_on</i></span>";
 				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-isLocalized'>Localized</div>";	
+			}
+			if ( item.attributes.secret_key !== undefined ) {
+				element += "	<span class='Signature' id='"+item.id+"-Signature'><i class='material-icons md-32'>verified_user</i></span>";
+				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-Signature'>Signature Secret Key</div>";
+			}
+			if ( item.attributes.secret_key_crypt !== undefined ) {
+				element += "	<span class='Crypt' id='"+item.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
+				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-Crypt'>Encryption Secret Key</div>";
 			}
 			element += "</div>";
 		} else {
