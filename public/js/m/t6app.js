@@ -2006,8 +2006,15 @@ var containers = {
 				if ( object.attributes.ipv6 || isEdit==true ) {
 					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
+				node += "	</div>";
+				node += "</section>";
+				
+				node += app.getSubtitle('Security');
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.secret_key || isEdit==true ) {
 					node += app.getField('verified_user', 'Secret Key in symmetric signature', object.attributes.secret_key!==undefined?object.attributes.secret_key:'', {type: 'text', id: 'secret_key', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key, error:''});
+					node += app.getField('', '', 'When flow require signed payload, you should provide your secret to verify signature.', {type: 'text', isEdit: false});
 				}
 				if ( object.attributes.secret_key_crypt || isEdit==true ) {
 					node += app.getField('vpn_key', 'Secret Key in symmetric cryptography', object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:'', {type: 'text', id: 'secret_key_crypt', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:''});
@@ -2198,7 +2205,14 @@ var containers = {
 		node += app.getField(app.icons.type, 'Type', object.attributes.type, {type: 'select', id: 'Type', options: app.types, isEdit: true });
 		node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: true, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
 		node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: true, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
+		node += "	</div>";
+		node += "</section>";
+		
+		node += app.getSubtitle('Security');
+		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField('verified_user', 'Secret Key in symmetric signature', object.attributes.secret_key!==undefined?object.attributes.secret_key:'', {type: 'text', id: 'secret_key', style:'text-transform: none !important;', isEdit: true, pattern: app.patterns.secret_key, error:''});
+		node += app.getField('', '', 'When flow require signed payload, you should provide your secret to verify signature.', {type: 'text', isEdit: false});
 		node += app.getField('vpn_key', 'Secret Key in symmetric cryptography', object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:'', {type: 'text', id: 'secret_key_crypt', style:'text-transform: none !important;', isEdit: true, pattern: app.patterns.secret_key_crypt, error:''});
 		node += app.getField('visibility', 'Object is only visible to you', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: true});
 		node += "	</div>";
