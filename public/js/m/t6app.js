@@ -234,13 +234,13 @@ var containers = {
 	exports.toast = toast; // Make this method available in global
 	
 	function getParameterByName(name, url) {
-	    if (!url) url = window.location.href;
-	    name = name.replace(/[\[\]]/g, "\\$&");
-	    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-	        results = regex.exec(url);
-	    if (!results) return null;
-	    if (!results[2]) return '';
-	    return decodeURIComponent(results[2].replace(/\+/g, " "));
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, "\\$&");
+		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+		results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 	exports.getParameterByName = getParameterByName; // Make this method available in global
 })(typeof window === 'undefined' ? module.exports : window);
@@ -5519,16 +5519,6 @@ var containers = {
 	var db;
 	var idbkr;
 	var objectStore;
-	
-	function singleExec(fn) {
-	    let lock;
-	    return async function () { 
-	        lock = lock || fn();
-	        r = await lock;
-	        lock = undefined;
-	        return r;
-	    }
-	}
 	
 	app.clearJWT = function() {
 		var jwt;
