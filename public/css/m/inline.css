@@ -1261,7 +1261,6 @@ span.isPublic {
 }
 span.isLocalized {
 	right: 48px;
-	padding: 5px;
 	top: 10px;
 }
 ul:not(.browser-default) li {
