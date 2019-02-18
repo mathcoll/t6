@@ -265,8 +265,10 @@ function checkForTooManyFailure(req, res, email) {
 					text: 'Html email client is required',
 					html: html
 				};
-				transporter.sendMail(mailOptions, function(err, info){
-					if( err ){ }
+				t6mailer.sendMail(mailOptions).then(function(info){
+					console.log("info", info);
+				}).catch(function(error){
+					console.log("t6mailer.sendMail error", error.info.code, error.info.response, error.info.responseCode, error.info.command);
 				});
 			});
 		}

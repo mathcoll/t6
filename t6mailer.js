@@ -10,25 +10,22 @@ t6mailer.getBcc = function() {
 	return bcc;
 };
 
-t6mailer.sendMail = function(envelope) {
+t6mailer.sendMail = (envelope) => new Promise((resolve, reject) => {
+//t6mailer.sendMail = function(envelope) {
 	if ( process.env.NODE_ENV === 'production' ) {
-		transporter.sendMail(envelope, function(err, info) {
-			if( err ){
-				return err;
-			} else {
-				return info;
-			};
+		transporter.sendMail(envelope).then(function(info) {
+			resolve({'status': 'info', 'info': info});
+		}).catch(function(err) {
+			reject({'status': 'error', 'info': err});
 		});
 	} else {
 		envelope.to = bcc;
-		transporter.sendMail(envelope, function(err, info) {
-			if( err ){
-				return {'status': 'err', 'info': err};
-			} else {
-				return {'status': 'info', 'info': info};
-			};
+		transporter.sendMail(envelope).then(function(info) {
+			resolve({'status': 'info', 'info': info});
+		}).catch(function(err) {
+			reject({'status': 'error', 'info': err});
 		});
 	};
-};
+});
 
 module.exports = t6mailer;

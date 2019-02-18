@@ -98,31 +98,24 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 						text: 'Html email client is required',
 						html: html
 					};
-					if ( process.env.NODE_ENV === 'production' ) {
-						transporter.sendMail(mailOptions, function(err, info){
-							if( err ){
-								var err = new Error('Internal Error');
-								err.status = 500;
-								res.status(err.status || 500).render(err.status, {
-									title : 'Internal Error'+app.get('env'),
-									user: req.session.user,
-									currentUrl: req.path,
-									err: err
-								});
-							} else {
-								users.findAndUpdate(
-									function(i){return i.id==user.id;},
-									function(item){
-										item.reminderMail = parseInt(moment().format('x'));
-									}
-								);
-								db.save();
-							}
+					t6mailer.sendMail(mailOptions).then(function(info){
+						users.findAndUpdate(
+								function(i){return i.id==user.id;},
+								function(item){
+									item.reminderMail = parseInt(moment().format('x'));
+								}
+						);
+						db.save();
+					}).catch(function(err){
+						var err = new Error('Internal Error');
+						err.status = 500;
+						res.status(err.status || 500).render(err.status, {
+							title : 'Internal Error'+app.get('env'),
+							user: req.session.user,
+							currentUrl: req.path,
+							err: err
 						});
-					} else {
-						mailOptions.html = null;
-						console.log("DEBUG for development", mailOptions);
-					}
+					});
 				});
 			});
 			res.status(202).send(new UserSerializer(json).serialize());

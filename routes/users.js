@@ -199,19 +199,23 @@ router.post('/', function (req, res) {
 			users.insert(new_user);
 
 			res.render('emails/welcome', {user: new_user, token: new_token.token}, function(err, html) {
-				var to = new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>';
 				var mailOptions = {
 					from: from,
 					bcc: bcc!==undefined?bcc:null,
-					to: to,
+					to: new_user.firstName+' '+new_user.lastName+' <'+new_user.email+'>',
 					subject: 'Welcome to t6',
 					text: 'Html email client is required',
 					html: html
 				};
-				t6mailer.sendMail(mailOptions);
-				t6events.add('t6App', 'user welcome mail', new_user.id);
-				res.header('Location', '/v'+version+'/users/'+new_user.id);
-				res.status(201).send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token });
+				t6mailer.sendMail(mailOptions).then(function(info){
+					//console.log("info", info);
+					t6events.add('t6App', 'user welcome mail', new_user.id);
+					res.header('Location', '/v'+version+'/users/'+new_user.id);
+					res.status(201).send({ 'code': 201, message: 'Created', user: new UserSerializer(new_user).serialize(), token: new_token });
+				}).catch(function(error) {
+					console.log("t6mailer.sendMail error", error.info.code, error.info.response, error.info.responseCode, error.info.command);
+					res.status(500).send({ 'code': 500, message: 'Internal Error'});
+				});
 			});
 		}
 	}
