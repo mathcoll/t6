@@ -44,7 +44,7 @@
     "morgan": "^1.9.0",
     "mqtt": "^2.18.8",
     "node-uuid": "^1.4.7",
-    "nodemailer": "^2.4.2",
+    "nodemailer": "^5.1.1",
     "passgen": "^1.0.1",
     "path": "^0.12.7",
     "pug": "^2.0.3",

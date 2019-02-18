@@ -40,8 +40,16 @@ from				= "t6 <contact@domain.tld>"; // The Sender email address
 bcc					= "t6 <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
 mailhost			= "my_smtp.domain.tld"; // Your Smtp server
 mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smtp credentials
-transporter			= nodemailer.createTransport({ host: mailhost, ignoreTLS: true, auth: mailauth });
-
+transporter = nodemailer.createTransport({
+	host : mailhost,
+	ignoreTLS : true,
+	auth : mailauth,
+	dkim : {
+		domainName : "",
+		keySelector : "",
+		privateKey : fs.readFileSync('/path/to/data/certificates/dkim/privatekey.txt', 'utf8')
+	}
+});
 /* Database settings - Storage */
 db_type				= {
 	influxdb: true,
