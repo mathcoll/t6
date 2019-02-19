@@ -1,2 +1,6 @@
 /.muttrc
 /newsletter_recipients_PROD.csv
+/build-nativefier.electron.sh
+/deliver.sh
+/lighthouse.sh
+/maintenance.sh
