@@ -3598,12 +3598,22 @@ var containers = {
 		element += "		</div>";
 		if ( type == 'snippets' ) {
 			element += "<div class='mdl-list__item--three-line small-padding'>";
+			if ( item.attributes.type ) {
+				element += "	<div class='mdl-list__item-sub-title'>";
+				element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetsTypes.find( function(s) { return s.name == item.attributes.type; }).value;
+				element += "	</div>";
+			}
+			if ( item.attributes.color ) {
+				element += "	<div class='mdl-list__item-sub-title'>";
+				element += "		<i class='material-icons md-28'>format_color_fill</i><span style='text-transform:uppercase; color:"+item.attributes.color+"'>"+item.attributes.color+"</span>";
+				element += "	</div>";
+			}
 			element += "	<span class='mdl-list__item-sub-title'>";
 			element += "		<i class='material-icons md-28'>"+item.attributes.icon+"</i>"+app.types.find( function(t) { return t.name == item.attributes.icon; }).value;
 			element += "	</span>";
 			element += "</div>";
 		} else if ( type == 'flows' ) {
-			element += "<div class='mdl-list__item--three-line small-padding mdl-card--expand'>";
+			element += "<div class='mdl-list__item--three-line small-padding'>";
 			if ( item.attributes.unit ) {
 				element += "	<div class='mdl-list__item-sub-title'>";
 				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == item.attributes.unit; }).value;
@@ -4195,11 +4205,11 @@ var containers = {
 	}
 	
 	app.setDrawer = function() {
-		if ( localStorage.getItem("currentUserName") !== null ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
+		if ( localStorage.getItem("currentUserName") != 'null' ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
 		else { document.getElementById("currentUserName").innerHTML = "t6 IoT App"; }
-		if ( localStorage.getItem("currentUserEmail") !== null ) { document.getElementById("currentUserEmail").innerHTML = localStorage.getItem("currentUserEmail") }
+		if ( localStorage.getItem("currentUserEmail") != 'null' ) { document.getElementById("currentUserEmail").innerHTML = localStorage.getItem("currentUserEmail") }
 		else { document.getElementById("currentUserEmail").innerHTML = ""; }
-		if ( localStorage.getItem("currentUserHeader") !== null ) {
+		if ( localStorage.getItem("currentUserHeader") != 'null' ) {
 			document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader"));
 			document.getElementById("imgIconMenu").outerHTML = "<img id=\"imgIconMenu\" src=\""+localStorage.getItem("currentUserHeader")+"\" alt=\"Current user avatar\" style=\"border-radius: 50%; width: 30px; padding: 0px;border: 1px solid #fff;margin: 0px 0px;\">";
 		}
