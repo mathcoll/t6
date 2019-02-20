@@ -1,9 +1,102 @@
 app.resources.objects = {
 	onEdit(evt) {
-		
+		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
+		if ( !object_id ) {
+			toast('No Object id found!', {timeout:3000, type: 'error'});
+		} else {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			var body = {
+				type: myForm.querySelector("select[name='Type']").value,
+				name: myForm.querySelector("input[name='Name']").value,
+				description: myForm.querySelector("textarea[name='Description']").value,
+				position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
+				longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
+				latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
+				ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
+				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+				secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
+				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
+				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
+			};
+	
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+'/'+app.api_version+'/objects/'+object_id;
+			fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				app.setSection('objects');
+				toast('Object has been saved.', {timeout:3000, type: 'done'});
+				//var objectContainer = document.querySelector("section#objects div[data-id='"+object_id+"']");
+				//objectContainer.querySelector("h2").innerHTML = body.name;
+				//objectContainer.querySelector("div.mdl-list__item--three-line.small-padding span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
+			})
+			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'Save Object',
+						'eventLabel': 'Object has not been saved.',
+						'eventValue': '0',
+						'event': 'Error'
+					});
+				}
+				toast('Object has not been saved.', {timeout:3000, type: 'error'});
+			});
+			evt.preventDefault();
+		}
 	},
 	onAdd(evt) {
-		
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var body = {
+			type: myForm.querySelector("select[name='Type']").value,
+			name: myForm.querySelector("input[name='Name']").value,
+			description: myForm.querySelector("textarea[name='Description']").value,
+			position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
+			longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
+			latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
+			ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
+			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+			secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
+			secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
+			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+		};
+
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+'/'+app.api_version+'/objects/';
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			app.setSection('objects');
+			toast('Object has been added.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'Add Object',
+					'eventLabel': 'Object has not been added.',
+					'eventValue': '0',
+					'event': 'Error'
+				});
+			}
+			toast('Object has not been added.', {timeout:3000, type: 'error'});
+		});
+		evt.preventDefault();
 	},
 	onDelete(id) {
 		
@@ -192,8 +285,8 @@ app.resources.objects = {
 				
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					buttons.backObject.addEventListener('click', function(evt) { app.displayObject(object.id, false); }, false);
-					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
+					buttons.backObject.addEventListener('click', function(evt) { app.resources.objects.display(object.id, false, false, false); }, false);
+					buttons.saveObject.addEventListener('click', function(evt) { app.resources.objects.onEdit(evt); }, false);
 					
 					var element = document.getElementById('switch-Visibility').parentNode;
 					if ( element ) {
@@ -207,7 +300,7 @@ app.resources.objects = {
 					// buttons.deleteObject2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					buttons.editObject2.addEventListener('click', function(evt) { app.displayObject(object.id, true); evt.preventDefault(); }, false);
+					buttons.editObject2.addEventListener('click', function(evt) { app.resources.objects.display(object.id, true); evt.preventDefault(); }, false);
 				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
@@ -531,7 +624,7 @@ app.resources.objects = {
 		
 		app.refreshButtonsSelectors();
 		buttons.addObjectBack.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
-		buttons.addObject.addEventListener('click', function(evt) { app.onAddObject(evt); }, false);
+		buttons.addObject.addEventListener('click', function(evt) { app.resources.objects.onAdd(evt); }, false);
 
 		var element = document.getElementById('switch-Visibility').parentNode;
 		if ( element ) {
