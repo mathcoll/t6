@@ -598,4 +598,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
               a(href='#', id='cookieconsent.agree') Got it!
         
       script(type='application/javascript', src=baseUrlCdn + '/js/m/vendor.min.js')
-      script(type='application/javascript', src=baseUrlCdn + '/js/m/t6app.js')
+      if process.env.NODE_ENV === 'development'
+        //-script(type='application/javascript', src=baseUrlCdn + '/js/m/t6app.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/t6app-main.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-objects.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/valueDisplay.js')
+      else
+        -script(type='application/javascript', src=baseUrlCdn + '/js/m/t6app-min.js')
