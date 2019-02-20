@@ -9,9 +9,9 @@ app.resources.mqtts = {
 	},
 	displayPublic(id, isAdd, isEdit, isPublic) {
 	},
-	displayAdd(object, isAdd, isEdit, isPublic) {
+	displayAdd(mqtt, isAdd, isEdit, isPublic) {
 	},
-	displayItem(object) {
+	displayItem(mqtt) {
 		/* On the list Views */
 	}
 };
