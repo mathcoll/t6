@@ -191,8 +191,8 @@ app.resources.dashboards = {
 				
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					buttons.backDashboard.addEventListener('click', function(evt) { app.resources.dashboards.display(dashboard.id, false, false, false); }, false);
-					buttons.saveDashboard.addEventListener('click', function(evt) { app.resources.dashboards.onEdit(evt); }, false);
+					app.buttons.backDashboard.addEventListener('click', function(evt) { app.resources.dashboards.display(dashboard.id, false, false, false); }, false);
+					app.buttons.saveDashboard.addEventListener('click', function(evt) { app.resources.dashboards.onEdit(evt); }, false);
 
 					document.getElementById('snippetsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
 						var id = evt.target.getAttribute('data-value');
@@ -292,8 +292,8 @@ app.resources.dashboards = {
 		}, false);
 		
 		app.refreshButtonsSelectors();
-		buttons.addDashboardBack.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
-		buttons.addDashboard.addEventListener('click', function(evt) { app.resources.dashboards.onAdd(evt); }, false);
+		app.buttons.addDashboardBack.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
+		app.buttons.addDashboard.addEventListener('click', function(evt) { app.resources.dashboards.onAdd(evt); }, false);
 
 		app.setExpandAction();
 	},

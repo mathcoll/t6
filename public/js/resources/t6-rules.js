@@ -126,8 +126,8 @@ app.resources.rules = {
 					app.setExpandAction();
 					
 					app.refreshButtonsSelectors();
-					buttons.backRule.addEventListener('click', function(evt) { app.resources.rules.display(rule.id, false, false, false); }, false);
-					buttons.saveRule.addEventListener('click', function(evt) { app.resources.rules.onEdit(evt); }, false);
+					app.buttons.backRule.addEventListener('click', function(evt) { app.resources.rules.display(rule.id, false, false, false); }, false);
+					app.buttons.saveRule.addEventListener('click', function(evt) { app.resources.rules.onEdit(evt); }, false);
 						
 				} else {
 					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
@@ -188,11 +188,11 @@ app.resources.rules = {
 					app.setExpandAction();
 					
 					app.refreshButtonsSelectors();
-					buttons.listRule.addEventListener('click', function(evt) { app.setSection('rules'); evt.preventDefault(); }, false);
+					app.buttons.listRule.addEventListener('click', function(evt) { app.setSection('rules'); evt.preventDefault(); }, false);
 					// buttons.deleteRule2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					buttons.editRule2.addEventListener('click', function(evt) { app.resources.rules.display(rule.id, false, true, false); evt.preventDefault(); }, false);
+					app.buttons.editRule2.addEventListener('click', function(evt) { app.resources.rules.display(rule.id, false, true, false); evt.preventDefault(); }, false);
 				}
 				app.setSection('rule');
 			}
@@ -269,8 +269,8 @@ app.resources.rules = {
 			});
 		}
 		
-		buttons.addRuleBack.addEventListener('click', function(evt) { app.setSection('rules'); evt.preventDefault(); }, false);
-		buttons.addRule.addEventListener('click', function(evt) { app.resources.rules.onAdd(evt); }, false);
+		app.buttons.addRuleBack.addEventListener('click', function(evt) { app.setSection('rules'); evt.preventDefault(); }, false);
+		app.buttons.addRule.addEventListener('click', function(evt) { app.resources.rules.onAdd(evt); }, false);
 
 		app.setExpandAction();
 	},

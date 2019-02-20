@@ -132,6 +132,7 @@ var app = {
 		{name: 'watch', value:'Watch'},
 	],
 	snippetsTypes: [{name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'cardchart', value:'Card Chart'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'}],
+	snippetTypes = [],
 	EventTypes: [{name: 'mqttPublish', value:'mqtt Publish'}, {name: 'email', value:'Email'}, {name: 'httpWebhook', value:'http(s) Webhook'}, {name: 'sms', value:'Sms/Text message'}, {name: 'serial', value:'Serial using Arduino CmdMessenger'}],
 	units: [],
 	datatypes: [],
@@ -163,13 +164,12 @@ var app = {
 		integerNotNegative: '[1-999]+',
 		meta_revision: "^[0-9]{1,}$",
 	},
-	resources: {}
+	resources: {},
+	buttons = {} // see function app.refreshButtonsSelectors()
 };
 app.offlineCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'};
 
-var snippetTypes = [];
 var Tawk_API;
-var buttons = {}; // see function app.refreshButtonsSelectors()
 var containers = {
 	spinner: document.querySelector('section#loading-spinner'),
 	index: document.querySelector('section#index'),
@@ -252,16 +252,18 @@ var containers = {
 	'use strict';
 
 /* *********************************** General functions *********************************** */
-	function setLoginAction() {	
-		for (var i in buttons.loginButtons) {
-			if ( buttons.loginButtons[i].childElementCount > -1 ) {
-				buttons.loginButtons[i].removeEventListener('click', onLoginButtonClick, false);
-				buttons.loginButtons[i].addEventListener('click', onLoginButtonClick, false);
+	//function setLoginAction() {	
+	app.setLoginAction = function() {
+		for (var i in app.buttons.loginButtons) {
+			if ( app.buttons.loginButtons[i].childElementCount > -1 ) {
+				app.buttons.loginButtons[i].removeEventListener('click', onLoginButtonClick, false);
+				app.buttons.loginButtons[i].addEventListener('click', onLoginButtonClick, false);
 			}
 		}
 	}; // setLoginAction
 	
-	function onLoginButtonClick(evt) {
+	//function onLoginButtonClick(evt) {
+	app.onLoginButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.signin button.login_button i.material-icons").textContent = "cached";
@@ -275,53 +277,61 @@ var containers = {
 		evt.preventDefault();
 	}; // onLoginButtonClick
 	
-	function onStatusButtonClick(evt) {
+	//function onStatusButtonClick(evt) {
+	app.onStatusButtonClick = function(evt) {
 		app.getStatus();
 		app.setSection('status');
 		if (evt) evt.preventDefault();
 	}; // onStatusButtonClick
 	
-	function onSettingsButtonClick(evt) {
+	//function onSettingsButtonClick(evt) {
+	app.onSettingsButtonClick = function(evt) {
 		app.setSection('settings');
 		if (evt) evt.preventDefault();
 	}; // onSettingsButtonClick
 	
-	function onDocsButtonClick(evt) {
+	//function onDocsButtonClick(evt) {
+	app.onDocsButtonClick = function(evt) {
 		app.setSection('docs');
 		if (evt) evt.preventDefault();
 	}; // onDocsButtonClick
 	
-	function onTermsButtonClick(evt) {
+	//function onTermsButtonClick(evt) {
+	app.onTermsButtonClick = function(evt) {
 		app.getTerms();
 		app.setSection('terms');
 		if (evt) evt.preventDefault();
 	}; // onTermsButtonClick
 	
-	function setSignupAction() {
-		for (var i in buttons.user_create) {
-			if ( buttons.user_create[i].childElementCount > -1 ) {
-				buttons.user_create[i].addEventListener('click', onSignupButtonClick, false);
+	//function setSignupAction() {
+	app.setSignupAction = function() {
+		for (var i in app.buttons.user_create) {
+			if ( app.buttons.user_create[i].childElementCount > -1 ) {
+				app.buttons.user_create[i].addEventListener('click', onSignupButtonClick, false);
 			}
 		}
 	}; // setSignupAction
 	
-	function setPasswordResetAction() {
-		for (var i in buttons.user_setpassword) {
-			if ( buttons.user_setpassword[i].childElementCount > -1 ) {
-				buttons.user_setpassword[i].addEventListener('click', onPasswordResetButtonClick, false);
+	//function setPasswordResetAction() {
+	app.setPasswordResetAction = function() {
+		for (var i in app.buttons.user_setpassword) {
+			if ( app.buttons.user_setpassword[i].childElementCount > -1 ) {
+				app.buttons.user_setpassword[i].addEventListener('click', onPasswordResetButtonClick, false);
 			}
 		}
 	}; // setPasswordResetAction
 	
-	function setForgotAction() {
-		for (var i in buttons.user_forgot) {
-			if ( buttons.user_forgot[i].childElementCount > -1 ) {
-				buttons.user_forgot[i].addEventListener('click', onForgotPasswordButtonClick, false);
+	//function setForgotAction() {
+	app.setForgotAction = function() {
+		for (var i in app.buttons.user_forgot) {
+			if ( app.buttons.user_forgot[i].childElementCount > -1 ) {
+				app.buttons.user_forgot[i].addEventListener('click', onForgotPasswordButtonClick, false);
 			}
 		}
 	}; // setForgotAction
 	
-	function onSignupButtonClick(evt) {
+	//function onSignupButtonClick(evt) {
+	app.onSignupButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.signup button.createUser").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.signup button.createUser i.material-icons").textContent = "cached";
@@ -366,7 +376,8 @@ var containers = {
 		evt.preventDefault();
 	}; // onSignupButtonClick
 	
-	function onPasswordResetButtonClick(evt) {
+	//function onPasswordResetButtonClick(evt) {
+	app.onPasswordResetButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.resetpassword button.setPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.resetpassword button.setPassword i.material-icons").textContent = "cached";
@@ -559,7 +570,7 @@ var containers = {
 		});
 	}; // subscribeUserToPush
 
-	var preloadImage = function(img) {
+	app.preloadImage = function(img) {
 		img.setAttribute('src', img.getAttribute('data-src'));
 	} // preloadImage
 
@@ -598,7 +609,7 @@ var containers = {
 	
 	app.refreshButtonsSelectors = function() {
 		if ( componentHandler ) componentHandler.upgradeDom();
-		buttons = {
+		app.buttons = {
 			// signin_button
 			// _button
 			notification: document.querySelector('button#notification'),
@@ -682,9 +693,9 @@ var containers = {
 	app.setExpandAction = function() {
 		componentHandler.upgradeDom();
 		app.refreshButtonsSelectors();
-		for (var i in buttons.expandButtons) {
-			if ( (buttons.expandButtons[i]).childElementCount > -1 ) {
-				(buttons.expandButtons[i]).addEventListener('click', app.expand, false);
+		for (var i in app.buttons.expandButtons) {
+			if ( (app.buttons.expandButtons[i]).childElementCount > -1 ) {
+				(app.buttons.expandButtons[i]).addEventListener('click', app.expand, false);
 			}
 		}
 	}; // setExpandAction
@@ -870,11 +881,11 @@ var containers = {
 				act[i].classList.add('is-inactive');
 			}
 		}
-		for (var i in buttons.menuTabBar) {
-			if ( (buttons.menuTabBar[i]).childElementCount > -1 ) {
-				buttons.menuTabBar[i].classList.remove('is-active');
-				if ( buttons.menuTabBar[i].getAttribute("for") == section || buttons.menuTabBar[i].getAttribute("for") == section+'s' ) {
-					buttons.menuTabBar[i].classList.add('is-active');
+		for (var i in app.buttons.menuTabBar) {
+			if ( (app.buttons.menuTabBar[i]).childElementCount > -1 ) {
+				app.buttons.menuTabBar[i].classList.remove('is-active');
+				if ( app.buttons.menuTabBar[i].getAttribute("for") == section || buttons.menuTabBar[i].getAttribute("for") == section+'s' ) {
+					app.buttons.menuTabBar[i].classList.add('is-active');
 				}
 			}
 		}
@@ -1125,8 +1136,8 @@ var containers = {
 		}
 		
 		if ( type == 'objects' ) {
-			for (var d=0;d<buttons.deleteObject.length;d++) {
-				buttons.deleteObject[d].addEventListener('click', function(evt) {
+			for (var d=0;d<app.buttons.deleteObject.length;d++) {
+				app.buttons.deleteObject[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Object';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"?</p>'; //
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -1162,17 +1173,17 @@ var containers = {
 					});
 				});
 			}
-			for (var e=0;e<buttons.editObject.length;e++) {
+			for (var e=0;e<app.buttons.editObject.length;e++) {
 				//console.log(buttons.editObject[e]);
-				buttons.editObject[e].addEventListener('click', function(evt) {
+				app.buttons.editObject[e].addEventListener('click', function(evt) {
 					app.resources.objects.display(evt.currentTarget.dataset.id, false, true, false);
 					evt.preventDefault();
 				});
 			}
 		} else if ( type == 'flows' ) {
-			for (var d=0;d<buttons.deleteFlow.length;d++) {
+			for (var d=0;d<app.buttons.deleteFlow.length;d++) {
 				//console.log(buttons.deleteFlow[d]);
-				buttons.deleteFlow[d].addEventListener('click', function(evt) {
+				app.buttons.deleteFlow[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Flow';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"? This action will remove all datapoints in the flow and can\'t be recovered.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -1208,17 +1219,17 @@ var containers = {
 					});
 				});
 			}
-			for (var e=0;e<buttons.editFlow.length;e++) {
+			for (var e=0;e<app.buttons.editFlow.length;e++) {
 				//console.log(buttons.editFlow[e]);
-				buttons.editFlow[e].addEventListener('click', function(evt) {
+				app.buttons.editFlow[e].addEventListener('click', function(evt) {
 					app.resources.flows.display(evt.currentTarget.dataset.id, false, true, false);
 					evt.preventDefault();
 				});
 			}
 		} else if ( type == 'dashboards' ) {
-			for (var d=0;d<buttons.deleteDashboard.length;d++) {
+			for (var d=0;d<app.buttons.deleteDashboard.length;d++) {
 				//console.log(buttons.deleteDashboard[d]);
-				buttons.deleteDashboard[d].addEventListener('click', function(evt) {
+				app.buttons.deleteDashboard[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Dashboard';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"?</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -1254,16 +1265,16 @@ var containers = {
 					});
 				});
 			}
-			for (var d=0;d<buttons.editDashboard.length;d++) {
+			for (var d=0;d<app.buttons.editDashboard.length;d++) {
 				//console.log(buttons.editDashboard[d]);
-				buttons.editDashboard[d].addEventListener('click', function(evt) {
+				app.buttons.editDashboard[d].addEventListener('click', function(evt) {
 					app.resources.dashboards.display(evt.currentTarget.dataset.id, false, true, false);
 					evt.preventDefault();
 				});
 			}
 		} else if ( type == 'snippets' ) {
-			for (var d=0;d<buttons.deleteSnippet.length;d++) {
-				buttons.deleteSnippet[d].addEventListener('click', function(evt) {
+			for (var d=0;d<app.buttons.deleteSnippet.length;d++) {
+				app.buttons.deleteSnippet[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Snippet';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"? This action will remove all reference to the Snippet in Dashboards.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -1299,15 +1310,15 @@ var containers = {
 					});
 				});
 			}
-			for (var s=0;s<buttons.editSnippet.length;s++) {
-				buttons.editSnippet[s].addEventListener('click', function(evt) {
+			for (var s=0;s<app.buttons.editSnippet.length;s++) {
+				app.buttons.editSnippet[s].addEventListener('click', function(evt) {
 					app.resources.snippets.display(evt.currentTarget.dataset.id, false, true, false);
 					evt.preventDefault();
 				});
 			}
 		} else if ( type == 'rules' ) {
-			for (var d=0;d<buttons.deleteRule.length;d++) {
-				buttons.deleteRule[d].addEventListener('click', function(evt) {
+			for (var d=0;d<app.buttons.deleteRule.length;d++) {
+				app.buttons.deleteRule[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete rule';
 					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"? This action will remove all reference to the Rule in t6.</p>';
 					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
@@ -1344,8 +1355,8 @@ var containers = {
 					});
 				});
 			}
-			for (var s=0;s<buttons.editRule.length;s++) {
-				buttons.editRule[s].addEventListener('click', function(evt) {
+			for (var s=0;s<app.buttons.editRule.length;s++) {
+				app.buttons.editRule[s].addEventListener('click', function(evt) {
 					app.resources.rules.display(evt.currentTarget.dataset.id, false, true, false);
 					evt.preventDefault();
 				});
@@ -2294,7 +2305,7 @@ var containers = {
 				updated[i].removeAttribute('data-upgraded');
 			}
 			app.refreshButtonsSelectors();
-			setLoginAction();
+			app.setLoginAction();
 			setSignupAction();
 		}
 	} // displayLoginForm
@@ -2397,12 +2408,12 @@ var containers = {
 			componentHandler.upgradeDom();
 			
 			app.refreshButtonsSelectors();
-			if ( buttons.createObject ) buttons.createObject.addEventListener('click', function() {app.setSection('object_add');}, false);
-			if ( buttons.createFlow ) buttons.createFlow.addEventListener('click', function() {app.setSection('flow_add');}, false);
-			if ( buttons.createSnippet ) buttons.createSnippet.addEventListener('click', function() {app.setSection('snippet_add');}, false);
-			if ( buttons.createDashboard ) buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add');}, false);
-			if ( buttons.createRule ) buttons.createRule.addEventListener('click', function() {app.setSection('rule_add');}, false);
-			if ( buttons.createMqtt ) buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
+			if ( app.buttons.createObject ) app.buttons.createObject.addEventListener('click', function() {app.setSection('object_add');}, false);
+			if ( app.buttons.createFlow ) app.buttons.createFlow.addEventListener('click', function() {app.setSection('flow_add');}, false);
+			if ( app.buttons.createSnippet ) app.buttons.createSnippet.addEventListener('click', function() {app.setSection('snippet_add');}, false);
+			if ( app.buttons.createDashboard ) app.buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add');}, false);
+			if ( app.buttons.createRule ) app.buttons.createRule.addEventListener('click', function() {app.setSection('rule_add');}, false);
+			if ( app.buttons.createMqtt ) app.buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
 		}
 	} // showAddFAB
 
@@ -3517,7 +3528,7 @@ var containers = {
 		
 		componentHandler.upgradeDom();
 		app.refreshButtonsSelectors();
-		setLoginAction();
+		app.setLoginAction();
 		setSignupAction();
 	}// sessionExpired
 	
@@ -3628,7 +3639,7 @@ var containers = {
 		}
 	}
 	
-	function setPosition(position) {
+	app.setPosition = function(position) {
 		app.defaultResources.object.attributes.longitude = position.coords.longitude;
 		app.defaultResources.object.attributes.latitude = position.coords.latitude;
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
@@ -3636,7 +3647,7 @@ var containers = {
 		}
 	}
 	
-	function setPositionError(error) {
+	app.setPositionError = function(error) {
 		switch (error.code) {
 			case error.TIMEOUT:
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
@@ -3673,7 +3684,7 @@ var containers = {
 	app.getLocation = function() {
 		if (navigator.geolocation) {
 			var options = { enableHighAccuracy: false, timeout: 200000, maximumAge: 500000 };
-			navigator.geolocation.getCurrentPosition(setPosition, setPositionError, options);
+			navigator.geolocation.getCurrentPosition(app.setPosition, app.setPositionError, options);
 		} else {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast("Geolocation is not supported by this browser.", {timeout:3000, type: 'warning'});
@@ -3729,11 +3740,11 @@ var containers = {
 	}
 	app.fetchIndex('index');
 	app.refreshButtonsSelectors();
-	setLoginAction();
-	setSignupAction();
+	app.setLoginAction();
+	app.setSignupAction();
 	app.refreshButtonsSelectors();
-	setPasswordResetAction();
-	setForgotAction();
+	app.setPasswordResetAction();
+	app.setForgotAction();
 	
 	if( !app.isLogged || app.auth.username === undefined ) {
 		if ( localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix() ) {
@@ -3749,9 +3760,9 @@ var containers = {
 		}
 	}
 	
-	for (var i in buttons.notifications) {
-		if ( buttons.notifications[i].childElementCount > -1 ) {
-			buttons.notifications[i].addEventListener('click', function(e) {
+	for (var i in app.buttons.notifications) {
+		if ( app.buttons.notifications[i].childElementCount > -1 ) {
+			app.buttons.notifications[i].addEventListener('click', function(e) {
 				if ( app.getSetting('notifications.email') && app.getSetting('notifications.unsubscription_token') ) {
 					var myHeaders = new Headers();
 					myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -3840,28 +3851,28 @@ var containers = {
 		}
 	}, false);
 	
-	for (var i in buttons.status) {
-		if ( buttons.status[i].childElementCount > -1 ) {
-			buttons.status[i].removeEventListener('click', onStatusButtonClick, false);
-			buttons.status[i].addEventListener('click', onStatusButtonClick, false);
+	for (var i in app.buttons.status) {
+		if ( app.buttons.status[i].childElementCount > -1 ) {
+			app.buttons.status[i].removeEventListener('click', onStatusButtonClick, false);
+			app.buttons.status[i].addEventListener('click', onStatusButtonClick, false);
 		}
 	}
-	for (var i in buttons.settings) {
-		if ( buttons.settings[i].childElementCount > -1 ) {
-			buttons.settings[i].removeEventListener('click', onSettingsButtonClick, false);
-			buttons.settings[i].addEventListener('click', onSettingsButtonClick, false);
+	for (var i in app.buttons.settings) {
+		if ( app.buttons.settings[i].childElementCount > -1 ) {
+			app.buttons.settings[i].removeEventListener('click', onSettingsButtonClick, false);
+			app.buttons.settings[i].addEventListener('click', onSettingsButtonClick, false);
 		}
 	}
-	for (var i in buttons.docs) {
-		if ( buttons.docs[i].childElementCount > -1 ) {
-			buttons.docs[i].removeEventListener('click', onDocsButtonClick, false);
-			buttons.docs[i].addEventListener('click', onDocsButtonClick, false);
+	for (var i in app.buttons.docs) {
+		if ( app.buttons.docs[i].childElementCount > -1 ) {
+			app.buttons.docs[i].removeEventListener('click', onDocsButtonClick, false);
+			app.buttons.docs[i].addEventListener('click', onDocsButtonClick, false);
 		}
 	}
-	for (var i in buttons.terms) {
-		if ( buttons.terms[i].childElementCount > -1 ) {
-			buttons.terms[i].removeEventListener('click', onTermsButtonClick, false);
-			buttons.terms[i].addEventListener('click', onTermsButtonClick, false);
+	for (var i in app.buttons.terms) {
+		if ( app.buttons.terms[i].childElementCount > -1 ) {
+			app.buttons.terms[i].removeEventListener('click', onTermsButtonClick, false);
+			app.buttons.terms[i].addEventListener('click', onTermsButtonClick, false);
 		}
 	}
 
@@ -4006,7 +4017,7 @@ var containers = {
 		app.auth={};
 		app.setSection('login');
 	}, false);
-	buttons.notification.addEventListener('click', function(evt) {
+	app.buttons.notification.addEventListener('click', function(evt) {
 		app.showNotification();
 	}, false);
 	profile_button.addEventListener('click', function(evt) {
@@ -4124,7 +4135,7 @@ var containers = {
 		var LL = document.querySelectorAll('img.lazyloading');
 		for (var image in LL) {
 			if ( (LL[image]).childElementCount > -1 ) {
-				preloadImage(LL[image]);
+				app.preloadImage(LL[image]);
 			}
 		}
 	} else {
@@ -4133,7 +4144,7 @@ var containers = {
 				entries.map(function(IOentry) {
 					if (IOentry.intersectionRatio > 0 && navigator.onLine) {
 						io.unobserve(IOentry.target);
-						preloadImage(IOentry.target);
+						app.preloadImage(IOentry.target);
 					}
 				});
 			}, {}

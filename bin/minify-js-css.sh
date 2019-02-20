@@ -1,6 +1,7 @@
 
 echo Minification in progress...
 
+: '
 uglifyjs \
 	../public/js/vendor/jquery-3.3.1.min.js \
 	../public/js/sortable/sortable.min-1.4.2.js \
@@ -8,13 +9,32 @@ uglifyjs \
 	../public/js/t6.js \
 	-o ../public/js/t6.min.js \
 	-p 5 -m -c warnings=false
-echo Javascript minify: Completed
+'
 
 uglifycss \
 	../public/css/bootstrap.css \
 	../public/css/t6.css \
 	> ../public/css/t6.min.css
 echo Stylesheet minify: Completed
+
+uglifyjs \
+	../public/js/material.js \
+	../public/js/t6app-main.js \
+	../public/js/resources/t6-objects.js \
+	../public/js/resources/t6-flows.js \
+	../public/js/resources/t6-snippets.js \
+	../public/js/resources/t6-dashboards.js \
+	../public/js/resources/t6-rules.js \
+	../public/js/resources/t6-mqtts.js \
+	../public/js/resources/snippets/valueDisplay.js  \
+	../public/js/resources/snippets/graphDisplay.js  \
+	../public/js/resources/snippets/cardChart.js  \
+	../public/js/resources/snippets/simpleRow.js  \
+	../public/js/resources/snippets/simpleClock.js  \
+	-o ../public/js/t6app-min.js \
+-p 5 -m -c warnings=false
+echo Javascript minify: Completed
+
 
 
 

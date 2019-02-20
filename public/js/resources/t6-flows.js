@@ -322,8 +322,8 @@ app.resources.flows = {
 
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					buttons.backFlow.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, false, false); }, false);
-					buttons.saveFlow.addEventListener('click', function(evt) { app.resources.flows.onEdit(evt); }, false);
+					app.buttons.backFlow.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, false, false); }, false);
+					app.buttons.saveFlow.addEventListener('click', function(evt) { app.resources.flows.onEdit(evt); }, false);
 
 					let element1 = document.getElementById('switch-edit_require_signed').parentNode;
 					if ( element1 ) {
@@ -340,11 +340,11 @@ app.resources.flows = {
 						});
 					}
 				} else {
-					buttons.listFlow.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
+					app.buttons.listFlow.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
 					// buttons.deleteFlow2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					buttons.editFlow2.addEventListener('click', function(evt) { app.displayFlow(flow.id, true); evt.preventDefault(); }, false);
+					app.buttons.editFlow2.addEventListener('click', function(evt) { app.displayFlow(flow.id, true); evt.preventDefault(); }, false);
 				}
 				
 				componentHandler.upgradeDom();
@@ -408,8 +408,8 @@ app.resources.flows = {
 		componentHandler.upgradeDom();
 		
 		app.refreshButtonsSelectors();
-		buttons.addFlowBack.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
-		buttons.addFlow.addEventListener('click', function(evt) { app.resources.flows.onAdd(evt); }, false);
+		app.buttons.addFlowBack.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
+		app.buttons.addFlow.addEventListener('click', function(evt) { app.resources.flows.onAdd(evt); }, false);
 
 		let element1 = document.getElementById('switch-add_require_signed').parentNode;
 		if ( element1 ) {

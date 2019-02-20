@@ -285,8 +285,8 @@ app.resources.objects = {
 				
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					buttons.backObject.addEventListener('click', function(evt) { app.resources.objects.display(object.id, false, false, false); }, false);
-					buttons.saveObject.addEventListener('click', function(evt) { app.resources.objects.onEdit(evt); }, false);
+					app.buttons.backObject.addEventListener('click', function(evt) { app.resources.objects.display(object.id, false, false, false); }, false);
+					app.buttons.saveObject.addEventListener('click', function(evt) { app.resources.objects.onEdit(evt); }, false);
 					
 					var element = document.getElementById('switch-Visibility').parentNode;
 					if ( element ) {
@@ -296,11 +296,11 @@ app.resources.objects = {
 						});
 					}
 				} else {
-					buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
+					app.buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
 					// buttons.deleteObject2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					buttons.editObject2.addEventListener('click', function(evt) { app.resources.objects.display(object.id, true); evt.preventDefault(); }, false);
+					app.buttons.editObject2.addEventListener('click', function(evt) { app.resources.objects.display(object.id, true); evt.preventDefault(); }, false);
 				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
@@ -623,8 +623,8 @@ app.resources.objects = {
 		/* End Localization Map */
 		
 		app.refreshButtonsSelectors();
-		buttons.addObjectBack.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
-		buttons.addObject.addEventListener('click', function(evt) { app.resources.objects.onAdd(evt); }, false);
+		app.buttons.addObjectBack.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
+		app.buttons.addObject.addEventListener('click', function(evt) { app.resources.objects.onAdd(evt); }, false);
 
 		var element = document.getElementById('switch-Visibility').parentNode;
 		if ( element ) {

@@ -189,8 +189,8 @@ app.resources.snippets = {
 					app.setExpandAction();
 					
 					app.refreshButtonsSelectors();
-					buttons.backSnippet.addEventListener('click', function(evt) { app.resources.snippets.display(snippet.id, false, false, false); }, false);
-					buttons.saveSnippet.addEventListener('click', function(evt) { app.resources.snippets.onEdit(evt); }, false);
+					app.buttons.backSnippet.addEventListener('click', function(evt) { app.resources.snippets.display(snippet.id, false, false, false); }, false);
+					app.buttons.saveSnippet.addEventListener('click', function(evt) { app.resources.snippets.onEdit(evt); }, false);
 
 					document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
 						var id = evt.target.getAttribute('data-value');
@@ -277,11 +277,11 @@ app.resources.snippets = {
 					app.setExpandAction();
 					
 					app.refreshButtonsSelectors();
-					buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
+					app.buttons.listSnippet.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
 					// buttons.deleteSnippet2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					buttons.editSnippet2.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, true); evt.preventDefault(); }, false);
+					app.buttons.editSnippet2.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, true); evt.preventDefault(); }, false);
 				}
 				app.setSection('snippet');
 			}
@@ -351,8 +351,8 @@ app.resources.snippets = {
 		}, false);
 		
 		app.refreshButtonsSelectors();
-		buttons.addSnippetBack.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
-		buttons.addSnippet.addEventListener('click', function(evt) { app.resources.snippets.onAdd(evt); }, false);
+		app.buttons.addSnippetBack.addEventListener('click', function(evt) { app.setSection('snippets'); evt.preventDefault(); }, false);
+		app.buttons.addSnippet.addEventListener('click', function(evt) { app.resources.snippets.onAdd(evt); }, false);
 
 		app.setExpandAction();
 	},
