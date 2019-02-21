@@ -95,8 +95,8 @@ app.resources.flows = {
 		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+id );
 		
 		window.scrollTo(0, 0);
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -112,7 +112,7 @@ app.resources.flows = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var flow = response.data[i];
 				document.title = (app.sectionsPageTitles['flow']).replace(/%s/g, flow.attributes.name);
-				((containers.flow).querySelector('.page-content')).innerHTML = '';
+				((app.containers.flow).querySelector('.page-content')).innerHTML = '';
 				var datapoints = "";
 				
 				var node = "";
@@ -259,7 +259,7 @@ app.resources.flows = {
 							}
 							datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), value, {type: 'text', isEdit: false});
 							return [i.attributes.timestamp, i.attributes.value];
-					    })];
+						})];
 						componentHandler.upgradeDom();
 						$.plot($('#flow-graph-'+flow.id), dataset, options);
 						datapoints += "		</div>";
@@ -269,7 +269,7 @@ app.resources.flows = {
 						dtps.className = "mdl-grid mdl-cell--12-col";
 						dtps.dataset.id = "last-datapoints_"+flow.id;
 						dtps.innerHTML = datapoints;
-						((containers.flow).querySelector('.page-content')).appendChild(dtps);
+						((app.containers.flow).querySelector('.page-content')).appendChild(dtps);
 						
 						componentHandler.upgradeDom();
 						app.setExpandAction();
@@ -318,7 +318,7 @@ app.resources.flows = {
 				c.className = "mdl-grid mdl-cell--12-col";
 				c.dataset.id = flow.id;
 				c.innerHTML = node;
-				((containers.flow).querySelector('.page-content')).appendChild(c);
+				((app.containers.flow).querySelector('.page-content')).appendChild(c);
 
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
@@ -357,7 +357,7 @@ app.resources.flows = {
 				toast('displayFlow error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 	},
 	displayPublic(id, isAdd, isEdit, isPublic) {
 	},
@@ -404,7 +404,7 @@ app.resources.flows = {
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
-		(containers.flow_add).querySelector('.page-content').innerHTML = node;
+		(app.containers.flow_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 		
 		app.refreshButtonsSelectors();

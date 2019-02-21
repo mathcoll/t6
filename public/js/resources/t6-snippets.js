@@ -93,8 +93,8 @@ app.resources.snippets = {
 		history.pushState( {section: 'snippet' }, window.location.hash.substr(1), '#snippet?id='+id );
 		
 		window.scrollTo(0, 0);
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -184,7 +184,7 @@ app.resources.snippets = {
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 					
-					(containers.snippet).querySelector('.page-content').innerHTML = node;
+					(app.containers.snippet).querySelector('.page-content').innerHTML = node;
 					componentHandler.upgradeDom();
 					app.setExpandAction();
 					
@@ -269,10 +269,10 @@ app.resources.snippets = {
 
 					node += "<section class='mdl-grid mdl-cell--12-col snippetPreview'>";
 					//Snippet preview
-					app.getSnippet(app.icons.snippets, snippet.id, (containers.snippet).querySelector('.page-content'));
+					app.getSnippet(app.icons.snippets, snippet.id, (app.containers.snippet).querySelector('.page-content'));
 					node += "</section>";
 					
-					(containers.snippet).querySelector('.page-content').innerHTML = node;
+					(app.containers.snippet).querySelector('.page-content').innerHTML = node;
 					componentHandler.upgradeDom();
 					app.setExpandAction();
 					
@@ -292,7 +292,7 @@ app.resources.snippets = {
 				toast('displaySnippet error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 	},
 	displayPublic(id, isAdd, isEdit, isPublic) {
 	},
@@ -339,7 +339,7 @@ app.resources.snippets = {
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
-		(containers.snippet_add).querySelector('.page-content').innerHTML = node;
+		(app.containers.snippet_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 		document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
 			console.log(evt.target);

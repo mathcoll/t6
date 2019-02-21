@@ -10,4 +10,4 @@ var snippet = {
 		//sprintf("<div class='valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp'>%s</div>", "");
 	},
 }
-snippetTypes.push(snippet);
+app.snippetTypes.push(snippet);

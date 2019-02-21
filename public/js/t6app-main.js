@@ -9,6 +9,10 @@
  * [pushSubscription]
  * [ServiceWorker]
  * [setSection]
+ 
+ TODO: l165: app.displayListItem
+ TODO: 1916: container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
+ BECOME:     container.innerHTML += app.resources.(type).dysplayCard(type, 12, icon, response.data[i]);
  */
 
 var app = {
@@ -132,7 +136,7 @@ var app = {
 		{name: 'watch', value:'Watch'},
 	],
 	snippetsTypes: [{name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'cardchart', value:'Card Chart'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'}],
-	snippetTypes = [],
+	snippetTypes: [],
 	EventTypes: [{name: 'mqttPublish', value:'mqtt Publish'}, {name: 'email', value:'Email'}, {name: 'httpWebhook', value:'http(s) Webhook'}, {name: 'sms', value:'Sms/Text message'}, {name: 'serial', value:'Serial using Arduino CmdMessenger'}],
 	units: [],
 	datatypes: [],
@@ -165,37 +169,13 @@ var app = {
 		meta_revision: "^[0-9]{1,}$",
 	},
 	resources: {},
-	buttons = {} // see function app.refreshButtonsSelectors()
+	buttons: {}, // see function app.refreshButtonsSelectors()
+	containers: {}, // see function app.refreshContainers()
 };
 app.offlineCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'};
 
 var Tawk_API;
-var containers = {
-	spinner: document.querySelector('section#loading-spinner'),
-	index: document.querySelector('section#index'),
-	objects: document.querySelector('section#objects'),
-	object: document.querySelector('section#object'),
-	object_add: document.querySelector('section#object_add'),
-	flows: document.querySelector('section#flows'),
-	flow: document.querySelector('section#flow'),
-	flow_add: document.querySelector('section#flow_add'),
-	dashboards: document.querySelector('section#dashboards'),
-	dashboard: document.querySelector('section#dashboard'),
-	dashboard_add: document.querySelector('section#dashboard_add'),
-	snippets: document.querySelector('section#snippets'),
-	snippet: document.querySelector('section#snippet'),
-	snippet_add: document.querySelector('section#snippet_add'),
-	profile: document.querySelector('section#profile'),
-	settings: document.querySelector('section#settings'),
-	rules: document.querySelector('section#rules'),
-	rule: document.querySelector('section#rule'),
-	rule_add: document.querySelector('section#rule_add'),
-	mqtts: document.querySelector('section#mqtts'),
-	status: document.querySelector('section#status'),
-	terms: document.querySelector('section#terms'),
-	docs: document.querySelector('section#docs'),
-	usersList: document.querySelector('section#users-list'),
-};
+var touchStartPoint, touchMovePoint;
 
 (function (exports) {
 	'use strict';
@@ -250,19 +230,97 @@ var containers = {
 	
 (function() {
 	'use strict';
+/*
+ * *********************************** Tooling functions ***********************************
+ */
+	app.isLtr = function() {
+		return app.getSetting('settings.isLtr')!==undefined?!!JSON.parse(String( app.getSetting('settings.isLtr') ).toLowerCase()):true;
+	};
 
-/* *********************************** General functions *********************************** */
-	//function setLoginAction() {	
+	app.preloadImage = function(img) {
+		img.setAttribute('src', img.getAttribute('data-src'));
+	};
+
+	app.urlBase64ToUint8Array = function(base64String) {
+		const padding = '='.repeat((4 - base64String.length % 4) % 4);
+		const base64 = (base64String + padding)  .replace(/\-/g, '+') .replace(/_/g, '/');
+		const rawData = window.atob(base64);
+		const outputArray = new Uint8Array(rawData.length);
+		for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); };
+		return outputArray;
+	};
+	
+	app.nl2br = function (str, isXhtml) {
+		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
+		return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
+	};
+	
+	app.offsetBottom = function(el, i) {
+		i = i || 0;
+		return $(el)[i].getBoundingClientRect().bottom;
+	};
+	
+	app.fetchStatusHandler = function(response) {
+		if ( response.headers.get('X-RateLimit-Limit') && response.headers.get('X-RateLimit-Remaining') ) {
+			app.RateLimit.Limit = response.headers.get('X-RateLimit-Limit');
+			app.RateLimit.Remaining = response.headers.get('X-RateLimit-Remaining');
+			app.RateLimit.Used = app.RateLimit.Limit - app.RateLimit.Remaining;
+		}
+		if (response.status === 200 || response.status === 201) {
+			return response;
+		} else if (response.status === 400) {
+			toast('Bad Request.', {timeout:3000, type: 'error'});
+			throw new Error('Bad Request.');
+		} else if (response.status === 401 || response.status === 403) {
+			app.sessionExpired();
+			throw new Error(response.statusText);
+		} else if (response.status === 409) {
+			toast('Revision is conflictual.', {timeout:3000, type: 'error'});
+			throw new Error('Revision is conflictual.');
+		} else {
+			throw new Error(response.statusText);
+		}
+	};
+	
+	app.fetchStatusHandlerOnUser = function(response) {
+		if ( response.headers.get('X-RateLimit-Limit') && response.headers.get('X-RateLimit-Remaining') ) {
+			app.RateLimit.Limit = response.headers.get('X-RateLimit-Limit');
+			app.RateLimit.Remaining = response.headers.get('X-RateLimit-Remaining');
+			app.RateLimit.Used = app.RateLimit.Limit - app.RateLimit.Remaining;
+		}
+		if (response.status === 200 || response.status === 201) {
+			return response;
+		} else if (response.status === 409) {
+			throw new Error('Email already exists on t6, please Sign in.');
+		} else {
+			throw new Error(response.statusText);
+		}
+	};
+
+	app.getUniqueId = function() {
+		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+	};
+	
+	app.setSetting = function(name, value) {
+		localStorage.setItem(name, value);
+	};
+	
+	app.getSetting = function(name) {
+		return localStorage.getItem(name);
+	};
+
+/*
+ * *********************************** Application functions ***********************************
+ */
 	app.setLoginAction = function() {
 		for (var i in app.buttons.loginButtons) {
 			if ( app.buttons.loginButtons[i].childElementCount > -1 ) {
-				app.buttons.loginButtons[i].removeEventListener('click', onLoginButtonClick, false);
-				app.buttons.loginButtons[i].addEventListener('click', onLoginButtonClick, false);
+				app.buttons.loginButtons[i].removeEventListener('click', app.onLoginButtonClick, false);
+				app.buttons.loginButtons[i].addEventListener('click', app.onLoginButtonClick, false);
 			}
 		}
-	}; // setLoginAction
+	};
 	
-	//function onLoginButtonClick(evt) {
 	app.onLoginButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
@@ -275,62 +333,54 @@ var containers = {
 		app.auth = {"username":username, "password":password};
 		app.authenticate();
 		evt.preventDefault();
-	}; // onLoginButtonClick
+	};
 	
-	//function onStatusButtonClick(evt) {
 	app.onStatusButtonClick = function(evt) {
 		app.getStatus();
 		app.setSection('status');
 		if (evt) evt.preventDefault();
-	}; // onStatusButtonClick
+	};
 	
-	//function onSettingsButtonClick(evt) {
 	app.onSettingsButtonClick = function(evt) {
 		app.setSection('settings');
 		if (evt) evt.preventDefault();
-	}; // onSettingsButtonClick
+	};
 	
-	//function onDocsButtonClick(evt) {
 	app.onDocsButtonClick = function(evt) {
 		app.setSection('docs');
 		if (evt) evt.preventDefault();
-	}; // onDocsButtonClick
+	};
 	
-	//function onTermsButtonClick(evt) {
 	app.onTermsButtonClick = function(evt) {
 		app.getTerms();
 		app.setSection('terms');
 		if (evt) evt.preventDefault();
-	}; // onTermsButtonClick
+	};
 	
-	//function setSignupAction() {
 	app.setSignupAction = function() {
 		for (var i in app.buttons.user_create) {
 			if ( app.buttons.user_create[i].childElementCount > -1 ) {
-				app.buttons.user_create[i].addEventListener('click', onSignupButtonClick, false);
+				app.buttons.user_create[i].addEventListener('click', app.onSignupButtonClick, false);
 			}
 		}
-	}; // setSignupAction
+	};
 	
-	//function setPasswordResetAction() {
 	app.setPasswordResetAction = function() {
 		for (var i in app.buttons.user_setpassword) {
 			if ( app.buttons.user_setpassword[i].childElementCount > -1 ) {
-				app.buttons.user_setpassword[i].addEventListener('click', onPasswordResetButtonClick, false);
+				app.buttons.user_setpassword[i].addEventListener('click', app.onPasswordResetButtonClick, false);
 			}
 		}
-	}; // setPasswordResetAction
+	};
 	
-	//function setForgotAction() {
 	app.setForgotAction = function() {
 		for (var i in app.buttons.user_forgot) {
 			if ( app.buttons.user_forgot[i].childElementCount > -1 ) {
-				app.buttons.user_forgot[i].addEventListener('click', onForgotPasswordButtonClick, false);
+				app.buttons.user_forgot[i].addEventListener('click', app.onForgotPasswordButtonClick, false);
 			}
 		}
-	}; // setForgotAction
+	};
 	
-	//function onSignupButtonClick(evt) {
 	app.onSignupButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.signup button.createUser").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
@@ -374,9 +424,8 @@ var containers = {
 			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 		}
 		evt.preventDefault();
-	}; // onSignupButtonClick
+	};
 	
-	//function onPasswordResetButtonClick(evt) {
 	app.onPasswordResetButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.resetpassword button.setPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
@@ -429,9 +478,9 @@ var containers = {
 			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 		}
 		evt.preventDefault();
-	}; // onPasswordResetButtonClick
+	};
 	
-	function onForgotPasswordButtonClick(evt) {
+	app.onForgotPasswordButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		//myForm.querySelector("form.forgotpassword button.forgotPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").textContent = "cached";
@@ -472,23 +521,9 @@ var containers = {
 			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
 		}
 		evt.preventDefault();
-	}; // onForgotPasswordButtonClick
-
-	function urlBase64ToUint8Array(base64String) {
-		const padding = '='.repeat((4 - base64String.length % 4) % 4);
-		const base64 = (base64String + padding)  .replace(/\-/g, '+') .replace(/_/g, '/');
-		const rawData = window.atob(base64);
-		const outputArray = new Uint8Array(rawData.length);
-		for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); };
-		return outputArray;
-	}; // urlBase64ToUint8Array
+	};
 	
-	function offsetBottom(el, i) {
-		i = i || 0;
-		return $(el)[i].getBoundingClientRect().bottom;
-	}; // offsetBottom
-	
-	function askPermission() {
+	app.askPermission = function() {
 		return new Promise(function(resolve, reject) {
 			const permissionResult = Notification.requestPermission(function(result) {
 				resolve(result);
@@ -503,9 +538,9 @@ var containers = {
 				throw new Error('We weren\'t granted permission.');
 			}
 		});
-	}; // askPermission
+	};
 	
-	function registerServiceWorker() {
+	app.registerServiceWorker = function() {
 		return navigator.serviceWorker.register('/service-worker.js')
 		.then(function(registration) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
@@ -527,14 +562,14 @@ var containers = {
 				console.log('[ServiceWorker] error occured...'+ err);
 			}
 		});
-	}; // registerServiceWorker
+	};
 	
-	function subscribeUserToPush() {
-		return registerServiceWorker()
+	app.subscribeUserToPush = function() {
+		return app.registerServiceWorker()
 		.then(function(registration) {
 			const subscribeOptions = {
 				userVisibleOnly: true,
-				applicationServerKey: urlBase64ToUint8Array(app.applicationServerKey)
+				applicationServerKey: app.urlBase64ToUint8Array(app.applicationServerKey)
 			};
 			if ( registration ) {
 				return registration.pushManager.subscribe(subscribeOptions);
@@ -568,18 +603,7 @@ var containers = {
 				console.log('[pushSubscription]', 'subscribeUserToPush'+error);
 			}
 		});
-	}; // subscribeUserToPush
-
-	app.preloadImage = function(img) {
-		img.setAttribute('src', img.getAttribute('data-src'));
-	} // preloadImage
-
-/*
- * *********************************** Application functions ***********************************
- */
-	app.isLtr = function() {
-		return app.getSetting('settings.isLtr')!==undefined?!!JSON.parse(String( app.getSetting('settings.isLtr') ).toLowerCase()):true;
-	} // isLtr
+	};
 	
 	app.onSaveProfileButtonClick = function(evt) {
 		var firstName = document.getElementById("firstName").value;
@@ -605,7 +629,7 @@ var containers = {
 		.catch(function (error) {
 			toast('We can\'t process your modifications. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 		});
-	}; // onSaveProfileButtonClick
+	};
 	
 	app.refreshButtonsSelectors = function() {
 		if ( componentHandler ) componentHandler.upgradeDom();
@@ -683,12 +707,43 @@ var containers = {
 			editMqtt: document.querySelectorAll('#mqtts .edit-button'),
 			createMqtt: document.querySelector('#mqtts button#createMqtt'),
 		};
-	}
+	};
 	
-	app.nl2br = function (str, isXhtml) {
-		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
-		return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-	}; // nl2br
+	app.refreshContainers = function() {
+		app.containers = {
+			spinner: document.querySelector('section#loading-spinner'),
+			index: document.querySelector('section#index'),
+			objects: document.querySelector('section#objects'),
+			object: document.querySelector('section#object'),
+			object_add: document.querySelector('section#object_add'),
+			flows: document.querySelector('section#flows'),
+			flow: document.querySelector('section#flow'),
+			flow_add: document.querySelector('section#flow_add'),
+			dashboards: document.querySelector('section#dashboards'),
+			dashboard: document.querySelector('section#dashboard'),
+			dashboard_add: document.querySelector('section#dashboard_add'),
+			snippets: document.querySelector('section#snippets'),
+			snippet: document.querySelector('section#snippet'),
+			snippet_add: document.querySelector('section#snippet_add'),
+			profile: document.querySelector('section#profile'),
+			settings: document.querySelector('section#settings'),
+			rules: document.querySelector('section#rules'),
+			rule: document.querySelector('section#rule'),
+			rule_add: document.querySelector('section#rule_add'),
+			mqtts: document.querySelector('section#mqtts'),
+			status: document.querySelector('section#status'),
+			terms: document.querySelector('section#terms'),
+			docs: document.querySelector('section#docs'),
+			usersList: document.querySelector('section#users-list'),
+			menuIconElement: document.querySelector('.mdl-layout__drawer-button'),
+			menuElement: document.getElementById('drawer'),
+			menuOverlayElement: document.querySelector('.menu__overlay'),
+			drawerObfuscatorElement: document.getElementsByClassName('mdl-layout__obfuscator')[0],
+			menuItems: document.querySelectorAll('.mdl-layout__drawer nav a.mdl-navigation__link'),
+			menuTabItems: document.querySelectorAll('.mdl-layout__tab-bar a.mdl-navigation__link.mdl-layout__tab'),
+		}
+	};
+	app.refreshContainers();
 
 	app.setExpandAction = function() {
 		componentHandler.upgradeDom();
@@ -698,7 +753,7 @@ var containers = {
 				(app.buttons.expandButtons[i]).addEventListener('click', app.expand, false);
 			}
 		}
-	}; // setExpandAction
+	};
 	
 	app.expand = function(evt) {
 		var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
@@ -710,7 +765,7 @@ var containers = {
 				evt.target.parentElement.querySelector('i.material-icons').innerHTML = 'expand_more';
 			}
 		}
-	}; // expand
+	};
 	
 	app.setSection = function(section, direction) {
 		section = section.split("?")[0];
@@ -855,7 +910,7 @@ var containers = {
 		} else if ( section === 'profile' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
-			(containers.profile).querySelector('.page-content').innerHTML = "";
+			(app.containers.profile).querySelector('.page-content').innerHTML = "";
 			app.fetchProfile();
 		} else if ( section === 'settings' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
@@ -884,7 +939,7 @@ var containers = {
 		for (var i in app.buttons.menuTabBar) {
 			if ( (app.buttons.menuTabBar[i]).childElementCount > -1 ) {
 				app.buttons.menuTabBar[i].classList.remove('is-active');
-				if ( app.buttons.menuTabBar[i].getAttribute("for") == section || buttons.menuTabBar[i].getAttribute("for") == section+'s' ) {
+				if ( app.buttons.menuTabBar[i].getAttribute("for") == section || app.buttons.menuTabBar[i].getAttribute("for") == section+'s' ) {
 					app.buttons.menuTabBar[i].classList.add('is-active');
 				}
 			}
@@ -912,7 +967,7 @@ var containers = {
 			}
 		}
 		app.currentSection = section;
-	}; // setSection
+	};
 
 	app.setItemsClickAction = function(type) {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
@@ -1045,56 +1100,19 @@ var containers = {
 				}, {passive: false,});
 			}
 		};
-	}; // setItemsClickAction
-	
-	app.fetchStatusHandler = function(response) {
-		if ( response.headers.get('X-RateLimit-Limit') && response.headers.get('X-RateLimit-Remaining') ) {
-			app.RateLimit.Limit = response.headers.get('X-RateLimit-Limit');
-			app.RateLimit.Remaining = response.headers.get('X-RateLimit-Remaining');
-			app.RateLimit.Used = app.RateLimit.Limit - app.RateLimit.Remaining;
-		}
-		if (response.status === 200 || response.status === 201) {
-			return response;
-		} else if (response.status === 400) {
-			toast('Bad Request.', {timeout:3000, type: 'error'});
-			throw new Error('Bad Request.');
-		} else if (response.status === 401 || response.status === 403) {
-			app.sessionExpired();
-			throw new Error(response.statusText);
-		} else if (response.status === 409) {
-			toast('Revision is conflictual.', {timeout:3000, type: 'error'});
-			throw new Error('Revision is conflictual.');
-		} else {
-			throw new Error(response.statusText);
-		}
-	}; // fetchStatusHandler
-	
-	app.fetchStatusHandlerOnUser = function(response) {
-		if ( response.headers.get('X-RateLimit-Limit') && response.headers.get('X-RateLimit-Remaining') ) {
-			app.RateLimit.Limit = response.headers.get('X-RateLimit-Limit');
-			app.RateLimit.Remaining = response.headers.get('X-RateLimit-Remaining');
-			app.RateLimit.Used = app.RateLimit.Limit - app.RateLimit.Remaining;
-		}
-		if (response.status === 200 || response.status === 201) {
-			return response;
-		} else if (response.status === 409) {
-			throw new Error('Email already exists on t6, please Sign in.');
-		} else {
-			throw new Error(response.statusText);
-		}
-	}; // fetchStatusHandlerOnUser
+	};
 	
 	app.showModal = function() {
 		dialog.style.display = 'block';
 		dialog.style.position = 'fixed';
 		dialog.style.top = '20%';
 		dialog.style.zIndex = '9999';
-	}; // showModal
+	};
 	
 	app.hideModal = function() {
 		dialog.style.display = 'none';
 		dialog.style.zIndex = '-9999';
-	}; // hideModal
+	};
 	
 	app.copyTextToClipboard = function(text, evt) {
 		if ( !navigator.clipboard ) {
@@ -1120,7 +1138,7 @@ var containers = {
 				return false;
 			});
 		}
-	} // copyTextToClipboard
+	};
 
 	app.setListActions = function(type) {
 		app.refreshButtonsSelectors();
@@ -1364,7 +1382,7 @@ var containers = {
 		} else if ( type == 'mqtts' ) {
 			// TODO
 		}
-	} // setListActions
+	};
 	
 	app.getSubtitle = function(subtitle) {
 		var node = "<section class='mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky' role='heading'>";
@@ -1375,7 +1393,7 @@ var containers = {
 		node += "	</div>";
 		node += "</section>";
 		return node;
-	}; // getSubtitle
+	};
 	
 	app.getUnits = function() {
 		if ( app.units.length == 0 ) {
@@ -1397,7 +1415,7 @@ var containers = {
 				localStorage.setItem('units', JSON.stringify(app.units));
 			});
 		}
-	} // getUnits
+	};
 	
 	app.getFlows = function() {
 		if ( app.flows.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
@@ -1420,7 +1438,7 @@ var containers = {
 				localStorage.setItem('flows', JSON.stringify(app.flows));
 			});
 		}
-	} // getFlows
+	};
 	
 	app.getSnippets = function() {
 		if ( app.snippets.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
@@ -1443,7 +1461,7 @@ var containers = {
 				localStorage.setItem('snippets', JSON.stringify(app.snippets));
 			});
 		}
-	} // getSnippets
+	};
 	
 	app.getDatatypes = function() {
 		if ( app.datatypes.length == 0 ) {
@@ -1465,7 +1483,7 @@ var containers = {
 				localStorage.setItem('datatypes', JSON.stringify(app.datatypes));
 			});
 		}
-	} // getDatatypes
+	};
 	
 	app.getCard = function(card) {
 		var output = "";
@@ -1479,7 +1497,7 @@ var containers = {
 		output += "			<h3 class=\"mdl-card__title-text\">" + card.title + "</h3>";
 		output += "		</div>";
 		output += "  	<div class=\"mdl-card__supporting-text mdl-card--expand\">" + card.description + "</div>";
-		if ( card.url || card.secondaryaction || card.action ) {
+		if ( card.url || card.secondaryaction || card.action ) {
 			output += "  	<div class=\"mdl-card__actions mdl-card--border\">";
 			if ( card.url ) {
 				output += "		<a href=\""+ card.url +"\"> Get Started</a>";
@@ -1498,7 +1516,7 @@ var containers = {
 		output += "		</div>";
 		output += "</div>";
 		return output;
-	} // getCard
+	};
 	
 	app.displayChip = function(chip) {
 		var chipElt = document.createElement('div');
@@ -1510,11 +1528,11 @@ var containers = {
 				evt.target.parentNode.remove();
 			}, false);
 		return chipElt;
-	}; // displayChip
+	};
 	
 	app.addChipTo = function(container, chip) {
 		document.getElementById(container).append(app.displayChip(chip));
-	}; // addChipTo
+	};
 	
 	app.displayChipSnippet = function(chipSnippet) {
 		var displayChipSnippet = document.createElement('div');
@@ -1538,76 +1556,74 @@ var containers = {
 		}, false);
 			
 		return displayChipSnippet;
-	}; // displayChipSnippet
+	};
 	
 	/* Sort Snippets */
-		var dragSrcEl = null;
-		function handleDragStart(e) {
-		  // Target (this) element is the source node.
-		  dragSrcEl = this;
-		  e.dataTransfer.effectAllowed = 'move';
-		  e.dataTransfer.setData('text/html', this.outerHTML);
-		  this.classList.add('dragElem');
+	var dragSrcEl = null;
+	app.handleDragStart = function(e) {
+		// Target (this) element is the source node.
+		dragSrcEl = this;
+		e.dataTransfer.effectAllowed = 'move';
+		e.dataTransfer.setData('text/html', this.outerHTML);
+		this.classList.add('dragElem');
+	};
+	app.handleDragOver = function(e) {
+		if (e.preventDefault) {
+			e.preventDefault(); // Necessary. Allows us to drop.
 		}
-		function handleDragOver(e) {
-		  if (e.preventDefault) {
-		    e.preventDefault(); // Necessary. Allows us to drop.
-		  }
-		  this.classList.add('over');
-		  e.dataTransfer.dropEffect = 'move';  // See the section on the DataTransfer object.
-		  return false;
+		this.classList.add('over');
+		e.dataTransfer.dropEffect = 'move'; // See the section on the DataTransfer object.
+		return false;
+	};
+	app.handleDragEnter = function(e) {
+		// this / e.target is the current hover target.
+	};
+	app.handleDragLeave = function(e) {
+			this.classList.remove('over'); // this / e.target is previous target element.
 		}
-		function handleDragEnter(e) {
-		  // this / e.target is the current hover target.
-		}
-		function handleDragLeave(e) {
-		  this.classList.remove('over');  // this / e.target is previous target element.
-		}
-		function handleDrop(e) {
-		  // this/e.target is current target element.
-		  if (e.stopPropagation) {
-		    e.stopPropagation(); // Stops some browsers from redirecting.
-		  }
-		  // Don't do anything if dropping the same column we're dragging.
-		  if (dragSrcEl != this) {
-		    // Set the source column's HTML to the HTML of the column we dropped on.
-		    //alert(this.outerHTML);
-		    //dragSrcEl.innerHTML = this.innerHTML;
-		    //this.innerHTML = e.dataTransfer.getData('text/html');
-		    this.parentNode.removeChild(dragSrcEl);
-		    var dropHTML = e.dataTransfer.getData('text/html');
-		    this.insertAdjacentHTML('beforebegin',dropHTML);
-		    var dropElem = this.previousSibling;
-		    addDnDHandlers(dropElem);
-		  }
-		  this.classList.remove('over');
-		  return false;
-		}
-		function handleDragEnd(e) {
-		  // this/e.target is the source node.
-		  this.classList.remove('over');
-		  /*[].forEach.call(cols, function (col) {
-		    col.classList.remove('over');
-		  });*/
-		}
-		function addDnDHandlers(elem) {
-		  elem.addEventListener('dragstart', handleDragStart, false);
-		  elem.addEventListener('dragenter', handleDragEnter, false)
-		  elem.addEventListener('dragover', handleDragOver, false);
-		  elem.addEventListener('dragleave', handleDragLeave, false);
-		  elem.addEventListener('drop', handleDrop, false);
-		  elem.addEventListener('dragend', handleDragEnd, false);
-		}
+		app.handleDrop = function(e) {
+			// this/e.target is current target element.
+			if (e.stopPropagation) {
+				e.stopPropagation(); // Stops some browsers from redirecting.
+			}
+			// Don't do anything if dropping the same column we're dragging.
+			if (dragSrcEl != this) {
+				// Set the source column's HTML to the HTML of the column we dropped on.
+				//alert(this.outerHTML);
+				//dragSrcEl.innerHTML = this.innerHTML;
+				//this.innerHTML = e.dataTransfer.getData('text/html');
+				this.parentNode.removeChild(dragSrcEl);
+				var dropHTML = e.dataTransfer.getData('text/html');
+				this.insertAdjacentHTML('beforebegin',dropHTML);
+				var dropElem = this.previousSibling;
+				app.addDnDHandlers(dropElem);
+			}
+			this.classList.remove('over');
+			return false;
+		};
+		app.handleDragEnd = function(e) {
+			// this/e.target is the source node.
+			this.classList.remove('over');
+			/*[].forEach.call(cols, function (col) {
+			    col.classList.remove('over');
+			  });*/
+		};
+		app.addDnDHandlers = function(elem) {
+			elem.addEventListener('dragstart', handleDragStart, false);
+			elem.addEventListener('dragenter', handleDragEnter, false)
+			elem.addEventListener('dragover', handleDragOver, false);
+			elem.addEventListener('dragleave', handleDragLeave, false);
+			elem.addEventListener('drop', handleDrop, false);
+			elem.addEventListener('dragend', handleDragEnd, false);
+		};
 	/* END Sorting */
 	
 	app.addChipSnippetTo = function(container, chipSnippet) {
 		document.getElementById(container).append(app.displayChipSnippet(chipSnippet));
-	}; // addChipSnippetTo
-	
-	app.getSnippetIdFromIndex = function(index) {
+	};
+		app.getSnippetIdFromIndex = function(index) {
 		return ((JSON.parse(localStorage.getItem('snippets')))[index]).id;
-		//
-	}; // getSnippetIdFromIndex
+	};
 
 	app.displayListItem = function(type, width, iconName, item) {
 		var name = item.attributes.name!==undefined?item.attributes.name:"";
@@ -1721,11 +1737,11 @@ var containers = {
 		element += "</div>";
 
 		return element;
-	} // displayListItem
+	};
 	
 	app.fetchItemsPaginated = function(type, filter, page, size) {
 		let promise = new Promise((resolve, reject) => {
-			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' ) {
+			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' ) {
 				resolve();
 				return false;
 			}
@@ -1733,8 +1749,8 @@ var containers = {
 			size = size!==undefined?size:app.itemsSize[type];
 			page = page!==undefined?page:app.itemsPage[type];
 			
-			containers.spinner.removeAttribute('hidden');
-			containers.spinner.classList.remove('hidden');
+			app.containers.spinner.removeAttribute('hidden');
+			app.containers.spinner.classList.remove('hidden');
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
@@ -1743,7 +1759,7 @@ var containers = {
 	
 			if (type == 'objects') {
 				var icon = app.icons.objects;
-				var container = (containers.objects).querySelector('.page-content');
+				var container = (app.containers.objects).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/objects';
 
 				if ( page || size || filter ) {
@@ -1764,7 +1780,7 @@ var containers = {
 			
 			} else if (type == 'flows') {
 				var icon = app.icons.flows;
-				var container = (containers.flows).querySelector('.page-content');
+				var container = (app.containers.flows).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/flows';
 				if ( page || size || filter ) {
 					url += '?';
@@ -1784,7 +1800,7 @@ var containers = {
 																																																																			// action:
 			} else if (type == 'dashboards') {
 				var icon = app.icons.dashboards;
-				var container = (containers.dashboards).querySelector('.page-content');
+				var container = (app.containers.dashboards).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 				if ( page || size ) {
 					url += '?';
@@ -1796,12 +1812,14 @@ var containers = {
 					}
 				}
 				var title = 'My Dashboards';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: false, action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.'}; // ,
-				
+				if ( app.isLogged ) {
+					defaultCard = {image: app.baseUrlCdn+'/img/opl_img.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: false, action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}};
+				} else {
+					defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.'};
+				}
 			} else if (type == 'snippets') {
 				var icon = app.icons.snippets;
-				var container = (containers.snippets).querySelector('.page-content');
+				var container = (app.containers.snippets).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
 				if ( page || size ) {
 					url += '?';
@@ -1818,7 +1836,7 @@ var containers = {
 				
 			} else if (type == 'rules') {
 				var icon = app.icons.snippets;
-				var container = (containers.rules).querySelector('.page-content');
+				var container = (app.containers.rules).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/rules';
 				if ( page || size ) {
 					url += '?';
@@ -1835,7 +1853,7 @@ var containers = {
 				
 			} else if (type == 'mqtts') {
 				var icon = app.icons.mqtts;
-				var container = (containers.mqtts).querySelector('.page-content');
+				var container = (app.containers.mqtts).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
 				if ( page || size ) {
 					url += '?';
@@ -1852,7 +1870,7 @@ var containers = {
 				
 			} else if (type == 'tokens') {
 				var icon = app.icons.tokens;
-				var container = (containers.tokens).querySelector('.page-content');
+				var container = (app.containers.tokens).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/tokens';
 				if ( page || size ) {
 					url += '?';
@@ -1869,7 +1887,7 @@ var containers = {
 				
 			} else if (type == 'status') {
 				var icon = app.icons.status;
-				var container = (containers.status).querySelector('.page-content');
+				var container = (app.containers.status).querySelector('.page-content');
 				defaultCard = {};
 				app.getStatus();
 				
@@ -1921,18 +1939,18 @@ var containers = {
 			}
 		});
 			
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 		return promise;
-	}; // fetchItemsPaginated
+	};
 	
 	app.getUsersList = function() {
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var container = (containers.usersList).querySelector('.page-content');
+		var container = (app.containers.usersList).querySelector('.page-content');
 		var url = app.baseUrl+'/'+app.api_version+'/users/list';
 		var title = 'Users List';
 
@@ -1990,17 +2008,17 @@ var containers = {
 				toast('getUsersList error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
-	} // getUsersList
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 	
 	app.fetchProfile = function() {
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var container = (containers.profile).querySelector('.page-content');
+		var container = (app.containers.profile).querySelector('.page-content');
 		var url = app.baseUrl+'/'+app.api_version+'/users/me/token';
 		var title = 'My Profile';
 
@@ -2084,7 +2102,7 @@ var containers = {
 				}
 				app.setDrawer();
 				app.fetchUnsubscriptions();
-				app.displayUnsubscriptions((containers.profile).querySelector('.page-content'));
+				app.displayUnsubscriptions((app.containers.profile).querySelector('.page-content'));
 				
 				document.getElementById("saveProfileButton").addEventListener("click", function(evt) {
 					app.onSaveProfileButtonClick();
@@ -2101,8 +2119,8 @@ var containers = {
 				toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
-	}; // fetchProfile
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 	
 	app.fetchUnsubscriptions = function() {
 		var myHeaders = new Headers();
@@ -2126,7 +2144,7 @@ var containers = {
 				toast('fetchUnsubscriptions error' + error, {timeout:3000, type: 'error'});
 			}
 		});
-	} // fetchUnsubscriptions
+	};
 	
 	app.displayUnsubscriptions = function(container) {
 		var notifications = JSON.parse(app.getSetting('notifications.unsubscribed'));
@@ -2218,15 +2236,7 @@ var containers = {
 			});
 		}
 		
-	} // displayUnsubscriptions
-	
-	app.setSetting = function(name, value) {
-		localStorage.setItem(name, value);
-	}
-	
-	app.getSetting = function(name) {
-		return localStorage.getItem(name);
-	}
+	};
 	
 	app.setDrawer = function() {
 		if ( localStorage.getItem("currentUserName") != 'null' ) { document.getElementById("currentUserName").innerHTML = localStorage.getItem("currentUserName") }
@@ -2240,7 +2250,7 @@ var containers = {
 		else { document.getElementById("currentUserHeader").setAttribute('src', app.baseUrlCdn+"/img/m/icons/icon-128x128.png"); }
 		if ( localStorage.getItem("currentUserBackground") !== null ) { document.getElementById("currentUserBackground").style.background="#795548 url("+localStorage.getItem("currentUserBackground")+") 50% 50% / cover" }
 		else { document.getElementById("currentUserBackground").style.background="#795548 url("+app.baseUrlCdn+"/img/m/side-nav-bg.jpg) 50% 50% / cover" }
-	}
+	};
 
 	app.resetDrawer = function() {
 		localStorage.removeItem("currentUserName");
@@ -2249,7 +2259,7 @@ var containers = {
 		localStorage.removeItem("currentUserBackground");
 		if (document.getElementById("imgIconMenu")) document.getElementById("imgIconMenu").outerHTML = "<i id=\"imgIconMenu\" class=\"material-icons\">menu</i>";
 		app.setDrawer();
-	}
+	};
 
 	app.displayLoginForm = function(container) {
 		container.querySelectorAll('form.signin').forEach(function(e) {
@@ -2306,15 +2316,15 @@ var containers = {
 			}
 			app.refreshButtonsSelectors();
 			app.setLoginAction();
-			setSignupAction();
+			app.setSignupAction();
 		}
-	} // displayLoginForm
+	};
 
 	app.fetchIndex = function() {
 		var node = "";
-		var container = (containers.index).querySelector('.page-content');
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		var container = (app.containers.index).querySelector('.page-content');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		if ( !localStorage.getItem('index') ) {
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -2350,35 +2360,35 @@ var containers = {
 			}
 			container.innerHTML = node;
 		}
-		containers.spinner.setAttribute('hidden', true);
-	}; // fetchIndex
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 
 	app.showAddFAB = function(type) {
 		var container;
 		var showFAB = false;
 		if( type == 'objects' ) {
 			var id = 'createObject';
-			container = (containers.objects).querySelector('.page-content');
+			container = (app.containers.objects).querySelector('.page-content');
 			showFAB = true;
 		}
 		if( type == 'flows' ) {
 			var id = 'createFlow';
-			container = (containers.flows).querySelector('.page-content');
+			container = (app.containers.flows).querySelector('.page-content');
 			showFAB = true;
 		}
 		if( type == 'dashboards' ) {
 			var id = 'createDashboard';
-			container = (containers.dashboards).querySelector('.page-content');
+			container = (app.containers.dashboards).querySelector('.page-content');
 			showFAB = true;
 		}
 		if( type == 'snippets' ) {
 			var id = 'createSnippet';
-			container = (containers.snippets).querySelector('.page-content');
+			container = (app.containers.snippets).querySelector('.page-content');
 			showFAB = true;
 		}
 		if( type == 'rules' ) {
 			var id = 'createRule';
-			container = (containers.rules).querySelector('.page-content');
+			container = (app.containers.rules).querySelector('.page-content');
 			showFAB = true;
 		}
 		if ( showFAB  && container && app.itemsPage[type]==1 ) {
@@ -2415,11 +2425,7 @@ var containers = {
 			if ( app.buttons.createRule ) app.buttons.createRule.addEventListener('click', function() {app.setSection('rule_add');}, false);
 			if ( app.buttons.createMqtt ) app.buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
 		}
-	} // showAddFAB
-
-	app.getUniqueId = function() {
-		return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
-	} // getUniqueId
+	};
 	
 	app.getField = function(icon, label, value, options) {
 		if ( options.type === 'hidden' ) {
@@ -2432,7 +2438,7 @@ var containers = {
 		if ( typeof options === 'object' ) {
 			var id = options.id!==null?options.id:app.getUniqueId();
 			
-			if ( options.type === 'input' || options.type === 'text' ) {
+			if ( options.type === 'input' || options.type === 'text' ) {
 				var style = options.style!==undefined?"style='"+options.style+"'":"";
 				if ( options.isEdit == true ) {
 					var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
@@ -2583,16 +2589,16 @@ var containers = {
 		}
 		field += "</div>";
 		return field;
-	} // getField
+	};
 
 	app.getSnippet = function(icon, snippet_id, container) {
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var myContainer = container!=null?container:(containers.dashboard).querySelector('.page-content');
+		var myContainer = container!=null?container:(app.containers.dashboard).querySelector('.page-content');
 		var url = app.baseUrl+'/'+app.api_version+'/snippets/'+snippet_id;
 		
 		fetch(url, myInit)
@@ -2999,8 +3005,8 @@ var containers = {
 				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
-	} // getSnippet
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 	
 	app.refreshFromNow = function(id, time, fromNow) {
 		if (document.getElementById(id)) {
@@ -3009,7 +3015,7 @@ var containers = {
 				document.getElementById(id).innerHTML += "<small>, " + moment(time).fromNow() + "</small>";
 			}
 		}
-	} // refreshFromNow
+	};
 
 	app.getQrcodeImg = function(icon, label, id) {
 		var field = "<div class='mdl-list__item small-padding'>";
@@ -3022,7 +3028,7 @@ var containers = {
 		field += "		</span>";
 		field += "</div>";
 		return field;
-	} // getQrcodeImg
+	};
 
 	app.getQrcode = function(icon, label, id) {
 		var myHeaders = new Headers();
@@ -3048,15 +3054,15 @@ var containers = {
 				toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
-	} // getQrcode
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 
 	app.getMap = function(icon, id, longitude, latitude, isEditable, isActionable) {
 		var field = "<div class='mdl-list__item'>";
 		field += "	<span class='mdl-list__item-primary-content map' id='"+id+"' style='width:100%; height:400px;'></span>";
 		field += "</div>";
 		return field;
-	} // getMap
+	};
 	
 	app.authenticate = function() {
 		var myHeaders = new Headers();
@@ -3125,7 +3131,7 @@ var containers = {
 			}
 		});
 		app.auth = {};
-	} // authenticate
+	};
 	
 	app.refreshAuthenticate = function() {
 		//console.log("DEBUG", "refreshAuthenticate");
@@ -3166,7 +3172,7 @@ var containers = {
 			}
 		});
 		app.auth = {};
-	} // refreshAuthenticate
+	};
 
 	app.addMenuItem = function(title, icon, link, position) {
 		var menuElt = document.createElement("a");
@@ -3187,7 +3193,7 @@ var containers = {
 		} else {
 			document.querySelector('#drawer nav.mdl-navigation.menu__list').appendChild(menuElt);
 		}
-	} // addMenuItem
+	};
 
 	app.getSettings = function() {
 		var settings = "";
@@ -3219,7 +3225,7 @@ var containers = {
 		settings += "	</div>";
 		settings += "</section>";
 		
-		(containers.settings).querySelector('.page-content').innerHTML = settings;
+		(app.containers.settings).querySelector('.page-content').innerHTML = settings;
 		componentHandler.upgradeDom();
 		
 		if ( document.getElementById('settings.fab_position') ) {
@@ -3263,8 +3269,8 @@ var containers = {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
 				if ( document.getElementById('switch-settings.notifications').checked == true ) {
 					app.setSetting('settings.notifications', true);
-					askPermission();
-					subscribeUserToPush();
+					app.skPermission();
+					app.subscribeUserToPush();
 					label.innerText = "Notifications are enabled";
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
 						toast('Awsome, Notifications are enabled.', {timeout:3000, type: 'done'});
@@ -3329,7 +3335,7 @@ var containers = {
 				}
 			});
 		}
-	} // getSettings
+	};
 
 	app.getStatus = function() {
 		var myHeaders = new Headers();
@@ -3345,7 +3351,7 @@ var containers = {
 		})
 		.then(function(response) {
 			if ( !navigator.onLine ) {
-				(containers.status).querySelector('.page-content').innerHTML = app.getCard(app.offlineCard);
+				(app.containers.status).querySelector('.page-content').innerHTML = app.getCard(app.offlineCard);
 			} else {
 				var status = "";
 				status += "<section class=\"mdl-grid mdl-cell--12-col\">";
@@ -3400,7 +3406,7 @@ var containers = {
 					status += "</section>";
 				}
 				
-				(containers.status).querySelector('.page-content').innerHTML = status;
+				(app.containers.status).querySelector('.page-content').innerHTML = status;
 				if ( app.RateLimit.Used && app.RateLimit.Limit ) {
 					var rate = Math.ceil((app.RateLimit.Used * 100 / app.RateLimit.Limit)/10)*10;
 					document.querySelector('#progress-status').addEventListener('mdl-componentupgraded', function() {
@@ -3415,8 +3421,8 @@ var containers = {
 				toast('Can\'t display Status...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
-	} // getStatus
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 
 	app.getTerms = function() {
 		var myHeaders = new Headers();
@@ -3448,9 +3454,9 @@ var containers = {
 				terms += "</section>";
 			}
 			
-			(containers.terms).querySelector('.page-content').innerHTML = terms;
+			(app.containers.terms).querySelector('.page-content').innerHTML = terms;
 			if ( !app.isLogged ) {
-				app.displayLoginForm( (containers.terms).querySelector('.page-content') );
+				app.displayLoginForm( (app.containers.terms).querySelector('.page-content') );
 			}
 		})
 		.catch(function (error) {
@@ -3458,24 +3464,24 @@ var containers = {
 				toast('Can\'t display Terms...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
-	} // getTerms
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 	
 	app.toggleElement = function(id) {
 		document.querySelector('#'+id).classList.toggle('hidden');
-	} // toggleElement
+	};
 	
 	app.setHiddenElement = function(id) {
 		document.querySelector('#'+id).classList.add('hidden');
-	} // setHiddenElement
+	};
 	
 	app.setVisibleElement = function(id) {
 		document.querySelector('#'+id).classList.remove('hidden');
-	} // setVisibleElement
+	};
 
 	app.showNotification = function() {
 		toast('You are offline.', {timeout:3000, type: 'warning'});
-	} // showLatestNotification
+	};
 	
 	app.sessionExpired = function() {
 		localStorage.setItem('bearer', null);
@@ -3490,7 +3496,7 @@ var containers = {
 		localStorage.setItem('notifications.unsubscribed', null);
 		localStorage.setItem('notifications.unsubscription_token', null);
 		localStorage.setItem('notifications.email', null);
-		(containers.profile).querySelector('.page-content').innerHTML = "";
+		(app.containers.profile).querySelector('.page-content').innerHTML = "";
 		
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
@@ -3507,18 +3513,18 @@ var containers = {
 		app.refreshButtonsSelectors();
 		componentHandler.upgradeDom();
 
-		(containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'}); // ,
-		app.displayLoginForm( (containers.objects).querySelector('.page-content') );
-		(containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (containers.flows).querySelector('.page-content') );
-		(containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (containers.dashboards).querySelector('.page-content') );
-		(containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (containers.snippets).querySelector('.page-content') );
-		(containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (containers.rules).querySelector('.page-content') );
-		(containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (containers.mqtts).querySelector('.page-content') );
+		(app.containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'}); // ,
+		app.displayLoginForm( (app.containers.objects).querySelector('.page-content') );
+		(app.containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		app.displayLoginForm( (app.containers.flows).querySelector('.page-content') );
+		(app.containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		app.displayLoginForm( (app.containers.dashboards).querySelector('.page-content') );
+		(app.containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		app.displayLoginForm( (app.containers.snippets).querySelector('.page-content') );
+		(app.containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		app.displayLoginForm( (app.containers.rules).querySelector('.page-content') );
+		(app.containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		app.displayLoginForm( (app.containers.mqtts).querySelector('.page-content') );
 		
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
 		for (var i=0; i<updated.length;i++) {
@@ -3529,24 +3535,24 @@ var containers = {
 		componentHandler.upgradeDom();
 		app.refreshButtonsSelectors();
 		app.setLoginAction();
-		setSignupAction();
-	}// sessionExpired
+		app.setSignupAction();
+	};
 	
 	app.resetSections = function() {
 		/* reset views to default */
 		if (localStorage.getItem('settings.debug') == 'true') { console.log('DEBUG resetSections()'); }
-		(containers.objects).querySelector('.page-content').innerHTML = '';
-		(containers.object).querySelector('.page-content').innerHTML = '';
-		(containers.flows).querySelector('.page-content').innerHTML = '';
-		(containers.flow).querySelector('.page-content').innerHTML = '';
-		(containers.dashboards).querySelector('.page-content').innerHTML = '';
-		(containers.dashboard).querySelector('.page-content').innerHTML = '';
-		(containers.snippets).querySelector('.page-content').innerHTML = '';
-		(containers.snippet).querySelector('.page-content').innerHTML = '';
-		(containers.profile).querySelector('.page-content').innerHTML = '';
-		(containers.rules).querySelector('.page-content').innerHTML = '';
-		(containers.mqtts).querySelector('.page-content').innerHTML = '';
-	} // resetSections
+		(app.containers.objects).querySelector('.page-content').innerHTML = '';
+		(app.containers.object).querySelector('.page-content').innerHTML = '';
+		(app.containers.flows).querySelector('.page-content').innerHTML = '';
+		(app.containers.flow).querySelector('.page-content').innerHTML = '';
+		(app.containers.dashboards).querySelector('.page-content').innerHTML = '';
+		(app.containers.dashboard).querySelector('.page-content').innerHTML = '';
+		(app.containers.snippets).querySelector('.page-content').innerHTML = '';
+		(app.containers.snippet).querySelector('.page-content').innerHTML = '';
+		(app.containers.profile).querySelector('.page-content').innerHTML = '';
+		(app.containers.rules).querySelector('.page-content').innerHTML = '';
+		(app.containers.mqtts).querySelector('.page-content').innerHTML = '';
+	};
 
 	/*
 	 * *********************************** indexedDB ***********************************
@@ -3560,7 +3566,7 @@ var containers = {
 		var tx = db.transaction(["jwt"], "readwrite");
 		var request = tx.objectStore("jwt");
 		var objectStoreRequest = request.clear();
-	}
+	};
 	
 	app.addJWT = function(jwt) {
 		var item = { token: jwt, exp: moment().add(5, 'minute').unix() };
@@ -3578,7 +3584,7 @@ var containers = {
 				console.log(event);
 			}
 		}
-	}
+	};
 	
 	app.searchJWT = function() {
 		var jwt;
@@ -3631,13 +3637,13 @@ var containers = {
 			}
 		}
 		return jwt;
-	}
+	};
 
 	app.showOrientation = function() {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			toast("[Orientation]", screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
 		}
-	}
+	};
 	
 	app.setPosition = function(position) {
 		app.defaultResources.object.attributes.longitude = position.coords.longitude;
@@ -3645,7 +3651,7 @@ var containers = {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			toast("Geolocation (Accuracy="+position.coords.accuracy+") is set to: L"+position.coords.longitude+" - l"+position.coords.latitude, {timeout:3000, type: 'info'});
 		}
-	}
+	};
 	
 	app.setPositionError = function(error) {
 		switch (error.code) {
@@ -3679,7 +3685,7 @@ var containers = {
 				}
 				break;
 		}
-	}
+	};
 	
 	app.getLocation = function() {
 		if (navigator.geolocation) {
@@ -3690,7 +3696,7 @@ var containers = {
 				toast("Geolocation is not supported by this browser.", {timeout:3000, type: 'warning'});
 			}
 		}
-	}
+	};
 	
 	app.getCookie = function(cname) {
 		var name = cname + "=";
@@ -3705,7 +3711,7 @@ var containers = {
 			}
 		}
 		return "";
-	}
+	};
 	
 	/*
 	 * *********************************** Run the App ***********************************
@@ -3718,13 +3724,13 @@ var containers = {
 	if ( window.location.hash ) {
 		currentPage = window.location.hash.substr(1);
 		if ( currentPage === 'terms' ) {
-			onTermsButtonClick();
+			app.onTermsButtonClick();
 		} else if ( currentPage === 'docs' ) {
-			onDocsButtonClick();
+			app.onDocsButtonClick();
 		} else if ( currentPage === 'status' ) {
-			onStatusButtonClick();
+			app.onStatusButtonClick();
 		} else if ( currentPage === 'settings' ) {
-			onSettingsButtonClick();
+			app.onSettingsButtonClick();
 		} else if ( currentPage === 'login' ) {
 			app.isLogged = false;
 			localStorage.setItem("bearer", null);
@@ -3746,7 +3752,7 @@ var containers = {
 	app.setPasswordResetAction();
 	app.setForgotAction();
 	
-	if( !app.isLogged || app.auth.username === undefined ) {
+	if( !app.isLogged || app.auth.username === undefined ) {
 		if ( localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix() ) {
 			app.refreshAuthenticate();
 
@@ -3760,6 +3766,7 @@ var containers = {
 		}
 	}
 	
+	// Notifications
 	for (var i in app.buttons.notifications) {
 		if ( app.buttons.notifications[i].childElementCount > -1 ) {
 			app.buttons.notifications[i].addEventListener('click', function(e) {
@@ -3792,7 +3799,7 @@ var containers = {
 				}
 			}, false);
 		}
-	} // Notifications
+	}
 	
 	app.refreshButtonsSelectors();
 	if ( document.querySelector('.sticky') ) {
@@ -3853,26 +3860,26 @@ var containers = {
 	
 	for (var i in app.buttons.status) {
 		if ( app.buttons.status[i].childElementCount > -1 ) {
-			app.buttons.status[i].removeEventListener('click', onStatusButtonClick, false);
-			app.buttons.status[i].addEventListener('click', onStatusButtonClick, false);
+			app.buttons.status[i].removeEventListener('click', app.onStatusButtonClick, false);
+			app.buttons.status[i].addEventListener('click', app.onStatusButtonClick, false);
 		}
 	}
 	for (var i in app.buttons.settings) {
 		if ( app.buttons.settings[i].childElementCount > -1 ) {
-			app.buttons.settings[i].removeEventListener('click', onSettingsButtonClick, false);
-			app.buttons.settings[i].addEventListener('click', onSettingsButtonClick, false);
+			app.buttons.settings[i].removeEventListener('click', app.onSettingsButtonClick, false);
+			app.buttons.settings[i].addEventListener('click', app.onSettingsButtonClick, false);
 		}
 	}
 	for (var i in app.buttons.docs) {
 		if ( app.buttons.docs[i].childElementCount > -1 ) {
-			app.buttons.docs[i].removeEventListener('click', onDocsButtonClick, false);
-			app.buttons.docs[i].addEventListener('click', onDocsButtonClick, false);
+			app.buttons.docs[i].removeEventListener('click', app.onDocsButtonClick, false);
+			app.buttons.docs[i].addEventListener('click', app.onDocsButtonClick, false);
 		}
 	}
 	for (var i in app.buttons.terms) {
 		if ( app.buttons.terms[i].childElementCount > -1 ) {
-			app.buttons.terms[i].removeEventListener('click', onTermsButtonClick, false);
-			app.buttons.terms[i].addEventListener('click', onTermsButtonClick, false);
+			app.buttons.terms[i].removeEventListener('click', app.onTermsButtonClick, false);
+			app.buttons.terms[i].addEventListener('click', app.onTermsButtonClick, false);
 		}
 	}
 
@@ -3926,7 +3933,7 @@ var containers = {
 		};
 	}
 	
-	/* Cookie Consent */
+	// Cookie Consent
 	var d = new Date();
 	d.setTime(d.getTime() + (app.cookieconsent * 24*60*60*1000));
 	document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
@@ -3957,19 +3964,11 @@ var containers = {
 	/*
 	 * *********************************** Menu ***********************************
 	 */
-	var menuIconElement = document.querySelector('.mdl-layout__drawer-button');
-	var menuElement = document.getElementById('drawer');
-	var menuOverlayElement = document.querySelector('.menu__overlay');
-	var drawerObfuscatorElement = document.getElementsByClassName('mdl-layout__obfuscator')[0];
-	var menuItems = document.querySelectorAll('.mdl-layout__drawer nav a.mdl-navigation__link');
-	var menuTabItems = document.querySelectorAll('.mdl-layout__tab-bar a.mdl-navigation__link.mdl-layout__tab');
-	var touchStartPoint, touchMovePoint;
-
 	app.showMenu = function() {
-		menuElement.style.transform = "translateX(0) !important";
-		menuElement.classList.add('menu--show');
-		menuOverlayElement.classList.add('menu__overlay--show');
-		drawerObfuscatorElement.remove();
+		app.containers.menuElement.style.transform = "translateX(0) !important";
+		app.containers.menuElement.classList.add('menu--show');
+		app.containers.menuOverlayElement.classList.add('menu__overlay--show');
+		app.containers.drawerObfuscatorElement.remove();
 		if ( dataLayer !== undefined ) {
 			dataLayer.push({
 				'eventCategory': 'Interaction',
@@ -3979,14 +3978,14 @@ var containers = {
 				'event': 'Menu'
 			});
 		}
-	}
+	};
 	app.hideMenu = function() {
-		menuElement.style.transform = "translateX(-120%) !important";
-		menuElement.classList.remove('menu--show');
-		menuOverlayElement.classList.add('menu__overlay--hide');
-		menuOverlayElement.classList.remove('menu__overlay--show');
-		menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
-		menuElement.classList.remove('is-visible');
+		app.containers.menuElement.style.transform = "translateX(-120%) !important";
+		app.containers.menuElement.classList.remove('menu--show');
+		app.containers.menuOverlayElement.classList.add('menu__overlay--hide');
+		app.containers.menuOverlayElement.classList.remove('menu__overlay--show');
+		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
+		app.containers.menuElement.classList.remove('is-visible');
 		if ( dataLayer !== undefined ) {
 			dataLayer.push({
 				'eventCategory': 'Interaction',
@@ -3996,15 +3995,14 @@ var containers = {
 				'event': 'Menu'
 			});
 		}
-	}
+	};
 	app.onTransitionEnd = function() {
 		if (touchStartPoint < 10) {
-			menuElement.style.transform = "translateX(0)";
-			menuOverlayElement.classList.add('menu__overlay--show');
-			menuElement.removeEventListener('transitionend', app.onTransitionEnd, false);
+			app.containers.menuElement.style.transform = "translateX(0)";
+			app.containers.menuOverlayElement.classList.add('menu__overlay--show');
+			app.containers.menuElement.removeEventListener('transitionend', app.onTransitionEnd, false);
 		}
-	}
-	
+	};
 	logout_button.addEventListener('click', function(evt) {
 		app.auth={};
 		app.clearJWT();
@@ -4029,21 +4027,23 @@ var containers = {
 	}, false);
 	app.setHiddenElement("notification");
 
-	menuIconElement.addEventListener('click', app.showMenu, false);
-	menuIconElement.querySelector('i.material-icons').setAttribute('id', 'imgIconMenu');
-	menuOverlayElement.addEventListener('click', app.hideMenu, false);
-	menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
-	for (var item in menuItems) {
-		if ( menuItems[item].childElementCount > -1 ) {
-			(menuItems[item]).addEventListener('click', function(evt) {
-				app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
-				app.hideMenu();
-			}, false);
-		}
-	};
-	for (var item in menuTabItems) {
-		if ( menuTabItems[item].childElementCount > -1 ) {
-			(menuTabItems[item]).addEventListener('click', function(evt) {
+	if ( app.containers.menuIconElement ) {
+		app.containers.menuIconElement.addEventListener('click', app.showMenu, false);
+		app.containers.menuIconElement.querySelector('i.material-icons').setAttribute('id', 'imgIconMenu');
+		app.containers.menuOverlayElement.addEventListener('click', app.hideMenu, false);
+		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
+		for (var item in menuItems) {
+			if ( app.containers.menuItems[item].childElementCount > -1 ) {
+				(app.containers.menuItems[item]).addEventListener('click', function(evt) {
+					app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
+					app.hideMenu();
+				}, false);
+			}
+		};
+	}
+	for (var item in app.containers.menuTabItems) {
+		if ( app.containers.menuTabItems[item].childElementCount > -1 ) {
+			(app.containers.menuTabItems[item]).addEventListener('click', function(evt) {
 				app.setSection((evt.target.parentNode.getAttribute('hash')!==null?evt.target.parentNode.getAttribute('hash'):evt.target.parentNode.getAttribute('href')).substr(1));
 			}, false);
 		}
@@ -4063,7 +4063,7 @@ var containers = {
 	document.body.addEventListener('touchmove', function(event) {
 		touchMovePoint = event.touches[0].pageX;
 		if (touchStartPoint < 10 && touchMovePoint > 100) {
-			menuElement.classList.add('is-visible');
+			app.containers.menuElement.classList.add('is-visible');
 		}
 	}, false);
 	document.body.addEventListener('touchend', function(event) {
@@ -4118,11 +4118,11 @@ var containers = {
 	*/
 
 	/* Lazy loading */
-	var paginatedContainer = Array(Array(containers.objects, 'objects'), Array(containers.flows, 'flows'), Array(containers.snippets, 'snippets'), Array(containers.dashboards, 'dashboards'), Array(containers.mqtts, 'mqtts'), Array(containers.rules, 'rules'));
+	var paginatedContainer = Array(Array(app.containers.objects, 'objects'), Array(app.containers.flows, 'flows'), Array(app.containers.snippets, 'snippets'), Array(app.containers.dashboards, 'dashboards'), Array(app.containers.mqtts, 'mqtts'), Array(app.containers.rules, 'rules'));
 	paginatedContainer.map(function(c) {
 		c[0].addEventListener('DOMMouseScroll', function(event) {
 			var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
-			var bottom = offsetBottom(c[0]);
+			var bottom = app.offsetBottom(c[0]);
 			if ( bottom <= height && c[0].classList.contains('is-active') ) {
 				//console.log("Lazy loading -->", c[0].offsetHeight, height, bottom);
 				//console.log('Lazy loading page=', ++(app.itemsPage[c[1]]));
@@ -4200,8 +4200,8 @@ var containers = {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				console.log('[pushSubscription]', 'askPermission && subscribeUserToPush');
 			}
-			askPermission();
-			subscribeUserToPush();
+			app.askPermission();
+			app.subscribeUserToPush();
 		}
 	};
 

@@ -17,24 +17,6 @@ uglifycss \
 	> ../public/css/t6.min.css
 echo Stylesheet minify: Completed
 
-uglifyjs \
-	../public/js/material.js \
-	../public/js/t6app-main.js \
-	../public/js/resources/t6-objects.js \
-	../public/js/resources/t6-flows.js \
-	../public/js/resources/t6-snippets.js \
-	../public/js/resources/t6-dashboards.js \
-	../public/js/resources/t6-rules.js \
-	../public/js/resources/t6-mqtts.js \
-	../public/js/resources/snippets/valueDisplay.js  \
-	../public/js/resources/snippets/graphDisplay.js  \
-	../public/js/resources/snippets/cardChart.js  \
-	../public/js/resources/snippets/simpleRow.js  \
-	../public/js/resources/snippets/simpleClock.js  \
-	-o ../public/js/t6app-min.js \
--p 5 -m -c warnings=false
-echo Javascript minify: Completed
-
 
 
 
@@ -50,7 +32,24 @@ uglifyjs \
 	../public/js/OpenLayers/ol-4.6.5.min.js \
 	-o ../public/js/m/vendor.min.js \
 	-p 5 -m -c warnings=false
-echo PWA Javascript minify: Completed
+echo PWA Javascript VERNDOR minify: Completed
+
+uglifyjs \
+	../public/js/t6app-main.js \
+	../public/js/resources/t6-objects.js \
+	../public/js/resources/t6-flows.js \
+	../public/js/resources/t6-snippets.js \
+	../public/js/resources/t6-dashboards.js \
+	../public/js/resources/t6-rules.js \
+	../public/js/resources/t6-mqtts.js \
+	../public/js/resources/snippets/valueDisplay.js  \
+	../public/js/resources/snippets/graphDisplay.js  \
+	../public/js/resources/snippets/cardChart.js  \
+	../public/js/resources/snippets/simpleRow.js  \
+	../public/js/resources/snippets/simpleClock.js  \
+	-o ../public/js/t6app-min.js \
+-p 5 -m -c warnings=false
+echo PWA Javascript T6 minify: Completed
 
 uglifycss \
 	../public/css/material-design-lite/1.3.0/material.brown-blue.min.css \

@@ -91,8 +91,8 @@ app.resources.dashboards = {
 		history.pushState( {section: 'dashboard' }, window.location.hash.substr(1), '#dashboard?id='+id );
 		
 		window.scrollTo(0, 0);
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -148,11 +148,13 @@ app.resources.dashboards = {
 					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
 
-					if ( localStorage.getItem('snippets') ) {
+					if ( localStorage.getItem('snippets') != 'null' ) {
 						var snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
 							return {value: snippet.name, name: snippet.id, sType: snippet.sType};
 						});
 						node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
+					} else {
+						node += app.getField(app.icons.snippets, 'Snippets to add (you should add some snippets first)', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: {} });
 					}
 					
 					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='snippetsChips'>";
@@ -182,10 +184,10 @@ app.resources.dashboards = {
 				} else {
 					/* View mode */
 					for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-						app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (containers.dashboard).querySelector('.page-content'));
+						app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (app.containers.dashboard).querySelector('.page-content'));
 					}
 				}
-				(containers.dashboard).querySelector('.page-content').innerHTML = node;
+				(app.containers.dashboard).querySelector('.page-content').innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
 				
@@ -197,10 +199,12 @@ app.resources.dashboards = {
 					document.getElementById('snippetsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
 						var id = evt.target.getAttribute('data-value');
 						var n=0;
-						var s = JSON.parse(localStorage.getItem('snippets')).find(function(snippet) {
-							if ( n == id ) return snippet;
-							else n++;
+						if ( localStorage.getItem('snippets') != 'null' ) {
+							var s = JSON.parse(localStorage.getItem('snippets')).find(function(snippet) {
+								if ( n == id ) return snippet;
+								else n++;
 						});
+						}
 						var sType = s.sType;
 						var name = evt.target.innerText; // == s.name
 						app.addChipSnippetTo('snippetsChips', {name: s.name, id: id, sType: s.sType, type: 'snippets'});
@@ -211,15 +215,19 @@ app.resources.dashboards = {
 						dashboard.attributes.snippets.map(function(s) {
 							//Snippet list, we put the index not the snippet_id into the selector:
 							var n=0;
-							var theSnippet = (JSON.parse(localStorage.getItem('snippets'))).find(function(storedS) { storedS.index = n++; return storedS.id == s; });
-							app.addChipSnippetTo('snippetsChips', {name: theSnippet.name, id: theSnippet.index, sType: theSnippet.sType, type: 'snippets'});
+							if ( localStorage.getItem('snippets') != 'null' ) {
+								var theSnippet = (JSON.parse(localStorage.getItem('snippets'))).find(function(storedS) { storedS.index = n++; return storedS.id == s; });
+								app.addChipSnippetTo('snippetsChips', {name: theSnippet.name, id: theSnippet.index, sType: theSnippet.sType, type: 'snippets'});
+							}
 						});
 					}
 				}
 
 				var sn = document.querySelectorAll('#snippetsChips .mdl-chip');
-				[].forEach.call(sn, addDnDHandlers);
+				[].forEach.call(sn, app.addDnDHandlers);
 				
+				componentHandler.upgradeDom();
+				app.setExpandAction();
 				app.setSection('dashboard');
 			}
 		})
@@ -228,7 +236,7 @@ app.resources.dashboards = {
 				toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 	},
 	displayPublic(id, isAdd, isEdit, isPublic) {
 	},
@@ -276,7 +284,7 @@ app.resources.dashboards = {
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
-		(containers.dashboard_add).querySelector('.page-content').innerHTML = node;
+		(app.containers.dashboard_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 		document.getElementById('snippetsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
 			var id = evt.target.getAttribute('data-value');

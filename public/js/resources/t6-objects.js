@@ -111,8 +111,8 @@ app.resources.objects = {
 		} else {
 			history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+id );
 		}
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -280,7 +280,7 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				(containers.object).querySelector('.page-content').innerHTML = node;
+				(app.containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
 				
 				app.refreshButtonsSelectors();
@@ -356,14 +356,14 @@ app.resources.objects = {
 				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 	},
 	displayPublic(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+id );
 		
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -452,7 +452,7 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				(containers.object).querySelector('.page-content').innerHTML = node;
+				(app.containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
@@ -508,7 +508,7 @@ app.resources.objects = {
 				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 	},
 	displayAdd(object, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'object_add' }, window.location.hash.substr(1), '#object_add' );
@@ -575,7 +575,7 @@ app.resources.objects = {
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
-		(containers.object_add).querySelector('.page-content').innerHTML = node;
+		(app.containers.object_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 
 		app.getLocation();
