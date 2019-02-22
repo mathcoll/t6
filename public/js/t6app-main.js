@@ -14,7 +14,7 @@
  TODO: 1916: container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
  BECOME:     container.innerHTML += app.resources.(type).dysplayCard(type, 12, icon, response.data[i]);
  */
-
+'use strict';
 var app = {
 	api_version: 'v2.0.1',
 	debug: false,
@@ -417,11 +417,11 @@ var touchStartPoint, touchMovePoint;
 				});
 			} else {
 				toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', {timeout:3000, type: 'warning'});
-				document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+				document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 			}
 		} else {
 			toast('We can\'t process your signup. Please check your inputs.', {timeout:3000, type: 'warning'});
-			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+			document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 		}
 		evt.preventDefault();
 	};
@@ -475,7 +475,7 @@ var touchStartPoint, touchMovePoint;
 				});
 			}
 			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
-			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+			document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 		}
 		evt.preventDefault();
 	};
@@ -518,7 +518,7 @@ var touchStartPoint, touchMovePoint;
 			});
 		} else {
 			toast('We can\'t send the instructions. Please check your inputs.', {timeout:3000, type: 'warning'});
-			document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+			document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 		}
 		evt.preventDefault();
 	};
@@ -984,7 +984,7 @@ var touchStartPoint, touchMovePoint;
 				}, {passive: false,});
 				
 				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(div => {
+				Array.from(divs).forEach( function(div) {
 					(div).addEventListener('click', function(evt) {
 						var item = evt.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
@@ -1001,7 +1001,7 @@ var touchStartPoint, touchMovePoint;
 				}, {passive: false,});
 				
 				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(div => {
+				Array.from(divs).forEach( function(div) {
 					(div).addEventListener('click', function(evt) {
 						var item = evt.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
@@ -1018,7 +1018,7 @@ var touchStartPoint, touchMovePoint;
 				}, {passive: false,});
 				
 				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(div => {
+				Array.from(divs).forEach( function(div) {
 					(div).addEventListener('click', function(evt) {
 						var item = evt.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
@@ -1035,7 +1035,7 @@ var touchStartPoint, touchMovePoint;
 				}, {passive: false,});
 				
 				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(div => {
+				Array.from(divs).forEach( function(div) {
 					(div).addEventListener('click', function(evt) {
 						var item = evt.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
@@ -1052,7 +1052,7 @@ var touchStartPoint, touchMovePoint;
 				}, {passive: false,});
 				
 				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(div => {
+				Array.from(divs).forEach( function(div) {
 					(div).addEventListener('click', function(evt) {
 						var item = evt.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
@@ -2262,11 +2262,7 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.displayLoginForm = function(container) {
-		container.querySelectorAll('form.signin').forEach(function(e) {
-			if (e) {
-				e.parentNode.remove();
-			}
-		});
+		container.querySelectorAll('form.signin').forEach( function(e) { if (e) { e.parentNode.remove(); }} );
 		
 		if ( app.isLogged === false ) {
 			var login = "<section class='content-grid mdl-grid'>" +
@@ -3127,7 +3123,7 @@ var touchStartPoint, touchMovePoint;
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
-				document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+				document.querySelectorAll(".mdl-spinner").forEach( function(e) {e.parentNode.removeChild(e);} );
 			}
 		});
 		app.auth = {};
@@ -3168,7 +3164,7 @@ var touchStartPoint, touchMovePoint;
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('We can\'t process your identification. Please resubmit your credentials on login page!', {timeout:3000, type: 'warning'});
-				document.querySelectorAll(".mdl-spinner").forEach(e => e.parentNode.removeChild(e));
+				document.querySelectorAll(".mdl-spinner").forEach( function(div) {e.parentNode.removeChild(e);} );
 			}
 		});
 		app.auth = {};
@@ -4036,7 +4032,6 @@ var touchStartPoint, touchMovePoint;
 		app.containers.menuOverlayElement.addEventListener('click', app.hideMenu, false);
 		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
 		for (var item in app.containers.menuItems) {
-			console.log(app.containers.menuItems[item]);
 			if ( app.containers.menuItems[item].childElementCount > -1 ) {
 				(app.containers.menuItems[item]).addEventListener('click', function(evt) {
 					app.setSection((evt.target.getAttribute('href')).substr(1));

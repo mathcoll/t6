@@ -63,7 +63,9 @@
   },
   "readmeFilename": "README.md",
   "devDependencies": {
-    "lighthouse": "^4.1.0"
+    "lighthouse": "^4.1.0",
+    "uglify-es": "github:mishoo/UglifyJS2#harmony",
+    "uglify-js": "^3.4.9"
   },
   "snyk": true
 }

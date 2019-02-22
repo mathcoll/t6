@@ -1,5 +1,6 @@
+'use strict';
 app.resources.flows = {
-	onEdit(evt) {
+	onEdit: function(evt) {
 		var flow_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
 		if ( !flow_id ) {
 			toast('No Flow id found!', {timeout:3000, type: 'error'});
@@ -47,7 +48,7 @@ app.resources.flows = {
 			evt.preventDefault();
 		}
 	},
-	onAdd(evt) {
+	onAdd: function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
@@ -89,9 +90,9 @@ app.resources.flows = {
 		});
 		evt.preventDefault();
 	},
-	onDelete(id) {
+	onDelete: function(id) {
 	},
-	display(id, isAdd, isEdit, isPublic) {
+	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+id );
 		
 		window.scrollTo(0, 0);
@@ -226,7 +227,7 @@ app.resources.flows = {
 						xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
 						yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
 					};
-	
+
 					var my_flow_data_url = app.baseUrl+'/'+app.api_version+'/data/'+flow.id+'?limit=100&sort=desc';
 					fetch(my_flow_data_url, myInit)
 					.then(
@@ -325,14 +326,14 @@ app.resources.flows = {
 					app.buttons.backFlow.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, false, false); }, false);
 					app.buttons.saveFlow.addEventListener('click', function(evt) { app.resources.flows.onEdit(evt); }, false);
 
-					let element1 = document.getElementById('switch-edit_require_signed').parentNode;
+					var element1 = document.getElementById('switch-edit_require_signed').parentNode;
 					if ( element1 ) {
 						element1.addEventListener('change', function(e) {
 							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
 							label.innerText = element1.classList.contains('is-checked')!=='false'?"Require payload signature secret from Object":"Does not require payload signature secret from Object";
 						});
 					}
-					let element2 = document.getElementById('switch-edit_require_encrypted').parentNode;
+					var element2 = document.getElementById('switch-edit_require_encrypted').parentNode;
 					if ( element2 ) {
 						element2.addEventListener('change', function(e) {
 							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
@@ -359,9 +360,9 @@ app.resources.flows = {
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayPublic(id, isAdd, isEdit, isPublic) {
+	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
-	displayAdd(flow, isAdd, isEdit, isPublic) {
+	displayAdd: function(flow, isAdd, isEdit, isPublic) {
 		if ( !localStorage.getItem('units') ) {
 			// retrieve units
 		}
@@ -411,14 +412,14 @@ app.resources.flows = {
 		app.buttons.addFlowBack.addEventListener('click', function(evt) { app.setSection('flows'); evt.preventDefault(); }, false);
 		app.buttons.addFlow.addEventListener('click', function(evt) { app.resources.flows.onAdd(evt); }, false);
 
-		let element1 = document.getElementById('switch-add_require_signed').parentNode;
+		var element1 = document.getElementById('switch-add_require_signed').parentNode;
 		if ( element1 ) {
 			element1.addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
 				label.innerText = element1.classList.contains('is-checked')!==false?"Require payload signature secret from Object":"Does not require payload signature secret from Object";
 			});
 		}
-		let element2 = document.getElementById('switch-add_require_encrypted').parentNode;
+		var element2 = document.getElementById('switch-add_require_encrypted').parentNode;
 		if ( element2 ) {
 			element2.addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
@@ -427,7 +428,7 @@ app.resources.flows = {
 		}
 		app.setExpandAction();
 	},
-	displayItem(flow) {
+	displayItem: function(flow) {
 		/* On the list Views */
 	}
 };

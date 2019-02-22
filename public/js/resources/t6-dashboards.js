@@ -1,5 +1,6 @@
+'use strict';
 app.resources.dashboards = {
-	onEdit(evt) {
+	onEdit: function(evt) {
 		var dashboard_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
 		if ( !dashboard_id ) {
 			toast('No Dashboard id found!', {timeout:3000, type: 'error'});
@@ -46,7 +47,7 @@ app.resources.dashboards = {
 			evt.preventDefault();
 		}
 	},
-	onAdd(evt) {
+	onAdd: function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
@@ -85,9 +86,9 @@ app.resources.dashboards = {
 		});
 		evt.preventDefault();
 	},
-	onDelete(id) {
+	onDelete: function(id) {
 	},
-	display(id, isAdd, isEdit, isPublic) {
+	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'dashboard' }, window.location.hash.substr(1), '#dashboard?id='+id );
 		
 		window.scrollTo(0, 0);
@@ -239,9 +240,9 @@ app.resources.dashboards = {
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayPublic(id, isAdd, isEdit, isPublic) {
+	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
-	displayAdd(dashboard, isAdd, isEdit, isPublic) {
+	displayAdd: function(dashboard, isAdd, isEdit, isPublic) {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -307,7 +308,7 @@ app.resources.dashboards = {
 
 		app.setExpandAction();
 	},
-	displayItem(dashboard) {
+	displayItem: function(dashboard) {
 		/* On the list Views */
 	}
 };

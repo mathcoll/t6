@@ -1,5 +1,6 @@
+'use strict';
 app.resources.snippets = {
-	onEdit(evt) {
+	onEdit: function(evt) {
 		var snippet_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
 		if ( !snippet_id ) {
 			toast('No Snippet id found!', {timeout:3000, type: 'error'});
@@ -46,7 +47,7 @@ app.resources.snippets = {
 			evt.preventDefault();
 		}
 	},
-	onAdd(evt) {
+	onAdd: function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
@@ -87,9 +88,9 @@ app.resources.snippets = {
 		});
 		evt.preventDefault();
 	},
-	onDelete(id) {
+	onDelete: function(id) {
 	},
-	display(id, isAdd, isEdit, isPublic) {
+	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'snippet' }, window.location.hash.substr(1), '#snippet?id='+id );
 		
 		window.scrollTo(0, 0);
@@ -294,9 +295,9 @@ app.resources.snippets = {
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayPublic(id, isAdd, isEdit, isPublic) {
+	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
-	displayAdd(snippet, isAdd, isEdit, isPublic) {
+	displayAdd: function(snippet, isAdd, isEdit, isPublic) {
 		var node = "";
 		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
@@ -358,7 +359,7 @@ app.resources.snippets = {
 
 		app.setExpandAction();
 	},
-	displayItem(snippet) {
+	displayItem: function(snippet) {
 		/* On the list Views */
 	}
 };

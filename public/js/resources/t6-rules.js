@@ -1,7 +1,8 @@
+'use strict';
 app.resources.rules = {
-	onEdit(evt) {
+	onEdit: function(evt) {
 	},
-	onAdd(evt) {
+	onAdd: function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
@@ -47,9 +48,9 @@ app.resources.rules = {
 		});
 		evt.preventDefault();
 	},
-	onDelete(id) {
+	onDelete: function(id) {
 	},
-	display(id, isAdd, isEdit, isPublic) {
+	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'rule' }, window.location.hash.substr(1), '#rule?id='+id );
 		
 		window.scrollTo(0, 0);
@@ -204,9 +205,9 @@ app.resources.rules = {
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayPublic(id, isAdd, isEdit, isPublic) {
+	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
-	displayAdd(rule, isAdd, isEdit, isPublic) {
+	displayAdd: function(rule, isAdd, isEdit, isPublic) {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -274,7 +275,7 @@ app.resources.rules = {
 
 		app.setExpandAction();
 	},
-	displayItem(rule) {
+	displayItem: function(rule) {
 		/* On the list Views */
 	}
 };

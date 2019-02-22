@@ -1,5 +1,6 @@
+'use strict';
 app.resources.objects = {
-	onEdit(evt) {
+	onEdit: function(evt) {
 		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
 		if ( !object_id ) {
 			toast('No Object id found!', {timeout:3000, type: 'error'});
@@ -53,7 +54,7 @@ app.resources.objects = {
 			evt.preventDefault();
 		}
 	},
-	onAdd(evt) {
+	onAdd: function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
 			type: myForm.querySelector("select[name='Type']").value,
@@ -98,10 +99,10 @@ app.resources.objects = {
 		});
 		evt.preventDefault();
 	},
-	onDelete(id) {
+	onDelete: function(id) {
 		
 	},
-	display(id, isAdd, isEdit, isPublic) {
+	display: function(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		if (isPublic) {
 			displayPublic(id, isAdd, isEdit, isPublic);
@@ -358,7 +359,7 @@ app.resources.objects = {
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayPublic(id, isAdd, isEdit, isPublic) {
+	displayPublic: function(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+id );
 		
@@ -510,7 +511,7 @@ app.resources.objects = {
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayAdd(object, isAdd, isEdit, isPublic) {
+	displayAdd: function(object, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'object_add' }, window.location.hash.substr(1), '#object_add' );
 		var node = "";
 		object.id = object.id!==""?object.id:app.getUniqueId();
@@ -635,7 +636,7 @@ app.resources.objects = {
 		}
 		app.setExpandAction();
 	},
-	displayItem(object) {
+	displayItem: function(object) {
 		/* On the list Views */
 	}
 };

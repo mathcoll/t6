@@ -1,17 +1,18 @@
+'use strict';
 app.resources.mqtts = {
-	onEdit(evt) {
+	onEdit: function(evt) {
 	},
-	onAdd(evt) {
+	onAdd: function(evt) {
 	},
-	onDelete(id) {
+	onDelete: function(id) {
 	},
-	display(id, isAdd, isEdit, isPublic) {
+	display: function(id, isAdd, isEdit, isPublic) {
 	},
-	displayPublic(id, isAdd, isEdit, isPublic) {
+	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
-	displayAdd(mqtt, isAdd, isEdit, isPublic) {
+	displayAdd: function(mqtt, isAdd, isEdit, isPublic) {
 	},
-	displayItem(mqtt) {
+	displayItem: function(mqtt) {
 		/* On the list Views */
 	}
 };
