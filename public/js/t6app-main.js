@@ -234,7 +234,7 @@ var touchStartPoint, touchMovePoint;
  * *********************************** Tooling functions ***********************************
  */
 	app.isLtr = function() {
-		return app.getSetting('settings.isLtr')!==undefined?!!JSON.parse(String( app.getSetting('settings.isLtr') ).toLowerCase()):true;
+		return app.getSetting('settings.isLtr')!==null?!!JSON.parse(String( app.getSetting('settings.isLtr') ).toLowerCase()):true;
 	};
 
 	app.preloadImage = function(img) {
@@ -1579,43 +1579,43 @@ var touchStartPoint, touchMovePoint;
 		// this / e.target is the current hover target.
 	};
 	app.handleDragLeave = function(e) {
-			this.classList.remove('over'); // this / e.target is previous target element.
+		this.classList.remove('over'); // this / e.target is previous target element.
+	}
+	app.handleDrop = function(e) {
+		// this/e.target is current target element.
+		if (e.stopPropagation) {
+			e.stopPropagation(); // Stops some browsers from redirecting.
 		}
-		app.handleDrop = function(e) {
-			// this/e.target is current target element.
-			if (e.stopPropagation) {
-				e.stopPropagation(); // Stops some browsers from redirecting.
-			}
-			// Don't do anything if dropping the same column we're dragging.
-			if (dragSrcEl != this) {
-				// Set the source column's HTML to the HTML of the column we dropped on.
-				//alert(this.outerHTML);
-				//dragSrcEl.innerHTML = this.innerHTML;
-				//this.innerHTML = e.dataTransfer.getData('text/html');
-				this.parentNode.removeChild(dragSrcEl);
-				var dropHTML = e.dataTransfer.getData('text/html');
-				this.insertAdjacentHTML('beforebegin',dropHTML);
-				var dropElem = this.previousSibling;
-				app.addDnDHandlers(dropElem);
-			}
-			this.classList.remove('over');
-			return false;
-		};
-		app.handleDragEnd = function(e) {
-			// this/e.target is the source node.
-			this.classList.remove('over');
-			/*[].forEach.call(cols, function (col) {
-			    col.classList.remove('over');
-			  });*/
-		};
-		app.addDnDHandlers = function(elem) {
-			elem.addEventListener('dragstart', handleDragStart, false);
-			elem.addEventListener('dragenter', handleDragEnter, false)
-			elem.addEventListener('dragover', handleDragOver, false);
-			elem.addEventListener('dragleave', handleDragLeave, false);
-			elem.addEventListener('drop', handleDrop, false);
-			elem.addEventListener('dragend', handleDragEnd, false);
-		};
+		// Don't do anything if dropping the same column we're dragging.
+		if (dragSrcEl != this) {
+			// Set the source column's HTML to the HTML of the column we dropped on.
+			//alert(this.outerHTML);
+			//dragSrcEl.innerHTML = this.innerHTML;
+			//this.innerHTML = e.dataTransfer.getData('text/html');
+			this.parentNode.removeChild(dragSrcEl);
+			var dropHTML = e.dataTransfer.getData('text/html');
+			this.insertAdjacentHTML('beforebegin',dropHTML);
+			var dropElem = this.previousSibling;
+			app.addDnDHandlers(dropElem);
+		}
+		this.classList.remove('over');
+		return false;
+	};
+	app.handleDragEnd = function(e) {
+		// this/e.target is the source node.
+		this.classList.remove('over');
+		/*[].forEach.call(cols, function (col) {
+			col.classList.remove('over');
+		});*/
+	};
+	app.addDnDHandlers = function(e) {
+		e.addEventListener('dragstart', app.handleDragStart, false);
+		e.addEventListener('dragenter', app.handleDragEnter, false)
+		e.addEventListener('dragover', app.handleDragOver, false);
+		e.addEventListener('dragleave', app.handleDragLeave, false);
+		e.addEventListener('drop', app.handleDrop, false);
+		e.addEventListener('dragend', app.handleDragEnd, false);
+	};
 	/* END Sorting */
 	
 	app.addChipSnippetTo = function(container, chipSnippet) {
@@ -2844,24 +2844,24 @@ var touchStartPoint, touchMovePoint;
 					})];
 					
 
-		            var dataDailySalesChart = {
-	                    //labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-	                    series: [ dataset ]
-	                };
-	                var optionsDailySalesChart = {
-	                    lineSmooth: Chartist.Interpolation.cardinal({
-	                        tension: 0
-	                    }),
-	                    low: 0,
-	                    high: 50,
-	                    chartPadding: {
-	                        top: 0,
-	                        right: 0,
-	                        bottom: 0,
-	                        left: 0
-	                    },
-	                }
-	                var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
+					var dataDailySalesChart = {
+						//labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+						series: [ dataset ]
+					};
+					var optionsDailySalesChart = {
+						lineSmooth: Chartist.Interpolation.cardinal({
+							tension: 0
+						}),
+						low: 0,
+						high: 50,
+						chartPadding: {
+							top: 0,
+							right: 0,
+							bottom: 0,
+							left: 0
+						},
+					}
+					var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
 					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(dataset[0][0][0]).format(app.date_format) + ", " + moment(dataset[0][0][0]).fromNow();
 				})
 				.catch(function (error) {
@@ -2985,7 +2985,7 @@ var touchStartPoint, touchMovePoint;
 					}
 				});
 			}
-			
+
 			// Set the buttons on edit Snippets
 			var editSnippetButtons = document.querySelectorAll('.edit-snippet');
 			for (var b in editSnippetButtons) {
@@ -2996,7 +2996,7 @@ var touchStartPoint, touchMovePoint;
 					});
 				}
 			}
-			
+
 			// console.log(myContainer);
 			// return snippet;
 		})
@@ -3005,9 +3005,9 @@ var touchStartPoint, touchMovePoint;
 				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
+
 		app.containers.spinner.setAttribute('hidden', true);
 	};
-	
 	app.refreshFromNow = function(id, time, fromNow) {
 		if (document.getElementById(id)) {
 			document.getElementById(id).innerHTML = moment(time).format(app.date_format);
@@ -3720,30 +3720,32 @@ var touchStartPoint, touchMovePoint;
 		app.isLogged = true;
 	}
 	
-	var currentPage = localStorage.getItem("currentPage");
-	if ( window.location.hash ) {
-		currentPage = window.location.hash.substr(1);
-		if ( currentPage === 'terms' ) {
-			app.onTermsButtonClick();
-		} else if ( currentPage === 'docs' ) {
-			app.onDocsButtonClick();
-		} else if ( currentPage === 'status' ) {
-			app.onStatusButtonClick();
-		} else if ( currentPage === 'settings' ) {
-			app.onSettingsButtonClick();
-		} else if ( currentPage === 'login' ) {
-			app.isLogged = false;
-			localStorage.setItem("bearer", null);
-			app.setSection(currentPage);
-		} else {
+	document.addEventListener("DOMContentLoaded", function() {
+		var currentPage = localStorage.getItem("currentPage");
+		if ( window.location.hash ) {
+			currentPage = window.location.hash.substr(1);
+			if ( currentPage === 'terms' ) {
+				app.onTermsButtonClick();
+			} else if ( currentPage === 'docs' ) {
+				app.onDocsButtonClick();
+			} else if ( currentPage === 'status' ) {
+				app.onStatusButtonClick();
+			} else if ( currentPage === 'settings' ) {
+				app.onSettingsButtonClick();
+			} else if ( currentPage === 'login' ) {
+				app.isLogged = false;
+				localStorage.setItem("bearer", null);
+				app.setSection(currentPage);
+			} else {
+				app.setSection(currentPage);
+			}
+		} else if ( currentPage ) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
+				toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
+			}
 			app.setSection(currentPage);
 		}
-	} else if ( currentPage ) {
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
-		}
-		app.setSection(currentPage);
-	}
+	});
 	app.fetchIndex('index');
 	app.refreshButtonsSelectors();
 	app.setLoginAction();
@@ -4027,15 +4029,17 @@ var touchStartPoint, touchMovePoint;
 	}, false);
 	app.setHiddenElement("notification");
 
+	app.refreshContainers();
 	if ( app.containers.menuIconElement ) {
 		app.containers.menuIconElement.addEventListener('click', app.showMenu, false);
 		app.containers.menuIconElement.querySelector('i.material-icons').setAttribute('id', 'imgIconMenu');
 		app.containers.menuOverlayElement.addEventListener('click', app.hideMenu, false);
 		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
-		for (var item in menuItems) {
+		for (var item in app.containers.menuItems) {
+			console.log(app.containers.menuItems[item]);
 			if ( app.containers.menuItems[item].childElementCount > -1 ) {
 				(app.containers.menuItems[item]).addEventListener('click', function(evt) {
-					app.setSection((evt.target.getAttribute('hash')!==null?evt.target.getAttribute('hash'):evt.target.getAttribute('href')).substr(1));
+					app.setSection((evt.target.getAttribute('href')).substr(1));
 					app.hideMenu();
 				}, false);
 			}

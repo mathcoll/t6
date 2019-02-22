@@ -310,9 +310,11 @@ app.resources.snippets = {
 			var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
 				return {value: flow.name, name: flow.id};
 			});
+			node += app.getField(app.icons.flows, 'Flows to add', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
+		} else {
+			app.getFlows();
+			node += app.getField(app.icons.flows, 'Flows to add (you should add flow first)', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: {} });
 		}
-		node += app.getField(app.icons.flows, 'Flows to add', '', {type: 'select', id: 'flowsChipsSelect', isEdit: true, options: flows });
-		
 		node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
 		node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
 		node += "		</div>";

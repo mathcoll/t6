@@ -154,9 +154,10 @@ app.resources.dashboards = {
 						});
 						node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
 					} else {
+						app.getSnippets();
 						node += app.getField(app.icons.snippets, 'Snippets to add (you should add some snippets first)', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: {} });
 					}
-					
+
 					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='snippetsChips'>";
 					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
 					node += "		</div>";
@@ -203,7 +204,7 @@ app.resources.dashboards = {
 							var s = JSON.parse(localStorage.getItem('snippets')).find(function(snippet) {
 								if ( n == id ) return snippet;
 								else n++;
-						});
+							});
 						}
 						var sType = s.sType;
 						var name = evt.target.innerText; // == s.name
@@ -223,11 +224,11 @@ app.resources.dashboards = {
 					}
 				}
 
-				var sn = document.querySelectorAll('#snippetsChips .mdl-chip');
-				[].forEach.call(sn, app.addDnDHandlers);
-				
 				componentHandler.upgradeDom();
 				app.setExpandAction();
+
+				var sn = document.querySelectorAll('#snippetsChips .mdl-chip');
+				[].forEach.call(sn, app.addDnDHandlers);
 				app.setSection('dashboard');
 			}
 		})
@@ -248,13 +249,14 @@ app.resources.dashboards = {
 		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: true});
 
 		var snippets;
-		if (JSON.parse(localStorage.getItem('snippets')) === null || JSON.parse(localStorage.getItem('snippets')).length == 0) {
-			toast('You should add a Snippet first, it seems you don\' have any yet.', {timeout:3000, type: 'warning'});
-			snippets = [{value: 'undefined', name: 'undefined', sType: 'undefined'}];
-		} else {
+		if ( localStorage.getItem('snippets') != 'null' ) {
 			snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
 				return {value: snippet.name, name: snippet.id, sType: snippet.sType};
 			});
+		} else {
+			app.getSnippets();
+			toast('You should add a Snippet first, it seems you don\' have any yet.', {timeout:3000, type: 'warning'});
+			snippets = [{value: 'undefined', name: 'undefined', sType: 'undefined'}];
 		}
 		node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
 		

@@ -1,7 +1,7 @@
 
 var dataCacheName= 't6-cache-2019-02-06';
 var cacheName= dataCacheName;
-var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'gravatar', 'fonts.g', 'cdn.jsdelivr.net', 'static-v.tawk.to'];
+var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'secure.gravatar.com', 'fonts.g', 'cdn.jsdelivr.net', 'static-v.tawk.to'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token', '/mail/', 'hotjar', 'analytics', 'gtm', 'collect', 'tawk'];
 var filesToCache = [
 	'/',
