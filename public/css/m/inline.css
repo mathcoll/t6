@@ -741,6 +741,9 @@ div[data-action='view'] .mdl-card__title,
 div[data-action='view'] .mdl-list__item--three-line {
 	cursor: pointer;
 }
+div[data-action='view'] .mdl-list__item--three-line {
+	flex: auto;
+}
 div:not([data-action='view']) .mdl-card__title h3.mdl-card__title-text,
 div:not([data-action='nothing']) .mdl-card__title h3.mdl-card__title-text {
 	background: #0000004d;

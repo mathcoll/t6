@@ -3265,7 +3265,7 @@ var touchStartPoint, touchMovePoint;
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
 				if ( document.getElementById('switch-settings.notifications').checked == true ) {
 					app.setSetting('settings.notifications', true);
-					app.skPermission();
+					app.askPermission();
 					app.subscribeUserToPush();
 					label.innerText = "Notifications are enabled";
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
