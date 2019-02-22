@@ -377,7 +377,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='notifications.reminder')
                         input.mdl-checkbox__input(checked, type='checkbox', id='notifications.reminder', name='reminder')
                         span.mdl-checkbox__label(style='position: absolute;') Reminder email.
-                          | This notification will be sent only once, the week after your subscription.
+                          | This notification will be sent only once, the week after your subscription.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='notifications.changePassword')
@@ -386,7 +386,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                   .mdl-card__actions.mdl-card--border
                     a.mdl-button.small(onclick="app.setSection('login');", href="#login")
                       | Skip this step
-                    | (I will do it later)
+                    | (I will do it later)
               div.mdl-layout-spacer
           
         section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -598,10 +598,4 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
               a(href='#', id='cookieconsent.agree') Got it!
         
       script(type='application/javascript', src=baseUrlCdn + '/js/m/vendor.min.js')
-      if process.env.NODE_ENV === 'development'
-        //-script(type='application/javascript', src=baseUrlCdn + '/js/m/t6app.js')
-        script(type='application/javascript', src=baseUrlCdn + '/js/t6app-main.js')
-        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-objects.js')
-        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/valueDisplay.js')
-      else
-        -script(type='application/javascript', src=baseUrlCdn + '/js/m/t6app-min.js')
+      script(type='application/javascript', src=baseUrlCdn + '/js/m/t6app.js')

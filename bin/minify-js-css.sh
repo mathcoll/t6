@@ -1,4 +1,3 @@
-
 echo Minification in progress...
 
 uglifyjs \
@@ -21,7 +20,7 @@ echo Stylesheet minify: Completed
 
 # PWA version
 uglifyjs \
-	../public/js/m/material.js \
+	../public/js/material.js \
 	../public/js/m/mdl-selectfield.min.js \
 	../public/js/vendor/jquery-3.3.1.min.js \
 	../public/js/flot/jquery.flot.js \
