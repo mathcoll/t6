@@ -14,6 +14,11 @@ cat \
 	../public/js/resources/t6-rules.js \
 	../public/js/resources/t6-mqtts.js \
 	../public/js/resources/snippets/valueDisplay.js \
+	../public/js/resources/snippets/graphDisplay.js \
+	../public/js/resources/snippets/flowGraph.js \
+	../public/js/resources/snippets/simpleClock.js \
+	../public/js/resources/snippets/simpleRow.js \
+	../public/js/resources/snippets/cardChart.js \
 	> ../public/js/t6app-min.js
 echo Completed
 echo ""
@@ -29,6 +34,11 @@ echo Failed
 #	../public/js/resources/t6-rules.js \
 #	../public/js/resources/t6-mqtts.js \
 #	../public/js/resources/snippets/valueDisplay.js \
+#	../public/js/resources/snippets/graphDisplay.js \
+#	../public/js/resources/snippets/flowGraph.js \
+#	../public/js/resources/snippets/simpleClock.js \
+#	../public/js/resources/snippets/simpleRow.js \
+#	../public/js/resources/snippets/cardChart.js \
 #	-o ../public/js/t6app-min.js \
 #	-m -c warnings=false
 #echo Completed

@@ -14,7 +14,7 @@ app.resources.snippets = {
 				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
-	
+
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
@@ -149,7 +149,8 @@ app.resources.snippets = {
 					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: isEdit });
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetTypes, isEdit: isEdit });
+					node += app.getField(null, 'Sample', null, {type: 'container', id: 'TypeSample', options: {}, isEdit: false });
 
 					if ( localStorage.getItem('flows') !== 'null' ) {
 						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
@@ -200,6 +201,23 @@ app.resources.snippets = {
 						app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
 						evt.preventDefault();
 					}, false);
+
+					document.getElementById('Type').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+						//console.log(evt.target);
+						var index = evt.target.getAttribute('data-value');
+						var value = evt.target.innerText;
+						var s = app.snippetTypes.find(function(snippet) {
+							return snippet.value===value;
+						});
+						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getSample();
+						evt.preventDefault();
+					}, false);
+					if( snippet.attributes.type ) {
+						var s = app.snippetTypes.find(function(sn) {
+							return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
+						});
+						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getSample();
+					}
 
 					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 && localStorage.getItem('flows') !== 'null' ) {
 						snippet.attributes.flows.map(function(s) {
@@ -283,7 +301,7 @@ app.resources.snippets = {
 					// buttons.deleteSnippet2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					app.buttons.editSnippet2.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, true); evt.preventDefault(); }, false);
+					app.buttons.editSnippet2.addEventListener('click', function(evt) { app.resources.snippets.display(snippet.id, false, true, false); evt.preventDefault(); }, false);
 				}
 				app.setSection('snippet');
 			}
@@ -306,7 +324,8 @@ app.resources.snippets = {
 		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: true, options: app.types });
 		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: true});
-		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: true });
+		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetTypes, isEdit: true });
+		node += app.getField(null, 'Sample', null, {type: 'container', id: 'TypeSample', options: {}, isEdit: false });
 
 		if ( localStorage.getItem('flows') != 'null' ) {
 			var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
@@ -346,11 +365,21 @@ app.resources.snippets = {
 		(app.containers.snippet_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 		document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-			console.log(evt.target);
+			//console.log(evt.target);
 			var id = evt.target.getAttribute('data-value');
 			var name = evt.target.innerText;
 			console.log({name: name, id: id, type: 'flows'});
 			app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
+			evt.preventDefault();
+		}, false);
+		document.getElementById('Type').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+			//console.log(evt.target);
+			var index = evt.target.getAttribute('data-value');
+			var value = evt.target.innerText;
+			var s = app.snippetTypes.find(function(snippet) {
+				return snippet.value===value;
+			});
+			(app.containers.snippet_add).querySelector('#TypeSample').innerHTML = s.getSample();
 			evt.preventDefault();
 		}, false);
 		
@@ -376,7 +405,13 @@ app.resources.snippets = {
 		element += "<div class='mdl-list__item--three-line small-padding'>";
 		if ( snippet.attributes.type ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetsTypes.find( function(s) { return s.name == snippet.attributes.type; }).value;
+
+			
+			var s = app.snippetTypes.find(function(sn) {
+				return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
+			});
+			if ( !s ) console.log("type not found !!!", (snippet.attributes.type).toLowerCase());
+			element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetTypes.find( function(s) { return (s.name).toLowerCase() == (snippet.attributes.type).toLowerCase(); }).value;
 			element += "	</div>";
 		}
 		if ( snippet.attributes.color ) {

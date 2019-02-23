@@ -1548,7 +1548,12 @@ var touchStartPoint, touchMovePoint;
 		}, false);
 		displayChipSnippet.querySelector('i.edit').addEventListener('click', function(evt) {
 			evt.preventDefault();
-			app.resources.snippets.display(app.getSnippetIdFromIndex(evt.target.parentNode.getAttribute('data-id'), false, false, false), true);
+			app.resources.snippets.display(
+				app.getSnippetIdFromIndex( evt.target.parentNode.parentNode.getAttribute('data-id') ),
+				false,
+				true,
+				false
+			);
 		}, false);
 			
 		return displayChipSnippet;
@@ -2327,6 +2332,12 @@ var touchStartPoint, touchMovePoint;
 					if (value) field += "	<span class='mdl-list__item-sub-title' "+style+">"+value+"</span>";
 					field += "</div>";
 				}
+			} else if ( options.type === 'container' ) {
+				field += "<div class='mdl-list__item-sub-title'>";
+				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>view_module</i>";
+				if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+				field += "	<div class='' id='"+id+"'></div>";
+				field += "</div>";
 			} else if ( options.type === 'hidden' ) {
 				var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 				field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
@@ -4122,17 +4133,3 @@ var touchStartPoint, touchMovePoint;
 		}
 	}
 })();
-
-
-/*
-var params = {
-	"snippet_id": "uuidv4-1234-1234",
-	"name": "Super Name",
-	"timstamp": "1234567",
-	"icon": "widgets",
-	"ttl": "" // ???
-};
-document.addEventListener("DOMContentLoaded", function() {
-	console.log(snippetTypes.find(function (type) {return type.id === 'valueDisplay.js';}).getHtml(params) );
-});
-*/
