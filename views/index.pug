@@ -18,11 +18,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
     meta(name='theme-color', content='#795548')
     meta(name='Description' content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
     if process.env.NODE_ENV === 'development'
-      link(rel='stylesheet', href=baseUrlCdn + '/css/material-design-lite/1.3.0/material.brown-blue.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel='stylesheet', href=baseUrlCdn + '/css/m/inline.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel='stylesheet', href=baseUrlCdn + '/css/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
     else
-      link(rel='stylesheet', href=baseUrlCdn + '/css/t6App.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
 
     link(rel='manifest', href='/manifest.json')
     link(rel='apple-touch-icon', href=baseUrlCdn + '/img/m/icons/icon-152x152.png')
@@ -580,7 +580,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
 
       .menu__overlay
       .toast__container
-      
+
       #cookieconsent.mdl-card__actions.mdl-card--border.hidden
         #cookieconsent_wrapper
           h4#cookieconsent_header This website uses cookies
@@ -594,8 +594,8 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
               a(href='#', id='cookieconsent.noGTM') Deny Marketing cookies 
             #cookieconsent_accept.mdl-button
               a(href='#', id='cookieconsent.agree') Got it!
-        
-      script(type='application/javascript', src=baseUrlCdn + '/js/m/vendor.min.js')
+
+      script(type='application/javascript', src=baseUrlCdn + '/js/vendor.min.js')
       if process.env.NODE_ENV === 'development'
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-main.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-objects.js')
@@ -606,4 +606,4 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-rules.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/valueDisplay.js')
       else
-        -script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js')

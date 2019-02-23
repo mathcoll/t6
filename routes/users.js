@@ -28,7 +28,6 @@ router.get('/list', expressJwt({secret: jwtsettings.secret}), function (req, res
 		
 		users	= db.getCollection('users');
 		var json = users.chain().find().simplesort('subscription_date', true).offset(offset).limit(size).data();
-		
 		res.status(200).send(new UserSerializer(json).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 502, 'code': 401, 'message': 'Unauthorized'}).serialize());

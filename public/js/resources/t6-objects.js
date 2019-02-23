@@ -301,7 +301,7 @@ app.resources.objects = {
 					// buttons.deleteObject2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					app.buttons.editObject2.addEventListener('click', function(evt) { app.resources.objects.display(object.id, true); evt.preventDefault(); }, false);
+					app.buttons.editObject2.addEventListener('click', function(evt) { app.resources.objects.display(object.id, false, true, false); evt.preventDefault(); }, false);
 				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {

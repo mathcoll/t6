@@ -2243,7 +2243,7 @@ var touchStartPoint, touchMovePoint;
 		else { document.getElementById("currentUserName").innerHTML = "t6 IoT App"; }
 		if ( localStorage.getItem("currentUserEmail") != 'null' ) { document.getElementById("currentUserEmail").innerHTML = localStorage.getItem("currentUserEmail") }
 		else { document.getElementById("currentUserEmail").innerHTML = ""; }
-		if ( document.getElementById("imgIconMenu") && localStorage.getItem("currentUserHeader") != 'null' ) {
+		if ( document.getElementById("imgIconMenu") && localStorage.getItem("currentUserHeader") != 'null' && localStorage.getItem("currentUserHeader") ) {
 			document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader"));
 			document.getElementById("imgIconMenu").outerHTML = "<img id=\"imgIconMenu\" src=\""+localStorage.getItem("currentUserHeader")+"\" alt=\"Current user avatar\" style=\"border-radius: 50%; width: 30px; padding: 0px;border: 1px solid #fff;margin: 0px 0px;\">";
 		}
@@ -2328,7 +2328,7 @@ var touchStartPoint, touchMovePoint;
 			var myInit = { method: 'GET', headers: myHeaders };
 			var url = app.baseUrl+'/'+app.api_version+'/index';
 			var title = '';
-	
+
 			fetch(url, myInit)
 			.then(
 				app.fetchStatusHandler
@@ -3130,7 +3130,6 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.refreshAuthenticate = function() {
-		//console.log("DEBUG", "refreshAuthenticate");
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 		var refreshPOST = {"grant_type": "refresh_token", "refresh_token": localStorage.getItem('refresh_token')};
@@ -3571,12 +3570,12 @@ var touchStartPoint, touchMovePoint;
 		var request = store.add(item);
 		request.onsuccess = function(event) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("DEBUG add(): onsuccess.");
+				console.log("DEBUG", "add(): onsuccess.");
 			}
 		}
 		request.onerror = function(event) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log("DEBUG add(): onerror.");
+				console.log("DEBUG", "add(): onerror.");
 				console.log(event);
 			}
 		}
@@ -3758,12 +3757,14 @@ var touchStartPoint, touchMovePoint;
 			app.setVisibleElement("logout_button");
 			app.getUnits();
 			app.getDatatypes();
+			app.getSnippets();
+			app.getFlows();
 			setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 		} else {
 			app.sessionExpired();
 		}
 	}
-	
+
 	// Notifications
 	for (var i in app.buttons.notifications) {
 		if ( app.buttons.notifications[i].childElementCount > -1 ) {

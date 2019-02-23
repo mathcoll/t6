@@ -15,7 +15,7 @@ app.resources.flows = {
 				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")==true?'true':'false',
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
-	
+
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
@@ -364,12 +364,12 @@ app.resources.flows = {
 	},
 	displayAdd: function(flow, isAdd, isEdit, isPublic) {
 		if ( !localStorage.getItem('units') ) {
-			// retrieve units
+			app.getUnits();
 		}
 		var allUnits = JSON.parse(localStorage.getItem('units'));
 
 		if ( !localStorage.getItem('datatypes') ) {
-			// retrieve datatypes
+			app.getDatatypes();
 		}
 		var allDatatypes = JSON.parse(localStorage.getItem('datatypes'));
 		
