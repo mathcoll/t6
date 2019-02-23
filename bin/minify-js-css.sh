@@ -4,7 +4,7 @@ echo "Using uglifyjs version:"
 uglifyjs -V
 echo ""
 
-echo 0. PWA Javascript T6 concat:
+echo 1. PWA Javascript T6 concat:
 cat \
 	../public/js/t6app-main.js \
 	../public/js/resources/t6-objects.js \
@@ -19,18 +19,19 @@ echo Completed
 echo ""
 
 echo 1. PWA Javascript T6 minify:
-uglifyjs \
-	../public/js/t6app-main.js \
-	../public/js/resources/t6-objects.js \
-	../public/js/resources/t6-flows.js \
-	../public/js/resources/t6-snippets.js \
-	../public/js/resources/t6-dashboards.js \
-	../public/js/resources/t6-rules.js \
-	../public/js/resources/t6-mqtts.js \
-	../public/js/resources/snippets/valueDisplay.js \
-	-o ../public/js/t6app-min.js \
-	-m -c warnings=false
-echo Completed
+echo Failed
+#uglifyjs \
+#	../public/js/t6app-main.js \
+#	../public/js/resources/t6-objects.js \
+#	../public/js/resources/t6-flows.js \
+#	../public/js/resources/t6-snippets.js \
+#	../public/js/resources/t6-dashboards.js \
+#	../public/js/resources/t6-rules.js \
+#	../public/js/resources/t6-mqtts.js \
+#	../public/js/resources/snippets/valueDisplay.js \
+#	-o ../public/js/t6app-min.js \
+#	-m -c warnings=false
+#echo Completed
 echo ""
 
 echo 2. PWA Javascript T6-VENDOR minify:
@@ -68,6 +69,7 @@ echo ""
 
 echo 5. Old site? Stylesheet minify:
 uglifycss \
+	../public/css/vendor/bootstrap/bootstrap.css \
 	../public/css/t6.css \
 	> ../public/css/t6.min.css
 echo Completed
