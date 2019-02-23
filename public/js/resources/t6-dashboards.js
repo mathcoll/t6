@@ -271,14 +271,14 @@ app.resources.dashboards = {
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+dashboard.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Dashboards</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+dashboard.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Dashboard</label>";
@@ -309,6 +309,51 @@ app.resources.dashboards = {
 		app.setExpandAction();
 	},
 	displayItem: function(dashboard) {
-		/* On the list Views */
+		var type = 'dashboards';
+		var name = dashboard.attributes.name!==undefined?dashboard.attributes.name:"";
+		var description = dashboard.attributes.description!==undefined?dashboard.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = dashboard.attributes.type!==undefined?dashboard.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+dashboard.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+dashboard.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(dashboard.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( dashboard.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(dashboard.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+dashboard.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+dashboard.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+dashboard.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+dashboard.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+dashboard.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+dashboard.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };

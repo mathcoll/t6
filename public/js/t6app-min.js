@@ -2055,7 +2055,7 @@ var touchStartPoint, touchMovePoint;
 				node += "	<div class=\"card-body\">";
 				node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
 				node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
-				node += app.getField('lock', 'Email', user.attributes.email, {type: 'text', id:'email', isEdit: false});
+				node += app.getField('lock', 'Email', user.attributes.email, {type: 'text', id:'email', style:'text-transform: none !important;', isEdit: false});
 				node += "	</div>";
 				node += "	<div class=\"mdl-card__actions mdl-card--border\">";
 				node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" id=\"saveProfileButton\"><i class=\"material-icons\">edit</i>Save t6 profile</a>";
@@ -2110,6 +2110,7 @@ var touchStartPoint, touchMovePoint;
 				});
 				
 				if ( user.attributes.role == 'admin' ) {
+					localStorage.setItem("role", 'admin');
 					app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
 				}
 			}
@@ -3491,6 +3492,7 @@ var touchStartPoint, touchMovePoint;
 		localStorage.setItem('notifications.unsubscribed', null);
 		localStorage.setItem('notifications.unsubscription_token', null);
 		localStorage.setItem('notifications.email', null);
+		localStorage.setItem('role', null);
 		(app.containers.profile).querySelector('.page-content').innerHTML = "";
 		
 		app.auth = {};
@@ -3760,6 +3762,9 @@ var touchStartPoint, touchMovePoint;
 			app.getSnippets();
 			app.getFlows();
 			setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
+			if ( localStorage.getItem('role') == 'admin' ) {
+				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
+			}
 		} else {
 			app.sessionExpired();
 		}

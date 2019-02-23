@@ -62,6 +62,9 @@ a {
 	background: #fff;
 	color: rgb(68,138,255);
 }
+.mdl-cell--12-col, .mdl-cell--12-col-desktop.mdl-cell--12-col-desktop {
+	width: calc(100%);
+}
 h1.page_title {
 	color: #fff;
 	font-size: 14px;
@@ -1857,9 +1860,6 @@ input ~ .mdl-switch__label {
 .mdl-selectfield {
 	padding: 0;
 }
-
-/*# sourceMappingURL=mdl-selectfield.min.css.map */
-
 /*cookieconsent*/
 #cookieconsent {
 	background-color: rgb(238, 238, 238);

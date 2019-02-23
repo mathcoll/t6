@@ -327,14 +327,14 @@ app.resources.snippets = {
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Snippets</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Snippet</label>";
@@ -361,6 +361,65 @@ app.resources.snippets = {
 		app.setExpandAction();
 	},
 	displayItem: function(snippet) {
-		/* On the list Views */
+		var type = 'snippets';
+		var name = snippet.attributes.name!==undefined?snippet.attributes.name:"";
+		var description = snippet.attributes.description!==undefined?snippet.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = snippet.attributes.type!==undefined?snippet.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+snippet.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += "<div class='mdl-list__item--three-line small-padding'>";
+		if ( snippet.attributes.type ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetsTypes.find( function(s) { return s.name == snippet.attributes.type; }).value;
+			element += "	</div>";
+		}
+		if ( snippet.attributes.color ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>format_color_fill</i><span style='text-transform:uppercase; color:"+snippet.attributes.color+"'>"+snippet.attributes.color+"</span>";
+			element += "	</div>";
+		}
+		element += "	<span class='mdl-list__item-sub-title'>";
+		element += "		<i class='material-icons md-28'>"+snippet.attributes.icon+"</i>"+app.types.find( function(t) { return t.name == snippet.attributes.icon; }).value;
+		element += "	</span>";
+		element += "</div>";
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+snippet.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(snippet.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( snippet.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(snippet.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+snippet.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+snippet.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+snippet.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+snippet.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+snippet.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+snippet.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };

@@ -389,14 +389,14 @@ app.resources.flows = {
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Flows</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Flow</label>";
@@ -429,6 +429,72 @@ app.resources.flows = {
 		app.setExpandAction();
 	},
 	displayItem: function(flow) {
-		/* On the list Views */
+		var type = 'flows';
+		var name = flow.attributes.name!==undefined?flow.attributes.name:"";
+		var description = flow.attributes.description!==undefined?flow.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = flow.attributes.type!==undefined?flow.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+flow.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += "<div class='mdl-list__item--three-line small-padding'>";
+		if ( flow.attributes.unit ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; }).value;
+			element += "	</div>";
+		}
+		if ( flow.attributes.data_type ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
+			element += "	</div>";
+		}
+		if ( flow.attributes.require_signed == true ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>verified_user</i> Require Signature Secret Key"
+			element += "	</div>";
+		}
+		if ( flow.attributes.require_encrypted == true ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>vpn_key</i> Require Encryption Secret Key"
+			element += "	</div>";
+		}
+		element += "</div>";
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+flow.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(flow.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( flow.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(flow.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+flow.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+flow.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+flow.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+flow.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+flow.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+flow.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };

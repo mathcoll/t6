@@ -9,10 +9,6 @@
  * [pushSubscription]
  * [ServiceWorker]
  * [setSection]
- 
- TODO: l165: app.displayListItem
- TODO: 1916: container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
- BECOME:     container.innerHTML += app.resources.(type).dysplayCard(type, 12, icon, response.data[i]);
  */
 'use strict';
 var app = {
@@ -1552,7 +1548,7 @@ var touchStartPoint, touchMovePoint;
 		}, false);
 		displayChipSnippet.querySelector('i.edit').addEventListener('click', function(evt) {
 			evt.preventDefault();
-			app.resources.snippets(app.getSnippetIdFromIndex(evt.target.parentNode.getAttribute('data-id'), false, false, false), true);
+			app.resources.snippets.display(app.getSnippetIdFromIndex(evt.target.parentNode.getAttribute('data-id'), false, false, false), true);
 		}, false);
 			
 		return displayChipSnippet;
@@ -1621,122 +1617,8 @@ var touchStartPoint, touchMovePoint;
 	app.addChipSnippetTo = function(container, chipSnippet) {
 		document.getElementById(container).append(app.displayChipSnippet(chipSnippet));
 	};
-		app.getSnippetIdFromIndex = function(index) {
+	app.getSnippetIdFromIndex = function(index) {
 		return ((JSON.parse(localStorage.getItem('snippets')))[index]).id;
-	};
-
-	app.displayListItem = function(type, width, iconName, item) {
-		var name = item.attributes.name!==undefined?item.attributes.name:"";
-		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, app.cardMaxChars):'';
-		var attributeType = item.attributes.type!==undefined?item.attributes.type:'';
-		var element = "";
-		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
-		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
-		element += "		<div class=\"mdl-card__title\">";
-		element += "			<i class=\"material-icons\">"+iconName+"</i>";
-		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
-		element += "		</div>";
-		if ( type == 'snippets' ) {
-			element += "<div class='mdl-list__item--three-line small-padding'>";
-			if ( item.attributes.type ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetsTypes.find( function(s) { return s.name == item.attributes.type; }).value;
-				element += "	</div>";
-			}
-			if ( item.attributes.color ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>format_color_fill</i><span style='text-transform:uppercase; color:"+item.attributes.color+"'>"+item.attributes.color+"</span>";
-				element += "	</div>";
-			}
-			element += "	<span class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>"+item.attributes.icon+"</i>"+app.types.find( function(t) { return t.name == item.attributes.icon; }).value;
-			element += "	</span>";
-			element += "</div>";
-		} else if ( type == 'flows' ) {
-			element += "<div class='mdl-list__item--three-line small-padding'>";
-			if ( item.attributes.unit ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == item.attributes.unit; }).value;
-				element += "	</div>";
-			}
-			if ( item.attributes.data_type ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == item.attributes.data_type; }).value;
-				element += "	</div>";
-			}
-			if ( item.attributes.require_signed == true ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>verified_user</i> Require Signature Secret Key"
-				element += "	</div>";
-			}
-			if ( item.attributes.require_encrypted == true ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>vpn_key</i> Require Encryption Secret Key"
-				element += "	</div>";
-			}
-			element += "</div>";
-		} else if ( type == 'objects' ) {
-			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
-			element += "<div class='mdl-list__item--three-line small-padding'>";
-			if ( item.attributes.type ) {
-				var d = app.types.find( function(type) { return type.name == item.attributes.type; });
-				d = d!==undefined?d:'';
-				element += "	<span class='type' id='"+item.id+"-type'><i class='material-icons md-32'>"+d.name+"</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-type'>"+d.value+"</div>";
-			}
-			if ( item.attributes.is_public == 'true' ) {
-				element += "	<span class='isPublic' id='"+item.id+"-isPublic'><i class='material-icons md-32'>visibility</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-isPublic'>Public</div>";
-			}
-			if ( (item.attributes.longitude && item.attributes.latitude) || item.attributes.position ) {
-				element += "	<span class='isLocalized' id='"+item.id+"-isLocalized'><i class='material-icons md-32'>location_on</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-isLocalized'>Localized</div>";	
-			}
-			if ( item.attributes.secret_key != '' ) {
-				element += "	<span class='Signature' id='"+item.id+"-Signature'><i class='material-icons md-32'>verified_user</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-Signature'>Signature Secret Key</div>";
-			}
-			if ( item.attributes.secret_key_crypt != '' ) {
-				element += "	<span class='Crypt' id='"+item.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-Crypt'>Encryption Secret Key</div>";
-			}
-			element += "</div>";
-		} else {
-			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
-		}
-		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
-		element += "			<span class=\"pull-left mdl-card__date\">";
-		element += "				<button data-id=\""+item.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		element += "					<i class=\"material-icons\">update</i>";
-		element += "				</button>";
-		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(item.attributes.meta.created).format(app.date_format) + "</span>";
-		if ( item.attributes.meta.updated ) {
-			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(item.attributes.meta.updated).format(app.date_format) + "</span>";
-		} else {
-			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
-		}
-		element += "			</span>";
-		element += "			<span class=\"pull-right mdl-card__menuaction\">";
-		element += "				<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
-		element += "				</button>";
-		element += "			</span>";
-		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
-		element += "				<li class=\"mdl-menu__item delete-button\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
-		element += "				</li>";
-		element += "				<li class=\"mdl-menu__item\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
-		element += "				</li>";
-		element += "				<li class=\"mdl-menu__item\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+item.id+"</textarea>Copy ID to clipboard</a>";
-		element += "				</li>";
-		element += "			</ul>";
-		element += "		</div>";
-		element += "	</div>";
-		element += "</div>";
-
-		return element;
 	};
 	
 	app.fetchItemsPaginated = function(type, filter, page, size) {
@@ -1758,7 +1640,6 @@ var touchStartPoint, touchMovePoint;
 			var defaultCard = {};
 	
 			if (type == 'objects') {
-				var icon = app.icons.objects;
 				var container = (app.containers.objects).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/objects';
 
@@ -1779,7 +1660,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'}; // ,
 			
 			} else if (type == 'flows') {
-				var icon = app.icons.flows;
 				var container = (app.containers.flows).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/flows';
 				if ( page || size || filter ) {
@@ -1799,7 +1679,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; // ,
 																																																																			// action:
 			} else if (type == 'dashboards') {
-				var icon = app.icons.dashboards;
 				var container = (app.containers.dashboards).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 				if ( page || size ) {
@@ -1818,7 +1697,6 @@ var touchStartPoint, touchMovePoint;
 					defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.'};
 				}
 			} else if (type == 'snippets') {
-				var icon = app.icons.snippets;
 				var container = (app.containers.snippets).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
 				if ( page || size ) {
@@ -1835,7 +1713,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
 				
 			} else if (type == 'rules') {
-				var icon = app.icons.snippets;
 				var container = (app.containers.rules).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/rules';
 				if ( page || size ) {
@@ -1852,7 +1729,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; // ,
 				
 			} else if (type == 'mqtts') {
-				var icon = app.icons.mqtts;
 				var container = (app.containers.mqtts).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
 				if ( page || size ) {
@@ -1869,7 +1745,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
 				
 			} else if (type == 'tokens') {
-				var icon = app.icons.tokens;
 				var container = (app.containers.tokens).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/tokens';
 				if ( page || size ) {
@@ -1918,7 +1793,7 @@ var touchStartPoint, touchMovePoint;
 							app.displayLoginForm( container );
 						} else {
 							for (var i=0; i < (response.data).length ; i++ ) {
-								container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
+								container.innerHTML += (app.resources)[type].displayItem(response.data[i]);
 							}
 							app.showAddFAB(type);
 							componentHandler.upgradeDom();
@@ -2055,7 +1930,7 @@ var touchStartPoint, touchMovePoint;
 				node += "	<div class=\"card-body\">";
 				node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
 				node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
-				node += app.getField('lock', 'Email', user.attributes.email, {type: 'text', id:'email', isEdit: false});
+				node += app.getField('lock', 'Email', user.attributes.email, {type: 'text', id:'email', style:'text-transform: none !important;', isEdit: false});
 				node += "	</div>";
 				node += "	<div class=\"mdl-card__actions mdl-card--border\">";
 				node += "		<a class=\"mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\" id=\"saveProfileButton\"><i class=\"material-icons\">edit</i>Save t6 profile</a>";
@@ -2110,6 +1985,7 @@ var touchStartPoint, touchMovePoint;
 				});
 				
 				if ( user.attributes.role == 'admin' ) {
+					localStorage.setItem("role", 'admin');
 					app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
 				}
 			}
@@ -2499,8 +2375,8 @@ var touchStartPoint, touchMovePoint;
 					field += "</div>";
 				}
 			} else if ( options.type === 'switch' ) {
-				var isChecked = value==true?' checked':'';
-				var className = value==true?'is-checked':'';
+				var isChecked = value==true||value=='true'?' checked':'';
+				var className = value==true||value=='true'?'is-checked':'';
 				if ( options.isEdit == true ) {
 					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label "+className+"' for='switch-"+id+"' data-id='switch-"+id+"'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
@@ -3491,6 +3367,7 @@ var touchStartPoint, touchMovePoint;
 		localStorage.setItem('notifications.unsubscribed', null);
 		localStorage.setItem('notifications.unsubscription_token', null);
 		localStorage.setItem('notifications.email', null);
+		localStorage.setItem('role', null);
 		(app.containers.profile).querySelector('.page-content').innerHTML = "";
 		
 		app.auth = {};
@@ -3760,6 +3637,9 @@ var touchStartPoint, touchMovePoint;
 			app.getSnippets();
 			app.getFlows();
 			setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
+			if ( localStorage.getItem('role') == 'admin' ) {
+				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
+			}
 		} else {
 			app.sessionExpired();
 		}

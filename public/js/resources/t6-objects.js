@@ -204,6 +204,7 @@ app.resources.objects = {
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 				} else {
+					console.log(object.attributes.is_public);
 					node += app.getField('visibility', object.attributes.is_public=='true'?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 				}
 				node += "	</div>";
@@ -637,6 +638,75 @@ app.resources.objects = {
 		app.setExpandAction();
 	},
 	displayItem: function(object) {
-		/* On the list Views */
+		var type = 'objects';
+		var name = object.attributes.name!==undefined?object.attributes.name:"";
+		var description = object.attributes.description!==undefined?object.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = object.attributes.type!==undefined?object.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+object.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += "<div class='mdl-list__item--three-line small-padding'>";
+		if ( object.attributes.type ) {
+			var d = app.types.find( function(type) { return type.name == object.attributes.type; });
+			d = d!==undefined?d:'';
+			element += "	<span class='type' id='"+object.id+"-type'><i class='material-icons md-32'>"+d.name+"</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-type'>"+d.value+"</div>";
+		}
+		if ( object.attributes.is_public == 'true' ) {
+			element += "	<span class='isPublic' id='"+object.id+"-isPublic'><i class='material-icons md-32'>visibility</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-isPublic'>Public</div>";
+		}
+		if ( (object.attributes.longitude && object.attributes.latitude) || object.attributes.position ) {
+			element += "	<span class='isLocalized' id='"+object.id+"-isLocalized'><i class='material-icons md-32'>location_on</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-isLocalized'>Localized</div>";	
+		}
+		if ( object.attributes.secret_key != '' ) {
+			element += "	<span class='Signature' id='"+object.id+"-Signature'><i class='material-icons md-32'>verified_user</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Signature'>Signature Secret Key</div>";
+		}
+		if ( object.attributes.secret_key_crypt != '' ) {
+			element += "	<span class='Crypt' id='"+object.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Crypt'>Encryption Secret Key</div>";
+		}
+		element += "</div>";
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+object.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(object.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( object.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(object.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+object.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+object.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+object.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };
