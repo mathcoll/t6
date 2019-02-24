@@ -19,7 +19,7 @@ var snippet = {
 			<span class="mdl-list__item mdl-list__item--two-line">
 				<span class="mdl-list__item-primary-content">
 					<i class="material-icons">widgets</i>
-					<span class="heading">${params.title}</span>
+					<span class="heading">${params.name}</span>
 					<span class="mdl-list__item-sub-title" id="snippet-time-${params.id}">
 						${params.time}
 					</span>

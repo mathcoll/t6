@@ -4,16 +4,18 @@ var snippet = {
 	value: "Graph a Flow over axis",
 	
 	options: {
-		color: {defaultValue: "#FF0000", type: 'text'},
+		color: {defaultValue: "#FF0000", type: 'text', value: '#195bb0'},
 		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]},
-		limit: {defaultValue: 500, value: 1000, type: 'integer'},
+		limit: {defaultValue: 500, type: 'integer', value: 1000},
 	},
 	activateOnce: function(params) {
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var limit = params.limit&&params.limit.value!==undefined?params.limit.value:500;
+		var opt = this.getOptions();
+		console.log("DEBUG getOptions", opt);
+		var limit = opt.limit&&opt.limit.value!==undefined?opt.limit.value:500;
 		var url = app.baseUrl+"/"+app.api_version+'/data/'+params.attributes.flows[0]+'?sort=desc&limit='+limit;
 		fetch(url, myInit)
 		.then(
@@ -36,7 +38,7 @@ var snippet = {
 					fill: false,
 					showLine: false,
 					steppedLine: false, //true, false, 'before', 'after'
-					pointBackgroundColor: 'rgb(255, 99, 132)',
+					pointBackgroundColor: opt.color&&opt.color.value!==undefined?opt.color.value:'rgb(255, 99, 132)',
 					data: datapoints,
 				}]
 			};
@@ -108,15 +110,19 @@ var snippet = {
 						</button>
 					</span>
 				</div>
-			</div>
-			<div class="mdl-list__item-primary-content">
-				<div class="mdl-list__item" id="snippet-graph-${params.id}" style="width:100%; height:200px;">
-					<canvas id="chart-${params.id}"></canvas>
-				</span>
+				<div class="mdl-list__item-secondary-content">
+					<div class="mdl-list__item" id="snippet-graph-${params.id}" style="width:100%;">
+						<canvas id="chart-${params.id}"></canvas>
+					</div>
+				</div>
 			</div>
 			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}"></span>
 		</div>`;
 		return html;
 	},
-}
+	//get getOptions() {
+	//	return this.options;
+	//}
+};
+snippet.getOptions = function() { return snippet.options; }
 app.snippetTypes.push(snippet);
