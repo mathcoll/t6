@@ -1,21 +1,36 @@
 'use strict';
 var snippet = {
 	name: "simpleclock",
-	value: "Display a realtime clock",
+	value: "Realtime clock",
 	
 	options: {
 		color: {defaultValue: "#FF0000", type: 'text'},
 		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
 	},
-	getSample: function() {
-		var html = "";
-		html += "<div class='simpleclock tile card-simpleclock material-animate margin-top-4 material-animated mdl-shadow--2dp is-ontime'>";
-		html += "</div>";
-		return html;
+	activateOnce: function(params) {
+		setInterval(function() {app.refreshFromNow('snippet-clock-'+params.id, moment(), null)}, 1000);
 	},
 	getHtml: function(params) {
-		return "<div class='flowgraph tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp'>"+params.name+"</div>";
-		//sprintf("<div class='valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp'>%s</div>", "");
+		if (!params) {
+			params = {}
+		}
+		params.time = moment().format(app.date_format);
+		var html = `
+		<div class="clock tile card-simpleclock material-animate margin-top-4 material-animated">
+			<span class='mdl-list__item mdl-list__item--two-line'>
+				<span class='mdl-list__item-primary-content'>
+					<i class='material-icons'>${params.icon}</i>
+					<span class="heading">${params.name}</span>
+					<span class='mdl-list__item-sub-title' id='snippet-time-${params.id}'></span>
+				</span>
+				<span class='mdl-list__item-secondary-content'>
+					<span class='mdl-list__item'>
+						<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-${params.id}'>${params.time}</span>
+					</span>
+				</span>
+			</span>
+		</div>`;
+		return html;
 	},
 }
 app.snippetTypes.push(snippet);

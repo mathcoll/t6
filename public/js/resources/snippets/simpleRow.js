@@ -7,37 +7,36 @@ var snippet = {
 		color: {defaultValue: "#FF0000", type: 'text'},
 		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
 	},
-	getSample: function() {
-		var html = "";
-		html += "<div class='simplerow tile card-simplerow material-animate margin-top-4 material-animated mdl-shadow--2dp'>";		
-		html += "<span class='mdl-list__item mdl-list__item--two-line'>";
-		html += "<span class='mdl-list__item-primary-content'>";
-		html += "<i class='material-icons'>widgets";
-		html += "</i>";
-		html += "<span class='heading'>Flow ID";
-		html += "</span>";
-		html += "<span class='mdl-list__item-sub-title' id='snippet-time-'>23/02/2019, 22:40";
-		html += "<small>, 26 minutes ago";
-		html += "</small>";
-		html += "</span>";
-		html += "</span>";
-		html += "<span class='mdl-list__item-secondary-content'>";
-		html += "<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-'>value";
-		html += "</span>";
-		html += "</span>";
-		html += "<span class='heading pull-right'>";
-		html += "<button class='edit-snippet mdl-button mdl-js-button mdl-button--icon'>";
-		html += "<i class='material-icons'>settings";
-		html += "</i>";
-		html += "</button>";
-		html += "</span>";
-		html += "</span>";
-		html += "</div>";
-		return html;
+	activateOnce: function(params) {
+		
 	},
 	getHtml: function(params) {
-		return "<div class='flowgraph tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp'>"+params.name+"</div>";
-		//sprintf("<div class='valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp'>%s</div>", "");
+		if (!params) {
+			params = {}
+		}
+		params.time = moment().format(app.date_format);
+		var html = `<div class="simplerow tile card-simplerow material-animate margin-top-4 material-animated mdl-shadow--2dp">		
+			<span class="mdl-list__item mdl-list__item--two-line">
+				<span class="mdl-list__item-primary-content">
+					<i class="material-icons">widgets</i>
+					<span class="heading">${params.title}</span>
+					<span class="mdl-list__item-sub-title" id="snippet-time-${params.id}">
+						${params.time}
+					</span>
+				</span>
+				<span class="mdl-list__item-secondary-content">
+					<span class="mdl-list__item-sub-title mdl-chip mdl-chip__text" id="snippet-value-${params.id}">
+						${params.value}
+					</span>
+				</span>
+				<span class="heading pull-right">
+					<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+						<i class="material-icons">settings</i>
+					</button>
+				</span>
+			</span>
+		</div>`;
+		return html;
 	},
 }
 app.snippetTypes.push(snippet);

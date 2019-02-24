@@ -323,7 +323,7 @@ app.resources.flows = {
 
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					app.buttons.backFlow.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, false, false); }, false);
+					app.buttons.backFlow.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, false, false) }, false);
 					app.buttons.saveFlow.addEventListener('click', function(evt) { app.resources.flows.onEdit(evt); }, false);
 
 					var element1 = document.getElementById('switch-edit_require_signed').parentNode;
@@ -345,7 +345,7 @@ app.resources.flows = {
 					// buttons.deleteFlow2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					app.buttons.editFlow2.addEventListener('click', function(evt) { app.displayFlow(flow.id, true); evt.preventDefault(); }, false);
+					app.buttons.editFlow2.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, true, false) }, false);
 				}
 				
 				componentHandler.upgradeDom();

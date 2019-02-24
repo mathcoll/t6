@@ -9,10 +9,6 @@
  * [pushSubscription]
  * [ServiceWorker]
  * [setSection]
- 
- TODO: l165: app.displayListItem
- TODO: 1916: container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
- BECOME:     container.innerHTML += app.resources.(type).dysplayCard(type, 12, icon, response.data[i]);
  */
 'use strict';
 var app = {
@@ -135,7 +131,6 @@ var app = {
 		{name: 'videogame_asset', value:'Videogame Asset'},
 		{name: 'watch', value:'Watch'},
 	],
-	snippetsTypes: [{name: 'valuedisplay', value:'Value Display'}, {name: 'flowgraph', value:'Graph Display'}, {name: 'cardchart', value:'Card Chart'}, {name: 'simplerow', value:'Simple Row'}, {name: 'simpleclock', value:'Simple Clock'}],
 	snippetTypes: [],
 	EventTypes: [{name: 'mqttPublish', value:'mqtt Publish'}, {name: 'email', value:'Email'}, {name: 'httpWebhook', value:'http(s) Webhook'}, {name: 'sms', value:'Sms/Text message'}, {name: 'serial', value:'Serial using Arduino CmdMessenger'}],
 	units: [],
@@ -1552,7 +1547,12 @@ var touchStartPoint, touchMovePoint;
 		}, false);
 		displayChipSnippet.querySelector('i.edit').addEventListener('click', function(evt) {
 			evt.preventDefault();
-			app.resources.snippets(app.getSnippetIdFromIndex(evt.target.parentNode.getAttribute('data-id'), false, false, false), true);
+			app.resources.snippets.display(
+				app.getSnippetIdFromIndex( evt.target.parentNode.parentNode.getAttribute('data-id') ),
+				false,
+				true,
+				false
+			);
 		}, false);
 			
 		return displayChipSnippet;
@@ -1621,122 +1621,8 @@ var touchStartPoint, touchMovePoint;
 	app.addChipSnippetTo = function(container, chipSnippet) {
 		document.getElementById(container).append(app.displayChipSnippet(chipSnippet));
 	};
-		app.getSnippetIdFromIndex = function(index) {
+	app.getSnippetIdFromIndex = function(index) {
 		return ((JSON.parse(localStorage.getItem('snippets')))[index]).id;
-	};
-
-	app.displayListItem = function(type, width, iconName, item) {
-		var name = item.attributes.name!==undefined?item.attributes.name:"";
-		var description = item.attributes.description!==undefined?item.attributes.description.substring(0, app.cardMaxChars):'';
-		var attributeType = item.attributes.type!==undefined?item.attributes.type:'';
-		var element = "";
-		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+item.id+"\">";
-		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
-		element += "		<div class=\"mdl-card__title\">";
-		element += "			<i class=\"material-icons\">"+iconName+"</i>";
-		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
-		element += "		</div>";
-		if ( type == 'snippets' ) {
-			element += "<div class='mdl-list__item--three-line small-padding'>";
-			if ( item.attributes.type ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetsTypes.find( function(s) { return s.name == item.attributes.type; }).value;
-				element += "	</div>";
-			}
-			if ( item.attributes.color ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>format_color_fill</i><span style='text-transform:uppercase; color:"+item.attributes.color+"'>"+item.attributes.color+"</span>";
-				element += "	</div>";
-			}
-			element += "	<span class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>"+item.attributes.icon+"</i>"+app.types.find( function(t) { return t.name == item.attributes.icon; }).value;
-			element += "	</span>";
-			element += "</div>";
-		} else if ( type == 'flows' ) {
-			element += "<div class='mdl-list__item--three-line small-padding'>";
-			if ( item.attributes.unit ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == item.attributes.unit; }).value;
-				element += "	</div>";
-			}
-			if ( item.attributes.data_type ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == item.attributes.data_type; }).value;
-				element += "	</div>";
-			}
-			if ( item.attributes.require_signed == true ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>verified_user</i> Require Signature Secret Key"
-				element += "	</div>";
-			}
-			if ( item.attributes.require_encrypted == true ) {
-				element += "	<div class='mdl-list__item-sub-title'>";
-				element += "		<i class='material-icons md-28'>vpn_key</i> Require Encryption Secret Key"
-				element += "	</div>";
-			}
-			element += "</div>";
-		} else if ( type == 'objects' ) {
-			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
-			element += "<div class='mdl-list__item--three-line small-padding'>";
-			if ( item.attributes.type ) {
-				var d = app.types.find( function(type) { return type.name == item.attributes.type; });
-				d = d!==undefined?d:'';
-				element += "	<span class='type' id='"+item.id+"-type'><i class='material-icons md-32'>"+d.name+"</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-type'>"+d.value+"</div>";
-			}
-			if ( item.attributes.is_public == 'true' ) {
-				element += "	<span class='isPublic' id='"+item.id+"-isPublic'><i class='material-icons md-32'>visibility</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-isPublic'>Public</div>";
-			}
-			if ( (item.attributes.longitude && item.attributes.latitude) || item.attributes.position ) {
-				element += "	<span class='isLocalized' id='"+item.id+"-isLocalized'><i class='material-icons md-32'>location_on</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-isLocalized'>Localized</div>";	
-			}
-			if ( item.attributes.secret_key != '' ) {
-				element += "	<span class='Signature' id='"+item.id+"-Signature'><i class='material-icons md-32'>verified_user</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-Signature'>Signature Secret Key</div>";
-			}
-			if ( item.attributes.secret_key_crypt != '' ) {
-				element += "	<span class='Crypt' id='"+item.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
-				element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+item.id+"-Crypt'>Encryption Secret Key</div>";
-			}
-			element += "</div>";
-		} else {
-			element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
-		}
-		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
-		element += "			<span class=\"pull-left mdl-card__date\">";
-		element += "				<button data-id=\""+item.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		element += "					<i class=\"material-icons\">update</i>";
-		element += "				</button>";
-		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(item.attributes.meta.created).format(app.date_format) + "</span>";
-		if ( item.attributes.meta.updated ) {
-			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(item.attributes.meta.updated).format(app.date_format) + "</span>";
-		} else {
-			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
-		}
-		element += "			</span>";
-		element += "			<span class=\"pull-right mdl-card__menuaction\">";
-		element += "				<button id=\"menu_"+item.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
-		element += "				</button>";
-		element += "			</span>";
-		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+item.id+"\">";
-		element += "				<li class=\"mdl-menu__item delete-button\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
-		element += "				</li>";
-		element += "				<li class=\"mdl-menu__item\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
-		element += "				</li>";
-		element += "				<li class=\"mdl-menu__item\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+item.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+item.id+"</textarea>Copy ID to clipboard</a>";
-		element += "				</li>";
-		element += "			</ul>";
-		element += "		</div>";
-		element += "	</div>";
-		element += "</div>";
-
-		return element;
 	};
 	
 	app.fetchItemsPaginated = function(type, filter, page, size) {
@@ -1758,7 +1644,6 @@ var touchStartPoint, touchMovePoint;
 			var defaultCard = {};
 	
 			if (type == 'objects') {
-				var icon = app.icons.objects;
 				var container = (app.containers.objects).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/objects';
 
@@ -1779,7 +1664,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'}; // ,
 			
 			} else if (type == 'flows') {
-				var icon = app.icons.flows;
 				var container = (app.containers.flows).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/flows';
 				if ( page || size || filter ) {
@@ -1799,7 +1683,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; // ,
 																																																																			// action:
 			} else if (type == 'dashboards') {
-				var icon = app.icons.dashboards;
 				var container = (app.containers.dashboards).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
 				if ( page || size ) {
@@ -1818,7 +1701,6 @@ var touchStartPoint, touchMovePoint;
 					defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.'};
 				}
 			} else if (type == 'snippets') {
-				var icon = app.icons.snippets;
 				var container = (app.containers.snippets).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/snippets';
 				if ( page || size ) {
@@ -1835,7 +1717,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
 				
 			} else if (type == 'rules') {
-				var icon = app.icons.snippets;
 				var container = (app.containers.rules).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/rules';
 				if ( page || size ) {
@@ -1852,7 +1733,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; // ,
 				
 			} else if (type == 'mqtts') {
-				var icon = app.icons.mqtts;
 				var container = (app.containers.mqtts).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
 				if ( page || size ) {
@@ -1869,7 +1749,6 @@ var touchStartPoint, touchMovePoint;
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.'}; // ,
 				
 			} else if (type == 'tokens') {
-				var icon = app.icons.tokens;
 				var container = (app.containers.tokens).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/tokens';
 				if ( page || size ) {
@@ -1918,7 +1797,7 @@ var touchStartPoint, touchMovePoint;
 							app.displayLoginForm( container );
 						} else {
 							for (var i=0; i < (response.data).length ; i++ ) {
-								container.innerHTML += app.displayListItem(type, 12, icon, response.data[i]);
+								container.innerHTML += (app.resources)[type].displayItem(response.data[i]);
 							}
 							app.showAddFAB(type);
 							componentHandler.upgradeDom();
@@ -2452,6 +2331,12 @@ var touchStartPoint, touchMovePoint;
 					if (value) field += "	<span class='mdl-list__item-sub-title' "+style+">"+value+"</span>";
 					field += "</div>";
 				}
+			} else if ( options.type === 'container' ) {
+				field += "<div class='mdl-list__item-sub-title'>";
+				field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>view_module</i>";
+				if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
+				field += "	<div class='' id='"+id+"'></div>";
+				field += "</div>";
 			} else if ( options.type === 'hidden' ) {
 				var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 				field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
@@ -2500,8 +2385,8 @@ var touchStartPoint, touchMovePoint;
 					field += "</div>";
 				}
 			} else if ( options.type === 'switch' ) {
-				var isChecked = value==true?' checked':'';
-				var className = value==true?'is-checked':'';
+				var isChecked = value==true||value=='true'?' checked':'';
+				var className = value==true||value=='true'?'is-checked':'';
 				if ( options.isEdit == true ) {
 					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label "+className+"' for='switch-"+id+"' data-id='switch-"+id+"'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
@@ -2606,278 +2491,12 @@ var touchStartPoint, touchMovePoint;
 		})
 		.then(function(response) {
 			var my_snippet = response.data[0];
-			var width = 6; // TODO: should be a parameter in the flow
-
-			// var snippet = "<section class='mdl-grid mdl-cell--12-col'
-			// id='"+my_snippet.id+"'>";
-			var snippet = "";
-			if ( my_snippet.attributes.type == 'valuedisplay' ) {
-				snippet += "	<div class=\"valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
-				snippet += "		<div class=\"contextual\">";
-				snippet += "			<div class='mdl-list__item-primary-content'>";
-				snippet += "				<i class='material-icons'>"+icon+"</i>";
-				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
-				snippet += "				<span class=\"heading pull-right\">";
-				snippet += "					<button data-snippet-id=\""+my_snippet.id+"\" class=\"edit-snippet mdl-button mdl-js-button mdl-button--icon\">";
-				snippet += "						<i class='material-icons'>settings</i>";
-				snippet += "					</button>";
-				snippet += "				</span>";
-				snippet += "			</div>";
-				snippet += "			<div class='mdl-list__item-secondary-content'>";
-				snippet += "				<span class='snippet-value1' id='snippet-value1-"+my_snippet.id+"'>-</span>";
-				//snippet += "				<span class='snippet-unit1' id='snippet-unit1-"+my_snippet.id+"'>n/a</span>";
-				snippet += "				<hr style='' />";
-				snippet += "				<span class='snippet-value2' id='snippet-value2-"+my_snippet.id+"'>-</span>";
-				//snippet += "				<span class='snippet-unit2' id='snippet-unit2-"+my_snippet.id+"'>n/a</span>";
-				snippet += "				<hr style='' />";
-				snippet += "				<span class='snippet-value3' id='snippet-value3-"+my_snippet.id+"'>-</span>";
-				//snippet += "				<span class='snippet-unit3' id='snippet-unit3-"+my_snippet.id+"'>n/a</span>";
-				snippet += "			</div>";
-				snippet += "		</div>";
-				snippet += "		<div class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet += "		<div class=\"chart without-time chart-balance\"></div>";
-				snippet += "	</div>";
-				
-			} else if ( my_snippet.attributes.type == 'sparkline' ) {
-				width = 12;
-				snippet += "	<div class=\"sparkline tile card-sparkline material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
-				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
-				snippet += "			<span class='mdl-list__item-primary-content'>";
-				snippet += "				<i class='material-icons'>"+icon+"</i>";
-				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
-				snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet += "			</span>";
-				snippet += "			<span class='mdl-list__item-secondary-content'>";
-				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.id+"'></span>";
-				snippet += "			</span>";
-				snippet += "			<span class='mdl-list__item' id='snippet-sparkline-"+my_snippet.id+"' style='width:100%; height:200px;'>";
-				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'>sparkline</span>";
-				snippet += "			</span>";
-				snippet += "		</span>";
-				snippet += "	</div>";
-				
-			} else if ( my_snippet.attributes.type == 'simplerow' ) {
-				width = 12;
-				for (var f=0; f<(my_snippet.attributes.flows).length; f++) {
-					var flow_id = my_snippet.attributes.flows[f];
-					snippet += "	<div class=\"simplerow tile card-simplerow material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
-					snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
-					snippet += "			<span class='mdl-list__item-primary-content'>";
-					snippet += "				<i class='material-icons'>"+icon+"</i>";
-					snippet += "				<span class=\"heading\">"+flow_id+"</span>";
-					snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+flow_id+"'></span>";
-					snippet += "			</span>";
-					snippet += "			<span class='mdl-list__item-secondary-content'>";
-					snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+flow_id+"'></span>";
-					snippet += "			</span>";
-					snippet += "				<span class=\"heading pull-right\">";
-					snippet += "					<button data-snippet-id=\""+my_snippet.id+"\" class=\"edit-snippet mdl-button mdl-js-button mdl-button--icon\">";
-					snippet += "						<i class='material-icons'>settings</i>";
-					snippet += "					</button>";
-					snippet += "				</span>";
-					snippet += "		</span>";
-					snippet += "	</div>";
-					
-					// var flow_id = my_snippet.attributes.flows[f];
-					var url_snippet = app.baseUrl+"/"+app.api_version+'/data/'+flow_id+'?sort=desc&limit=1';
-					fetch(url_snippet, myInit)
-					.then(
-						app.fetchStatusHandler
-					).then(function(fetchResponse){ 
-						return fetchResponse.json();
-					})
-					.then(function(response) {
-						//console.log("Get data from Flow: "+ flow_id);
-						var id = response.data[0].attributes.id;
-						var time = response.data[0].attributes.time;
-						var value = response.data[0].attributes.value;
-						var unit = response.links.unit!==undefined?response.links.unit:'';
-						var ttl = response.links.ttl;
-						if (document.getElementById('snippet-value-'+flow_id)) {
-							document.getElementById('snippet-value-'+flow_id).innerHTML = value;
-						}
-						if (document.getElementById('snippet-unit-'+flow_id)) {
-							document.getElementById('snippet-unit-'+flow_id).innerHTML = unit;
-						}
-						if (document.getElementById('snippet-time-'+flow_id)) {
-							document.getElementById('snippet-time-'+flow_id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
-						}
-						setInterval(function() {app.refreshFromNow('snippet-time-'+flow_id, time)}, 10000);
-					})
-					.catch(function (error) {
-						if ( localStorage.getItem('settings.debug') == 'true' ) {
-							toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
-						}
-					});
-				}
-			} else if ( my_snippet.attributes.type == 'flowgraph' ) {
-				width = 12;
-				snippet += "	<div class=\"flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp\">";
-				snippet += "		<div class=\"contextual\">";
-				snippet += "			<div class='mdl-list__item-primary-content'>";
-				snippet += "				<i class='material-icons'>"+icon+"</i>";
-				snippet += "				<span class=\"heading\">"+my_snippet.attributes.name+"</span>";
-				snippet += "				<span class=\"heading pull-right\">";
-				snippet += "					<button data-snippet-id=\""+my_snippet.id+"\" class=\"edit-snippet mdl-button mdl-js-button mdl-button--icon\">";
-				snippet += "						<i class='material-icons'>settings</i>";
-				snippet += "					</button>";
-				snippet += "				</span>";
-				snippet += "			</div>";
-				snippet += "		</div>";
-				snippet += "		<div class='mdl-list__item-primary-content'>";
-				snippet += "			<div class='mdl-list__item' id='snippet-graph-"+my_snippet.id+"' style='width:100%; height:200px;'>";
-				snippet += "				<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
-				snippet += "			</span>";
-				snippet += "		</div>";
-				snippet += "		<div class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet += "	</div>";
-				
-				var options = {
-					series: { lines : { show: true, fill: 'false', lineWidth: 3, steps: false } },
-					colors: [my_snippet.attributes.color!==''?my_snippet.attributes.color:'#000000'],
-					points : { show : true },
-					legend: { show: true, position: "sw" },
-					grid: {
-						borderWidth: { top: 0, right: 0, bottom: 0, left: 0 },
-						borderColor: { top: "", right: "", bottom: "", left: "" },
-						// markings: weekendAreas,
-						clickable: true,
-						hoverable: true,
-						autoHighlight: true,
-						mouseActiveRadius: 5
-					},
-					xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-					yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
-				};
-
-				var my_snippet_data_url = app.baseUrl+'/'+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?limit=100&sort=desc';
-				fetch(my_snippet_data_url, myInit)
-				.then(
-					app.fetchStatusHandler
-				).then(function(fetchResponse){ 
-					return fetchResponse.json();
-				})
-				.then(function(data) {
-					var id = data.data[0].attributes.id;
-					var time = data.data[0].attributes.time;
-					var value = data.data[0].attributes.value;
-					var unit = data.links.unit!==undefined?response.links.unit:'';
-					var ttl = data.links.ttl;
-					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-ontime');
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-outdated');
-					} else {
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-outdated');
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-ontime');
-					}
-					var dataset = [data.data.map(function(i) {
-						return [i.attributes.timestamp, i.attributes.value];
-					})];
-					$.plot($('#snippet-graph-'+my_snippet.id), dataset, options);
-					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(dataset[0][0][0]).format(app.date_format) + ", " + moment(dataset[0][0][0]).fromNow();
-				})
-				.catch(function (error) {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
-					}
-				});
-			} else if ( my_snippet.attributes.type == 'clock' ) {
-				width = 12;
-				snippet += "	<div class=\"clock tile card-simpleclock material-animate margin-top-4 material-animated\">";
-				snippet += "		<span class='mdl-list__item mdl-list__item--two-line'>";
-				snippet += "			<span class='mdl-list__item-primary-content'>";
-				snippet += "				<i class='material-icons'>alarm</i>";
-				snippet += "				<span class=\"heading\"></span>";
-				snippet += "				<span class='mdl-list__item-sub-title' id='snippet-time-"+my_snippet.id+"'></span>";
-				snippet += "			</span>";
-				snippet += "			<span class='mdl-list__item-secondary-content'>";
-				snippet += "				<span class='mdl-list__item'>";
-				snippet += "					<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-"+my_snippet.id+"'>"+moment().format(app.date_format)+"</span>";
-				snippet += "				</span>";
-				snippet += "			</span>";
-				snippet += "		</span>";
-				snippet += "	</div>";
-				setInterval(function() {app.refreshFromNow('snippet-clock-'+my_snippet.id, moment(), null)}, 3600);
-			} else if ( my_snippet.attributes.type == 'cardchart' ) {
-				snippet += "	<div class='card card-chart'>";
-				if (my_snippet.attributes.color) snippet += "		<div class='card-header' style='background: "+my_snippet.attributes.color+"'>";
-				else snippet += "		<div class='card-header' style='background: linear-gradient(60deg,#66bb6a,#66bb6a);'>";
-				snippet += " 	 	 <div class='ct-chart' id='dailySalesChart'></div>";
-				snippet += "		</div>";
-				snippet += "		<div class='card-body'>";
-				if (my_snippet.attributes.icon) snippet += "		<i class='material-icons'>"+my_snippet.attributes.icon+"</i>";
-				snippet += " 			<h4 class='card-title'>"+my_snippet.attributes.name+"</h4>";
-				snippet += "			<p class='card-category'>Subtitle</p>";
-				snippet += "		</div>";
-				snippet += "		<div class='card-footer'>";
-				snippet += "  		<div class='stats'>";
-				snippet += "  			<i class='material-icons' id='snippet-time-"+my_snippet.id+"'>access_time</i> Last";
-				snippet += "  		</div>";
-				snippet += "	</div>";
-				snippet += "</div>";
-				
-				var my_snippet_data_url = app.baseUrl+'/'+app.api_version+'/data/'+my_snippet.attributes.flows[0]+'?limit=100&sort=desc';
-				fetch(my_snippet_data_url, myInit)
-				.then(
-					app.fetchStatusHandler
-				).then(function(fetchResponse){ 
-					return fetchResponse.json();
-				})
-				.then(function(data) {
-					var id = data.data[0].attributes.id;
-					var time = data.data[0].attributes.time;
-					var value = data.data[0].attributes.value;
-					var unit = data.links.unit!==undefined?response.links.unit:'';
-					var ttl = data.links.ttl;
-					if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-ontime');
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-outdated');
-					} else {
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.remove('is-outdated');
-						document.getElementById('snippet-time-'+my_snippet.id).parentNode.parentNode.classList.add('is-ontime');
-					}
-					var dataset = [data.data.map(function(i) {
-						return [i.attributes.timestamp, i.attributes.value];
-					})];
-					
-
-					var dataDailySalesChart = {
-						//labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
-						series: [ dataset ]
-					};
-					var optionsDailySalesChart = {
-						lineSmooth: Chartist.Interpolation.cardinal({
-							tension: 0
-						}),
-						low: 0,
-						high: 50,
-						chartPadding: {
-							top: 0,
-							right: 0,
-							bottom: 0,
-							left: 0
-						},
-					}
-					var dailySalesChart = new Chartist.Line('#dailySalesChart', dataDailySalesChart, optionsDailySalesChart);
-					document.getElementById('snippet-time-'+my_snippet.id).innerHTML = moment(dataset[0][0][0]).format(app.date_format) + ", " + moment(dataset[0][0][0]).fromNow();
-				})
-				.catch(function (error) {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
-					}
-				});
-				
-			} else {
-				snippet += "	<div class=\" tile card-dashboard-graph material-animate margin-top-4 material-animated\">";
-				snippet += "		<span class='mdl-list__item-secondary-content'>";
-				snippet += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-value-"+my_snippet.attributes.type+"'>"+my_snippet.attributes.type+" is not implemented yet.</span>";
-				snippet += "		</span>";
-				snippet += "	</div>";
-			}
-
-			// snippet += "</section>";
-			// var c = document.createElement('div');
-			// c.innerHTML = snippet;
+			var s = app.snippetTypes.find(function(snippet) {
+				return (snippet.name).toLowerCase()===(my_snippet.attributes.type).toLowerCase();
+			});
+			var snippet = s.getHtml({title: my_snippet.attributes.name, id: my_snippet.id});
+			//s.activateOnce({id: my_snippet.id});
+			var width = 6; // TODO: should be a parameter in the snippet
 			
 			var c= document.createElement("div");
 			c.setAttribute('class','mdl-grid mdl-cell--'+width+'-col');
@@ -2988,7 +2607,7 @@ var touchStartPoint, touchMovePoint;
 			for (var b in editSnippetButtons) {
 				if ( (editSnippetButtons[b]).childElementCount > -1 ) {
 					(editSnippetButtons[b]).addEventListener('click', function(evt) {
-						app.resources.snippets(evt.target.getAttribute('data-snippet-id'), false, true, false);
+						app.resources.snippets.display(evt.target.getAttribute('data-snippet-id'), false, true, false);
 						evt.preventDefault();
 					});
 				}
@@ -4246,21 +3865,7 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 	}
-})();
-
-
-/*
-var params = {
-	"snippet_id": "uuidv4-1234-1234",
-	"name": "Super Name",
-	"timstamp": "1234567",
-	"icon": "widgets",
-	"ttl": "" // ???
-};
-document.addEventListener("DOMContentLoaded", function() {
-	console.log(snippetTypes.find(function (type) {return type.id === 'valueDisplay.js';}).getHtml(params) );
-});
-*/'use strict';
+})();'use strict';
 app.resources.objects = {
 	onEdit: function(evt) {
 		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
@@ -4466,6 +4071,7 @@ app.resources.objects = {
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 				} else {
+					console.log(object.attributes.is_public);
 					node += app.getField('visibility', object.attributes.is_public=='true'?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 				}
 				node += "	</div>";
@@ -4899,7 +4505,76 @@ app.resources.objects = {
 		app.setExpandAction();
 	},
 	displayItem: function(object) {
-		/* On the list Views */
+		var type = 'objects';
+		var name = object.attributes.name!==undefined?object.attributes.name:"";
+		var description = object.attributes.description!==undefined?object.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = object.attributes.type!==undefined?object.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+object.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += "<div class='mdl-list__item--three-line small-padding'>";
+		if ( object.attributes.type ) {
+			var d = app.types.find( function(type) { return type.name == object.attributes.type; });
+			d = d!==undefined?d:'';
+			element += "	<span class='type' id='"+object.id+"-type'><i class='material-icons md-32'>"+d.name+"</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-type'>"+d.value+"</div>";
+		}
+		if ( object.attributes.is_public == 'true' ) {
+			element += "	<span class='isPublic' id='"+object.id+"-isPublic'><i class='material-icons md-32'>visibility</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-isPublic'>Public</div>";
+		}
+		if ( (object.attributes.longitude && object.attributes.latitude) || object.attributes.position ) {
+			element += "	<span class='isLocalized' id='"+object.id+"-isLocalized'><i class='material-icons md-32'>location_on</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-isLocalized'>Localized</div>";	
+		}
+		if ( object.attributes.secret_key != '' ) {
+			element += "	<span class='Signature' id='"+object.id+"-Signature'><i class='material-icons md-32'>verified_user</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Signature'>Signature Secret Key</div>";
+		}
+		if ( object.attributes.secret_key_crypt != '' ) {
+			element += "	<span class='Crypt' id='"+object.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Crypt'>Encryption Secret Key</div>";
+		}
+		element += "</div>";
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+object.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(object.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( object.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(object.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+object.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+object.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+object.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };'use strict';
 app.resources.flows = {
@@ -5226,7 +4901,7 @@ app.resources.flows = {
 
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					app.buttons.backFlow.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, false, false); }, false);
+					app.buttons.backFlow.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, false, false) }, false);
 					app.buttons.saveFlow.addEventListener('click', function(evt) { app.resources.flows.onEdit(evt); }, false);
 
 					var element1 = document.getElementById('switch-edit_require_signed').parentNode;
@@ -5248,7 +4923,7 @@ app.resources.flows = {
 					// buttons.deleteFlow2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					app.buttons.editFlow2.addEventListener('click', function(evt) { app.displayFlow(flow.id, true); evt.preventDefault(); }, false);
+					app.buttons.editFlow2.addEventListener('click', function(evt) { app.resources.flows.display(flow.id, false, true, false) }, false);
 				}
 				
 				componentHandler.upgradeDom();
@@ -5292,14 +4967,14 @@ app.resources.flows = {
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Flows</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Flow</label>";
@@ -5332,7 +5007,73 @@ app.resources.flows = {
 		app.setExpandAction();
 	},
 	displayItem: function(flow) {
-		/* On the list Views */
+		var type = 'flows';
+		var name = flow.attributes.name!==undefined?flow.attributes.name:"";
+		var description = flow.attributes.description!==undefined?flow.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = flow.attributes.type!==undefined?flow.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+flow.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += "<div class='mdl-list__item--three-line small-padding'>";
+		if ( flow.attributes.unit ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; }).value;
+			element += "	</div>";
+		}
+		if ( flow.attributes.data_type ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
+			element += "	</div>";
+		}
+		if ( flow.attributes.require_signed == true ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>verified_user</i> Require Signature Secret Key"
+			element += "	</div>";
+		}
+		if ( flow.attributes.require_encrypted == true ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>vpn_key</i> Require Encryption Secret Key"
+			element += "	</div>";
+		}
+		element += "</div>";
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+flow.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(flow.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( flow.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(flow.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+flow.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+flow.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+flow.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+flow.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+flow.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+flow.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };'use strict';
 app.resources.snippets = {
@@ -5350,7 +5091,7 @@ app.resources.snippets = {
 				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem('flows')))[flow.getAttribute('data-id')]).id; }),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
-	
+
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 			myHeaders.append("Content-Type", "application/json");
@@ -5485,7 +5226,8 @@ app.resources.snippets = {
 					node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: isEdit });
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetTypes, isEdit: isEdit });
+					node += app.getField(null, 'Sample', null, {type: 'container', id: 'TypeSample', options: {}, isEdit: false });
 
 					if ( localStorage.getItem('flows') !== 'null' ) {
 						var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
@@ -5537,6 +5279,24 @@ app.resources.snippets = {
 						evt.preventDefault();
 					}, false);
 
+					document.getElementById('Type').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+						var index = evt.target.getAttribute('data-value');
+						var value = evt.target.innerText;
+						var s = app.snippetTypes.find(function(sn) {
+							return (sn.value).toLowerCase()===value.toLowerCase();
+						});
+						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getHtml({id: snippet.id, icon: '', name: ''});
+						s.activateOnce({id: snippet.id});
+						evt.preventDefault();
+					}, false);
+					if( snippet.attributes.type ) {
+						var s = app.snippetTypes.find(function(sn) {
+							return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
+						});
+						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getHtml({id: snippet.id, icon: '', name: ''});
+						s.activateOnce({id: snippet.id});
+					}
+
 					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 && localStorage.getItem('flows') !== 'null' ) {
 						snippet.attributes.flows.map(function(s) {
 							//Flows list, we put the index not the flow_id into the selector:
@@ -5573,7 +5333,7 @@ app.resources.snippets = {
 					}
 					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: isEdit });
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetTypes, isEdit: isEdit });
 					node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
 
 					node += "	</div>"; // mdl-shadow--2dp
@@ -5619,7 +5379,7 @@ app.resources.snippets = {
 					// buttons.deleteSnippet2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					app.buttons.editSnippet2.addEventListener('click', function(evt) { app.displaySnippet(snippet.id, true); evt.preventDefault(); }, false);
+					app.buttons.editSnippet2.addEventListener('click', function(evt) { app.resources.snippets.display(snippet.id, false, true, false); evt.preventDefault(); }, false);
 				}
 				app.setSection('snippet');
 			}
@@ -5642,7 +5402,8 @@ app.resources.snippets = {
 		node += app.getField(app.icons.snippets, 'Name', snippet.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
 		node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: true, options: app.types });
 		node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: true});
-		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: true });
+		node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetTypes, isEdit: true });
+		node += app.getField(null, 'Sample', null, {type: 'container', id: 'TypeSample', options: {}, isEdit: false });
 
 		if ( localStorage.getItem('flows') != 'null' ) {
 			var flows = JSON.parse(localStorage.getItem('flows')).map(function(flow) {
@@ -5663,14 +5424,14 @@ app.resources.snippets = {
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Snippets</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Snippet</label>";
@@ -5682,11 +5443,22 @@ app.resources.snippets = {
 		(app.containers.snippet_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 		document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-			console.log(evt.target);
+			//console.log(evt.target);
 			var id = evt.target.getAttribute('data-value');
 			var name = evt.target.innerText;
 			console.log({name: name, id: id, type: 'flows'});
 			app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
+			evt.preventDefault();
+		}, false);
+		document.getElementById('Type').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
+			//console.log(evt.target);
+			var index = evt.target.getAttribute('data-value');
+			var value = evt.target.innerText;
+			var s = app.snippetTypes.find(function(sn) {
+				return sn.value===value;
+			});
+			(app.containers.snippet_add).querySelector('#TypeSample').innerHTML = s.getHtml({id: snippet.id, icon: '', name: ''});
+			s.activateOnce();
 			evt.preventDefault();
 		}, false);
 		
@@ -5697,7 +5469,72 @@ app.resources.snippets = {
 		app.setExpandAction();
 	},
 	displayItem: function(snippet) {
-		/* On the list Views */
+		var type = 'snippets';
+		var name = snippet.attributes.name!==undefined?snippet.attributes.name:"";
+		var description = snippet.attributes.description!==undefined?snippet.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = snippet.attributes.type!==undefined?snippet.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+snippet.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += "<div class='mdl-list__item--three-line small-padding'>";
+		if ( snippet.attributes.type ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+
+			
+			var s = app.snippetTypes.find(function(sn) {
+				return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
+			});
+			if ( !s ) console.log("type not found !!!", (snippet.attributes.type).toLowerCase());
+			element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetTypes.find( function(s) { return (s.name).toLowerCase() == (snippet.attributes.type).toLowerCase(); }).value;
+			element += "	</div>";
+		}
+		if ( snippet.attributes.color ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>format_color_fill</i><span style='text-transform:uppercase; color:"+snippet.attributes.color+"'>"+snippet.attributes.color+"</span>";
+			element += "	</div>";
+		}
+		element += "	<span class='mdl-list__item-sub-title'>";
+		element += "		<i class='material-icons md-28'>"+snippet.attributes.icon+"</i>"+app.types.find( function(t) { return t.name == snippet.attributes.icon; }).value;
+		element += "	</span>";
+		element += "</div>";
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+snippet.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(snippet.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( snippet.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(snippet.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+snippet.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+snippet.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+snippet.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+snippet.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+snippet.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+snippet.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };'use strict';
 app.resources.dashboards = {
@@ -5972,14 +5809,14 @@ app.resources.dashboards = {
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+dashboard.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Dashboards</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+dashboard.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Dashboard</label>";
@@ -6010,7 +5847,52 @@ app.resources.dashboards = {
 		app.setExpandAction();
 	},
 	displayItem: function(dashboard) {
-		/* On the list Views */
+		var type = 'dashboards';
+		var name = dashboard.attributes.name!==undefined?dashboard.attributes.name:"";
+		var description = dashboard.attributes.description!==undefined?dashboard.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = dashboard.attributes.type!==undefined?dashboard.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+dashboard.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+dashboard.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(dashboard.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( dashboard.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(dashboard.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+dashboard.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+dashboard.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+dashboard.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+dashboard.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+dashboard.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+dashboard.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };'use strict';
 app.resources.rules = {
@@ -6252,14 +6134,14 @@ app.resources.rules = {
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+rule.id+"'>";
 		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+rule.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
 		node += "			<label>List</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Rules</label>";
 		node += "		</button>";
 		node += "	</div>";
 		node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+		node += "		<button id='"+btnId[1]+"' class='add-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+rule.id+"'>";
 		node += "			<i class='material-icons'>edit</i>";
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Rule</label>";
@@ -6290,7 +6172,52 @@ app.resources.rules = {
 		app.setExpandAction();
 	},
 	displayItem: function(rule) {
-		/* On the list Views */
+		var type = 'rules';
+		var name = rule.attributes.name!==undefined?rule.attributes.name:"";
+		var description = rule.attributes.description!==undefined?rule.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = rule.attributes.type!==undefined?rule.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+rule.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+rule.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(rule.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( rule.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(rule.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+rule.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+rule.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+rule.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+rule.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+rule.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+rule.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };'use strict';
 app.resources.mqtts = {
@@ -6307,19 +6234,394 @@ app.resources.mqtts = {
 	displayAdd: function(mqtt, isAdd, isEdit, isPublic) {
 	},
 	displayItem: function(mqtt) {
-		/* On the list Views */
+		var type = 'mqtts';
+		var name = mqtt.attributes.name!==undefined?mqtt.attributes.name:"";
+		var description = mqtt.attributes.description!==undefined?mqtt.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = mqtt.attributes.type!==undefined?mqtt.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+mqtt.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+mqtt.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(mqtt.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( mqtt.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(mqtt.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+mqtt.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+mqtt.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+mqtt.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+mqtt.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+mqtt.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+mqtt.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };'use strict';
 var snippet = {
-	id: "valueDisplay.js",
-	name: "Value Display",
+	name: "valueDisplay",
+	value: "Value Display",
+	
 	options: {
-		color: {defaultVvalue: "#FF0000"},
-		legend: {defaultVvalue: "top", availableValues: [true, false, "top", "bottom"]}
+		color: {defaultValue: "#FF0000", type: 'text'},
+		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+	},
+	activateOnce: function(params) {
+		
 	},
 	getHtml: function(params) {
-		return "<div class='valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp'>"+params.name+"</div>";
-		//sprintf("<div class='valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp'>%s</div>", "");
+		if (!params) {
+			params = {}
+		}
+		params.time = moment().format(app.date_format);
+		var html = `<div class="valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp is-ontime">
+		<div class="contextual">
+			<div class="mdl-list__item-primary-content">
+				<i class="material-icons">widgets</i>
+			<span class="heading">${params.title}</span>
+				<span class="heading pull-right">
+					<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+						<i class="material-icons">settings</i>
+						</button>
+				</span>
+			</div>
+			<div class="mdl-list__item-secondary-content">
+						<span class="snippet-value1" id="snippet-value1-${params.id}">
+						<i class="material-icons md-48">trending_flat</i>
+					</span>
+				<hr style="">
+			<span class="snippet-value2" id="snippet-value2-${params.id}">
+				<i class="material-icons">trending_down</i>
+			</span>
+			<hr style="">
+				<span class="snippet-value3" id="snippet-value3-${params.id}">
+					<i class="material-icons">trending_up</i>
+				</span>
+				</div>
+			</div>
+			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}">${params.time}</div>
+		</div>`;
+		return html;
+	},
+}
+app.snippetTypes.push(snippet);'use strict';
+var snippet = {
+	name: "graphDisplay",
+	value: "Display a Graph from a flow (DEPRECATED, please use flowgraph)",
+	
+	options: {
+		color: {defaultValue: "#FF0000", type: 'text'},
+		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+	},
+	activateOnce: function(params) {
+		
+	},
+	getHtml: function(params) {
+		if (!params) {
+			params = {}
+		}
+		var html = `
+		<div class="flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp">
+			<div class="contextual">
+				<div class="mdl-list__item-primary-content">
+					<i class="material-icons">${params.icon}</i>
+					<span class="heading">${params.name}</span>
+					<span class="heading pull-right">
+						<button data-snippet-id="${params.id}" class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+							<i class="material-icons">settings</i>
+						</button>
+					</span>
+				</div>
+			</div>
+			<div class="mdl-list__item-primary-content">
+				<div class="mdl-list__item" id="snippet-graph-${params.id}" style="width:100%; height:200px;">
+					<span class="mdl-list__item-sub-title mdl-chip mdl-chip__text"></span>
+				</span>
+			</div>
+			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}"></span>
+		</div>`;
+		return html;
+	},
+}
+app.snippetTypes.push(snippet);'use strict';
+var snippet = {
+	name: "flowgraph",
+	value: "Graph a Flow over axis",
+	
+	options: {
+		color: {defaultValue: "#FF0000", type: 'text'},
+		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+	},
+	activateOnce: function(params) {
+		console.log("DEBUG", "1");
+		componentHandler.upgradeDom();
+		console.log("DEBUG", "2");
+		var ctx = document.getElementById("chart-"+params.id).getContext('2d');
+		var datapointsFromApi = {"links":{"parent":null,"first":null,"prev":null,"next":"http://192.168.0.15:3000/v2.0.1/data/5?limit=100&page=2&order=asc","title":"Yocto-VOC - Indoor","ttl":3600,"unit":"%s ppm"},"data":[{"type":"data","id":"1550612703000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550612703000,"time":1550612703000,"timestamp":1550612703000,"value":2547}},{"type":"data","id":"1550611803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550611803000,"time":1550611803000,"timestamp":1550611803000,"value":2410}},{"type":"data","id":"1550610902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550610902000,"time":1550610902000,"timestamp":1550610902000,"value":2146}},{"type":"data","id":"1550610003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550610003000,"time":1550610003000,"timestamp":1550610003000,"value":2204}},{"type":"data","id":"1550609103000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550609103000,"time":1550609103000,"timestamp":1550609103000,"value":2356}},{"type":"data","id":"1550608204000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550608204000,"time":1550608204000,"timestamp":1550608204000,"value":2483}},{"type":"data","id":"1550607304000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550607304000,"time":1550607304000,"timestamp":1550607304000,"value":2103}},{"type":"data","id":"1550606404000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550606404000,"time":1550606404000,"timestamp":1550606404000,"value":2122}},{"type":"data","id":"1550605504000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550605504000,"time":1550605504000,"timestamp":1550605504000,"value":2014}},{"type":"data","id":"1550604603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550604603000,"time":1550604603000,"timestamp":1550604603000,"value":1887}},{"type":"data","id":"1550603702000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550603702000,"time":1550603702000,"timestamp":1550603702000,"value":2044}},{"type":"data","id":"1550602803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550602803000,"time":1550602803000,"timestamp":1550602803000,"value":2134}},{"type":"data","id":"1550601902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550601902000,"time":1550601902000,"timestamp":1550601902000,"value":1692}},{"type":"data","id":"1550601003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550601003000,"time":1550601003000,"timestamp":1550601003000,"value":1508}},{"type":"data","id":"1550600102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550600102000,"time":1550600102000,"timestamp":1550600102000,"value":1270}},{"type":"data","id":"1550599202000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550599202000,"time":1550599202000,"timestamp":1550599202000,"value":1232}},{"type":"data","id":"1550598302000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550598302000,"time":1550598302000,"timestamp":1550598302000,"value":1271}},{"type":"data","id":"1550597402000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550597402000,"time":1550597402000,"timestamp":1550597402000,"value":1120}},{"type":"data","id":"1550596502000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550596502000,"time":1550596502000,"timestamp":1550596502000,"value":898}},{"type":"data","id":"1550595603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550595603000,"time":1550595603000,"timestamp":1550595603000,"value":816}},{"type":"data","id":"1550594703000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550594703000,"time":1550594703000,"timestamp":1550594703000,"value":730}},{"type":"data","id":"1550593803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550593803000,"time":1550593803000,"timestamp":1550593803000,"value":742}},{"type":"data","id":"1550592902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550592902000,"time":1550592902000,"timestamp":1550592902000,"value":746}},{"type":"data","id":"1550592003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550592003000,"time":1550592003000,"timestamp":1550592003000,"value":754}},{"type":"data","id":"1550591102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550591102000,"time":1550591102000,"timestamp":1550591102000,"value":770}},{"type":"data","id":"1550590203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550590203000,"time":1550590203000,"timestamp":1550590203000,"value":816}},{"type":"data","id":"1550589303000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550589303000,"time":1550589303000,"timestamp":1550589303000,"value":821}},{"type":"data","id":"1550588402000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550588402000,"time":1550588402000,"timestamp":1550588402000,"value":836}},{"type":"data","id":"1550587502000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550587502000,"time":1550587502000,"timestamp":1550587502000,"value":863}},{"type":"data","id":"1550586602000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550586602000,"time":1550586602000,"timestamp":1550586602000,"value":885}},{"type":"data","id":"1550585703000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550585703000,"time":1550585703000,"timestamp":1550585703000,"value":907}},{"type":"data","id":"1550584802000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550584802000,"time":1550584802000,"timestamp":1550584802000,"value":928}},{"type":"data","id":"1550583902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550583902000,"time":1550583902000,"timestamp":1550583902000,"value":972}},{"type":"data","id":"1550583003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550583003000,"time":1550583003000,"timestamp":1550583003000,"value":999}},{"type":"data","id":"1550582102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550582102000,"time":1550582102000,"timestamp":1550582102000,"value":1030}},{"type":"data","id":"1550581203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550581203000,"time":1550581203000,"timestamp":1550581203000,"value":1059}},{"type":"data","id":"1550580303000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550580303000,"time":1550580303000,"timestamp":1550580303000,"value":1085}},{"type":"data","id":"1550579403000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550579403000,"time":1550579403000,"timestamp":1550579403000,"value":1116}},{"type":"data","id":"1550578503000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550578503000,"time":1550578503000,"timestamp":1550578503000,"value":1188}},{"type":"data","id":"1550577603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550577603000,"time":1550577603000,"timestamp":1550577603000,"value":1233}},{"type":"data","id":"1550576702000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550576702000,"time":1550576702000,"timestamp":1550576702000,"value":1251}},{"type":"data","id":"1550575803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550575803000,"time":1550575803000,"timestamp":1550575803000,"value":1272}},{"type":"data","id":"1550574903000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550574903000,"time":1550574903000,"timestamp":1550574903000,"value":1324}},{"type":"data","id":"1550574003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550574003000,"time":1550574003000,"timestamp":1550574003000,"value":1345}},{"type":"data","id":"1550573102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550573102000,"time":1550573102000,"timestamp":1550573102000,"value":1383}},{"type":"data","id":"1550572203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550572203000,"time":1550572203000,"timestamp":1550572203000,"value":1465}},{"type":"data","id":"1550571302000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550571302000,"time":1550571302000,"timestamp":1550571302000,"value":1533}},{"type":"data","id":"1550570402000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550570402000,"time":1550570402000,"timestamp":1550570402000,"value":1512}},{"type":"data","id":"1550569503000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550569503000,"time":1550569503000,"timestamp":1550569503000,"value":1544}},{"type":"data","id":"1550568603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550568603000,"time":1550568603000,"timestamp":1550568603000,"value":1577}},{"type":"data","id":"1550567702000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550567702000,"time":1550567702000,"timestamp":1550567702000,"value":1693}},{"type":"data","id":"1550566803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550566803000,"time":1550566803000,"timestamp":1550566803000,"value":1771}},{"type":"data","id":"1550565902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550565902000,"time":1550565902000,"timestamp":1550565902000,"value":1777}},{"type":"data","id":"1550565003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550565003000,"time":1550565003000,"timestamp":1550565003000,"value":1870}},{"type":"data","id":"1550564103000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550564103000,"time":1550564103000,"timestamp":1550564103000,"value":1933}},{"type":"data","id":"1550563203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550563203000,"time":1550563203000,"timestamp":1550563203000,"value":2023}},{"type":"data","id":"1550562302000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550562302000,"time":1550562302000,"timestamp":1550562302000,"value":2114}},{"type":"data","id":"1550561403000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550561403000,"time":1550561403000,"timestamp":1550561403000,"value":2192}},{"type":"data","id":"1550560503000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550560503000,"time":1550560503000,"timestamp":1550560503000,"value":2305}},{"type":"data","id":"1550559603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550559603000,"time":1550559603000,"timestamp":1550559603000,"value":2432}},{"type":"data","id":"1550558702000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550558702000,"time":1550558702000,"timestamp":1550558702000,"value":2459}},{"type":"data","id":"1550557803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550557803000,"time":1550557803000,"timestamp":1550557803000,"value":2439}},{"type":"data","id":"1550556902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550556902000,"time":1550556902000,"timestamp":1550556902000,"value":2182}},{"type":"data","id":"1550556003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550556003000,"time":1550556003000,"timestamp":1550556003000,"value":2245}},{"type":"data","id":"1550555102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550555102000,"time":1550555102000,"timestamp":1550555102000,"value":2196}},{"type":"data","id":"1550554203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550554203000,"time":1550554203000,"timestamp":1550554203000,"value":2240}},{"type":"data","id":"1550553302000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550553302000,"time":1550553302000,"timestamp":1550553302000,"value":2263}},{"type":"data","id":"1550552403000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550552403000,"time":1550552403000,"timestamp":1550552403000,"value":2278}},{"type":"data","id":"1550551502000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550551502000,"time":1550551502000,"timestamp":1550551502000,"value":2335}},{"type":"data","id":"1550550603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550550603000,"time":1550550603000,"timestamp":1550550603000,"value":2358}},{"type":"data","id":"1550549702000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550549702000,"time":1550549702000,"timestamp":1550549702000,"value":2346}},{"type":"data","id":"1550548803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550548803000,"time":1550548803000,"timestamp":1550548803000,"value":2314}},{"type":"data","id":"1550547902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550547902000,"time":1550547902000,"timestamp":1550547902000,"value":2294}},{"type":"data","id":"1550547003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550547003000,"time":1550547003000,"timestamp":1550547003000,"value":2298}},{"type":"data","id":"1550546102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550546102000,"time":1550546102000,"timestamp":1550546102000,"value":2305}},{"type":"data","id":"1550545203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550545203000,"time":1550545203000,"timestamp":1550545203000,"value":2312}},{"type":"data","id":"1550544303000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550544303000,"time":1550544303000,"timestamp":1550544303000,"value":2339}},{"type":"data","id":"1550543403000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550543403000,"time":1550543403000,"timestamp":1550543403000,"value":2373}},{"type":"data","id":"1550542502000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550542502000,"time":1550542502000,"timestamp":1550542502000,"value":2401}},{"type":"data","id":"1550541603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550541603000,"time":1550541603000,"timestamp":1550541603000,"value":2357}},{"type":"data","id":"1550540702000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550540702000,"time":1550540702000,"timestamp":1550540702000,"value":2303}},{"type":"data","id":"1550539803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550539803000,"time":1550539803000,"timestamp":1550539803000,"value":2348}},{"type":"data","id":"1550538903000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550538903000,"time":1550538903000,"timestamp":1550538903000,"value":2356}},{"type":"data","id":"1550538007000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550538007000,"time":1550538007000,"timestamp":1550538007000,"value":2348}},{"type":"data","id":"1550537102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550537102000,"time":1550537102000,"timestamp":1550537102000,"value":2339}},{"type":"data","id":"1550536203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550536203000,"time":1550536203000,"timestamp":1550536203000,"value":2413}},{"type":"data","id":"1550535302000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550535302000,"time":1550535302000,"timestamp":1550535302000,"value":2393}},{"type":"data","id":"1550534402000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550534402000,"time":1550534402000,"timestamp":1550534402000,"value":2287}},{"type":"data","id":"1550533503000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550533503000,"time":1550533503000,"timestamp":1550533503000,"value":2252}},{"type":"data","id":"1550532603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550532603000,"time":1550532603000,"timestamp":1550532603000,"value":2294}},{"type":"data","id":"1550531702000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550531702000,"time":1550531702000,"timestamp":1550531702000,"value":2387}},{"type":"data","id":"1550530803000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550530803000,"time":1550530803000,"timestamp":1550530803000,"value":2398}},{"type":"data","id":"1550529902000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550529902000,"time":1550529902000,"timestamp":1550529902000,"value":2485}},{"type":"data","id":"1550529003000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550529003000,"time":1550529003000,"timestamp":1550529003000,"value":2581}},{"type":"data","id":"1550528102000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550528102000,"time":1550528102000,"timestamp":1550528102000,"value":2730}},{"type":"data","id":"1550527203000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550527203000,"time":1550527203000,"timestamp":1550527203000,"value":2788}},{"type":"data","id":"1550526302000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550526302000,"time":1550526302000,"timestamp":1550526302000,"value":2729}},{"type":"data","id":"1550525402000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550525402000,"time":1550525402000,"timestamp":1550525402000,"value":2881}},{"type":"data","id":"1550524502000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550524502000,"time":1550524502000,"timestamp":1550524502000,"value":2994}},{"type":"data","id":"1550523603000","links":{"self":"http://192.168.0.15:3000/v2.0.1/data/5/undefined"},"attributes":{"id":1550523603000,"time":1550523603000,"timestamp":1550523603000,"value":2985}}]};
+		var datapoints = [];
+		datapointsFromApi.data.forEach(function(d) {
+			datapoints.push({ x: new Date(d.attributes.timestamp), y: d.attributes.value });
+		});
+		console.log("DEBUG", "3");
+		var type = 'line';
+		var data = {
+				datasets: [{
+					label: "Flow title",
+					backgroundColor: 'rgb(255, 99, 132)',
+					borderColor: 'rgb(255, 99, 132)',
+					fill: false,
+					showLine: false,
+					steppedLine: false, //true, false, 'before', 'after'
+					pointBackgroundColor: 'rgb(255, 99, 132)',
+					data: datapoints,
+				}]
+		};
+		console.log("DEBUG", "4");
+		var options = {
+				title: {
+					display: true,
+					text: 'Snippet Title',
+					fontSize: 28,
+					fontFamily: 'Helvetica', //"'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+				},
+				legend: {
+					display: true,
+					position: 'bottom', //'left', 'right', 'top'
+					labels: {
+						fontColor: 'rgb(255, 99, 132)'
+					}
+				},
+				tooltips: {
+					enable: false
+				},
+				scales: {
+					xAxes: [{
+						type: 'time',
+						time: {
+							unit: 'hour'
+						},
+						ticks: {
+							source: 'auto',
+						}
+					}]
+				},
+				animation: {
+					duration: 0, // general animation time
+				},
+		};
+		console.log("DEBUG", "5");
+		var myLineChart = new Chart(ctx, {
+			type: type,
+			data: data,
+			options: options
+		});
+		console.log("DEBUG", "6");
+	},
+	getHtml: function(params) {
+		if (!params) {
+			params = {}
+		}
+		var html = `
+		<div class="flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp">
+			<div class="contextual">
+				<div class="mdl-list__item-primary-content">
+					<i class="material-icons">${params.icon}</i>
+					<span class="heading">${params.name}</span>
+					<span class="heading pull-right">
+						<button data-snippet-id="${params.id}" class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+							<i class="material-icons">settings</i>
+						</button>
+					</span>
+				</div>
+			</div>
+			<div class="mdl-list__item-primary-content">
+				<div class="mdl-list__item" id="snippet-graph-${params.id}" style="width:100%; height:200px;">
+					<canvas id="chart-"></canvas>
+				</span>
+			</div>
+			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}"></span>
+		</div>`;
+		return html;
+	},
+}
+app.snippetTypes.push(snippet);'use strict';
+var snippet = {
+	name: "simpleclock",
+	value: "Display a realtime clock",
+	
+	options: {
+		color: {defaultValue: "#FF0000", type: 'text'},
+		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+	},
+	activateOnce: function(params) {
+		setInterval(
+			function() {
+				app.refreshFromNow('snippet-clock-', moment(), null)
+			}
+		);
+	},
+	getHtml: function(params) {
+		if (!params) {
+			params = {}
+		}
+		params.time = moment().format(app.date_format);
+		var html = `
+		<div class="clock tile card-simpleclock material-animate margin-top-4 material-animated">
+			<span class='mdl-list__item mdl-list__item--two-line'>
+				<span class='mdl-list__item-primary-content'>
+					<i class='material-icons'>alarm</i>
+					<span class="heading">${params.title}</span>
+					<span class='mdl-list__item-sub-title' id='snippet-time-${params.id}'></span>
+				</span>
+				<span class='mdl-list__item-secondary-content'>
+					<span class='mdl-list__item'>
+						<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-${params.id}'>${params.time}</span>
+					</span>
+				</span>
+			</span>
+		</div>`;
+		return html;
+	},
+}
+app.snippetTypes.push(snippet);'use strict';
+var snippet = {
+	name: "simplerow",
+	value: "Display one row for each value",
+	
+	options: {
+		color: {defaultValue: "#FF0000", type: 'text'},
+		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+	},
+	activateOnce: function(params) {
+		
+	},
+	getHtml: function(params) {
+		if (!params) {
+			params = {}
+		}
+		params.time = moment().format(app.date_format);
+		var html = `<div class="simplerow tile card-simplerow material-animate margin-top-4 material-animated mdl-shadow--2dp">		
+			<span class="mdl-list__item mdl-list__item--two-line">
+				<span class="mdl-list__item-primary-content">
+					<i class="material-icons">widgets</i>
+					<span class="heading">${params.title}</span>
+					<span class="mdl-list__item-sub-title" id="snippet-time-${params.id}">
+						${params.time}
+					</span>
+				</span>
+				<span class="mdl-list__item-secondary-content">
+					<span class="mdl-list__item-sub-title mdl-chip mdl-chip__text" id="snippet-value-${params.id}">
+						${params.value}
+					</span>
+				</span>
+				<span class="heading pull-right">
+					<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+						<i class="material-icons">settings</i>
+					</button>
+				</span>
+			</span>
+		</div>`;
+		return html;
+	},
+}
+app.snippetTypes.push(snippet);'use strict';
+var snippet = {
+	name: "cardChart",
+	value: "Display a chart using a card",
+	
+	options: {
+		color: {defaultValue: "#FF0000", type: 'text'},
+		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+	},
+	getSample: function() {
+		var params = {
+			
+		};
+		return snippet.getHtml(params);
+	},
+	activateOnce: function(params) {
+		
+	},
+	getHtml: function(params) {
+		if (!params) {
+			params = {}
+		}
+		//else snippet += "		<div class='card-header' style='background: linear-gradient(60deg,#66bb6a,#66bb6a);'>";
+		var html = `
+		<div class="card card-chart material-animate margin-top-4 material-animated mdl-shadow--2dp">
+			<div class="card-header" style="background: ${params.color}">
+			<div class="ct-chart" id="dailySalesChart"></div>
+			</div>
+			<div class="card-body">
+				<i class="material-icons">${params.icon}</i>
+				<h4 class="card-title">${params.name}</h4>
+				<p class="card-category">Subtitle</p>
+			</div>
+			<div class="card-footer">
+				<div class="stats">
+					<i class="material-icons" id="snippet-time-${params.id}">access_time</i> Last
+				</div>
+			</div>
+		</div>`
+		return html;
+	},
+}
+app.snippetTypes.push(snippet);'use strict';
+var snippet = {
+	name: "sparkline",
+	value: "Spark line",
+	
+	options: {
+		color: {defaultValue: "#FF0000", type: 'text'},
+		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+	},
+	activateOnce: function(params) {
+		
+	},
+	getHtml: function(params) {
+		if (!params) {
+			params = {}
+		}
+		var html = `<div class="sparkline tile card-sparkline material-animate margin-top-4 material-animated mdl-shadow--2dp">
+			<span class="mdl-list__item mdl-list__item--two-line">
+				<span class="mdl-list__item-primary-content">
+					<i class="material-icons">trending_up</i>
+					<span class="heading">${params.title}</span>
+					<span class="mdl-list__item-sub-title" id="snippet-time-${params.id}"></span>
+				</span>
+				<span class="mdl-list__item-secondary-content">
+					<span class="mdl-list__item-sub-title mdl-chip mdl-chip__text" id="snippet-value-${params.id}"></span>
+				</span>
+				<span class="mdl-list__item" id="snippet-sparkline-" style="width:100%; height:200px;">
+					<span class="mdl-list__item-sub-title mdl-chip mdl-chip__text">sparkline</span>
+				</span>
+			</span>
+		</div>`;
+		return html;
 	},
 }
 app.snippetTypes.push(snippet);

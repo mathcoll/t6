@@ -595,8 +595,13 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
             #cookieconsent_accept.mdl-button
               a(href='#', id='cookieconsent.agree') Got it!
 
-      script(type='application/javascript', src=baseUrlCdn + '/js/vendor.min.js')
       if process.env.NODE_ENV === 'development'
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/material/material.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/mdl/mdl-selectfield.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/moment/moment.min-2.22.2.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/OpenLayers/ol-4.6.5.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/Chart/Chart.min.js')
+        
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-main.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-objects.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-flows.js')
@@ -610,5 +615,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/simpleClock.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/simpleRow.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/cardChart.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/sparkline.js')
       else
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor.min.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js')

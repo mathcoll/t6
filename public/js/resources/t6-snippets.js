@@ -203,20 +203,21 @@ app.resources.snippets = {
 					}, false);
 
 					document.getElementById('Type').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-						//console.log(evt.target);
 						var index = evt.target.getAttribute('data-value');
 						var value = evt.target.innerText;
-						var s = app.snippetTypes.find(function(snippet) {
-							return snippet.value===value;
+						var s = app.snippetTypes.find(function(sn) {
+							return (sn.value).toLowerCase()===value.toLowerCase();
 						});
-						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getSample();
+						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getHtml({id: snippet.id, icon: '', name: ''});
+						s.activateOnce(snippet);
 						evt.preventDefault();
 					}, false);
 					if( snippet.attributes.type ) {
 						var s = app.snippetTypes.find(function(sn) {
 							return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
 						});
-						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getSample();
+						(app.containers.snippet).querySelector('#TypeSample').innerHTML = s.getHtml({id: snippet.id, icon: '', name: ''});
+						s.activateOnce(snippet);
 					}
 
 					if ( snippet.attributes.flows && snippet.attributes.flows.length > -1 && localStorage.getItem('flows') !== 'null' ) {
@@ -255,7 +256,7 @@ app.resources.snippets = {
 					}
 					node += app.getField(app.icons.icon, 'Icon', snippet.attributes.icon, {type: 'select', id: 'Icon', isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, 'Color', snippet.attributes.color, {type: 'text', id: 'Color', isEdit: isEdit});
-					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetsTypes, isEdit: isEdit });
+					node += app.getField('add_circle_outline', 'Type', snippet.attributes.type, {type: 'select', id: 'Type', options: app.snippetTypes, isEdit: isEdit });
 					node += app.getField(app.icons.flows, 'Linked Flows #', snippet.attributes.flows.length, {type: 'text'});
 
 					node += "	</div>"; // mdl-shadow--2dp
@@ -291,9 +292,15 @@ app.resources.snippets = {
 					//Snippet preview
 					app.getSnippet(app.icons.snippets, snippet.id, (app.containers.snippet).querySelector('.page-content'));
 					node += "</section>";
-					
+
 					(app.containers.snippet).querySelector('.page-content').innerHTML = node;
 					componentHandler.upgradeDom();
+
+					var s = app.snippetTypes.find(function(sn) {
+						return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
+					});
+					s.activateOnce(snippet);
+
 					app.setExpandAction();
 					
 					app.refreshButtonsSelectors();
@@ -365,21 +372,19 @@ app.resources.snippets = {
 		(app.containers.snippet_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 		document.getElementById('flowsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-			//console.log(evt.target);
 			var id = evt.target.getAttribute('data-value');
 			var name = evt.target.innerText;
-			console.log({name: name, id: id, type: 'flows'});
 			app.addChipTo('flowsChips', {name: name, id: id, type: 'flows'});
 			evt.preventDefault();
 		}, false);
 		document.getElementById('Type').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-			//console.log(evt.target);
 			var index = evt.target.getAttribute('data-value');
 			var value = evt.target.innerText;
-			var s = app.snippetTypes.find(function(snippet) {
-				return snippet.value===value;
+			var s = app.snippetTypes.find(function(sn) {
+				return sn.value===value;
 			});
-			(app.containers.snippet_add).querySelector('#TypeSample').innerHTML = s.getSample();
+			(app.containers.snippet_add).querySelector('#TypeSample').innerHTML = s.getHtml({id: snippet.id, icon: '', name: ''});
+			s.activateOnce(snippet);
 			evt.preventDefault();
 		}, false);
 		

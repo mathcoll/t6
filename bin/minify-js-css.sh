@@ -19,6 +19,7 @@ cat \
 	../public/js/resources/snippets/simpleClock.js \
 	../public/js/resources/snippets/simpleRow.js \
 	../public/js/resources/snippets/cardChart.js \
+	../public/js/resources/snippets/sparkline.js \
 	> ../public/js/t6app-min.js
 echo Completed
 echo ""
@@ -39,6 +40,7 @@ echo Failed
 #	../public/js/resources/snippets/simpleClock.js \
 #	../public/js/resources/snippets/simpleRow.js \
 #	../public/js/resources/snippets/cardChart.js \
+#	../public/js/resources/snippets/sparkline.js \
 #	-o ../public/js/t6app-min.js \
 #	-m -c warnings=false
 #echo Completed
@@ -48,11 +50,9 @@ echo 2. PWA Javascript T6-VENDOR minify:
 uglifyjs \
 	../public/js/vendor/material/material.js \
 	../public/js/vendor/mdl/mdl-selectfield.min.js \
-	../public/js/vendor/jquery/jquery-3.3.1.min.js \
-	../public/js/vendor/flot/jquery.flot.js \
-	../public/js/vendor/flot/jquery.flot.time.min.js \
 	../public/js/vendor/moment/moment.min-2.22.2.js \
 	../public/js/vendor/OpenLayers/ol-4.6.5.min.js \
+	../public/js/vendor/Chart/Chart.min.js \
 	-o ../public/vendor.min.js \
 	-m -c warnings=false
 echo Completed
