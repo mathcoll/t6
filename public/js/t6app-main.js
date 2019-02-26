@@ -138,7 +138,7 @@ var app = {
 	flows: [],
 	snippets: [],
 	defaultResources: {
-		object: {id:'', attributes: {name: '', description: '', is_public: true, type: '', ipv4: '', ipv6: '', longitude: '', latitude: '', position: ''}},
+		object: {id:'', attributes: {name: '', description: '', is_public: false, type: '', ipv4: '', ipv6: '', longitude: '', latitude: '', position: ''}},
 		flow: {id:'', attributes: {name: '', mqtt_topic: '', require_signed: false, require_encrypted: false}},
 		dashboard: {id:'', attributes: {name: '', description: ''}},
 		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
@@ -221,6 +221,11 @@ var touchStartPoint, touchMovePoint;
 		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 	exports.getParameterByName = getParameterByName; // Make this method available in global
+	
+	function sprintf(string, options) {
+		return string.replace(/%s/g, options);
+	}
+	exports.sprintf = sprintf; // Make this method available in global
 })(typeof window === 'undefined' ? module.exports : window);
 	
 (function() {
@@ -248,11 +253,6 @@ var touchStartPoint, touchMovePoint;
 	app.nl2br = function (str, isXhtml) {
 		var breakTag = (isXhtml || typeof isXhtml === 'undefined') ? '<br />' : '<br>';
 		return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + breakTag + '$2');
-	};
-	
-	app.offsetBottom = function(el, i) {
-		i = i || 0;
-		return $(el)[i].getBoundingClientRect().bottom;
 	};
 	
 	app.fetchStatusHandler = function(response) {
@@ -1223,6 +1223,7 @@ var touchStartPoint, touchMovePoint;
 						})
 						.then(function(response) {
 							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
+							app.resources.flows.onDelete(myId);
 							toast('Flow has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
@@ -1314,6 +1315,7 @@ var touchStartPoint, touchMovePoint;
 						})
 						.then(function(response) {
 							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
+							app.resources.snippets.onDelete(myId);
 							toast('Snippet has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
@@ -1617,21 +1619,21 @@ var touchStartPoint, touchMovePoint;
 		e.addEventListener('dragend', app.handleDragEnd, false);
 	};
 	/* END Sorting */
-	
+
 	app.addChipSnippetTo = function(container, chipSnippet) {
 		document.getElementById(container).append(app.displayChipSnippet(chipSnippet));
 	};
 	app.getSnippetIdFromIndex = function(index) {
 		return ((JSON.parse(localStorage.getItem('snippets')))[index]).id;
 	};
-	
+
 	app.fetchItemsPaginated = function(type, filter, page, size) {
 		let promise = new Promise((resolve, reject) => {
 			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' ) {
 				resolve();
 				return false;
 			}
-			
+
 			size = size!==undefined?size:app.itemsSize[type];
 			page = page!==undefined?page:app.itemsPage[type];
 			
@@ -1642,7 +1644,7 @@ var touchStartPoint, touchMovePoint;
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'GET', headers: myHeaders };
 			var defaultCard = {};
-	
+
 			if (type == 'objects') {
 				var container = (app.containers.objects).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/objects';
@@ -1731,7 +1733,7 @@ var touchStartPoint, touchMovePoint;
 				var title = 'My Rules';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: false, action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.'}; // ,
-				
+
 			} else if (type == 'mqtts') {
 				var container = (app.containers.mqtts).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/mqtts';
@@ -1803,6 +1805,19 @@ var touchStartPoint, touchMovePoint;
 							componentHandler.upgradeDom();
 							app.setItemsClickAction(type);
 							app.setListActions(type);
+							if ( type == 'snippets' ) {
+								app.snippets = [];
+								(response.data).map(function(snippet) {
+									app.snippets.push( {id: snippet.id, name:snippet.attributes.name, sType:snippet.attributes.type, type: snippets.attributes.type} );
+								});
+								localStorage.setItem('snippets', JSON.stringify(app.snippets));
+							} else if ( type == 'flows' ) {
+								app.flows = [];
+								(response.data).map(function(flow) {
+									app.flows.push( {id: flow.id, name:flow.attributes.name, type: flow.attributes.type} );
+								});
+								localStorage.setItem('flows', JSON.stringify(app.flows));
+							}
 						}
 						resolve();
 					})
@@ -3655,7 +3670,7 @@ var touchStartPoint, touchMovePoint;
 	paginatedContainer.map(function(c) {
 		c[0].addEventListener('DOMMouseScroll', function(event) {
 			var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
-			var bottom = app.offsetBottom(c[0]);
+			var bottom = (document.querySelector('section#'+c[1])).getBoundingClientRect().bottom;
 			if ( bottom <= height && c[0].classList.contains('is-active') ) {
 				//console.log("Lazy loading -->", c[0].offsetHeight, height, bottom);
 				//console.log('Lazy loading page=', ++(app.itemsPage[c[1]]));

@@ -338,19 +338,19 @@ div.valuedisplay .snippet-unit3 {
 	font-weight: 600;
 }
 div.valuedisplay .snippet-value1 {
-	font-size: 12vh;
+	font-size: 7vh;
 }
 div.valuedisplay .snippet-unit1 {
-	font-size: 8vh;
-}
-div.valuedisplay .snippet-value2 {
 	font-size: 6vh;
 }
+div.valuedisplay .snippet-value2 {
+	font-size: 4vh;
+}
 div.valuedisplay .snippet-unit2 {
-	font-size: 1vh;
+	font-size: 2vh;
 }
 div.valuedisplay .snippet-value3 {
-	font-size: 2vh;
+	font-size: 3vh;
 }
 div.valuedisplay .snippet-unit3 {
 	font-size: 1vh;

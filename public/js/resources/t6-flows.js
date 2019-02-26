@@ -29,6 +29,16 @@ app.resources.flows = {
 			})
 			.then(function(response) {
 				app.setSection('flows');
+				var flowsList = JSON.parse(localStorage.getItem('flows'));
+				app.flows = [];
+				flowsList.map(function(fl) {
+					if( fl.id == flow_id ) {
+						app.flows.push( {id: fl.id, name:response.flow.data.attributes.name, type: response.flow.data.type} );
+					} else {
+						app.flows.push( {id: fl.id, name:fl.name, type: fl.type} );
+					}
+				});
+				localStorage.setItem('flows', JSON.stringify(app.flows));
 				toast('Flow has been saved.', {timeout:3000, type: 'done'});
 				//var flowContainer = document.querySelector("section#flows div[data-id='"+flow_id+"']");
 				//flowContainer.querySelector("h2").innerHTML = body.name;
@@ -43,7 +53,7 @@ app.resources.flows = {
 						'event': 'Error'
 					});
 				}
-				toast('Flow has not been saved.', {timeout:3000, type: 'error'});
+				toast('Flow has not been saved.'+error, {timeout:3000, type: 'error'});
 			});
 			evt.preventDefault();
 		}
@@ -74,6 +84,12 @@ app.resources.flows = {
 		})
 		.then(function(response) {
 			app.setSection('flows');
+			var flowsList = new Array();
+			if ( JSON.parse(localStorage.getItem('flows')) != 'null' && JSON.parse(localStorage.getItem('flows')).length > -1 ) {
+				flowsList = JSON.parse(localStorage.getItem('flows'));
+			}
+			flowsList.push({id: response.flow.data.id, name:response.flow.data.attributes.name, type: response.flow.data.type});
+			localStorage.setItem('flows', JSON.stringify(flowsList));
 			toast('Flow has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
@@ -90,7 +106,15 @@ app.resources.flows = {
 		});
 		evt.preventDefault();
 	},
-	onDelete: function(id) {
+	onDelete: function(flow_id) {
+		var flowsList = JSON.parse(localStorage.getItem('flows'));
+		app.flows = [];
+		flowsList.filter(function(fl) {
+			if( fl.id != flow_id ) {
+				app.flows.push( {id: fl.id, name:fl.name, type: fl.type} );
+			}
+		});
+		localStorage.setItem('flows', JSON.stringify(app.flows));
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'flow' }, window.location.hash.substr(1), '#flow?id='+id );
@@ -126,8 +150,8 @@ app.resources.flows = {
 					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
 					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, options: app.units });
 					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: true, options: app.datatypes });
-					node += app.getField('verified_user', flow.attributes.require_signed==true?"Require payload signature secret from Object":"Does not require payload signature secret from Object secret", flow.attributes.require_signed, {type: 'switch', id: 'edit_require_signed', isEdit: true});
-					node += app.getField('vpn_key', flow.attributes.require_encrypted==true?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object secret", flow.attributes.require_encrypted, {type: 'switch', id: 'edit_require_encrypted', isEdit: true});
+					node += app.getField('verified_user', flow.attributes.require_signed!=false?"Require signed payload from Object":"Does not require signed payload from Object secret", flow.attributes.require_signed, {type: 'switch', id: 'edit_require_signed', isEdit: true});
+					node += app.getField('vpn_key', flow.attributes.require_encrypted!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: 'switch', id: 'edit_require_encrypted', isEdit: true});
 					node += "	</div>";
 					node += "</section>";
 					
@@ -194,8 +218,8 @@ app.resources.flows = {
 						var datatype = JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
 						node += app.getField(app.icons.datatypes, 'DataType', datatype, {type: 'select', id: 'DataType', isEdit: isEdit, options: app.datatypes });
 					}
-					node += app.getField('verified_user', flow.attributes.require_signed==true?"Require payload signature secret from Object":"Does not require payload signature secret from Object", {type: 'switch', id: 'show_require_signed', isEdit: isEdit});
-					node += app.getField('vpn_key', flow.attributes.require_encrypted==true?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object", {type: 'switch', id: 'show_require_encrypted', isEdit: isEdit});
+					node += app.getField('verified_user', flow.attributes.require_signed!=false?"Require signed payload from Object":"Does not require signed payload from Object", {type: 'switch', id: 'show_require_signed', isEdit: isEdit});
+					node += app.getField('vpn_key', flow.attributes.require_encrypted!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", {type: 'switch', id: 'show_require_encrypted', isEdit: isEdit});
 					node += "	</div>";
 					node += "</div>";
 				
@@ -330,14 +354,14 @@ app.resources.flows = {
 					if ( element1 ) {
 						element1.addEventListener('change', function(e) {
 							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-							label.innerText = element1.classList.contains('is-checked')!=='false'?"Require payload signature secret from Object":"Does not require payload signature secret from Object";
+							label.innerText = element1.classList.contains('is-checked')!=false?"Require signed payload from Object":"Does not require signed payload from Object";
 						});
 					}
 					var element2 = document.getElementById('switch-edit_require_encrypted').parentNode;
 					if ( element2 ) {
 						element2.addEventListener('change', function(e) {
 							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-							label.innerText = element2.classList.contains('is-checked')!=='false'?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object";
+							label.innerText = element2.classList.contains('is-checked')!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object";
 						});
 					}
 				} else {
@@ -380,8 +404,8 @@ app.resources.flows = {
 		node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
 		node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, id: 'Unit', options: allUnits });
 		node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.datatype, {type: 'select', id: 'DataType', isEdit: true, id: 'DataType', options: allDatatypes });
-		node += app.getField('verified_user', flow.attributes.require_signed!==false?'Does not require payload signature secret from Object':'Does not require payload signature secret from Object', flow.attributes.require_signed, {type: 'switch', id: 'add_require_signed', isEdit: true});
-		node += app.getField('vpn_key', flow.attributes.require_encrypted!==false?'Does not require payload encryption secret from Object':'Does not require payload encryption secret from Object', flow.attributes.require_encrypted, {type: 'switch', id: 'add_require_encrypted', isEdit: true});
+		node += app.getField('verified_user', flow.attributes.require_signed!==false?'Does not require signed payload  from Object':'Does not require signed payload from Object', flow.attributes.require_signed, {type: 'switch', id: 'add_require_signed', isEdit: true});
+		node += app.getField('vpn_key', flow.attributes.require_encrypted!==false?'Does not require encrypted payload from Object':'Does not require encrypted payload from Object', flow.attributes.require_encrypted, {type: 'switch', id: 'add_require_encrypted', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -416,14 +440,14 @@ app.resources.flows = {
 		if ( element1 ) {
 			element1.addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-				label.innerText = element1.classList.contains('is-checked')!==false?"Require payload signature secret from Object":"Does not require payload signature secret from Object";
+				label.innerText = element1.classList.contains('is-checked')!==false?"Require signed payload from Object":"Does not require signed payload from Object";
 			});
 		}
 		var element2 = document.getElementById('switch-add_require_encrypted').parentNode;
 		if ( element2 ) {
 			element2.addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-				label.innerText = element2.classList.contains('is-checked')!==false?"Require payload encryption secret from Object":"Does not require payload encryption secret from Object";
+				label.innerText = element2.classList.contains('is-checked')!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object";
 			});
 		}
 		app.setExpandAction();
@@ -454,12 +478,12 @@ app.resources.flows = {
 		}
 		if ( flow.attributes.require_signed == true ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>verified_user</i> Require Signature Secret Key"
+			element += "		<i class='material-icons md-28'>verified_user</i> Require signed payload from Object"
 			element += "	</div>";
 		}
 		if ( flow.attributes.require_encrypted == true ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>vpn_key</i> Require Encryption Secret Key"
+			element += "		<i class='material-icons md-28'>vpn_key</i> Require encrypted payload from Object"
 			element += "	</div>";
 		}
 		element += "</div>";

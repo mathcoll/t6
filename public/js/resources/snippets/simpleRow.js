@@ -38,5 +38,6 @@ var snippet = {
 		</div>`;
 		return html;
 	},
-}
+};
+snippet.getOptions = function(s) { return s.options; }
 app.snippetTypes.push(snippet);

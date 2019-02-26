@@ -24,18 +24,18 @@ var snippet = {
 			var id = response.data[0].attributes.id;
 			var time = response.data[0].attributes.time;
 			var value = response.data[0].attributes.value;
-			var unit = response.links.unit!==undefined?response.links.unit:'';
+			var unit = response.links.unit!==undefined?response.links.unit:'%';
 			var ttl = response.links.ttl;
 			var value = [];
 			for (var i=0; i<limit-1; i++) {
 				var cur = i;
 				var prev = i+1;
 				if ( response.data[cur].attributes.value == response.data[prev].attributes.value ) {
-					value[prev] = "<i class='material-icons md-48'>trending_flat</i> " + response.data[cur].attributes.value;
+					value[prev] = "<i class='material-icons md-48'>trending_flat</i> " + sprintf(unit, response.data[cur].attributes.value);
 				} else if( response.data[cur].attributes.value < response.data[prev].attributes.value ) {
-					value[prev] = "<i class='material-icons md-48'>trending_down</i> " + response.data[cur].attributes.value;
+					value[prev] = "<i class='material-icons md-48'>trending_down</i> " + sprintf(unit, response.data[cur].attributes.value);
 				} else if( response.data[cur].attributes.value > response.data[prev].attributes.value ) {
-					value[prev] = "<i class='material-icons md-48'>trending_up</i> " + response.data[cur].attributes.value;
+					value[prev] = "<i class='material-icons md-48'>trending_up</i> " + sprintf(unit, response.data[cur].attributes.value);
 				}
 				if ( moment().subtract(ttl, 'seconds') > moment(time) ) {
 					document.getElementById('snippet-value'+prev+'-'+params.id).parentNode.parentNode.parentNode.classList.remove('is-ontime');
@@ -90,5 +90,6 @@ var snippet = {
 		</div>`;
 		return html;
 	},
-}
+};
+snippet.getOptions = function(s) { return s.options; }
 app.snippetTypes.push(snippet);

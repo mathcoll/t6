@@ -28,6 +28,16 @@ app.resources.snippets = {
 			})
 			.then(function(response) {
 				app.setSection('snippets');
+				var snippetsList = JSON.parse(localStorage.getItem('snippets'));
+				app.snippets = [];
+				snippetsList.map(function(sn) {
+					if( sn.id == snippet_id ) {
+						app.snippets.push( {id: sn.id, name:response.snippet.data.attributes.name, type: response.snippet.data.type, type: response.snippet.data.attributes.type});
+					} else {
+						app.snippets.push( {id: sn.id, name:sn.name, type: sn.type} );
+					}
+				});
+				localStorage.setItem('snippets', JSON.stringify(app.snippets));
 				toast('Snippet has been saved.', {timeout:3000, type: 'done'});
 				//var snippetContainer = document.querySelector("section#snippets div[data-id='"+snippet_id+"']");
 				//snippetContainer.querySelector("h2").innerHTML = body.name;
@@ -72,6 +82,12 @@ app.resources.snippets = {
 		})
 		.then(function(response) {
 			app.setSection('snippets');
+			var snippetsList = new Array();
+			if ( JSON.parse(localStorage.getItem('snippets')) != 'null' && JSON.parse(localStorage.getItem('snippets')).length > -1 ) {
+				snippetsList = JSON.parse(localStorage.getItem('snippets'));
+			}
+			snippetsList.push( {id: response.snippet.data.id, name:response.snippet.data.attributes.name, type: response.snippet.data.type, type: response.snippet.data.attributes.type});
+			localStorage.setItem('snippets', JSON.stringify(snippetsList));
 			toast('Snippet has been added.', {timeout:3000, type: 'done'});
 		})
 		.catch(function (error) {
@@ -88,7 +104,15 @@ app.resources.snippets = {
 		});
 		evt.preventDefault();
 	},
-	onDelete: function(id) {
+	onDelete: function(snippet_id) {
+		var snippetsList = JSON.parse(localStorage.getItem('snippets'));
+		app.snippets = [];
+		snippetsList.filter(function(sn) {
+			if( sn.id != snippet_id ) {
+				app.snippets.push( {id: sn.id, name:sn.name, type: sn.type} );
+			}
+		});
+		localStorage.setItem('snippets', JSON.stringify(app.snippets));
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'snippet' }, window.location.hash.substr(1), '#snippet?id='+id );
