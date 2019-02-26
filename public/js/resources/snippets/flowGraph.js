@@ -47,7 +47,7 @@ var snippet = {
 			var unit = ' ('+sprintf(response.links.unit!==undefined?response.links.unit:'', '')+')';
 			var data = {
 				datasets: [{
-					label: params.flowNames[0],
+					label: params.flowNames!==undefined?params.flowNames[0]:'',
 					backgroundColor: opt.backgroundColor&&opt.backgroundColor.value!==undefined?opt.backgroundColor.value:'rgb(255, 99, 132)',
 					borderColor: opt.borderColor&&opt.borderColor.value!==undefined?opt.borderColor.value:'rgb(255, 99, 132)',
 					fill: opt.fill&&opt.fill.value!==undefined?opt.fill.value:false,
@@ -87,7 +87,7 @@ var snippet = {
 				},
 				animation: { duration: 0, },
 			};
-			var myLineChart = new Chart(ctx, {
+			var myChart = new Chart(ctx, {
 				type: type,
 				data: data,
 				options: options

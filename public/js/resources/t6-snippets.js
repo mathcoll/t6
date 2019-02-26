@@ -323,7 +323,7 @@ app.resources.snippets = {
 					var s = app.snippetTypes.find(function(sn) {
 						return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
 					});
-					s.activateOnce(snippet);
+					//s.activateOnce(snippet); // looks to be activated from somewhere else :-)
 
 					app.setExpandAction();
 					
