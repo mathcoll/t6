@@ -2521,8 +2521,10 @@ var touchStartPoint, touchMovePoint;
 
 			my_snippet.flowNames=[];
 			my_snippet.attributes.flows.map(function(f) {
-				var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == f; });
-				my_snippet.flowNames.push(theFlow.name);
+				if ( JSON.parse(localStorage.getItem('flows')) ) {
+					var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == f; });
+					my_snippet.flowNames.push(theFlow.name);
+				}
 			});
 			s.activateOnce(my_snippet);
 
@@ -2545,9 +2547,9 @@ var touchStartPoint, touchMovePoint;
 				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-
 		app.containers.spinner.setAttribute('hidden', true);
 	};
+
 	app.refreshFromNow = function(id, time, fromNow) {
 		if (document.getElementById(id)) {
 			document.getElementById(id).innerHTML = moment(time).format(app.date_format);
