@@ -22,6 +22,7 @@ var filesToCache = [
 	'https://cdn.internetcollaboratif.info/css/t6app.min.css',
 	'https://cdn.internetcollaboratif.info/js/t6app.min.js',
 	'https://cdn.internetcollaboratif.info/js/vendor.min.js',
+	'https://cdn.internetcollaboratif.info/js/Chart/Chart-min-2.7.3.js',
 	'https://cdn.internetcollaboratif.info/img/opl_img3.jpg',
 	'https://cdn.internetcollaboratif.info/img/opl_img2.jpg',
 	'https://cdn.internetcollaboratif.info/img/opl_img.jpg',
