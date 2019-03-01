@@ -1,14 +1,108 @@
+'use strict';
 app.resources.objects = {
-	onEdit(evt) {
+	onEdit: function(evt) {
+		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
+		if ( !object_id ) {
+			toast('No Object id found!', {timeout:3000, type: 'error'});
+		} else {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			var body = {
+				type: myForm.querySelector("select[name='Type']").value,
+				name: myForm.querySelector("input[name='Name']").value,
+				description: myForm.querySelector("textarea[name='Description']").value,
+				position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
+				longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
+				latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
+				ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
+				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+				secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
+				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
+				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
+			};
+	
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+'/'+app.api_version+'/objects/'+object_id;
+			fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				app.setSection('objects');
+				toast('Object has been saved.', {timeout:3000, type: 'done'});
+				//var objectContainer = document.querySelector("section#objects div[data-id='"+object_id+"']");
+				//objectContainer.querySelector("h2").innerHTML = body.name;
+				//objectContainer.querySelector("div.mdl-list__item--three-line.small-padding span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
+			})
+			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						'eventCategory': 'Interaction',
+						'eventAction': 'Save Object',
+						'eventLabel': 'Object has not been saved.',
+						'eventValue': '0',
+						'event': 'Error'
+					});
+				}
+				toast('Object has not been saved.', {timeout:3000, type: 'error'});
+			});
+			evt.preventDefault();
+		}
+	},
+	onAdd: function(evt) {
+		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+		var body = {
+			type: myForm.querySelector("select[name='Type']").value,
+			name: myForm.querySelector("input[name='Name']").value,
+			description: myForm.querySelector("textarea[name='Description']").value,
+			position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
+			longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
+			latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
+			ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
+			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
+			secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
+			secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
+			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+		};
+
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+'/'+app.api_version+'/objects/';
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			app.setSection('objects');
+			toast('Object has been added.', {timeout:3000, type: 'done'});
+		})
+		.catch(function (error) {
+			if ( dataLayer !== undefined ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'Add Object',
+					'eventLabel': 'Object has not been added.',
+					'eventValue': '0',
+					'event': 'Error'
+				});
+			}
+			toast('Object has not been added.', {timeout:3000, type: 'error'});
+		});
+		evt.preventDefault();
+	},
+	onDelete: function(id) {
 		
 	},
-	onAdd(evt) {
-		
-	},
-	onDelete(id) {
-		
-	},
-	display(id, isAdd, isEdit, isPublic) {
+	display: function(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		if (isPublic) {
 			displayPublic(id, isAdd, isEdit, isPublic);
@@ -18,8 +112,8 @@ app.resources.objects = {
 		} else {
 			history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+id );
 		}
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -110,6 +204,7 @@ app.resources.objects = {
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 				} else {
+					console.log(object.attributes.is_public);
 					node += app.getField('visibility', object.attributes.is_public=='true'?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 				}
 				node += "	</div>";
@@ -187,13 +282,13 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				(containers.object).querySelector('.page-content').innerHTML = node;
+				(app.containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
 				
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					buttons.backObject.addEventListener('click', function(evt) { app.displayObject(object.id, false); }, false);
-					buttons.saveObject.addEventListener('click', function(evt) { app.onSaveObject(evt); }, false);
+					app.buttons.backObject.addEventListener('click', function(evt) { app.resources.objects.display(object.id, false, false, false); }, false);
+					app.buttons.saveObject.addEventListener('click', function(evt) { app.resources.objects.onEdit(evt); }, false);
 					
 					var element = document.getElementById('switch-Visibility').parentNode;
 					if ( element ) {
@@ -203,11 +298,11 @@ app.resources.objects = {
 						});
 					}
 				} else {
-					buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
+					app.buttons.listObject.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
 					// buttons.deleteObject2.addEventListener('click',
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					buttons.editObject2.addEventListener('click', function(evt) { app.displayObject(object.id, true); evt.preventDefault(); }, false);
+					app.buttons.editObject2.addEventListener('click', function(evt) { app.resources.objects.display(object.id, false, true, false); evt.preventDefault(); }, false);
 				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
@@ -263,14 +358,14 @@ app.resources.objects = {
 				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayPublic(id, isAdd, isEdit, isPublic) {
+	displayPublic: function(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		history.pushState( {section: 'object' }, window.location.hash.substr(1), '#object?id='+id );
 		
-		containers.spinner.removeAttribute('hidden');
-		containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -359,7 +454,7 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				(containers.object).querySelector('.page-content').innerHTML = node;
+				(app.containers.object).querySelector('.page-content').innerHTML = node;
 				componentHandler.upgradeDom();
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
@@ -415,9 +510,9 @@ app.resources.objects = {
 				toast('displayObject error occured...' + error, {timeout:3000, type: 'error'});
 			}
 		});
-		containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute('hidden', true);
 	},
-	displayAdd(object, isAdd, isEdit, isPublic) {
+	displayAdd: function(object, isAdd, isEdit, isPublic) {
 		history.pushState( {section: 'object_add' }, window.location.hash.substr(1), '#object_add' );
 		var node = "";
 		object.id = object.id!==""?object.id:app.getUniqueId();
@@ -441,7 +536,7 @@ app.resources.objects = {
 		node += app.getField('verified_user', 'Secret Key in symmetric signature', object.attributes.secret_key!==undefined?object.attributes.secret_key:'', {type: 'text', id: 'secret_key', style:'text-transform: none !important;', isEdit: true, pattern: app.patterns.secret_key, error:''});
 		node += app.getField('', '', 'When flow require signed payload, you should provide your secret to verify signature.', {type: 'text', isEdit: false});
 		node += app.getField('vpn_key', 'Secret Key in symmetric cryptography', object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:'', {type: 'text', id: 'secret_key_crypt', style:'text-transform: none !important;', isEdit: true, pattern: app.patterns.secret_key_crypt, error:''});
-		node += app.getField('visibility', 'Object is only visible to you', object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: true});
+		node += app.getField('visibility', 'Object is only visible to you', object.attributes.is_public!==undefined?object.attributes.is_public:false, {type: 'switch', id: 'Visibility', isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -482,7 +577,7 @@ app.resources.objects = {
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
-		(containers.object_add).querySelector('.page-content').innerHTML = node;
+		(app.containers.object_add).querySelector('.page-content').innerHTML = node;
 		componentHandler.upgradeDom();
 
 		app.getLocation();
@@ -530,8 +625,8 @@ app.resources.objects = {
 		/* End Localization Map */
 		
 		app.refreshButtonsSelectors();
-		buttons.addObjectBack.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
-		buttons.addObject.addEventListener('click', function(evt) { app.onAddObject(evt); }, false);
+		app.buttons.addObjectBack.addEventListener('click', function(evt) { app.setSection('objects'); evt.preventDefault(); }, false);
+		app.buttons.addObject.addEventListener('click', function(evt) { app.resources.objects.onAdd(evt); }, false);
 
 		var element = document.getElementById('switch-Visibility').parentNode;
 		if ( element ) {
@@ -542,7 +637,76 @@ app.resources.objects = {
 		}
 		app.setExpandAction();
 	},
-	displayItem(object) {
-		/* On the list Views */
+	displayItem: function(object) {
+		var type = 'objects';
+		var name = object.attributes.name!==undefined?object.attributes.name:"";
+		var description = object.attributes.description!==undefined?object.attributes.description.substring(0, app.cardMaxChars):'';
+		var attributeType = object.attributes.type!==undefined?object.attributes.type:'';
+		
+		var element = "";
+		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+object.id+"\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "		<div class=\"mdl-card__title\">";
+		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
+		element += "		</div>";
+		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += "<div class='mdl-list__item--three-line small-padding'>";
+		if ( object.attributes.type ) {
+			var d = app.types.find( function(type) { return type.name == object.attributes.type; });
+			d = d!==undefined?d:'';
+			element += "	<span class='type' id='"+object.id+"-type'><i class='material-icons md-32'>"+d.name+"</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-type'>"+d.value+"</div>";
+		}
+		if ( object.attributes.is_public == 'true' ) {
+			element += "	<span class='isPublic' id='"+object.id+"-isPublic'><i class='material-icons md-32'>visibility</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-isPublic'>Public</div>";
+		}
+		if ( (object.attributes.longitude && object.attributes.latitude) || object.attributes.position ) {
+			element += "	<span class='isLocalized' id='"+object.id+"-isLocalized'><i class='material-icons md-32'>location_on</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-isLocalized'>Localized</div>";	
+		}
+		if ( object.attributes.secret_key != '' ) {
+			element += "	<span class='Signature' id='"+object.id+"-Signature'><i class='material-icons md-32'>verified_user</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Signature'>Signature Secret Key</div>";
+		}
+		if ( object.attributes.secret_key_crypt != '' ) {
+			element += "	<span class='Crypt' id='"+object.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Crypt'>Encryption Secret Key</div>";
+		}
+		element += "</div>";
+		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
+		element += "			<span class=\"pull-left mdl-card__date\">";
+		element += "				<button data-id=\""+object.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">update</i>";
+		element += "				</button>";
+		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(object.attributes.meta.created).format(app.date_format) + "</span>";
+		if ( object.attributes.meta.updated ) {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(object.attributes.meta.updated).format(app.date_format) + "</span>";
+		} else {
+			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+		}
+		element += "			</span>";
+		element += "			<span class=\"pull-right mdl-card__menuaction\">";
+		element += "				<button id=\"menu_"+object.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
+		element += "				</button>";
+		element += "			</span>";
+		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+object.id+"\">";
+		element += "				<li class=\"mdl-menu__item delete-button\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
+		element += "				</li>";
+		element += "				<li class=\"mdl-menu__item\">";
+		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+object.id+"</textarea>Copy ID to clipboard</a>";
+		element += "				</li>";
+		element += "			</ul>";
+		element += "		</div>";
+		element += "	</div>";
+		element += "</div>";
+
+		return element;
 	}
 };

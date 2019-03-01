@@ -1,42 +1,89 @@
-echo Minification in progress...
+#!/bin/sh
 
+echo Starting Minification ...
+echo "========================"
+echo "Using uglifyjs version:"
+../node_modules/uglify-js-es6/bin/uglifyjs -V
+echo ""
+
+#echo 0. PWA Javascript T6 concat:
+#cat \
+#	../public/js/t6app-main.js \
+#	../public/js/resources/t6-objects.js \
+#	../public/js/resources/t6-flows.js \
+#	../public/js/resources/t6-snippets.js \
+#	../public/js/resources/t6-dashboards.js \
+#	../public/js/resources/t6-rules.js \
+#	../public/js/resources/t6-mqtts.js \
+#	../public/js/resources/snippets/valueDisplay.js \
+#	../public/js/resources/snippets/graphDisplay.js \
+#	../public/js/resources/snippets/flowGraph.js \
+#	../public/js/resources/snippets/simpleClock.js \
+#	../public/js/resources/snippets/simpleRow.js \
+#	../public/js/resources/snippets/cardChart.js \
+#	../public/js/resources/snippets/sparkline.js \
+#	> ../public/js/t6app-cat.js
+######node minify.js > ../public/js/t6app-min.js
+#echo Completed
+#echo ""
+
+echo 1. PWA Javascript T6 minify:
+../node_modules/uglify-js-es6/bin/uglifyjs \
+	../public/js/t6app-main.js \
+	../public/js/resources/t6-objects.js \
+	../public/js/resources/t6-flows.js \
+	../public/js/resources/t6-snippets.js \
+	../public/js/resources/t6-dashboards.js \
+	../public/js/resources/t6-rules.js \
+	../public/js/resources/t6-mqtts.js \
+	../public/js/resources/snippets/valueDisplay.js \
+	../public/js/resources/snippets/graphDisplay.js \
+	../public/js/resources/snippets/flowGraph.js \
+	../public/js/resources/snippets/simpleClock.js \
+	../public/js/resources/snippets/simpleRow.js \
+	../public/js/resources/snippets/cardChart.js \
+	../public/js/resources/snippets/sparkline.js \
+	-o ../public/js/t6app-min.js \
+	-m -c warnings=false
+echo Completed
+echo ""
+
+echo 2. PWA Javascript T6-VENDOR minify:
 uglifyjs \
-	../public/js/vendor/jquery-3.3.1.min.js \
-	../public/js/sortable/sortable.min-1.4.2.js \
-	../public/js/bootstrap.js \
+	../public/js/vendor/material/material.js \
+	../public/js/vendor/mdl/mdl-selectfield.min.js \
+	../public/js/vendor/moment/moment.min-2.22.2.js \
+	../public/js/vendor/OpenLayers/ol-4.6.5.min.js \
+	-o ../public/js/vendor.min.js \
+	-m -c warnings=false
+echo Completed
+echo ""
+
+echo 3. PWA Stylesheet minify: 
+uglifycss \
+	../public/css/vendor/material/material.css \
+	../public/css/vendor/material/material.brown-blue.min-1.3.0.css \
+	../public/css/t6app.css \
+	../public/css/vendor/OpenLayers/ol-4.6.5.css \
+	> ../public/css/t6app.min.css
+echo Completed
+echo ""
+
+echo 4. Documentation Javascript minify:
+../node_modules/uglify-js-es6/bin/uglifyjs \
+	../public/js/vendor/jquery/jquery-3.3.1.min.js \
 	../public/js/t6.js \
 	-o ../public/js/t6.min.js \
-	-p 5 -m -c warnings=false
-echo Javascript minify: Completed
+	-m -c warnings=false
+echo Completed
+echo ""
 
+echo 5. Documentation Stylesheet minify:
 uglifycss \
-	../public/css/bootstrap.css \
+	../public/css/vendor/bootstrap/bootstrap.css \
 	../public/css/t6.css \
 	> ../public/css/t6.min.css
-echo Stylesheet minify: Completed
+echo Completed
+echo ""
 
-
-
-
-# PWA version
-uglifyjs \
-	../public/js/material.js \
-	../public/js/m/mdl-selectfield.min.js \
-	../public/js/vendor/jquery-3.3.1.min.js \
-	../public/js/flot/jquery.flot.js \
-	../public/js/flot/jquery.flot.time.min.js \
-	../public/js/m/moment.min-2.22.2.js \
-	../public/js/OpenLayers/ol-4.6.5.min.js \
-	-o ../public/js/m/vendor.min.js \
-	-p 5 -m -c warnings=false
-echo PWA Javascript minify: Completed
-
-uglifycss \
-	../public/css/material-design-lite/1.3.0/material.brown-blue.min.css \
-	../public/css/m/inline.css \
-	../public/css/OpenLayers/ol-4.6.5.css \
-	> ../public/css/t6App.min.css
-echo PWA Stylesheet minify: Completed
-
-
-echo Minification Completed.
+echo Full Minification Completed.

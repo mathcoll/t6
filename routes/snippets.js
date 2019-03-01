@@ -111,7 +111,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			//console.log(snippets);
 			
 			res.header('Location', '/v'+version+'/snippets/'+new_snippet.id);
-			res.status(201).send({ 'code': 201, message: 'Created', flow: new SnippetSerializer(new_snippet).serialize() });
+			res.status(201).send({ 'code': 201, message: 'Created', snippet: new SnippetSerializer(new_snippet).serialize() });
 		}
 	}
 });

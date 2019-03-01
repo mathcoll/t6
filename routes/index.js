@@ -535,32 +535,32 @@ router.post('/refresh', function (req, res) {
 			};
 	var myToken = tokens.findOne(queryT);
 	if ( !myToken ) {
-        return res.status(403).send(new ErrorSerializer({'id': 109, 'code': 403, 'message': 'Forbidden or Token Expired'}));
+		return res.status(403).send(new ErrorSerializer({'id': 109, 'code': 403, 'message': 'Forbidden or Token Expired'}));
 	} else {
 		let user = users.findOne({ 'id': myToken.user_id });
 		if ( !user ) {
-	        return res.status(403).send(new ErrorSerializer({'id': 110, 'code': 403, 'message': 'Forbidden or Token Expired'}));
-	    } else {
-	    	var payload = JSON.parse(JSON.stringify(user));
-	    	payload.permissions = undefined;
-	    	payload.token = undefined;
-	    	payload.password = undefined;
-	    	payload.gravatar = undefined;
-	    	payload.meta = undefined;
-	    	payload.$loki = undefined;
-	    	payload.token_type = "Bearer";
-	    	payload.scope = "Application";
-	    	payload.sub = '/users/'+user.id;
-	    	payload.iss = req.ip+' - '+user.location.ip;
-	        var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-	        
-	        // Add the refresh token to the list
-	    	tokens	= db.getCollection('tokens');
-	    	var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
-	    	var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
-	    	tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
-	        return res.status(200).json( {status: 'ok', token: token, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp} );
-	    }
+			return res.status(403).send(new ErrorSerializer({'id': 110, 'code': 403, 'message': 'Forbidden or Token Expired'}));
+		} else {
+			var payload = JSON.parse(JSON.stringify(user));
+			payload.permissions = undefined;
+			payload.token = undefined;
+			payload.password = undefined;
+			payload.gravatar = undefined;
+			payload.meta = undefined;
+			payload.$loki = undefined;
+			payload.token_type = "Bearer";
+			payload.scope = "Application";
+			payload.sub = '/users/'+user.id;
+			payload.iss = req.ip+' - '+user.location.ip;
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+
+			// Add the refresh token to the list
+			tokens	= db.getCollection('tokens');
+			var refreshPayload = user.id + '.' + crypto.randomBytes(40).toString('hex');
+			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, 'seconds').format('X');
+			tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
+			return res.status(200).json( {status: 'ok', token: token, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp} );
+		}
 	}
 });
 

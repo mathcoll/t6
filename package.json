@@ -63,7 +63,8 @@
   },
   "readmeFilename": "README.md",
   "devDependencies": {
-    "lighthouse": "^4.1.0"
+    "lighthouse": "^4.1.0",
+    "uglify-js-es6": "^2.8.9"
   },
   "snyk": true
 }
