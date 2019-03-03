@@ -4,10 +4,13 @@ var snippet = {
 	value: "Value Display",
 	
 	options: {
+		width: {defaultValue: "6", value: "6", type: 'select', availableValues: ["4", "6", "8", "12"]},
 		color: {defaultValue: "#FF0000", type: 'text'},
 		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
 	},
 	activateOnce: function(params) {
+		this.options.width.value = this.options.width.value!==null?this.options.width.value:this.options.width.defaultValue;
+		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -61,29 +64,30 @@ var snippet = {
 			params = {}
 		}
 		params.time = moment().format(app.date_format);
-		var html = `<div class="valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp is-ontime">
-		<div class="contextual">
-			<div class="mdl-list__item-primary-content">
-				<i class="material-icons">widgets</i>
-			<span class="heading">${params.name}</span>
-				<span class="heading pull-right">
-					<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
-						<i class="material-icons">settings</i>
+		var html = `
+		<div id="${params.id}" class="valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp is-ontime">
+			<div class="contextual">
+				<div class="mdl-list__item-primary-content">
+					<i class="material-icons">widgets</i>
+					<span class="heading">${params.name}</span>
+					<span class="heading pull-right">
+						<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+							<i class="material-icons">settings</i>
 						</button>
-				</span>
-			</div>
-			<div class="mdl-list__item-secondary-content">
-						<span class="snippet-value1" id="snippet-value1-${params.id}">
+					</span>
+				</div>
+				<div class="mdl-list__item-secondary-content">
+					<span class="snippet-value1" id="snippet-value1-${params.id}">
 						<i class="material-icons md-48">trending_flat</i>
 					</span>
-				<hr style="">
-			<span class="snippet-value2" id="snippet-value2-${params.id}">
-				<i class="material-icons">trending_down</i>
-			</span>
-			<hr style="">
-				<span class="snippet-value3" id="snippet-value3-${params.id}">
-					<i class="material-icons">trending_up</i>
-				</span>
+					<hr style="">
+					<span class="snippet-value2" id="snippet-value2-${params.id}">
+						<i class="material-icons">trending_down</i>
+					</span>
+					<hr style="">
+					<span class="snippet-value3" id="snippet-value3-${params.id}">
+						<i class="material-icons">trending_up</i>
+					</span>
 				</div>
 			</div>
 			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}">${params.time}</div>

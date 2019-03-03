@@ -4,6 +4,8 @@ var snippet = {
 	value: "Graph a Flow over axis",
 	
 	options: {
+		width: {defaultValue: "12", value: "12", type: 'select', availableValues: ["4", "6", "8", "12"]},
+		
 		type: {defaultValue: "top", value: "line", type: 'select', availableValues: ["bar", "line", "radar", "pie", "polarArea", "bubble", "scatter"]},
 		color: {defaultValue: "#FF0000", type: 'text', value: '#0d87b0'},
 		legendFontColor: {defaultValue: "#FF0000", type: 'text', value: '#0d87b0'},
@@ -24,6 +26,8 @@ var snippet = {
 		legendDisplay: {defaultValue: false, value: false, type: 'switch', availableValues: [true, false]},
 	},
 	activateOnce: function(params) {
+		this.options.width.value = this.options.width.value!==null?this.options.width.value:this.options.width.defaultValue;
+		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -113,7 +117,7 @@ var snippet = {
 		}
 		params.unit
 		var html = `
-		<div class="flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp">
+		<div id="${params.id}" class="flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp">
 			<div class="contextual">
 				<div class="mdl-list__item-primary-content">
 					<i class="material-icons">${params.icon}</i>

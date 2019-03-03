@@ -2510,11 +2510,9 @@ var touchStartPoint, touchMovePoint;
 				return (snippet.name).toLowerCase()===(my_snippet.attributes.type).toLowerCase();
 			});
 			var snippet = s.getHtml({name: my_snippet.attributes.name, id: my_snippet.id, icon: my_snippet.attributes.icon});
-			var width = 6; // TODO: should be a parameter in the snippet
 
 			var c= document.createElement("div");
-			c.setAttribute('class','mdl-grid mdl-cell--'+width+'-col');
-			c.setAttribute('id',my_snippet.id);
+			c.setAttribute('class','mdl-grid mdl-cell');
 			c.innerHTML = snippet;
 			myContainer.appendChild(c);
 			componentHandler.upgradeDom();
