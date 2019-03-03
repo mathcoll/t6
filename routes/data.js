@@ -44,6 +44,7 @@ router.get('/1234/test/mqtt', function (req, res) {
  * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
  * @apiSuccess {String} data.attributes.value Value of Data point
  * @apiUse 200
+ * @apiUse 204
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -191,7 +192,7 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 						res.status(404).send("SVG Not Implemented with influxDB");
 					};
 				} else {
-					res.status(404).send(new ErrorSerializer({'id': 898, 'code': 404, 'message': 'Not Found'}).serialize());
+					res.status(204).send(new ErrorSerializer({'id': 898, 'code': 204, 'message': 'No Content'}).serialize());
 				};
 			}).catch(err => {
 				res.status(500).send({query: query, err: err, 'id': 899, 'code': 500, 'message': 'Internal Error'});

@@ -263,6 +263,8 @@ var touchStartPoint, touchMovePoint;
 		}
 		if (response.status === 200 || response.status === 201) {
 			return response;
+		} else if (response.status === 204) {
+			return response;
 		} else if (response.status === 400) {
 			toast('Bad Request.', {timeout:3000, type: 'error'});
 			throw new Error('Bad Request.');
@@ -272,6 +274,9 @@ var touchStartPoint, touchMovePoint;
 		} else if (response.status === 409) {
 			toast('Revision is conflictual.', {timeout:3000, type: 'error'});
 			throw new Error('Revision is conflictual.');
+		} else if (response.status === 429) {
+			toast('Oups, over quota.', {timeout:3000, type: 'error'});
+			return response;
 		} else {
 			throw new Error(response.statusText);
 		}
@@ -1405,11 +1410,13 @@ var touchStartPoint, touchMovePoint;
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				for (var i=0; i < (response.data).length ; i++ ) {
-					var u = response.data[i];
-					app.units.push( {name: u.id, value:u.attributes.type+' '+u.attributes.name, format: u.attributes.format} );
+				if ( response.data ) {
+					for (var i=0; i < (response.data).length ; i++ ) {
+						var u = response.data[i];
+						app.units.push( {name: u.id, value:u.attributes.type+' '+u.attributes.name, format: u.attributes.format} );
+					}
+					localStorage.setItem('units', JSON.stringify(app.units));
 				}
-				localStorage.setItem('units', JSON.stringify(app.units));
 			});
 		}
 	};
@@ -1428,11 +1435,13 @@ var touchStartPoint, touchMovePoint;
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				for (var i=0; i < (response.data).length ; i++ ) {
-					var f = response.data[i];
-					app.flows.push( {id: f.id, name:f.attributes.name, type: 'flows'} );
+				if ( response.data ) {
+					for (var i=0; i < (response.data).length ; i++ ) {
+						var f = response.data[i];
+						app.flows.push( {id: f.id, name:f.attributes.name, type: 'flows'} );
+					}
+					localStorage.setItem('flows', JSON.stringify(app.flows));
 				}
-				localStorage.setItem('flows', JSON.stringify(app.flows));
 			});
 		}
 	};
@@ -1451,11 +1460,13 @@ var touchStartPoint, touchMovePoint;
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				for (var i=0; i < (response.data).length ; i++ ) {
-					var s = response.data[i];
-					app.snippets.push( {id: s.id, name:s.attributes.name, sType:s.attributes.type, type: 'snippets'} );
+				if ( response.data ) {
+					for (var i=0; i < (response.data).length ; i++ ) {
+						var s = response.data[i];
+						app.snippets.push( {id: s.id, name:s.attributes.name, sType:s.attributes.type, type: 'snippets'} );
+					}
+					localStorage.setItem('snippets', JSON.stringify(app.snippets));
 				}
-				localStorage.setItem('snippets', JSON.stringify(app.snippets));
 			});
 		}
 	};
@@ -1473,11 +1484,13 @@ var touchStartPoint, touchMovePoint;
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				for (var i=0; i < (response.data).length ; i++ ) {
-					var d = response.data[i];
-					app.datatypes.push( {name: d.id, value:d.attributes.name} );
+				if ( response.data ) {
+					for (var i=0; i < (response.data).length ; i++ ) {
+						var d = response.data[i];
+						app.datatypes.push( {name: d.id, value:d.attributes.name} );
+					}
+					localStorage.setItem('datatypes', JSON.stringify(app.datatypes));
 				}
-				localStorage.setItem('datatypes', JSON.stringify(app.datatypes));
 			});
 		}
 	};
@@ -1794,7 +1807,7 @@ var touchStartPoint, touchMovePoint;
 						if ( page==1 ) {
 							container.innerHTML = "";
 						}
-						if ( (response.data).length == 0 ) {
+						if ( !response.data || (response.data && (response.data).length == 0 )) {
 							container.innerHTML = app.getCard(defaultCard);
 							app.displayLoginForm( container );
 						} else {
@@ -2519,7 +2532,7 @@ var touchStartPoint, touchMovePoint;
 
 			my_snippet.flowNames=[];
 			my_snippet.attributes.flows.map(function(f) {
-				if ( JSON.parse(localStorage.getItem('flows')) ) {
+				if ( JSON.parse(localStorage.getItem('flows')) != 'null' ) {
 					var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == f; });
 					my_snippet.flowNames.push(theFlow.name);
 				}

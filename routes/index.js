@@ -36,6 +36,15 @@ var users;
  */
 
 /**
+ * @apiDefine 204
+ * @apiSuccess 204 No Content
+ * @apiSuccessExample 204 Response
+ *     HTTP/1.1 204 No Content
+ *     {
+ *     }
+ */
+
+/**
  * @apiDefine 400
  * @apiError 400 Bad Request, require a Bearer Authentication or revision is incorrect.
  * @apiErrorExample 400 Response
@@ -172,12 +181,12 @@ router.all('*', function (req, res, next) {
 		url:		req.originalUrl,
 		date:		moment().format('x')
 	};
-	if ( req.headers.authorization ) {
-		if ( !req.user ) {
-			var jwtdecoded = jwt.decode(req.headers.authorization.split(' ')[1]);
-			req.user = jwtdecoded;
-		}
-		
+	if ( !req.user && req.headers.authorization ) {
+		var jwtdecoded = jwt.decode(req.headers.authorization.split(' ')[1]);
+		req.user = jwtdecoded;
+	}
+	
+	if ( req.headers.authorization && req.user ) {
 		var limit = req.user!==null?(quota[req.user.role]).calls:-1;
 		if (req.user !== null && req.user.role  !== null ) {
 			res.header('X-RateLimit-Limit', limit);
