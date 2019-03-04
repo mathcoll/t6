@@ -120,6 +120,7 @@ li.delete-button:hover {
 	min-height: auto !important;
 	padding: 5px 16px !important;
 }
+#TypeSample > div { width: calc(100% - 48px) !important; }
 body {
 	display: -webkit-box;
 	display: -webkit-flex;
