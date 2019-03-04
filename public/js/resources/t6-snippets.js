@@ -312,7 +312,6 @@ app.resources.snippets = {
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 
-					node += "<section class='mdl-grid mdl-cell--12-col snippetPreview'>";
 					//Snippet preview
 					app.getSnippet(app.icons.snippets, snippet.id, (app.containers.snippet).querySelector('.page-content'));
 					node += "</section>";

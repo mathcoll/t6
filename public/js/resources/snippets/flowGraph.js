@@ -101,9 +101,8 @@ var snippet = {
 			var time = response.data[0].attributes.time;
 			var value = response.data[0].attributes.value;
 			var ttl = response.links.ttl;
-			document.getElementById('snippet-time-'+params.id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
 			document.getElementById('unit-'+params.id).innerHTML = unit;
-			setInterval(function() {app.refreshFromNow('snippet-time-'+params.id, time)}, 10000);
+			setInterval(function() {app.refreshFromNow('snippet-time-'+params.id, time, true)}, 6000);
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {

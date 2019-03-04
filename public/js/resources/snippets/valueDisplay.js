@@ -49,9 +49,7 @@ var snippet = {
 				}
 				document.getElementById('snippet-value'+prev+'-'+params.id).innerHTML = value[prev];
 			}
-			
-			document.getElementById('snippet-time-'+params.id).innerHTML = moment(time).format(app.date_format) + "<small>, " + moment(time).fromNow() + "</small>";
-			setInterval(function() {app.refreshFromNow('snippet-time-'+params.id, moment(), true)}, 6000);
+			setInterval(function() {app.refreshFromNow('snippet-time-'+params.id, time, true)}, 6000);
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {

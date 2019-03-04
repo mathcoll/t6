@@ -3104,7 +3104,9 @@ var touchStartPoint, touchMovePoint;
 		(app.containers.snippet).querySelector('.page-content').innerHTML = '';
 		(app.containers.profile).querySelector('.page-content').innerHTML = '';
 		(app.containers.rules).querySelector('.page-content').innerHTML = '';
+		(app.containers.rule).querySelector('.page-content').innerHTML = '';
 		(app.containers.mqtts).querySelector('.page-content').innerHTML = '';
+		(app.containers.mqtt).querySelector('.page-content').innerHTML = '';
 	};
 
 	/*
@@ -3293,10 +3295,26 @@ var touchStartPoint, touchMovePoint;
 				app.setSection(currentPage);
 			}
 		} else if ( currentPage ) {
+			if ( (currentPage === 'object' || currentPage === 'objects') ) {
+				app.setSection('objects');
+			} else if ( (currentPage === 'flow' || currentPage === 'flows') ) {
+				app.setSection('flows');
+			} else if ( (currentPage === 'dashboard' || currentPage === 'dashboards') ) {
+				app.setSection('dashboards');
+			} else if ( (currentPage === 'snippet' || currentPage === 'snippets') ) {
+				app.setSection('snippets');
+			} else if ( (currentPage === 'rule' || currentPage === 'rules') ) {
+				app.setSection('rules');
+			} else if ( (currentPage === 'mqtt' || currentPage === 'mqtts') ) {
+				app.setSection('mqtts');
+			} else {
+				app.setSection(currentPage);
+			}
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
 			}
-			app.setSection(currentPage);
+		} else {
+			app.setSection('index');
 		}
 	});
 	app.fetchIndex('index');
