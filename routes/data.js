@@ -565,8 +565,9 @@ function decryptPayload(encryptedPayload, sender) {
  * @apiUse 429
  * @apiUse 500
  */
-router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res, next) {
 	let payload = req.body;
+	let error;
 	let isEncrypted = false;
 	let isSigned = false;
 	let prerequisite = 0;
@@ -616,13 +617,16 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 					}
 				} else {
 					payload = undefined;
+					error = err;
+					console.log("Error "+error);
 					res.status(401).send(new ErrorSerializer({'id': 62.4, 'code': 401, 'message': 'Invalid Signature',}).serialize());
+					next();
 				}
 			});
 		}
 	}
 
-	if ( payload !== undefined ) {
+	if ( payload !== undefined && !error ) {
 		var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:payload.flow_id;
 		var time		= (payload.timestamp!==''&&payload.timestamp!==undefined)?parseInt(payload.timestamp):moment().format('x');
 		if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
@@ -635,11 +639,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 		var longitude	= payload.longitude!==undefined?payload.longitude:"";
 		var text		= payload.text!==undefined?payload.text:"";
 
-		if ( !flow_id ) {
-			res.status(405).send(new ErrorSerializer({'id': 63, 'code': 405, 'message': 'Method Not Allowed',}).serialize());
-		}
-
-		if ( !req.user.id ){
+		if ( !flow_id || !req.user.id ){
 			// Not Authorized because token is invalid
 			res.status(401).send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized',}).serialize());
 		} else {
@@ -707,7 +707,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 						if (flow_id!== "") tags.flow_id = flow_id;
 						tags.user_id = req.user.id;
 						if (text!== "") fields[0].text = text;
-	
+
 						dbInfluxDB.writePoints([{
 							measurement: 'data',
 							tags: tags,
@@ -734,7 +734,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 						});
 					};
 				}
-
+				
 				t6decisionrules.action(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
 
 				fields.flow_id = flow_id;
@@ -759,7 +759,7 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 			}
 		};
 	} else {
-		res.status(412).send(new ErrorSerializer({'id': 65, 'code': 412, 'message': 'Precondition Failed',}).serialize());
+		res.status(412).send(new ErrorSerializer({'id': 65, 'code': 412, 'message': 'Precondition Failed '+error,}).serialize());
 	}
 });
 
