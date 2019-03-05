@@ -314,7 +314,6 @@ app.resources.snippets = {
 
 					//Snippet preview
 					app.getSnippet(app.icons.snippets, snippet.id, (app.containers.snippet).querySelector('.page-content'));
-					node += "</section>";
 
 					(app.containers.snippet).querySelector('.page-content').innerHTML = node;
 					componentHandler.upgradeDom();

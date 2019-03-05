@@ -461,6 +461,7 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 	padding: 16px;
 	margin: 5px 0;
 }
+.flowgraph canvas { max-height: 300px; }
 .card-sparkline,
 .card-simplerow,
 .card-simpleclock {

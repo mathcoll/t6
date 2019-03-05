@@ -713,28 +713,37 @@ var touchStartPoint, touchMovePoint;
 		app.containers = {
 			spinner: document.querySelector('section#loading-spinner'),
 			index: document.querySelector('section#index'),
-			objects: document.querySelector('section#objects'),
-			object: document.querySelector('section#object'),
-			object_add: document.querySelector('section#object_add'),
-			flows: document.querySelector('section#flows'),
-			flow: document.querySelector('section#flow'),
-			flow_add: document.querySelector('section#flow_add'),
-			dashboards: document.querySelector('section#dashboards'),
-			dashboard: document.querySelector('section#dashboard'),
-			dashboard_add: document.querySelector('section#dashboard_add'),
-			snippets: document.querySelector('section#snippets'),
-			snippet: document.querySelector('section#snippet'),
-			snippet_add: document.querySelector('section#snippet_add'),
 			profile: document.querySelector('section#profile'),
 			settings: document.querySelector('section#settings'),
-			rules: document.querySelector('section#rules'),
-			rule: document.querySelector('section#rule'),
-			rule_add: document.querySelector('section#rule_add'),
-			mqtts: document.querySelector('section#mqtts'),
 			status: document.querySelector('section#status'),
 			terms: document.querySelector('section#terms'),
 			docs: document.querySelector('section#docs'),
 			usersList: document.querySelector('section#users-list'),
+			
+			objects: document.querySelector('section#objects'),
+			object: document.querySelector('section#object'),
+			object_add: document.querySelector('section#object_add'),
+			
+			flows: document.querySelector('section#flows'),
+			flow: document.querySelector('section#flow'),
+			flow_add: document.querySelector('section#flow_add'),
+			
+			dashboards: document.querySelector('section#dashboards'),
+			dashboard: document.querySelector('section#dashboard'),
+			dashboard_add: document.querySelector('section#dashboard_add'),
+			
+			snippets: document.querySelector('section#snippets'),
+			snippet: document.querySelector('section#snippet'),
+			snippet_add: document.querySelector('section#snippet_add'),
+			
+			rules: document.querySelector('section#rules'),
+			rule: document.querySelector('section#rule'),
+			rule_add: document.querySelector('section#rule_add'),
+			
+			mqtts: document.querySelector('section#mqtts'),
+			mqtt: document.querySelector('section#mqtt'),
+			mqtt_add: document.querySelector('section#mqtt_add'),
+			
 			menuIconElement: document.querySelector('.mdl-layout__drawer-button'),
 			menuElement: document.getElementById('drawer'),
 			menuOverlayElement: document.querySelector('.menu__overlay'),
@@ -2532,9 +2541,11 @@ var touchStartPoint, touchMovePoint;
 
 			my_snippet.flowNames=[];
 			my_snippet.attributes.flows.map(function(f) {
-				if ( JSON.parse(localStorage.getItem('flows')) != 'null' ) {
+				if ( localStorage.getItem('flows') != 'null' && JSON.parse(localStorage.getItem('flows')) ) {
 					var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == f; });
-					my_snippet.flowNames.push(theFlow.name);
+					if ( theFlow ) {
+						my_snippet.flowNames.push(theFlow.name);
+					}
 				}
 			});
 			s.activateOnce(my_snippet);
@@ -2659,11 +2670,13 @@ var touchStartPoint, touchMovePoint;
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
-				if (Tawk_API) {
+				if (Tawk_API && Tawk_API.setAttributes) {
 					Tawk_API.setAttributes({
 						'name' : localStorage.getItem('currentUserName')?localStorage.getItem('currentUserName'):null,
 						'email': localStorage.getItem('currentUserEmail')?localStorage.getItem('currentUserEmail'):null
 					}, function (error) {});
+				} else {
+					console.log("DEBUG", Tawk_API, "<->", Tawk_API.setAttributes);
 				}
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
@@ -3614,7 +3627,7 @@ var touchStartPoint, touchMovePoint;
 		for (var item in app.containers.menuItems) {
 			if ( app.containers.menuItems[item].childElementCount > -1 ) {
 				(app.containers.menuItems[item]).addEventListener('click', function(evt) {
-					app.setSection((evt.target.getAttribute('href')).substr(1));
+					app.setSection((evt.currentTarget.getAttribute('href')).substr(1));
 					app.hideMenu();
 				}, false);
 			}

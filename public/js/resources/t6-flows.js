@@ -218,11 +218,11 @@ app.resources.flows = {
 						var datatype = JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
 						node += app.getField(app.icons.datatypes, 'DataType', datatype, {type: 'select', id: 'DataType', isEdit: isEdit, options: app.datatypes });
 					}
-					node += app.getField('verified_user', flow.attributes.require_signed!=false?"Require signed payload from Object":"Does not require signed payload from Object", {type: 'switch', id: 'show_require_signed', isEdit: isEdit});
-					node += app.getField('vpn_key', flow.attributes.require_encrypted!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", {type: 'switch', id: 'show_require_encrypted', isEdit: isEdit});
+					node += app.getField('verified_user', flow.attributes.require_signed!=false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: 'switch', id: 'show_require_signed', isEdit: isEdit});
+					node += app.getField('vpn_key', flow.attributes.require_encrypted!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: 'switch', id: 'show_require_encrypted', isEdit: isEdit});
 					node += "	</div>";
 					node += "</div>";
-				
+
 					node += "<div class='mdl-card mdl-cell mdl-cell--12-col' id='"+flow.id+"'>";
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
@@ -286,7 +286,7 @@ app.resources.flows = {
 							return [i.attributes.timestamp, i.attributes.value];
 						})];
 						componentHandler.upgradeDom();
-						$.plot($('#flow-graph-'+flow.id), dataset, options);
+						//$.plot($('#flow-graph-'+flow.id), dataset, options);
 						datapoints += "		</div>";
 						datapoints += "	</div>";
 						
