@@ -159,7 +159,7 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 						} else if ( datatype == 'date' ) {
 							d.value = d.valueDate;
 						} else if ( datatype == 'integer' ) {
-							d.value = parseInt((d.valueInteger).substring(-1));
+							d.value = (d.valueInteger).length>0?parseInt((d.valueInteger).substring(-1)):parseInt((d.valueInteger));
 						} else if ( datatype == 'json' ) {
 							d.value = d.valueJson;
 						} else if ( datatype == 'string' ) {
