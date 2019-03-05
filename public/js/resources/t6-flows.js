@@ -210,9 +210,11 @@ app.resources.flows = {
 					if ( flow.attributes.ttl ) {
 						node += app.getField('schedule', 'Time To Live (TTL)', flow.attributes.ttl, {type: 'text', id: 'TTL', isEdit: isEdit});
 					}
-					if ( flow.attributes.unit ) {
+					if ( flow.attributes.unit && localStorage.getItem('units') !== 'null' && JSON.parse(localStorage.getItem('units')) ) {
 						var unit = JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; });
 						node += app.getField(app.icons.units, 'Unit', unit.value, {type: 'select', id: 'Unit', isEdit: isEdit, options: app.units });
+					} else {
+						app.getUnits();
 					}
 					if ( flow.attributes.data_type ) {
 						var datatype = JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
@@ -468,7 +470,11 @@ app.resources.flows = {
 		element += "<div class='mdl-list__item--three-line small-padding'>";
 		if ( flow.attributes.unit ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; }).value;
+			if ( localStorage.getItem('units') !== 'null' && JSON.parse(localStorage.getItem('units')) ) {
+				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; }).value;
+			} else {
+				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i> ?";
+			}
 			element += "	</div>";
 		}
 		if ( flow.attributes.data_type ) {

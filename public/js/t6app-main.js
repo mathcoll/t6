@@ -1407,7 +1407,7 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.getUnits = function() {
-		if ( app.units.length == 0 ) {
+		if ( localStorage.getItem('units') == 'null' || !JSON.parse(localStorage.getItem('units')) ) {
 			var myHeaders = new Headers();
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'GET', headers: myHeaders };
