@@ -2180,7 +2180,6 @@ var touchStartPoint, touchMovePoint;
 
 	app.displayLoginForm = function(container) {
 		container.querySelectorAll('form.signin').forEach( function(e) { if (e) { e.parentNode.remove(); }} );
-		
 		if ( app.isLogged === false ) {
 			var login = "<section class='content-grid mdl-grid'>" +
 			"	<div class='mdl-layout-spacer'></div>" +
@@ -2304,6 +2303,11 @@ var touchStartPoint, touchMovePoint;
 			container = (app.containers.rules).querySelector('.page-content');
 			showFAB = true;
 		}
+		if( type == 'mqtts' ) {
+			var id = 'createMqtt';
+			container = (app.containers.mqtts).querySelector('.page-content');
+			showFAB = true;
+		}
 		if ( showFAB  && container && app.itemsPage[type]==1 ) {
 			var fabClass = app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom';
 			var fab = "<div class='mdl-button--fab_flinger-container "+fabClass+"'>";
@@ -2318,15 +2322,6 @@ var touchStartPoint, touchMovePoint;
 			var to = (parseInt(app.itemsPage[type])+1)*parseInt(app.itemsSize[type]);
 			var page = parseInt(app.itemsPage[type])+1;
 			var max = 5; // hardcoded! # TODO
-			//if ( to < max ) {
-				fab += "<div class='mdl-grid mdl-cell mdl-cell--12-col spacer'>";
-				fab += "	<span class='mdl-layout-spacer'></span>";
-				fab += "		<button data-size='"+parseInt(app.itemsSize[type])+"' data-page='"+page+"' data-type='"+type+"' class='lazyloading mdl-cell--12-col mdl-button mdl-js-button mdl-js-ripple-effect'>";
-				fab += "			<i class='material-icons'>expand_more</i>";
-				fab += "		</button>";
-				fab += "	<span class='mdl-layout-spacer'></span>";
-				fab += "</div>";
-			//}
 			container.innerHTML += fab;
 			componentHandler.upgradeDom();
 			
@@ -2670,13 +2665,11 @@ var touchStartPoint, touchMovePoint;
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
-				if (Tawk_API && Tawk_API.setAttributes) {
+				if ( Tawk_API && Tawk_API.setAttributes ) {
 					Tawk_API.setAttributes({
 						'name' : localStorage.getItem('currentUserName')?localStorage.getItem('currentUserName'):null,
 						'email': localStorage.getItem('currentUserEmail')?localStorage.getItem('currentUserEmail'):null
 					}, function (error) {});
-				} else {
-					console.log("DEBUG", Tawk_API, "<->", Tawk_API.setAttributes);
 				}
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
