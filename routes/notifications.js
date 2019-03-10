@@ -102,7 +102,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
 								function(item){
-									item.reminderMail = parseInt(moment().format('x'));
+									item.reminderMail = parseInt(moment().format('x'), 10);
 								}
 						);
 						db.save();
@@ -188,7 +188,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 								users.findAndUpdate(
 									function(i){return i.id==user.id;},
 									function(item){
-										item.changePasswordMail = parseInt(moment().format('x'));
+										item.changePasswordMail = parseInt(moment().format('x'), 10);
 									}
 								);
 								db.save();

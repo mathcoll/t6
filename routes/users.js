@@ -293,7 +293,7 @@ router.post('/token/:token([0-9a-zA-Z\.]+)', function (req, res) {
 		//console.log(users);
 		if ( user ) {
 			user.password = bcrypt.hashSync(req.body.password, 10);
-			user.passwordLastUpdated = parseInt(moment().format('x'));
+			user.passwordLastUpdated = parseInt(moment().format('x'), 10);
 			user.token = null;
 			users.update(user);
 			db.save();
