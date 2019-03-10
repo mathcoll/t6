@@ -2322,6 +2322,15 @@ var touchStartPoint, touchMovePoint;
 			var to = (parseInt(app.itemsPage[type])+1)*parseInt(app.itemsSize[type]);
 			var page = parseInt(app.itemsPage[type])+1;
 			var max = 5; // hardcoded! # TODO
+			//if ( to < max ) {
+			fab += "<div class='mdl-grid mdl-cell mdl-cell--12-col spacer'>";
+			fab += "	<span class='mdl-layout-spacer'></span>";
+			fab += "		<button data-size='"+parseInt(app.itemsSize[type])+"' data-page='"+page+"' data-type='"+type+"' class='lazyloading mdl-cell--12-col mdl-button mdl-js-button mdl-js-ripple-effect'>";
+			fab += "			<i class='material-icons'>expand_more</i>";
+			fab += "		</button>";
+			fab += "	<span class='mdl-layout-spacer'></span>";
+			fab += "</div>";
+			//}
 			container.innerHTML += fab;
 			componentHandler.upgradeDom();
 			
