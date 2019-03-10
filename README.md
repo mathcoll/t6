@@ -23,7 +23,7 @@ Detailed Api documentation is available here: [api-General](https://api.internet
 #### Rules
 "Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months.
 To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
-#### Actions
+#### Actions
 _Actions_ are triggered when something is happening on the t6 platform.
 Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
 

@@ -75,7 +75,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
 					{'subscription_date': { '$lte': moment().subtract(7, 'days') }},
 					{'reminderMail': undefined},
 					{'token': null},
-					{ '$or': [{'unsubscription': undefined}, {'unsubscription.reminder': undefined}, {'unsubscription.reminder': null}] },
+					{ '$or': [{'unsubscription': undefined}, {'unsubscription.reminder': undefined}, {'unsubscription.reminder': null}] },
 				]};
 		var json = users.find( query );
 		
@@ -147,7 +147,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
 					{'$or': [{'passwordLastUpdated': { '$lte': moment().subtract(3, 'months') }}, {passwordLastUpdated: undefined}]},
 					{'changePasswordMail': { '$lte': moment().subtract(3, 'months') }},
 					{'token': null},
-					{ '$or': [{'unsubscription': undefined}, {'unsubscription.changePassword': undefined}, {'unsubscription.changePassword': null}] },
+					{ '$or': [{'unsubscription': undefined}, {'unsubscription.changePassword': undefined}, {'unsubscription.changePassword': null}] },
 	 			]};
 		var json = users.find( query );
 		if ( json.length > 0 ) {

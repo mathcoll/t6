@@ -222,7 +222,7 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				if ( isEdit || (object.attributes.longitude || object.attributes.latitude || object.attributes.position) ) {
+				if ( isEdit || (object.attributes.longitude || object.attributes.latitude || object.attributes.position) ) {
 					node += app.getSubtitle('Localization');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -434,7 +434,7 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
+				if ( object.attributes.longitude || object.attributes.latitude || object.attributes.position ) {
 					node += app.getSubtitle('Localization');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
