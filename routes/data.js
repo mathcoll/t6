@@ -71,7 +71,7 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 		sorting = req.query.sort=='asc'?true:false;
 		var page = parseInt(req.query.page, 10);
 		if (isNaN(page) || page < 1) {
-		  page = 1;
+			page = 1;
 		}
 
 		var limit = parseInt(req.query.limit, 10);
