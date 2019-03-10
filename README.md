@@ -16,11 +16,8 @@ Sample nodeMCU and Arduino scripts are available in the _sensors_ repositories.
 
 Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
 
-
-
-### t6 API first: Live, eat, and breathe the API-first lifestyle of t6.
+### t6 API first: Live, eat, and breathe the API-first lifestyle of t6
 Detailed Api documentation is available here: [api-General](https://api.internetcollaboratif.info/docs/).
-
 
 ### Mqtt rules to handle Actions
 #### Rules
@@ -29,7 +26,6 @@ To sum up, events are pushed as json payloads to mqtt topics. Then the engine is
 #### Actions
 _Actions_ are triggered when something is happening on the t6 platform.
 Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
-
 
 ## t6 Installation
 ```
@@ -47,8 +43,8 @@ rename "sensors-hostname.js" according to your server _hostname_.
 rename "db-hostname.json" according to your server _hostname_.
 ```
 :sparkles: On linux, to identify your hostname, you can run the following command:
-```
-hostname
+```console
+$ hostname
 ```
 
 Please have a look at the options in _settings-hostname.js_, there are some secrets to be customized.
@@ -61,19 +57,19 @@ CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATI
 ```
 
 You can add the server running as a service, tested with Ubuntu and Debian:
-* First: install the server in services:
-```
-sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
+  * First: install the server in services:
+```console
+$ sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
 ```
 
 And then, start _t6_ using:
-```
-sudo /etc/init.d/t6 (re)start|stop|status
+```console
+$ sudo /etc/init.d/t6 (re)start|stop|status
 ```
 
-* Then, set the server to run at start: 
-```
-sudo update-rc.d t6 defaults
+  * Then, set the server to run at start: 
+```console
+$ sudo update-rc.d t6 defaults
 ```
 
 ## t6 Troobleshooting after installation
@@ -81,11 +77,9 @@ Q: ```sudo /etc/init.d/t6 start``` does not return any output, what should I do?
 
 A: Try to set chmod +x to file /var/www/t6/bin/www
 
-
 Q: Do I need to install sqlite3?
 
 A: sqlite3 is not required and can be disabled in the settings. sqlite3 library to store data is not maintained and become obsolete.
-
 
 Q: I got an error trying to install sqlite3, what should I do?
 
