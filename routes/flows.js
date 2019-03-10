@@ -10,7 +10,7 @@ var datatypes;
 var units;
 
 function str2bool(v) {
-	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
+	return [true, "yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
 }
 
 /**
