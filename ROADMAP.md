@@ -19,4 +19,4 @@ Some snippets are available to see graphs, display a simple value (like temperat
 ### :heavy_check_mark: Milestone 1: API completion
 3 resources are fully manageable via Apis. Remaining 3 resources (rules, snippets and dashboards)
 
-### :heavy_check_mark: Milestone 0: API basics and simple UI to manage most of resources.
+### :heavy_check_mark: Milestone 0: API basics and simple UI to manage most of resources
