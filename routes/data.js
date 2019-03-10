@@ -660,11 +660,11 @@ router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}
 				//console.log("(f.data())[0].left", (f.data())[0].left);
 				prerequisite += 1;
 			}
-			console.log("flow", (f.data())[0].left);
-			console.log("isSigned", isSigned);
-			console.log("isEncrypted", isEncrypted);
-			console.log("prerequisite isSigned -", (f.data())[0].left.require_signed);
-			console.log("prerequisite isEncrypted -", (f.data())[0].left.require_encrypted);
+			console.log("Payload isSigned", isSigned);
+			console.log("Payload isEncrypted", isEncrypted);
+			console.log("Flow require isSigned -", (f.data())[0].left.require_signed);
+			console.log("Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
+			console.log("prerequisite=", prerequisite);
 
 			if ( prerequisite <= 0 ) {
 				// Cast value according to Flow settings
