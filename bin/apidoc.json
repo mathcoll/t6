@@ -1,39 +1,33 @@
 {
-  "name": "t6, IoT platform and API",
-  "version": "2.0.1",
-  "description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
-  "title": "t6, IoT platform and API",
-  "url" : "https://api.internetcollaboratif.info/v2.0.1",
-  "sampleUrl": "https://api.internetcollaboratif.info/v2.0.1",
-  "order": [
-            "General",
-            "User",
-            "Flow",
-            "Object"
-          ],
-  "header": {
-    "title": "t6, IoT platform and API",
-    "filename": "header.md"
-  },
-  "footer": {
-    "title": "t6, IoT platform and API",
-    "filename": "footer.md"
-  },
-  "template": {
-  	"withCompare": true,
-  	"withGenerator": true
-  },
-  "order": [
-    "User",
-	"0 Datapoint",
-	"1 Object",
-	"2 Flow",
-	"3 Dashboard",
-	"4 Snippet",
-	"5 Rule",
-	"6 Mqtt",
-	"7 Admin User",
-	"8 Notifications email",
-	"General"
-  ]
+	"name": "t6, IoT platform and API",
+	"version": "2.0.1",
+	"description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
+	"title": "t6, IoT platform and API",
+	"url": "https://api.internetcollaboratif.info/v2.0.1",
+	"sampleUrl": "https://api.internetcollaboratif.info/v2.0.1",
+	"header": {
+		"title": "t6, IoT platform and API",
+		"filename": "header.md"
+	},
+	"footer": {
+		"title": "t6, IoT platform and API",
+		"filename": "footer.md"
+	},
+	"template": {
+		"withCompare": true,
+		"withGenerator": true
+	},
+	"order": [
+		"User",
+		"0 Datapoint",
+		"1 Object",
+		"2 Flow",
+		"3 Dashboard",
+		"4 Snippet",
+		"5 Rule",
+		"6 Mqtt",
+		"7 Admin User",
+		"8 Notifications email",
+		"General"
+	]
 }
