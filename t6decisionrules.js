@@ -75,7 +75,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify({dtepoch:payload.dtepoch, value:payload.value, text:payload.text, message:payload.message, flow: payload.flow}), true);
 			} else {
 				t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify({dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow}), true);
-			};
+			}
 		} else if ( event.type == 'email' ) {
 			var envelope = {
 				from:		event.params.from?event.params.from:from,
@@ -84,10 +84,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				subject:	event.params.subject?stringformat(event.params.subject, payload):'',
 				text:		event.params.text?stringformat(event.params.text, payload):'Html email client is required',
 				html:		event.params.html?stringformat(event.params.html, payload):null
-			};
+			}
 			t6mailer.sendMail(envelope);
 		} else if ( event.type == 'sms' ) {
-			
+			// TODO
 		} else if ( event.type == 'httpWebhook' ) {
 			var options = {
 				url: event.params.url,
@@ -112,7 +112,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			)
 		} else if ( event.type == 'Ifttt' ) {
-			
+			// TODO
 		} else if ( event.type == 'serial' ) {
 			// Arduino is using CmdMessenger
 			serialport = new serialport(event.params.serialPort?event.params.serialPort:'/dev/ttyUSB0', { baudRate:event.params.baudRate?event.params.baudRate:9600 })
@@ -122,7 +122,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			// 'kSetFlow,{flow};'
 			serialport.write(event.params.serialMessage?stringformat(event.params.serialMessage, payload):stringformat("kSetLed,{payload.value};", payload));
 		} else if ( event.type == 'slackMessage' ) {
-			
+			// TODO
 		}
 	});
 	

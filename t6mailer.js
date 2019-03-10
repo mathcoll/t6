@@ -25,7 +25,7 @@ t6mailer.sendMail = (envelope) => new Promise((resolve, reject) => {
 		}).catch(function(err) {
 			reject({'status': 'error', 'info': err});
 		});
-	};
+	}
 });
 
 module.exports = t6mailer;
