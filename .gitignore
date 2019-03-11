@@ -21,7 +21,6 @@ data/certificates/*
 public/BingSiteAuth.xml
 public/google*.html
 **/settings.lua
-**/settings.h
 test/screenshots/*
 
 # Runtime data
