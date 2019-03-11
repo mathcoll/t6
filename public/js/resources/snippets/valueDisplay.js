@@ -69,7 +69,7 @@ var snippet = {
 					<i class="material-icons">widgets</i>
 					<span class="heading">${params.name}</span>
 					<span class="heading pull-right">
-						<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+						<button data-snippet-id="${params.id}" class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
 							<i class="material-icons">settings</i>
 						</button>
 					</span>

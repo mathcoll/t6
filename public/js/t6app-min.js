@@ -12,7 +12,7 @@ n.attributes.meta.revision&&(o+=app.getField(app.icons.update,"Revision",n.attri
 \t\t\t\t\t<i class="material-icons">widgets</i>
 \t\t\t\t\t<span class="heading">${t.name}</span>
 \t\t\t\t\t<span class="heading pull-right">
-\t\t\t\t\t\t<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+\t\t\t\t\t\t<button data-snippet-id="${t.id}" class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
 \t\t\t\t\t\t\t<i class="material-icons">settings</i>
 \t\t\t\t\t\t</button>
 \t\t\t\t\t</span>
@@ -81,7 +81,7 @@ n.attributes.meta.revision&&(o+=app.getField(app.icons.update,"Revision",n.attri
 \t\t\t\t\t</span>
 \t\t\t\t</span>
 \t\t\t\t<span class="heading pull-right">
-\t\t\t\t\t<button class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
+\t\t\t\t\t<button data-snippet-id="${t.id}" class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
 \t\t\t\t\t\t<i class="material-icons">settings</i>
 \t\t\t\t\t</button>
 \t\t\t\t</span>
