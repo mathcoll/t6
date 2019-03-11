@@ -266,16 +266,23 @@ var touchStartPoint, touchMovePoint;
 		} else if (response.status === 204) {
 			return response;
 		} else if (response.status === 400) {
-			toast('Bad Request.', {timeout:3000, type: 'error'});
-			throw new Error('Bad Request.');
+			toast("Bad Request.", {timeout:3000, type: "error"});
+			return response;
+			//throw new Error('Bad Request.');
 		} else if (response.status === 401 || response.status === 403) {
 			app.sessionExpired();
-			throw new Error(response.statusText);
+			return response;
+			//throw new Error(response.statusText);
+		} else if (response.status === 404) {
+			toast("There is an unknown resource that can't be loaded.", {timeout:3000, type: "error"});
+			return response;
+			//throw new Error(response.statusText);
 		} else if (response.status === 409) {
-			toast('Revision is conflictual.', {timeout:3000, type: 'error'});
-			throw new Error('Revision is conflictual.');
+			toast("Revision is conflictual.", {timeout:3000, type: "error"});
+			return response;
+			//throw new Error('Revision is conflictual.');
 		} else if (response.status === 429) {
-			toast('Oups, over quota.', {timeout:3000, type: 'error'});
+			toast("Oups, over quota.", {timeout:3000, type: "error"});
 			return response;
 		} else {
 			throw new Error(response.statusText);
@@ -1194,7 +1201,7 @@ var touchStartPoint, touchMovePoint;
 							toast('Object has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Object has not been deleted.', {timeout:3000, type: 'error'});
+							toast('Object has not been deleted.', {timeout:3000, type: "error"});
 						});
 						evt.preventDefault();
 					});
@@ -1241,7 +1248,7 @@ var touchStartPoint, touchMovePoint;
 							toast('Flow has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Flow has not been deleted.', {timeout:3000, type: 'error'});
+							toast('Flow has not been deleted.', {timeout:3000, type: "error"});
 						});
 						evt.preventDefault();
 					});
@@ -1287,7 +1294,7 @@ var touchStartPoint, touchMovePoint;
 							toast('Dashboard has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Dashboard has not been deleted.', {timeout:3000, type: 'error'});
+							toast('Dashboard has not been deleted.', {timeout:3000, type: "error"});
 						});
 						evt.preventDefault();
 					});
@@ -1333,7 +1340,7 @@ var touchStartPoint, touchMovePoint;
 							toast('Snippet has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Snippet has not been deleted.', {timeout:3000, type: 'error'});
+							toast('Snippet has not been deleted.', {timeout:3000, type: "error"});
 						});
 						evt.preventDefault();
 					});
@@ -1378,7 +1385,7 @@ var touchStartPoint, touchMovePoint;
 							toast('Rule has been deleted.', {timeout:3000, type: 'done'});
 						})
 						.catch(function (error) {
-							toast('Rule has not been deleted.', {timeout:3000, type: 'error'});
+							toast('Rule has not been deleted.', {timeout:3000, type: "error"});
 						});
 						evt.preventDefault();
 					});
@@ -1797,7 +1804,7 @@ var touchStartPoint, touchMovePoint;
 			} else {
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
 					console.log('DEBUG Error no Type defined: '+type);
-					toast('Error no Type defined.', {timeout:3000, type: 'error'});
+					toast('Error no Type defined.', {timeout:3000, type: "error"});
 				}
 				type=undefined;
 			}
@@ -1845,7 +1852,7 @@ var touchStartPoint, touchMovePoint;
 					})
 					.catch(function (error) {
 						if ( localStorage.getItem('settings.debug') == 'true' ) {
-							toast('fetchItemsPaginated '+type+' error occured...'+ error, {timeout:3000, type: 'error'});
+							toast('fetchItemsPaginated '+type+' error occured...'+ error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
@@ -1921,7 +1928,7 @@ var touchStartPoint, touchMovePoint;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('getUsersList error out...' + error, {timeout:3000, type: 'error'});
+				toast('getUsersList error out...' + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -2033,7 +2040,7 @@ var touchStartPoint, touchMovePoint;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('fetchProfile error out...' + error, {timeout:3000, type: 'error'});
+				toast('fetchProfile error out...' + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -2058,7 +2065,7 @@ var touchStartPoint, touchMovePoint;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('fetchUnsubscriptions error' + error, {timeout:3000, type: 'error'});
+				toast('fetchUnsubscriptions error' + error, {timeout:3000, type: "error"});
 			}
 		});
 	};
@@ -2105,12 +2112,12 @@ var touchStartPoint, touchMovePoint;
 					})
 					.catch(function (error) {
 						if ( localStorage.getItem('settings.debug') == 'true' ) {
-							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('Error occured on saving Notifications...', {timeout:3000, type: 'error'});
+						toast('Error occured on saving Notifications...', {timeout:3000, type: "error"});
 					}
 				}
 			});
@@ -2142,12 +2149,12 @@ var touchStartPoint, touchMovePoint;
 					})
 					.catch(function (error) {
 						if ( localStorage.getItem('settings.debug') == 'true' ) {
-							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('Error occured on saving Notifications...', {timeout:3000, type: 'error'});
+						toast('Error occured on saving Notifications...', {timeout:3000, type: "error"});
 					}
 				}
 			});
@@ -2262,7 +2269,7 @@ var touchStartPoint, touchMovePoint;
 				container.innerHTML = app.getCard( {image: app.baseUrlCdn+'/img/opl_img2.jpg', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)'} );
 				app.displayLoginForm(container);
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					toast('fetchIndex error out...' + error, {timeout:3000, type: 'error'});
+					toast('fetchIndex error out...' + error, {timeout:3000, type: "error"});
 				}
 			});
 		} else {
@@ -2531,46 +2538,45 @@ var touchStartPoint, touchMovePoint;
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			var my_snippet = response.data[0];
-			var s = app.snippetTypes.find(function(snippet) {
-				return (snippet.name).toLowerCase()===(my_snippet.attributes.type).toLowerCase();
-			});
-			var snippet = s.getHtml({name: my_snippet.attributes.name, id: my_snippet.id, icon: my_snippet.attributes.icon});
-
-			var c= document.createElement("div");
-			c.setAttribute('class','mdl-grid mdl-cell');
-			c.innerHTML = snippet;
-			myContainer.appendChild(c);
-			componentHandler.upgradeDom();
-
-			my_snippet.flowNames=[];
-			my_snippet.attributes.flows.map(function(f) {
-				if ( localStorage.getItem('flows') != 'null' && JSON.parse(localStorage.getItem('flows')) ) {
-					var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == f; });
-					if ( theFlow ) {
-						my_snippet.flowNames.push(theFlow.name);
+			if ( response.data[0] ) {
+				var my_snippet = response.data[0];
+				var s = app.snippetTypes.find(function(snippet) {
+					return (snippet.name).toLowerCase()===(my_snippet.attributes.type).toLowerCase();
+				});
+				var snippet = s.getHtml({name: my_snippet.attributes.name, id: my_snippet.id, icon: my_snippet.attributes.icon});
+				
+				var c= document.createElement("div");
+				c.setAttribute('class','mdl-grid mdl-cell');
+				c.innerHTML = snippet;
+				myContainer.appendChild(c);
+				componentHandler.upgradeDom();
+				
+				my_snippet.flowNames=[];
+				my_snippet.attributes.flows.map(function(f) {
+					if ( localStorage.getItem('flows') != 'null' && JSON.parse(localStorage.getItem('flows')) ) {
+						var theFlow = (JSON.parse(localStorage.getItem('flows'))).find(function(storedF) { return storedF.id == f; });
+						if ( theFlow ) {
+							my_snippet.flowNames.push(theFlow.name);
+						}
+					}
+				});
+				s.activateOnce(my_snippet);
+				
+				// Set the buttons on edit Snippets
+				var editSnippetButtons = document.querySelectorAll('.edit-snippet');
+				for (var b in editSnippetButtons) {
+					if ( (editSnippetButtons[b]).childElementCount > -1 ) {
+						(editSnippetButtons[b]).addEventListener('click', function(evt) {
+							app.resources.snippets.display(evt.target.getAttribute('data-snippet-id'), false, true, false);
+							evt.preventDefault();
+						});
 					}
 				}
-			});
-			s.activateOnce(my_snippet);
-
-			// Set the buttons on edit Snippets
-			var editSnippetButtons = document.querySelectorAll('.edit-snippet');
-			for (var b in editSnippetButtons) {
-				if ( (editSnippetButtons[b]).childElementCount > -1 ) {
-					(editSnippetButtons[b]).addEventListener('click', function(evt) {
-						app.resources.snippets.display(evt.target.getAttribute('data-snippet-id'), false, true, false);
-						evt.preventDefault();
-					});
-				}
 			}
-
-			// console.log(myContainer);
-			// return snippet;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('getSnippet error out...' + error, {timeout:3000, type: 'error'});
+				toast('getSnippet error out...' + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -2619,7 +2625,7 @@ var touchStartPoint, touchMovePoint;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('fetch Qrcode error out...' + error, {timeout:3000, type: 'error'});
+				toast('fetch Qrcode error out...' + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -2689,7 +2695,7 @@ var touchStartPoint, touchMovePoint;
 				app.getSnippets();
 			} else {
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					toast('Auth internal error', {timeout:3000, type: 'error'});
+					toast('Auth internal error', {timeout:3000, type: "error"});
 				}
 				app.resetDrawer();
 			}
@@ -2729,7 +2735,7 @@ var touchStartPoint, touchMovePoint;
 				app.setVisibleElement("logout_button");
 			} else {
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					toast('Auth internal error', {timeout:3000, type: 'error'});
+					toast('Auth internal error', {timeout:3000, type: "error"});
 				}
 				app.resetDrawer();
 			}
@@ -2987,7 +2993,7 @@ var touchStartPoint, touchMovePoint;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('Can\'t display Status...' + error, {timeout:3000, type: 'error'});
+				toast('Can\'t display Status...' + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3030,7 +3036,7 @@ var touchStartPoint, touchMovePoint;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('Can\'t display Terms...' + error, {timeout:3000, type: 'error'});
+				toast('Can\'t display Terms...' + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3072,7 +3078,7 @@ var touchStartPoint, touchMovePoint;
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
 		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
 		app.itemsPage = {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1};
-		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: 'error'});
+		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: "error"});
 		app.isLogged = false;
 		app.resetDrawer();
 		
@@ -3229,31 +3235,31 @@ var touchStartPoint, touchMovePoint;
 		switch (error.code) {
 			case error.TIMEOUT:
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					toast("Browser geolocation error !\n\nTimeout.", {timeout:3000, type: 'error'});
+					toast("Browser geolocation error !\n\nTimeout.", {timeout:3000, type: "error"});
 				}
 				break;
 			case error.POSITION_UNAVAILABLE:
 				// dirty hack for safari
 				if(error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) {
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast("Origin does not have permission to use Geolocation service - no fallback.", {timeout:3000, type: 'error'});
+						toast("Origin does not have permission to use Geolocation service - no fallback.", {timeout:3000, type: "error"});
 					}
 				} else {
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast("Browser geolocation error !\n\nPosition unavailable.", {timeout:3000, type: 'error'});
+						toast("Browser geolocation error !\n\nPosition unavailable.", {timeout:3000, type: "error"});
 					}
 				}
 				break;
 			case error.PERMISSION_DENIED:
 				if(error.message.indexOf("Only secure origins are allowed") == 0) {
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast("Only secure origins are allowed - no fallback.", {timeout:3000, type: 'error'});
+						toast("Only secure origins are allowed - no fallback.", {timeout:3000, type: "error"});
 					}
 				}
 				break;
 			case error.UNKNOWN_ERROR:
 				if ( localStorage.getItem('settings.debug') == 'true' ) {
-					toast("Can't find your position - no fallback.", {timeout:3000, type: 'error'});
+					toast("Can't find your position - no fallback.", {timeout:3000, type: "error"});
 				}
 				break;
 		}
@@ -3384,12 +3390,12 @@ var touchStartPoint, touchMovePoint;
 					})
 					.catch(function (error) {
 						if ( localStorage.getItem('settings.debug') == 'true' ) {
-							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('Error occured on saving Notifications...' + error, {timeout:3000, type: 'error'});
+						toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 					}
 				}
 			}, false);

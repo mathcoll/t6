@@ -219,7 +219,9 @@ app.resources.dashboards = {
 							var n=0;
 							if ( localStorage.getItem('snippets') != 'null' ) {
 								var theSnippet = (JSON.parse(localStorage.getItem('snippets'))).find(function(storedS) { storedS.index = n++; return storedS.id == s; });
-								app.addChipSnippetTo('snippetsChips', {name: theSnippet.name, id: theSnippet.index, sType: theSnippet.sType, type: 'snippets'});
+								if ( theSnippet ) {
+									app.addChipSnippetTo('snippetsChips', {name: theSnippet.name, id: theSnippet.index, sType: theSnippet.sType, type: 'snippets'});
+								}
 							}
 						});
 					}
