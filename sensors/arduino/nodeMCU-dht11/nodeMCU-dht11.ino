@@ -1,12 +1,13 @@
-
+#include <ArduinoJWT.h>
+#include <sha256.h>
 #include <ESP8266WiFi.h>
-#include <ArduinoJson.h>
+#include <ArduinoJson.h> /* ArduinoJson 5.13.14 tested fine */
 #include "settings.h"
 #include "DHT.h"
 
 DHT dht(DHTPIN, DHTTYPE);
 
-const size_t MAX_CONTENT_SIZE = 512; 
+const size_t MAX_CONTENT_SIZE = 512;
 String privateKey;
 bool authorized = false;
 int processes = 0;
@@ -20,11 +21,13 @@ struct sAverage sampleAve;
 int16_t sensorTValue = 0;
 int16_t sensorHValue = 0;
 
-
 /*******************************************************
- postRequest
+  postRequest
  *******************************************************/
 void postRequest(WiFiClient* client, String url, JsonObject& jsonRoot, bool needKey) {
+  String dataStr;
+  jsonRoot.printTo(dataStr);
+  
   client->print("POST ");
   client->print(url);
   client->println(" HTTP/1.1");
@@ -38,10 +41,6 @@ void postRequest(WiFiClient* client, String url, JsonObject& jsonRoot, bool need
   client->println("Accept: application/json");
   client->println("Content-Type: application/json");
   client->print("Content-Length: ");
-
-  String dataStr;
-  jsonRoot.printTo(dataStr);
-
   client->println(dataStr.length());
   client->println("Connection: close");
   client->println();
@@ -52,7 +51,7 @@ void postRequest(WiFiClient* client, String url, JsonObject& jsonRoot, bool need
 }
 
 /*******************************************************
- getJWToken
+  getJWToken
  *******************************************************/
 void getJWToken() {
   StaticJsonBuffer<400> jsonBuffer; //used to store server response
@@ -97,7 +96,7 @@ void getJWToken() {
   //read http header lines
   while (client.available()) {
     String line = client.readStringUntil('\n');
-    Serial.println(line);
+    //Serial.println(line); // output the response from server
     if (line.length() == 1) { //empty line means end of headers
       break;
     }
@@ -121,19 +120,14 @@ void getJWToken() {
     const char* tokArray = jwt["token"];
     String token(tokArray); //convert to String
     privateKey = token;
-    //Serial.println("THIS IS MY BEARER:");
-    //Serial.println(lineChars);
-    //Serial.println(token);
-    //Serial.println(privateKey);
-    //Serial.println("END BEARER:");
-    Serial.println("----------JWT Updated----------");
-   
+    Serial.println("----------JWT token is Updated----------");
+
     authorized = true; //login process complete
   }
 }
 
 /*******************************************************
- addSampleToAverage
+  addSampleToAverage
  *******************************************************/
 int16_t addSampleToAverage(struct sAverage *ave, int16_t newSample) {
   ave->blockSum += newSample;
@@ -141,7 +135,7 @@ int16_t addSampleToAverage(struct sAverage *ave, int16_t newSample) {
 }
 
 /*******************************************************
- readSample
+  readSample
  *******************************************************/
 void readSample() {
   float t;
@@ -149,23 +143,18 @@ void readSample() {
   float h;
   float hi;
   do {
-    // Read Humidity
-    h = dht.readHumidity();
-    // Read temperature in Celcius
-    t = dht.readTemperature();
-    // Read temperature in Fahrenheit
-    f = dht.readTemperature(true);
+    h = dht.readHumidity(); // Read Humidity
+    t = dht.readTemperature(); // Read temperature in Celcius
+    f = dht.readTemperature(true); // Read temperature in Fahrenheit
     hi = dht.computeHeatIndex(f, h);
-    Serial.print("Current t=");
-    Serial.println(t);
   } while (isnan(t));
 
   Serial.println();
   Serial.println("------------------------------");
-  Serial.print("\tHumidite: "); 
+  Serial.print("\tHumidite: ");
   Serial.print(h);
   Serial.println(" %\t");
-  Serial.print("\tTemperature: "); 
+  Serial.print("\tTemperature: ");
   Serial.print(t);
   Serial.println(" *C");
   Serial.print("\tTemperature ressentie: ");
@@ -173,11 +162,11 @@ void readSample() {
   Serial.println(" *C");
   Serial.println("------------------------------");
   Serial.println();
-  
+
   sensorTValue = t;
   sensorHValue = h;
   addSampleToAverage(&sampleAve, sensorTValue);
-  
+
   delay(3000);
 }
 
@@ -186,13 +175,12 @@ void readSample() {
  *******************************************************/
 int16_t getAverage(struct sAverage *ave) {
   int16_t average = ave->blockSum / ave->numSamples;
-  // get ready for the next block
   ave->blockSum = 0; ave->numSamples = 0;
   return average;
 }
 
 /*******************************************************
- wifi
+  wifi
  *******************************************************/
 void wifi() {
   Serial.println();
@@ -204,7 +192,6 @@ void wifi() {
     delay(500);
     Serial.print(".");
   }
-
   Serial.println();
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
@@ -213,7 +200,7 @@ void wifi() {
 }
 
 /*******************************************************
- setup
+  setup
  *******************************************************/
 void setup() {
   Serial.begin(115200);
@@ -222,42 +209,44 @@ void setup() {
 }
 
 /*******************************************************
- pleaseGoToBed
+  pleaseGoToBed
  *******************************************************/
 void pleaseGoToBed() {
-    Serial.println();
-    Serial.println();
-    Serial.println("Sleeping in few seconds...");
-    delay(500);
-    ESP.deepSleep(SLEEP_DELAY_IN_SECONDS * 1000000, WAKE_RF_DEFAULT);
+  Serial.println();
+  Serial.println();
+  Serial.println("Sleeping in few seconds...");
+  delay(500);
+  ESP.deepSleep(SLEEP_DELAY_IN_SECONDS * 1000000, WAKE_RF_DEFAULT);
 }
 
 /*******************************************************
- loop
+  getSignedPayload
+ *******************************************************/
+String getSignedPayload(String payload) {
+  ArduinoJWT jwt = ArduinoJWT(secret);
+  return jwt.encodeJWT(payload);
+}
+
+/*******************************************************
+  loop
  *******************************************************/
 void loop() {
   readSample();
-  
   wifi();
-  
-  if(WiFi.status()== WL_CONNECTED) {
+
+  if (WiFi.status() == WL_CONNECTED) {
     getJWToken(); //get authorization key
-    if ( !privateKey || authorized == false ) {
-      //getJWToken();
-    }
-    
-    const int BUFFER_SIZE = JSON_OBJECT_SIZE(6);
+    const int BUFFER_SIZE = JSON_OBJECT_SIZE(25);
     StaticJsonBuffer<BUFFER_SIZE> jsonBufferT;
+    StaticJsonBuffer<BUFFER_SIZE> jsonBufferTSigned;
     StaticJsonBuffer<BUFFER_SIZE> jsonBufferH;
-   
+    StaticJsonBuffer<BUFFER_SIZE> jsonBufferHSigned;
+
     // ------------------------------------------------------------ TEMPERATURE
     if ( sensorTValue > -1 && authorized == true ) {
       Serial.println("----------Sending data for Temperature----------");
       WiFiClient clientT;
-      if (!clientT.connect(host, httpPort)) {
-        Serial.println("connection failed");
-        return;
-      }
+      
       JsonObject& dataRootT = jsonBufferT.createObject();
       dataRootT["value"] = sensorTValue;
       dataRootT["flow_id"] = T_flow_id;
@@ -265,30 +254,43 @@ void loop() {
       dataRootT["unit"] = T_unit;
       dataRootT["save"] = T_save;
       dataRootT["publish"] = T_publish;
+      
+      Serial.print("POST ");
+      Serial.print(host);
+      Serial.print(" ");
       Serial.println(urlDataPoint);
       dataRootT.prettyPrintTo(Serial);
       Serial.println();
-      //Serial.print("\tUsing Bearer ");
-      //Serial.println(privateKey);
-      postRequest(&clientT, urlDataPoint, dataRootT, true);
+      Serial.println();
+
+      JsonObject& dataRootTSigned = jsonBufferTSigned.createObject();
+      String jsonStr;
+      String signedJson;
+      dataRootT.printTo(jsonStr);
       
-      if (authorized == false) {
-        //getJWToken();
+      signedJson = getSignedPayload( jsonStr );
+      dataRootTSigned["signedPayload"] = signedJson;
+      dataRootTSigned["object_id"] = object_id;
+      dataRootTSigned.prettyPrintTo(Serial);
+      Serial.println();
+      
+      String jsonStrSigned;
+      dataRootTSigned.printTo(jsonStrSigned);
+      
+      if ( !clientT.connect(host, httpPort) ) {
+        Serial.println("connection failed");
+        return;
       } else {
-        Serial.println("-------------------------");
+        postRequest(&clientT, urlDataPoint, dataRootTSigned, true);
       }
     }
     // ------------------------------------------------------------ END TEMPERATURE
 
-    
     // ------------------------------------------------------------ HUMIDITY
     if ( sensorHValue > -1 && authorized == true ) {
       Serial.println("----------Sending data for Humidity----------");
       WiFiClient clientH;
-      if (!clientH.connect(host, httpPort)) {
-        Serial.println("connection failed");
-        return;
-      }
+      
       JsonObject& dataRootH = jsonBufferH.createObject();
       dataRootH["value"] = sensorHValue;
       dataRootH["flow_id"] = H_flow_id;
@@ -296,22 +298,38 @@ void loop() {
       dataRootH["unit"] = H_unit;
       dataRootH["save"] = H_save;
       dataRootH["publish"] = H_publish;
+      
+      Serial.print("POST ");
+      Serial.print(host);
+      Serial.print(" ");
       Serial.println(urlDataPoint);
       dataRootH.prettyPrintTo(Serial);
       Serial.println();
-      //Serial.print("Using Bearer ");
-      //Serial.println(privateKey);
-      postRequest(&clientH, urlDataPoint, dataRootH, true);
+
+      JsonObject& dataRootHSigned = jsonBufferHSigned.createObject();
+      String jsonStr;
+      String signedJson;
+      dataRootH.printTo(jsonStr);
       
-      if (authorized == false) {
-        //getJWToken();
+      signedJson = getSignedPayload( jsonStr );
+      dataRootHSigned["signedPayload"] = signedJson;
+      dataRootHSigned["object_id"] = object_id;
+      dataRootHSigned.prettyPrintTo(Serial);
+      Serial.println();
+      Serial.println();
+      
+      String jsonStrSigned;
+      dataRootHSigned.printTo(jsonStrSigned);
+      
+      if ( !clientH.connect(host, httpPort) ) {
+        Serial.println("connection failed");
+        return;
       } else {
-        Serial.println("-------------------------");
+        postRequest(&clientH, urlDataPoint, dataRootHSigned, true);
       }
     }
     // ------------------------------------------------------------ END HUMIDITY
   }
-
-  delay(6000); // to get the answer
+  delay(5000); // to get the answer
   pleaseGoToBed();
 }
