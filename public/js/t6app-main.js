@@ -2674,11 +2674,13 @@ var touchStartPoint, touchMovePoint;
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
-				if ( Tawk_API && Tawk_API.setAttributes ) {
+				if ( Tawk_API && typeof Tawk_API.setAttributes == 'function' ) {
 					Tawk_API.setAttributes({
 						'name' : localStorage.getItem('currentUserName')?localStorage.getItem('currentUserName'):null,
 						'email': localStorage.getItem('currentUserEmail')?localStorage.getItem('currentUserEmail'):null
-					}, function (error) {});
+					}, function (error) {
+						console.log("DEBUG", error);
+					});
 				}
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();

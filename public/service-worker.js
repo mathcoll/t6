@@ -1,5 +1,5 @@
 
-var dataCacheName= 't6-cache-2019-02-26';
+var dataCacheName= 't6-cache-2019-03-11';
 var cacheName= dataCacheName;
 var cacheWhitelist = ['internetcollaboratif.info', 'css', 'img', 'js', 'secure.gravatar.com', 'fonts.g', 'cdn.jsdelivr.net', 'static-v.tawk.to'];
 var cacheBlacklist = ['v2', 'authenticate', 'users/me/token', '/mail/', 'hotjar', 'analytics', 'gtm', 'collect', 'tawk'];
@@ -9,7 +9,7 @@ var filesToCache = [
 	'/networkError',
 	'/manifest.json',
 	'/css/t6app.min.css',
-	'/js/t6app.min.js',
+	'/js/t6app-min.js',
 	'/js/vendor.min.js',
 	'/img/opl_img3.jpg',
 	'/img/opl_img2.jpg',
@@ -20,9 +20,9 @@ var filesToCache = [
 	'/img/m/icons/icon-128x128.png',
 	
 	'https://cdn.internetcollaboratif.info/css/t6app.min.css',
-	'https://cdn.internetcollaboratif.info/js/t6app.min.js',
+	'https://cdn.internetcollaboratif.info/js/t6app-min.js',
 	'https://cdn.internetcollaboratif.info/js/vendor.min.js',
-	'https://cdn.internetcollaboratif.info/js/Chart/Chart-min-2.7.3.js',
+	'https://cdn.internetcollaboratif.info/js/vendor/Chart/Chart-min-2.7.3.js',
 	'https://cdn.internetcollaboratif.info/img/opl_img3.jpg',
 	'https://cdn.internetcollaboratif.info/img/opl_img2.jpg',
 	'https://cdn.internetcollaboratif.info/img/opl_img.jpg',
