@@ -89,14 +89,17 @@ var snippet = {
 						}
 					}]
 				},
+				maintainAspectRatio: false,
+				responsive: true,
 				animation: { duration: 0, },
 			};
+			var c = document.getElementById("chart-"+params.id);
+			c.height = 250;
 			var myChart = new Chart(ctx, {
 				type: type,
 				data: data,
 				options: options
 			});
-			
 			var id = response.data[0].attributes.id;
 			var time = response.data[0].attributes.time;
 			var value = response.data[0].attributes.value;
