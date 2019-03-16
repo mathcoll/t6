@@ -1,11 +1,11 @@
 'use strict';
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var UserSerializer = require('../serializers/user');
-var PermissionSerializer = require('../serializers/permission');
-var ErrorSerializer = require('../serializers/error');
-var AccessTokenSerializer = require('../serializers/accessToken');
-var refreshTokenSerializer = require('../serializers/refreshToken');
+var UserSerializer = require("../serializers/user");
+var PermissionSerializer = require("../serializers/permission");
+var ErrorSerializer = require("../serializers/error");
+var AccessTokenSerializer = require("../serializers/accessToken");
+var refreshTokenSerializer = require("../serializers/refreshToken");
 var users;
 var tokens;
 

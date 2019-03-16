@@ -1,8 +1,8 @@
 'use strict';
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var MqttSerializer = require('../serializers/mqtt');
-var ErrorSerializer = require('../serializers/error');
+var MqttSerializer = require("../serializers/mqtt");
+var ErrorSerializer = require("../serializers/error");
 
 /**
  * @api {get} /mqtts/:mqtt_id Get Mqtt(s)

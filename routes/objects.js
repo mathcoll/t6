@@ -1,8 +1,8 @@
 'use strict';
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var ObjectSerializer = require('../serializers/object');
-var ErrorSerializer = require('../serializers/error');
+var ObjectSerializer = require("../serializers/object");
+var ErrorSerializer = require("../serializers/error");
 var objects;
 var users;
 var tokens;

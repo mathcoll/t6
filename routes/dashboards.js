@@ -1,9 +1,9 @@
 'use strict';
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var DashboardSerializer = require('../serializers/dashboard');
-var SnippetSerializer = require('../serializers/snippet');
-var ErrorSerializer = require('../serializers/error');
+var DashboardSerializer = require("../serializers/dashboard");
+var SnippetSerializer = require("../serializers/snippet");
+var ErrorSerializer = require("../serializers/error");
 var dashboards;
 var users;
 var snippets;
