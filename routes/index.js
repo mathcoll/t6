@@ -169,7 +169,7 @@ var users;
  */
 
 //catch API calls for quotas
-router.all('*', function (req, res, next) {
+router.all("*", function (req, res, next) {
 	users	= db.getCollection('users');
 
 	var o = {
@@ -307,7 +307,7 @@ function checkForTooManyFailure(req, res, email) {
  * @apiUse 403
  * @apiUse 500
  */
-router.post('/authenticate', function (req, res) {
+router.post("/authenticate", function (req, res) {
 	tokens	= dbTokens.getCollection('tokens');
 	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === 'password') ) {
 		var email = req.body.username;
@@ -531,7 +531,7 @@ router.post('/authenticate', function (req, res) {
  * @apiUse 200
  * @apiUse 403
  */
-router.post('/refresh', function (req, res) {
+router.post("/refresh", function (req, res) {
 	// get the refreshToken from body
 	var refreshToken = req.body.refreshToken;
 	// Find that refreshToken in Db
@@ -581,7 +581,7 @@ router.post('/refresh', function (req, res) {
  * 
  * @apiUse 200
  */
-router.get('/status', function(req, res, next) {
+router.get("/status", function(req, res, next) {
 	var status = {
 		version: version,
 		status: 'running',
@@ -601,7 +601,7 @@ router.get('/status', function(req, res, next) {
  * 
  * @apiUse 200
  */
-router.get('/index', function(req, res, next) {
+router.get("/index", function(req, res, next) {
 	res.set('Content-Type', 'application/json; charset=utf-8');
 	res.status(200).render('index-json');
 });
@@ -615,7 +615,7 @@ router.get('/index', function(req, res, next) {
  * 
  * @apiUse 200
  */
-router.get('/terms', function(req, res, next) {
+router.get("/terms", function(req, res, next) {
 	res.set('Content-Type', 'application/json; charset=utf-8');
 	res.status(200).render('terms-json');
 });

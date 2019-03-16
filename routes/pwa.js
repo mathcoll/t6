@@ -5,21 +5,21 @@ var DataSerializer = require("../serializers/data");
 var ErrorSerializer = require("../serializers/error");
 var users;
 
-router.get('/', function(req, res) {
+router.get("/", function(req, res) {
 	res.render('index', {
 		currentUrl: req.path,
 		user: req.session.user
 	});
 });
 
-router.get('/applicationStart', function(req, res) {
+router.get("/applicationStart", function(req, res) {
 	res.render('applicationStart', {
 		currentUrl: req.path,
 		user: req.session.user
 	});
 });
 
-router.get('/networkError', function(req, res) {
+router.get("/networkError", function(req, res) {
 	res.render('networkError', {
 		currentUrl: req.path,
 		user: req.session.user

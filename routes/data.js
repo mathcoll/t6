@@ -9,13 +9,13 @@ var flows;
 var objects;
 var datatypes;
 var units;
-const algorithm = 'aes-256-cbc';
+const algorithm = "aes-256-cbc";
 
 function str2bool(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
 }
 
-router.get('/1234/test/mqtt', function (req, res) {
+router.get("/1234/test/mqtt", function (req, res) {
 	decisionrules.actionTest('FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8', {'dtepoch': 1499103302768, 'value': "superValue", 'text': null, 'flow': 'FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c'}, true, 'testTopic');
 	res.status(200).send({message: "OK"});
 });
@@ -51,7 +51,7 @@ router.get('/1234/test/mqtt', function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
 	var output = req.query.output!==undefined?req.query.output:'json';
 	
@@ -76,11 +76,11 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 
 		var limit = parseInt(req.query.limit, 10);
 		if (isNaN(limit)) {
-		  limit = 10;
+			limit = 10;
 		} else if (limit > 5000) {
-		  limit = 5000;
+			limit = 5000;
 		} else if (limit < 1) {
-		  limit = 1;
+			limit = 1;
 		}
 
 		flows = db.getCollection('flows');
@@ -319,17 +319,17 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
 								    ;
 							
 							svg.selectAll("bar")
-						    	.data(data)
-							    .enter().append("text")
-							    	.attr("class", "text")
-								    .text(function(d, i) { return (d.value); })
-								    .attr("x", function(d, i) { return ((i * (width / data.length))+(x.rangeBand()/2)); })
-								    .attr("y", function(d, i) { return y(d.value)-margin.top+30; })
-								    .attr("dx", "0em")
-								    .attr("dy", "0em")
-								    .attr("fill", "white")
-								    .style("text-anchor", "middle")
-								    ;
+								.data(data)
+								.enter().append("text")
+									.attr("class", "text")
+									.text(function(d, i) { return (d.value); })
+									.attr("x", function(d, i) { return ((i * (width / data.length))+(x.rangeBand()/2)); })
+									.attr("y", function(d, i) { return y(d.value)-margin.top+30; })
+									.attr("dx", "0em")
+									.attr("dy", "0em")
+									.attr("fill", "white")
+									.style("text-anchor", "middle")
+									;
 									
 							res.setHeader('Content-Type', 'image/svg+xml');
 							res.status(200).send( d3n.svgString() );
@@ -369,7 +369,7 @@ router.get('/:flow_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), f
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
 	var output = req.query.output!==undefined?req.query.output:'json';
@@ -521,10 +521,10 @@ router.get('/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)', expressJwt({secret: j
 function decryptPayload(encryptedPayload, sender) {
 	if ( sender && sender.secret_key_crypt ) {
 		let iv = crypto.randomBytes(16);
-		let decipher = crypto.createDecipheriv(algorithm, Buffer.from(sender.secret_key_crypt, 'utf8'), iv);
+		let decipher = crypto.createDecipheriv(algorithm, Buffer.from(sender.secret_key_crypt, "utf8"), iv);
 		//let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
 		decipher.setAutoPadding(false);
-		let decryptedPayload = decipher.update(encryptedPayload, 'base64', 'utf8') + decipher.final('utf8');
+		let decryptedPayload = decipher.update(encryptedPayload, "base64", "utf8") + decipher.final("utf8");
 		console.log("decryptedPayload", decryptedPayload);
 		return decryptedPayload!==""?decryptedPayload:false;
 	} else {
@@ -565,7 +565,7 @@ function decryptPayload(encryptedPayload, sender) {
  * @apiUse 429
  * @apiUse 500
  */
-router.post('/(:flow_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res, next) {
+router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res, next) {
 	let payload = req.body;
 	let error;
 	let isEncrypted = false;

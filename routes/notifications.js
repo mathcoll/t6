@@ -21,7 +21,7 @@ var tokens;
  * @apiUse 200
  * @apiUse 403
  */
-router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(req, res) {
+router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret}), function(req, res) {
 	var mail = req.params.mail;
 	if ( req.user.role === 'admin' ) {
 		res.render('emails/'+mail, {
@@ -43,7 +43,7 @@ router.get('/debug/:mail', expressJwt({secret: jwtsettings.secret}), function(re
  * @apiUse 200
  * @apiUse 403
  */
-router.get('/list/unsubscribed', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var user_id = req.user.id;
 	if ( req.user && user_id ) {
 		users	= db.getCollection('users');
@@ -67,7 +67,7 @@ router.get('/list/unsubscribed', expressJwt({secret: jwtsettings.secret}), funct
  * @apiUse 403
  * @apiUse 404
  */
-router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role === 'admin' ) {
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
@@ -139,7 +139,7 @@ router.get('/mail/reminder', expressJwt({secret: jwtsettings.secret}), function 
  * @apiUse 403
  * @apiUse 404
  */
-router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role === 'admin' ) {
 		users	= db.getCollection('users');
 		//var query = {'token': { '$eq': null }};
@@ -221,7 +221,7 @@ router.get('/mail/changePassword', expressJwt({secret: jwtsettings.secret}), fun
  * @apiUse 403
  * @apiUse 404
  */
-router.post('/resetAllUsersTokens', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role === 'admin' ) {
 		users	= db.getCollection('users');
 		users.chain().find().update(function(user) {

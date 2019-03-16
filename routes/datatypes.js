@@ -20,7 +20,7 @@ var tokens;
  * @apiUse 405
  * @apiUse 500
  */
-router.get('/(:datatype_id([0-9a-z\-]+))?', function (req, res) {
+router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 	var datatype_id = req.params.datatype_id;
 	datatypes	= db.getCollection('datatypes');
 	var json;
@@ -46,7 +46,7 @@ router.get('/(:datatype_id([0-9a-z\-]+))?', function (req, res) {
  * 
  * @apiUse 401
  */
-router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == 'admin' ) {
 		datatypes	= db.getCollection('datatypes');
 		var new_datatype = {
@@ -75,7 +75,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * 
  * @apiUse 401
  */
-router.put('/:datatype_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == 'admin' ) {
 		var datatype_id = req.params.datatype_id;
 		datatypes	= db.getCollection('datatypes');
@@ -109,7 +109,7 @@ router.put('/:datatype_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}
  * @apiUse 401
  * @apiUse 404
  */
-router.delete('/:datatype_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == 'admin' ) {
 		var datatype_id = req.params.datatype_id;
 		datatypes	= db.getCollection('datatypes');

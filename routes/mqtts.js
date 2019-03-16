@@ -21,7 +21,7 @@ var ErrorSerializer = require("../serializers/error");
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/?(:mqtt_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/?(:mqtt_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var mqtt_id = req.params.mqtt_id;
 	var name = req.query.name;
 	var size = req.query.size!==undefined?req.query.size:20;

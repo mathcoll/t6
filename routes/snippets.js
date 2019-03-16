@@ -24,7 +24,7 @@ var tokens;
  * @apiUse 429
  * @apiUse 500
  */
-router.get('/(:snippet_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var snippet_id = req.params.snippet_id;
 	var name = req.query.name;
 	var size = req.query.size!==undefined?req.query.size:20;
@@ -90,7 +90,7 @@ router.get('/(:snippet_id([0-9a-z\-]+))?', expressJwt({secret: jwtsettings.secre
  * @apiUse 400
  * @apiUse 429
  */
-router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	snippets	= dbSnippets.getCollection('snippets');
 	/* Check for quota limitation */
 	var queryQ = { 'user_id' : req.user.id };
@@ -142,7 +142,7 @@ router.post('/', expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.put('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var snippet_id = req.params.snippet_id;
 	if ( snippet_id ) {
 		snippets	= dbSnippets.getCollection('snippets');
@@ -193,7 +193,7 @@ router.put('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret})
  * @apiUse Auth
  * @apiParam {uuid-v4} snippet_id Snippet Id
  */
-router.delete('/:snippet_id([0-9a-z\-]+)', expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var snippet_id = req.params.snippet_id;
 	snippets	= dbSnippets.getCollection('snippets');
 	var query = {

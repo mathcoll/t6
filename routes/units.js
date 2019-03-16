@@ -18,7 +18,7 @@ var tokens;
  * @apiUse 200
  * @apiUse 404
  */
-router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res, next) {
+router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
 	var json;
 	var unit_id = req.params.unit_id;
 	var type = req.query.type;
@@ -52,7 +52,7 @@ router.get('/(:unit_id([0-9a-z\-]+))?', function (req, res, next) {
  * @apiUse 201
  * @apiUse 401
  */
-router.post('/', bearerAdmin, function (req, res) {
+router.post("/", bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		units	= db.getCollection('units');
 		//console.log(units);
@@ -88,7 +88,7 @@ router.post('/', bearerAdmin, function (req, res) {
  * @apiUse 200
  * @apiUse 401
  */
-router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
+router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var unit_id = req.params.unit_id;
 		units	= db.getCollection('units');
@@ -126,7 +126,7 @@ router.put('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
  * @apiUse 401
  * @apiUse 404
  */
-router.delete('/:unit_id([0-9a-z\-]+)', bearerAdmin, function (req, res) {
+router.delete("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var unit_id = req.params.unit_id;
 		units	= db.getCollection('units');
@@ -155,8 +155,8 @@ function bearerAdmin(req, res, next) {
 		req.token = bearerToken;
 		req.bearer = tokens.findOne(
 			{ '$and': [
-	           {'token': { '$eq': req.token }},
-	           {'expiration': { '$gte': moment().format('x') }},
+				{'token': { '$eq': req.token }},
+				{'expiration': { '$gte': moment().format('x') }},
 			]}
 		);
 		if ( !req.bearer ) {
