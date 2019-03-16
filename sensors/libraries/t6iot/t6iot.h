@@ -1,0 +1,1 @@
+/home/mathieu/Projets/current/internetcollaboratif.info/t6/sensors/libraries/t6iot/examples/t6iot/t6iot.h
