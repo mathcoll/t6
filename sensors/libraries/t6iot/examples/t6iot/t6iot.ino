@@ -27,6 +27,18 @@ void setup() {
   t6Client.begin(httpHost, httpPort, userAgent, timeout);
 }
 
+
+/*
+* set Arduino to sleep mode
+*/
+void pleaseGoToBed() {
+  Serial.println();
+  Serial.println();
+  Serial.println("Sleeping in few milliseconds...");
+  delay(500);
+  ESP.deepSleep(SLEEP_DELAY_IN_SECONDS * 1000000, WAKE_RF_DEFAULT);
+}
+
 String responseA; // for authentication
 String responseD; // for datapoints
 String responseS; // for status
@@ -191,5 +203,5 @@ void loop() {
   //t6Client.editMqtt();
   //t6Client.deleteMqtt();
 
-  delay(200000000);
+  pleaseGoToBed();
 }

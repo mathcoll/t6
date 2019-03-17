@@ -68,7 +68,7 @@ void t6iot::authenticate(const char* t6Username, const char* t6Password, String*
   payload["username"] = _t6Username;
   payload["password"] = _t6Password;
   
-  _postRequest(&client, _urlJWT, payload);
+  _postRequest(&client, _urlJWT, payload, false);
   
   while (client.available()) {
     String line = client.readStringUntil('\n');
@@ -135,7 +135,7 @@ void t6iot::createDatapoint(char* flowId, JsonObject& payload, String* res) {
     Serial.println("Http connection failed");
   }
 
-  _postRequest(&client, _urlDataPoint+String(flowId), payload);
+  _postRequest(&client, _urlDataPoint+String(flowId), payload, true);
   
   while (client.available()) {
     String line = client.readStringUntil('\n');
@@ -248,43 +248,50 @@ void t6iot::_getRequest(WiFiClient* client, String url) {
 	
 	delay(_timeout);
 }
-void t6iot::_postRequest(WiFiClient* client, String url, JsonObject& payload) {
+void t6iot::_postRequest(WiFiClient* client, String url, JsonObject& payload, bool useSignature) {
 	String payloadStr;
 	payload.printTo(payloadStr);
   Serial.print("POSTing to: ");
   Serial.println(url);
-  if (secret) {
-    Serial.print("as signed payload:");
-    _getSignedPayload(payload, objectId, secret);
-  }
 
-	client->print("POST ");
-	client->print(url);
-	client->println(" HTTP/1.1");
-	client->print("Host: ");
-	client->println(_httpHost);
-	client->print("User-Agent: Arduino/2.2.0/t6iot-library/");
+  client->print("POST ");
+  client->print(url);
+  client->println(" HTTP/1.1");
+  client->print("Host: ");
+  client->println(_httpHost);
+  client->print("User-Agent: Arduino/2.2.0/t6iot-library/");
   client->println(_userAgent);
-	if (_JWTToken) {
-		client->print("Authorization: Bearer ");
-		client->println(_JWTToken);
-	}
-	client->println("Accept: application/json");
-	client->println("Content-Type: application/json");
-	client->print("Content-Length: ");
-	client->println(payloadStr.length());
-	client->println("Connection: close");
-	client->println();
-	payload.printTo(*client);
-	client->println();
-	
+  if (_JWTToken) {
+    client->print("Authorization: Bearer ");
+    client->println(_JWTToken);
+  }
+  client->println("Accept: application/json");
+  client->println("Content-Type: application/json");
+  client->print("Content-Length: ");
+  
+  if (useSignature) {
+    Serial.print("as signed payload:");
+    payloadStr = _getSignedPayload(payload, objectId, secret);
+    client->println(payloadStr.length());
+    client->println("Connection: close");
+    client->println();
+    client->println(payloadStr);
+  } else {
+    client->println(payloadStr.length());
+    client->println("Connection: close");
+    client->println();
+    payload.printTo(*client);
+  }
+  client->println();
+
 	delay(_timeout);
 }
-void t6iot::_getSignedPayload(JsonObject& payload, char* objectId, char* secret) {
+String t6iot::_getSignedPayload(JsonObject& payload, char* objectId, char* secret) {
   ArduinoJWT jwt = ArduinoJWT(secret);
-  
   String signedJson;
   String payloadString;
+  String signedPayloadAsString;
+  
   payload.printTo(payloadString);
   signedJson = jwt.encodeJWT( payloadString );
   
@@ -293,7 +300,8 @@ void t6iot::_getSignedPayload(JsonObject& payload, char* objectId, char* secret)
   JsonObject& signedPayload = jsonBufferSigned.createObject();
   signedPayload["signedPayload"] = signedJson;
   signedPayload["object_id"] = objectId;
-  Serial.println("Signed to:");
   signedPayload.prettyPrintTo(Serial);
-  //return signedPayload;
+  
+  signedPayload.printTo(signedPayloadAsString);
+  return signedPayloadAsString;
 }

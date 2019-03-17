@@ -81,10 +81,10 @@ class t6iot {
     const char* _t6Username;
     const char* _t6Password;
     void _getRequest(WiFiClient* client, String url);
-    void _postRequest(WiFiClient* client, String url, JsonObject& payload);
+    void _postRequest(WiFiClient* client, String url, JsonObject& payload, bool useSignature);
     void _putRequest(WiFiClient* client, String url, JsonObject& payload);
     void _deleteRequest(WiFiClient* client, String url);
-    void _getSignedPayload(JsonObject& payload, char* objectId, char* secret);
+    String _getSignedPayload(JsonObject& payload, char* objectId, char* secret);
 };
 
 #endif
