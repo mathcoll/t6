@@ -65,9 +65,6 @@ void t6iot::authenticate(const char* t6Username, const char* t6Password, String*
   
   _postRequest(&client, _urlJWT, payload);
   
-  //Serial.print("Response length:");
-  //Serial.println(client.available());
-  
   while (client.available()) {
     String line = client.readStringUntil('\n');
     //Serial.println(line); // output the response from server
@@ -94,9 +91,6 @@ void t6iot::getStatus(String* res) {
   DynamicJsonBuffer jsonRequestBuffer(BUFFER_SIZE);
   
 	_getRequest(&client, _urlStatus);
-	
-  //Serial.print("Response length:");
-  //Serial.println(client.available());
   
   while (client.available()) {
     String line = client.readStringUntil('\n');
@@ -137,9 +131,6 @@ void t6iot::createDatapoint(char* flowId, JsonObject& payload, String* res) {
   }
 
   _postRequest(&client, _urlDataPoint+String(flowId), payload);
-  
-  //Serial.print("Response length:");
-  //Serial.println(client.available());
   
   while (client.available()) {
     String line = client.readStringUntil('\n');
@@ -257,7 +248,6 @@ void t6iot::_postRequest(WiFiClient* client, String url, JsonObject& payload) {
 	payload.printTo(payloadStr);
   Serial.print("POSTing to: ");
   Serial.println(url);
-  Serial.print(_JWTToken);
 
 	client->print("POST ");
 	client->print(url);
