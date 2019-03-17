@@ -16,6 +16,7 @@ class t6iot {
     int begin(char* httpHost, int httpPort, char* _userAgent, int timeout);
     char* _userAgent;
 		char* _urlJWT;
+    char* _urlIndex;
     char* _urlDataPoint;
     char* _urlObjects;
     char* _urlFlows;
@@ -41,7 +42,7 @@ class t6iot {
     void getUser(char* userId);
     void editUser();
   
-    void createDatapoint();
+    void createDatapoint(char* flowId, JsonObject& payload, String* res);
     void getDatapoints();
   
     void createObject();
