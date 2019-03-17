@@ -192,10 +192,10 @@ app.use(function(req, res, next) {
 	//next(err);
 });
 
-/*
 if (app.get('env') === 'development') {
 	request.debug = true;
 	app.use(function(err, req, res, next) {
+		console.log("DEBUG in development", req.headers.authorization);
 		if (err.name === 'UnauthorizedError') {
 			res.status(401).send({ 'code': err.status, 'error': 'Unauthorized: invalid token...'+err.message, 'stack': err.stack });
 			res.end();
@@ -228,7 +228,6 @@ if (app.get('env') === 'development') {
 		}
 	});
 }
-*/
 
 t6events.add('t6App', 'start', 'self');
 console.log(sprintf('%s %s has started and listening to %s', moment().format('MMMM Do YYYY, H:mm:ss'), appName, process.env.BASE_URL_HTTPS));
