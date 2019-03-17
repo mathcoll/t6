@@ -3,9 +3,12 @@
   Created by Mathieu Lory.
 */
 
-#include <Arduino.h>
 /*#include <t6iot.h>*/
 #include "t6iot.h"
+
+#include <Arduino.h>
+#include <ArduinoJWT.h>
+#include <sha256.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoJson.h>
 
@@ -14,6 +17,8 @@ WiFiClient client;
 String _JWTToken;
 bool authorized = false;
 int processes = 0;
+extern char* objectId;
+extern char* secret;
 
 int t6iot::begin(char* host, int port) {
   return begin(host, port, "", 3000);
@@ -248,6 +253,10 @@ void t6iot::_postRequest(WiFiClient* client, String url, JsonObject& payload) {
 	payload.printTo(payloadStr);
   Serial.print("POSTing to: ");
   Serial.println(url);
+  if (secret) {
+    Serial.print("as signed payload:");
+    _getSignedPayload(payload, objectId, secret);
+  }
 
 	client->print("POST ");
 	client->print(url);
@@ -270,4 +279,21 @@ void t6iot::_postRequest(WiFiClient* client, String url, JsonObject& payload) {
 	client->println();
 	
 	delay(_timeout);
+}
+void t6iot::_getSignedPayload(JsonObject& payload, char* objectId, char* secret) {
+  ArduinoJWT jwt = ArduinoJWT(secret);
+  
+  String signedJson;
+  String payloadString;
+  payload.printTo(payloadString);
+  signedJson = jwt.encodeJWT( payloadString );
+  
+  const int BUFFER_SIZE = JSON_OBJECT_SIZE(25);
+  StaticJsonBuffer<BUFFER_SIZE> jsonBufferSigned;
+  JsonObject& signedPayload = jsonBufferSigned.createObject();
+  signedPayload["signedPayload"] = signedJson;
+  signedPayload["object_id"] = objectId;
+  Serial.println("Signed to:");
+  signedPayload.prettyPrintTo(Serial);
+  //return signedPayload;
 }

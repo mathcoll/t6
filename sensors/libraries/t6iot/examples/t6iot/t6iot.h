@@ -36,7 +36,6 @@ class t6iot {
   	void getDatatypes();
   	void getUnits();
   	void getIndex();
-  	
     
     void createUser();
     void getUser(char* userId);
@@ -85,6 +84,7 @@ class t6iot {
     void _postRequest(WiFiClient* client, String url, JsonObject& payload);
     void _putRequest(WiFiClient* client, String url, JsonObject& payload);
     void _deleteRequest(WiFiClient* client, String url);
+    void _getSignedPayload(JsonObject& payload, char* objectId, char* secret);
 };
 
 #endif

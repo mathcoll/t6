@@ -48,12 +48,10 @@ void loop() {
     const char* Astatus = authenticate["status"];
     const char* Arefresh_token = authenticate["refresh_token"];
     const char* ArefreshTokenExp = authenticate["refreshTokenExp"];
-
     if ( Aerror ) {
       Serial.println("Failure on:");
       Serial.println(responseA);
     }
-    
     Serial.println();
     Serial.print("\tToken: ");
     Serial.println( Atoken );
@@ -81,12 +79,10 @@ void loop() {
     const char* Serror = status["error"];
     const char* Sstatus = status["status"];
     const char* Sversion = status["version"];
-
     if ( Serror ) {
       Serial.println("Failure on:");
       Serial.println(responseS);
     }
-    
     Serial.println();
     Serial.print("\tStatus: ");
     Serial.println( Sstatus );
@@ -137,12 +133,10 @@ void loop() {
     const char* Dtime = datapoint["data"][0]["attributes"]["time"];
     const char* Dtimestamp = datapoint["data"][0]["attributes"]["timestamp"];
     const char* Dvalue = datapoint["data"][0]["attributes"]["value"];
-
     if ( Derror ) {
       Serial.println("Failure on:");
       Serial.println(responseD);
     }
-    
     Serial.println();
     Serial.print("\tId: ");
     Serial.println( Did );
@@ -150,6 +144,8 @@ void loop() {
     Serial.println( Dtime );
     Serial.print("\tTimestamp: ");
     Serial.println( Dtimestamp );
+    Serial.print("\tValue: ");
+    Serial.println( Dvalue );
     Serial.println();
   } // END createDatapoint
   
