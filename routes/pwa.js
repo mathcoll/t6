@@ -39,13 +39,14 @@ router.get("/networkError", function(req, res) {
  * 
  * @apiUse 200
  * @apiUse 403
+ * @apiUse 404
  */
 router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
 	
-	if ( list == 'changePassword' || list == 'reminder' ) {
+	if ( list == 'changePassword' || list == 'reminder' || list == 'newsletter' ) {
 		users	= db.getCollection('users');
 		var result;
 
@@ -63,6 +64,8 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 			list: list,
 			moment: moment,
 		});
+	} else {
+		res.status(404).send(new ErrorSerializer({'id': 10.4, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
 
@@ -80,13 +83,14 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
  * 
  * @apiUse 200
  * @apiUse 403
+ * @apiUse 404
  */
 router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
 	
-	if ( list == 'changePassword' || list == 'reminder' ) {
+	if ( list == 'changePassword' || list == 'reminder' || list == 'newsletter' ) {
 		users	= db.getCollection('users');
 		var result;
 
@@ -104,6 +108,8 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 			list: list,
 			moment: moment,
 		});
+	} else {
+		res.status(404).send(new ErrorSerializer({'id': 10.5, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
 });
 
