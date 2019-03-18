@@ -2086,6 +2086,9 @@ var touchStartPoint, touchMovePoint;
 		value = notifications.changePassword!==null?'false':'true';
 		node += app.getField('mail_outline', 'Reminder to change Password', value, {type: 'switch', id:'profile.notifications.changePassword', isEdit: isEdit});
 		
+		value = notifications.newsletter!==null?'false':'true';
+		node += app.getField('mail_outline', 't6 Newsletter', value, {type: 'switch', id:'profile.notifications.newsletter', isEdit: isEdit});
+		
 		node += app.getField('mail_outline', 'Security notification related to your account', true, {type: 'switch', id:'profile.notifications.security', isEdit: false});
 		node += "	</div>";
 		node += "</section>";
@@ -2159,7 +2162,36 @@ var touchStartPoint, touchMovePoint;
 				}
 			});
 		}
-		
+
+		let element3 = document.getElementById('switch-profile.notifications.newsletter').parentNode;
+		if ( element3 ) {
+			element3.addEventListener('change', function(e) {
+				if ( app.getSetting('notifications.email') && app.getSetting('notifications.unsubscription_token') ) {
+					var name = 'newsletter';
+					var type = element3.classList.contains('is-checked')!==false?'subscribe': 'unsubscribe';
+					var myHeaders = new Headers();
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: 'GET', headers: myHeaders };
+					var url = app.baseUrl+'/mail/'+app.getSetting('notifications.email')+'/'+type+'/'+name+'/'+app.getSetting('notifications.unsubscription_token')+'/';
+					
+					fetch(url, myInit)
+					.then(
+						app.fetchStatusHandler
+					).then(function(response) {
+						toast('Subscription '+name+' ('+type+') updated.', {timeout:3000, type: 'done'});
+					})
+					.catch(function (error) {
+						if ( localStorage.getItem('settings.debug') == 'true' ) {
+							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
+						}
+					});
+				} else {
+					if ( localStorage.getItem('settings.debug') == 'true' ) {
+						toast('Error occured on saving Notifications...', {timeout:3000, type: "error"});
+					}
+				}
+			});
+		}
 	};
 	
 	app.setDrawer = function() {
@@ -3371,13 +3403,25 @@ var touchStartPoint, touchMovePoint;
 	for (var i in app.buttons.notifications) {
 		if ( app.buttons.notifications[i].childElementCount > -1 ) {
 			app.buttons.notifications[i].addEventListener('click', function(e) {
-				if ( app.getSetting('notifications.email') && app.getSetting('notifications.unsubscription_token') ) {
+				var email = "";
+				var token = "";
+				if ( getParameterByName("email", null) ) {
+					email = decodeURI(getParameterByName("email", null));
+				} else {
+					email = app.getSetting("notifications.email");
+				}
+				if ( getParameterByName("token", null) ) {
+					token = decodeURI(getParameterByName("token", null));
+				} else {
+					token = app.getSetting("notifications.unsubscription_token");
+				}
+				if ( email && token ) {
 					var myHeaders = new Headers();
-					myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+					myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 					myHeaders.append("Content-Type", "application/json");
-					var myInit = { method: 'GET', headers: myHeaders };
-					var type = e.target.parentNode.classList.contains('is-checked')?'unsubscribe': 'subscribe';
-					var url = app.baseUrl+'/mail/'+app.getSetting('notifications.email')+'/'+type+'/'+e.target.getAttribute('name')+'/'+app.getSetting('notifications.unsubscription_token')+'/';
+					var myInit = { method: "GET", headers: myHeaders };
+					var type = e.target.parentNode.classList.contains("is-checked")?"unsubscribe": "subscribe";
+					var url = app.baseUrl+"/mail/"+email+"/"+type+"/"+e.target.getAttribute("name")+"/"+token+"/";
 					fetch(url, myInit)
 					.then(
 						app.fetchStatusHandler

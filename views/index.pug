@@ -374,13 +374,17 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='notifications.reminder')
                         input.mdl-checkbox__input(checked, type='checkbox', id='notifications.reminder', name='reminder')
-                        span.mdl-checkbox__label(style='position: absolute;') Reminder email.
-                          | This notification will be sent only once, the week after your subscription.
+                        span.mdl-checkbox__label(style='position: absolute;') Reminder email. This notification will be sent only once, the week after your subscription.
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='notifications.changePassword')
                         input.mdl-checkbox__input(checked, type='checkbox', id='notifications.changePassword', name='changePassword')
                         span.mdl-checkbox__label(style='position: absolute;') Notification to remind you to change your password regularly.
+                  .mdl-card__supporting-text
+                    .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
+                      label.mdl-checkbox.mdl-js-checkbox.mdl-js-ripple-effect(for='notifications.newsletter')
+                        input.mdl-checkbox__input(checked, type='checkbox', id='notifications.newsletter', name='newsletter')
+                        span.mdl-checkbox__label(style='position: absolute;') t6 Newsletters. Newsletter about t6 only are sent once or maybe twice a year!
                   .mdl-card__actions.mdl-card--border
                     a.mdl-button.small(onclick="app.setSection('login');", href="#login")
                       | Skip this step

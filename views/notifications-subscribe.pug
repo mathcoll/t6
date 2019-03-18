@@ -13,13 +13,21 @@
         li Reminder Welcome email - 
           a(href="/mail/"+user.email+"/unsubscribe/reminder/"+user.unsubscription_token+"/") Unsubscribe
       -endif
-      
+
       -if ( user && user.unsubscription.changePassword > 0 )
         li Reminder to change Password - 
           a(href="/mail/"+user.email+"/subscribe/changePassword/"+user.unsubscription_token+"/") Subscribe
       -else
         li Reminder to change Password - 
           a(href="/mail/"+user.email+"/unsubscribe/changePassword/"+user.unsubscription_token+"/") Unsubscribe
+      -endif
+
+      -if ( user && user.unsubscription.newsletter > 0 )
+        li t6 Newsletters - 
+          a(href="/mail/"+user.email+"/subscribe/newsletter/"+user.unsubscription_token+"/") Subscribe
+      -else
+        li t6 Newsletters - 
+          a(href="/mail/"+user.email+"/unsubscribe/newsletter/"+user.unsubscription_token+"/") Unsubscribe
       -endif
       
       li Security notification related to your account
