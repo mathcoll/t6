@@ -11,6 +11,24 @@ var mqtt_topic	= 'couleurs/Freebox';
 var unit		= 'byte';
 var timestamp	= moment().format('x');
 
+function send(api, flow_id, value, timestamp, publish, save, unit, mqtt_topic) {
+	var body = {flow_id: flow_id, value:value, timestamp: timestamp, publish: publish, save: save, unit: unit, mqtt_topic: mqtt_topic};
+	//console.log(body);
+	request({
+		url: api,
+		method: 'POST',
+		json: true,
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+			'Authorization': 'Bearer '+bearer,
+		},
+		body: body
+	}, function (error, response, body){
+		//console.log(error + response);
+	});
+};
+
 var get = request.get('http://mafreebox.freebox.fr/pub/fbx_info.txt').on('response', function (response) {
 	response.on('data', function (chunk) {
 		var br = (chunk.toString()).match( /bit ATM +([0-9]+) kb\/s +([0-9]+) kb\/s/im );
@@ -77,21 +95,3 @@ var get = request.get('http://mafreebox.freebox.fr/pub/fbx_info.txt').on('respon
 		console.log("End");
 	});
 });
-
-function send(api, flow_id, value, timestamp, publish, save, unit, mqtt_topic) {
-	var body = {flow_id: flow_id, value:value, timestamp: timestamp, publish: publish, save: save, unit: unit, mqtt_topic: mqtt_topic};
-	//console.log(body);
-	request({
-		url: api,
-		method: 'POST',
-		json: true,
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
-			'Authorization': 'Bearer '+bearer,
-		},
-		body: body
-	}, function (error, response, body){
-		//console.log(error + response);
-	});
-};
