@@ -32,7 +32,7 @@ app.resources.snippets = {
 				app.snippets = [];
 				snippetsList.map(function(sn) {
 					if( sn.id == snippet_id ) {
-						app.snippets.push( {id: sn.id, name:response.snippet.data.attributes.name, type: response.snippet.data.type, type: response.snippet.data.attributes.type});
+						app.snippets.push( {id: sn.id, name:response.snippet.data.attributes.name, type: response.snippet.data.type, sType: response.snippet.data.attributes.type});
 					} else {
 						app.snippets.push( {id: sn.id, name:sn.name, type: sn.type} );
 					}
@@ -86,7 +86,7 @@ app.resources.snippets = {
 			if ( JSON.parse(localStorage.getItem('snippets')) != 'null' && JSON.parse(localStorage.getItem('snippets')).length > -1 ) {
 				snippetsList = JSON.parse(localStorage.getItem('snippets'));
 			}
-			snippetsList.push( {id: response.snippet.data.id, name:response.snippet.data.attributes.name, type: response.snippet.data.type, type: response.snippet.data.attributes.type});
+			snippetsList.push( {id: response.snippet.data.id, name:response.snippet.data.attributes.name, type: response.snippet.data.type, sType: response.snippet.data.attributes.type});
 			localStorage.setItem('snippets', JSON.stringify(snippetsList));
 			toast('Snippet has been added.', {timeout:3000, type: 'done'});
 		})
