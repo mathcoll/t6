@@ -98,6 +98,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret}), function 
 						text: 'Html email client is required',
 						html: html
 					};
+					console.log("DEBUG", mailOptions);
 					t6mailer.sendMail(mailOptions).then(function(info){
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
@@ -173,36 +174,102 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 						text: 'Html email client is required',
 						html: html
 					};
-					if ( process.env.NODE_ENV === 'production' ) {
-						transporter.sendMail(mailOptions, function(err, info){
-							if( err ){
-								var err = new Error('Internal Error');
-								err.status = 500;
-								res.status(err.status || 500).render(err.status, {
-									title : 'Internal Error'+app.get('env'),
-									user: req.session.user,
-									currentUrl: req.path,
-									err: err
-								});
-							} else {
-								users.findAndUpdate(
-									function(i){return i.id==user.id;},
-									function(item){
-										item.changePasswordMail = parseInt(moment().format('x'), 10);
-									}
-								);
-								db.save();
-							}
+					console.log("DEBUG", mailOptions);
+					t6mailer.sendMail(mailOptions).then(function(info){
+						users.findAndUpdate(
+								function(i){return i.id==user.id;},
+								function(item){
+									item.changePassword = parseInt(moment().format('x'), 10);
+								}
+						);
+						db.save();
+					}).catch(function(err){
+						var err = new Error('Internal Error');
+						err.status = 500;
+						res.status(err.status || 500).render(err.status, {
+							title : 'Internal Error'+app.get('env'),
+							user: req.session.user,
+							currentUrl: req.path,
+							err: err
 						});
-					} else {
-						mailOptions.html = null;
-						console.log("DEBUG for development", mailOptions);
-					}
+					});
 				});
 			});
 			res.status(202).send(new UserSerializer(json).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
+ * @api {get} /notifications/mail/newsletter Send newsletter to subscribers
+ * @apiName Send Password Expiration Email to Users
+ * @apiGroup 8. Notifications Email
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role === 'admin' ) {
+		var year = req.query.year;
+		var template = req.query.template;
+		users	= db.getCollection('users');
+		//var query = {'token': { '$eq': null }};
+		var query = { '$and': [
+					{ '$or': [{'unsubscription': undefined}, {'unsubscription.newsletter': undefined}, {'unsubscription.newsletter': null}] },
+				]};
+		var json = users.find( query );
+		if ( json.length > 0 && year && template ) {
+			/* Send a newsletter to each subscribers */
+			json.forEach(function(user) {
+				console.log(user.firstName+' '+user.lastName+' <'+user.email+'>');
+				res.render('emails/newsletters/'+year+"/"+template, {user: user}, function(err, html) {
+					var to = user.firstName+' '+user.lastName+' <'+user.email+'>';
+					var mailOptions = {
+						from: from,
+						bcc: bcc,
+						to: to,
+						list: {
+							unsubscribe: {
+								url: baseUrl_https+'/mail/'+user.email+'/unsubscribe/newsletter/'+user.unsubscription_token+'/',
+								comment: 'Unsubscribe from this newsletter'
+							},
+						},
+						subject: '📰  t6 updates',
+						text: 'Html email client is required',
+						html: html
+					};
+					console.log("DEBUG", mailOptions);
+					t6mailer.sendMail(mailOptions).then(function(info){
+						users.findAndUpdate(
+								function(i){return i.id==user.id;},
+								function(item){
+									item.newsletter = parseInt(moment().format('x'), 10);
+								}
+						);
+						db.save();
+					}).catch(function(err){
+						var err = new Error('Internal Error');
+						err.status = 500;
+						res.status(err.status || 500).render(err.status, {
+							title : 'Internal Error'+app.get('env'),
+							user: req.session.user,
+							currentUrl: req.path,
+							err: err
+						});
+					});
+				});
+			});
+			res.status(202).send(new UserSerializer(json).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({'id': 21, 'code': 404, 'message': 'Not Found'}).serialize());
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());

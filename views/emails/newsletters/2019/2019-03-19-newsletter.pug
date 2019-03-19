@@ -1,0 +1,68 @@
+doctype html
+head(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+  meta(http-equiv='Content-Type' content='text/html; charset=us-ascii' style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+  meta(name='viewport' content='width=device-width' style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+  title t6 updates
+table.body-wrap(style="-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:none;background:#efefef;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;height:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+  tbody
+    tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+      td.container(style="clear:both!important;display:block!important;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0 auto!important;max-width:580px!important;padding:0")
+        table(style="border-collapse:collapse;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+          tbody
+            tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+              td.masthead(style="background:#337ab7 no-repeat;color:#337ab7;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0" align='center')
+                img(src=baseUrl+'/img/header_mail.jpg')
+                h1(style="color:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:32px;line-height:1.25;margin:10px!important;margin-bottom:20px;max-width:90%;padding:0;text-transform:uppercase")
+                  | t6 updates
+            tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+              td.content(style="background:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:30px 35px")
+                h2(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0")
+                  | Hi #{user.firstName} #{user.lastName},
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
+                  | Thank you again for being parts of t6 users. We wanted to let you know some of recent updates on t6 Api - we hope it will make you happy. :-)
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
+                  br
+                  b 1. 
+                  | A new, yet simple, Arduino library to ease sensor connection on t6 Api. This library is available as beta test on 
+                  a(href='https://github.com/mathcoll/t6/tree/master/sensors/libraries/t6iot') Github repository
+                  | . Feel free to download it, test it, use it, and get feedbacks so that we could improve it soon.
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
+                  br
+                  b 2. 
+                  | POSTing datapoint to Api can optionnaly use signed payload; the goal is simply to make sure the Object sending the payload is the one you expecting to be. This is using a shared secret key stored on t6 Object.
+                  br
+                  br
+                  | Well, next phase on the roadmap is to allow crypting payload, using shared secrets... Would you think it is a good idea? Please share your mind with us by replying this email.
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
+                  br
+                  b 3. 
+                  | I would like to apologize if your are receiving this message and you didn&apos;t consent to it. So, if you are not willing to get this message again, please, review and update your consent from the link below:
+                table(style="border-collapse:collapse;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+                  tbody
+                    tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                      td(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0" align='center')
+                        p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                          a.btn.btn-primary(href='' + baseUrl + '/?email=' + user.email + '&token=' + user.unsubscription_token + '#manage_notifications' style="-moz-user-select:none;background-color:#2973ac;background-image:none;border-color:#2e6da4;border-radius:4px;color:#fff;cursor:pointer;display:inline-block;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.42857;margin:0;margin-bottom:0;padding:6px 12px;text-align:center;text-decoration:none;vertical-align:middle;white-space:nowrap") Update consent
+                br
+                hr(style='border:1px solid #999; width: 10%;')
+                br
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                  | If you want to give your feedback on t6, do not hesitate to reply by email.
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                  | Thank you, and see you soon on t6.
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                  em(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                    | &ndash; Mathieu from t6
+    tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+      td.container(style="clear:both!important;display:block!important;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0 auto!important;max-width:580px!important;padding:0")
+        table(style="border-collapse:collapse;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+          tbody
+            tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+              td.content.footer(style="background:0 0;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:30px 35px" align='center')
+                p(style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.65;margin:0;margin-bottom:0;padding:0;text-align:center")
+                  | Sent to #{user.email} by 
+                  a(href=baseUrl style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;text-decoration:none")
+                    | t6 from internetcollaboratif.info
+                p(style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.65;margin:0;margin-bottom:0;padding:0;text-align:center")
+                  a(href='mailto:mathieu@internetcollaboratif.info' style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;font-weight:700;line-height:1.65;margin:0;padding:0;text-decoration:none")
+                    | mathieu@internetcollaboratif.info
