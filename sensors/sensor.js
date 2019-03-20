@@ -77,7 +77,7 @@ if ( config.exec ) {
 	    	process.exit(1);
 	    }
 	});
-} else if( config.postDataPoint == false ) {
+} else if( config.postDataPoint === false ) {
 	request({
 		url: config.api+'authenticate',
 		method: 'POST',

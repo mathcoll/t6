@@ -155,7 +155,7 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		if ( rule ) {
 			//console.log(req.body.meta.revision, rule.meta.revision);
 			//console.log((req.body.meta.revision - rule.meta.revision));
-			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) != 0 ) {
+			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) !== 0 ) {
 				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
 			} else {
 				var result;

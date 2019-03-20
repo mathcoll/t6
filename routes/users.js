@@ -126,13 +126,13 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret}), function (r
 router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user !== undefined ) {
 		var options = {
-		  url: 'https://en.gravatar.com/' + req.user.mail_hash + '.json',
-		  headers: {
-		    'User-Agent': 'Mozilla/5.0 Gecko/20100101 Firefox/44.0'
-		  }
+			url: "https://en.gravatar.com/" + req.user.mail_hash + ".json",
+			headers: {
+				"User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/44.0"
+			}
 		};
 		request(options, function(error, response, body) {
-			if ( !error && response.statusCode != 404 ) {
+			if ( !error && response.statusCode !== 404 ) {
 				req.user.gravatar = JSON.parse(body);
 			} else {
 				req.user.gravatar = {};

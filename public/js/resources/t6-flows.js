@@ -356,7 +356,7 @@ app.resources.flows = {
 					if ( element1 ) {
 						element1.addEventListener('change', function(e) {
 							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-							label.innerText = element1.classList.contains('is-checked')!=false?"Require signed payload from Object":"Does not require signed payload from Object";
+							label.innerText = element1.classList.contains('is-checked')!==false?"Require signed payload from Object":"Does not require signed payload from Object";
 						});
 					}
 					var element2 = document.getElementById('switch-edit_require_encrypted').parentNode;
