@@ -2641,7 +2641,7 @@ var touchStartPoint, touchMovePoint;
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var url = app.baseUrl+"/"+app.api_version+"/objects/"+id+"/qrcode/18/H";
+		var url = app.baseUrl+"/"+app.api_version+"/objects/"+id+"/qrcode/8/H";
 		
 		fetch(url, myInit)
 		.then(
@@ -2652,7 +2652,7 @@ var touchStartPoint, touchMovePoint;
 		.then(function(response) {
 			if ( response ) {
 				var container = document.getElementById('qr-'+id);
-				container.setAttribute('src', response.data);
+				container.setAttribute('src', (new DOMParser()).parseFromString(response.data, "text/html").images[0].src);
 			}
 		})
 		.catch(function (error) {

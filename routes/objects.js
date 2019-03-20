@@ -48,7 +48,7 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 		var qr = qrCode.qrcode(typenumber, errorcorrectionlevel);
 		qr.addData(baseUrl+'/m?id=/'+object_id+'#public-object');
 		qr.make();
-		res.status(200).send({'data': qr.createImg(5, 5).src});
+		res.status(200).send({'data': qr.createImgTag(typenumber)});
 	} else {
 		res.status(404).send(new ErrorSerializer({'id': 27, 'code': 404, 'message': 'Not Found'}).serialize());
 	}
