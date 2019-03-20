@@ -262,7 +262,7 @@ app.resources.rules = {
 		if ( document.getElementById('switch-active') ) {
 			document.getElementById('switch-active').addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-				if ( document.getElementById('switch-active').checked == true ) {
+				if ( document.getElementById('switch-active').checked === true ) {
 					label.innerText = "Rule is active";
 				} else {
 					label.innerText = "Rule is disabled";

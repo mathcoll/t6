@@ -47,12 +47,12 @@ global.t6events.setRP('autogen');
 
 /* Environment settings */
 require(sprintf('./data/settings-%s.js', os.hostname()));
-if ( db_type.sqlite3 == true ) {
+if ( db_type.sqlite3 === true ) {
 	var sqlite3	= require('sqlite3').verbose();
 	dbSQLite3		= new sqlite3.Database(SQLite3Settings);
 	console.log('Activating sqlite3');
 }
-if( db_type.influxdb == true ) {
+if( db_type.influxdb === true ) {
 	var influx		= require('influx');
 	var dbString	= influxSettings.protocol+'://'+influxSettings.host+':'+influxSettings.port+'/'+influxSettings.database;
 	dbInfluxDB		= new influx.InfluxDB(dbString);

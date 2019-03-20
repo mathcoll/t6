@@ -150,8 +150,8 @@ app.resources.flows = {
 					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
 					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, options: app.units });
 					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: true, options: app.datatypes });
-					node += app.getField('verified_user', flow.attributes.require_signed!=false?"Require signed payload from Object":"Does not require signed payload from Object secret", flow.attributes.require_signed, {type: 'switch', id: 'edit_require_signed', isEdit: true});
-					node += app.getField('vpn_key', flow.attributes.require_encrypted!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: 'switch', id: 'edit_require_encrypted', isEdit: true});
+					node += app.getField('verified_user', flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object secret", flow.attributes.require_signed, {type: 'switch', id: 'edit_require_signed', isEdit: true});
+					node += app.getField('vpn_key', flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: 'switch', id: 'edit_require_encrypted', isEdit: true});
 					node += "	</div>";
 					node += "</section>";
 					
@@ -220,8 +220,8 @@ app.resources.flows = {
 						var datatype = JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
 						node += app.getField(app.icons.datatypes, 'DataType', datatype, {type: 'select', id: 'DataType', isEdit: isEdit, options: app.datatypes });
 					}
-					node += app.getField('verified_user', flow.attributes.require_signed!=false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: 'switch', id: 'show_require_signed', isEdit: isEdit});
-					node += app.getField('vpn_key', flow.attributes.require_encrypted!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: 'switch', id: 'show_require_encrypted', isEdit: isEdit});
+					node += app.getField('verified_user', flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: 'switch', id: 'show_require_signed', isEdit: isEdit});
+					node += app.getField('vpn_key', flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: 'switch', id: 'show_require_encrypted', isEdit: isEdit});
 					node += "	</div>";
 					node += "</div>";
 
@@ -363,7 +363,7 @@ app.resources.flows = {
 					if ( element2 ) {
 						element2.addEventListener('change', function(e) {
 							var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-							label.innerText = element2.classList.contains('is-checked')!=false?"Require encrypted payload from Object":"Does not require encrypted payload from Object";
+							label.innerText = element2.classList.contains('is-checked')!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object";
 						});
 					}
 				} else {

@@ -17,7 +17,7 @@ app.resources.objects = {
 				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
 				secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
 				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
-				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?'true':'false',
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
@@ -146,7 +146,7 @@ app.resources.objects = {
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
 				node += app.getField(app.icons.objects, 'Id', object.id, {type: 'text'});
-				if ( object.attributes.description && isEdit!=true ) {
+				if ( object.attributes.description && isEdit!==true ) {
 					var description = app.nl2br(object.attributes.description);
 					node += app.getField(app.icons.description, 'Description', description, {type: 'text'});
 				}
@@ -165,7 +165,7 @@ app.resources.objects = {
 				node += app.getSubtitle('Parameters');
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				if ( isEdit==true ) {
+				if ( isEdit===true ) {
 					var description = object.attributes.description;
 					node += app.getField(null, 'meta.revision', object.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.objects, 'Name', object.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
