@@ -11,8 +11,8 @@ app.resources.flows = {
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 				data_type: myForm.querySelector("select[name='DataType']").value,
 				unit: myForm.querySelector("select[name='Unit']").value,
-				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")==true?'true':'false',
-				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")==true?'true':'false',
+				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?'true':'false',
+				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?'true':'false',
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 
@@ -65,8 +65,8 @@ app.resources.flows = {
 			mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 			data_type: myForm.querySelector("select[name='DataType']").value,
 			unit: myForm.querySelector("select[name='Unit']").value,
-			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")==true?'true':'false',
-			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")==true?'true':'false',
+			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?'true':'false',
+			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?'true':'false',
 		};
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('DEBUG onAddFlow', JSON.stringify(body));
@@ -482,12 +482,12 @@ app.resources.flows = {
 			element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
 			element += "	</div>";
 		}
-		if ( flow.attributes.require_signed == true ) {
+		if ( flow.attributes.require_signed === true ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
 			element += "		<i class='material-icons md-28'>verified_user</i> Require signed payload from Object"
 			element += "	</div>";
 		}
-		if ( flow.attributes.require_encrypted == true ) {
+		if ( flow.attributes.require_encrypted === true ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
 			element += "		<i class='material-icons md-28'>vpn_key</i> Require encrypted payload from Object"
 			element += "	</div>";

@@ -67,7 +67,7 @@ app.resources.objects = {
 			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
 			secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
 			secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
-			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")==true?'true':'false',
+			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?'true':'false',
 		};
 
 		var myHeaders = new Headers();
@@ -174,16 +174,16 @@ app.resources.objects = {
 				if ( object.attributes.type ) {
 					var d = app.types.find( function(type) { return type.name == object.attributes.type; });
 					d = d!==undefined?d:'';
-					if ( isEdit==true ) {
+					if ( isEdit===true ) {
 						node += app.getField(app.icons.type, 'Type', d.name, {type: 'select', id: 'Type', isEdit: isEdit, options: app.types });
 					} else {
 						node += app.getField(app.icons.type, 'Type', d.value, {type: 'select', id: 'Type', isEdit: isEdit, options: app.types });
 					}
 				}
-				if ( object.attributes.ipv4 || isEdit==true ) {
+				if ( object.attributes.ipv4 || isEdit===true ) {
 					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', id: 'IPv4', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
 				}
-				if ( object.attributes.ipv6 || isEdit==true ) {
+				if ( object.attributes.ipv6 || isEdit===true ) {
 					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', id: 'IPv6', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
 				node += "	</div>";
@@ -192,14 +192,14 @@ app.resources.objects = {
 				node += app.getSubtitle('Security');
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				if ( object.attributes.secret_key || isEdit==true ) {
+				if ( object.attributes.secret_key || isEdit===true ) {
 					node += app.getField('verified_user', 'Secret Key in symmetric signature', object.attributes.secret_key!==undefined?object.attributes.secret_key:'', {type: 'text', id: 'secret_key', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key, error:''});
 					node += app.getField('', '', 'When flow require signed payload, you should provide your secret to verify signature.', {type: 'text', isEdit: false});
 				}
-				if ( object.attributes.secret_key_crypt || isEdit==true ) {
+				if ( object.attributes.secret_key_crypt || isEdit===true ) {
 					node += app.getField('vpn_key', 'Secret Key in symmetric cryptography', object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:'', {type: 'text', id: 'secret_key_crypt', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:''});
 				}
-				if ( object.attributes.is_public == "true" && isEdit==false ) {
+				if ( object.attributes.is_public == "true" && isEdit===false ) {
 					node += app.getField('visibility', object.attributes.is_public=='true'?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: 'switch', id: 'Visibility', isEdit: isEdit});
 					node += app.getQrcodeImg(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
 					app.getQrcode(app.icons.date, '', object.id, {type: 'text', isEdit: isEdit});
@@ -413,11 +413,11 @@ app.resources.objects = {
 				node += app.getSubtitle('Parameters');
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-				if ( object.attributes.ipv4 || isEdit==true ) {
+				if ( object.attributes.ipv4 || isEdit===true ) {
 					node += app.getField('my_location', 'IPv4', object.attributes.ipv4, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv4, error:'IPv4 should be valid.'});
 
 				}
-				if ( object.attributes.ipv6 || isEdit==true ) {
+				if ( object.attributes.ipv6 || isEdit===true ) {
 					node += app.getField('my_location', 'IPv6', object.attributes.ipv6, {type: 'text', isEdit: isEdit, pattern: app.patterns.ipv6, error:'IPv6 should be valid.'});
 				}
 				node += "	</div>";
