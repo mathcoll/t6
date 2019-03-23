@@ -30,27 +30,27 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 	var page = req.query.page!==undefined?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
-	rules = dbRules.getCollection('rules');
+	rules = dbRules.getCollection("rules");
 	var query;
 	if ( rule_id !== undefined ) {
 		query = {
-		'$and': [
-				{ 'user_id' : req.user.id },
-				{ 'id' : rule_id },
+		"$and": [
+				{ "user_id" : req.user.id },
+				{ "id" : rule_id },
 			]
 		};
 	} else {
 		if ( name !== undefined ) {
 			query = {
-			'$and': [
-					{ 'user_id' : req.user.id },
-					{ 'name': { '$regex': [name, 'i'] } }
+			"$and": [
+					{ "user_id" : req.user.id },
+					{ "name": { "$regex": [name, "i"] } }
 				]
 			};
 		} else {
 			query = {
-			'$and': [
-					{ 'user_id' : req.user.id },
+			"$and": [
+					{ "user_id" : req.user.id },
 				]
 			};
 		}
@@ -93,28 +93,28 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
  * @apiUse 429
  */
 router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	rules	= dbRules.getCollection('rules');
+	rules	= dbRules.getCollection("rules");
 	/* Check for quota limitation */
-	var queryR = { 'user_id' : req.user.id };
+	var queryR = { "user_id" : req.user.id };
 	var i = (rules.find(queryR)).length;
 	if( i >= (quota[req.user.role]).rules ) {
-		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
+		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
 		if ( req.user.id !== undefined ) {
 			var rule_id = uuid.v4();
 			var newRule = {
 				id:			rule_id,
 				user_id:	req.user.id,
-				name: 		req.body.name!==undefined?req.body.name:'unamed',
+				name: 		req.body.name!==undefined?req.body.name:"unamed",
 				active: 	req.body.active!==undefined?req.body.active:true,
 				rule:		req.body.rule!==undefined?req.body.rule:{},
 			};
-			t6events.add('t6Api', 'rule add', newRule.id);
+			t6events.add("t6Api", "rule add", newRule.id);
 			rules.insert(newRule);
 			//console.log(rules);
 			
-			res.header('Location', '/v'+version+'/rules/'+newRule.id);
-			res.status(201).send({ 'code': 201, message: 'Created', rule: new RuleSerializer(newRule).serialize() });
+			res.header("Location", "/v"+version+"/rules/"+newRule.id);
+			res.status(201).send({ "code": 201, message: "Created", rule: new RuleSerializer(newRule).serialize() });
 		}
 	}
 });
@@ -144,11 +144,11 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var rule_id = req.params.rule_id;
 	if ( rule_id ) {
-		rules	= dbRules.getCollection('rules');
+		rules	= dbRules.getCollection("rules");
 		var query = {
-				'$and': [
-						{ 'id': rule_id },
-						{ 'user_id': req.user.id },
+				"$and": [
+						{ "id": rule_id },
+						{ "user_id": req.user.id },
 					]
 				}
 		var rule = rules.findOne( query );
@@ -156,10 +156,10 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 			//console.log(req.body.meta.revision, rule.meta.revision);
 			//console.log((req.body.meta.revision - rule.meta.revision));
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) !== 0 ) {
-				res.status(400).send(new ErrorSerializer({'id': 39.2, 'code': 400, 'message': 'Bad Request'}).serialize());
+				res.status(400).send(new ErrorSerializer({"id": 39.2, "code": 400, "message": "Bad Request"}).serialize());
 			} else {
 				var result;
-				rules.chain().find({ 'id': rule_id }).update(function(item) {
+				rules.chain().find({ "id": rule_id }).update(function(item) {
 					item.name		= req.body.name!==undefined?req.body.name:item.name;
 					item.rule		= req.body.rule!==undefined?req.body.rule:item.rule;
 					item.active		= req.body.active!==undefined?req.body.active:item.active;
@@ -169,17 +169,17 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 				if ( result !== undefined ) {
 					dbRules.save();
 					
-					res.header('Location', '/v'+version+'/rules/'+rule_id);
-					res.status(200).send({ 'code': 200, message: 'Successfully updated', rule: new RuleSerializer(result).serialize() });
+					res.header("Location", "/v"+version+"/rules/"+rule_id);
+					res.status(200).send({ "code": 200, message: "Successfully updated", rule: new RuleSerializer(result).serialize() });
 				} else {
-					res.status(404).send(new ErrorSerializer({'id': 40, 'code': 404, 'message': 'Not Found'}).serialize());
+					res.status(404).send(new ErrorSerializer({"id": 40, "code": 404, "message": "Not Found"}).serialize());
 				}
 			}
 		} else {
-			res.status(401).send(new ErrorSerializer({'id': 42, 'code': 401, 'message': 'Forbidden ??'}).serialize());
+			res.status(401).send(new ErrorSerializer({"id": 42, "code": 401, "message": "Forbidden ??"}).serialize());
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({'id': 40.5, 'code': 404, 'message': 'Not Found'}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 40.5, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -194,20 +194,20 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
  */
 router.delete("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var rule_id = req.params.rule_id;
-	rules	= dbRules.getCollection('rules');
+	rules	= dbRules.getCollection("rules");
 	var query = {
-		'$and': [
-			{ 'user_id' : req.user.id, }, // delete only rule from current user
-			{ 'id' : rule_id, },
+		"$and": [
+			{ "user_id" : req.user.id, }, // delete only rule from current user
+			{ "id" : rule_id, },
 		],
 	};
 	var s = rules.find(query);
 	if ( s.length > 0 ) {
 		rules.remove(s);
 		dbRules.saveDatabase();
-		res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: rule_id }); // TODO: missing serializer
+		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: rule_id }); // TODO: missing serializer
 	} else {
-		res.status(404).send(new ErrorSerializer({'id': 32, 'code': 404, 'message': 'Not Found'}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 32, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

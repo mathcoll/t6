@@ -22,12 +22,12 @@ var tokens;
  */
 router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 	var datatype_id = req.params.datatype_id;
-	datatypes	= db.getCollection('datatypes');
+	datatypes	= db.getCollection("datatypes");
 	var json;
 	if ( datatype_id === undefined ) {
 		json = datatypes.find();
 	} else {
-		json = datatypes.find({ 'id': { '$eq': ""+datatype_id } });
+		json = datatypes.find({ "id": { "$eq": ""+datatype_id } });
 	}
 	//console.log(json);
 	json = json.length>0?json:[];
@@ -47,18 +47,18 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
  * @apiUse 401
  */
 router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role == 'admin' ) {
-		datatypes	= db.getCollection('datatypes');
+	if ( req.user.role == "admin" ) {
+		datatypes	= db.getCollection("datatypes");
 		var newDatatype = {
 			id:			uuid.v4(),
-			name:	req.body.name!==undefined?req.body.name:'unamed',
+			name:	req.body.name!==undefined?req.body.name:"unamed",
 		};
 		datatypes.insert(newDatatype);
 		
-		res.header('Location', '/v'+version+'/datatypes/'+newDatatype.id);
-		res.status(201).send(new ErrorSerializer({ 'code': 201, message: 'Created', datatype: new DataTypeSerializer(newDatatype).serialize() }).serialize());
+		res.header("Location", "/v"+version+"/datatypes/"+newDatatype.id);
+		res.status(201).send(new ErrorSerializer({ "code": 201, message: "Created", datatype: new DataTypeSerializer(newDatatype).serialize() }).serialize());
 	} else {
-		res.status(401).send(new ErrorSerializer({'id': 49, 'code': 401, 'message': 'Unauthorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 49, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -76,9 +76,9 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 401
  */
 router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role == 'admin' ) {
+	if ( req.user.role == "admin" ) {
 		var datatype_id = req.params.datatype_id;
-		datatypes	= db.getCollection('datatypes');
+		datatypes	= db.getCollection("datatypes");
 		var result;
 		datatypes.findAndUpdate(
 			function(i){return i.id==datatype_id},
@@ -89,10 +89,10 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}
 		);
 		db.save();
 		
-		res.header('Location', '/v'+version+'/datatypes/'+datatype_id);
-		res.status(200).send(new ErrorSerializer({ 'code': 200, message: 'Successfully updated', datatype: new DataTypeSerializer(result).serialize() }).serialize());
+		res.header("Location", "/v"+version+"/datatypes/"+datatype_id);
+		res.status(200).send(new ErrorSerializer({ "code": 200, message: "Successfully updated", datatype: new DataTypeSerializer(result).serialize() }).serialize());
 	} else {
-		res.status(401).send(new ErrorSerializer({'id': 50, 'code': 401, 'message': 'Unauthorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 50, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -110,19 +110,19 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}
  * @apiUse 404
  */
 router.delete("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role == 'admin' ) {
+	if ( req.user.role == "admin" ) {
 		var datatype_id = req.params.datatype_id;
-		datatypes	= db.getCollection('datatypes');
-		var d = datatypes.find({'id': { '$eq': datatype_id }});
+		datatypes	= db.getCollection("datatypes");
+		var d = datatypes.find({"id": { "$eq": datatype_id }});
 		if (d) {
 			datatypes.remove(d);
 			db.save();
-			res.status(200).send(new ErrorSerializer({ 'code': 200, message: 'Successfully deleted', removed_id: datatype_id }).serialize());
+			res.status(200).send(new ErrorSerializer({ "code": 200, message: "Successfully deleted", removed_id: datatype_id }).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({'id': 51, 'code': 404, 'message': 'Not Found'}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 51, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(401).send(new ErrorSerializer({'id': 52, 'code': 401, 'message': 'Unauthorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 52, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
