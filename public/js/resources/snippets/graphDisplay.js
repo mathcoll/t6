@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var snippet = {
 	name: "graphDisplay",
 	value: "Graph DEPRECATED !!!!",

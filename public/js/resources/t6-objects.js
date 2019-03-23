@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 app.resources.objects = {
 	onEdit: function(evt) {
 		var object_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');

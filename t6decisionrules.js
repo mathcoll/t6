@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var t6decisionrules = module.exports = {};
 var SunCalc	= require("suncalc");
 var Engine = require('json-rules-engine').Engine;

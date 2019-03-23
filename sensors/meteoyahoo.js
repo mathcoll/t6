@@ -1,6 +1,6 @@
 #!/usr/bin/env nodejs
 
-'use strict';
+"use strict";
 var exec		= require('exec');
 var request		= require('request');
 var sprintf		= require('sprintf-js').sprintf;

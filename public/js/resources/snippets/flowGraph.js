@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var snippet = {
 	name: "flowgraph",
 	value: "Graph a Flow over axis",

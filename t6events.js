@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var t6events = module.exports = {};
 var measurement = 'events';
 var retention = 'autogen';

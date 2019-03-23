@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 app.resources.mqtts = {
 	onEdit: function(evt) {
 	},

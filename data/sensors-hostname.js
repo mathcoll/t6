@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var os			= require('os');
 var sprintf		= require('sprintf-js').sprintf;
 var argv		= require('minimist')(process.argv.slice(2));

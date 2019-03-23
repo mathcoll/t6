@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 app.resources.rules = {
 	onEdit: function(evt) {
 	},

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var snippet = {
 	name: "simplerow",
 	value: "Display one row for each value",

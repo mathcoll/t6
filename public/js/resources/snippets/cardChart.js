@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var snippet = {
 	name: "cardChart",
 	value: "Chart on a card",

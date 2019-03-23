@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 app.resources.snippets = {
 	onEdit: function(evt) {
 		var snippet_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');

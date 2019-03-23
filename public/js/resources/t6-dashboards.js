@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 app.resources.dashboards = {
 	onEdit: function(evt) {
 		var dashboard_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');

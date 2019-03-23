@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 app.resources.flows = {
 	onEdit: function(evt) {
 		var flow_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');

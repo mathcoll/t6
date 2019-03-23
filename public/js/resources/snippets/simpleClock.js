@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var snippet = {
 	name: "simpleclock",
 	value: "Realtime clock",

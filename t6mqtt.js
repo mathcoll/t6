@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var t6mqtt = module.exports = {};
 
 t6mqtt.publish = function(user_id, topic, payload, retain) {
@@ -9,7 +9,7 @@ t6mqtt.publish = function(user_id, topic, payload, retain) {
 			payload.environment = process.env.NODE_ENV;
 		}
 		if ( payload.dtepoch ) {
-			payload.datetime = moment((payload.dtepoch/1000)*1000).format('MMMM Do YYYY, H:mm:ss');
+			payload.datetime = moment((payload.dtepoch/1000)*1000).format("MMMM Do YYYY, H:mm:ss");
 		}
 	}
 	mqtt_client.publish(mqtt_root+user_id+topic, JSON.stringify(payload), {retain: retain});
