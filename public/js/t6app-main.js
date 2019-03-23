@@ -12,147 +12,147 @@
  */
 "use strict";
 var app = {
-	api_version: 'v2.0.1',
+	api_version: "v2.0.1",
 	debug: false,
-	baseUrl: '',
-	baseUrlCdn: '//cdn.internetcollaboratif.info',
-	bearer: '',
+	baseUrl: "",
+	baseUrlCdn: "//cdn.internetcollaboratif.info",
+	bearer: "",
 	auth: {},
 	isLogged: false,
 	autologin: false,
 	RateLimit : {Limit: null, Remaining: null, Used: null},
-	date_format: 'DD/MM/YYYY, HH:mm',
+	date_format: "DD/MM/YYYY, HH:mm",
 	cardMaxChars: 256,
 	cookieconsent: 30,
 	refreshExpiresInSeconds: 280000,
 	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15},
 	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
-	currentSection: 'index',
-	tawktoid: '58852788bcf30e71ac141187',
-	gtm: 'GTM-PH7923',
-	applicationServerKey: 'BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I',
-	defaultPageTitle: 't6 IoT App',
+	currentSection: "index",
+	tawktoid: "58852788bcf30e71ac141187",
+	gtm: "GTM-PH7923",
+	applicationServerKey: "BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I",
+	defaultPageTitle: "t6 IoT App",
 	sectionsPageTitles: {
-		'index': 't6 IoT App',
-		'profile': 't6 profile',
-		'object': 't6 Object %s',
-		'object_add': 'Add Object to t6',
-		'objects': 't6 Objects',
-		'flow': 't6 Flow %s',
-		'flows': 't6 Flows',
-		'flow_add': 'Add Flow to t6',
-		'dashboard': 't6 Dashboard %s',
-		'dashboards': 't6 Dashboards',
-		'dashboard_add': 'Add Dashboard to t6',
-		'snippet': 't6 Snippet %s',
-		'snippets': 't6 Snippets',
-		'snippet_add': 'Add Snippet to t6',
-		'rule': 't6 Rule %s',
-		'rules': 't6 Rules',
-		'rule_add': 'Add Rule to t6',
-		'mqtt': 't6 Mqtt topic %s',
-		'mqtts': 't6 Mqtt topics',
-		'mqtt_add': 'Add Mqtt topic to t6',
-		'settings': 't6 Settings',
-		'signin': 'Signin to t6',
-		'login': 'Signin to t6',
-		'signup': 'Signup to t6',
-		'forgot-password': 'Forgot your t6 password?',
-		'reset-password': 'Reset your t6 password',
-		'status': 't6 Api status',
-		'terms': 't6 Terms of Service and License Agreement',
-		'docs': 't6 Api first documentation',
-		'users-list': 't6 Users Accounts',
+		"index": "t6 IoT App",
+		"profile": "t6 profile",
+		"object": "t6 Object %s",
+		"object_add": "Add Object to t6",
+		"objects": "t6 Objects",
+		"flow": "t6 Flow %s",
+		"flows": "t6 Flows",
+		"flow_add": "Add Flow to t6",
+		"dashboard": "t6 Dashboard %s",
+		"dashboards": "t6 Dashboards",
+		"dashboard_add": "Add Dashboard to t6",
+		"snippet": "t6 Snippet %s",
+		"snippets": "t6 Snippets",
+		"snippet_add": "Add Snippet to t6",
+		"rule": "t6 Rule %s",
+		"rules": "t6 Rules",
+		"rule_add": "Add Rule to t6",
+		"mqtt": "t6 Mqtt topic %s",
+		"mqtts": "t6 Mqtt topics",
+		"mqtt_add": "Add Mqtt topic to t6",
+		"settings": "t6 Settings",
+		"signin": "Signin to t6",
+		"login": "Signin to t6",
+		"signup": "Signup to t6",
+		"forgot-password": "Forgot your t6 password?",
+		"reset-password": "Reset your t6 password",
+		"status": "t6 Api status",
+		"terms": "t6 Terms of Service and License Agreement",
+		"docs": "t6 Api first documentation",
+		"users-list": "t6 Users Accounts",
 	},
 	icons: {
-		'color': 'format_color_fill',
-		'copy': 'content_copy',
-		'dashboards': 'dashboard',
-		'datapoints': 'filter_center_focus',
-		'datatypes': 'build',
-		'date': 'event',
-		'delete': 'delete',
-		'delete_question': 'error_outline',
-		'description': 'label',
-		'docs': 'code',
-		'edit': 'edit',
-		'flows': 'settings_input_component',
-		'icon': 'label_outline',
-		'login': 'email',
-		'menu': 'menu',
-		'mqtts': 'volume_down',
-		'name': 'list',
-		'objects': 'devices_other',
-		'rules': 'call_split',
-		'settings': 'settings',
-		'snippets': 'widgets',
-		'status': 'favorite',
-		'terms': 'business_center',
-		'type': 'label',
-		'units': 'hourglass_empty',
-		'update': 'update',
+		"color": "format_color_fill",
+		"copy": "content_copy",
+		"dashboards": "dashboard",
+		"datapoints": "filter_center_focus",
+		"datatypes": "build",
+		"date": "event",
+		"delete": "delete",
+		"delete_question": "error_outline",
+		"description": "label",
+		"docs": "code",
+		"edit": "edit",
+		"flows": "settings_input_component",
+		"icon": "label_outline",
+		"login": "email",
+		"menu": "menu",
+		"mqtts": "volume_down",
+		"name": "list",
+		"objects": "devices_other",
+		"rules": "call_split",
+		"settings": "settings",
+		"snippets": "widgets",
+		"status": "favorite",
+		"terms": "business_center",
+		"type": "label",
+		"units": "hourglass_empty",
+		"update": "update",
 	},
 	types: [
-		{name: 'cast', value:'Cast'},
-		{name: 'cast_connected', value:'Cast Connected'},
-		{name: 'computer', value:'Computer'},
-		{name: 'desktop_mac', value:'Desktop Mac'},
-		{name: 'desktop_windows', value:'Desktop Windows'},
-		{name: 'developer_board', value:'Developer Board'},
-		{name: 'device_hub', value:'Device Hub'},
-		{name: 'devices_other', value:'Devices Other'},
-		{name: 'dock', value:'Dock'},
-		{name: 'gamepad', value:'Gamepad'},
-		{name: 'headset', value:'Headset'},
-		{name: 'headset_mic', value:'Headset Mic'},
-		{name: 'keyboard', value:'Keyboard'},
-		{name: 'keyboard_voice', value:'Keyboard Voice'},
-		{name: 'laptop', value:'Laptop'},
-		{name: 'laptop_chromebook', value:'Laptop Chromebook'},
-		{name: 'laptop_mac', value:'Laptop Mac'},
-		{name: 'laptop_windows', value:'Laptop Windows'},
-		{name: 'memory', value:'Memory'},
-		{name: 'mouse', value:'Mouse'},
-		{name: 'phone_android', value:'Phone Android'},
-		{name: 'phone_iphone', value:'Phone Iphone'},
-		{name: 'phonelink', value:'Phonelink'},
-		{name: 'router', value:'Router'},
-		{name: 'scanner', value:'Scanner'},
-		{name: 'security', value:'Security'},
-		{name: 'sim_card', value:'Sim Card'},
-		{name: 'smartphone', value:'Smartphone'},
-		{name: 'speaker', value:'Speaker'},
-		{name: 'speaker_group', value:'Speaker Group'},
-		{name: 'tablet', value:'Tablet'},
-		{name: 'tablet_android', value:'Tablet Android'},
-		{name: 'tablet_mac', value:'Tablet Mac'},
-		{name: 'toys', value:'Toys'},
-		{name: 'tv', value:'Tv'},
-		{name: 'videogame_asset', value:'Videogame Asset'},
-		{name: 'watch', value:'Watch'},
+		{name: "cast", value:"Cast"},
+		{name: "cast_connected", value:"Cast Connected"},
+		{name: "computer", value:"Computer"},
+		{name: "desktop_mac", value:"Desktop Mac"},
+		{name: "desktop_windows", value:"Desktop Windows"},
+		{name: "developer_board", value:"Developer Board"},
+		{name: "device_hub", value:"Device Hub"},
+		{name: "devices_other", value:"Devices Other"},
+		{name: "dock", value:"Dock"},
+		{name: "gamepad", value:"Gamepad"},
+		{name: "headset", value:"Headset"},
+		{name: "headset_mic", value:"Headset Mic"},
+		{name: "keyboard", value:"Keyboard"},
+		{name: "keyboard_voice", value:"Keyboard Voice"},
+		{name: "laptop", value:"Laptop"},
+		{name: "laptop_chromebook", value:"Laptop Chromebook"},
+		{name: "laptop_mac", value:"Laptop Mac"},
+		{name: "laptop_windows", value:"Laptop Windows"},
+		{name: "memory", value:"Memory"},
+		{name: "mouse", value:"Mouse"},
+		{name: "phone_android", value:"Phone Android"},
+		{name: "phone_iphone", value:"Phone Iphone"},
+		{name: "phonelink", value:"Phonelink"},
+		{name: "router", value:"Router"},
+		{name: "scanner", value:"Scanner"},
+		{name: "security", value:"Security"},
+		{name: "sim_card", value:"Sim Card"},
+		{name: "smartphone", value:"Smartphone"},
+		{name: "speaker", value:"Speaker"},
+		{name: "speaker_group", value:"Speaker Group"},
+		{name: "tablet", value:"Tablet"},
+		{name: "tablet_android", value:"Tablet Android"},
+		{name: "tablet_mac", value:"Tablet Mac"},
+		{name: "toys", value:"Toys"},
+		{name: "tv", value:"Tv"},
+		{name: "videogame_asset", value:"Videogame Asset"},
+		{name: "watch", value:"Watch"},
 	],
 	snippetTypes: [],
-	EventTypes: [{name: 'mqttPublish', value:'mqtt Publish'}, {name: 'email', value:'Email'}, {name: 'httpWebhook', value:'http(s) Webhook'}, {name: 'sms', value:'Sms/Text message'}, {name: 'serial', value:'Serial using Arduino CmdMessenger'}],
+	EventTypes: [{name: "mqttPublish", value:"mqtt Publish"}, {name: "email", value:"Email"}, {name: "httpWebhook", value:"http(s) Webhook"}, {name: "sms", value:"Sms/Text message"}, {name: "serial", value:"Serial using Arduino CmdMessenger"}],
 	units: [],
 	datatypes: [],
 	flows: [],
 	snippets: [],
 	defaultResources: {
-		object: {id:'', attributes: {name: '', description: '', is_public: false, type: '', ipv4: '', ipv6: '', longitude: '', latitude: '', position: ''}},
-		flow: {id:'', attributes: {name: '', mqtt_topic: '', require_signed: false, require_encrypted: false}},
-		dashboard: {id:'', attributes: {name: '', description: ''}},
-		snippet: {id:'', attributes: {name: '', icon: '', color: ''}},
-		mqtt: {id:'', attributes: {name: ''}},
-		rule: {id:'', active: true, attributes: {name: '', priority: 1, event: {type:'email', conditions: '{"all":[ { "fact":"environment", "operator":"equal", "value":"production" }]}', parameters: '{}'}}},
+		object: {id:"", attributes: {name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: "", latitude: "", position: ""}},
+		flow: {id:"", attributes: {name: "", mqtt_topic: "", require_signed: false, require_encrypted: false}},
+		dashboard: {id:"", attributes: {name: "", description: ""}},
+		snippet: {id:"", attributes: {name: "", icon: "", color: ""}},
+		mqtt: {id:"", attributes: {name: ""}},
+		rule: {id:'', active: true, attributes: {name: '', priority: 1, event: {type:"email", conditions: '{"all":[ { "fact":"environment", "operator":"equal", "value":"production" }]}', parameters: "{}"}}},
 	},
 	offlineCard: {},
 	patterns: {
-		name: '.{3,}',
-		ipv4: '((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}(:[0-9]{1,6})?',
-		ipv6: '/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$',
-		longitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,7}$',
-		latitude: '^[-+]?[0-9]{0,3}\.[0-9]{1,7}$',
-		position: '.{3,255}',
+		name: ".{3,}",
+		ipv4: "((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.|$)){4}(:[0-9]{1,6})?",
+		ipv6: "/^(?>(?>([a-f0-9]{1,4})(?>:(?1)){7}|(?!(?:.*[a-f0-9](?>:|$)){8,})((?1)(?>:(?1)){0,6})?::(?2)?)|(?>(?>(?1)(?>:(?1)){5}:|(?!(?:.*[a-f0-9]:){6,})(?3)?::(?>((?1)(?>:(?1)){0,4}):)?)?(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(?>\.(?4)){3}))$",
+		longitude: "^[-+]?[0-9]{0,3}\.[0-9]{1,7}$",
+		latitude: "^[-+]?[0-9]{0,3}\.[0-9]{1,7}$",
+		position: ".{3,255}",
 		username: "[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?",
 		password: ".{4,}",
 		cardMaxChars: "^[0-9]+$",
@@ -160,14 +160,14 @@ var app = {
 		customAttributeValue: "^.*?$",
 		secret_key: "^.*?$",
 		secret_key_crypt: "^.*?$",
-		integerNotNegative: '[1-999]+',
+		integerNotNegative: "[1-999]+",
 		meta_revision: "^[0-9]{1,}$",
 	},
 	resources: {},
 	buttons: {}, // see function app.refreshButtonsSelectors()
 	containers: {}, // see function app.refreshContainers()
 };
-app.offlineCard = {image: app.baseUrlCdn+'/img/opl_img3.jpg', title: 'Offline', titlecolor: '#ffffff', description: 'Offline mode, Please connect to internet in order to see your resources.'};
+app.offlineCard = {image: app.baseUrlCdn+"/img/opl_img3.jpg", title: "Offline", titlecolor: "#ffffff", description: "Offline mode, Please connect to internet in order to see your resources."};
 
 var Tawk_API;
 var touchStartPoint, touchMovePoint;
@@ -177,23 +177,23 @@ var touchStartPoint, touchMovePoint;
 	function hex_md5(r){return rstr2hex(rstr_md5(str2rstr_utf8(r)))}function b64_md5(r){return rstr2b64(rstr_md5(str2rstr_utf8(r)))}function any_md5(r,t){return rstr2any(rstr_md5(str2rstr_utf8(r)),t)}function hex_hmac_md5(r,t){return rstr2hex(rstr_hmac_md5(str2rstr_utf8(r),str2rstr_utf8(t)))}function b64_hmac_md5(r,t){return rstr2b64(rstr_hmac_md5(str2rstr_utf8(r),str2rstr_utf8(t)))}function any_hmac_md5(r,t,d){return rstr2any(rstr_hmac_md5(str2rstr_utf8(r),str2rstr_utf8(t)),d)}function md5_vm_test(){return"900150983cd24fb0d6963f7d28e17f72"==hex_md5("abc").toLowerCase()}function rstr_md5(r){return binl2rstr(binl_md5(rstr2binl(r),8*r.length))}function rstr_hmac_md5(r,t){var d=rstr2binl(r);d.length>16&&(d=binl_md5(d,8*r.length));for(var n=Array(16),_=Array(16),m=0;16>m;m++)n[m]=909522486^d[m],_[m]=1549556828^d[m];var f=binl_md5(n.concat(rstr2binl(t)),512+8*t.length);return binl2rstr(binl_md5(_.concat(f),640))}function rstr2hex(r){try{}catch(t){hexcase=0}for(var d,n=hexcase?"0123456789ABCDEF":"0123456789abcdef",_="",m=0;m<r.length;m++)d=r.charCodeAt(m),_+=n.charAt(d>>>4&15)+n.charAt(15&d);return _}function rstr2b64(r){try{}catch(t){b64pad=""}for(var d="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/",n="",_=r.length,m=0;_>m;m+=3)for(var f=r.charCodeAt(m)<<16|(_>m+1?r.charCodeAt(m+1)<<8:0)|(_>m+2?r.charCodeAt(m+2):0),h=0;4>h;h++)n+=8*m+6*h>8*r.length?b64pad:d.charAt(f>>>6*(3-h)&63);return n}function rstr2any(r,t){var d,n,_,m,f,h=t.length,e=Array(Math.ceil(r.length/2));for(d=0;d<e.length;d++)e[d]=r.charCodeAt(2*d)<<8|r.charCodeAt(2*d+1);var a=Math.ceil(8*r.length/(Math.log(t.length)/Math.log(2))),i=Array(a);for(n=0;a>n;n++){for(f=Array(),m=0,d=0;d<e.length;d++)m=(m<<16)+e[d],_=Math.floor(m/h),m-=_*h,(f.length>0||_>0)&&(f[f.length]=_);i[n]=m,e=f}var o="";for(d=i.length-1;d>=0;d--)o+=t.charAt(i[d]);return o}function str2rstr_utf8(r){for(var t,d,n="",_=-1;++_<r.length;)t=r.charCodeAt(_),d=_+1<r.length?r.charCodeAt(_+1):0,t>=55296&&56319>=t&&d>=56320&&57343>=d&&(t=65536+((1023&t)<<10)+(1023&d),_++),127>=t?n+=String.fromCharCode(t):2047>=t?n+=String.fromCharCode(192|t>>>6&31,128|63&t):65535>=t?n+=String.fromCharCode(224|t>>>12&15,128|t>>>6&63,128|63&t):2097151>=t&&(n+=String.fromCharCode(240|t>>>18&7,128|t>>>12&63,128|t>>>6&63,128|63&t));return n}function str2rstr_utf16le(r){for(var t="",d=0;d<r.length;d++)t+=String.fromCharCode(255&r.charCodeAt(d),r.charCodeAt(d)>>>8&255);return t}function str2rstr_utf16be(r){for(var t="",d=0;d<r.length;d++)t+=String.fromCharCode(r.charCodeAt(d)>>>8&255,255&r.charCodeAt(d));return t}function rstr2binl(r){for(var t=Array(r.length>>2),d=0;d<t.length;d++)t[d]=0;for(var d=0;d<8*r.length;d+=8)t[d>>5]|=(255&r.charCodeAt(d/8))<<d%32;return t}function binl2rstr(r){for(var t="",d=0;d<32*r.length;d+=8)t+=String.fromCharCode(r[d>>5]>>>d%32&255);return t}function binl_md5(r,t){r[t>>5]|=128<<t%32,r[(t+64>>>9<<4)+14]=t;for(var d=1732584193,n=-271733879,_=-1732584194,m=271733878,f=0;f<r.length;f+=16){var h=d,e=n,a=_,i=m;d=md5_ff(d,n,_,m,r[f+0],7,-680876936),m=md5_ff(m,d,n,_,r[f+1],12,-389564586),_=md5_ff(_,m,d,n,r[f+2],17,606105819),n=md5_ff(n,_,m,d,r[f+3],22,-1044525330),d=md5_ff(d,n,_,m,r[f+4],7,-176418897),m=md5_ff(m,d,n,_,r[f+5],12,1200080426),_=md5_ff(_,m,d,n,r[f+6],17,-1473231341),n=md5_ff(n,_,m,d,r[f+7],22,-45705983),d=md5_ff(d,n,_,m,r[f+8],7,1770035416),m=md5_ff(m,d,n,_,r[f+9],12,-1958414417),_=md5_ff(_,m,d,n,r[f+10],17,-42063),n=md5_ff(n,_,m,d,r[f+11],22,-1990404162),d=md5_ff(d,n,_,m,r[f+12],7,1804603682),m=md5_ff(m,d,n,_,r[f+13],12,-40341101),_=md5_ff(_,m,d,n,r[f+14],17,-1502002290),n=md5_ff(n,_,m,d,r[f+15],22,1236535329),d=md5_gg(d,n,_,m,r[f+1],5,-165796510),m=md5_gg(m,d,n,_,r[f+6],9,-1069501632),_=md5_gg(_,m,d,n,r[f+11],14,643717713),n=md5_gg(n,_,m,d,r[f+0],20,-373897302),d=md5_gg(d,n,_,m,r[f+5],5,-701558691),m=md5_gg(m,d,n,_,r[f+10],9,38016083),_=md5_gg(_,m,d,n,r[f+15],14,-660478335),n=md5_gg(n,_,m,d,r[f+4],20,-405537848),d=md5_gg(d,n,_,m,r[f+9],5,568446438),m=md5_gg(m,d,n,_,r[f+14],9,-1019803690),_=md5_gg(_,m,d,n,r[f+3],14,-187363961),n=md5_gg(n,_,m,d,r[f+8],20,1163531501),d=md5_gg(d,n,_,m,r[f+13],5,-1444681467),m=md5_gg(m,d,n,_,r[f+2],9,-51403784),_=md5_gg(_,m,d,n,r[f+7],14,1735328473),n=md5_gg(n,_,m,d,r[f+12],20,-1926607734),d=md5_hh(d,n,_,m,r[f+5],4,-378558),m=md5_hh(m,d,n,_,r[f+8],11,-2022574463),_=md5_hh(_,m,d,n,r[f+11],16,1839030562),n=md5_hh(n,_,m,d,r[f+14],23,-35309556),d=md5_hh(d,n,_,m,r[f+1],4,-1530992060),m=md5_hh(m,d,n,_,r[f+4],11,1272893353),_=md5_hh(_,m,d,n,r[f+7],16,-155497632),n=md5_hh(n,_,m,d,r[f+10],23,-1094730640),d=md5_hh(d,n,_,m,r[f+13],4,681279174),m=md5_hh(m,d,n,_,r[f+0],11,-358537222),_=md5_hh(_,m,d,n,r[f+3],16,-722521979),n=md5_hh(n,_,m,d,r[f+6],23,76029189),d=md5_hh(d,n,_,m,r[f+9],4,-640364487),m=md5_hh(m,d,n,_,r[f+12],11,-421815835),_=md5_hh(_,m,d,n,r[f+15],16,530742520),n=md5_hh(n,_,m,d,r[f+2],23,-995338651),d=md5_ii(d,n,_,m,r[f+0],6,-198630844),m=md5_ii(m,d,n,_,r[f+7],10,1126891415),_=md5_ii(_,m,d,n,r[f+14],15,-1416354905),n=md5_ii(n,_,m,d,r[f+5],21,-57434055),d=md5_ii(d,n,_,m,r[f+12],6,1700485571),m=md5_ii(m,d,n,_,r[f+3],10,-1894986606),_=md5_ii(_,m,d,n,r[f+10],15,-1051523),n=md5_ii(n,_,m,d,r[f+1],21,-2054922799),d=md5_ii(d,n,_,m,r[f+8],6,1873313359),m=md5_ii(m,d,n,_,r[f+15],10,-30611744),_=md5_ii(_,m,d,n,r[f+6],15,-1560198380),n=md5_ii(n,_,m,d,r[f+13],21,1309151649),d=md5_ii(d,n,_,m,r[f+4],6,-145523070),m=md5_ii(m,d,n,_,r[f+11],10,-1120210379),_=md5_ii(_,m,d,n,r[f+2],15,718787259),n=md5_ii(n,_,m,d,r[f+9],21,-343485551),d=safe_add(d,h),n=safe_add(n,e),_=safe_add(_,a),m=safe_add(m,i)}return Array(d,n,_,m)}function md5_cmn(r,t,d,n,_,m){return safe_add(bit_rol(safe_add(safe_add(t,r),safe_add(n,m)),_),d)}function md5_ff(r,t,d,n,_,m,f){return md5_cmn(t&d|~t&n,r,t,_,m,f)}function md5_gg(r,t,d,n,_,m,f){return md5_cmn(t&n|d&~n,r,t,_,m,f)}function md5_hh(r,t,d,n,_,m,f){return md5_cmn(t^d^n,r,t,_,m,f)}function md5_ii(r,t,d,n,_,m,f){return md5_cmn(d^(t|~n),r,t,_,m,f)}function safe_add(r,t){var d=(65535&r)+(65535&t),n=(r>>16)+(t>>16)+(d>>16);return n<<16|65535&d}function bit_rol(r,t){return r<<t|r>>>32-t}var hexcase=0,b64pad="";
 	exports.hex_md5 = hex_md5; // Make this method available in global
 	
-	var toastContainer = document.querySelector('.toast__container');
+	var toastContainer = document.querySelector(".toast__container");
 
 	// To show notification
 	function toast(msg, options) {
 		if (!msg) return;
 
-		options = options || {timeout:3000, type: 'info'};
+		options = options || {timeout:3000, type: "info"};
 		// type = error, done, warning, help, info
 		options.timeout = options.timeout!==undefined?options.timeout:3000;
-		options.type = options.type!==undefined?options.type:'info';
+		options.type = options.type!==undefined?options.type:"info";
 
-		var toastMsg = document.createElement('div');
-		toastMsg.className = 'toast__msg '+options.type;
-		var icon = document.createElement('i');
-		icon.className = 'material-icons';
+		var toastMsg = document.createElement("div");
+		toastMsg.className = "toast__msg "+options.type;
+		var icon = document.createElement("i");
+		icon.className = "material-icons";
 		icon.textContent = options.type;
-		var span = document.createElement('span');
+		var span = document.createElement("span");
 		span.textContent = msg;
 		toastMsg.appendChild(icon);
 		toastMsg.appendChild(span);
@@ -201,11 +201,11 @@ var touchStartPoint, touchMovePoint;
 
 		// Show toast for 3secs and hide it
 		setTimeout(function () {
-			toastMsg.classList.add('toast__msg--hide');
+			toastMsg.classList.add("toast__msg--hide");
 		}, options.timeout);
 
 		// Remove the element after hiding
-		toastMsg.addEventListener('transitionend', function (event) {
+		toastMsg.addEventListener("transitionend", function (event) {
 			event.target.parentNode.removeChild(event.target);
 		});
 	}
@@ -217,7 +217,7 @@ var touchStartPoint, touchMovePoint;
 		var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
 		results = regex.exec(url);
 		if (!results) return null;
-		if (!results[2]) return '';
+		if (!results[2]) return "";
 		return decodeURIComponent(results[2].replace(/\+/g, " "));
 	}
 	exports.getParameterByName = getParameterByName; // Make this method available in global
@@ -2595,11 +2595,11 @@ var touchStartPoint, touchMovePoint;
 				s.activateOnce(my_snippet);
 				
 				// Set the buttons on edit Snippets
-				var editSnippetButtons = document.querySelectorAll('.edit-snippet');
+				var editSnippetButtons = document.querySelectorAll(".edit-snippet");
 				for (var b in editSnippetButtons) {
 					if ( (editSnippetButtons[b]).childElementCount > -1 ) {
-						(editSnippetButtons[b]).addEventListener('click', function(evt) {
-							app.resources.snippets.display(evt.target.getAttribute('data-snippet-id'), false, true, false);
+						(editSnippetButtons[b]).addEventListener("click", function(evt) {
+							app.resources.snippets.display(evt.target.getAttribute("data-snippet-id"), false, true, false);
 							evt.preventDefault();
 						});
 					}
@@ -2607,8 +2607,8 @@ var touchStartPoint, touchMovePoint;
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('getSnippet error out...' + error, {timeout:3000, type: "error"});
+			if ( localStorage.getItem("settings.debug") == "true" ) {
+				toast("getSnippet error out..." + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
