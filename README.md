@@ -57,7 +57,7 @@ CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATI
 ```
 
 You can add the server running as a service, tested with Ubuntu and Debian:
-  * First: install the server in services:
+* First: install the server in services:
 ```console
 $ sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
 ```
@@ -67,7 +67,7 @@ And then, start _t6_ using:
 $ sudo /etc/init.d/t6 (re)start|stop|status
 ```
 
-  * Then, set the server to run at start: 
+* Then, set the server to run at start: 
 ```console
 $ sudo update-rc.d t6 defaults
 ```
