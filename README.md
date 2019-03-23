@@ -1,6 +1,7 @@
 # t6
 t6 is an "oriented-Data" platform to connect physical Objects with timeseries DB.
 Please referes to CONTRIBUTING.md in case you would like to help :-)
+
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/app/internetcollaboratif/t6?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
 
 ## Structure & Context
@@ -10,10 +11,10 @@ Physical Objects require a virtual _Object_ in t6 and then, they could add _Data
 Sample nodeMCU and Arduino scripts are available in the _sensors_ repositories.
 
 ### Application & Dashboard Screenshots
-![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png)
-![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png)
-![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot3.png)
-![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot4.png)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png | width=100)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png | width=100)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot3.png | width=100)
+![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot4.png | width=100)
 
 Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
 
@@ -29,13 +30,13 @@ _Actions_ are triggered when something is happening on the t6 platform.
 Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
 
 ## t6 Installation
-```
+```console
 Install node (if needed): https://nodejs.org/en/
 Install npm (if needed): https://github.com/npm/npm
 ```
 
 _Do not use sudo/root to install t6, this is not necessary_ and not recommended
-```
+```console
 git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
 npm install
 rename "settings-hostname.js" according to your server _hostname_ and edit the file.
@@ -58,17 +59,16 @@ CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATI
 ```
 
 You can add the server running as a service, tested with Ubuntu and Debian:
-* First: install the server in services:
+* First: install the server as service:
 ```console
 $ sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
 ```
-
-And then, start _t6_ using:
+* And then, start _t6_ using:
 ```console
 $ sudo /etc/init.d/t6 (re)start|stop|status
 ```
 
-* Then, set the server to run at start: 
+* Finally, set the server to run at startup: 
 ```console
 $ sudo update-rc.d t6 defaults
 ```
