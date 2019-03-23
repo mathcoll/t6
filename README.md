@@ -11,10 +11,14 @@ Physical Objects require a virtual _Object_ in t6 and then, they could add _Data
 Sample nodeMCU and Arduino scripts are available in the _sensors_ repositories.
 
 ### Application & Dashboard Screenshots
-![t6 screenshot|small](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png)
-![t6 screenshot|small](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png)
-![t6 screenshot|small](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot3.png)
-![t6 screenshot|small](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot4.png)
+#### Home page
+![t6 screenshot](//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png)
+#### Objects list
+![t6 screenshot](//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png)
+#### Objects Add form
+![t6 screenshot](//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot4.png)
+#### Dashboard view
+![t6 screenshot](//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot3.png)
 
 Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
 
