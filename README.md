@@ -12,12 +12,11 @@ Sample nodeMCU and Arduino scripts are available in the _sensors_ repositories.
 
 ### Application & Dashboard Screenshots
 | Home page | Object Add form |
-| :---         |          ---: |
+| --------- | --------------- |
 | ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot.png "Home page")  | ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot4.png "Object Add form")  |
 
 | Objects list | Dashboard view |
 | ------------ | -------------- |
-| :---         |           ---: |
 | ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot2.png "Objects list")  | ![t6 screenshot](https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-screenshot3.png "Dashboard view")  |
 
 Physical Objects require a virtual _Object_ in t6 and then, they could add _Data_ to _Flows_.
@@ -41,12 +40,12 @@ Install npm (if needed): https://github.com/npm/npm
 
 _Do not use sudo/root to install t6, this is not necessary_ and not recommended
 ```console
-git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
-npm install
-rename "settings-hostname.js" according to your server _hostname_ and edit the file.
-rename "rules-hostname.js" according to your server _hostname_.
-rename "sensors-hostname.js" according to your server _hostname_.
-rename "db-hostname.json" according to your server _hostname_.
+$ git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
+$ npm install
+$ rename "settings-hostname.js" according to your server _hostname_ and edit the file.
+$ rename "rules-hostname.js" according to your server _hostname_.
+$ rename "sensors-hostname.js" according to your server _hostname_.
+$ rename "db-hostname.json" according to your server _hostname_.
 ```
 :sparkles: On linux, to identify your hostname, you can run the following command:
 ```console
