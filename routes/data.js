@@ -16,7 +16,7 @@ function str2bool(v) {
 }
 
 router.get("/1234/test/mqtt", function (req, res) {
-	decisionrules.actionTest('FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8', {'dtepoch': 1499103302768, 'value': "superValue", 'text': null, 'flow': 'FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c'}, true, 'testTopic');
+	decisionrules.actionTest("FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8", {"dtepoch": 1499103302768, "value": "superValue", "text": null, "flow": "FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c"}, true, "testTopic");
 	res.status(200).send({message: "OK"});
 });
 
@@ -53,22 +53,22 @@ router.get("/1234/test/mqtt", function (req, res) {
  */
 router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
-	var output = req.query.output!==undefined?req.query.output:'json';
+	var output = req.query.output!==undefined?req.query.output:"json";
 	
 	if ( !flow_id ) {
-		res.status(405).send(new ErrorSerializer({'id': 56, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
+		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
 	}
 	if ( !req.user.id ){
 		// Not Authorized because token is invalid
-		res.status(401).send(new ErrorSerializer({'id': 57, 'code': 401, 'message': 'Not Authorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 57, "code": 401, "message": "Not Authorized"}).serialize());
 	} else {
 		//var limit = req.params.limit!==undefined?parseInt(req.params.limit):10;
 		//var page = req.params.page!==undefined?parseInt(req.params.page):1;
-		//var sort = req.query.sort!==undefined?req.query.sort:'time';
+		//var sort = req.query.sort!==undefined?req.query.sort:"time";
 		var sorting = req.query.order!==undefined?req.query.order:undefined;
-		sorting = req.query.order=='asc'?true:false;
+		sorting = req.query.order=="asc"?true:false;
 		sorting = req.query.sort!==undefined?req.query.sort:undefined;
-		sorting = req.query.sort=='asc'?true:false;
+		sorting = req.query.sort=="asc"?true:false;
 		var page = parseInt(req.query.page, 10);
 		if (isNaN(page) || page < 1) {
 			page = 1;
@@ -83,70 +83,70 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 			limit = 1;
 		}
 
-		flows = db.getCollection('flows');
-		units	= db.getCollection('units');
-		var flow = flows.chain().find({ 'id' : { '$aeq' : flow_id } }).limit(1);
-		var join = flow.eqJoin(units.chain(), 'unit_id', 'id');
+		flows = db.getCollection("flows");
+		units	= db.getCollection("units");
+		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
+		var join = flow.eqJoin(units.chain(), "unit_id", "id");
 
-		var flowsDT = db.getCollection('flows');
-		datatypes	= db.getCollection('datatypes');
+		var flowsDT = db.getCollection("flows");
+		datatypes	= db.getCollection("datatypes");
 		var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
-		var joinDT = flowDT.eqJoin(datatypes.chain(), 'data_type', 'id');
+		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = (joinDT.data())[0]!==undefined?(joinDT.data())[0].right.name:null;
 		
-		//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id='5' AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
+		//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id="5" AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 		if ( db_type.influxdb == true ) {
 			/* InfluxDB database */
 			
 			var query = squel.select()
-				.from('data')
-				.where('flow_id=?', flow_id)
+				.from("data")
+				.where("flow_id=?", flow_id)
 				.limit(limit)
 				.offset((page - 1) * limit)
-				.order('time', sorting)
+				.order("time", sorting)
 			;
 			
 			// Cast value according to Flow settings
-			if ( datatype == 'boolean' ) {
-				query.field('time, valueBoolean');
-			} else if ( datatype == 'date' ) {
-				query.field('time, valueDate');
-			} else if ( datatype == 'integer' ) {
-				query.field('time, valueInteger');
-			} else if ( datatype == 'json' ) {
-				query.field('time, valueJson');
-			} else if ( datatype == 'string' ) {
-				query.field('time, valueString');
-			} else if ( datatype == 'time' ) {
-				query.field('time, valueTime');
-			} else if ( datatype == 'float' ) {
-				query.field('time, valueFloat');
-			} else if ( datatype == 'geo' ) {
-				query.field('time, valueString');
+			if ( datatype == "boolean" ) {
+				query.field("time, valueBoolean");
+			} else if ( datatype == "date" ) {
+				query.field("time, valueDate");
+			} else if ( datatype == "integer" ) {
+				query.field("time, valueInteger");
+			} else if ( datatype == "json" ) {
+				query.field("time, valueJson");
+			} else if ( datatype == "string" ) {
+				query.field("time, valueString");
+			} else if ( datatype == "time" ) {
+				query.field("time, valueTime");
+			} else if ( datatype == "float" ) {
+				query.field("time, valueFloat");
+			} else if ( datatype == "geo" ) {
+				query.field("time, valueString");
 			} else {
-				query.field('time, value');
+				query.field("time, value");
 			}
 			// End casting
 
 			if ( req.query.start != undefined ) {
 				if ( !isNaN(req.query.start) ) {
 					//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
-					query.where('time>='+req.query.start*1000000);
+					query.where("time>="+req.query.start*1000000);
 				} else {
-					query.where('time>='+moment(req.query.start).format('x')*1000000); 
+					query.where("time>="+moment(req.query.start).format("x")*1000000); 
 				}
 			}	
 			if ( req.query.end != undefined ) {
 				if ( !isNaN(req.query.end) ) {
 					//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
-					query.where('time<='+req.query.end*1000000);
+					query.where("time<="+req.query.end*1000000);
 				} else {
-					query.where('time<='+moment(req.query.end).format('x')*1000000); 
+					query.where("time<="+moment(req.query.end).format("x")*1000000); 
 				}
 			}
 
 			query = query.toString();
-			//console.log('query: '+query);
+			//console.log("query: "+query);
 
 			dbInfluxDB.query(query).then(data => {
 				if ( data.length > 0 ) {
@@ -154,29 +154,29 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 						d.id = Date.parse(d.time);
 						d.timestamp = Date.parse(d.time);
 						d.time = Date.parse(d.time);
-						if ( datatype == 'boolean' ) {
-							d.value = d.valueBoolean=='true'?true:false;
-						} else if ( datatype == 'date' ) {
+						if ( datatype == "boolean" ) {
+							d.value = d.valueBoolean=="true"?true:false;
+						} else if ( datatype == "date" ) {
 							d.value = d.valueDate;
-						} else if ( datatype == 'integer' ) {
+						} else if ( datatype == "integer" ) {
 							d.value = (d.valueInteger).length>0?parseInt((d.valueInteger).substring(-1)):parseInt((d.valueInteger));
-						} else if ( datatype == 'json' ) {
+						} else if ( datatype == "json" ) {
 							d.value = d.valueJson;
-						} else if ( datatype == 'string' ) {
+						} else if ( datatype == "string" ) {
 							d.value = d.valueString;
-						} else if ( datatype == 'time' ) {
+						} else if ( datatype == "time" ) {
 							d.value = d.valueTime;
-						} else if ( datatype == 'float' ) {
+						} else if ( datatype == "float" ) {
 							d.value = parseFloat(d.valueFloat);
-						} else if ( datatype == 'geo' ) {
+						} else if ( datatype == "geo" ) {
 							d.value = d.valueString;
 						} else {
 							d.value = d.value;
 						}
 					});
 
-					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
-					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:'';
+					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
+					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
 					data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 					data.ttl = 3600;
 					data.flow_id = flow_id;
@@ -184,46 +184,46 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					data.next = page+1;
 					data.prev = page-1;
 					data.limit = limit;
-					data.order = req.query.order!==undefined?req.query.order:'asc';
+					data.order = req.query.order!==undefined?req.query.order:"asc";
 					
-					if (output == 'json') {
+					if (output == "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output == 'svg') {
+					} else if(output == "svg") {
 						res.status(404).send("SVG Not Implemented with influxDB");
 					};
 				} else {
-					res.status(204).send(new ErrorSerializer({'id': 898, 'code': 204, 'message': 'No Content'}).serialize());
+					res.status(204).send(new ErrorSerializer({"id": 898, "code": 204, "message": "No Content"}).serialize());
 				};
 			}).catch(err => {
-				res.status(500).send({query: query, err: err, 'id': 899, 'code': 500, 'message': 'Internal Error'});
+				res.status(500).send({query: query, err: err, "id": 899, "code": 500, "message": "Internal Error"});
 			});
 
 		} else if ( db_type.sqlite3 == true ) {
 			/* sqlite3 database */
-			// SELECT strftime('%Y', timestamp), AVG(value), MIN(value), MAX(value), count(value) FROM data WHERE flow_id=5 GROUP BY strftime('%Y', timestamp);
+			// SELECT strftime("%Y", timestamp), AVG(value), MIN(value), MAX(value), count(value) FROM data WHERE flow_id=5 GROUP BY strftime("%Y", timestamp);
 			var query = squel.select()
-				.field('timestamp, value, flow_id, timestamp AS id')
-				.from('data')
-				.where('flow_id=?', flow_id)
+				.field("timestamp, value, flow_id, timestamp AS id")
+				.from("data")
+				.where("flow_id=?", flow_id)
 				.limit(limit)
 				.offset((page - 1) * limit)
-				.order('timestamp', sorting)
+				.order("timestamp", sorting)
 			;
 			
 			if ( req.query.start != undefined ) {
 				if ( !isNaN(req.query.start) ) {
 					//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
-					query.where('timestamp>=?', req.query.start);
+					query.where("timestamp>=?", req.query.start);
 				} else {
-					query.where('timestamp>=?', moment(req.query.start).format('X')); // TODO, should be "x" lower case 
+					query.where("timestamp>=?", moment(req.query.start).format("X")); // TODO, should be "x" lower case 
 				}
 			}	
 			if ( req.query.end != undefined ) {
 				if ( !isNaN(req.query.end) ) {
 					//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
-					query.where('timestamp<=?', req.query.end);
+					query.where("timestamp<=?", req.query.end);
 				} else {
-					query.where('timestamp<=?', moment(req.query.end).format('X')); // TODO, should be "x" lower case 
+					query.where("timestamp<=?", moment(req.query.end).format("X")); // TODO, should be "x" lower case 
 				}
 			}	
 				
@@ -232,8 +232,8 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 			dbSQLite3.all(query, function(err, data) {
 				if (err) console.log(err);
 				if ( data.length > 0 ) {
-					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
-					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:'';
+					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
+					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
 					data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 					data.ttl = 3600;
 					data.flow_id = flow_id;
@@ -241,18 +241,18 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					data.next = page+1;
 					data.prev = page-1;
 					data.limit = limit;
-					data.id = moment(data.timestamp).format('x');
-					data.time = moment(data.timestamp).format('x');
-					data.timestamp = moment(data.timestamp).format('x');
-					data.order = req.query.order!==undefined?req.query.order:'asc';
+					data.id = moment(data.timestamp).format("x");
+					data.time = moment(data.timestamp).format("x");
+					data.timestamp = moment(data.timestamp).format("x");
+					data.order = req.query.order!==undefined?req.query.order:"asc";
 					
-					if (output == 'json') {
+					if (output == "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output == 'svg') {
-						var D3Node = require('d3-node');
-						var d3 = require('d3');
+					} else if(output == "svg") {
+						var D3Node = require("d3-node");
+						var d3 = require("d3");
 						data.reverse();
-						var svgStyles = '.text {color: #fff;} .bar { fill: steelblue; } .bar:hover { fill: brown; } .axis {font: 10px sans-serif;} .axis path, .axis line { fill: none; shape-rendering: crispedges; stroke: #000000; }';
+						var svgStyles = ".text {color: #fff;} .bar { fill: steelblue; } .bar:hover { fill: brown; } .axis {font: 10px sans-serif;} .axis path, .axis line { fill: none; shape-rendering: crispedges; stroke: #000000; }";
 						var d3n = new D3Node({svgStyles:svgStyles});
 						
 						var chartWidth = 800, chartHeight = 400;
@@ -331,12 +331,12 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 									.style("text-anchor", "middle")
 									;
 									
-							res.setHeader('Content-Type', 'image/svg+xml');
+							res.setHeader("Content-Type", "image/svg+xml");
 							res.status(200).send( d3n.svgString() );
 						});
 					}
 				} else {
-					res.status(404).send(new ErrorSerializer({'id': 598, 'code': 404, 'message': 'Not Found'}).serialize());
+					res.status(404).send(new ErrorSerializer({"id": 598, "code": 404, "message": "Not Found"}).serialize());
 				}
 			});
 		}
@@ -372,59 +372,59 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
-	var output = req.query.output!==undefined?req.query.output:'json';
+	var output = req.query.output!==undefined?req.query.output:"json";
 	
 	if ( !flow_id ) {
-		res.status(405).send(new ErrorSerializer({'id': 59, 'code': 405, 'message': 'Method Not Allowed'}).serialize());
+		res.status(405).send(new ErrorSerializer({"id": 59, "code": 405, "message": "Method Not Allowed"}).serialize());
 	}
 	if ( !req.user.id ){
 		// Not Authorized because token is invalid
-		res.status(401).send(new ErrorSerializer({'id': 60, 'code': 401, 'message': 'Not Authorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 60, "code": 401, "message": "Not Authorized"}).serialize());
 	} else {
 		var limit = 1;
 		var page = 1;
-		var sorting = req.query.order=='asc'?true:false;
+		var sorting = req.query.order=="asc"?true:false;
 		
-		flows	= db.getCollection('flows');
-		units	= db.getCollection('units');
-		var flow = flows.chain().find({ 'id' : { '$aeq' : flow_id, }, }).limit(1);
+		flows	= db.getCollection("flows");
+		units	= db.getCollection("units");
+		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id, }, }).limit(1);
 		var mqtt_topic = ((flow.data())[0].mqtt_topic!==undefined)?(flow.data())[0].mqtt_topic:null;
-		var join = flow.eqJoin(units.chain(), 'unit_id', 'id');
+		var join = flow.eqJoin(units.chain(), "unit_id", "id");
 
-		var flowsDT = db.getCollection('flows');
-		datatypes	= db.getCollection('datatypes');
+		var flowsDT = db.getCollection("flows");
+		datatypes	= db.getCollection("datatypes");
 		var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
-		var joinDT = flowDT.eqJoin(datatypes.chain(), 'data_type', 'id');
+		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = (joinDT.data())[0]!==undefined?(joinDT.data())[0].right.name:null;
 
 		if ( db_type.influxdb == true ) {
 			/* InfluxDB database */
 			var query = squel.select()
-				.from('data')
-				.where('flow_id=?', flow_id)
-				.where('time='+data_id)
+				.from("data")
+				.where("flow_id=?", flow_id)
+				.where("time="+data_id)
 				.limit(limit)
 			;
 			
 			// Cast value according to Flow settings
-			if ( datatype == 'boolean' ) {
-				query.field('time, valueBoolean');
-			} else if ( datatype == 'date' ) {
-				query.field('time, valueDate');
-			} else if ( datatype == 'integer' ) {
-				query.field('time, valueInteger');
-			} else if ( datatype == 'json' ) {
-				query.field('time, valueJson');
-			} else if ( datatype == 'string' ) {
-				query.field('time, valueString');
-			} else if ( datatype == 'time' ) {
-				query.field('time, valueTime');
-			} else if ( datatype == 'float' ) {
-				query.field('time, valueFloat');
-			} else if ( datatype == 'geo' ) {
-				query.field('time, valueString');
+			if ( datatype == "boolean" ) {
+				query.field("time, valueBoolean");
+			} else if ( datatype == "date" ) {
+				query.field("time, valueDate");
+			} else if ( datatype == "integer" ) {
+				query.field("time, valueInteger");
+			} else if ( datatype == "json" ) {
+				query.field("time, valueJson");
+			} else if ( datatype == "string" ) {
+				query.field("time, valueString");
+			} else if ( datatype == "time" ) {
+				query.field("time, valueTime");
+			} else if ( datatype == "float" ) {
+				query.field("time, valueFloat");
+			} else if ( datatype == "geo" ) {
+				query.field("time, valueString");
 			} else {
-				query.field('time, value');
+				query.field("time, value");
 			}
 			// End casting
 
@@ -437,29 +437,29 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 						d.id = Date.parse(d.time);
 						d.timestamp = Date.parse(d.time);
 						d.time = Date.parse(d.time);
-						if ( datatype == 'boolean' ) {
-							d.value = d.valueBoolean=='true'?true:false;
-						} else if ( datatype == 'date' ) {
+						if ( datatype == "boolean" ) {
+							d.value = d.valueBoolean=="true"?true:false;
+						} else if ( datatype == "date" ) {
 							d.value = d.valueDate;
-						} else if ( datatype == 'integer' ) {
+						} else if ( datatype == "integer" ) {
 							d.value = parseInt((d.valueInteger).substring(-1));
-						} else if ( datatype == 'json' ) {
+						} else if ( datatype == "json" ) {
 							d.value = d.valueJson;
-						} else if ( datatype == 'string' ) {
+						} else if ( datatype == "string" ) {
 							d.value = d.valueString;
-						} else if ( datatype == 'time' ) {
+						} else if ( datatype == "time" ) {
 							d.value = d.valueTime;
-						} else if ( datatype == 'float' ) {
+						} else if ( datatype == "float" ) {
 							d.value = parseFloat(d.valueFloat);
-						} else if ( datatype == 'geo' ) {
+						} else if ( datatype == "geo" ) {
 							d.value = d.valueString;
 						} else {
 							d.value = d.value;
 						}
 					});
 
-					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:'';
-					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:'';
+					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
+					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
 					data.datatype = datatype;
 					data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 					data.ttl = 3600;
@@ -469,33 +469,33 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 					data.prev = page-1;
 					data.limit = limit;
 					data.id = data_id;
-					data.order = req.query.order!==undefined?req.query.order:'asc';
+					data.order = req.query.order!==undefined?req.query.order:"asc";
 					
-					if (output == 'json') {
+					if (output == "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output == 'svg') {
+					} else if(output == "svg") {
 						res.status(404).send("SVG Not Implemented with influxDB");
 					};
 				} else {
-					res.status(404).send(new ErrorSerializer({'id': 900, 'code': 404, 'message': 'Not Found',}).serialize());
+					res.status(404).send(new ErrorSerializer({"id": 900, "code": 404, "message": "Not Found",}).serialize());
 				};
 			}).catch(err => {
-				res.status(500).send({query: query, err: err, 'id': 901, 'code': 500, 'message': 'Internal Error',});
+				res.status(500).send({query: query, err: err, "id": 901, "code": 500, "message": "Internal Error",});
 			});
 		} else if ( db_type.sqlite3 == true ) {
 			/* sqlite3 database */
 			var query = squel.select()
-				.field('timestamp, value, flow_id, timestamp AS id')
-				.from('data')
-				.where('flow_id=?', flow_id)
-				.where('timestamp=?', data_id)
+				.field("timestamp, value, flow_id, timestamp AS id")
+				.from("data")
+				.where("flow_id=?", flow_id)
+				.where("timestamp=?", data_id)
 				.limit(limit)
 				.toString()
 				;
 
 			dbSQLite3.all(query, function(err, data) {
 				if (err) console.log(err);
-				//data.id = moment(data.timestamp).format('x'); //BUG
+				//data.id = moment(data.timestamp).format("x"); //BUG
 				data.flow_id = flow_id;
 				data.page = page;
 				data.next = page+1;
@@ -505,13 +505,13 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 				data.time = data[0].timestamp;
 				data.timestamp = data[0].timestamp;
 				data.mqtt_topic = mqtt_topic;
-				data.order = req.query.order!==undefined?req.query.order:'asc';
+				data.order = req.query.order!==undefined?req.query.order:"asc";
 				//console.log(data);
 				
 				if ( data.length > 0 ) {
 					res.status(200).send(new DataSerializer(data).serialize());
 				} else {
-					res.status(404).send(new ErrorSerializer({'id': 61, 'code': 404, 'message': 'Not Found',}).serialize());
+					res.status(404).send(new ErrorSerializer({"id": 61, "code": 404, "message": "Not Found",}).serialize());
 				}
 			});
 		};
@@ -573,15 +573,15 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 	let prerequisite = 0;
 	if ( payload.signedPayload || payload.encryptedPayload ) {
 		var object_id = payload.object_id;
-		var cert = jwtsettings.secret; //- fs.readFileSync('private.key');
-		objects	= db.getCollection('objects');
+		var cert = jwtsettings.secret; //- fs.readFileSync("private.key");
+		objects	= db.getCollection("objects");
 
 		var query;
 		if ( object_id !== undefined ) {
 			query = {
-			'$and': [
-					{ 'user_id' : req.user.id },
-					{ 'id' : object_id },
+			"$and": [
+					{ "user_id" : req.user.id },
+					{ "id" : object_id },
 				]
 			};
 			var json = objects.findOne(query);
@@ -619,7 +619,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 					payload = undefined;
 					error = err;
 					console.log("Error "+error);
-					res.status(401).send(new ErrorSerializer({'id': 62.4, 'code': 401, 'message': 'Invalid Signature',}).serialize());
+					res.status(401).send(new ErrorSerializer({"id": 62.4, "code": 401, "message": "Invalid Signature",}).serialize());
 					next();
 				}
 			});
@@ -628,8 +628,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 
 	if ( payload !== undefined && !error ) {
 		var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:payload.flow_id;
-		var time		= (payload.timestamp!==''&&payload.timestamp!==undefined)?parseInt(payload.timestamp):moment().format('x');
-		if ( time.toString().length <= 10 ) { time = moment(time*1000).format('x'); };
+		var time		= (payload.timestamp!==""&&payload.timestamp!==undefined)?parseInt(payload.timestamp):moment().format("x");
+		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); };
 		var value		= payload.value!==undefined?payload.value:"";
 		var publish		= payload.publish!==undefined?JSON.parse(payload.publish):false;
 		var save		= payload.save!==undefined?JSON.parse(payload.save):true;
@@ -641,12 +641,12 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 
 		if ( !flow_id || !req.user.id ){
 			// Not Authorized because token is invalid
-			res.status(401).send(new ErrorSerializer({'id': 64, 'code': 401, 'message': 'Not Authorized',}).serialize());
+			res.status(401).send(new ErrorSerializer({"id": 64, "code": 401, "message": "Not Authorized",}).serialize());
 		} else {
-			flows		= db.getCollection('flows');
-			datatypes	= db.getCollection('datatypes');
+			flows		= db.getCollection("flows");
+			datatypes	= db.getCollection("datatypes");
 			var f = flows.chain().find({id: ""+flow_id,}).limit(1);
-			var join = f.eqJoin(datatypes.chain(), 'data_type', 'id');
+			var join = f.eqJoin(datatypes.chain(), "data_type", "id");
 			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].mqtt_topic ) {
 				mqtt_topic = (f.data())[0].mqtt_topic;
 			}
@@ -669,28 +669,28 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			if ( prerequisite <= 0 ) {
 				// Cast value according to Flow settings
 				var fields = [];
-				if ( datatype == 'boolean' ) {
+				if ( datatype == "boolean" ) {
 					value = str2bool(value);
 					fields[0] = {time:""+time, valueBoolean: value,};
-				} else if ( datatype == 'date' ) {
+				} else if ( datatype == "date" ) {
 					value = value;
 					fields[0] = {time:""+time, valueDate: value,};
-				} else if ( datatype == 'integer' ) {
+				} else if ( datatype == "integer" ) {
 					value = parseInt(value);
-					fields[0] = {time:""+time, valueInteger: value+'i',};
-				} else if ( datatype == 'json' ) {
+					fields[0] = {time:""+time, valueInteger: value+"i",};
+				} else if ( datatype == "json" ) {
 					value = {value:value,};
 					fields[0] = {time:""+time, valueJson: value,};
-				} else if ( datatype == 'string' ) {
+				} else if ( datatype == "string" ) {
 					value = ""+value;
 					fields[0] = {time:""+time, valueString: value,};
-				} else if ( datatype == 'time' ) {
+				} else if ( datatype == "time" ) {
 					value = value;
 					fields[0] = {time:""+time, valueTime: value,};
-				} else if ( datatype == 'float' ) {
+				} else if ( datatype == "float" ) {
 					value = parseFloat(value);
 					fields[0] = {time:""+time, valueFloat: value,};
-				} else if ( datatype == 'geo' ) {
+				} else if ( datatype == "geo" ) {
 					value = ""+value;
 					fields[0] = {time:""+time, valueString: value,};
 				} else {
@@ -709,16 +709,16 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 						if (text!== "") fields[0].text = text;
 
 						dbInfluxDB.writePoints([{
-							measurement: 'data',
+							measurement: "data",
 							tags: tags,
 							fields: fields[0],
 							timestamp: timestamp,
-						}], { retentionPolicy: 'autogen', }).then(err => {
-							if (err) console.log({'message': 'Error on writePoints to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-							//else console.log({'message': 'Success on writePoints to influxDb', 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
+						}], { retentionPolicy: "autogen", }).then(err => {
+							if (err) console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							//else console.log({"message": "Success on writePoints to influxDb", "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						}).catch(err => {
-							console.log({'message': 'Error catched on writting to influxDb', 'err': err, 'tags': tags, 'fields': fields[0], 'timestamp': timestamp});
-							console.error('Error catched on writting to influxDb:\n'+err);
+							console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							console.error("Error catched on writting to influxDb:\n"+err);
 						});
 					}
 					if ( db_type.sqlite3 == true ) {
@@ -735,7 +735,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 					};
 				}
 				
-				t6decisionrules.action(req.user.id, {'dtepoch': time, 'value': value, 'text': text, 'flow': flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
+				t6decisionrules.action(req.user.id, {"dtepoch": time, "value": value, "text": text, "flow": flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
 
 				fields.flow_id = flow_id;
 				fields.id = time*1000000;
@@ -752,14 +752,14 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				fields[0].publish = publish;
 				fields[0].mqtt_topic = mqtt_topic;
 
-				res.header('Location', '/v'+version+'/flows/'+flow_id+'/'+fields[0].id);
+				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
 			} else {
-				res.status(401).send(new ErrorSerializer({'id': 64.2, 'code': 401, 'message': 'Not Authorized, you must sign and/or encrypt',}).serialize());
+				res.status(401).send(new ErrorSerializer({"id": 64.2, "code": 401, "message": "Not Authorized, you must sign and/or encrypt",}).serialize());
 			}
 		};
 	} else {
-		res.status(412).send(new ErrorSerializer({'id': 65, 'code': 412, 'message': 'Precondition Failed '+error,}).serialize());
+		res.status(412).send(new ErrorSerializer({"id": 65, "code": 412, "message": "Precondition Failed "+error,}).serialize());
 	}
 });
 

@@ -22,15 +22,15 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
 	var json;
 	var unit_id = req.params.unit_id;
 	var type = req.query.type;
-	units	= db.getCollection('units');
+	units	= db.getCollection("units");
 	if ( type === undefined ) {
 		if ( unit_id === undefined ) {
 			json = units.find();
 		} else {
-			json = units.find({ 'id': unit_id });
+			json = units.find({ "id": unit_id });
 		}
 	} else {
-		json = units.find({'type': { '$eq': type }});
+		json = units.find({"type": { "$eq": type }});
 	}
 
 	json = json.length>0?json:[];
@@ -46,29 +46,29 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
  * @apiPermission Admin
  * 
  * @apiParam {String} [name=unamed] Unit Name
- * @apiParam {String} [format=''] Unit Format
- * @apiParam {String} [type=''] Unit Type
+ * @apiParam {String} [format=""] Unit Format
+ * @apiParam {String} [type=""] Unit Type
  * 
  * @apiUse 201
  * @apiUse 401
  */
 router.post("/", bearerAdmin, function (req, res) {
 	if ( req.token ) {
-		units	= db.getCollection('units');
+		units	= db.getCollection("units");
 		//console.log(units);
 		var new_unit = {
 			id: uuid.v4(),
-			name:	req.body.name!==undefined?req.body.name:'unamed',
-			format:	req.body.format!==undefined?req.body.format:'',
-			type:	req.body.type!==undefined?req.body.type:'',
+			name:	req.body.name!==undefined?req.body.name:"unamed",
+			format:	req.body.format!==undefined?req.body.format:"",
+			type:	req.body.type!==undefined?req.body.type:"",
 		};
 		units.insert(new_unit);
 		//console.log(units);
 		
-		res.header('Location', '/v'+version+'/units/'+new_unit.id);
-		res.status(201).send({ 'code': 201, message: 'Created', unit: new UnitSerializer(new_unit).serialize() }, 201);
+		res.header("Location", "/v"+version+"/units/"+new_unit.id);
+		res.status(201).send({ "code": 201, message: "Created", unit: new UnitSerializer(new_unit).serialize() }, 201);
 	} else {
-		res.status(401).send(new ErrorSerializer({'id': 18, 'code': 401, 'message': 'Unauthorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 18, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -91,7 +91,7 @@ router.post("/", bearerAdmin, function (req, res) {
 router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var unit_id = req.params.unit_id;
-		units	= db.getCollection('units');
+		units	= db.getCollection("units");
 		//console.log(units);
 		var result;
 		units.findAndUpdate(
@@ -105,10 +105,10 @@ router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 		);
 		db.save();
 		
-		res.header('Location', '/v'+version+'/units/'+unit_id);
-		res.status(200).send({ 'code': 200, message: 'Successfully updated', unit: new UnitSerializer(result).serialize() });
+		res.header("Location", "/v"+version+"/units/"+unit_id);
+		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new UnitSerializer(result).serialize() });
 	} else {
-		res.status(401).send(new ErrorSerializer({'id': 19, 'code': 401, 'message': 'Unauthorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 19, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -129,47 +129,47 @@ router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 router.delete("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 	if ( req.token ) {
 		var unit_id = req.params.unit_id;
-		units	= db.getCollection('units');
-		var u = units.find({'id': { '$eq': unit_id }});
+		units	= db.getCollection("units");
+		var u = units.find({"id": { "$eq": unit_id }});
 		//console.log(u);
 		if (u) {
 			units.remove(u);
 			db.save();
-			res.status(200).send({ 'code': 200, message: 'Successfully deleted', removed_id: unit_id }); // TODO: missing serializer
+			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: unit_id }); // TODO: missing serializer
 		} else {
-			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(401).send(new ErrorSerializer({'id': 21, 'code': 401, 'message': 'Unauthorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 21, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
 function bearerAdmin(req, res, next) {
 	var bearerToken;
-	var bearerHeader = req.headers['authorization'];
-	tokens	= db.getCollection('tokens');
-	users	= db.getCollection('users');
-	if ( typeof bearerHeader !== 'undefined' ) {
+	var bearerHeader = req.headers["authorization"];
+	tokens	= db.getCollection("tokens");
+	users	= db.getCollection("users");
+	if ( typeof bearerHeader !== "undefined" ) {
 		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
 		bearerToken = bearer[1];
 		req.token = bearerToken;
 		req.bearer = tokens.findOne(
-			{ '$and': [
-				{'token': { '$eq': req.token }},
-				{'expiration': { '$gte': moment().format('x') }},
+			{ "$and": [
+				{"token": { "$eq": req.token }},
+				{"expiration": { "$gte": moment().format("x") }},
 			]}
 		);
 		if ( !req.bearer ) {
-			res.status(403).send(new ErrorSerializer({'id': 22, 'code': 431, 'message': 'Forbidden'}).serialize());
+			res.status(403).send(new ErrorSerializer({"id": 22, "code": 431, "message": "Forbidden"}).serialize());
 		} else {
-			if ( req.user = users.findOne({'id': { '$eq': req.bearer.user_id }, 'role': 'admin'}) ) {
+			if ( req.user = users.findOne({"id": { "$eq": req.bearer.user_id }, "role": "admin"}) ) {
 				next();
 			} else {
-				res.status(404).send(new ErrorSerializer({'id': 23, 'code': 404, 'message': 'Not Found'}).serialize());
+				res.status(404).send(new ErrorSerializer({"id": 23, "code": 404, "message": "Not Found"}).serialize());
 			}
 		}
 	} else {
-		res.status(401).send(new ErrorSerializer({'id': 24, 'code': 401, 'message': 'Unauthorized'}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 24, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 }
 

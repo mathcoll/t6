@@ -13,10 +13,10 @@ app.resources.mqtts = {
 	displayAdd: function(mqtt, isAdd, isEdit, isPublic) {
 	},
 	displayItem: function(mqtt) {
-		var type = 'mqtts';
+		var type = "mqtts";
 		var name = mqtt.attributes.name!==undefined?mqtt.attributes.name:"";
-		var description = mqtt.attributes.description!==undefined?mqtt.attributes.description.substring(0, app.cardMaxChars):'';
-		var attributeType = mqtt.attributes.type!==undefined?mqtt.attributes.type:'';
+		var description = mqtt.attributes.description!==undefined?mqtt.attributes.description.substring(0, app.cardMaxChars):"";
+		var attributeType = mqtt.attributes.type!==undefined?mqtt.attributes.type:"";
 		
 		var element = "";
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+mqtt.id+"\">";

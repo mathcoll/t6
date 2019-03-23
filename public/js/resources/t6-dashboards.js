@@ -52,7 +52,7 @@ app.resources.dashboards = {
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
 			description: myForm.querySelector("textarea[name='Description']").value,
-			snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
+			snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem("snippets")))[snippet.getAttribute("data-id")]).id; }),
 		};
 		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log("DEBUG onAddDashboard", JSON.stringify(body));
@@ -145,9 +145,9 @@ app.resources.dashboards = {
 				if ( isEdit ) {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += app.getField(null, "meta.revision", dashboard.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.dashboards, "Name", dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
-					node += app.getField(app.icons.description, "Description", app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
+					node += app.getField(null, "meta.revision", dashboard.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
+					node += app.getField(app.icons.dashboards, "Name", dashboard.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+					node += app.getField(app.icons.description, "Description", app.nl2br(dashboard.attributes.description), {type: "textarea", id: "Description", isEdit: isEdit});
 
 					if ( localStorage.getItem("snippets") != "null" ) {
 						var snippets = JSON.parse(localStorage.getItem("snippets")).map(function(snippet) {
