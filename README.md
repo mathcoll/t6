@@ -50,7 +50,7 @@ $ hostname
 Please have a look at the options in _settings-hostname.js_, there are some secrets to be customized.
 
 Once the setting are done, you can initialize the influxDb databases:
-```
+```console
 CREATE DATABASE "t6"
 CREATE DATABASE "requests" WITH DURATION 7d REPLICATION 1 SHARD DURATION 1d NAME "req"
 CREATE RETENTION POLICY "quota7d" on "t6" DURATION 7d REPLICATION 1 SHARD DURATION 1d
