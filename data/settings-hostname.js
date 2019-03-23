@@ -5,10 +5,10 @@ baseUrl				= process.env.BASE_URL;
 baseUrlCdn			= "//cdn.domain.tld";
 
 /* Mqtt settings */
-mqtt_host			= "localhost"; // Your Mqtt server host
-mqtt_port			= 1883; // Your Mqtt server port
-mqtt_root			= 't6/'+os.hostname()+'/'; // Mqtt root
-mqtt_info			= mqtt_root+'api'; // Mqtt topic for t6 api basic logs
+mqttHost			= "localhost"; // Your Mqtt server host
+mqttPort			= 1883; // Your Mqtt server port
+mqttRoot			= 't6/'+os.hostname()+'/'; // Mqtt root
+mqttInfo			= mqttRoot+'api'; // Mqtt topic for t6 api basic logs
 
 /* Session settings */
 session				= require('express-session');

@@ -100,7 +100,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	} else {
 		if ( req.user.id !== undefined ) {
 			var snippet_id = uuid.v4();
-			var new_snippet = {
+			var newSnippet = {
 				id:			snippet_id,
 				user_id:	req.user.id,
 				name: 		req.body.name!==undefined?req.body.name:'unamed',
@@ -109,12 +109,12 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 				color:  	req.body.color!==undefined?req.body.color:'',
 				flows:		req.body.flows!==undefined?req.body.flows:new Array(),
 			};
-			t6events.add('t6Api', 'snippet add', new_snippet.id);
-			snippets.insert(new_snippet);
+			t6events.add('t6Api', 'snippet add', newSnippet.id);
+			snippets.insert(newSnippet);
 			//console.log(snippets);
 			
-			res.header('Location', '/v'+version+'/snippets/'+new_snippet.id);
-			res.status(201).send({ 'code': 201, message: 'Created', snippet: new SnippetSerializer(new_snippet).serialize() });
+			res.header('Location', '/v'+version+'/snippets/'+newSnippet.id);
+			res.status(201).send({ 'code': 201, message: 'Created', snippet: new SnippetSerializer(newSnippet).serialize() });
 		}
 	}
 });

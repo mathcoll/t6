@@ -194,7 +194,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if( i >= (quota[req.user.role]).objects ) {
 		res.status(429).send(new ErrorSerializer({'id': 129, 'code': 429, 'message': 'Too Many Requests: Over Quota!'}).serialize());
 	} else {
-		var new_object = {
+		var newObject = {
 			id:				uuid.v4(),
 			type:			req.body.type!==undefined?req.body.type:'default',
 			name:			req.body.name!==undefined?req.body.name:'unamed',
@@ -209,12 +209,12 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			secret_key:		req.body.secret_key!==undefined?req.body.secret_key:'',
 			secret_key_crypt:req.body.secret_key_crypt!==undefined?req.body.secret_key_crypt:'',
 		};
-		t6events.add('t6Api', 'object add', new_object.id);
-		objects.insert(new_object);
+		t6events.add('t6Api', 'object add', newObject.id);
+		objects.insert(newObject);
 		//console.log(objects);
 		
-		res.header('Location', '/v'+version+'/objects/'+new_object.id);
-		res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(new_object).serialize() });
+		res.header('Location', '/v'+version+'/objects/'+newObject.id);
+		res.status(201).send({ 'code': 201, message: 'Created', object: new ObjectSerializer(newObject).serialize() });
 
 	}
 });

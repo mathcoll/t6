@@ -102,19 +102,19 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	} else {
 		if ( req.user.id !== undefined ) {
 			var rule_id = uuid.v4();
-			var new_rule = {
+			var newRule = {
 				id:			rule_id,
 				user_id:	req.user.id,
 				name: 		req.body.name!==undefined?req.body.name:'unamed',
 				active: 	req.body.active!==undefined?req.body.active:true,
 				rule:		req.body.rule!==undefined?req.body.rule:{},
 			};
-			t6events.add('t6Api', 'rule add', new_rule.id);
-			rules.insert(new_rule);
+			t6events.add('t6Api', 'rule add', newRule.id);
+			rules.insert(newRule);
 			//console.log(rules);
 			
-			res.header('Location', '/v'+version+'/rules/'+new_rule.id);
-			res.status(201).send({ 'code': 201, message: 'Created', rule: new RuleSerializer(new_rule).serialize() });
+			res.header('Location', '/v'+version+'/rules/'+newRule.id);
+			res.status(201).send({ 'code': 201, message: 'Created', rule: new RuleSerializer(newRule).serialize() });
 		}
 	}
 });

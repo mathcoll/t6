@@ -124,7 +124,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 				res.status(400).send(new ErrorSerializer({'id': 38, 'code': 400, 'message': 'Bad Request', details: 'Permission must be greater than 600!'}).serialize());
 			} else {
 				var flow_id = uuid.v4();
-				var new_flow = {
+				var newFlow = {
 					id:			flow_id,
 					user_id:	req.user.id,
 					name: 		req.body.name!==undefined?req.body.name:'unamed',
@@ -137,12 +137,12 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 					require_encrypted:	req.body.require_encrypted!==undefined?str2bool(req.body.require_encrypted):false,
 					objects:	req.body.objects!==undefined?req.body.objects:new Array(),
 				};
-				t6events.add('t6Api', 'flow add', new_flow.id);
-				flows.insert(new_flow);
+				t6events.add('t6Api', 'flow add', newFlow.id);
+				flows.insert(newFlow);
 				//console.log(flows);
 				
-				res.header('Location', '/v'+version+'/flows/'+new_flow.id);
-				res.status(201).send({ 'code': 201, message: 'Created', flow: new FlowSerializer(new_flow).serialize() }); // TODO: missing serializer
+				res.header('Location', '/v'+version+'/flows/'+newFlow.id);
+				res.status(201).send({ 'code': 201, message: 'Created', flow: new FlowSerializer(newFlow).serialize() }); // TODO: missing serializer
 			}
 		}
 	}

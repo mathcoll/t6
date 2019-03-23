@@ -49,14 +49,14 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == 'admin' ) {
 		datatypes	= db.getCollection('datatypes');
-		var new_datatype = {
+		var newDatatype = {
 			id:			uuid.v4(),
 			name:	req.body.name!==undefined?req.body.name:'unamed',
 		};
-		datatypes.insert(new_datatype);
+		datatypes.insert(newDatatype);
 		
-		res.header('Location', '/v'+version+'/datatypes/'+new_datatype.id);
-		res.status(201).send(new ErrorSerializer({ 'code': 201, message: 'Created', datatype: new DataTypeSerializer(new_datatype).serialize() }).serialize());
+		res.header('Location', '/v'+version+'/datatypes/'+newDatatype.id);
+		res.status(201).send(new ErrorSerializer({ 'code': 201, message: 'Created', datatype: new DataTypeSerializer(newDatatype).serialize() }).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({'id': 49, 'code': 401, 'message': 'Unauthorized'}).serialize());
 	}

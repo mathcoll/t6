@@ -2981,7 +2981,7 @@ var touchStartPoint, touchMovePoint;
 				status += app.getField('thumb_up', 'Name', response.appName, {type: 'text', isEdit: false});
 				status += app.getField('verified_user', 'Version', response.version, {type: 'text', isEdit: false});
 				status += app.getField(app.icons.status, 'Status', response.status, {type: 'text', isEdit: false});
-				status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqtt_info, {type: 'text', isEdit: false});
+				status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqttInfo, {type: 'text', isEdit: false});
 				status += app.getField('alarm', 'Last Update', response.started_at, {type: 'text', isEdit: false});
 				status += "			</div>";
 				status += "		</div>";

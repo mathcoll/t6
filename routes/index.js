@@ -585,7 +585,7 @@ router.get("/status", function(req, res, next) {
 	var status = {
 		version: version,
 		status: 'running',
-		mqtt_info: mqtt_info,
+		mqttInfo: mqttInfo,
 		appName: process.env.NAME,
 		started_at: moment(process.env.STARTED*1000).format('DD/MM/Y H:mm:s'),
 	};
