@@ -4,7 +4,7 @@ var snippet = {
 	value: "Graph a Flow over axis",
 	
 	options: {
-		width: {defaultValue: "12", value: "12", type: 'select', availableValues: ["4", "6", "8", "12"]},
+		width: {defaultValue: "12", value: "12", type: "select", availableValues: ["4", "6", "8", "12"]},
 		
 		type: {defaultValue: "top", value: "line", type: "select", availableValues: ["bar", "line", "radar", "pie", "polarArea", "bubble", "scatter"]},
 		color: {defaultValue: "#FF0000", type: "text", value: "#0d87b0"},
@@ -29,12 +29,12 @@ var snippet = {
 		this.options.width.value = this.options.width.value!==null?this.options.width.value:this.options.width.defaultValue;
 		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: 'GET', headers: myHeaders };
+		var myInit = { method: "GET", headers: myHeaders };
 		var opt = this.getOptions(this);
 		var limit = opt.limit&&opt.limit.value!==undefined?opt.limit.value:5;
-		var url = app.baseUrl+"/"+app.api_version+'/data/'+params.attributes.flows[0]+'?sort=desc&limit='+limit;
+		var url = app.baseUrl+"/"+app.api_version+"/data/"+params.attributes.flows[0]+"?sort=desc&limit="+limit;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -42,13 +42,13 @@ var snippet = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			var ctx = document.getElementById("chart-"+params.id).getContext('2d');
+			var ctx = document.getElementById("chart-"+params.id).getContext("2d");
 			var datapoints = [];
 			response.data.forEach(function(d) {
 				datapoints.push({ x: new Date(d.attributes.timestamp), y: d.attributes.value });
 			});
-			var type = opt.type&&opt.type.value!==undefined?opt.type.value:'line';
-			var unit = ' ('+sprintf(response.links.unit!==undefined?response.links.unit:'', '')+')';
+			var type = opt.type&&opt.type.value!==undefined?opt.type.value:"line";
+			var unit = " ("+sprintf(response.links.unit!==undefined?response.links.unit:"", "")+")";
 			var data = {
 				datasets: [{
 					label: params.flowNames!==undefined?params.flowNames[0]:'',
@@ -64,15 +64,15 @@ var snippet = {
 			var options = {
 				title: {
 					display: opt.titleDisplay&&opt.titleDisplay.value!==undefined?opt.titleDisplay.value:true,
-					text: 'Snippet Title',
+					text: "Snippet Title",
 					fontSize: opt.titleFontSize&&opt.titleFontSize.value!==undefined?opt.titleFontSize.value:28,
-					fontFamily: opt.titleFontFamily&&opt.titleFontFamily.value!==undefined?opt.titleFontFamily.value:'Helvetica', //"'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+					fontFamily: opt.titleFontFamily&&opt.titleFontFamily.value!==undefined?opt.titleFontFamily.value:"Helvetica", //""Helvetica Neue", "Helvetica", "Arial", sans-serif"
 				},
 				legend: {
 					display: opt.legendDisplay&&opt.legendDisplay.value!==undefined?opt.legendDisplay.value:true,
-					position: opt.legendPosition&&opt.legendPosition.value!==undefined?opt.legendPosition.value:'bottom',
+					position: opt.legendPosition&&opt.legendPosition.value!==undefined?opt.legendPosition.value:"bottom",
 					labels: {
-						fontColor: opt.legendFontColor&&opt.legendFontColor.value!==undefined?opt.legendFontColor.value:'rgb(255, 99, 132)'
+						fontColor: opt.legendFontColor&&opt.legendFontColor.value!==undefined?opt.legendFontColor.value:"rgb(255, 99, 132)"
 					}
 				},
 				tooltips: {
@@ -80,12 +80,12 @@ var snippet = {
 				},
 				scales: {
 					xAxes: [{
-						type: 'time',
+						type: "time",
 						time: {
-							unit: 'hour'
+							unit: "hour"
 						},
 						ticks: {
-							source: 'auto',
+							source: "auto",
 						}
 					}]
 				},
@@ -104,12 +104,12 @@ var snippet = {
 			var time = response.data[0].attributes.time;
 			var value = response.data[0].attributes.value;
 			var ttl = response.links.ttl;
-			document.getElementById('unit-'+params.id).innerHTML = unit;
-			setInterval(function() {app.refreshFromNow('snippet-time-'+params.id, time, true)}, 6000);
+			document.getElementById("unit-"+params.id).innerHTML = unit;
+			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 6000);
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('getSnippet Inside error...' + error, {timeout:3000, type: 'error'});
+			if ( localStorage.getItem("settings.debug") == "true" ) {
+				toast("getSnippet Inside error..." + error, {timeout:3000, type: "error"});
 			}
 		});
 	},

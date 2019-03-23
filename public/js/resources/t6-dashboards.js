@@ -1,9 +1,9 @@
 "use strict";
 app.resources.dashboards = {
 	onEdit: function(evt) {
-		var dashboard_id = evt.target.parentNode.getAttribute('data-id')?evt.target.parentNode.getAttribute('data-id'):evt.target.getAttribute('data-id');
+		var dashboard_id = evt.target.parentNode.getAttribute("data-id")?evt.target.parentNode.getAttribute("data-id"):evt.target.getAttribute("data-id");
 		if ( !dashboard_id ) {
-			toast('No Dashboard id found!', {timeout:3000, type: 'error'});
+			toast("No Dashboard id found!", {timeout:3000, type: "error"});
 		} else {
 			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 			var body = {
@@ -12,14 +12,14 @@ app.resources.dashboards = {
 				snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('DEBUG onEditDashboard', JSON.stringify(body));
+			if ( localStorage.getItem("settings.debug") == "true" ) {
+				console.log("DEBUG onEditDashboard", JSON.stringify(body));
 			}
 			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 			myHeaders.append("Content-Type", "application/json");
-			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify(body) };
-			var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+dashboard_id;
+			var myInit = { method: "PUT", headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+"/"+app.api_version+"/dashboards/"+dashboard_id;
 			fetch(url, myInit)
 			.then(
 				app.fetchStatusHandler
@@ -27,22 +27,22 @@ app.resources.dashboards = {
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				app.setSection('dashboards');
-				toast('Dashboard has been saved.', {timeout:3000, type: 'done'});
-				//var dashboardContainer = document.querySelector("section#dashboards div[data-id='"+dashboard_id+"']");
+				app.setSection("dashboards");
+				toast("Dashboard has been saved.", {timeout:3000, type: "done"});
+				//var dashboardContainer = document.querySelector("section#dashboards div[data-id=""+dashboard_id+""]");
 				//dashboardContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
 				if ( dataLayer !== undefined ) {
 					dataLayer.push({
-						'eventCategory': 'Interaction',
-						'eventAction': 'Save Dashboard',
-						'eventLabel': 'Dashboard has not been saved.',
-						'eventValue': '0',
-						'event': 'Error'
+						"eventCategory": "Interaction",
+						"eventAction": "Save Dashboard",
+						"eventLabel": "Dashboard has not been saved.",
+						"eventValue": "0",
+						"event": "Error"
 					});
 				}
-				toast('Dashboard has not been saved.', {timeout:3000, type: 'error'});
+				toast("Dashboard has not been saved.", {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
 		}
@@ -54,14 +54,14 @@ app.resources.dashboards = {
 			description: myForm.querySelector("textarea[name='Description']").value,
 			snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
 		};
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('DEBUG onAddDashboard', JSON.stringify(body));
+		if ( localStorage.getItem("settings.debug") == "true" ) {
+			console.log("DEBUG onAddDashboard", JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(body) };
-		var url = app.baseUrl+'/'+app.api_version+'/dashboards/';
+		var myInit = { method: "POST", headers: myHeaders, body: JSON.stringify(body) };
+		var url = app.baseUrl+"/"+app.api_version+"/dashboards/";
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -69,36 +69,36 @@ app.resources.dashboards = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			app.setSection('dashboards');
-			toast('Dashboard has been added.', {timeout:3000, type: 'done'});
+			app.setSection("dashboards");
+			toast("Dashboard has been added.", {timeout:3000, type: "done"});
 		})
 		.catch(function (error) {
 			if ( dataLayer !== undefined ) {
 				dataLayer.push({
-					'eventCategory': 'Interaction',
-					'eventAction': 'Add Dashboard',
-					'eventLabel': 'Dashboard has not been added.',
-					'eventValue': '0',
-					'event': 'Error'
+					"eventCategory": "Interaction",
+					"eventAction": "Add Dashboard",
+					"eventLabel": "Dashboard has not been added.",
+					"eventValue": "0",
+					"event": "Error"
 				});
 			}
-			toast('Dashboard has not been added.', {timeout:3000, type: 'error'});
+			toast("Dashboard has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();
 	},
 	onDelete: function(id) {
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
-		history.pushState( {section: 'dashboard' }, window.location.hash.substr(1), '#dashboard?id='+id );
+		history.pushState( {section: "dashboard" }, window.location.hash.substr(1), "#dashboard?id="+id );
 		
 		window.scrollTo(0, 0);
-		app.containers.spinner.removeAttribute('hidden');
-		app.containers.spinner.classList.remove('hidden');
+		app.containers.spinner.removeAttribute("hidden");
+		app.containers.spinner.classList.remove("hidden");
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: 'GET', headers: myHeaders };
-		var url = app.baseUrl+'/'+app.api_version+'/dashboards/'+id;
+		var myInit = { method: "GET", headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/dashboards/"+id;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -108,7 +108,7 @@ app.resources.dashboards = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var dashboard = response.data[i];
-				document.title = (app.sectionsPageTitles['dashboard']).replace(/%s/g, dashboard.attributes.name);
+				document.title = (app.sectionsPageTitles["dashboard"]).replace(/%s/g, dashboard.attributes.name);
 
 				var node;
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
@@ -126,16 +126,16 @@ app.resources.dashboards = {
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
 				if ( dashboard.attributes.description ) {
 					var description = app.nl2br(dashboard.attributes.description);
-					node += app.getField(app.icons.description, 'Description', description, {type: 'text', isEdit: false});
+					node += app.getField(app.icons.description, "Description", description, {type: "text", isEdit: false});
 				}
 				if ( dashboard.attributes.meta.created ) {
-					node += app.getField(app.icons.date, 'Created', moment(dashboard.attributes.meta.created).format(app.date_format), {type: 'text', isEdit: false});
+					node += app.getField(app.icons.date, "Created", moment(dashboard.attributes.meta.created).format(app.date_format), {type: "text", isEdit: false});
 				}
 				if ( dashboard.attributes.meta.updated ) {
-					node += app.getField(app.icons.date, 'Updated', moment(dashboard.attributes.meta.updated).format(app.date_format), {type: 'text', isEdit: false});
+					node += app.getField(app.icons.date, "Updated", moment(dashboard.attributes.meta.updated).format(app.date_format), {type: "text", isEdit: false});
 				}
 				if ( dashboard.attributes.meta.revision ) {
-					node += app.getField(app.icons.update, 'Revision', dashboard.attributes.meta.revision, {type: 'text', isEdit: false});
+					node += app.getField(app.icons.update, "Revision", dashboard.attributes.meta.revision, {type: "text", isEdit: false});
 				}
 				node += "		</div>";
 				node += "	</div>";
@@ -145,18 +145,18 @@ app.resources.dashboards = {
 				if ( isEdit ) {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += app.getField(null, 'meta.revision', dashboard.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
-					node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
+					node += app.getField(null, "meta.revision", dashboard.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
+					node += app.getField(app.icons.dashboards, "Name", dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: isEdit, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
+					node += app.getField(app.icons.description, "Description", app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: isEdit});
 
-					if ( localStorage.getItem('snippets') != 'null' ) {
-						var snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
+					if ( localStorage.getItem("snippets") != "null" ) {
+						var snippets = JSON.parse(localStorage.getItem("snippets")).map(function(snippet) {
 							return {value: snippet.name, name: snippet.id, sType: snippet.sType};
 						});
-						node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
+						node += app.getField(app.icons.snippets, "Snippets to add", "", {type: "select", id: "snippetsChipsSelect", isEdit: true, options: snippets });
 					} else {
 						app.getSnippets();
-						node += app.getField(app.icons.snippets, 'Snippets to add (you should add some snippets first)', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: {} });
+						node += app.getField(app.icons.snippets, "Snippets to add (you should add some snippets first)", "", {type: "select", id: "snippetsChipsSelect", isEdit: true, options: {} });
 					}
 
 					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='snippetsChips'>";
@@ -189,27 +189,27 @@ app.resources.dashboards = {
 						app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (app.containers.dashboard).querySelector('.page-content'));
 					}
 				}
-				(app.containers.dashboard).querySelector('.page-content').innerHTML = node;
+				(app.containers.dashboard).querySelector(".page-content").innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
 				
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					app.buttons.backDashboard.addEventListener('click', function(evt) { app.resources.dashboards.display(dashboard.id, false, false, false); }, false);
-					app.buttons.saveDashboard.addEventListener('click', function(evt) { app.resources.dashboards.onEdit(evt); }, false);
+					app.buttons.backDashboard.addEventListener("click", function(evt) { app.resources.dashboards.display(dashboard.id, false, false, false); }, false);
+					app.buttons.saveDashboard.addEventListener("click", function(evt) { app.resources.dashboards.onEdit(evt); }, false);
 
-					document.getElementById('snippetsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-						var id = evt.target.getAttribute('data-value');
+					document.getElementById("snippetsChipsSelect").parentNode.querySelector("div.mdl-selectfield__list-option-box ul").addEventListener("click", function(evt) {
+						var id = evt.target.getAttribute("data-value");
 						var n=0;
-						if ( localStorage.getItem('snippets') != 'null' ) {
-							var s = JSON.parse(localStorage.getItem('snippets')).find(function(snippet) {
+						if ( localStorage.getItem("snippets") != "null" ) {
+							var s = JSON.parse(localStorage.getItem("snippets")).find(function(snippet) {
 								if ( n == id ) return snippet;
 								else n++;
 							});
 						}
 						var sType = s.sType;
 						var name = evt.target.innerText; // == s.name
-						app.addChipSnippetTo('snippetsChips', {name: s.name, id: id, sType: s.sType, type: 'snippets'});
+						app.addChipSnippetTo("snippetsChips", {name: s.name, id: id, sType: s.sType, type: "snippets"});
 						evt.preventDefault();
 					}, false);
 
@@ -217,10 +217,10 @@ app.resources.dashboards = {
 						dashboard.attributes.snippets.map(function(s) {
 							//Snippet list, we put the index not the snippet_id into the selector:
 							var n=0;
-							if ( localStorage.getItem('snippets') != 'null' ) {
-								var theSnippet = (JSON.parse(localStorage.getItem('snippets'))).find(function(storedS) { storedS.index = n++; return storedS.id == s; });
+							if ( localStorage.getItem("snippets") != "null" ) {
+								var theSnippet = (JSON.parse(localStorage.getItem("snippets"))).find(function(storedS) { storedS.index = n++; return storedS.id == s; });
 								if ( theSnippet ) {
-									app.addChipSnippetTo('snippetsChips', {name: theSnippet.name, id: theSnippet.index, sType: theSnippet.sType, type: 'snippets'});
+									app.addChipSnippetTo("snippetsChips", {name: theSnippet.name, id: theSnippet.index, sType: theSnippet.sType, type: "snippets"});
 								}
 							}
 						});
@@ -230,14 +230,14 @@ app.resources.dashboards = {
 				componentHandler.upgradeDom();
 				app.setExpandAction();
 
-				var sn = document.querySelectorAll('#snippetsChips .mdl-chip');
+				var sn = document.querySelectorAll("#snippetsChips .mdl-chip");
 				[].forEach.call(sn, app.addDnDHandlers);
-				app.setSection('dashboard');
+				app.setSection("dashboard");
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				toast('displayDashboard error occured...' + error, {timeout:3000, type: 'error'});
+			if ( localStorage.getItem("settings.debug") == "true" ) {
+				toast("displayDashboard error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -248,20 +248,20 @@ app.resources.dashboards = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.dashboards, 'Name', dashboard.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
-		node += app.getField(app.icons.description, 'Description', app.nl2br(dashboard.attributes.description), {type: 'textarea', id: 'Description', isEdit: true});
+		node += app.getField(app.icons.dashboards, "Name", dashboard.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+		node += app.getField(app.icons.description, "Description", app.nl2br(dashboard.attributes.description), {type: "textarea", id: "Description", isEdit: true});
 
 		var snippets;
-		if ( localStorage.getItem('snippets') != 'null' ) {
-			snippets = JSON.parse(localStorage.getItem('snippets')).map(function(snippet) {
+		if ( localStorage.getItem("snippets") != "null" ) {
+			snippets = JSON.parse(localStorage.getItem("snippets")).map(function(snippet) {
 				return {value: snippet.name, name: snippet.id, sType: snippet.sType};
 			});
 		} else {
 			app.getSnippets();
-			toast('You should add a Snippet first, it seems you don\' have any yet.', {timeout:3000, type: 'warning'});
-			snippets = [{value: 'undefined', name: 'undefined', sType: 'undefined'}];
+			toast("You should add a Snippet first, it seems you don\" have any yet.", {timeout:3000, type: "warning"});
+			snippets = [{value: "undefined", name: "undefined", sType: "undefined"}];
 		}
-		node += app.getField(app.icons.snippets, 'Snippets to add', '', {type: 'select', id: 'snippetsChipsSelect', isEdit: true, options: snippets });
+		node += app.getField(app.icons.snippets, "Snippets to add", "", {type: "select", id: "snippetsChipsSelect", isEdit: true, options: snippets });
 		
 		node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='snippetsChips'>";
 		node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
@@ -311,10 +311,10 @@ app.resources.dashboards = {
 		app.setExpandAction();
 	},
 	displayItem: function(dashboard) {
-		var type = 'dashboards';
+		var type = "dashboards";
 		var name = dashboard.attributes.name!==undefined?dashboard.attributes.name:"";
-		var description = dashboard.attributes.description!==undefined?dashboard.attributes.description.substring(0, app.cardMaxChars):'';
-		var attributeType = dashboard.attributes.type!==undefined?dashboard.attributes.type:'';
+		var description = dashboard.attributes.description!==undefined?dashboard.attributes.description.substring(0, app.cardMaxChars):"";
+		var attributeType = dashboard.attributes.type!==undefined?dashboard.attributes.type:"";
 		
 		var element = "";
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+dashboard.id+"\">";
