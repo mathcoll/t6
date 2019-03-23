@@ -4,19 +4,19 @@ var snippet = {
 	value: "Value Display",
 	
 	options: {
-		width: {defaultValue: "6", value: "6", type: 'select', availableValues: ["4", "6", "8", "12"]},
-		color: {defaultValue: "#FF0000", type: 'text'},
-		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+		width: {defaultValue: "6", value: "6", type: "select", availableValues: ["4", "6", "8", "12"]},
+		color: {defaultValue: "#FF0000", type: "text"},
+		legend: {defaultValue: "top", type: "select", availableValues: [true, false, "top", "bottom"]}
 	},
 	activateOnce: function(params) {
 		this.options.width.value = this.options.width.value!==null?this.options.width.value:this.options.width.defaultValue;
 		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
 		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: 'GET', headers: myHeaders };
+		var myInit = { method: "GET", headers: myHeaders };
 		var limit = 4;
-		var url = app.baseUrl+"/"+app.api_version+'/data/'+params.attributes.flows[0]+'?sort=desc&limit='+limit;
+		var url = app.baseUrl+"/"+app.api_version+"/data/"+params.attributes.flows[0]+"?sort=desc&limit="+limit;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler

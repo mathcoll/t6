@@ -4,14 +4,14 @@ var snippet = {
 	value: "Realtime clock",
 	
 	options: {
-		width: {defaultValue: "12", value: "12", type: 'select', availableValues: ["4", "6", "8", "12"]},
-		color: {defaultValue: "#FF0000", type: 'text'},
-		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+		width: {defaultValue: "12", value: "12", type: "select", availableValues: ["4", "6", "8", "12"]},
+		color: {defaultValue: "#FF0000", type: "text"},
+		legend: {defaultValue: "top", type: "select", availableValues: [true, false, "top", "bottom"]}
 	},
 	activateOnce: function(params) {
 		this.options.width.value = this.options.width.value!==null?this.options.width.value:this.options.width.defaultValue;
 		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
-		setInterval(function() {app.refreshFromNow('snippet-clock-'+params.id, moment(), null)}, 1000);
+		setInterval(function() {app.refreshFromNow("snippet-clock-"+params.id, moment(), null)}, 1000);
 	},
 	getHtml: function(params) {
 		if (!params) {

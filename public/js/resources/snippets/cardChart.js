@@ -4,9 +4,9 @@ var snippet = {
 	value: "Chart on a card",
 	
 	options: {
-		width: {defaultValue: "12", value: "12", type: 'select', availableValues: ["4", "6", "8", "12"]},
-		color: {defaultValue: "#FF0000", type: 'text'},
-		legend: {defaultValue: "top", type: 'select', availableValues: [true, false, "top", "bottom"]}
+		width: {defaultValue: "12", value: "12", type: "select", availableValues: ["4", "6", "8", "12"]},
+		color: {defaultValue: "#FF0000", type: "text"},
+		legend: {defaultValue: "top", type: "select", availableValues: [true, false, "top", "bottom"]}
 	},
 	getSample: function() {
 		var params = {
