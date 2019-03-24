@@ -52,12 +52,12 @@ var snippet = {
 			var data = {
 				datasets: [{
 					label: params.flowNames!==undefined?params.flowNames[0]:"",
-					backgroundColor: opt.backgroundColor&&opt.backgroundColor.value!==undefined?opt.backgroundColor.value:'rgb(255, 99, 132)',
-					borderColor: opt.borderColor&&opt.borderColor.value!==undefined?opt.borderColor.value:'rgb(255, 99, 132)',
+					backgroundColor: opt.backgroundColor&&opt.backgroundColor.value!==undefined?opt.backgroundColor.value:"rgb(255, 99, 132)",
+					borderColor: opt.borderColor&&opt.borderColor.value!==undefined?opt.borderColor.value:"rgb(255, 99, 132)",
 					fill: opt.fill&&opt.fill.value!==undefined?opt.fill.value:false,
 					showLine: opt.showLine&&opt.showLine.value!==undefined?opt.showLine.value:false,
 					steppedLine: opt.steppedLine&&opt.steppedLine.value!==undefined?opt.steppedLine.value:false,
-					pointBackgroundColor: opt.pointBackgroundColor&&opt.pointBackgroundColor.value!==undefined?opt.pointBackgroundColor.value:'rgb(255, 99, 132)',
+					pointBackgroundColor: opt.pointBackgroundColor&&opt.pointBackgroundColor.value!==undefined?opt.pointBackgroundColor.value:"rgb(255, 99, 132)",
 					data: datapoints,
 				}]
 			};
