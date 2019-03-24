@@ -42,14 +42,14 @@ app.resources.objects = {
 			.catch(function (error) {
 				if ( dataLayer !== undefined ) {
 					dataLayer.push({
-						'eventCategory': 'Interaction',
-						'eventAction': 'Save Object',
-						'eventLabel': 'Object has not been saved.',
-						'eventValue': '0',
-						'event': 'Error'
+						"eventCategory": "Interaction",
+						"eventAction": "Save Object",
+						"eventLabel": "Object has not been saved.",
+						"eventValue": "0",
+						"event": "Error"
 					});
 				}
-				toast('Object has not been saved.', {timeout:3000, type: 'error'});
+				toast("Object has not been saved.", {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
 		}

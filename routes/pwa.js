@@ -6,21 +6,21 @@ var ErrorSerializer = require("../serializers/error");
 var users;
 
 router.get("/", function(req, res) {
-	res.render('index', {
+	res.render("index", {
 		currentUrl: req.path,
 		user: req.session.user
 	});
 });
 
 router.get("/applicationStart", function(req, res) {
-	res.render('applicationStart', {
+	res.render("applicationStart", {
 		currentUrl: req.path,
 		user: req.session.user
 	});
 });
 
 router.get("/networkError", function(req, res) {
-	res.render('networkError', {
+	res.render("networkError", {
 		currentUrl: req.path,
 		user: req.session.user
 	});
@@ -46,18 +46,18 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
 	
-	if ( list == 'changePassword' || list == 'reminder' || list == 'newsletter' ) {
-		users	= db.getCollection('users');
+	if ( list == "changePassword" || list == "reminder" || list == "newsletter" ) {
+		users	= db.getCollection("users");
 		var result;
 
-		users.chain().find({ 'email': mail, 'unsubscription_token': unsubscription_token }).update(function(user) {
+		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
 			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:{};
-			user.unsubscription[''+list] = moment().format('x');
+			user.unsubscription[""+list] = moment().format("x");
 			result = user;
 		});
 		db.save();
 		
-		res.render('notifications-unsubscribe', {
+		res.render("notifications-unsubscribe", {
 			currentUrl: req.path,
 			user: result,
 			mail: mail,
@@ -65,7 +65,7 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 			moment: moment,
 		});
 	} else {
-		res.status(404).send(new ErrorSerializer({'id': 10.4, 'code': 404, 'message': 'Not Found'}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 10.4, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -90,18 +90,18 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
 	
-	if ( list == 'changePassword' || list == 'reminder' || list == 'newsletter' ) {
-		users	= db.getCollection('users');
+	if ( list == "changePassword" || list == "reminder" || list == "newsletter" ) {
+		users	= db.getCollection("users");
 		var result;
 
-		users.chain().find({ 'email': mail, 'unsubscription_token': unsubscription_token }).update(function(user) {
+		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
 			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:{};
-			user.unsubscription[''+list] = null;
+			user.unsubscription[""+list] = null;
 			result = user;
 		});
 		db.save();
 		
-		res.render('notifications-subscribe', {
+		res.render("notifications-subscribe", {
 			currentUrl: req.path,
 			user: result,
 			mail: mail,
@@ -109,7 +109,7 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 			moment: moment,
 		});
 	} else {
-		res.status(404).send(new ErrorSerializer({'id': 10.5, 'code': 404, 'message': 'Not Found'}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 10.5, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

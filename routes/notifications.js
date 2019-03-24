@@ -102,7 +102,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret}), function 
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
 								function(item){
-									item.reminderMail = parseInt(moment().format('x'), 10);
+									item.reminderMail = parseInt(moment().format("x"), 10);
 								}
 						);
 						db.save();
@@ -178,7 +178,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
 								function(item){
-									item.changePassword = parseInt(moment().format('x'), 10);
+									item.changePassword = parseInt(moment().format("x"), 10);
 								}
 						);
 						db.save();
@@ -196,10 +196,10 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 			});
 			res.status(202).send(new UserSerializer(json).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({'id': 20, 'code': 404, 'message': 'Not Found'}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({'id': 18, 'code': 403, 'message': 'Forbidden '+req.user.role+'/'+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
 	}
 });
 

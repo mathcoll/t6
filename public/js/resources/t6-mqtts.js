@@ -25,7 +25,7 @@ app.resources.mqtts = {
 		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
 		element += "		</div>";
-		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += app.getField(null, null, description, {type: "textarea", isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		element += "			<span class=\"pull-left mdl-card__date\">";
 		element += "				<button data-id=\""+mqtt.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
