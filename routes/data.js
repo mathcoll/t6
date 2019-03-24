@@ -66,9 +66,9 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		//var page = req.params.page!==undefined?parseInt(req.params.page):1;
 		//var sort = req.query.sort!==undefined?req.query.sort:"time";
 		var sorting = req.query.order!==undefined?req.query.order:undefined;
-		sorting = req.query.order=="asc"?true:false;
+		sorting = req.query.order==="asc"?true:false;
 		sorting = req.query.sort!==undefined?req.query.sort:undefined;
-		sorting = req.query.sort=="asc"?true:false;
+		sorting = req.query.sort==="asc"?true:false;
 		var page = parseInt(req.query.page, 10);
 		if (isNaN(page) || page < 1) {
 			page = 1;
@@ -210,7 +210,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 				.order("timestamp", sorting)
 			;
 			
-			if ( req.query.start != undefined ) {
+			if ( req.query.start !== undefined ) {
 				if ( !isNaN(req.query.start) ) {
 					//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
 					query.where("timestamp>=?", req.query.start);
@@ -218,7 +218,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					query.where("timestamp>=?", moment(req.query.start).format("X")); // TODO, should be "x" lower case 
 				}
 			}	
-			if ( req.query.end != undefined ) {
+			if ( req.query.end !== undefined ) {
 				if ( !isNaN(req.query.end) ) {
 					//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
 					query.where("timestamp<=?", req.query.end);
@@ -482,7 +482,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 			}).catch(err => {
 				res.status(500).send({query: query, err: err, "id": 901, "code": 500, "message": "Internal Error",});
 			});
-		} else if ( db_type.sqlite3 == true ) {
+		} else if ( db_type.sqlite3 === true ) {
 			/* sqlite3 database */
 			var query = squel.select()
 				.field("timestamp, value, flow_id, timestamp AS id")
@@ -700,7 +700,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				// End casting
 
 				if ( save == true ) {
-					if ( db_type.influxdb == true ) {
+					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
 						var tags = {};
 						var timestamp = time*1000000;
@@ -721,7 +721,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 							console.error("Error catched on writting to influxDb:\n"+err);
 						});
 					}
-					if ( db_type.sqlite3 == true ) {
+					if ( db_type.sqlite3 === true ) {
 						/* sqlite3 database */
 						var query = squel.insert()
 							.into("data")
