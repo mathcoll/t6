@@ -33,7 +33,7 @@ class t6iot {
     void authenticate(const char* t6Username, const char* t6Password, String* response);
     
   	void getStatus(String* response);
-  	void getDatatypes();
+  	void getDatatypes(String* response);
   	void getUnits();
   	void getIndex();
     

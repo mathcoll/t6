@@ -111,8 +111,30 @@ void t6iot::getStatus(String* res) {
     res->concat(line);
 	}
 }
-void t6iot::getDatatypes() {
-	
+void t6iot::getDatatypes(String* res) {
+  Serial.println("Getting datatypes:");
+  if (!client.connect(_httpHost, _httpPort)) {
+    Serial.println("Http connection failed");
+  }
+  StaticJsonBuffer<400> jsonBuffer;
+  const int BUFFER_SIZE = JSON_OBJECT_SIZE(2);
+  DynamicJsonBuffer jsonRequestBuffer(BUFFER_SIZE);
+  
+  _getRequest(&client, _urlDatatypes);
+  
+  while (client.available()) {
+    String line = client.readStringUntil('\n');
+    //Serial.println(line); // output the response from server
+    if (line.length() == 1) { //empty line means end of headers
+      break;
+    }
+  }
+  //read first line of body
+  while (client.available()) {
+    String line = client.readStringUntil('\n');
+    const char* lineChars = line.c_str();
+    res->concat(line);
+  }
 }
 void t6iot::getUnits() {
 	

@@ -1,0 +1,64 @@
+#######################################
+# Syntax Coloring Map For t6iot
+# Use TAB to seperate identifiers
+#         and KEYWORD specifiers!
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+t6iot	KEYWORD1
+
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+authenticate	KEYWORD2
+getStatus	KEYWORD2
+getDatatypes	KEYWORD2
+getUnits	KEYWORD2
+getIndex	KEYWORD2
+createUser	KEYWORD2
+getUser	KEYWORD2
+editUser	KEYWORD2
+createDatapoint	KEYWORD2
+getDatapoints	KEYWORD2
+createObject	KEYWORD2
+getObjects	KEYWORD2
+editObject	KEYWORD2
+deleteObject	KEYWORD2
+createFlow	KEYWORD2
+getFlows	KEYWORD2
+editFlow	KEYWORD2
+deleteFlow	KEYWORD2
+createDashboard	KEYWORD2
+getDashboards	KEYWORD2
+editDashboard	KEYWORD2
+deleteDashboard	KEYWORD2
+createSnippet	KEYWORD2
+getSnippets	KEYWORD2
+editSnippet	KEYWORD2
+deleteSnippet	KEYWORD2
+createRule	KEYWORD2
+getRules	KEYWORD2
+editRule	KEYWORD2
+deleteRule	KEYWORD2
+createMqtt	KEYWORD2
+getMqtts	KEYWORD2
+editMqtt	KEYWORD2
+deleteMqtt	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+t6iot_False	LITERAL1
+t6iot_True	LITERAL1
+t6iot_NULL	LITERAL1
+t6iot_Number	LITERAL1
+t6iot_String	LITERAL1
+t6iot_Array	LITERAL1
+t6iot_Object	LITERAL1
+t6iot_IsReference	LITERAL1

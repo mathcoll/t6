@@ -1,7 +1,9 @@
 /*
   t6iot.cpp - 
-  Created by Mathieu Lory.
+  Created by mathieu@internetcollaboratif.info <Mathieu Lory>.
   Sample file to connect t6 api
+  - t6 iot: https://api.internetcollaboratif.info
+  - Api doc: https://api.internetcollaboratif.info/docs/
 */
 
 /*#include <t6iot.h>*/
@@ -41,6 +43,7 @@ void pleaseGoToBed() {
 
 String responseA; // for authentication
 String responseD; // for datapoints
+String responseDT; // for datatypes
 String responseS; // for status
 void loop() {
   /*
@@ -104,7 +107,32 @@ void loop() {
   }
   // END getStatus
   
-  //t6Client.getDatatypes();
+  /*
+  * get t6 Datatypes
+  */
+  t6Client.getDatatypes(&responseDT);
+  const int DT_BUFFER_SIZE = JSON_OBJECT_SIZE(2);
+  DynamicJsonBuffer DT_jsonRequestBuffer(DT_BUFFER_SIZE);
+  JsonObject& datatypes = DT_jsonRequestBuffer.parseObject(responseDT);
+
+  if (!datatypes.success()) {
+    Serial.println("Failure on parsing json.");
+    Serial.println(responseDT);
+  } else {
+    const char* DTerror = datatypes["error"];
+    const char* DTstatus = datatypes["status"];
+    const char* DTversion = datatypes["version"];
+    if ( DTerror ) {
+      Serial.println("Failure on:");
+      Serial.println(responseDT);
+    }
+    Serial.println();
+    Serial.print("\tStatus: ");
+    Serial.println( DTstatus );
+    Serial.println();
+  }
+  // END getDatatypes
+  
   //t6Client.getUnits();
   //t6Client.getIndex();
   
