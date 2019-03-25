@@ -1,4 +1,4 @@
-# t6
+# t6 - Connect real world Object to Digital Api
 t6 is an "oriented-Data" platform to connect physical Objects with timeseries DB.
 Please referes to CONTRIBUTING.md in case you would like to help :-)
 
@@ -26,9 +26,7 @@ Detailed Api documentation is available here: [api-General](https://api.internet
 
 ### Mqtt rules to handle Actions
 #### Rules
-"Decision-Rule" engine is not yet pushed to github. But a working stable implementation is working at home since several months.
-To sum up, events are pushed as json payloads to mqtt topics. Then the engine is watching for these payloads and handle them according to specific rules.
-#### Actions
+"Decision-Rule" engine is an event based trigger. The engine is watching for fact matching conditions on payloads coming from datapoint POST, and handle action  according to rules.
 _Actions_ are triggered when something is happening on the t6 platform.
 Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
 
@@ -83,7 +81,7 @@ A: Try to set chmod +x to file /var/www/t6/bin/www
 
 Q: Do I need to install sqlite3?
 
-A: sqlite3 is not required and can be disabled in the settings. sqlite3 library to store data is not maintained and become obsolete.
+A: sqlite3 is not required and can be disabled in the settings. sqlite3 library to store data is not maintained and become obsolete. You should avoid activating sqlite3.
 
 Q: I got an error trying to install sqlite3, what should I do?
 
