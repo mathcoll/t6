@@ -195,18 +195,17 @@ app.use(function(req, res, next) {
 if (app.get("env") === "development") {
 	request.debug = true;
 	app.use(function(err, req, res, next) {
-		console.log("DEBUG in development", req.headers.authorization);
 		if (err.name === "UnauthorizedError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token..."+err.message, "stack": err.stack });
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
 			res.end();
 		} else if (err.name === "TokenExpiredError") {
-			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token..."+err.message, "stack": err.stack });
+			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token "+err.message, "stack": err.stack });
 			res.end();
 		} else if (err.name === "JsonWebTokenError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token..."+err.message, "stack": err.stack });
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
 			res.end();
 		} else if (err.name === "NotBeforeError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token..."+err.message, "stack": err.stack });
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
 			res.end();
 		} else {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack });
