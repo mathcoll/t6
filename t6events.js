@@ -16,7 +16,7 @@ t6events.setRP = function(rp) {
 };
 
 t6events.add = function(where, what, who) {
-	if ( db_type.influxdb ) { 
+	if ( db_type.influxdb ) {
 		var tags = {what: what, where: where};
 		var fields = {who: who};
 		dbInfluxDB.writePoints([{
