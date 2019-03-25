@@ -1,13 +1,12 @@
 /*
-  t6iot.cpp - 
+  t6iot.ino - 
   Created by mathieu@internetcollaboratif.info <Mathieu Lory>.
   Sample file to connect t6 api
   - t6 iot: https://api.internetcollaboratif.info
   - Api doc: https://api.internetcollaboratif.info/docs/
 */
 
-/*#include <t6iot.h>*/
-#include "t6iot.h"
+#include <t6iot.h>
 #include "settings.h"
 
 t6iot t6Client;
@@ -39,21 +38,23 @@ void pleaseGoToBed() {
   Serial.println("Sleeping in few milliseconds...");
   delay(500);
   ESP.deepSleep(SLEEP_DELAY_IN_SECONDS * 1000000, WAKE_RF_DEFAULT);
+  delay(1500);
 }
 
 String responseA; // for authentication
 String responseD; // for datapoints
 String responseDT; // for datatypes
+String responseU; // for units
 String responseS; // for status
-void loop() {
-  /*
-  * Authenticate and get the JWT token
-  */
-  t6Client.authenticate(t6Username, t6Password, &responseA);
+String responseIndex; // for index
+  
+/*
+* Use JWT token from Authenticate
+*/
+void handleAuthenticateResponse() {
   const int A_BUFFER_SIZE = JSON_OBJECT_SIZE(2);
   DynamicJsonBuffer A_jsonRequestBuffer(A_BUFFER_SIZE);
   JsonObject& authenticate = A_jsonRequestBuffer.parseObject(responseA);
-
   if (!authenticate.success()) {
     Serial.println("Failure on parsing json.");
     Serial.println(responseA);
@@ -77,16 +78,16 @@ void loop() {
     Serial.print("\tRefresh Token Exp: ");
     Serial.println( ArefreshTokenExp );
     Serial.println();
-  } // END authenticate
-
-  /*
-  * get t6 Status
-  */
-  t6Client.getStatus(&responseS);
+  }
+} // handleAuthenticateResponse
+  
+/*
+* Retrieve and use t6 api Status
+*/
+void handlStatusResponse() {
   const int S_BUFFER_SIZE = JSON_OBJECT_SIZE(2);
   DynamicJsonBuffer S_jsonRequestBuffer(S_BUFFER_SIZE);
   JsonObject& status = S_jsonRequestBuffer.parseObject(responseS);
-
   if (!status.success()) {
     Serial.println("Failure on parsing json.");
     Serial.println(responseS);
@@ -105,16 +106,15 @@ void loop() {
     Serial.println( Sversion );
     Serial.println();
   }
-  // END getStatus
-  
-  /*
-  * get t6 Datatypes
-  */
-  t6Client.getDatatypes(&responseDT);
+} // handlStatusResponse
+
+/*
+* Retrieve and use t6 Datatypes
+*/
+void handleDatatypesResponse() {
   const int DT_BUFFER_SIZE = JSON_OBJECT_SIZE(2);
   DynamicJsonBuffer DT_jsonRequestBuffer(DT_BUFFER_SIZE);
   JsonObject& datatypes = DT_jsonRequestBuffer.parseObject(responseDT);
-
   if (!datatypes.success()) {
     Serial.println("Failure on parsing json.");
     Serial.println(responseDT);
@@ -127,25 +127,22 @@ void loop() {
       Serial.println(responseDT);
     }
     Serial.println();
-    Serial.print("\tStatus: ");
-    Serial.println( DTstatus );
     Serial.println();
   }
-  // END getDatatypes
+} // handleDatatypesResponse
+
+/*
+* Retrieve and use t6 units
+*/
+void handleUnitsResponse() {
+  Serial.println( "handleUnitsResponse" );
+} // handleUnitsResponse
   
-  //t6Client.getUnits();
-  //t6Client.getIndex();
-  
-  // 0. Users
-  //Serial.println("0. Users");
-  //t6Client.createUser();
-  //t6Client.getUser();
-  //t6Client.editUser();
-  
-  // 0. Datapoints
+/*
+* Add data point to timeserie
+*/
+void handleDatapointResponse() {
   /*
-  * Add data point to timeserie
-  */
   StaticJsonBuffer<400> jsonBuffer;
   const int BUFFER_SIZE = JSON_OBJECT_SIZE(2);
   DynamicJsonBuffer jsonRequestBuffer(BUFFER_SIZE);
@@ -187,7 +184,32 @@ void loop() {
     Serial.print("\tValue: ");
     Serial.println( Dvalue );
     Serial.println();
-  } // END createDatapoint
+  }
+  */
+} // handleDatapointResponse
+
+
+
+/*
+* Loop
+*/
+void loop() {
+  t6Client.authenticate(t6Username, t6Password, &responseA);
+    handleAuthenticateResponse();
+  t6Client.getStatus(&responseS);
+    handlStatusResponse();
+  t6Client.getDatatypes(&responseDT);
+    handleDatatypesResponse();
+  t6Client.getUnits(&responseU);
+    handleUnitsResponse();
+  t6Client.getIndex(&responseIndex);
+    ;
+  
+  // 0. Users
+  //Serial.println("0. Users");
+  //t6Client.createUser();
+  //t6Client.getUser();
+  //t6Client.editUser();
   
   // 1. Objects
   //Serial.println("1. Objects");
@@ -232,4 +254,4 @@ void loop() {
   //t6Client.deleteMqtt();
 
   pleaseGoToBed();
-}
+} // Loop
