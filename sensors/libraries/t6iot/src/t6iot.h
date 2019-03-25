@@ -1,6 +1,9 @@
 /*
   t6iot.h - 
-  Created by Mathieu Lory.
+  Created by mathieu@internetcollaboratif.info <Mathieu Lory>.
+  Sample file to connect t6 api
+  - t6 iot: https://api.internetcollaboratif.info
+  - Api doc: https://api.internetcollaboratif.info/docs/
 */
 
 #ifndef t6iot_h
@@ -34,8 +37,8 @@ class t6iot {
     
   	void getStatus(String* response);
   	void getDatatypes(String* response);
-  	void getUnits();
-  	void getIndex();
+  	void getUnits(String* response);
+  	void getIndex(String* response);
     
     void createUser();
     void getUser(char* userId);
