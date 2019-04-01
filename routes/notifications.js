@@ -145,7 +145,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 		//var query = {"token": { "$eq": null }};
 		var query = { "$and": [
 					{"$or": [{"passwordLastUpdated": { "$lte": moment().subtract(3, "months") }}, {passwordLastUpdated: undefined}]},
-					{"changePasswordMail": { "$lte": moment().subtract(3, "months") }},
+					{"changePassword": { "$lte": moment().subtract(3, "months") }},
 					{"token": null},
 					{ "$or": [{"unsubscription": undefined}, {"unsubscription.changePassword": undefined}, {"unsubscription.changePassword": null}] },
 	 			]};
@@ -153,10 +153,11 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
 			json.forEach(function(user) {
-				console.log(user.firstName+" "+user.lastName+" <"+user.email+">");
-				console.log(" --> subscription_date:" + user.subscription_date + " = " + moment(user.subscription_date, "x").format("DD/MM/YYYY, HH:mm"));
-				console.log(" --> changePasswordMail:" + user.changePasswordMail + " = " + moment(user.changePasswordMail, "x").format("DD/MM/YYYY, HH:mm"));
-				console.log(" --> passwordLastUpdated:" + user.passwordLastUpdated + " = " + moment(user.passwordLastUpdated, "x").format("DD/MM/YYYY, HH:mm"));
+				//console.log(user.firstName+" "+user.lastName+" <"+user.email+">");
+				//console.log(" --> 3months"+ moment().subtract(3, "months"));
+				//console.log(" --> subscription_date:" + user.subscription_date + " = " + moment(user.subscription_date, "x").format("DD/MM/YYYY, HH:mm"));
+				//console.log(" --> changePasswordMail:" + user.changePasswordMail + " = " + moment(user.changePasswordMail, "x").format("DD/MM/YYYY, HH:mm"));
+				//console.log(" --> passwordLastUpdated:" + user.passwordLastUpdated + " = " + moment(user.passwordLastUpdated, "x").format("DD/MM/YYYY, HH:mm"));
 				res.render("emails/change-password", {user: user}, function(err, html) {
 					var to = user.firstName+" "+user.lastName+" <"+user.email+">";
 					var mailOptions = {
@@ -173,7 +174,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 						text: "Html email client is required",
 						html: html
 					};
-					console.log("DEBUG", mailOptions);
+					//console.log("DEBUG", mailOptions);
 					t6mailer.sendMail(mailOptions).then(function(info){
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
