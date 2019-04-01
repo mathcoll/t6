@@ -1,5 +1,5 @@
 
-var dataCacheName= "t6-cache-2019-03-11";
+var dataCacheName= "t6-cache-2019-04-01";
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -119,6 +119,9 @@ self.addEventListener("fetch", function(e) {
 				return response || fetch(e.request);
 			})
 			.catch(function() {
+				caches.add(e.request.url).then(function() {
+					console.log("[ServiceWorker]", "Added "+e.request.url+" to cached.");
+				});
 				console.log("[ServiceWorker]", "Serving the asset from server (Whitelisted but not found).", e.request.url);
 				return fromServer(e.request);
 			})
