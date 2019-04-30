@@ -240,6 +240,17 @@ var touchStartPoint, touchMovePoint;
 	app.preloadImage = function(img) {
 		img.setAttribute('src', img.getAttribute('data-src'));
 	};
+	
+	app.escapeHtml = function(text) {
+		if (typeof text === "string") {
+			text = text
+				.replace(/</g, "&lt;")
+				.replace(/>/g, "&gt;")
+				.replace(/"/g, "&quot;")
+				.replace(/'/g, "&#039;");
+		}
+		return text;
+	};
 
 	app.urlBase64ToUint8Array = function(base64String) {
 		const padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -2400,7 +2411,7 @@ var touchStartPoint, touchMovePoint;
 					var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='text' "+style+" value='"+value+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+					field += "	<input type='text' "+style+" value='"+app.escapeHtml(value)+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
@@ -2408,7 +2419,7 @@ var touchStartPoint, touchMovePoint;
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
 					if (label) field += "	<label class='mdl-textfield__label'>"+label+"</label>";
-					if (value) field += "	<span class='mdl-list__item-sub-title' "+style+">"+value+"</span>";
+					if (value) field += "	<span class='mdl-list__item-sub-title' "+style+">"+app.escapeHtml(value)+"</span>";
 					field += "</div>";
 				}
 			} else if ( options.type === 'container' ) {
