@@ -211,7 +211,7 @@ app.resources.rules = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.rules, "Name", rule.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+		node += app.getField(app.icons.name, "Name", rule.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 		node += app.getField("add_circle_outline", "Event Type", rule.attributes.event.type, {type: "select", id: "EventType", options: app.EventTypes, isEdit: true });
 		node += app.getField("swap_vert", "Priority", rule.attributes.priority, {type: "text", id: "Priority", isEdit: true, pattern: app.patterns.integerNotNegative, error:"Should be a positive integer."});
 		node += app.getField("traffic", rule.attributes.active!="false"?"Rule is active":"Rule is disabled", rule.attributes.active!==undefined?rule.attributes.active:true, {type: "switch", id:"active", isEdit: true});

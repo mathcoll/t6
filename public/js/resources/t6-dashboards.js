@@ -146,7 +146,7 @@ app.resources.dashboards = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, "meta.revision", dashboard.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.dashboards, "Name", dashboard.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+					node += app.getField(app.icons.name, "Name", dashboard.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 					node += app.getField(app.icons.description, "Description", app.nl2br(dashboard.attributes.description), {type: "textarea", id: "Description", isEdit: isEdit});
 
 					if ( localStorage.getItem("snippets") != "null" ) {
@@ -248,7 +248,7 @@ app.resources.dashboards = {
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.dashboards, "Name", dashboard.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+		node += app.getField(app.icons.name, "Name", dashboard.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 		node += app.getField(app.icons.description, "Description", app.nl2br(dashboard.attributes.description), {type: "textarea", id: "Description", isEdit: true});
 
 		var snippets;

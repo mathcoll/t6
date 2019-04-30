@@ -170,7 +170,7 @@ app.resources.snippets = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, "meta.revision", snippet.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.snippets, "Name", snippet.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+					node += app.getField(app.icons.name, "Name", snippet.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 					node += app.getField(app.icons.icon, "Icon", snippet.attributes.icon, {type: "select", id: "Icon", isEdit: isEdit, options: app.types });
 					node += app.getField(app.icons.color, "Color", snippet.attributes.color, {type: "text", id: "Color", isEdit: isEdit});
 					node += app.getField("add_circle_outline", "Type", snippet.attributes.type, {type: "select", id: "Type", options: app.snippetTypes, isEdit: isEdit });
@@ -349,7 +349,7 @@ app.resources.snippets = {
 		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
 		node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		node += app.getField(app.icons.snippets, "Name", snippet.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+		node += app.getField(app.icons.name, "Name", snippet.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 		node += app.getField(app.icons.icon, "Icon", snippet.attributes.icon, {type: "select", id: "Icon", isEdit: true, options: app.types });
 		node += app.getField(app.icons.color, "Color", snippet.attributes.color, {type: "text", id: "Color", isEdit: true});
 		node += app.getField("add_circle_outline", "Type", snippet.attributes.type, {type: "select", id: "Type", options: app.snippetTypes, isEdit: true });
