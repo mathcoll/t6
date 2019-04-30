@@ -162,6 +162,7 @@ var app = {
 		secret_key_crypt: "^.*?$",
 		integerNotNegative: "[1-999]+",
 		meta_revision: "^[0-9]{1,}$",
+		ttl: "^[1-9]+$",
 	},
 	resources: {},
 	buttons: {}, // see function app.refreshButtonsSelectors()
@@ -783,6 +784,7 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.expand = function(evt) {
+		console.log(evt.target);
 		var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
 		if ( id != null ) {
 			document.getElementById(id).classList.toggle('hidden');

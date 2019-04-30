@@ -5,7 +5,9 @@ app.resources.flows = {
 		if ( !flow_id ) {
 			toast("No Flow id found!", {timeout:3000, type: "error"});
 		} else {
-			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode.parentNode;
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			
+			console.log(myForm.querySelector("input[name='MQTT Topic']").value);
 			var body = {
 				name: myForm.querySelector("input[name='Name']").value,
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
@@ -137,10 +139,43 @@ app.resources.flows = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var flow = response.data[i];
 				document.title = (app.sectionsPageTitles["flow"]).replace(/%s/g, flow.attributes.name);
+				
 				((app.containers.flow).querySelector(".page-content")).innerHTML = "";
 				var datapoints = "";
 				
 				var node = "";
+				node = "<div class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-list__item\">";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
+				node += "				<h2 class=\"mdl-card__title-text\">"+flow.attributes.name+"</h2>";
+				node += "			</span>";
+				node += "			<span class='mdl-list__item-secondary-action'>";
+				node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+flow.id+"'>";
+				node += "					<i class='material-icons'>expand_more</i>";
+				node += "				</button>";
+				node += "			</span>";
+				node += "		</div>";
+				node += "		<div class='mdl-cell--12-col hidden' id='description-"+flow.id+"'>";
+
+				node += app.getField(app.icons.flows, "Id", flow.id, {type: "text"});
+				if ( flow.attributes.description && isEdit!==true ) {
+					node += app.getField(app.icons.description, "Description", app.nl2br(flow.attributes.description), {type: "text"});
+				}
+				if ( flow.attributes.meta.created ) {
+					node += app.getField(app.icons.date, "Created", moment(flow.attributes.meta.created).format(app.date_format), {type: "text"});
+				}
+				if ( flow.attributes.meta.updated ) {
+					node += app.getField(app.icons.date, "Updated", moment(flow.attributes.meta.updated).format(app.date_format), {type: "text"});
+				}
+				if ( flow.attributes.meta.revision ) {
+					node += app.getField(app.icons.update, "Revision", flow.attributes.meta.revision, {type: "text"});
+				}
+				node += "		</div>";
+				node += "	</div>";
+				node += "</div>";
+				
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
 					if ( !localStorage.getItem("units") ) {
@@ -153,72 +188,48 @@ app.resources.flows = {
 					}
 					var allDatatypes = JSON.parse(localStorage.getItem("datatypes"));
 					
-					//node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+id+"\">";
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += app.getField(null, 'meta.revision', flow.attributes.meta.revision, {type: 'hidden', id: 'meta.revision', pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.flows, 'Name', flow.attributes.name, {type: 'text', id: 'Name', isEdit: true, pattern: app.patterns.name, error:'Name should be set and more than 3 chars length.'});
-					node += app.getField(app.icons.mqtts, 'MQTT Topic', flow.attributes.mqtt_topic, {type: 'text', id: 'MQTTTopic', isEdit: true});
+					node += app.getField(null, "meta.revision", flow.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
+					node += app.getField(app.icons.name, "Name", flow.attributes.name!==undefined?flow.attributes.name:"", {type: "text", id: "Name", isEdit: isEdit});
+					//var description = flow.attributes.description!==undefined?app.nl2br(flow.attributes.description):"";
+					//node += app.getField(app.icons.description, "Description", description, {type: "text", id: "Description", isEdit: isEdit});
+					node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic!==undefined?flow.attributes.mqtt_topic:"", {type: "text", id: "MQTTTopic", isEdit: isEdit});
 					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, options: allUnits });
 					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: true, options: allDatatypes });
-					node += app.getField('verified_user', flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object secret", flow.attributes.require_signed, {type: 'switch', id: 'edit_require_signed', isEdit: true});
-					node += app.getField('vpn_key', flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: 'switch', id: 'edit_require_encrypted', isEdit: true});
+					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "edit_require_signed", isEdit: isEdit});
+					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
 					
+					var allDatatypes = JSON.parse(localStorage.getItem("datatypes"));
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>View</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>View Flow</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>View Flow</div>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button id='"+btnId[1]+"' class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save Flow</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save Flow</div>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "</section>";
 					
 				} else {
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += "		<div class=\"mdl-list__item\">";
-					node += "			<span class='mdl-list__item-primary-content'>";
-					node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
-					node += "				<h2 class=\"mdl-card__title-text\">"+flow.attributes.name+"</h2>";
-					node += "			</span>";
-					node += "			<span class='mdl-list__item-secondary-action'>";
-					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+id+"'>";
-					node += "					<i class='material-icons'>expand_more</i>";
-					node += "				</button>";
-					node += "			</span>";
-					node += "		</div>";
-					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
-					node += app.getField(app.icons.flows, "Id", flow.id, {type: "text"});
-					if ( flow.attributes.description ) {
-						node += app.getField(null, null, app.nl2br(flow.attributes.description), {type: "textarea", id: "Description", isEdit: isEdit});
-					}
-					if ( flow.attributes.meta.created ) {
-						node += app.getField(app.icons.date, "Created", moment(flow.attributes.meta.created).format(app.date_format), {type: "text"});
-					}
-					if ( flow.attributes.meta.updated ) {
-						node += app.getField(app.icons.date, "Updated", moment(flow.attributes.meta.updated).format(app.date_format), {type: "text"});
-					}
-					if ( flow.attributes.meta.revision ) {
-						node += app.getField(app.icons.update, "Revision", flow.attributes.meta.revision, {type: "text"});
-					}
 					if ( flow.attributes.type ) {
 						node += app.getField("extension", "Type", flow.attributes.type, {type: "text", id: "Type", isEdit: isEdit});
 					}
 					if ( flow.attributes.mqtt_topic ) {
 						node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic, {type: "text", id: "MQTTTopic", isEdit: isEdit});
-					}
-					if ( flow.attributes.ttl ) {
-						node += app.getField("schedule", "Time To Live (TTL)", flow.attributes.ttl, {type: "text", id: "TTL", isEdit: isEdit});
 					}
 					if ( flow.attributes.unit && localStorage.getItem("units") !== "null" && JSON.parse(localStorage.getItem("units")) ) {
 						var unit = JSON.parse(localStorage.getItem("units")).find( function(u) { return u.name == flow.attributes.unit; });
@@ -233,8 +244,8 @@ app.resources.flows = {
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "show_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "show_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
-					node += "</div>";
-
+					node += "</section>";
+					
 					node += "<div class='mdl-card mdl-cell mdl-cell--12-col' id='"+flow.id+"'>";
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
@@ -330,21 +341,21 @@ app.resources.flows = {
 					node += "		<button id='"+btnId[0]+"' class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Flows</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Flows</div>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
 					node += "		<button id='"+btnId[1]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Delete Flow...</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Delete Flow...</div>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Flow</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Flow</div>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -474,7 +485,7 @@ app.resources.flows = {
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+flow.id+"\">";
 		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 		element += "		<div class=\"mdl-card__title\">";
-		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<i class=\"material-icons\">"+app.icons.flows+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
 		element += "		</div>";
 		element += "<div class='mdl-list__item--three-line small-padding'>";
