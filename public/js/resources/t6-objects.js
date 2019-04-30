@@ -147,7 +147,7 @@ app.resources.objects = {
 
 				node += app.getField(app.icons.objects, "Id", object.id, {type: "text"});
 				if ( object.attributes.description && isEdit!==true ) {
-					var description = app.nl2br(object.attributes.description);
+					var description = object.attributes.description!==undefined?object.attributes.description:"";
 					node += app.getField(app.icons.description, "Description", description, {type: "text"});
 				}
 				if ( object.attributes.meta.created ) {
@@ -159,6 +159,7 @@ app.resources.objects = {
 				if ( object.attributes.meta.revision ) {
 					node += app.getField(app.icons.update, "Revision", object.attributes.meta.revision, {type: "text"});
 				}
+				node += "		</div>";
 				node += "	</div>";
 				node += "</section>";
 				
@@ -166,9 +167,9 @@ app.resources.objects = {
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( isEdit===true ) {
-					var description = object.attributes.description;
+					var description = object.attributes.description!==undefined?object.attributes.description:"";
 					node += app.getField(null, "meta.revision", object.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.objects, "Name", object.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+					node += app.getField(app.icons.name, "Name", object.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 					node += app.getField(app.icons.description, "Description", description, {type: "textarea", id: "Description", isEdit: isEdit});
 				}
 				if ( object.attributes.type ) {
@@ -398,7 +399,7 @@ app.resources.objects = {
 
 				node += app.getField(app.icons.objects, 'Id', object.id, {type: 'input'});
 				if ( object.attributes.description || isEdit!==true ) {
-					var description = app.nl2br(object.attributes.description);
+					var description = object.attributes.description!==undefined?object.attributes.description:"";
 					node += app.getField(app.icons.description, "Description", description, {type: "text"});
 				}
 				if ( object.attributes.meta.created ) {
@@ -518,12 +519,13 @@ app.resources.objects = {
 		object.id = object.id!==""?object.id:app.getUniqueId();
 		object.attributes.longitude = parseFloat(object.attributes.longitude!==""?object.attributes.longitude:0).toFixed(6);
 		object.attributes.latitude = parseFloat(object.attributes.latitude!==""?object.attributes.latitude:0).toFixed(6);
+		var description = object.attributes.description!==undefined?object.attributes.description:"";
 		
 		node += app.getSubtitle("Description");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.objects, "Name", object.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
-		node += app.getField(app.icons.description, "Description", app.nl2br(object.attributes.description), {type: "textarea", id: "Description", isEdit: true});
+		node += app.getField(app.icons.name, "Name", object.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+		node += app.getField(app.icons.description, "Description", description, {type: "textarea", id: "Description", isEdit: true});
 		node += app.getField(app.icons.type, "Type", object.attributes.type, {type: "select", id: "Type", options: app.types, isEdit: true });
 		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 		node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: true, pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
