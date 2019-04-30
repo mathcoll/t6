@@ -195,7 +195,7 @@ router.all("*", function (req, res, next) {
 		
 		var query = squel.select()
 			.field("count(url)")
-			.from("quota7d.requests")
+			.from("requests")
 			.where("user_id=?", req.user.id!==undefined?req.user.id:o.user_id)
 			.where("time>now() - 7d")
 			.limit(1)
@@ -221,7 +221,7 @@ router.all("*", function (req, res, next) {
 						measurement: "requests",
 						tags: tags,
 						fields: fields,
-					}], { retentionPolicy: "quota7d", precision: "s", })
+					}], { precision: "s", })
 					.then(err => {
 						if (err) console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						next();
@@ -242,7 +242,7 @@ router.all("*", function (req, res, next) {
 			measurement: "requests",
 			tags: tags,
 			fields: fields,
-		}], { retentionPolicy: "quota7d", precision: "s", })
+		}], { precision: "s", })
 		next(); // no User Auth..
 	}
 });
