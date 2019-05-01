@@ -144,7 +144,7 @@ app.resources.flows = {
 				var datapoints = "";
 				
 				var node = "";
-				node = "<div class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
+				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
@@ -174,7 +174,7 @@ app.resources.flows = {
 				}
 				node += "		</div>";
 				node += "	</div>";
-				node += "</div>";
+				node += "</section>";
 				
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
@@ -246,7 +246,7 @@ app.resources.flows = {
 					node += "	</div>";
 					node += "</section>";
 					
-					node += "<div class='mdl-card mdl-cell mdl-cell--12-col' id='"+flow.id+"'>";
+					node += "<section class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 					node += "			<span class='mdl-list__item-primary-content'>";
@@ -333,7 +333,7 @@ app.resources.flows = {
 						}
 					});
 					node +=	"	</div>";
-					node +=	"</div>";
+					node +=	"</section>";
 
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -362,11 +362,12 @@ app.resources.flows = {
 					node += "</section>";
 				}
 				
-				var c = document.createElement("section");
-				c.className = "mdl-grid mdl-cell--12-col";
-				c.dataset.id = flow.id;
+				var c = document.createElement("div");
+				c.className = "page-content mdl-grid mdl-grid--no-spacing";
+				c.dataset.idsupercoollllll = flow.id;
 				c.innerHTML = node;
-				((app.containers.flow).querySelector(".page-content")).appendChild(c);
+				(app.containers.flow).querySelector(".page-content").remove();
+				(app.containers.flow).appendChild(c);
 
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
