@@ -50,11 +50,6 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 	}
 }
 
-router.get("/1234/test/mqtt", function (req, res) {
-	decisionrules.actionTest("FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8", {"dtepoch": 1499103302768, "value": "superValue", "text": null, "flow": "FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c"}, true, "testTopic");
-	res.status(200).send({message: "OK"});
-});
-
 /**
  * @api {get} /data/:flow_id Get DataPoint List
  * @apiName Get DataPoint List
