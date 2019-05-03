@@ -14,6 +14,41 @@ const algorithm = "aes-256-cbc";
 function str2bool(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
 }
+function getJson(v) {
+	try {
+		return JSON.parse(v);
+	} catch (e) {
+		return v;
+	}
+}
+function decryptPayload(encryptedPayload, sender, encoding) {
+	if ( sender && sender.secret_key_crypt ) {
+		var decryptedPayload;
+		sender.secret_key_crypt = Buffer.from(sender.secret_key_crypt, "hex");
+		let textParts = encryptedPayload.split(".");
+		// Initialization vector
+		let iv0 = crypto.randomBytes(16);
+		let iv1 = Buffer.from(textParts.shift(), "hex");
+		let iv2 = Buffer.alloc(16, 0);
+		//console.log(iv0);
+		//console.log(iv1);
+		//console.log(iv2);
+		//console.log(sender.secret_key_crypt);
+		encryptedPayload = textParts.shift();
+
+		//console.log("\nPayload encrypted:\n", encryptedPayload);
+		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv1);
+		decipher.setAutoPadding(true);
+		decryptedPayload = decipher.update(encryptedPayload, "base64", encoding || "utf8");// ascii, binary, base64, hex, utf8
+		decryptedPayload += decipher.final(encoding || "utf8");
+
+		//console.log("\nPayload decrypted:\n", decryptedPayload);
+		return decryptedPayload!==""?decryptedPayload:false;
+	} else {
+		//console.log("decryptPayload", "Error: Missing secret_key_crypt");
+		return false;
+	}
+}
 
 router.get("/1234/test/mqtt", function (req, res) {
 	decisionrules.actionTest("FAKE-e8cedd98-3af6-499c-870f-af6a0fc869e8", {"dtepoch": 1499103302768, "value": "superValue", "text": null, "flow": "FAKE-076dd068-b25e-48f4-8ad8-1c0d57aa1f5c"}, true, "testTopic");
@@ -518,21 +553,6 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 	};
 });
 
-function decryptPayload(encryptedPayload, sender) {
-	if ( sender && sender.secret_key_crypt ) {
-		let iv = crypto.randomBytes(16);
-		let decipher = crypto.createDecipheriv(algorithm, Buffer.from(sender.secret_key_crypt, "utf8"), iv);
-		//let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
-		decipher.setAutoPadding(false);
-		let decryptedPayload = decipher.update(encryptedPayload, "base64", "utf8") + decipher.final("utf8");
-		console.log("decryptedPayload", decryptedPayload);
-		return decryptedPayload!==""?decryptedPayload:false;
-	} else {
-		console.log("decryptPayload", "Missing secret_key_crypt");
-		return false;
-	}
-}
-
 /**
  * @api {post} /data/:flow_id Create a DataPoint
  * @apiName Create a DataPoint
@@ -592,28 +612,26 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 
 		if ( payload.encryptedPayload ) {
 			// The payload is encrypted
-			console.log("payload.encryptedPayload", payload.encryptedPayload);
 			isEncrypted = true;
-			let decrypted = decryptPayload(payload.encryptedPayload, json);
+			let decrypted = decryptPayload(payload.encryptedPayload.trim(), json); // ascii, binary, base64, hex, utf8
 			payload = decrypted!==false?decrypted:payload;
-			console.log("payload after decryption", payload);
+			//console.log("DEBUG", "\nPayload after decryption (1)", payload);
 		}
 
-		if ( payload.signedPayload ) {
+		if ( payload !== undefined && payload.signedPayload ) {
 			// The payload is signed
 			//console.log("payload.signedPayload", payload.signedPayload);
 			isSigned = true;
 			jwt.verify(payload.signedPayload, cert, function(err, decoded) {
 				if ( !err ) {
 					payload = decoded;
-					console.log("payload.unsigned", payload);
+					//console.log("DEBUG", "\nPayload Unsigned", payload);
 					if ( payload.encryptedPayload ) {
 						// The payload is encrypted
-						//console.log("payload.encryptedPayload", payload.encryptedPayload);
 						isEncrypted = true;
-						let decrypted = decryptPayload(payload.encryptedPayload, json);
+						let decrypted = decryptPayload(payload.encryptedPayload.trim(), json); // ascii, binary, base64, hex, utf8
 						payload = decrypted!==false?decrypted:payload;
-						console.log("payload after decryption", payload);
+						//console.log("DEBUG", "\nPayload after unsigned & decryption", payload);
 					}
 				} else {
 					payload = undefined;
@@ -625,8 +643,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			});
 		}
 	}
-
+	
 	if ( payload !== undefined && !error ) {
+		payload = getJson(payload);
 		var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:payload.flow_id;
 		var time		= (payload.timestamp!==""&&payload.timestamp!==undefined)?parseInt(payload.timestamp):moment().format("x");
 		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); };
@@ -639,7 +658,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		var longitude	= payload.longitude!==undefined?payload.longitude:"";
 		var text		= payload.text!==undefined?payload.text:"";
 
-		if ( !flow_id || !req.user.id ){
+		if ( !flow_id || !req.user.id ) {
 			// Not Authorized because token is invalid
 			res.status(401).send(new ErrorSerializer({"id": 64, "code": 401, "message": "Not Authorized",}).serialize());
 		} else {
@@ -660,12 +679,14 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				//console.log("(f.data())[0].left", (f.data())[0].left);
 				prerequisite += 1;
 			}
-			console.log("Payload isSigned", isSigned);
-			console.log("Payload isEncrypted", isEncrypted);
-			console.log("Flow require isSigned -", (f.data())[0].left.require_signed);
-			console.log("Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
-			console.log("prerequisite=", prerequisite);
-
+			/*
+			console.log("DEBUG", "payload=", payload);
+			console.log("DEBUG", "Flow require isSigned -", (f.data())[0].left.require_signed);
+			console.log("DEBUG", ".. & Payload isSigned", isSigned);
+			console.log("DEBUG", "Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
+			console.log("DEBUG", ".. & Payload isEncrypted", isEncrypted);
+			console.log("DEBUG", "Prerequisite Index=", prerequisite, "(>0 means something is required.)");
+			*/
 			if ( prerequisite <= 0 ) {
 				// Cast value according to Flow settings
 				var fields = [];
@@ -698,7 +719,14 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 					fields[0] = {time:""+time, valueString: value,};
 				}
 				// End casting
-
+				
+				/*
+				console.log("DEBUG", "value = ", value);
+				console.log("DEBUG", "datatype = ", datatype);
+				console.log("DEBUG", "text = ", text);
+				console.log("DEBUG", "influxdb = ", db_type.influxdb);
+				console.log("DEBUG", "save = ", save);
+				*/
 				if ( save == true ) {
 					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
@@ -715,9 +743,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 							timestamp: timestamp,
 						}], { retentionPolicy: "autogen", }).then(err => {
 							if (err) console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
-							//else console.log({"message": "Success on writePoints to influxDb", "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							//else console.log("DEBUG", {"message": "Success on writePoints to influxDb", "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						}).catch(err => {
-							console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							console.log("DEBUG", {"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 							console.error("Error catched on writting to influxDb:\n"+err);
 						});
 					}
