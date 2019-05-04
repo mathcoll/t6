@@ -610,6 +610,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			isEncrypted = true;
 			let decrypted = decryptPayload(payload.encryptedPayload.trim(), json); // ascii, binary, base64, hex, utf8
 			payload = decrypted!==false?decrypted:payload;
+			payload = getJson(payload);
 			//console.log("DEBUG", "\nPayload after decryption (1)", payload);
 		}
 
