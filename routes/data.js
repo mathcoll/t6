@@ -26,18 +26,13 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 		var decryptedPayload;
 		sender.secret_key_crypt = Buffer.from(sender.secret_key_crypt, "hex");
 		let textParts = encryptedPayload.split(".");
-		// Initialization vector
-		let iv0 = crypto.randomBytes(16);
-		let iv1 = Buffer.from(textParts.shift(), "hex");
-		let iv2 = Buffer.alloc(16, 0);
-		//console.log(iv0);
-		//console.log(iv1);
-		//console.log(iv2);
+		let iv = Buffer.from(textParts.shift(), "hex"); // Initialization vector
+		//console.log("Initialization vector", iv);
 		//console.log(sender.secret_key_crypt);
 		encryptedPayload = textParts.shift();
 
 		//console.log("\nPayload encrypted:\n", encryptedPayload);
-		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv1);
+		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
 		decipher.setAutoPadding(true);
 		decryptedPayload = decipher.update(encryptedPayload, "base64", encoding || "utf8");// ascii, binary, base64, hex, utf8
 		decryptedPayload += decipher.final(encoding || "utf8");
@@ -552,7 +547,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
  * @api {post} /data/:flow_id Create a DataPoint
  * @apiName Create a DataPoint
  * @apiDescription Create a DataPoint to t6. This needs to post the datapoint over a flow from your own collection.
- * The payload can be crypted using aes-256-cbc algorithm and optionally signed as well. Using both encrypting and signature require to encrypt the payload first and then to sign the new payload as an enveloppe.
+ * The payload can be crypted using aes-256-cbc algorithm and optionally signed as well. Using both encrypting and signature require to sign the payload first and then to encrypt the new payload as an enveloppe.
  * On both Sign & Encrypt, it is required to claim the object_id in the body so that the symmetric Secret Key can be found on the object as well as the Crypt Secret.
  * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
@@ -570,7 +565,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
  * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
  * @apiParam {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
- * @apiParam {String} [object_id=undefined] Optional except when using a Signed payload, the oject_id is required for the Symmetric-key algorithm verification; The object must be own by the user in JWT.
+ * @apiParam {String} [object_id=undefined] Optional Except when using a Signed payload, the oject_id is required for the Symmetric-key algorithm verification; The object must be own by the user in JWT.
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
