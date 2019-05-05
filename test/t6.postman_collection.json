@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "f31f497e-f493-7ba1-aeb3-ac86ca206a80",
 		"name": "t6",
-		"description": "t6 API first: Live, eat, and breathe the API-first lifestyle of t6.\n\nt6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
+		"description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.\n\n## Introduction\n\nt6 is using either _Http_ or _Https_ protocols to manage your Objects, Flows and Data Points. \nEndpoints allows to manage your own Objects, Flows, Users, and Data Points using normalized verbs:\n\n* **GET** verb is used to retrieve information from t6 datastore;\n* **POST** verb is used to create a new element;\n* **PUT** verb is used to edit an existing elements;\n* **DELETE** verb is used to delete existing elements.\n\nAll API enpoints support json and optional _Http Headers_ can be provided:\n* Content-Type: _application/json_\n* Accept: _application/json_\n\n## Authentication\nTo create and get a _JWT Token_, you must authenticate yourself on the API by using the dedicated Endpoint.\nMost API endpoint require an Authentication to identify and approve the user request. This is done by adding Authorization: Bearer Header to the Http request.\n\n## Quota\n_Quota_ is defined during the registration process. When the limit is reached, an Http error message is sent by the API and the request is not processed: 429 Too Many Requests.\n\n## Pagination\nPagination is using the following parameters:\n* **size**: the size parameter allow to request the number of items you want to retrieve.\n* **page**: this page parameter allows to place cursor on the selected page.\n\ne.g.: _https://api.internetcollaboratif.info/v2.0.1/objects/?page=2&size=20_\nThis will generate the payload listing Objects from resource cursor 21 to 41.\n\nAdditionnaly, the json payload is containing the following data:\n* **parent**: url endpoint of the parent resource.\n* **self**: url endpoint of the current resource.\n* **first**: url endpoint of the first page/cursor for the current resource.\n* **last**: url endpoint of the last page/cursor for the current resource.\n* **prev**: url endpoint of the previous page/cursor for the current resource.\n* **next**: url endpoint of the next page/cursor for the current resource.\n\n## Http Statuses\n* **200 Success**: Server successfully understood the transaction.\n* **201 Created**: The Creation of a new resource was successful.\n* **400 Bad Request**: Require a Bearer Authentication.\n* **401 Not Authorized**: Require a Bearer JWTtoken Authentication.\n* **403 Forbidden**: JWTtoken used in transaction is not valid. Check your token and/or permission.\n* **404 Not Found**: We couldn't find the resource you are trying to access.\n* **405 Method Not Allowed**: API endpoint does not accept the method used.\n* **412 Precondition Failed**: Request input does not match prerequisites, and so, failed.\n* **429 Too Many Requests**: Request failed due to quota overlimit.\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -10,18 +10,39 @@
 			"name": "General",
 			"item": [
 				{
-					"name": "authenticate with username+password",
+					"name": "authenticate userAccount to get a JWT token",
 					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "da329942-7ff9-4350-b544-dad04897f888",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
 						{
 							"listen": "test",
 							"script": {
-								"id": "36cb7443-f248-4993-8a50-893af82b65ad",
-								"type": "text/javascript",
+								"id": "b4a76676-003a-4eb8-832d-08dfeca3441e",
 								"exec": [
 									"var response = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);",
-									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);"
-								]
+									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);",
+									"postman.setEnvironmentVariable(\"refreshTokenExp\", response.refreshTokenExp);",
+									"",
+									"pm.test(\"Response must have OK as status\", function () {",
+									"    pm.expect( response.status ).to.equal( \"ok\" );",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -31,16 +52,11 @@
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "User-Agent",
-								"value": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:60.0) Gecko/20100101 Firefox/60.0",
-								"disabled": true
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"username\": \"{{usernameAdmin}}\", \"password\": \"{{password}}\", \"grant_type\": \"password\"}"
+							"raw": "{\"username\": \"{{usernameAdmin}}\", \"password\": \"{{password}}\"}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
@@ -56,18 +72,28 @@
 					"response": []
 				},
 				{
-					"name": "authenticate with refresh token",
+					"name": "refresh JWT token",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"id": "d371d3ca-a8c8-44fe-b7ee-9188defc400f",
-								"type": "text/javascript",
 								"exec": [
 									"var response = JSON.parse(responseBody);",
 									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);",
-									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);"
-								]
+									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);",
+									"",
+									"pm.test(\"Response must have OK as status\", function () {",
+									"    pm.expect( response.status ).to.equal( \"ok\" );",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -97,16 +123,27 @@
 					"response": []
 				},
 				{
-					"name": "authenticate, Client Api Key",
+					"name": "authenticate client using Api Key",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"type": "text/javascript",
+								"id": "f268a475-4143-4195-a2a3-9bed12ab8eac",
 								"exec": [
 									"var response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);"
-								]
+									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);",
+									"",
+									"pm.test(\"Response must have OK as status\", function () {",
+									"    pm.expect( response.status ).to.equal( \"ok\" );",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -136,16 +173,26 @@
 					"response": []
 				},
 				{
-					"name": "status",
+					"name": "Get t6 api status",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"type": "text/javascript",
+								"id": "9d9d2639-037c-4936-bcff-1e92598d6a98",
 								"exec": [
 									"var response = JSON.parse(responseBody);",
-									"tests[\"Application is running\"] = response.status.has(\"running\");"
-								]
+									"",
+									"pm.test(\"Response must have Running as status\", function () {",
+									"    pm.expect( response.status ).to.equal( \"running\" );",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -157,7 +204,10 @@
 								"value": "application/json"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/status",
 							"host": [
@@ -172,7 +222,26 @@
 					"response": []
 				},
 				{
-					"name": "datatypes",
+					"name": "Get all datatypes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4975f19c-ae19-4e6a-90b2-7c179019cb79",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -181,7 +250,10 @@
 								"value": "application/json"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
 							"host": [
@@ -197,7 +269,26 @@
 					"response": []
 				},
 				{
-					"name": "units",
+					"name": "Get all units",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "00100990-cdcd-4987-812c-bee03a67dec2",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -206,7 +297,10 @@
 								"value": "application/json"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
 							"host": [
@@ -223,6 +317,25 @@
 				},
 				{
 					"name": "index - PWA index cards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8abb462-63f6-4226-97aa-f1ff0f79135e",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -231,7 +344,10 @@
 								"value": "application/json"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/index/",
 							"host": [
@@ -372,7 +488,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"memo\": \"this is a memo\"}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/accessTokens",
@@ -420,7 +536,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"memo\": \"this is a memo\"}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/me/sessions",
@@ -515,7 +631,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/44800701-d6de-48f7-9577-4b3ea1fab81a",
 							"host": [
@@ -560,7 +679,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/me/token",
 							"host": [
@@ -582,16 +704,16 @@
 			"name": "0 DataPoint",
 			"item": [
 				{
-					"name": "Create a DataPoint",
+					"name": "1. Create a DataPoint not signed, not crypted",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"id": "12f584aa-6882-4851-b29a-760e179acfd0",
-								"type": "text/javascript",
 								"exec": [
 									"var response = JSON.parse(responseBody);"
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -613,17 +735,443 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"value\": \"1000\",\n  \"publish\": \"true\",\n  \"save\": \"false\",\n  \"unit\": \"\",\n  \"mqtt_topic\": \"\",\n  \"latitude\": \"39.800327\",\n  \"longitude\": \"6.343530\",\n  \"text\": \"\"\n}"
+							"raw": "{\n  \"value\": \"1. Datapoint not signed, not crypted\",\n  \"text\": \"\",\n  \"publish\": \"false\",\n  \"save\": \"true\",\n  \"unit\": \"\",\n  \"mqtt_topic\": \"\",\n  \"latitude\": \"39.800327\",\n  \"longitude\": \"6.343530\"\n}"
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/3",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
 								"data",
-								"cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f"
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2. Create a DataPoint signed, not crypted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "12f584aa-6882-4851-b29a-760e179acfd0",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Response must have the same value as the one POSTed.\", function () {",
+									"    pm.expect( response.data[0].attributes.value ).to.equal( pm.environment.get(\"expected_value\") );",
+									"});",
+									"pm.test(\"Status code is 200, 201, 202\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});",
+									"",
+									"postman.clearEnvironmentVariable(\"signedPayload\");",
+									"postman.clearEnvironmentVariable(\"encryptedPayload\");",
+									"postman.clearEnvironmentVariable(\"cryp_sender_object_id\");",
+									"postman.clearEnvironmentVariable(\"signature_sender_object_id\");",
+									"postman.clearEnvironmentVariable(\"expected_value\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "3d21200b-48a5-4e3e-9ec2-22418073fc2d",
+								"exec": [
+									"",
+									"/* SETTINGS ***************************************************************************************** */",
+									"var header = {",
+									"  \"alg\": \"HS256\",",
+									"  \"typ\": \"JWT\"",
+									"};",
+									"var payload = {",
+									"  \"value\": \"2. Datapoint signed, not crypted\",",
+									"  \"text\": \"\",",
+									"  \"publish\": \"false\",",
+									"  \"save\": \"true\",",
+									"  \"unit\": \"\",",
+									"  \"mqtt_topic\": \"\",",
+									"  \"latitude\": \"39.800327\",",
+									"  \"longitude\": \"6.343530\"",
+									"};",
+									"var signature_sender_object_id = \"dc89ab81-eecb-45e9-9e12-e3b71ea7f044\";",
+									"var signature_secret = \"'[].Gdvj`a/'CfH9-N[<L}=W$6WtKQb5jasn/,fc%L9B^m^Gmdg<>hg+C9*o6UHyCjC`2K\";",
+									"/* END OF SETTINGS *********************************************************************************** */",
+									"",
+									"var data = payload;",
+									"function base64url(source) {",
+									"  // Encode in classical base64",
+									"  encodedSource = CryptoJS.enc.Base64.stringify(source);",
+									"  ",
+									"  // Remove padding equal characters",
+									"  encodedSource = encodedSource.replace(/=+$/, '');",
+									"  ",
+									"  // Replace characters according to base64url specifications",
+									"  encodedSource = encodedSource.replace(/\\+/g, '-');",
+									"  encodedSource = encodedSource.replace(/\\//g, '_');",
+									"  ",
+									"  return encodedSource;",
+									"}",
+									"",
+									"var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));",
+									"var encodedHeader = base64url(stringifiedHeader);",
+									"",
+									"var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));",
+									"var encodedData = base64url(stringifiedData);",
+									"",
+									"var signature = encodedHeader + \".\" + encodedData;",
+									"signature = CryptoJS.HmacSHA256(signature, signature_secret);",
+									"",
+									"signature = base64url(signature);",
+									"var signedPayload = encodedHeader + \".\" + encodedData + \".\" + signature;",
+									"pm.environment.set(\"signedPayload\", signedPayload);",
+									"pm.environment.set(\"signature_sender_object_id\", signature_sender_object_id);",
+									"pm.environment.set(\"expected_value\", payload.value);",
+									"",
+									"console.log(signedPayload); //https://github.com/postmanlabs/postman-app-support/issues/4808#issuecomment-404083462",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"signedPayload\": \"{{signedPayload}}\",\n    \"object_id\": \"{{signature_sender_object_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/3",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"data",
+								"3"
+							]
+						},
+						"description": "This endpoint allows signed payload to be POSTed."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Create a DataPoint not signed, crypted",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "4958b060-c6bf-4a2d-a08e-58d61adbe119",
+								"exec": [
+									"var CryptoJS = require(\"crypto-js\");",
+									"",
+									"/* SETTINGS ***************************************************************************************** */",
+									"var cryp_sender_object_id = \"dc89ab81-eecb-45e9-9e12-e3b71ea7f044\";",
+									"var cryp_secret = \"B25ddfBdabBCcBCcCBFa2a5DbEcDcCee55b2C295DFFa779a99c726bE4bDeA2ee\"; // 32bits hexa",
+									"var iv = CryptoJS.enc.Hex.parse( getIv() );",
+									"",
+									"var payload = {",
+									"  \"value\": \"3. Datapoint not signed, crypted\",",
+									"  \"text\": \"\",",
+									"  \"publish\": \"false\",",
+									"  \"save\": \"true\",",
+									"  \"unit\": getUuidv4(),",
+									"  \"mqtt_topic\": \"mqtt_topic/xyz\",",
+									"  \"latitude\": getRandomFloat(0, 10),",
+									"  \"longitude\": getRandomFloat(0, 10)",
+									"};",
+									"/* END OF SETTINGS *********************************************************************************** */",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"function getRandomInt(min, max) {",
+									"    return _.random(min, max);",
+									"}",
+									"function getRandomFloat(min, max) {",
+									"    return _.random(min, max, true);",
+									"}",
+									"function getUuidv4() {",
+									"  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {",
+									"    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);",
+									"    return v.toString(16);",
+									"  });",
+									"}",
+									"function getIv() {",
+									"  return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/[x]/g, function(c) {",
+									"    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);",
+									"    //return CryptoJS.enc.Hex.parse(v.toString(16));",
+									"    return v.toString(16);",
+									"  });",
+									"}",
+									"",
+									"cryp_secret = CryptoJS.enc.Hex.parse(cryp_secret);",
+									"var encryptedPayload = CryptoJS.AES.encrypt(JSON.stringify(payload).trim(), cryp_secret, {iv: iv});",
+									"encryptedPayload = encryptedPayload.toString(CryptoJS.enc.base64); // Utf8, base64",
+									"",
+									"pm.environment.set(\"encryptedPayload\", iv+\".\"+encryptedPayload.trim());",
+									"pm.environment.set(\"cryp_sender_object_id\", cryp_sender_object_id);",
+									"pm.environment.set(\"expected_value\", payload.value);",
+									"",
+									"console.log(\"iv= \" + iv.toString() );",
+									"console.log(\"payload= \");",
+									"console.log(payload);",
+									"console.log(\"encryptedPayload= \" + encryptedPayload); //https://github.com/postmanlabs/postman-app-support/issues/4808#issuecomment-404083462"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "6cfcad31-1e34-40a7-87c6-2a2dd08595f4",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Response must have the same value as the one POSTed.\", function () {",
+									"    pm.expect( response.data[0].attributes.value ).to.equal( pm.environment.get(\"expected_value\") );",
+									"});",
+									"pm.test(\"Status code is 200, 201, 202\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});",
+									"",
+									"postman.clearEnvironmentVariable(\"signedPayload\");",
+									"postman.clearEnvironmentVariable(\"encryptedPayload\");",
+									"postman.clearEnvironmentVariable(\"cryp_sender_object_id\");",
+									"postman.clearEnvironmentVariable(\"signature_sender_object_id\");",
+									"postman.clearEnvironmentVariable(\"expected_value\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"encryptedPayload\": \"{{encryptedPayload}}\",\n\t\"object_id\": \"{{cryp_sender_object_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/3",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"data",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4. Create a Datapoint first signed, and then crypted",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "12f584aa-6882-4851-b29a-760e179acfd0",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Response must have the same value as the one POSTed.\", function () {",
+									"    pm.expect( response.data[0].attributes.value ).to.equal( pm.environment.get(\"expected_value\") );",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});",
+									"",
+									"postman.clearEnvironmentVariable(\"signedPayload\");",
+									"postman.clearEnvironmentVariable(\"encryptedPayload\");",
+									"postman.clearEnvironmentVariable(\"cryp_sender_object_id\");",
+									"postman.clearEnvironmentVariable(\"signature_sender_object_id\");",
+									"postman.clearEnvironmentVariable(\"expected_value\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a2cac151-048d-4d78-84ea-cd884317f337",
+								"exec": [
+									"var CryptoJS = require(\"crypto-js\");",
+									"",
+									"/* SETTINGS ***************************************************************************************** */",
+									"var cryp_sender_object_id = \"dc89ab81-eecb-45e9-9e12-e3b71ea7f044\";",
+									"var cryp_secret = \"B25ddfBdabBCcBCcCBFa2a5DbEcDcCee55b2C295DFFa779a99c726bE4bDeA2ee\"; // 32bits hexa",
+									"var iv = CryptoJS.enc.Hex.parse( getIv() );",
+									"",
+									"var signature_sender_object_id = \"dc89ab81-eecb-45e9-9e12-e3b71ea7f044\";",
+									"var signature_secret = \"'[].Gdvj`a/'CfH9-N[<L}=W$6WtKQb5jasn/,fc%L9B^m^Gmdg<>hg+C9*o6UHyCjC`2K\";",
+									"",
+									"var header = {",
+									"  \"alg\": \"HS256\",",
+									"  \"typ\": \"JWT\"",
+									"};",
+									"var payload = {",
+									"  \"value\": \"4. Datapoint first signed, and then crypted\",",
+									"  \"text\": \"\",",
+									"  \"publish\": \"false\",",
+									"  \"save\": \"true\",",
+									"  \"unit\": getUuidv4(),",
+									"  \"mqtt_topic\": \"mqtt_topic/xyz\",",
+									"  \"latitude\": getRandomFloat(0, 10),",
+									"  \"longitude\": getRandomFloat(0, 10)",
+									"};",
+									"/* END OF SETTINGS *********************************************************************************** */",
+									"",
+									"function getRandomInt(min, max) {",
+									"    return _.random(min, max);",
+									"}",
+									"function getRandomFloat(min, max) {",
+									"    return _.random(min, max, true);",
+									"}",
+									"function getUuidv4() {",
+									"  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {",
+									"    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);",
+									"    return v.toString(16);",
+									"  });",
+									"}",
+									"function getIv() {",
+									"  return 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'.replace(/[x]/g, function(c) {",
+									"    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);",
+									"    //return CryptoJS.enc.Hex.parse(v.toString(16));",
+									"    return v.toString(16);",
+									"  });",
+									"}",
+									"function base64url(source) {",
+									"  // Encode in classical base64",
+									"  encodedSource = CryptoJS.enc.Base64.stringify(source);",
+									"  ",
+									"  // Remove padding equal characters",
+									"  encodedSource = encodedSource.replace(/=+$/, '');",
+									"  ",
+									"  // Replace characters according to base64url specifications",
+									"  encodedSource = encodedSource.replace(/\\+/g, '-');",
+									"  encodedSource = encodedSource.replace(/\\//g, '_');",
+									"  ",
+									"  return encodedSource;",
+									"}",
+									"",
+									"",
+									"var signedPayload = {",
+									"    \"signedPayload\": \"\",",
+									"    \"object_id\": signature_sender_object_id",
+									"}",
+									"cryp_secret = CryptoJS.enc.Hex.parse(cryp_secret);",
+									"pm.environment.set(\"expected_value\", payload.value);",
+									"",
+									"",
+									"// 1. Signature",
+									"var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header));",
+									"var encodedHeader = base64url(stringifiedHeader);",
+									"",
+									"var data = payload;",
+									"var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data));",
+									"var encodedData = base64url(stringifiedData);",
+									"",
+									"var signature = encodedHeader + \".\" + encodedData;",
+									"signature = CryptoJS.HmacSHA256(signature, signature_secret);",
+									"",
+									"signature = base64url(signature);",
+									"var signedPayloadContent = encodedHeader + \".\" + encodedData + \".\" + signature;",
+									"",
+									"signedPayload.signedPayload = signedPayloadContent;",
+									"var payload = signedPayloadContent;",
+									"console.log(\"1. Signature:\");",
+									"console.log(signedPayload);",
+									"",
+									"payload = signedPayload;",
+									"",
+									"// 2. Encryption",
+									"var encryptedPayload = CryptoJS.AES.encrypt(JSON.stringify(payload).trim(), cryp_secret, {iv: iv});",
+									"encryptedPayload = encryptedPayload.toString(CryptoJS.enc.base64); // Utf8, base64",
+									"",
+									"pm.environment.set(\"encryptedPayload\", iv+\".\"+encryptedPayload.trim());",
+									"pm.environment.set(\"cryp_sender_object_id\", cryp_sender_object_id);",
+									"",
+									"console.log(\"2. Encryption:\");",
+									"console.log(encryptedPayload); //https://github.com/postmanlabs/postman-app-support/issues/4808#issuecomment-404083462",
+									"//console.log(JSON.stringify(payload));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"encryptedPayload\": \"{{encryptedPayload}}\",\n\t\"object_id\": \"{{cryp_sender_object_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/3",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"data",
+								"3"
 							]
 						}
 					},
@@ -647,7 +1195,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/ce40b2f3-56bc-4946-910d-8d8b2835a177?limit=100&sort=desc",
 							"host": [
@@ -661,47 +1212,14 @@
 							"query": [
 								{
 									"key": "limit",
-									"value": "100"
+									"value": "100",
+									"description": "Set the number of expected resources."
 								},
 								{
 									"key": "sort",
-									"value": "desc"
+									"value": "desc",
+									"description": "Set to sorting order, the value can be either \"asc\" dor ascending or \"desc\" for descending."
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "TEST MQTT",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/1234/test/mqtt",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"data",
-								"1234",
-								"test",
-								"mqtt"
 							]
 						}
 					},
@@ -730,7 +1248,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/?page=1&size=20",
 							"host": [
@@ -757,6 +1278,18 @@
 				},
 				{
 					"name": "Get an object",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "656fd260-2961-482b-af25-d91b35b8488d",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
@@ -773,16 +1306,19 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/fbbc628f-ef61-47ae-88cc-1ec3b13fed0a",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/54663ca2-619c-49ac-b9ac-cff4ffed8777",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
 								"objects",
-								"fbbc628f-ef61-47ae-88cc-1ec3b13fed0a"
+								"54663ca2-619c-49ac-b9ac-cff4ffed8777"
 							]
 						}
 					},
@@ -806,7 +1342,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/54663ca2-619c-49ac-b9ac-cff4ffed8777/ActivationDateOnGuruplug",
 							"host": [
@@ -987,9 +1526,12 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/flows/?page=1&size=20",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/flows/?page=1&size=200&name=Outdoor Temperature",
 							"host": [
 								"{{ENDPOINT}}"
 							],
@@ -1005,7 +1547,11 @@
 								},
 								{
 									"key": "size",
-									"value": "20"
+									"value": "200"
+								},
+								{
+									"key": "name",
+									"value": "Outdoor Temperature"
 								}
 							]
 						}
@@ -1140,7 +1686,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/dashboards/?page=1&size=20",
 							"host": [
@@ -1221,7 +1770,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/snippets/?page=1&size=20",
 							"host": [
@@ -1374,15 +1926,19 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules?page=1&size=20",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules/?page=1&size=20",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
-								"rules"
+								"rules",
+								""
 							],
 							"query": [
 								{
@@ -1418,17 +1974,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"conditions\": {\n        \"all\": [\n            {\n                \"fact\": \"user_id\",\n                \"operator\": \"equal\",\n                \"value\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\"\n            },\n            {\n                \"fact\": \"environment\",\n                \"operator\": \"equal\",\n                \"value\": \"development\"\n            },\n            {\n                \"operator\": \"isDayTime\",\n\t            \"params\": {\n\t\t\t\t  \"latitude\": \"39.800327\",\n\t\t\t\t  \"longitude\": \"6.343530\"\n\t            }\n            }\n]\n    },\n        \"event\": {\n            \"type\": \"mqttPublish\",\n            \"params\": {\n                \"message\": \"\",\n                \"mqtt_topic\": \"devRuleTest\"\n            }\n        },\n    \"priority\": 2,\n    \"meta\": {\n        \"revision\": 0,\n        \"created\": 1541708621529,\n        \"version\": 0\n    }\n}"
+							"raw": "{\n                \"name\": \"Test notification\",\n                \"user_id\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\",\n                \"id\": \"2b2bbd54-c675-45db-a89c-6a63fc331bba\",\n                \"rule\": {\n                    \"conditions\": {\n                        \"all\": [\n                            {\n                                \"fact\": \"user_id\",\n                                \"operator\": \"equal\",\n                                \"value\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\"\n                            },\n                            {\n                                \"fact\": \"environment\",\n                                \"operator\": \"equal\",\n                                \"value\": \"development\"\n                            }\n                        ]\n                    },\n                    \"event\": {\n                        \"type\": \"httpWebhook\",\n                        \"params\": {\n                            \"method\": \"GET\",\n                            \"url\": \"https://support.oneskyapp.com/hc/en-us/article_attachments/202761627/example_1.json\",\n                            \"strictSSL\": true,\n                            \"headers\": {\n                                \"Content-Type\": \"application/json\"\n                            },\n                            \"body\": {}\n                        }\n                    },\n                    \"priority\": 2\n                },\n                \"active\": false,\n                \"meta\": {\n                    \"revision\": 6,\n                    \"created\": 1541855719663,\n                    \"version\": 0,\n                    \"updated\": 1541858123699\n                }\n            }"
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules/f09fbdf9-472b-4023-9b43-708afadcebfb",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules/2b2bbd54-c675-45db-a89c-6a63fc331bba",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
 								"rules",
-								"f09fbdf9-472b-4023-9b43-708afadcebfb"
+								"2b2bbd54-c675-45db-a89c-6a63fc331bba"
 							]
 						}
 					},
@@ -1490,7 +2046,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Email alert 2\",\n    \"user_id\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\",\n    \"rule\": {\n        \"conditions\": {\n            \"all\": [\n                {\n                    \"fact\": \"user_id\",\n                    \"operator\": \"equal\",\n                    \"value\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\"\n                },\n                {\n                    \"fact\": \"environment\",\n                    \"operator\": \"equal\",\n                    \"value\": \"development\"\n                },\n                {\n                    \"fact\": \"flow\",\n                    \"operator\": \"equal\",\n                    \"value\": \"cb510da8-ddd0-49cc-bb73-95b3b2bbfd8f\"\n                }\n            ]\n        },\n            \"event\": {\n                \"type\": \"mqttPublish\",\n                \"params\": {\n                    \"message\": \"\",\n                    \"mqtt_topic\": \"\"\n                }\n            },\n        \"priority\": 2\n    }\n}"
+							"raw": "{\n    \"name\": \"Test Serial\",\n    \"active\": true,\n    \"rule\": {\n        \"conditions\": {\n            \"all\": [\n                {\n                    \"fact\": \"user_id\",\n                    \"operator\": \"equal\",\n                    \"value\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\"\n                },\n                {\n                    \"fact\": \"environment\",\n                    \"operator\": \"equal\",\n                    \"value\": \"development\"\n                }\n            ]\n        },\n        \"event\": {\n            \"type\": \"serial\",\n            \"params\": {\n                \"serialPort\": \"/dev/ttyUSB0\",\n                \"baudRate\": 9600\n            }\n        },\n        \"priority\": 2\n    }\n}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules",
@@ -1528,7 +2084,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/mqtts/?page=1&size=20",
 							"host": [
@@ -1614,7 +2173,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/units/",
@@ -1722,7 +2281,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/datatypes/",
@@ -1794,7 +2353,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/users/list",
@@ -1812,6 +2371,28 @@
 				},
 				{
 					"name": "Reset tokens for all users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b4708096-91fa-4e2c-834f-a89377b3b97d",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Response must have\", function () {",
+									"    pm.expect( response.status ).to.equal( \"done\" );",
+									"});",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [
@@ -1868,7 +2449,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/reminder",
@@ -1880,6 +2461,43 @@
 								"notifications",
 								"debug",
 								"reminder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get (Html) loginfailure email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/loginfailure",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"debug",
+								"loginfailure"
 							]
 						}
 					},
@@ -1905,7 +2523,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/change-password",
@@ -1917,6 +2535,80 @@
 								"notifications",
 								"debug",
 								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get (Html) forgot-password email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/forgot-password",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"debug",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get (Html) newsletter",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/newsletters%2f2019%2f2019-03-xx-newsletter",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"debug",
+								"newsletters%2f2019%2f2019-03-xx-newsletter"
 							]
 						}
 					},
@@ -1942,7 +2634,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"\"\n}"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/list/unsubscribed",
@@ -1977,7 +2669,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/reminder",
 							"host": [
@@ -1988,6 +2683,53 @@
 								"notifications",
 								"mail",
 								"reminder"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send (email) newsletter",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/newsletter?year=2019&template=2019-03-xx-newsletter",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"notifications",
+								"mail",
+								"newsletter"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2019"
+								},
+								{
+									"key": "template",
+									"value": "2019-03-xx-newsletter"
+								}
 							]
 						}
 					},
@@ -2011,7 +2753,10 @@
 								"value": "{{token}}"
 							}
 						],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/changePassword",
 							"host": [
@@ -2052,6 +2797,9 @@
 			]
 		}
 	],
+	"auth": {
+		"type": "bearer"
+	},
 	"event": [
 		{
 			"listen": "prerequest",
