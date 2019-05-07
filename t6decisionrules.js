@@ -5,6 +5,33 @@ var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
 var rules;
 
+function cryptPayload(payload, sender, encoding) {
+	/*
+	if ( sender && sender.secret_key_crypt ) {
+		var decryptedPayload;
+		sender.secret_key_crypt = Buffer.from(sender.secret_key_crypt, "hex");
+		let textParts = encryptedPayload.split(".");
+		let iv = Buffer.from(textParts.shift(), "hex"); // Initialization vector
+		//console.log("Initialization vector", iv);
+		//console.log(sender.secret_key_crypt);
+		encryptedPayload = textParts.shift();
+
+		//console.log("\nPayload encrypted:\n", encryptedPayload);
+		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
+		decipher.setAutoPadding(true);
+		decryptedPayload = decipher.update(encryptedPayload, "base64", encoding || "utf8");// ascii, binary, base64, hex, utf8
+		decryptedPayload += decipher.final(encoding || "utf8");
+
+		//console.log("\nPayload decrypted:\n", decryptedPayload);
+		return decryptedPayload!==""?decryptedPayload:false;
+	} else {
+		//console.log("payload", "Error: Missing secret_key_crypt");
+		return false;
+	}
+	*/
+	return "TODO: CRYPTED VALUE";
+}
+
 t6decisionrules.export = function(rule) {
 	console.dir(JSON.stringify(rule));
 };
@@ -14,11 +41,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	rules = dbRules.getCollection("rules");
 	
 	var query = {
-		"$and": [
-				{ "user_id": { "$eq": user_id } },
-				{ "active": true },
-			]
-		}
+	"$and": [
+			{ "user_id": { "$eq": user_id } },
+			{ "active": true },
+		]
+	}
 	var r = rules.chain().find(query).data();
 	
 	let engine = new Engine();
@@ -71,11 +98,19 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		}
 
 		if( event.type == "mqttPublish" ) {
+			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, message:payload.message, flow: payload.flow, object_id: payload.object_id};
 			if ( payload.text !== "" ) {
-				t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify({dtepoch:payload.dtepoch, value:payload.value, text:payload.text, message:payload.message, flow: payload.flow}), true);
-			} else {
-				t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify({dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow}), true);
+				mqttPayload.text = payload.text;
 			}
+			if( user_id && payload.object_id ) {
+				let objects	= db.getCollection("objects");
+				let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
+				if ( object && object.secret_key_crypt ) { // TODO: Should also get the Flow.requireCrypted flag.
+					mqttPayload.value = cryptPayload(mqttPayload.value, {secret_key_crypt: object.secret_key_crypt}); // ascii, binary, base64, hex, utf8
+				}
+			}
+			t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify(mqttPayload), true);
+
 		} else if ( event.type == "email" ) {
 			var envelope = {
 				from:		event.params.from?event.params.from:from,
@@ -125,21 +160,21 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			// TODO
 		}
 	});
-	
+
 	engine.run(payload);
 };
 
-t6decisionrules.action = function(user_id, p, publish, mqtt_topic) {
-	if ( !p.environment ) {
-		p.environment = process.env.NODE_ENV;
+t6decisionrules.action = function(user_id, payload, publish, mqtt_topic) {
+	if ( !payload.environment ) {
+		payload.environment = process.env.NODE_ENV;
 	}
-	if ( !p.mqtt_topic ) {
-		p.mqtt_topic = mqtt_topic;
+	if ( !payload.mqtt_topic ) {
+		payload.mqtt_topic = mqtt_topic;
 	}
 	if ( !user_id ) {
 		user_id = "unknown_user";
 	} else {
-		t6decisionrules.checkRulesFromUser(user_id, p);
+		t6decisionrules.checkRulesFromUser(user_id, payload);
 	}
 };
 

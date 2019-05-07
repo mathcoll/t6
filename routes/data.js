@@ -556,16 +556,16 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to add Data Point to
  * @apiParam {String} value Data Point value
- * @apiParam {Boolean} [publish=false] Flag to publish to Mqtt Topic
+ * @apiParam {Boolean} [publish=true] Flag to publish to Mqtt Topic ; This parameter might become deprecated.
  * @apiParam {Boolean} [save=false] Flag to store in database the Value
  * @apiParam {String} [unit=undefined] Unit of the Value
  * @apiParam {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
  * @apiParam {String} [text=undefined] Optional text to qualify Value
+ * @apiParam {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
  * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
  * @apiParam {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
- * @apiParam {String} [object_id=undefined] Optional Except when using a Signed payload, the oject_id is required for the Symmetric-key algorithm verification; The object must be own by the user in JWT.
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
@@ -641,13 +641,14 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		var time		= (payload.timestamp!==""&&payload.timestamp!==undefined)?parseInt(payload.timestamp):moment().format("x");
 		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); };
 		var value		= payload.value!==undefined?payload.value:"";
-		var publish		= payload.publish!==undefined?JSON.parse(payload.publish):false;
+		var publish		= payload.publish!==undefined?JSON.parse(payload.publish):true;
 		var save		= payload.save!==undefined?JSON.parse(payload.save):true;
 		var unit		= payload.unit!==undefined?payload.unit:"";
 		var mqtt_topic	= payload.mqtt_topic!==undefined?payload.mqtt_topic:"";
 		var latitude	= payload.latitude!==undefined?payload.latitude:"";
 		var longitude	= payload.longitude!==undefined?payload.longitude:"";
 		var text		= payload.text!==undefined?payload.text:"";
+		var object_id	= payload.object_id;
 
 		if ( !flow_id || !req.user.id ) {
 			// Not Authorized because token is invalid
@@ -718,7 +719,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				console.log("DEBUG", "influxdb = ", db_type.influxdb);
 				console.log("DEBUG", "save = ", save);
 				*/
-				if ( save == true ) {
+				if ( save === true ) {
 					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
 						var tags = {};
@@ -753,8 +754,10 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 						});
 					};
 				}
-				
-				t6decisionrules.action(req.user.id, {"dtepoch": time, "value": value, "text": text, "flow": flow_id, latitude: latitude, longitude: longitude}, publish, mqtt_topic);
+
+				if ( publish === true ) {
+					t6decisionrules.action(req.user.id, {"dtepoch": time, "value": value, "text": text, "flow": flow_id, latitude: latitude, longitude: longitude, object_id: object_id}, publish, mqtt_topic);
+				}
 
 				fields.flow_id = flow_id;
 				fields.id = time*1000000;

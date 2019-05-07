@@ -231,7 +231,7 @@ if (app.get("env") === "development") {
 t6events.add("t6App", "start", "self");
 console.log(sprintf("%s %s has started and listening to %s", moment().format("MMMM Do YYYY, H:mm:ss"), appName, process.env.BASE_URL_HTTPS));
 
-mqttClient = mqtt.connect("mqtt://"+mqttHost+":"+mqttPort);
+mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
 	mqttClient.publish(mqttInfo, JSON.stringify({"dtepoch": moment().format("x"), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
 	console.log(sprintf("%s Connected to Mqtt broker on %s:%s - %s", moment().format("MMMM Do YYYY, H:mm:ss"), mqttHost, mqttPort, mqttRoot));
