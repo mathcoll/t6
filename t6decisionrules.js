@@ -97,6 +97,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 			t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify(mqttPayload), true);
 
+		} else if ( event.type === "mqttCommand" ) {
+			let mqttPayload = payload.value;
+			t6mqtt.publish(payload.user_id, "object_id/"+payload.object_id+"/cmd", mqttPayload, true);
+
 		} else if ( event.type === "email" ) {
 			var envelope = {
 				from:		event.params.from?event.params.from:from,

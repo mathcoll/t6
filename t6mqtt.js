@@ -4,7 +4,7 @@ var t6mqtt = module.exports = {};
 t6mqtt.publish = function(user_id, topic, payload, retain) {
 	topic = !topic.startsWith("/", 0)?"/"+topic:topic;
 	payload = JSON.parse(payload);
-	if ( payload ) {
+	if ( payload && typeof payload === "object" ) {
 		if ( !payload.environment ) {
 			payload.environment = process.env.NODE_ENV;
 		}
@@ -21,7 +21,5 @@ t6mqtt.publish = function(user_id, topic, payload, retain) {
 	console.log("port", mqttClient.options.port);
 	*/
 };
-
-
 
 module.exports = t6mqtt;
