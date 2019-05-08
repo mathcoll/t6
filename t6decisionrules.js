@@ -97,7 +97,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		}
 
-		if( event.type == "mqttPublish" ) {
+		if( event.type === "mqttPublish" ) {
 			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, message:payload.message, flow: payload.flow, object_id: payload.object_id};
 			if ( payload.text !== "" ) {
 				mqttPayload.text = payload.text;
@@ -111,7 +111,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 			t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify(mqttPayload), true);
 
-		} else if ( event.type == "email" ) {
+		} else if ( event.type === "email" ) {
 			var envelope = {
 				from:		event.params.from?event.params.from:from,
 				bcc:		event.params.bcc?event.params.bcc:bcc,
@@ -121,9 +121,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				html:		event.params.html?stringformat(event.params.html, payload):null
 			}
 			t6mailer.sendMail(envelope);
-		} else if ( event.type == "sms" ) {
+		} else if ( event.type === "sms" ) {
 			// TODO
-		} else if ( event.type == "httpWebhook" ) {
+		} else if ( event.type === "httpWebhook" ) {
 			var options = {
 				url: event.params.url,
 				port: event.params.port,
@@ -146,9 +146,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					console.log("success", options.url, statusCode, body);
 				}
 			)
-		} else if ( event.type == "Ifttt" ) {
+		} else if ( event.type === "Ifttt" ) {
 			// TODO
-		} else if ( event.type == "serial" ) {
+		} else if ( event.type === "serial" ) {
 			// Arduino is using CmdMessenger
 			serialport = new serialport(event.params.serialPort?event.params.serialPort:"/dev/ttyUSB0", { baudRate:event.params.baudRate?event.params.baudRate:9600 })
 			// Some examples:
@@ -156,11 +156,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			// "kSetDtEpoch,{dtepoch};"
 			// "kSetFlow,{flow};"
 			serialport.write(event.params.serialMessage?stringformat(event.params.serialMessage, payload):stringformat("kSetLed,{payload.value};", payload));
-		} else if ( event.type == "slackMessage" ) {
+		} else if ( event.type === "slackMessage" ) {
 			// TODO
 		}
 	});
-
 	engine.run(payload);
 };
 
@@ -177,7 +176,5 @@ t6decisionrules.action = function(user_id, payload, publish, mqtt_topic) {
 		t6decisionrules.checkRulesFromUser(user_id, payload);
 	}
 };
-
-
 
 module.exports = t6decisionrules;
