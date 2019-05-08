@@ -112,6 +112,9 @@ li.delete-button:hover {
 	height: 5px !important;
 	background: #fff !important;
 }
+.is-invalid {
+	text-transform: none;
+}
 .small-padding {
 	min-height: 50px !important;
 	padding: 5px 16px !important;

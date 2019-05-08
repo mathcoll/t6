@@ -198,7 +198,7 @@ app.resources.objects = {
 					node += app.getField('', '', 'When flow require signed payload, you should provide your secret to verify signature.', {type: 'text', isEdit: false});
 				}
 				if ( object.attributes.secret_key_crypt || isEdit===true ) {
-					node += app.getField('vpn_key', 'Secret Key in symmetric cryptography', object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:'', {type: 'text', id: 'secret_key_crypt', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:''});
+					node += app.getField('vpn_key', 'Secret Key in symmetric cryptography', object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:'', {type: 'text', id: 'secret_key_crypt', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:'This must be a 64 hexadecimal chars length A-F & 0-9'});
 				}
 				if ( object.attributes.is_public == "true" && isEdit===false ) {
 					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
