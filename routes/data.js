@@ -752,7 +752,20 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				}
 
 				if ( publish === true ) {
-					t6decisionrules.action(req.user.id, {"dtepoch": time, "value": value, "text": text, "flow": flow_id, latitude: latitude, longitude: longitude, object_id: object_id}, publish, mqtt_topic);
+					let payloadFact = {"dtepoch": time, "value": value, "flow": flow_id}; // This is the minimal payload
+					if ( object_id ) {
+						payloadFact.object_id = object_id;
+					}
+					if ( text ) {
+						payloadFact.text = text;
+					}
+					if ( latitude ) {
+						payloadFact.latitude = latitude;
+					}
+					if ( longitude ) {
+						payloadFact.longitude = longitude;
+					}
+					t6decisionrules.action(req.user.id, payloadFact, mqtt_topic);
 				}
 
 				fields.flow_id = flow_id;

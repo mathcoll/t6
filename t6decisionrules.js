@@ -70,7 +70,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 
 	engine.on("success", function(event, almanac, ruleResult) {
 		// ruleResult.result == true
-		
 		if ( !payload.mqtt_topic ) {
 			if ( event.params.mqtt_topic ) {
 				payload.mqtt_topic = event.params.mqtt_topic;
@@ -150,7 +149,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	engine.run(payload);
 };
 
-t6decisionrules.action = function(user_id, payload, publish, mqtt_topic) {
+t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 	if ( !payload.environment ) {
 		payload.environment = process.env.NODE_ENV;
 	}
