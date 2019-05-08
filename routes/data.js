@@ -654,8 +654,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			datatypes	= db.getCollection("datatypes");
 			var f = flows.chain().find({id: ""+flow_id,}).limit(1);
 			var join = f.eqJoin(datatypes.chain(), "data_type", "id");
-			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].mqtt_topic ) {
-				mqtt_topic = (f.data())[0].mqtt_topic;
+			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].left && (f.data())[0].left.mqtt_topic ) {
+				mqtt_topic = (f.data())[0].left.mqtt_topic;
 			}
 			var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
 
