@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "General",
+			"name": "General, public access",
 			"item": [
 				{
 					"name": "authenticate userAccount to get a JWT token",
@@ -57,57 +57,6 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\"username\": \"{{usernameAdmin}}\", \"password\": \"{{password}}\"}"
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"authenticate"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "refresh JWT token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "d371d3ca-a8c8-44fe-b7ee-9188defc400f",
-								"exec": [
-									"var response = JSON.parse(responseBody);",
-									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);",
-									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);",
-									"",
-									"pm.test(\"Response must have OK as status\", function () {",
-									"    pm.expect( response.status ).to.equal( \"ok\" );",
-									"});",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
-									"});",
-									"pm.test(\"Status code name has string\", function () {",
-									"    pm.response.to.have.status(\"OK\");",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"username\": \"{{usernameAdmin}}\", \"grant_type\": \"refresh_token\", \"refresh_token\": \"{{refresh_token}}\"}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
@@ -173,17 +122,19 @@
 					"response": []
 				},
 				{
-					"name": "Get t6 api status",
+					"name": "refresh JWT token",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "9d9d2639-037c-4936-bcff-1e92598d6a98",
+								"id": "d371d3ca-a8c8-44fe-b7ee-9188defc400f",
 								"exec": [
 									"var response = JSON.parse(responseBody);",
+									"postman.setEnvironmentVariable(\"token\", \"Bearer \"+response.token);",
+									"postman.setEnvironmentVariable(\"refresh_token\", response.refresh_token);",
 									"",
-									"pm.test(\"Response must have Running as status\", function () {",
-									"    pm.expect( response.status ).to.equal( \"running\" );",
+									"pm.test(\"Response must have OK as status\", function () {",
+									"    pm.expect( response.status ).to.equal( \"ok\" );",
 									"});",
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
@@ -197,7 +148,7 @@
 						}
 					],
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -206,16 +157,16 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": ""
+							"raw": "{\"username\": \"{{usernameAdmin}}\", \"grant_type\": \"refresh_token\", \"refresh_token\": \"{{refresh_token}}\"}"
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/status",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/authenticate",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
-								"status"
+								"authenticate"
 							]
 						}
 					},
@@ -309,53 +260,6 @@
 							"path": [
 								"v{{API_VERSION}}",
 								"units",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "index - PWA index cards",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "e8abb462-63f6-4226-97aa-f1ff0f79135e",
-								"exec": [
-									"var response = JSON.parse(responseBody);",
-									"",
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
-									"});",
-									"pm.test(\"Status code name has string\", function () {",
-									"    pm.response.to.have.status(\"OK\");",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/index/",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"index",
 								""
 							]
 						}
@@ -701,10 +605,10 @@
 			]
 		},
 		{
-			"name": "0 DataPoint",
+			"name": "DataPoint & Command",
 			"item": [
 				{
-					"name": "1. Create a DataPoint not signed, not crypted",
+					"name": "1. DataPoint not signed, not crypted",
 					"event": [
 						{
 							"listen": "test",
@@ -735,7 +639,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"value\": \"1. Datapoint not signed, not crypted\",\n  \"text\": \"\",\n  \"publish\": \"false\",\n  \"save\": \"true\",\n  \"unit\": \"\",\n  \"mqtt_topic\": \"\",\n  \"latitude\": \"39.800327\",\n  \"longitude\": \"6.343530\"\n}"
+							"raw": "{\n\t\"value\": \"1. Datapoint not signed, not crypted\",\n\t\"text\": \"\",\n\t\"save\": \"true\",\n\t\"unit\": \"\",\n\t\"mqtt_topic\": \"test\",\n\t\"latitude\": \"39.800327\",\n\t\"longitude\": \"6.343530\",\n\t\"object_id\": \"54663ca2-619c-49ac-b9ac-cff4ffed8777\"\n}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/3",
@@ -752,7 +656,7 @@
 					"response": []
 				},
 				{
-					"name": "2. Create a DataPoint signed, not crypted",
+					"name": "2. DataPoint signed, not crypted",
 					"event": [
 						{
 							"listen": "test",
@@ -787,22 +691,23 @@
 								"exec": [
 									"",
 									"/* SETTINGS ***************************************************************************************** */",
+									"var signature_sender_object_id = \"dc89ab81-eecb-45e9-9e12-e3b71ea7f044\";",
+									"var signature_secret = \"'[].Gdvj`a/'CfH9-N[<L}=W$6WtKQb5jasn/,fc%L9B^m^Gmdg<>hg+C9*o6UHyCjC`2K\";",
 									"var header = {",
 									"  \"alg\": \"HS256\",",
 									"  \"typ\": \"JWT\"",
 									"};",
 									"var payload = {",
-									"  \"value\": \"2. Datapoint signed, not crypted\",",
-									"  \"text\": \"\",",
-									"  \"publish\": \"false\",",
-									"  \"save\": \"true\",",
-									"  \"unit\": \"\",",
-									"  \"mqtt_topic\": \"\",",
-									"  \"latitude\": \"39.800327\",",
-									"  \"longitude\": \"6.343530\"",
+									"    \"value\": \"2. Datapoint signed, not crypted\",",
+									"    \"text\": \"\",",
+									"    \"publish\": \"true\",",
+									"    \"save\": \"true\",",
+									"    \"unit\": \"\",",
+									"    \"mqtt_topic\": \"\",",
+									"    \"latitude\": \"39.800327\",",
+									"    \"longitude\": \"6.343530\",",
+									"    \"object_id\": signature_sender_object_id",
 									"};",
-									"var signature_sender_object_id = \"dc89ab81-eecb-45e9-9e12-e3b71ea7f044\";",
-									"var signature_secret = \"'[].Gdvj`a/'CfH9-N[<L}=W$6WtKQb5jasn/,fc%L9B^m^Gmdg<>hg+C9*o6UHyCjC`2K\";",
 									"/* END OF SETTINGS *********************************************************************************** */",
 									"",
 									"var data = payload;",
@@ -878,7 +783,7 @@
 					"response": []
 				},
 				{
-					"name": "3. Create a DataPoint not signed, crypted",
+					"name": "3. DataPoint not signed, crypted",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -893,14 +798,15 @@
 									"var iv = CryptoJS.enc.Hex.parse( getIv() );",
 									"",
 									"var payload = {",
-									"  \"value\": \"3. Datapoint not signed, crypted\",",
-									"  \"text\": \"\",",
-									"  \"publish\": \"false\",",
-									"  \"save\": \"true\",",
-									"  \"unit\": getUuidv4(),",
-									"  \"mqtt_topic\": \"mqtt_topic/xyz\",",
-									"  \"latitude\": getRandomFloat(0, 10),",
-									"  \"longitude\": getRandomFloat(0, 10)",
+									"    \"value\": \"3. Datapoint not signed, crypted\",",
+									"    \"text\": \"\",",
+									"    \"publish\": \"true\",",
+									"    \"save\": \"true\",",
+									"    \"unit\": getUuidv4(),",
+									"    \"mqtt_topic\": \"mqtt_topic/xyz\",",
+									"    \"latitude\": getRandomFloat(0, 10),",
+									"    \"longitude\": getRandomFloat(0, 10),",
+									"    \"object_id\": cryp_sender_object_id",
 									"};",
 									"/* END OF SETTINGS *********************************************************************************** */",
 									"",
@@ -932,7 +838,7 @@
 									"var encryptedPayload = CryptoJS.AES.encrypt(JSON.stringify(payload).trim(), cryp_secret, {iv: iv});",
 									"encryptedPayload = encryptedPayload.toString(CryptoJS.enc.base64); // Utf8, base64",
 									"",
-									"pm.environment.set(\"encryptedPayload\", iv+\".\"+encryptedPayload.trim());",
+									"pm.environment.set(\"encryptedPayload\", iv+\":\"+encryptedPayload.trim());",
 									"pm.environment.set(\"cryp_sender_object_id\", cryp_sender_object_id);",
 									"pm.environment.set(\"expected_value\", payload.value);",
 									"",
@@ -1006,7 +912,7 @@
 					"response": []
 				},
 				{
-					"name": "4. Create a Datapoint first signed, and then crypted",
+					"name": "4. Datapoint first signed, and then crypted",
 					"event": [
 						{
 							"listen": "test",
@@ -1054,14 +960,15 @@
 									"  \"typ\": \"JWT\"",
 									"};",
 									"var payload = {",
-									"  \"value\": \"4. Datapoint first signed, and then crypted\",",
-									"  \"text\": \"\",",
-									"  \"publish\": \"false\",",
-									"  \"save\": \"true\",",
-									"  \"unit\": getUuidv4(),",
-									"  \"mqtt_topic\": \"mqtt_topic/xyz\",",
-									"  \"latitude\": getRandomFloat(0, 10),",
-									"  \"longitude\": getRandomFloat(0, 10)",
+									"    \"value\": \"4. Datapoint first signed, and then crypted\",",
+									"    \"text\": \"\",",
+									"    \"publish\": \"true\",",
+									"    \"save\": \"true\",",
+									"    \"unit\": getUuidv4(),",
+									"    \"mqtt_topic\": \"mqtt_topic/xyz\",",
+									"    \"latitude\": getRandomFloat(0, 10),",
+									"    \"longitude\": getRandomFloat(0, 10),",
+									"    \"object_id\": cryp_sender_object_id",
 									"};",
 									"/* END OF SETTINGS *********************************************************************************** */",
 									"",
@@ -1132,7 +1039,7 @@
 									"var encryptedPayload = CryptoJS.AES.encrypt(JSON.stringify(payload).trim(), cryp_secret, {iv: iv});",
 									"encryptedPayload = encryptedPayload.toString(CryptoJS.enc.base64); // Utf8, base64",
 									"",
-									"pm.environment.set(\"encryptedPayload\", iv+\".\"+encryptedPayload.trim());",
+									"pm.environment.set(\"encryptedPayload\", iv+\":\"+encryptedPayload.trim());",
 									"pm.environment.set(\"cryp_sender_object_id\", cryp_sender_object_id);",
 									"",
 									"console.log(\"2. Encryption:\");",
@@ -1162,6 +1069,54 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n\t\"encryptedPayload\": \"{{encryptedPayload}}\",\n\t\"object_id\": \"{{cryp_sender_object_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/3",
+							"host": [
+								"{{ENDPOINT}}"
+							],
+							"path": [
+								"v{{API_VERSION}}",
+								"data",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5. Post Command to switch on Light using mqttCommand",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "12f584aa-6882-4851-b29a-760e179acfd0",
+								"exec": [
+									"var response = JSON.parse(responseBody);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{token}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"text\": \"This event will command the Object and set Light to ON/OFF\",\n\t\"value\": \"0\",\n\t\"save\": \"false\",\n\t\"object_id\": \"a06dfa8a-ddeb-4bf6-885a-6fb4f1f84b01\"\n}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/data/3",
@@ -1228,7 +1183,7 @@
 			]
 		},
 		{
-			"name": "1 Object",
+			"name": "1. Object",
 			"item": [
 				{
 					"name": "Get objects list",
@@ -1311,14 +1266,14 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/54663ca2-619c-49ac-b9ac-cff4ffed8777",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/dc89ab81-eecb-45e9-9e12-e3b71ea7f044",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
 								"objects",
-								"54663ca2-619c-49ac-b9ac-cff4ffed8777"
+								"dc89ab81-eecb-45e9-9e12-e3b71ea7f044"
 							]
 						}
 					},
@@ -1454,17 +1409,17 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Localized Object\",\n    \"user_id\": \"dd3a09d6-54b3-4336-a147-1971a3b3261b\",\n    \"type\": \"smartphone\",\n    \"description\": \"This object is localized\",\n    \"position\": \"\",\n    \"ipv4\": \"\",\n    \"ipv6\": \"\",\n    \"is_public\": \"false\",\n    \"longitude\": \"\",\n    \"latitude\": \"\",\n    \"meta\": {\n        \"revision\": 5\n    }\n}"
+							"raw": "{\n    \"name\": \"Canon MG3250\",\n    \"user_id\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\",\n    \"type\": \"devices_other\",\n    \"description\": \"Brand name\\tCanon\\nItem Weight\\t5.5 Kg\\nProduct Dimensions\\t44.9 x 30.4 x 15.2 cm\\nItem model number\\t6223B008AA\\nSeries\\tPixma MG 3250\\nScreen Size\\t7 inches\\nWireless Type\\t802.11B, 802.11G, 802.11n\\nWattage\\t20 watts\",\n    \"secret_key\": \"'[].Gdvj`a/'CfH9-N[<L}=W$6WtKQb5jasn/,fc%L9B^m^Gmdg<>hg+C9*o6UHyCjC`2K\",\n    \"secret_key_crypt\": \"B25ddfBdabBCcBCcCBFa2a5DbEcDcCee55b2C295DFFa779a99c726bE4bDeA2ee\",\n    \"position\": \"Bed Room\",\n    \"ipv4\": \"192.168.0.12\",\n    \"ipv6\": \"\",\n    \"is_public\": \"false\",\n    \"longitude\": \"2.31812\",\n    \"latitude\": \"48.90333\",\n    \"meta\": {\n        \"created\": 1456863889408,\n        \"revision\": 20,\n        \"updated\": 1557319239162,\n        \"version\": 0\n    },\n    \"parameters\": []\n}"
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/fbbc628f-ef61-47ae-88cc-1ec3b13fed0a",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/objects/dc89ab81-eecb-45e9-9e12-e3b71ea7f044",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
 								"objects",
-								"fbbc628f-ef61-47ae-88cc-1ec3b13fed0a"
+								"dc89ab81-eecb-45e9-9e12-e3b71ea7f044"
 							]
 						}
 					},
@@ -1506,7 +1461,7 @@
 			]
 		},
 		{
-			"name": "2 Flow",
+			"name": "2. Flow",
 			"item": [
 				{
 					"name": "Get Flows",
@@ -1666,7 +1621,7 @@
 			]
 		},
 		{
-			"name": "3 Dashboard",
+			"name": "3. Dashboard",
 			"item": [
 				{
 					"name": "Get Dashboards",
@@ -1750,7 +1705,7 @@
 			]
 		},
 		{
-			"name": "4 Snippet",
+			"name": "4. Snippet",
 			"item": [
 				{
 					"name": "Get Snippets",
@@ -1906,7 +1861,7 @@
 			]
 		},
 		{
-			"name": "5 Rule",
+			"name": "5. Rule",
 			"item": [
 				{
 					"name": "Get Rules",
@@ -2046,7 +2001,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"Test Serial\",\n    \"active\": true,\n    \"rule\": {\n        \"conditions\": {\n            \"all\": [\n                {\n                    \"fact\": \"user_id\",\n                    \"operator\": \"equal\",\n                    \"value\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\"\n                },\n                {\n                    \"fact\": \"environment\",\n                    \"operator\": \"equal\",\n                    \"value\": \"development\"\n                }\n            ]\n        },\n        \"event\": {\n            \"type\": \"serial\",\n            \"params\": {\n                \"serialPort\": \"/dev/ttyUSB0\",\n                \"baudRate\": 9600\n            }\n        },\n        \"priority\": 2\n    }\n}"
+							"raw": "{\n    \"name\": \"mqttCommand on a specific flow\",\n    \"user_id\": \"44800701-d6de-48f7-9577-4b3ea1fab81a\",\n    \"rule\": {\n        \"conditions\": {\n            \"all\": [\n                {\n                    \"fact\": \"environment\",\n                    \"operator\": \"equal\",\n                    \"value\": \"development\"\n                },\n                {\n                    \"fact\": \"flow\",\n                    \"operator\": \"equal\",\n                    \"value\": \"3\"\n                }\n            ]\n        },\n        \"event\": {\n            \"type\": \"mqttCommand\",\n            \"params\": {\n                \"message\": \"\",\n                \"mqtt_topic\": \"\"\n            }\n        },\n        \"priority\": 1\n    },\n    \"active\": true,\n    \"meta\": {\n        \"revision\": 7,\n        \"created\": 1465818172007,\n        \"version\": 0,\n        \"updated\": 1557230804728\n    }\n}"
 						},
 						"url": {
 							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/rules",
@@ -2064,7 +2019,7 @@
 			]
 		},
 		{
-			"name": "6 Mqtt",
+			"name": "6. Mqtt",
 			"item": [
 				{
 					"name": "Get Mqtts",
@@ -2115,8 +2070,357 @@
 			]
 		},
 		{
-			"name": "7 Admin User",
+			"name": "Administration",
 			"item": [
+				{
+					"name": "Notifications (email)",
+					"item": [
+						{
+							"name": "Get (Html) Welcome reminder email",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/reminder",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"debug",
+										"reminder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get (Html) loginfailure email",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/loginfailure",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"debug",
+										"loginfailure"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get (Html) changePassword email",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/change-password",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"debug",
+										"change-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get (Html) forgot-password email",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/forgot-password",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"debug",
+										"forgot-password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get (Html) newsletter",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/newsletters%2f2019%2f2019-03-xx-newsletter",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"debug",
+										"newsletters%2f2019%2f2019-03-xx-newsletter"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Notifications unsubscription list",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/list/unsubscribed",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"list",
+										"unsubscribed"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send (email) reminder",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/reminder",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"mail",
+										"reminder"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send (email) newsletter",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/newsletter?year=2019&template=2019-03-xx-newsletter",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"mail",
+										"newsletter"
+									],
+									"query": [
+										{
+											"key": "year",
+											"value": "2019"
+										},
+										{
+											"key": "template",
+											"value": "2019-03-xx-newsletter"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Send (email) changePassword",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Accept",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/changePassword",
+									"host": [
+										"{{ENDPOINT}}"
+									],
+									"path": [
+										"v{{API_VERSION}}",
+										"notifications",
+										"mail",
+										"changePassword"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"_postman_isSubFolder": true
+				},
 				{
 					"name": "Add a unit",
 					"request": {
@@ -2427,24 +2731,35 @@
 			]
 		},
 		{
-			"name": "8 Notifications (email)",
+			"name": "PWA",
 			"item": [
 				{
-					"name": "Get (Html) Welcome reminder email",
+					"name": "index - Get PWA index cards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8abb462-63f6-4226-97aa-f1ff0f79135e",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
 							}
 						],
 						"body": {
@@ -2452,36 +2767,46 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/reminder",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/index/",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
-								"notifications",
-								"debug",
-								"reminder"
+								"index",
+								""
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get (Html) loginfailure email",
+					"name": "terms - Get PWA Terms&Conditions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8abb462-63f6-4226-97aa-f1ff0f79135e",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
 							}
 						],
 						"body": {
@@ -2489,36 +2814,46 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/loginfailure",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/terms/",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
-								"notifications",
-								"debug",
-								"loginfailure"
+								"terms",
+								""
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get (Html) changePassword email",
+					"name": "status - Get PWA Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8abb462-63f6-4226-97aa-f1ff0f79135e",
+								"exec": [
+									"var response = JSON.parse(responseBody);",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200]);",
+									"});",
+									"pm.test(\"Status code name has string\", function () {",
+									"    pm.response.to.have.status(\"OK\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "GET",
 						"header": [
 							{
 								"key": "Content-Type",
 								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
 							}
 						],
 						"body": {
@@ -2526,273 +2861,18 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/change-password",
+							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/terms/",
 							"host": [
 								"{{ENDPOINT}}"
 							],
 							"path": [
 								"v{{API_VERSION}}",
-								"notifications",
-								"debug",
-								"change-password"
+								"terms",
+								""
 							]
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "Get (Html) forgot-password email",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/forgot-password",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"notifications",
-								"debug",
-								"forgot-password"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get (Html) newsletter",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/debug/newsletters%2f2019%2f2019-03-xx-newsletter",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"notifications",
-								"debug",
-								"newsletters%2f2019%2f2019-03-xx-newsletter"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get Notifications unsubscription list",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/list/unsubscribed",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"notifications",
-								"list",
-								"unsubscribed"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Send (email) reminder",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/reminder",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"notifications",
-								"mail",
-								"reminder"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Send (email) newsletter",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/newsletter?year=2019&template=2019-03-xx-newsletter",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"notifications",
-								"mail",
-								"newsletter"
-							],
-							"query": [
-								{
-									"key": "year",
-									"value": "2019"
-								},
-								{
-									"key": "template",
-									"value": "2019-03-xx-newsletter"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Send (email) changePassword",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							},
-							{
-								"key": "Accept",
-								"value": "application/json"
-							},
-							{
-								"key": "Authorization",
-								"value": "{{token}}"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ENDPOINT}}/v{{API_VERSION}}/notifications/mail/changePassword",
-							"host": [
-								"{{ENDPOINT}}"
-							],
-							"path": [
-								"v{{API_VERSION}}",
-								"notifications",
-								"mail",
-								"changePassword"
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "62957f3a-e5d7-43d3-b30a-b51ab1691387",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "17c9ac6f-0fb7-4888-bdaf-339c058b9036",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
 				}
 			]
 		}
