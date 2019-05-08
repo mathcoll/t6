@@ -6,30 +6,17 @@ var Rule = require("json-rules-engine").Rule;
 var rules;
 
 function cryptPayload(payload, sender, encoding) {
-	/*
 	if ( sender && sender.secret_key_crypt ) {
-		var decryptedPayload;
-		sender.secret_key_crypt = Buffer.from(sender.secret_key_crypt, "hex");
-		let textParts = encryptedPayload.split(".");
-		let iv = Buffer.from(textParts.shift(), "hex"); // Initialization vector
-		//console.log("Initialization vector", iv);
-		//console.log(sender.secret_key_crypt);
-		encryptedPayload = textParts.shift();
-
-		//console.log("\nPayload encrypted:\n", encryptedPayload);
-		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
-		decipher.setAutoPadding(true);
-		decryptedPayload = decipher.update(encryptedPayload, "base64", encoding || "utf8");// ascii, binary, base64, hex, utf8
-		decryptedPayload += decipher.final(encoding || "utf8");
-
-		//console.log("\nPayload decrypted:\n", decryptedPayload);
-		return decryptedPayload!==""?decryptedPayload:false;
+		let iv = crypto.randomBytes(16);
+		// sender.secret_key_crypt must be 256 bytes (32 characters)
+		let cipher = crypto.createCipheriv(algorithm, Buffer.from(sender.secret_key_crypt, "hex"), iv);
+		let encrypted = cipher.update(payload);
+		encrypted = Buffer.concat([encrypted, cipher.final()]);
+		return iv.toString("hex") + ':' + encrypted.toString("hex");
 	} else {
 		//console.log("payload", "Error: Missing secret_key_crypt");
-		return false;
+		return "Error: Missing secret_key_crypt";
 	}
-	*/
-	return "TODO: CRYPTED VALUE";
 }
 
 t6decisionrules.export = function(rule) {
