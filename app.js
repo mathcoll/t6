@@ -44,6 +44,7 @@ global.t6mailer			= require("./t6mailer");
 global.t6events			= require("./t6events");
 global.t6events.setMeasurement("events");
 global.t6events.setRP("autogen");
+global.algorithm		= "aes-256-cbc";
 
 /* Environment settings */
 require(sprintf("./data/settings-%s.js", os.hostname()));

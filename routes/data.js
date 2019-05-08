@@ -9,7 +9,6 @@ var flows;
 var objects;
 var datatypes;
 var units;
-const algorithm = "aes-256-cbc";
 
 function str2bool(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
@@ -25,7 +24,7 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
 		var decryptedPayload;
 		sender.secret_key_crypt = Buffer.from(sender.secret_key_crypt, "hex");
-		let textParts = encryptedPayload.split(".");
+		let textParts = encryptedPayload.split(":");
 		let iv = Buffer.from(textParts.shift(), "hex"); // Initialization vector
 		//console.log("Initialization vector", iv);
 		//console.log(sender.secret_key_crypt);
