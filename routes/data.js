@@ -23,15 +23,12 @@ function getJson(v) {
 function decryptPayload(encryptedPayload, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
 		var decryptedPayload;
-		sender.secret_key_crypt = Buffer.from(sender.secret_key_crypt, "hex");
+		var key = Buffer.from(sender.secret_key_crypt, "hex");
 		let textParts = encryptedPayload.split(":");
-		let iv = Buffer.from(textParts.shift(), "hex"); // Initialization vector
-		//console.log("Initialization vector", iv);
-		//console.log(sender.secret_key_crypt);
+		let iv = Buffer.from(textParts.shift(), "hex");
 		encryptedPayload = textParts.shift();
 
-		//console.log("\nPayload encrypted:\n", encryptedPayload);
-		let decipher = crypto.createDecipheriv(algorithm, sender.secret_key_crypt, iv);
+		let decipher = crypto.createDecipheriv(algorithm, key, iv);
 		decipher.setAutoPadding(true);
 		decryptedPayload = decipher.update(encryptedPayload, "base64", encoding || "utf8");// ascii, binary, base64, hex, utf8
 		decryptedPayload += decipher.final(encoding || "utf8");
@@ -593,16 +590,16 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 					{ "id" : object_id },
 				]
 			};
-			var json = objects.findOne(query);
-			if ( json && json.secret_key ) {
-				cert = json.secret_key;
+			var object = objects.findOne(query);
+			if ( object && object.secret_key ) {
+				cert = object.secret_key;
 			}
 		}
 
 		if ( payload.encryptedPayload ) {
 			// The payload is encrypted
 			isEncrypted = true;
-			let decrypted = decryptPayload(payload.encryptedPayload.trim(), json); // ascii, binary, base64, hex, utf8
+			let decrypted = decryptPayload(payload.encryptedPayload.trim(), object); // ascii, binary, base64, hex, utf8
 			payload = decrypted!==false?decrypted:payload;
 			payload = getJson(payload);
 			//console.log("DEBUG", "\nPayload after decryption (1)", payload);
@@ -619,7 +616,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 					if ( payload.encryptedPayload ) {
 						// The payload is encrypted
 						isEncrypted = true;
-						let decrypted = decryptPayload(payload.encryptedPayload.trim(), json); // ascii, binary, base64, hex, utf8
+						let decrypted = decryptPayload(payload.encryptedPayload.trim(), object); // ascii, binary, base64, hex, utf8
 						payload = decrypted!==false?decrypted:payload;
 						//console.log("DEBUG", "\nPayload after unsigned & decryption", payload);
 					}
