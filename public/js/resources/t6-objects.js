@@ -654,6 +654,8 @@ app.resources.objects = {
 		element += "		</div>";
 		element += app.getField(null, null, description, {type: "textarea", isEdit: false});
 		element += "<div class='mdl-list__item--three-line small-padding'>";
+		element += "		<span class='type' id='"+object.id+"-connected'><i class='material-icons md-32'>"+(object.attributes.is_connected===true?"flash_on":"flash_off")+"</i></span>";
+		element += "		<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-connected'>"+(object.attributes.is_connected===true?"Connected":"Disconnected")+"</div>";
 		if ( object.attributes.type ) {
 			var d = app.types.find( function(type) { return type.name == object.attributes.type; });
 			d = d!==undefined?d:"";

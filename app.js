@@ -45,6 +45,7 @@ global.t6events			= require("./t6events");
 global.t6events.setMeasurement("events");
 global.t6events.setRP("autogen");
 global.algorithm		= "aes-256-cbc";
+global.t6ConnectedObjects = [];
 
 /* Environment settings */
 require(sprintf("./data/settings-%s.js", os.hostname()));
@@ -236,6 +237,25 @@ mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
 	mqttClient.publish(mqttInfo, JSON.stringify({"dtepoch": moment().format("x"), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
 	console.log(sprintf("%s Connected to Mqtt broker on %s:%s - %s", moment().format("MMMM Do YYYY, H:mm:ss"), mqttHost, mqttPort, mqttRoot));
+	mqttClient.subscribe("objects/status/#", function (err) {
+		if (!err) {
+			console.log(sprintf("%s Subscribed to Mqtt topic \"objects/status/#\"", moment().format("MMMM Do YYYY, H:mm:ss")));
+		}
+	})
 });
+mqttClient.on("message", function (topic, message) {
+	let object = topic.toString().split("objects/status/")[1];
+	let stat = message.toString();
+	console.log("Object Status Changed:", sprintf("%s is %s", object, stat==="1"?"connected":"disconnected"), "->"+message+"<-")
+	if ( stat === "1" ) {
+		t6ConnectedObjects.push(object);
+	} else {
+		let i = t6ConnectedObjects.indexOf(object);
+		if (i > -1) {
+			t6ConnectedObjects.splice(i, 1);
+		}
+	}
+	console.log("Connected Objects:", t6ConnectedObjects);
+})
 
 module.exports = app;
