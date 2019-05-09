@@ -48,7 +48,6 @@ void callback(char* topic, byte* payload, unsigned int length) {
   }
   Serial.println();
 
-  
   if ((char)payload[0] == '1') {
   	// Switch on the LED if an 1 was received as first character
     digitalWrite(BUILTIN_LED, LOW);
@@ -62,10 +61,11 @@ void callback(char* topic, byte* payload, unsigned int length) {
 }
 
 void reconnect() {
-  while (!client.connected()) {
+  while ( !client.connected() ) {
     String clientId = clientPrefixId+String(random(0xffff), HEX);
     Serial.println("MQTT connection...");
-    if (client.connect(clientId.c_str())) {
+    if ( client.connect(clientId.c_str(), ("objects/status/"+String(objectId)).c_str (), 1, true, "0") ) {
+      client.publish(("objects/status/"+String(objectId)).c_str (), "1");
       client.subscribe(("+/+/+/object_id/"+String(objectId)+"/cmd").c_str ());
       Serial.println("subscribed.");
     } else {

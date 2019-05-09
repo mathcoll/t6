@@ -148,6 +148,16 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 		}
 	}
 	var json = objects.chain().find(query).offset(offset).limit(size).data();
+	json.map(function(o) {
+		let i = t6ConnectedObjects.indexOf(o.id);
+		if (i > -1) {
+			o.is_connected = true;
+		} else {
+			o.is_connected = false;
+		}
+		console.log("is_connected=", o.is_connected);
+		return o;
+	});
 	//console.log(query);
 
 	var total = objects.find(query).length;
