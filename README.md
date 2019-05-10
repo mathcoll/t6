@@ -30,7 +30,34 @@ Detailed Api documentation is available here: [api-General](https://api.internet
 #### Rules
 "Decision-Rule" engine is an event based trigger. The engine is watching for fact matching conditions on payloads coming from datapoint POST, and handle action  according to rules.
 _Actions_ are triggered when something is happening on the t6 platform.
-Actions can be: email, SMS, API calls (e.g. twitter), etc ... 
+
+Conditions matching operators:
+* isDayTime
+* anormalityChange: _TODO_
+* diffFromPrevious: _TODO_
+* All logical Math operators listed and documented: https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
+
+Available Actions:
+* mqttPublish
+* mqttCommand
+* email
+* httpWebhook
+* serial
+* sms: _TODO_
+* Ifttt: _TODO_
+* slackMessage: _TODO_
+* .../...
+
+## t6 security policy
+t6 implement various level of security:
+* __JWT and signed token__ (Token lifetime can be setup in configuration file, but suggested to be short);
+* POSTing to timeseries endpoints allows __signed payloads__ (with a shared secret) to check and verify sender;
+* POSTing to timeseries endpoints allows __encrypted payloads__ (aes-256-cbc only yet; with a shared secret, no public key yet);
+* POSTing to timeseries allows both __signed then encrypted payloads__;
+* Optionally, __signature and/or encryption can be required__ from a _Flow_;
+* Rule based events can send data to __Mqtt using encryption__;
+* User __passwords are bcrypt-hashed__ in databased; at least not in clear;
+* User __passwords recovery__ process is secured, but still can be improved when the User set it's own password and Post data;
 
 ## t6 Installation
 ```console
@@ -54,15 +81,8 @@ $ hostname
 
 Please have a look at the options in _settings-hostname.js_, there are some secrets to be customized.
 
-Once the setting are done, you can initialize the influxDb databases:
-```console
-CREATE DATABASE "t6"
-```
-Database will contains the following measurements:
-* _data_: All timeseries for measures; 
-* _events_: events happening in t6 Api; not really used, except for few logs;
-* _requests_: Allows to manage quotas and limits;
 
+## t6 as a startup service (Linux)
 You can add the server running as a service, tested with Ubuntu and Debian:
 * First: install the server as service:
 ```console
@@ -77,6 +97,17 @@ $ sudo /etc/init.d/t6 (re)start|stop|status
 ```console
 $ sudo update-rc.d t6 defaults
 ```
+
+## t6 timeseries settings
+Once the setting are done, you can initialize the influxDb databases:
+```console
+CREATE DATABASE "t6"
+```
+Database will contains the following measurements:
+* _data_: All timeseries for measures; 
+* _events_: events happening in t6 Api; not really used, except for few logs;
+* _requests_: Allows to manage quotas and limits;
+
 
 ## t6 Troobleshooting after installation
 Q: ```sudo /etc/init.d/t6 start``` does not return any output, what should I do?
