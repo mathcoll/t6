@@ -246,7 +246,7 @@ mqttClient.on("connect", function () {
 mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split("objects/status/")[1];
 	let stat = message.toString();
-	console.log("Object Status Changed:", sprintf("%s is %s", object, stat==="1"?"connected":"disconnected"), "->"+message+"<-")
+	console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("Object Status Changed: %s is %s", object, stat==="1"?"connected":"disconnected"), "("+message+")");
 	if ( stat === "1" ) {
 		t6ConnectedObjects.push(object);
 	} else {
@@ -255,7 +255,7 @@ mqttClient.on("message", function (topic, message) {
 			t6ConnectedObjects.splice(i, 1);
 		}
 	}
-	console.log("Connected Objects:", t6ConnectedObjects);
+	console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "Connected Objects:", t6ConnectedObjects);
 })
 
 module.exports = app;
