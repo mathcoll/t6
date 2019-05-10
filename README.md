@@ -38,7 +38,7 @@ Install node (if needed): https://nodejs.org/en/
 Install npm (if needed): https://github.com/npm/npm
 ```
 
-_Do not use sudo/root to install t6, this is not necessary_ and not recommended
+_Do not use sudo/root to install t6, this is not necessary_ and not recommended.
 ```console
 $ git clone https://github.com/mathcoll/t6.git ./t6 & cd ./t6
 $ npm install
@@ -58,6 +58,10 @@ Once the setting are done, you can initialize the influxDb databases:
 ```console
 CREATE DATABASE "t6"
 ```
+Database will contains the following measurements:
+* _data_: All timeseries for measures; 
+* _events_: events happening in t6 Api; not really used, except for few logs;
+* _requests_: Allows to manage quotas and limits;
 
 You can add the server running as a service, tested with Ubuntu and Debian:
 * First: install the server as service:
@@ -69,7 +73,7 @@ $ sudo ln -s /var/www/t6/etc/init.d/t6 /etc/init.d/t6
 $ sudo /etc/init.d/t6 (re)start|stop|status
 ```
 
-* Finally, set the server to run at startup: 
+* Finally, set the service to run at startup: 
 ```console
 $ sudo update-rc.d t6 defaults
 ```
