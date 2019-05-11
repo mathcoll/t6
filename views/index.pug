@@ -514,6 +514,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                         h4 Objects, sensors and actuators
                         div Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
                         div Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
+                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Object") More details
                       div.mdl-layout-spacer &nbsp;
                       
                     li.mdl-list__item-primary-content
@@ -523,6 +524,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                         div Flows are datastore to save time/values (DataPoints). Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
                         div Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.
                         div Objects are sending their Data to Flow-containers using the API.
+                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Flow") More details
                       div.mdl-layout-spacer &nbsp;
                       
                     li.mdl-list__item-primary-content
@@ -530,20 +532,23 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                         i.material-icons.md-24 dashboard
                         h4 Dashboards to graph, draw, and monitor
                         div Dashboard includes one or many Snippets to visualize your data. You can create as many dashboards as you like.
+                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Dashboard") More details
                       div.mdl-layout-spacer &nbsp;
                       
                     li.mdl-list__item-primary-content
                       div
                         i.material-icons.md-24 widgets
                         h4 Snippets
-                        div Snippets refers to small component containing a dashboard. Multiple variety are available and the librairy aim to growth regularly. 
+                        div Snippets refers to small component containing a dashboard. Multiple variety are available and the library aim to growth regularly.
+                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Snippet") More details
                       div.mdl-layout-spacer &nbsp;
                       
                     li.mdl-list__item-primary-content
                       div
                         i.material-icons.md-24 call_split
                         h4 Rules, to Alert and Notify
-                        div 
+                        div Decision-Rule is the event-based engine that trigger Actions following matching Conditions. Engine is watching for fact matching conditions on payloads coming from datapoint POST, and handle Action(s) according to rules.
+                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Decision-Rule") More details
                       div.mdl-layout-spacer &nbsp;
                       
                     li.mdl-list__item-primary-content
@@ -551,6 +556,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                         i.material-icons.md-24 volume_down
                         h4 Mqtt, to communicate
                         div 
+                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Mqtt-Topic") More details
                       div.mdl-layout-spacer &nbsp;
                       
             section.mdl-grid.mdl-cell--12-col
