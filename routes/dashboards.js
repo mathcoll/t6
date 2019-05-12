@@ -36,7 +36,7 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
 	dashboards	= dbDashboards.getCollection("dashboards");
 	snippets = dbSnippets.getCollection("snippets"); // WTF ??
 	var query;
-	if ( typeof dashboard_id !== undefined ) {
+	if ( typeof dashboard_id !== "undefined" ) {
 		query = {
 		"$and": [
 				{ "user_id" : req.user.id },
@@ -44,7 +44,7 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
 			]
 		};
 	} else {
-		if ( typeof name !== undefined ) {
+		if ( typeof name !== "undefined" ) {
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
@@ -96,14 +96,14 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if( i >= (quota[req.user.role]).dashboards ) {
 		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
-		if ( req.user.id !== undefined ) {
+		if ( typeof req.user.id !== "undefined" ) {
 			var dashboard_id = uuid.v4();
 			var new_dashboard = {
 				id:			dashboard_id,
 				user_id:	req.user.id,
-				name: 		req.body.name!==undefined?req.body.name:"unamed",
-				description:req.body.description!==undefined?req.body.description:"",
-				snippets:	req.body.snippets!==undefined?req.body.snippets:new Array(),
+				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
+				description:typeof req.body.description!=="undefined"?req.body.description:"",
+				snippets:	typeof req.body.snippets!=="undefined"?req.body.snippets:new Array(),
 			};
 			t6events.add("t6Api", "dashboard add", new_dashboard.id);
 			dashboards.insert(new_dashboard);
@@ -154,13 +154,13 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 			} else {
 				var result;
 				dashboards.chain().find({ "id": dashboard_id }).update(function(item) {
-					item.name		= req.body.name!==undefined?req.body.name:item.name;
-					item.description= req.body.description!==undefined?req.body.description:item.description;
-					item.snippets	= req.body.snippets!==undefined?req.body.snippets:item.snippets;
+					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
+					item.description= typeof req.body.description!=="undefined"?req.body.description:item.description;
+					item.snippets	= typeof req.body.snippets!=="undefined"?req.body.snippets:item.snippets;
 					item.meta.revision = ++(req.body.meta.revision);
 					result = item;
 				});
-				if ( result !== undefined ) {
+				if ( typeof result !== "undefined" ) {
 					dbDashboards.save();
 					
 					res.header("Location", "/v"+version+"/dashboards/"+dashboard_id);

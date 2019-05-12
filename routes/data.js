@@ -74,7 +74,7 @@ function decryptPayload(encryptedPayload, sender, encoding) {
  */
 router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
-	var output = req.query.output!==undefined?req.query.output:"json";
+	var output = typeof req.query.output!=="undefined"?req.query.output:"json";
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
@@ -83,12 +83,12 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		// Not Authorized because token is invalid
 		res.status(401).send(new ErrorSerializer({"id": 57, "code": 401, "message": "Not Authorized"}).serialize());
 	} else {
-		//var limit = req.params.limit!==undefined?parseInt(req.params.limit):10;
-		//var page = req.params.page!==undefined?parseInt(req.params.page):1;
-		//var sort = req.query.sort!==undefined?req.query.sort:"time";
-		var sorting = req.query.order!==undefined?req.query.order:undefined;
+		//var limit = typeof req.params.limit!=="undefined"?parseInt(req.params.limit):10;
+		//var page = typeof req.params.page!=="undefined"?parseInt(req.params.page):1;
+		//var sort = typeof req.query.sort!=="undefined"?req.query.sort:"time";
+		var sorting = typeof req.query.order!=="undefined"?req.query.order:undefined;
 		sorting = req.query.order==="asc"?true:false;
-		sorting = req.query.sort!==undefined?req.query.sort:undefined;
+		sorting = typeof req.query.sort!=="undefined"?req.query.sort:undefined;
 		sorting = req.query.sort==="asc"?true:false;
 		var page = parseInt(req.query.page, 10);
 		if (isNaN(page) || page < 1) {
@@ -113,7 +113,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		datatypes	= db.getCollection("datatypes");
 		var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
-		var datatype = (joinDT.data())[0]!==undefined?(joinDT.data())[0].right.name:null;
+		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 		
 		//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id="5" AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
 		if ( db_type.influxdb == true ) {
@@ -149,7 +149,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 			}
 			// End casting
 
-			if ( req.query.start != undefined ) {
+			if ( typeof req.query.start !== "undefined" ) {
 				if ( !isNaN(req.query.start) ) {
 					//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
 					query.where("time>="+req.query.start*1000000);
@@ -157,7 +157,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					query.where("time>="+moment(req.query.start).format("x")*1000000); 
 				}
 			}	
-			if ( req.query.end != undefined ) {
+			if ( typeof req.query.end !== "undefined" ) {
 				if ( !isNaN(req.query.end) ) {
 					//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
 					query.where("time<="+req.query.end*1000000);
@@ -205,7 +205,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					data.next = page+1;
 					data.prev = page-1;
 					data.limit = limit;
-					data.order = req.query.order!==undefined?req.query.order:"asc";
+					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
 					
 					if (output == "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
@@ -231,7 +231,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 				.order("timestamp", sorting)
 			;
 			
-			if ( req.query.start !== undefined ) {
+			if ( typeof req.query.start !== "undefined" ) {
 				if ( !isNaN(req.query.start) ) {
 					//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
 					query.where("timestamp>=?", req.query.start);
@@ -239,7 +239,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					query.where("timestamp>=?", moment(req.query.start).format("X")); // TODO, should be "x" lower case 
 				}
 			}	
-			if ( req.query.end !== undefined ) {
+			if ( typeof req.query.end !== "undefined" ) {
 				if ( !isNaN(req.query.end) ) {
 					//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
 					query.where("timestamp<=?", req.query.end);
@@ -265,7 +265,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					data.id = moment(data.timestamp).format("x");
 					data.time = moment(data.timestamp).format("x");
 					data.timestamp = moment(data.timestamp).format("x");
-					data.order = req.query.order!==undefined?req.query.order:"asc";
+					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
 					
 					if (output == "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
@@ -393,7 +393,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
-	var output = req.query.output!==undefined?req.query.output:"json";
+	var output = typeof req.query.output!=="undefined"?req.query.output:"json";
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 59, "code": 405, "message": "Method Not Allowed"}).serialize());
@@ -409,16 +409,16 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 		flows	= db.getCollection("flows");
 		units	= db.getCollection("units");
 		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id, }, }).limit(1);
-		var mqtt_topic = ((flow.data())[0].mqtt_topic!==undefined)?(flow.data())[0].mqtt_topic:null;
+		var mqtt_topic = typeof ((flow.data())[0].mqtt_topic!=="undefined")?(flow.data())[0].mqtt_topic:null;
 		var join = flow.eqJoin(units.chain(), "unit_id", "id");
 
 		var flowsDT = db.getCollection("flows");
 		datatypes	= db.getCollection("datatypes");
 		var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
-		var datatype = (joinDT.data())[0]!==undefined?(joinDT.data())[0].right.name:null;
+		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 
-		if ( db_type.influxdb == true ) {
+		if ( db_type.influxdb === true ) {
 			/* InfluxDB database */
 			var query = squel.select()
 				.from("data")
@@ -490,7 +490,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 					data.prev = page-1;
 					data.limit = limit;
 					data.id = data_id;
-					data.order = req.query.order!==undefined?req.query.order:"asc";
+					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
 					
 					if (output == "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
@@ -526,7 +526,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 				data.time = data[0].timestamp;
 				data.timestamp = data[0].timestamp;
 				data.mqtt_topic = mqtt_topic;
-				data.order = req.query.order!==undefined?req.query.order:"asc";
+				data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
 				//console.log(data);
 				
 				if ( data.length > 0 ) {
@@ -583,7 +583,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		objects	= db.getCollection("objects");
 
 		var query;
-		if ( object_id !== undefined ) {
+		if ( typeof object_id !== "undefine" ) {
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
@@ -605,7 +605,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			//console.log("DEBUG", "\nPayload after decryption (1)", payload);
 		}
 
-		if ( payload !== undefined && payload.signedPayload ) {
+		if ( typeof payload !== "undefined" && payload.signedPayload ) {
 			// The payload is signed
 			//console.log("payload.signedPayload", payload.signedPayload);
 			isSigned = true;
@@ -631,19 +631,19 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		}
 	}
 	
-	if ( payload !== undefined && !error ) {
+	if ( typeof payload !== "undefined" && !error ) {
 		payload = getJson(payload);
-		var flow_id		= req.params.flow_id!==undefined?req.params.flow_id:payload.flow_id;
-		var time		= (payload.timestamp!==""&&payload.timestamp!==undefined)?parseInt(payload.timestamp):moment().format("x");
+		var flow_id		= typeof req.params.flow_id!=="undefined"?req.params.flow_id:payload.flow_id;
+		var time		= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp):moment().format("x");
 		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); };
-		var value		= payload.value!==undefined?payload.value:"";
-		var publish		= payload.publish!==undefined?JSON.parse(payload.publish):true;
-		var save		= payload.save!==undefined?JSON.parse(payload.save):true;
-		var unit		= payload.unit!==undefined?payload.unit:"";
-		var mqtt_topic	= payload.mqtt_topic!==undefined?payload.mqtt_topic:"";
-		var latitude	= payload.latitude!==undefined?payload.latitude:"";
-		var longitude	= payload.longitude!==undefined?payload.longitude:"";
-		var text		= payload.text!==undefined?payload.text:"";
+		var value		= typeof payload.value!=="undefined"?payload.value:"";
+		var publish		= typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
+		var save		= typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+		var unit		= typeof payload.unit!=="undefined"?payload.unit:"";
+		var mqtt_topic	= typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+		var latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
+		var longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
+		var text		= typeof payload.text!=="undefined"?payload.text:"";
 		var object_id	= payload.object_id;
 
 		if ( !flow_id || !req.user.id ) {
@@ -657,7 +657,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].left && (f.data())[0].left.mqtt_topic ) {
 				mqtt_topic = (f.data())[0].left.mqtt_topic;
 			}
-			var datatype = (join.data())[0]!==undefined?(join.data())[0].right.name:null;
+			var datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:null;
 
 			if ( (f.data())[0].left.require_encrypted && !isEncrypted ) {
 				//console.log("(f.data())[0].left", (f.data())[0].left);
