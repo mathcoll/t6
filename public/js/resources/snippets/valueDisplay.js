@@ -32,7 +32,7 @@ var snippet = {
 			for (var i=0; i<limit-1; i++) {
 				var cur = i;
 				var prev = i+1;
-				if ( response.data[cur].attributes.value == response.data[prev].attributes.value ) {
+				if ( response.data[cur].attributes.value === response.data[prev].attributes.value ) {
 					value[prev] = "<i class='material-icons md-48'>trending_flat</i> " + sprintf(unit, response.data[cur].attributes.value);
 				} else if( response.data[cur].attributes.value < response.data[prev].attributes.value ) {
 					value[prev] = "<i class='material-icons md-48'>trending_down</i> " + sprintf(unit, response.data[cur].attributes.value);
