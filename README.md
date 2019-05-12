@@ -10,7 +10,7 @@ Please referes to CONTRIBUTING.md in case you would like to help :-)
 Physical World are composed by your sensors and actuators, real physical Objects.
 In t6, physical Objects require a virtual _Object_ as a reference in t6 and then, they are able to add _Data_ to _Flows_.
 
-Sample nodeMCU and Arduino scripts are available in the _[sensors](https://github.com/mathcoll/t6/tree/master/sensors)_ repositories.
+Sample nodeMCU and Arduino scripts are available in the _[sensors](https://github.com/mathcoll/t6/tree/master/sensors)_ repositories and on [t6iot Arduino library](https://github.com/mathcoll/t6iot).
 
 ## t6 API first: Live, eat, and breathe the API-first lifestyle of t6
 Detailed Api documentation is available here: [api-General](https://api.internetcollaboratif.info/docs/).
