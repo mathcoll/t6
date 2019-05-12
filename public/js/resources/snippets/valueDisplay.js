@@ -22,8 +22,7 @@ var snippet = {
 			app.fetchStatusHandler
 		).then(function(fetchResponse){
 			return fetchResponse.json();
-		})
-		.then(function(response) {
+		}).then(function(response) {
 			var id = response.data[0].attributes.id;
 			var time = response.data[0].attributes.time;
 			var unit = typeof response.links.unit!=="undefined"?response.links.unit:"%";
@@ -49,8 +48,7 @@ var snippet = {
 				document.getElementById("snippet-value"+prev+"-"+params.id).innerHTML = value[prev];
 			}
 			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 6000);
-		})
-		.catch(function (error) {
+		}).catch(function (error) {
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast("getSnippet Inside error..." + error, {timeout:3000, type: "error"});
 			}
