@@ -29,11 +29,11 @@ var tokens;
 router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlevel)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	var typenumber = req.params.typenumber;
-	var errorcorrectionlevel = req.params.errorcorrectionlevel!==undefined?req.params.errorcorrectionlevel:"M";
+	var errorcorrectionlevel = typeof req.params.errorcorrectionlevel!=="undefined"?req.params.errorcorrectionlevel:"M";
 		
 	objects	= db.getCollection("objects");
 	var query;
-	if ( object_id !== undefined ) {
+	if ( typeof object_id !== "undefined" ) {
 		query = {
 		"$and": [
 				{ "user_id" : req.user.id },
@@ -75,7 +75,7 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 	var name = req.query.name;
 	objects	= db.getCollection("objects");
 	var query;
-	if ( object_id !== undefined ) {
+	if ( typeof object_id !== "undefined" ) {
 		query = {
 		"$and": [
 				{ "isPublic" : "true" },
@@ -83,7 +83,7 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 			]
 		};
 	} else {
-		if ( name !== undefined ) {
+		if ( typeof name !== "undefined" ) {
 			query = {
 			"$and": [
 					{ "isPublic" : "true" },
@@ -118,13 +118,13 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	var name = req.query.name;
-	var size = req.query.size!==undefined?req.query.size:20;
-	var page = req.query.page!==undefined?req.query.page:1;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
 	objects	= db.getCollection("objects");
 	var query;
-	if ( object_id !== undefined ) {
+	if ( typeof object_id !== "undefined" ) {
 		query = {
 		"$and": [
 				{ "user_id" : req.user.id },
@@ -132,7 +132,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 			]
 		};
 	} else {
-		if ( name !== undefined ) {
+		if ( typeof name !== "undefined" ) {
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
@@ -206,18 +206,18 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	} else {
 		var newObject = {
 			id:				uuid.v4(),
-			type:			req.body.type!==undefined?req.body.type:"default",
-			name:			req.body.name!==undefined?req.body.name:"unamed",
-			description:	req.body.description!==undefined?(req.body.description).substring(0, 1024):"",
-			position:		req.body.position!==undefined?req.body.position:"",
-			longitude:		req.body.longitude!==undefined?req.body.longitude:"",
-			latitude:		req.body.latitude!==undefined?req.body.latitude:"",
-			isPublic:		req.body.isPublic!==undefined?req.body.isPublic:"false",
-			ipv4:			req.body.ipv4!==undefined?req.body.ipv4:"",
-			ipv6:			req.body.ipv6!==undefined?req.body.ipv6:"",
+			type:			typeof req.body.type!=="undefined"?req.body.type:"default",
+			name:			typeof req.body.name!=="undefined"?req.body.name:"unamed",
+			description:	typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):"",
+			position:		typeof req.body.position!=="undefined"?req.body.position:"",
+			longitude:		typeof req.body.longitude!=="undefined"?req.body.longitude:"",
+			latitude:		typeof req.body.latitude!=="undefined"?req.body.latitude:"",
+			isPublic:		typeof req.body.isPublic!=="undefined"?req.body.isPublic:"false",
+			ipv4:			typeof req.body.ipv4!=="undefined"?req.body.ipv4:"",
+			ipv6:			typeof req.body.ipv6!=="undefined"?req.body.ipv6:"",
 			user_id:		req.user.id,
-			secret_key:		req.body.secret_key!==undefined?req.body.secret_key:"",
-			secret_key_crypt:req.body.secret_key_crypt!==undefined?req.body.secret_key_crypt:"",
+			secret_key:		typeof req.body.secret_key!=="undefined"?req.body.secret_key:"",
+			secret_key_crypt:typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:"",
 		};
 		t6events.add("t6Api", "object add", newObject.id);
 		objects.insert(newObject);
@@ -272,22 +272,22 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 			res.status(400).send(new ErrorSerializer({"id": 40.2, "code": 400, "message": "Bad Request"}).serialize());
 		} else {
 			var result;
-			req.body.isPublic = req.body.isPublic!==undefined?req.body.isPublic:req.body.is_public!==undefined?req.body.is_public:undefined;
+			req.body.isPublic = typeof req.body.isPublic!=="undefined"?req.body.isPublic:typeof req.body.is_public!=="undefined"?req.body.is_public:undefined;
 			objects.chain().find({ "id": object_id }).update(function(item) {
-				item.type				= req.body.type!==undefined?req.body.type:item.type;
-				item.name				= req.body.name!==undefined?req.body.name:item.name;
-				item.description		= req.body.description!==undefined?(req.body.description).substring(0, 1024):item.description;
-				item.position			= req.body.position!==undefined?req.body.position:item.position;
-				item.longitude			= req.body.longitude!==undefined?req.body.longitude:item.longitude;
-				item.latitude			= req.body.latitude!==undefined?req.body.latitude:item.latitude;
-				item.isPublic			= req.body.isPublic!==undefined?req.body.isPublic:item.isPublic;
-				item.ipv4				= req.body.ipv4!==undefined?req.body.ipv4:item.ipv4;
-				item.ipv6				= req.body.ipv6!==undefined?req.body.ipv6:item.ipv6;
-				item.secret_key			= req.body.secret_key!==undefined?req.body.secret_key:item.secret_key;
-				item.secret_key_crypt	= req.body.secret_key_crypt!==undefined?req.body.secret_key_crypt:item.secret_key_crypt;
+				item.type				= typeof req.body.type!=="undefined"?req.body.type:item.type;
+				item.name				= typeof req.body.name!=="undefined"?req.body.name:item.name;
+				item.description		= typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):item.description;
+				item.position			= typeof req.body.position!=="undefined"?req.body.position:item.position;
+				item.longitude			= typeof req.body.longitude!=="undefined"?req.body.longitude:item.longitude;
+				item.latitude			= typeof req.body.latitude!=="undefined"?req.body.latitude:item.latitude;
+				item.isPublic			= typeof req.body.isPublic!=="undefined"?req.body.isPublic:item.isPublic;
+				item.ipv4				= typeof req.body.ipv4!=="undefined"?req.body.ipv4:item.ipv4;
+				item.ipv6				= typeof req.body.ipv6!=="undefined"?req.body.ipv6:item.ipv6;
+				item.secret_key			= typeof req.body.secret_key!=="undefined"?req.body.secret_key:item.secret_key;
+				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;
 				result = item;
 			});
-			if ( result !== undefined ) {
+			if ( typeof result !== "undefined" ) {
 				db.save();
 				
 				res.header("Location", "/v"+version+"/objects/"+object_id);
@@ -360,7 +360,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 	if ( !req.user.id ) {
 		// Not Authorized because token is invalid
 		res.status(401).send(new ErrorSerializer({"id": 34, "code": 401, "message": "Not Authorized"}).serialize());
-	} else if ( object_id && req.body.value !== undefined ) {
+	} else if ( object_id && typeof req.body.value !== "undefined" ) {
 		objects	= db.getCollection("objects");
 		var query = {
 			"$and": [
@@ -371,7 +371,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 		var object = objects.findOne(query);
 		
 		if ( object ) {
-			object.parameters = object.parameters!==undefined?object.parameters:[];
+			object.parameters = typeof object.parameters!=="undefined"?object.parameters:[];
 			var p = object.parameters.filter(function(e, i) { if ( e.name == pName ) { object.parameters[i].value = req.body.value; return e; } });
 			console.log(object);
 			console.log(p);

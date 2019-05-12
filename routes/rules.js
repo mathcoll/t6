@@ -26,13 +26,13 @@ var rules;
 router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var rule_id = req.params.rule_id;
 	var name = req.query.name;
-	var size = req.query.size!==undefined?req.query.size:20;
-	var page = req.query.page!==undefined?req.query.page:1;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
 	rules = dbRules.getCollection("rules");
 	var query;
-	if ( rule_id !== undefined ) {
+	if ( typeof rule_id !== "undefined" ) {
 		query = {
 		"$and": [
 				{ "user_id" : req.user.id },
@@ -40,7 +40,7 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			]
 		};
 	} else {
-		if ( name !== undefined ) {
+		if ( typeof name !== "undefined" ) {
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
@@ -100,14 +100,14 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if( i >= (quota[req.user.role]).rules ) {
 		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
-		if ( req.user.id !== undefined ) {
+		if ( typeof req.user.id !== "undefined" ) {
 			var rule_id = uuid.v4();
 			var newRule = {
 				id:			rule_id,
 				user_id:	req.user.id,
-				name: 		req.body.name!==undefined?req.body.name:"unamed",
-				active: 	req.body.active!==undefined?req.body.active:true,
-				rule:		req.body.rule!==undefined?req.body.rule:{},
+				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
+				active: 	typeof req.body.active!=="undefined"?req.body.active:true,
+				rule:		typeof req.body.rule!=="undefined"?req.body.rule:{},
 			};
 			t6events.add("t6Api", "rule add", newRule.id);
 			rules.insert(newRule);
@@ -160,13 +160,13 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 			} else {
 				var result;
 				rules.chain().find({ "id": rule_id }).update(function(item) {
-					item.name		= req.body.name!==undefined?req.body.name:item.name;
-					item.rule		= req.body.rule!==undefined?req.body.rule:item.rule;
-					item.active		= req.body.active!==undefined?req.body.active:item.active;
+					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
+					item.rule		= typeof req.body.rule!=="undefined"?req.body.rule:item.rule;
+					item.active		= typeof req.body.active!=="undefined"?req.body.active:item.active;
 					item.meta.revision = ++(req.body.meta.revision);
 					result = item;
 				});
-				if ( result !== undefined ) {
+				if ( typeof result !== "undefined" ) {
 					dbRules.save();
 					
 					res.header("Location", "/v"+version+"/rules/"+rule_id);

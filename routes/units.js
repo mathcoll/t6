@@ -23,8 +23,8 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
 	var unit_id = req.params.unit_id;
 	var type = req.query.type;
 	units	= db.getCollection("units");
-	if ( type === undefined ) {
-		if ( unit_id === undefined ) {
+	if ( typeof type === "undefined" ) {
+		if ( typeof unit_id === "undefined" ) {
 			json = units.find();
 		} else {
 			json = units.find({ "id": unit_id });
@@ -58,9 +58,9 @@ router.post("/", bearerAdmin, function (req, res) {
 		//console.log(units);
 		var new_unit = {
 			id: uuid.v4(),
-			name:	req.body.name!==undefined?req.body.name:"unamed",
-			format:	req.body.format!==undefined?req.body.format:"",
-			type:	req.body.type!==undefined?req.body.type:"",
+			name:	typeof req.body.name!=="undefined"?req.body.name:"unamed",
+			format:	typeof req.body.format!=="undefined"?req.body.format:"",
+			type:	typeof req.body.type!=="undefined"?req.body.type:"",
 		};
 		units.insert(new_unit);
 		//console.log(units);
@@ -97,9 +97,9 @@ router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 		units.findAndUpdate(
 			function(i){return i.id==unit_id},
 			function(item){
-				item.name		= req.body.name!==undefined?req.body.name:item.name;
-				item.format		= req.body.format!==undefined?req.body.format:item.format;
-				item.type		= req.body.type!==undefined?req.body.type:item.type;
+				item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
+				item.format		= typeof req.body.format!=="undefined"?req.body.format:item.format;
+				item.type		= typeof req.body.type!=="undefined"?req.body.type:item.type;
 				result = item;
 			}
 		);

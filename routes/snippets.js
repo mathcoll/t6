@@ -27,13 +27,13 @@ var tokens;
 router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var snippet_id = req.params.snippet_id;
 	var name = req.query.name;
-	var size = req.query.size!==undefined?req.query.size:20;
-	var page = req.query.page!==undefined?req.query.page:1;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
 	snippets	= dbSnippets.getCollection("snippets");
 	var query;
-	if ( snippet_id !== undefined ) {
+	if ( typeof snippet_id !== "undefined" ) {
 		query = {
 		"$and": [
 				{ "user_id" : req.user.id },
@@ -41,7 +41,7 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 			]
 		};
 	} else {
-		if ( name !== undefined ) {
+		if ( typeof name !== "undefined" ) {
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
@@ -98,16 +98,16 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if( i >= (quota[req.user.role]).snippets ) {
 		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
-		if ( req.user.id !== undefined ) {
+		if ( typeof req.user.id !== "undefined" ) {
 			var snippet_id = uuid.v4();
 			var newSnippet = {
 				id:			snippet_id,
 				user_id:	req.user.id,
-				name: 		req.body.name!==undefined?req.body.name:"unamed",
-				type:		req.body.type!==undefined?req.body.type:"",
-				icon:  		req.body.icon!==undefined?req.body.icon:"",
-				color:  	req.body.color!==undefined?req.body.color:"",
-				flows:		req.body.flows!==undefined?req.body.flows:new Array(),
+				name:		typeof req.body.name!=="undefined"?req.body.name:"unamed",
+				type:		typeof req.body.type!=="undefined"?req.body.type:"",
+				icon:		typeof req.body.icon!=="undefined"?req.body.icon:"",
+				color:		typeof req.body.color!=="undefined"?req.body.color:"",
+				flows:		typeof req.body.flows!=="undefined"?req.body.flows:new Array(),
 			};
 			t6events.add("t6Api", "snippet add", newSnippet.id);
 			snippets.insert(newSnippet);
@@ -159,15 +159,15 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret})
 			} else {
 				var result;
 				snippets.chain().find({ "id": snippet_id }).update(function(item) {
-					item.name		= req.body.name!==undefined?req.body.name:item.name;
-					item.type		= req.body.type!==undefined?req.body.type:item.type;
-					item.icon		= req.body.icon!==undefined?req.body.icon:item.icon;
-					item.color		= req.body.color!==undefined?req.body.color:item.color;
-					item.flows		= req.body.flows!==undefined?req.body.flows:item.flows;
+					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
+					item.type		= typeof req.body.type!=="undefined"?req.body.type:item.type;
+					item.icon		= typeof req.body.icon!=="undefined"?req.body.icon:item.icon;
+					item.color		= typeof req.body.color!=="undefined"?req.body.color:item.color;
+					item.flows		= typeof req.body.flows!=="undefined"?req.body.flows:item.flows;
 					item.meta.revision = ++(req.body.meta.revision);
 					result = item;
 				});
-				if ( result !== undefined ) {
+				if ( typeof result !== "undefined" ) {
 					dbSnippets.save();
 					
 					res.header("Location", "/v"+version+"/snippets/"+snippet_id);

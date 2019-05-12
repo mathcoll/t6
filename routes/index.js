@@ -173,10 +173,10 @@ router.all("*", function (req, res, next) {
 	users	= db.getCollection("users");
 
 	var o = {
-		key:		req.user!==undefined?req.user.key:"",
-		secret:		req.user!==undefined?req.user.secret:null,
-		user_id:	req.user!==undefined,
-		session_id:	req.user!==undefined?req.user.session_id:null,
+		key:		typeof req.user!=="undefined"?req.user.key:"",
+		secret:		typeof req.user!=="undefined"?req.user.secret:null,
+		user_id:	typeof req.user!=="undefined",
+		session_id:	typeof req.user!=="undefined"?req.user.session_id:null,
 		verb:		req.method,
 		url:		req.originalUrl,
 		date:		moment().format("x")
@@ -196,13 +196,13 @@ router.all("*", function (req, res, next) {
 		var query = squel.select()
 			.field("count(url)")
 			.from("requests")
-			.where("user_id=?", req.user.id!==undefined?req.user.id:o.user_id)
+			.where("user_id=?", typeof req.user.id!=="undefined"?req.user.id:o.user_id)
 			.where("time>now() - 7d")
 			.limit(1)
 			.toString();
 
 		dbInfluxDB.query(query).then(data => {
-			i = data[0]!==undefined?data[0].count:0;
+			i = typeof data[0]!=="undefined"?data[0].count:0;
 			
 			if ( limit-i > 0 ) {
 				res.header("X-RateLimit-Remaining", limit-i);
@@ -211,11 +211,11 @@ router.all("*", function (req, res, next) {
 			res.header("Cache-Control", "no-cache, max-age=360, private, must-revalidate, proxy-revalidate");
 			
 			if( (req.user && i >= limit) ) {
-				t6events.add("t6Api", "api 429", req.user.id!==undefined?req.user.id:o.user_id);
+				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
 				res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 			} else {
 				if ( db_type.influxdb == true ) {
-					var tags = {user_id: req.user.id!==undefined?req.user.id:o.user_id, session_id: o.session_id!==undefined?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+					var tags = {user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 					var fields = {url: o.url};
 					dbInfluxDB.writePoints([{
 						measurement: "requests",
@@ -236,7 +236,7 @@ router.all("*", function (req, res, next) {
 			res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
 		});
 	} else {
-		var tags = {user_id: "anonymous", session_id: o.session_id!==undefined?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+		var tags = {user_id: "anonymous", session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 		var fields = {url: o.url};
 		dbInfluxDB.writePoints([{
 			measurement: "requests",
@@ -268,7 +268,7 @@ function checkForTooManyFailure(req, res, email) {
 				var to = email;
 				var mailOptions = {
 					from: from,
-					bcc: bcc!==undefined?bcc:null,
+					bcc: typeof bcc!=="undefined"?bcc:null,
 					to: to,
 					subject: "t6 warning notification",
 					text: "Html email client is required",
@@ -319,7 +319,7 @@ router.post("/authenticate", function (req, res) {
 		if ( user ) {
 			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
 				var geo = geoip.lookup(req.ip);
-				if ( user.location === undefined || user.location === null ) {
+				if ( typeof user.location === "undefined" || user.location === null ) {
 					user.location = {geo: geo, ip: req.ip,};
 				}
 				users.update(user);
@@ -387,7 +387,7 @@ router.post("/authenticate", function (req, res) {
 			var user = users.findOne({ "id": tokens.findOne(queryT).user_id });
 			var geo = geoip.lookup(req.ip);
 			
-			if ( user.location === undefined || user.location === null ) {
+			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			users.update(user);
@@ -455,7 +455,7 @@ router.post("/authenticate", function (req, res) {
 			var user = users.findOne({ "id": user_id });
 			var geo = geoip.lookup(req.ip);
 			
-			if ( user.location === undefined || user.location === null ) {
+			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			users.update(user);

@@ -24,7 +24,7 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 	var datatype_id = req.params.datatype_id;
 	datatypes	= db.getCollection("datatypes");
 	var json;
-	if ( datatype_id === undefined ) {
+	if ( typeof datatype_id === "undefined" ) {
 		json = datatypes.find();
 	} else {
 		json = datatypes.find({ "id": { "$eq": ""+datatype_id } });
@@ -50,8 +50,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == "admin" ) {
 		datatypes	= db.getCollection("datatypes");
 		var newDatatype = {
-			id:			uuid.v4(),
-			name:	req.body.name!==undefined?req.body.name:"unamed",
+			id:		uuid.v4(),
+			name:	typeof req.body.name!=="undefined"?req.body.name:"unamed",
 		};
 		datatypes.insert(newDatatype);
 		
@@ -83,8 +83,8 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}
 		datatypes.findAndUpdate(
 			function(i){return i.id==datatype_id},
 			function(item){
-				item.name		= req.body.name!==undefined?req.body.name:item.name;
-				result = item;
+				item.name	= typeof req.body.name!=="undefined"?req.body.name:item.name;
+				result 		= item;
 			}
 		);
 		db.save();

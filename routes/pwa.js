@@ -51,7 +51,7 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 		var result;
 
 		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
-			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:{};
+			user.unsubscription = typeof user.unsubscription!=="undefined"?user.unsubscription:{};
 			user.unsubscription[""+list] = moment().format("x");
 			result = user;
 		});
@@ -95,7 +95,7 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 		var result;
 
 		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
-			user.unsubscription = user.unsubscription!==undefined?user.unsubscription:{};
+			user.unsubscription = typeof user.unsubscription!=="undefined"?user.unsubscription:{};
 			user.unsubscription[""+list] = null;
 			result = user;
 		});

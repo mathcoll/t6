@@ -32,16 +32,16 @@ function str2bool(v) {
 router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var results = Array();
 	var flow_id = req.params.flow_id;
-	var size = req.query.size!==undefined?req.query.size:20;
-	var page = req.query.page!==undefined?req.query.page:1;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
 	var name = req.query.name;
-	if ( req.user !== undefined && req.user.id !== undefined ) {
+	if ( typeof req.user !== "undefined" && typeof req.user.id !== "undefined" ) {
 		flows	= db.getCollection("flows");
 
 		var query;
-		if ( flow_id !== undefined ) {
+		if ( typeof flow_id !== "undefined" ) {
 			query = {
 			"$and": [
 					{ "id": flow_id },
@@ -49,7 +49,7 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret}), 
 				]
 			};
 		} else {
-			if ( name !== undefined ) {
+			if ( typeof name !== "undefined" ) {
 				query = {
 				"$and": [
 						{ "user_id" : req.user.id },
@@ -118,24 +118,24 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if( i >= (quota[req.user.role]).flows ) {
 		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
-		if ( req.user.id !== undefined ) {
-			var permission = req.body.permission!==undefined?req.body.permission:"600"; //TODO: default to Owner: Read+Write
+		if ( typeof req.user.id !== "undefined" ) {
+			var permission = typeof req.body.permission!=="undefined"?req.body.permission:"600"; //TODO: default to Owner: Read+Write
 			if ( permission < 600 ) {
 				res.status(400).send(new ErrorSerializer({"id": 38, "code": 400, "message": "Bad Request", details: "Permission must be greater than 600!"}).serialize());
 			} else {
 				var flow_id = uuid.v4();
 				var newFlow = {
-					id:			flow_id,
-					user_id:	req.user.id,
-					name: 		req.body.name!==undefined?req.body.name:"unamed",
-					data_type:	req.body.data_type!==undefined?req.body.data_type:"",
-					unit:  		req.body.unit!==undefined?req.body.unit:"",
-					theme:  	req.body.theme!==undefined?req.body.theme:"",
-					mqtt_topic:	req.body.mqtt_topic!==undefined?req.body.mqtt_topic:"",
-					permission:	permission,
-					require_signed:	req.body.require_signed!==undefined?str2bool(req.body.require_signed):false,
-					require_encrypted:	req.body.require_encrypted!==undefined?str2bool(req.body.require_encrypted):false,
-					objects:	req.body.objects!==undefined?req.body.objects:new Array(),
+					id:					flow_id,
+					user_id:			req.user.id,
+					name: 				typeof req.body.name!=="undefined"?req.body.name:"unamed",
+					data_type:			typeof req.body.data_type!=="undefined"?req.body.data_type:"",
+					unit:  				typeof req.body.unit!=="undefined"?req.body.unit:"",
+					theme:  			typeof req.body.theme!=="undefined"?req.body.theme:"",
+					mqtt_topic:			typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:"",
+					permission:			permission,
+					require_signed:		typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):false,
+					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
+					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 				};
 				t6events.add("t6Api", "flow add", newFlow.id);
 				flows.insert(newFlow);
@@ -178,7 +178,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
 	if ( flow_id ) {
-		var permission = req.body.permission!==undefined?req.body.permission:undefined;
+		var permission = typeof req.body.permission!=="undefined"?req.body.permission:undefined;
 		if ( permission < 600 ) {
 			res.status(400).send(new ErrorSerializer({"id": 39, "code": 400, "message": "Bad Request", "details": "Permission must be greater than 600!"}).serialize());
 		} else {
@@ -196,18 +196,18 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 				} else {
 					var result;
 					flows.chain().find({ "id": flow_id }).update(function(item) {
-						item.name		= req.body.name!==undefined?req.body.name:item.name;
-						item.unit		= req.body.unit!==undefined?req.body.unit:item.unit;
-						item.data_type	= req.body.data_type!==undefined?req.body.data_type:item.data_type;
-						item.permission	= permission!==undefined?permission:item.permission;
-						item.objects	= req.body.objects!==undefined?req.body.objects:item.objects;
-						item.mqtt_topic	= req.body.mqtt_topic!==undefined?req.body.mqtt_topic:item.mqtt_topic;
-						item.require_signed = req.body.require_signed!==undefined?str2bool(req.body.require_signed):str2bool(item.require_signed);
-						item.require_encrypted = req.body.require_encrypted!==undefined?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
-						item.meta.revision = ++(req.body.meta.revision);
+						item.name				= typeof req.body.name!=="undefined"?req.body.name:item.name;
+						item.unit				= typeof req.body.unit!=="undefined"?req.body.unit:item.unit;
+						item.data_type			= typeof req.body.data_type!=="undefined"?req.body.data_type:item.data_type;
+						item.permission			= typeof permission!=="undefined"?permission:item.permission;
+						item.objects			= typeof req.body.objects!=="undefined"?req.body.objects:item.objects;
+						item.mqtt_topic			= typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:item.mqtt_topic;
+						item.require_signed		= typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):str2bool(item.require_signed);
+						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
+						item.meta.revision		= ++(req.body.meta.revision);
 						result = item;
 					});
-					if ( result !== undefined ) {
+					if ( typeof result !== "undefined" ) {
 						db.save();
 						
 						res.header("Location", "/v"+version+"/flows/"+flow_id);

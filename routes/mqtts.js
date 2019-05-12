@@ -24,8 +24,8 @@ var ErrorSerializer = require("../serializers/error");
 router.get("/?(:mqtt_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var mqtt_id = req.params.mqtt_id;
 	var name = req.query.name;
-	var size = req.query.size!==undefined?req.query.size:20;
-	var page = req.query.page!==undefined?req.query.page:1;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
 

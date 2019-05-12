@@ -21,8 +21,8 @@ var tokens;
  */
 router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.role == "admin" ) {
-		var size = req.query.size!==undefined?req.query.size:20;
-		var page = req.query.page!==undefined?req.query.page:1;
+		var size = typeof req.query.size!=="undefined"?req.query.size:20;
+		var page = typeof req.query.page!=="undefined"?req.query.page:1;
 		page = page>0?page:1;
 		var offset = Math.ceil(size*(page-1));
 		
@@ -48,7 +48,7 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
  * @apiUse 429
  */
 router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user !== undefined ) {
+	if ( typeof req.user !== "undefined" ) {
 		tokens	= db.getCollection("tokens");
 		var accessTokens = tokens.chain().find({"user_id": req.user.id}).simplesort("expiration", true).data();
 		res.status(200).send(new AccessTokenSerializer(accessTokens).serialize());
@@ -124,7 +124,7 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret}), function (r
  * @apiUse 500
  */
 router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user !== undefined ) {
+	if ( typeof req.user !== "undefined" ) {
 		var options = {
 			url: "https://en.gravatar.com/" + req.user.mail_hash + ".json",
 			headers: {
@@ -138,7 +138,7 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req,
 				req.user.gravatar = {};
 			}
 			var json = new UserSerializer(req.user).serialize();
-			if ( json !== undefined ) {
+			if ( typeof json !== "undefined" ) {
 				res.status(200).send(json);
 			} else {
 				res.status(404).send(new ErrorSerializer({"id": 11,"code": 404, "message": "Not Found"}).serialize());
@@ -184,9 +184,9 @@ router.post("/", function (req, res) {
 			};
 			var new_user = {
 				id:					my_id,
-				firstName:			req.body.firstName!==undefined?req.body.firstName:"",
-				lastName:			req.body.lastName!==undefined?req.body.lastName:"",
-				email:				req.body.email!==undefined?req.body.email:"",
+				firstName:			typeof req.body.firstName!=="undefined"?req.body.firstName:"",
+				lastName:			typeof req.body.lastName!=="undefined"?req.body.lastName:"",
+				email:				typeof req.body.email!=="undefined"?req.body.email:"",
 				role:				"free", // no admin creation from the API
 				subscription_date:  moment().format("x"),
 				token:				token,
@@ -200,7 +200,7 @@ router.post("/", function (req, res) {
 			res.render("emails/welcome", {user: new_user, token: new_token.token}, function(err, html) {
 				var mailOptions = {
 					from: from,
-					bcc: bcc!==undefined?bcc:null,
+					bcc: typeof bcc!=="undefined"?bcc:null,
 					to: new_user.firstName+" "+new_user.lastName+" <"+new_user.email+">",
 					subject: "Welcome to t6",
 					text: "Html email client is required",
@@ -236,7 +236,7 @@ router.post("/", function (req, res) {
  * @apiUse 429
  */
 router.post("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user !== undefined ) {
+	if ( typeof req.user !== "undefined" ) {
 		if ( !req.user.id ) {
 			res.status(412).send(new ErrorSerializer({"id": 203,"code": 412, "message": "Precondition Failed"}).serialize());
 		} else {
@@ -337,7 +337,7 @@ router.post("/instruction", function (req, res) {
 				var to = user.firstName+" "+user.lastName+" <"+user.email+">";
 				var mailOptions = {
 					from: from,
-					bcc: bcc!==undefined?bcc:null,
+					bcc: typeof bcc!=="undefined"?bcc:null,
 					to: to,
 					subject: "Reset your password to t6",
 					text: "Html email client is required",
@@ -387,9 +387,9 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 			users.findAndUpdate(
 				function(i){return i.id==user_id},
 				function(item){
-					item.firstName		= req.body.firstName!==undefined?req.body.firstName:item.firstName;
-					item.lastName		= req.body.lastName!==undefined?req.body.lastName:item.lastName;
-					item.email			= req.body.email!==undefined?req.body.email:item.email;
+					item.firstName		= typeof req.body.firstName!=="undefined"?req.body.firstName:item.firstName;
+					item.lastName		= typeof req.body.lastName!=="undefined"?req.body.lastName:item.lastName;
+					item.email			= typeof req.body.email!=="undefined"?req.body.email:item.email;
 					item.update_date	= moment().format("x");
 					if ( req.body.password ) {
 						item.password = bcrypt.hashSync(req.body.password, 10);
