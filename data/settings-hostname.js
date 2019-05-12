@@ -18,7 +18,7 @@ sessionDuration		= 3600*24*10; // 10 days cookie session
 store				= new FileStore({ttl: sessionDuration, path: "/sessions"}); // Force session folder as absolute path in settings
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
-staticOptions		= { etag: true, maxAge: 864000000 };//10 Days
+staticOptions		= { etag: true, maxAge: 10*24*3600*1000 };//10 Days
 
 /* JWT */
 jwtsettings = {
