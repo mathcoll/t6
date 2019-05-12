@@ -26,7 +26,6 @@ var snippet = {
 		.then(function(response) {
 			var id = response.data[0].attributes.id;
 			var time = response.data[0].attributes.time;
-			var value = response.data[0].attributes.value;
 			var unit = typeof response.links.unit!=="undefined"?response.links.unit:"%";
 			var ttl = response.links.ttl;
 			var value = [];
