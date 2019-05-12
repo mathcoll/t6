@@ -116,7 +116,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 		
 		//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id="5" AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
-		if ( db_type.influxdb == true ) {
+		if ( db_type.influxdb === true ) {
 			/* InfluxDB database */
 			
 			var query = squel.select()
@@ -219,7 +219,7 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 				res.status(500).send({query: query, err: err, "id": 899, "code": 500, "message": "Internal Error"});
 			});
 
-		} else if ( db_type.sqlite3 == true ) {
+		} else if ( db_type.sqlite3 === true ) {
 			/* sqlite3 database */
 			// SELECT strftime("%Y", timestamp), AVG(value), MIN(value), MAX(value), count(value) FROM data WHERE flow_id=5 GROUP BY strftime("%Y", timestamp);
 			var query = squel.select()
@@ -284,22 +284,22 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 						var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
 						var y = d3.scale.linear().range([height, 0]);
 						var xAxis = d3.svg.axis()
-						    .scale(x)
-						    .orient("bottom")
-						    .ticks(data.limit)
-						    //.tickFormat(d3.time.format("%d/%m/%Y %H:%M"));
-							.tickFormat(d3.time.format("%H:%M"));
+						.scale(x)
+						.orient("bottom")
+						.ticks(data.limit)
+						//.tickFormat(d3.time.format("%d/%m/%Y %H:%M"));
+						.tickFormat(d3.time.format("%H:%M"));
 
 						var yAxis = d3.svg.axis()
-						    .scale(y)
-						    .orient("left")
-						    .ticks(10);
+						.scale(y)
+						.orient("left")
+						.ticks(10);
 						var svg = d3n.createSVG()
-						    .attr("width", chartWidth)
-						    .attr("height", chartHeight)
-						    .append("g")
-						    .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
-						
+						.attr("width", chartWidth)
+						.attr("height", chartHeight)
+						.append("g")
+						.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
 						data.forEach(function(d) {
 							x.domain(data.map(function (d) {
 								return new Date(d.timestamp);
@@ -307,51 +307,47 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 							y.domain([0, d3.max(data, function (d) {
 								return d.value;
 							})]);
-							
-							svg.append("g")
-							    .attr("class", "x axis")
-							    .attr("transform", "translate(0," + (height-margin.top-margin.bottom) + ")")
-							    .call(xAxis)
-							    .selectAll("text")
-							    .style("text-anchor", "middle")
-							    .attr("x", function(d, i) { return ((i * ((width-margin.left-margin.right) / data.length))+(x.rangeBand()/2)); })
-							    .attr("y", "20")
-							    ;
 
 							svg.append("g")
-							    .attr("class", "y axis")
-							    .attr("transform", "rotate(0)")
-							    .call(yAxis)
-							    .append("text")
-							    .attr("y", "")
-							    .attr("dy", "")
-							    .style("text-anchor", "middle")
-							    .text(data.unit)
-							    ;
-							
+							.attr("class", "x axis")
+							.attr("transform", "translate(0," + (height-margin.top-margin.bottom) + ")")
+							.call(xAxis)
+							.selectAll("text")
+							.style("text-anchor", "middle")
+							.attr("x", function(d, i) { return ((i * ((width-margin.left-margin.right) / data.length))+(x.rangeBand()/2)); })
+							.attr("y", "20");
+
+							svg.append("g")
+							.attr("class", "y axis")
+							.attr("transform", "rotate(0)")
+							.call(yAxis)
+							.append("text")
+							.attr("y", "")
+							.attr("dy", "")
+							.style("text-anchor", "middle")
+							.text(data.unit);
+
 							svg.selectAll("bar")
-							    .data(data)
-							    .enter().append("rect")
-								    .attr("class", "bar")
-								    .attr("x", function(d) { return x(new Date(d.timestamp)); })
-								    .attr("y", function(d) { return y(d.value); })
-								    .attr("width", x.rangeBand())
-								    .attr("height", function(d) { return (height-margin.top-margin.bottom) - y(d.value); })
-								    ;
-							
+							.data(data)
+							.enter().append("rect")
+							.attr("class", "bar")
+							.attr("x", function(d) { return x(new Date(d.timestamp)); })
+							.attr("y", function(d) { return y(d.value); })
+							.attr("width", x.rangeBand())
+							.attr("height", function(d) { return (height-margin.top-margin.bottom) - y(d.value); });
+
 							svg.selectAll("bar")
-								.data(data)
-								.enter().append("text")
-									.attr("class", "text")
-									.text(function(d, i) { return (d.value); })
-									.attr("x", function(d, i) { return ((i * (width / data.length))+(x.rangeBand()/2)); })
-									.attr("y", function(d, i) { return y(d.value)-margin.top+30; })
-									.attr("dx", "0em")
-									.attr("dy", "0em")
-									.attr("fill", "white")
-									.style("text-anchor", "middle")
-									;
-									
+							.data(data)
+							.enter().append("text")
+							.attr("class", "text")
+							.text(function(d, i) { return (d.value); })
+							.attr("x", function(d, i) { return ((i * (width / data.length))+(x.rangeBand()/2)); })
+							.attr("y", function(d, i) { return y(d.value)-margin.top+30; })
+							.attr("dx", "0em")
+							.attr("dy", "0em")
+							.attr("fill", "white")
+							.style("text-anchor", "middle");
+
 							res.setHeader("Content-Type", "image/svg+xml");
 							res.status(200).send( d3n.svgString() );
 						});
@@ -511,8 +507,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 				.where("flow_id=?", flow_id)
 				.where("timestamp=?", data_id)
 				.limit(limit)
-				.toString()
-				;
+				.toString();
 
 			dbSQLite3.all(query, function(err, data) {
 				if (err) console.log(err);

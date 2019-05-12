@@ -69,7 +69,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	});
 
 	engine.on("success", function(event, almanac, ruleResult) {
-		// ruleResult.result == true
 		if ( !payload.mqtt_topic ) {
 			if ( event.params.mqtt_topic ) {
 				payload.mqtt_topic = event.params.mqtt_topic;

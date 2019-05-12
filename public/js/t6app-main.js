@@ -2409,7 +2409,7 @@ var touchStartPoint, touchMovePoint;
 			
 			if ( options.type === 'input' || options.type === 'text' ) {
 				var style = options.style!==undefined?"style='"+options.style+"'":"";
-				if ( options.isEdit == true ) {
+				if ( options.isEdit === true ) {
 					var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
@@ -2439,7 +2439,7 @@ var touchStartPoint, touchMovePoint;
 				if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 				field += "</div>";
 			} else if ( options.type === 'textarea' ) {
-				if ( options.isEdit == true ) {
+				if ( options.isEdit === true ) {
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<textarea style='width:100%; height:100%;' type='text' rows='3' class='mdl-textfield__input' name='"+label+"' id='"+id+"'>"+value+"</textarea>";
@@ -2450,7 +2450,7 @@ var touchStartPoint, touchMovePoint;
 					if (value ) field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
 				}
 			} else if ( options.type === 'radio' ) {
-				if ( options.isEdit == true ) {
+				if ( options.isEdit === true ) {
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'> /!\ radio "+icon+"</i>";
 					if (label) field += "	<label class='mdl-textfield__label'> /!\ radio "+label+"</label>";
@@ -2464,7 +2464,7 @@ var touchStartPoint, touchMovePoint;
 					field += "</div>";
 				}
 			} else if ( options.type === 'checkbox' ) {
-				if ( options.isEdit == true ) {
+				if ( options.isEdit === true ) {
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'> /!\ checkbox "+icon+"</i>";
 					if (label) field += "	<label class='mdl-list__item-sub-title'> /!\ checkbox "+label+"</label>";
@@ -2478,9 +2478,9 @@ var touchStartPoint, touchMovePoint;
 					field += "</div>";
 				}
 			} else if ( options.type === 'switch' ) {
-				var isChecked = value==true||value=='true'?' checked':'';
-				var className = value==true||value=='true'?'is-checked':'';
-				if ( options.isEdit == true ) {
+				var isChecked = value===true||value==="true"?" checked":"";
+				var className = value===true||value==="true"?"is-checked":"";
+				if ( options.isEdit === true ) {
 					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label "+className+"' for='switch-"+id+"' data-id='switch-"+id+"'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					field += "	<input type='checkbox' id='switch-"+id+"' class='mdl-switch__input' name='"+label+"' value='"+value+"' placeholder='"+label+"' "+isChecked+">";
@@ -2887,7 +2887,7 @@ var touchStartPoint, touchMovePoint;
 		if ( document.getElementById('switch-settings.notifications') ) {
 			document.getElementById('switch-settings.notifications').addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-				if ( document.getElementById('switch-settings.notifications').checked == true ) {
+				if ( document.getElementById('switch-settings.notifications').checked === true ) {
 					app.setSetting('settings.notifications', true);
 					app.askPermission();
 					app.subscribeUserToPush();
@@ -2905,7 +2905,7 @@ var touchStartPoint, touchMovePoint;
 		if ( document.getElementById('switch-settings.geolocalization') ) {
 			document.getElementById('switch-settings.geolocalization').addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-				if ( document.getElementById('switch-settings.geolocalization').checked == true ) {
+				if ( document.getElementById('switch-settings.geolocalization').checked === true ) {
 					app.setSetting('settings.geolocalization', true);
 					label.innerText = "Geolocalization is enabled";
 					app.getLocation();
@@ -2922,7 +2922,7 @@ var touchStartPoint, touchMovePoint;
 		if ( document.getElementById('switch-settings.debug') ) {
 			document.getElementById('switch-settings.debug').addEventListener('change', function(e) {
 				var label = e.target.parentElement.querySelector('div.mdl-switch__label');
-				if ( document.getElementById('switch-settings.debug').checked == true ) {
+				if ( document.getElementById('switch-settings.debug').checked === true ) {
 					app.setSetting('settings.debug', true);
 					label.innerText = "Debug is enabled";
 					app.debug = true;
@@ -3220,7 +3220,7 @@ var touchStartPoint, touchMovePoint;
 			var cursor = e.target.result;
 			if(cursor && cursor.value['token']) {
 				jwt = cursor.value['token'];
-				if ( app.debug == true ) {
+				if ( app.debug === true ) {
 					console.log('Using JWT expiring on '+moment(parseInt(cursor.value['exp']*1000)).format(app.date_format));
 				}
 				localStorage.setItem('bearer', jwt);

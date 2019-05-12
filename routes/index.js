@@ -214,7 +214,7 @@ router.all("*", function (req, res, next) {
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
 				res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 			} else {
-				if ( db_type.influxdb == true ) {
+				if ( db_type.influxdb === true ) {
 					var tags = {user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 					var fields = {url: o.url};
 					dbInfluxDB.writePoints([{
@@ -246,7 +246,6 @@ router.all("*", function (req, res, next) {
 		next(); // no User Auth..
 	}
 });
-
 
 function checkForTooManyFailure(req, res, email) {
 	// Invalid Credentials
@@ -444,12 +443,12 @@ router.post("/authenticate", function (req, res) {
 		var token = req.body.refresh_token.split(".")[1];
 		
 		var queryT = {
-				"$and": [
-							{ "user_id": user_id },
-							{ "refresh_token": token },
-							{ "expiration": { "$gte": moment().format("X") } },
-						]
-				};
+			"$and": [
+						{ "user_id": user_id },
+						{ "refresh_token": token },
+						{ "expiration": { "$gte": moment().format("X") } },
+					]
+		};
 		if ( user_id && token && tokens.findOne(queryT) ) {
 			// Sign a new token
 			var user = users.findOne({ "id": user_id });
@@ -537,11 +536,11 @@ router.post("/refresh", function (req, res) {
 	// Find that refreshToken in Db
 	tokens	= db.getCollection("tokens");
 	var queryT = {
-			"$and": [
-						{ "refreshToken": refreshToken },
-						{"expiration": { "$gte": moment().format("x") }},
-					]
-			};
+		"$and": [
+					{ "refreshToken": refreshToken },
+					{"expiration": { "$gte": moment().format("x") }},
+				]
+	};
 	var myToken = tokens.findOne(queryT);
 	if ( !myToken ) {
 		return res.status(403).send(new ErrorSerializer({"id": 109, "code": 403, "message": "Forbidden or Token Expired"}));
