@@ -313,8 +313,7 @@ router.post("/authenticate", function (req, res) {
 		var password = req.body.password;
 
 		var queryU = { "$and": [ { "email": email } ] };
-		user = users.findOne(queryU);
-		
+		var user = users.findOne(queryU);
 		if ( user ) {
 			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
 				var geo = geoip.lookup(req.ip);
@@ -383,7 +382,7 @@ router.post("/authenticate", function (req, res) {
 				]
 		};
 		if ( tokens.findOne(queryT) ) {
-			user = users.findOne({ "id": tokens.findOne(queryT).user_id });
+			var user = users.findOne({ "id": tokens.findOne(queryT).user_id });
 			var geo = geoip.lookup(req.ip);
 			
 			if ( typeof user.location === "undefined" || user.location === null ) {
