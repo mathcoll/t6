@@ -33,7 +33,7 @@ var snippet = {
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: "GET", headers: myHeaders };
 		var opt = this.getOptions(this);
-		var limit = opt.limit&&opt.limit.value!==undefined?opt.limit.value:5;
+		var limit = opt.limit&&typeof opt.limit.value!=="undefined"?opt.limit.value:5;
 		var url = app.baseUrl+"/"+app.api_version+"/data/"+params.attributes.flows[0]+"?sort=desc&limit="+limit;
 		fetch(url, myInit)
 		.then(
@@ -47,32 +47,32 @@ var snippet = {
 			response.data.forEach(function(d) {
 				datapoints.push({ x: new Date(d.attributes.timestamp), y: d.attributes.value });
 			});
-			var type = opt.type&&opt.type.value!==undefined?opt.type.value:"line";
-			var unit = " ("+sprintf(response.links.unit!==undefined?response.links.unit:"", "")+")";
+			var type = opt.type&&typeof opt.type.value!=="undefined"?opt.type.value:"line";
+			var unit = " ("+sprintf(typeof response.links.unit!=="undefined"?response.links.unit:"", "")+")";
 			var data = {
 				datasets: [{
-					label: params.flowNames!==undefined?params.flowNames[0]:"",
-					backgroundColor: opt.backgroundColor&&opt.backgroundColor.value!==undefined?opt.backgroundColor.value:"rgb(255, 99, 132)",
-					borderColor: opt.borderColor&&opt.borderColor.value!==undefined?opt.borderColor.value:"rgb(255, 99, 132)",
-					fill: opt.fill&&opt.fill.value!==undefined?opt.fill.value:false,
-					showLine: opt.showLine&&opt.showLine.value!==undefined?opt.showLine.value:false,
-					steppedLine: opt.steppedLine&&opt.steppedLine.value!==undefined?opt.steppedLine.value:false,
-					pointBackgroundColor: opt.pointBackgroundColor&&opt.pointBackgroundColor.value!==undefined?opt.pointBackgroundColor.value:"rgb(255, 99, 132)",
+					label: typeof params.flowNames!=="undefined"?params.flowNames[0]:"",
+					backgroundColor: opt.backgroundColor&&typeof opt.backgroundColor.value!=="undefined"?opt.backgroundColor.value:"rgb(255, 99, 132)",
+					borderColor: opt.borderColor&&typeof opt.borderColor.value!=="undefined"?opt.borderColor.value:"rgb(255, 99, 132)",
+					fill: opt.fill&&typeof opt.fill.value!=="undefined"?opt.fill.value:false,
+					showLine: opt.showLine&&typeof opt.showLine.value!=="undefined"?opt.showLine.value:false,
+					steppedLine: opt.steppedLine&&typeof opt.steppedLine.value!=="undefined"?opt.steppedLine.value:false,
+					pointBackgroundColor: opt.pointBackgroundColor&&typeof opt.pointBackgroundColor.value!=="undefined"?opt.pointBackgroundColor.value:"rgb(255, 99, 132)",
 					data: datapoints,
 				}]
 			};
 			var options = {
 				title: {
-					display: opt.titleDisplay&&opt.titleDisplay.value!==undefined?opt.titleDisplay.value:true,
+					display: opt.titleDisplay&&typeof opt.titleDisplay.value!=="undefined"?opt.titleDisplay.value:true,
 					text: "Snippet Title",
-					fontSize: opt.titleFontSize&&opt.titleFontSize.value!==undefined?opt.titleFontSize.value:28,
-					fontFamily: opt.titleFontFamily&&opt.titleFontFamily.value!==undefined?opt.titleFontFamily.value:"Helvetica", //""Helvetica Neue", "Helvetica", "Arial", sans-serif"
+					fontSize: opt.titleFontSize&&typeof opt.titleFontSize.value!=="undefined"?opt.titleFontSize.value:28,
+					fontFamily: opt.titleFontFamily&&typeof opt.titleFontFamily.value!=="undefined"?opt.titleFontFamily.value:"Helvetica", //""Helvetica Neue", "Helvetica", "Arial", sans-serif"
 				},
 				legend: {
-					display: opt.legendDisplay&&opt.legendDisplay.value!==undefined?opt.legendDisplay.value:true,
-					position: opt.legendPosition&&opt.legendPosition.value!==undefined?opt.legendPosition.value:"bottom",
+					display: opt.legendDisplay&&typeof opt.legendDisplay.value!=="undefined"?opt.legendDisplay.value:true,
+					position: opt.legendPosition&&typeof opt.legendPosition.value!=="undefined"?opt.legendPosition.value:"bottom",
 					labels: {
-						fontColor: opt.legendFontColor&&opt.legendFontColor.value!==undefined?opt.legendFontColor.value:"rgb(255, 99, 132)"
+						fontColor: opt.legendFontColor&&typeof opt.legendFontColor.value!=="undefined"?opt.legendFontColor.value:"rgb(255, 99, 132)"
 					}
 				},
 				tooltips: {
