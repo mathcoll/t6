@@ -90,5 +90,5 @@ var snippet = {
 		return html;
 	},
 };
-snippet.getOptions = function(s) { return s.options; }
+snippet.getOptions = function(s) { return s.options; };
 app.snippetTypes.push(snippet);
