@@ -29,14 +29,14 @@ var tokens;
 router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var dashboard_id = req.params.dashboard_id;
 	var name = req.query.name;
-	var size = req.query.size!==undefined?req.query.size:20;
-	var page = req.query.page!==undefined?req.query.page:1;
+	var size = typeof req.query.size !== "undefined"?req.query.size:20;
+	var page = typeof req.query.page !== "undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
 	dashboards	= dbDashboards.getCollection("dashboards");
 	snippets = dbSnippets.getCollection("snippets"); // WTF ??
 	var query;
-	if ( dashboard_id !== undefined ) {
+	if ( typeof dashboard_id !== undefined ) {
 		query = {
 		"$and": [
 				{ "user_id" : req.user.id },
@@ -44,7 +44,7 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
 			]
 		};
 	} else {
-		if ( name !== undefined ) {
+		if ( typeof name !== undefined ) {
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
