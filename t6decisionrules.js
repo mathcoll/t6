@@ -89,17 +89,17 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 			if ( typeof payload.object_id !== "undefined" ) {
 				mqttPayload.object_id = payload.object_id;
-			}
-			if( user_id && payload.object_id ) {
-				let objects	= db.getCollection("objects");
-				let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
-				if ( object && object.secret_key_crypt ) { // TODO: Should also get the Flow.requireCrypted flag.
-					mqttPayload.value = cryptPayload(mqttPayload.value, {secret_key_crypt: object.secret_key_crypt}); // ascii, binary, base64, hex, utf8
+				if( user_id ) {
+					let objects	= db.getCollection("objects");
+					let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
+					if ( object && object.secret_key_crypt ) { // TODO: Should also get the Flow.requireCrypted flag.
+						mqttPayload.value = cryptPayload(mqttPayload.value, {secret_key_crypt: object.secret_key_crypt}); // ascii, binary, base64, hex, utf8
+					}
 				}
 			}
 			t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify(mqttPayload), true);
 
-		} else if ( event.type === "mqttCommand" ) {
+		} else if ( event.type === "mqttCommand" && typeof payload.object_id !== "undefined" ) {
 			let mqttPayload = payload.value;
 			t6mqtt.publish(payload.user_id, "object_id/"+payload.object_id+"/cmd", mqttPayload, true);
 
