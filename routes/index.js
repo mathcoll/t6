@@ -214,24 +214,22 @@ router.all("*", function (req, res, next) {
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
 				res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 			} else {
-				if ( db_type.influxdb === true ) {
-					var tags = {user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
-					var fields = {url: o.url};
-					dbInfluxDB.writePoints([{
-						measurement: "requests",
-						tags: tags,
-						fields: fields,
-					}], { precision: "s", })
-					.then(err => {
-						if (err) console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
-						next();
-					}).catch(err => {
-						console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
-						console.error("Error catched on writting to influxDb:\n"+err);
-						next();
-					});
-				}
-			};
+				var tags = {user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+				var fields = {url: o.url};
+				dbInfluxDB.writePoints([{
+					measurement: "requests",
+					tags: tags,
+					fields: fields,
+				}], { precision: "s", })
+				.then(err => {
+					if (err) console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+					next();
+				}).catch(err => {
+					console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+					console.error("Error catched on writting to influxDb:\n"+err);
+					next();
+				});
+			}
 		}).catch(err => {
 			res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
 		});
@@ -242,7 +240,7 @@ router.all("*", function (req, res, next) {
 			measurement: "requests",
 			tags: tags,
 			fields: fields,
-		}], { precision: "s", })
+		}], { precision: "s", });
 		next(); // no User Auth..
 	}
 });
