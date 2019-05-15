@@ -222,7 +222,9 @@ router.all("*", function (req, res, next) {
 					fields: fields,
 				}], { precision: "s", })
 				.then(err => {
-					if (err) console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+					if (err) {
+						console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+					}
 					next();
 				}).catch(err => {
 					console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
