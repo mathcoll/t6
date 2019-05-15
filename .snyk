@@ -93,7 +93,7 @@ ignore:
   'npm:squel:20180322':
     - squel:
         reason: None given
-        expires: '2019-02-08T19:17:19.761Z'
+        expires: '2019-06-14T19:27:25.748Z'
   'npm:stringstream:20180511':
     - request > stringstream:
         reason: None given
@@ -112,6 +112,14 @@ ignore:
     - geoip-lite > save > event-stream > flatmap-stream:
         reason: None given
         expires: '2019-02-07T20:31:40.524Z'
+  SNYK-JS-LODASHMERGE-173732:
+    - geoip-lite > ip-address > lodash.merge:
+        reason: None given
+        expires: '2019-06-14T19:27:25.748Z'
+  SNYK-JS-LODASHMERGE-173733:
+    - geoip-lite > ip-address > lodash.merge:
+        reason: None given
+        expires: '2019-06-14T19:27:25.748Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
