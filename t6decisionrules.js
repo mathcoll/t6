@@ -83,9 +83,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		}
 
 		if( event.type === "mqttPublish" ) {
-			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, message:payload.message, flow: payload.flow, object_id: payload.object_id};
-			if ( payload.text !== "" ) {
+			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, message:payload.message, flow: payload.flow};
+			if ( typeof payload.text !== "undefined" ) {
 				mqttPayload.text = payload.text;
+			}
+			if ( typeof payload.object_id !== "undefined" ) {
+				mqttPayload.object_id = payload.object_id;
 			}
 			if( user_id && payload.object_id ) {
 				let objects	= db.getCollection("objects");
