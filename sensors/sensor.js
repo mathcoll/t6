@@ -13,8 +13,8 @@ var auth = config.auth;
 config = config.sensors[argv.run]!==undefined?config.sensors[argv.run]:null;
 
 if ( argv.run === undefined ) {
-	console.log("Please use the "--run" parameter to set your setting. e.g.:");
-	console.log("$ nodejs "+path.join(__filename)+" --run "$configId"\n");
+	console.log("Please use the '--run' parameter to set your setting. e.g.:");
+	console.log("$ nodejs "+path.join(__filename)+" --run '$configId'\n");
 	process.exit(1);
 }
 if ( config === null ) {
