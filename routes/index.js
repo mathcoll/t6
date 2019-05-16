@@ -287,6 +287,27 @@ function checkForTooManyFailure(req, res, email) {
 }
 
 /**
+ * @api {delete} /tokens/all Clean and delete all tokens
+ * @apiName Clean and delete all tokens ; no restriction
+ * @apiGroup 7. Admin User
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 201
+ * @apiUse 403
+ */
+router.delete("/tokens/all", function (req, res) {
+	if ( req.user.role === "admin" ) {
+		tokens	= dbTokens.getCollection("tokens");
+		var expired = tokens.chain().find( {} ).remove();
+		return res.status(201).json( {status: "ok", "expired": expired} );
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 102.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
+	}
+});
+
+/**
  * @api {post} /authenticate Authenticate - get JWT Token
  * @apiName Authenticate - get JWT Token
  * @apiDescription The authenticate endpoint provide you an access token whi is multiple time use but expired within 5 minutes.
@@ -297,8 +318,8 @@ function checkForTooManyFailure(req, res, email) {
  * @apiParam {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
  * @apiParam {String} [username] Your own username
  * @apiParam {String} [password] Your own password
- * @apiParam {String} [api_key=undefined] In "access_token" context, Client Api Key
- * @apiParam {String} [api_secret=undefined] In "access_token" context, Client Api Secret
+ * @apiParam {String} [key=undefined] In "access_token" context, Client Api Key
+ * @apiParam {String} [secret=undefined] In "access_token" context, Client Api Secret
  * @apiParam {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
  * @apiUse 200
  * @apiUse 400
@@ -341,15 +362,7 @@ router.post("/authenticate", function (req, res) {
 				var refreshPayload = crypto.randomBytes(40).toString("hex");
 				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
 
-				var mydevice = device(req.headers["user-agent"]);
 				var agent = useragent.parse(req.headers["user-agent"]);
-				var type = mydevice.is("desktop")!==false?"desktop":
-					mydevice.is("tv")!==false?"tv":
-						mydevice.is("tablet")!==false?"tablet":
-							mydevice.is("phone")!==false?"phone":
-								mydevice.is("bot")!==false?"bot":
-									mydevice.is("car")!==false?"car":
-										mydevice.is("console")!==false?"console":"unknown";
 				var t = {
 						user_id: user.id,
 						refresh_token: refreshPayload,
@@ -361,7 +374,7 @@ router.post("/authenticate", function (req, res) {
 							"os": agent.os.toString(),
 							"osVersion": agent.os.toVersion(),
 						},
-						"device-type": type,
+						"device": agent.device.toString(),
 				};
 				tokens.insert(t);
 
@@ -374,15 +387,18 @@ router.post("/authenticate", function (req, res) {
 		} else {
 			return res.status(403).send(new ErrorSerializer({"id": 102.2, "code": 403, "message": "Forbidden"}).serialize());
 		}
-	} else if ( ( req.body.api_key && req.body.api_secret ) && req.body.grant_type === "access_token" ) {
+	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
 		var queryT = {
 		"$and": [
-					{ "key": req.body.api_key },
-					{ "secret": req.body.api_secret },
+					{ "key": req.body.key },
+					{ "secret": req.body.secret },
 				]
 		};
-		if ( tokens.findOne(queryT) ) {
-			var user = users.findOne({ "id": tokens.findOne(queryT).user_id });
+		var accessTokens	= db.getCollection("tokens");
+		//console.log("accessTokens Q:", queryT);
+		var u = accessTokens.findOne(queryT)
+		if ( typeof u.user_id !== "undefined" ) {
+			var user = users.findOne({ "id": u.user_id });
 			var geo = geoip.lookup(req.ip);
 			
 			if ( typeof user.location === "undefined" || user.location === null ) {
@@ -408,15 +424,7 @@ router.post("/authenticate", function (req, res) {
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
 
-			var mydevice = device(req.headers["user-agent"]);
 			var agent = useragent.parse(req.headers["user-agent"]);
-			var type = mydevice.is("desktop")!==false?"desktop":
-				mydevice.is("tv")!==false?"tv":
-					mydevice.is("tablet")!==false?"tablet":
-						mydevice.is("phone")!==false?"phone":
-							mydevice.is("bot")!==false?"bot":
-								mydevice.is("car")!==false?"car":
-									mydevice.is("console")!==false?"console":"unknown";
 			var t = {
 					user_id: user.id,
 					refresh_token: refreshPayload,
@@ -428,7 +436,7 @@ router.post("/authenticate", function (req, res) {
 						"os": agent.os.toString(),
 						"osVersion": agent.os.toVersion(),
 					},
-					"device-type": type,
+					"device": agent.device.toString(),
 			};
 			tokens.insert(t);
 
@@ -474,15 +482,7 @@ router.post("/authenticate", function (req, res) {
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
 
-			var mydevice = device(req.headers["user-agent"]);
 			var agent = useragent.parse(req.headers["user-agent"]);
-			var type = mydevice.is("desktop")!==false?"desktop":
-				mydevice.is("tv")!==false?"tv":
-					mydevice.is("tablet")!==false?"tablet":
-						mydevice.is("phone")!==false?"phone":
-							mydevice.is("bot")!==false?"bot":
-								mydevice.is("car")!==false?"car":
-									mydevice.is("console")!==false?"console":"unknown";
 			var t = {
 					user_id: user.id,
 					refresh_token: refreshPayload,
@@ -494,7 +494,7 @@ router.post("/authenticate", function (req, res) {
 						"os": agent.os.toString(),
 						"osVersion": agent.os.toVersion(),
 					},
-					"device-type": type,
+					"device": agent.device.toString(),
 			};
 			tokens.insert(t);
 			var refresh_token = user.id + "." + refreshPayload;
@@ -506,13 +506,13 @@ router.post("/authenticate", function (req, res) {
 		// TODO
 		return res.status(400).send(new ErrorSerializer({"id": 102.3, "code": 400, "message": "Required param grant_type"}).serialize());
 	}
+
 	var expired = tokens.find( { "expiration" : { "$lt": moment().format("X") } } );
 	if ( expired ) {
 		tokens.remove(expired);
 		db.save();
 	}
 });
-
 
 /**
  * @api {post} /refresh Refresh a JWT Token

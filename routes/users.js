@@ -8,6 +8,7 @@ var AccessTokenSerializer = require("../serializers/accessToken");
 var refreshTokenSerializer = require("../serializers/refreshToken");
 var users;
 var tokens;
+var accessTokens;
 
 /**
  * @api {get} /users/list Get Users list
@@ -225,7 +226,6 @@ router.post("/", function (req, res) {
  * @apiName Generate Access Tokens
  * @apiGroup User
  * @apiVersion 2.0.1
- * @apiIgnore use now (#User:Authenticate).
  * 
  * @apiParam {String{128}} [memo] Free memo string
  * 
@@ -403,6 +403,41 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		} else {
 			res.status(403).send(new ErrorSerializer({"id": 7,"code": 403, "message": "Forbidden"}).serialize());
 		}
+	}
+});
+
+/**
+ * @api {delete} /users/accessTokens/:key Revoke an Access Token from its key
+ * @apiName Revoke an Access Token from its key
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {string} key to revoke
+ * @apiUse 201
+ * @apiUse 403
+ * @apiUse 412
+ * @apiUse 429
+ */
+router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var key = req.params.key;
+	if ( key ) {
+		accessTokens	= db.getCollection("tokens");
+		var queryT = {
+				"$and": [
+							{ "key": key },
+							{ "user_id": req.user.id },
+						]
+				};
+		var u = accessTokens.findOne(queryT);
+		if (u) {
+			accessTokens.remove(u);
+			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: key }); // TODO: missing serializer
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 6,"code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 105,"code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
