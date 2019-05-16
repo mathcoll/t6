@@ -30,7 +30,6 @@ router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret}), function(re
 		});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
-
 	}
 });
 
