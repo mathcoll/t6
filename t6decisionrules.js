@@ -83,7 +83,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		}
 
 		if( event.type === "mqttPublish" ) {
-			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, message:payload.message, flow: payload.flow};
+			console.log("Matching EventType", "mqttPublish");
+			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};
+			if ( typeof payload.message !== "undefined" ) {
+				mqttPayload.message = payload.message;
+			}
 			if ( typeof payload.text !== "undefined" ) {
 				mqttPayload.text = payload.text;
 			}
@@ -100,10 +104,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify(mqttPayload), true);
 
 		} else if ( event.type === "mqttCommand" && typeof payload.object_id !== "undefined" ) {
-			let mqttPayload = payload.value;
-			t6mqtt.publish(payload.user_id, "object_id/"+payload.object_id+"/cmd", mqttPayload, true);
+			console.log("Matching EventType", "mqttCommand");
+			t6mqtt.publish(payload.user_id, "object_id/"+payload.object_id+"/cmd", payload.value, true);
 
 		} else if ( event.type === "email" ) {
+			console.log("Matching EventType", "email");
 			var envelope = {
 				from:		event.params.from?event.params.from:from,
 				bcc:		event.params.bcc?event.params.bcc:bcc,
@@ -116,6 +121,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		} else if ( event.type === "sms" ) {
 			// TODO
 		} else if ( event.type === "httpWebhook" ) {
+			console.log("Matching EventType", "httpWebhook");
 			var options = {
 				url: event.params.url,
 				port: event.params.port,
@@ -129,7 +135,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				function (error, response, body) {
 					var statusCode = response ? response.statusCode : null
 							body = body || null
-							console.log("Request sent - Server responded with:", statusCode)
+							console.log("Request sent - Server responded with:", statusCode);
 					
 					if ( error ) {
 						return console.error("HTTP failed: ", error, options.url, statusCode, body)
@@ -139,8 +145,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			)
 		} else if ( event.type === "Ifttt" ) {
+			console.log("Matching EventType", "Ifttt");
 			// TODO
 		} else if ( event.type === "serial" ) {
+			console.log("Matching EventType", "serial");
 			// Arduino is using CmdMessenger
 			serialport = new serialport(event.params.serialPort?event.params.serialPort:"/dev/ttyUSB0", { baudRate:event.params.baudRate?event.params.baudRate:9600 })
 			// Some examples:
@@ -149,6 +157,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			// "kSetFlow,{flow};"
 			serialport.write(event.params.serialMessage?stringformat(event.params.serialMessage, payload):stringformat("kSetLed,{payload.value};", payload));
 		} else if ( event.type === "slackMessage" ) {
+			console.log("Matching EventType", "slackMessage");
 			// TODO
 		}
 	});

@@ -781,7 +781,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
 			} else {
-				res.status(401).send(new ErrorSerializer({"id": 64.2, "code": 401, "message": "Not Authorized, you must sign and/or encrypt",}).serialize());
+				res.status(412).send(new ErrorSerializer({"id": 64.2, "code": 412, "message": "Precondition Failed "+prerequisite,}).serialize());
 			}
 		};
 	} else {
