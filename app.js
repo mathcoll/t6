@@ -30,7 +30,6 @@ global.qrCode			= require("qrcode-npm");
 global.fs				= require("fs");
 global.util				= require("util");
 global.geoip			= require("geoip-lite");
-global.device			= require("device");
 global.useragent		= require("useragent");
 global.strength			= require("strength");
 global.stringformat		= require("string-format");
