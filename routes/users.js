@@ -13,11 +13,12 @@ var accessTokens;
 /**
  * @api {get} /users/list Get Users list
  * @apiName Get Users list
- * @apiGroup 7. Admin User
+ \* @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
  * 
+ * @apiUse 200
  * @apiUse 401
  */
 router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res) {
@@ -36,11 +37,10 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
 });
 
 /**
- * @api {get} /users/accessTokens Get Key+Secret list
- * @apiName Get Key+Secret list
+ * @api {get} /users/accessTokens Get accessTokens
+ * @apiName Get accessTokens list from the user account
  * @apiGroup User
  * @apiVersion 2.0.1
- * @apiIgnore use now (#User:Get_User_active_sessions_list).
  * 
  * @apiUse Auth
  * @apiUse 201
@@ -59,34 +59,8 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (
 });
 
 /**
- * @api {get} /users/:user_id Get User
- * @apiName Get User
- * @apiGroup User
- * @apiVersion 2.0.1
- * 
- * @apiUse Auth
- * @apiParam {uuid-v4} user_id User ID
- * 
- * @apiUse 200
- * @apiUse 401
- * @apiUse 404
- * @apiUse 405
- * @apiUse 429
- * @apiUse 500
- */
-router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var user_id = req.params.user_id;
-	if ( req.user.id == user_id ) {
-		users	= db.getCollection("users");
-		res.status(200).send(new UserSerializer(users.find({"id": { "$eq": user_id }}).simplesort("expiration", true).data()).serialize());
-	} else {
-		res.status(403).send(new ErrorSerializer({"id": 16, "code": 403, "message": "Forbidden"}).serialize());
-	}
-});
-
-/**
- * @api {get} /users/me/sessions Get User active sessions list
- * @apiName Get User active sessions list
+ * @api {get} /users/me/sessions Get User active sessions JWT list
+ * @apiName Get User active sessions JWT list
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -147,6 +121,58 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req,
 		});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 10,"code": 403, "message": "Forbidden"}).serialize());
+	}
+});
+
+/**
+ * @api {get} /users/:user_id Get User
+ * @apiName Get User
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} user_id User ID
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var user_id = req.params.user_id;
+	if ( req.user.id == user_id ) {
+		users	= db.getCollection("users");
+		res.status(200).send(new UserSerializer(users.chain().find({"id": { "$eq": user_id }}).simplesort("expiration", true).data()).serialize());
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 16, "code": 403, "message": "Forbidden"}).serialize());
+	}
+});
+
+/**
+ * @api {get} /users/:user_id/token Get User Token
+ * @apiName Get User Token
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} user_id User ID
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var user_id = req.params.user_id;
+	if ( req.user.id == user_id ) {
+		users	= db.getCollection("users");
+		res.status(200).send( {token: users.findOne({"id": { "$eq": user_id }}).token} );
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 16, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -269,8 +295,8 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret}), function 
 });
 
 /**
- * @api {post} /users/token/:token Reset a password
- * @apiName Reset a password
+ * @api {post} /users/token/:token Reset a User password
+ * @apiName Reset a User password
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -332,7 +358,7 @@ router.post("/instruction", function (req, res) {
 			user.token = token;
 			users.update(user);
 			db.save();
-			
+
 			res.render("emails/forgot-password", {user: user, token: token}, function(err, html) {
 				var to = user.firstName+" "+user.lastName+" <"+user.email+">";
 				var mailOptions = {

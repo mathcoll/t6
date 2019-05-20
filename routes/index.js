@@ -289,7 +289,7 @@ function checkForTooManyFailure(req, res, email) {
 /**
  * @api {delete} /tokens/all Clean and delete all tokens
  * @apiName Clean and delete all tokens ; no restriction
- * @apiGroup 7. Admin User
+ \* @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -395,9 +395,8 @@ router.post("/authenticate", function (req, res) {
 				]
 		};
 		var accessTokens	= db.getCollection("tokens");
-		//console.log("accessTokens Q:", queryT);
 		var u = accessTokens.findOne(queryT)
-		if ( typeof u.user_id !== "undefined" ) {
+		if ( u && typeof u.user_id !== "undefined" ) {
 			var user = users.findOne({ "id": u.user_id });
 			var geo = geoip.lookup(req.ip);
 			
