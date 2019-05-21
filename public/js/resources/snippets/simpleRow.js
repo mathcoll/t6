@@ -24,7 +24,7 @@ var snippet = {
 					<i class="material-icons">widgets</i>
 					<span class="heading">${params.name}</span>
 					<span class="mdl-list__item-sub-title" id="snippet-time-${params.id}">
-						${params.time}
+						◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾
 					</span>
 				</span>
 				<span class="mdl-list__item-secondary-content">

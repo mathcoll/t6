@@ -28,7 +28,7 @@ var snippet = {
 				</span>
 				<span class='mdl-list__item-secondary-content'>
 					<span class='mdl-list__item'>
-						<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-${params.id}'>${params.time}</span>
+						<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-${params.id}'>◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</span>
 					</span>
 				</span>
 			</span>

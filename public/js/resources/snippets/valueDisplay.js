@@ -73,19 +73,19 @@ var snippet = {
 				</div>
 				<div class="mdl-list__item-secondary-content">
 					<span class="snippet-value1" id="snippet-value1-${params.id}">
-						<i class="material-icons md-48">trending_flat</i>
+						<i class="material-icons md-48">trending_flat</i> ◾◾ ◾◾
 					</span>
 					<hr style="">
 					<span class="snippet-value2" id="snippet-value2-${params.id}">
-						<i class="material-icons">trending_down</i>
+						<i class="material-icons">trending_flat</i> ◾◾ ◾◾
 					</span>
 					<hr style="">
 					<span class="snippet-value3" id="snippet-value3-${params.id}">
-						<i class="material-icons">trending_up</i>
+						<i class="material-icons">trending_flat</i> ◾◾ ◾◾
 					</span>
 				</div>
 			</div>
-			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}">${params.time}</div>
+			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}">◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</div>
 		</div>`;
 		return html;
 	},

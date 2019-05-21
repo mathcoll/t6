@@ -136,7 +136,7 @@ var snippet = {
 					</div>
 				</div>
 			</div>
-			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}"></span>
+			<div class="mdl-list__item-sub-title" id="snippet-time-${params.id}">◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</span>
 		</div>`;
 		return html;
 	},

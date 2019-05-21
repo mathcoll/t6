@@ -22,7 +22,7 @@ var snippet = {
 				<span class="mdl-list__item-primary-content">
 					<i class="material-icons">trending_up</i>
 					<span class="heading">${params.title}</span>
-					<span class="mdl-list__item-sub-title" id="snippet-time-${params.id}"></span>
+					<span class="mdl-list__item-sub-title" id="snippet-time-${params.id}">◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</span>
 				</span>
 				<span class="mdl-list__item-secondary-content">
 					<span class="mdl-list__item-sub-title mdl-chip mdl-chip__text" id="snippet-value-${params.id}"></span>
