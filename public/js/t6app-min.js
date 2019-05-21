@@ -19,19 +19,19 @@ o+="\t\t<button id='"+s[0]+"' class='back-button mdl-cell mdl-button mdl-button-
 \t\t\t\t</div>
 \t\t\t\t<div class="mdl-list__item-secondary-content">
 \t\t\t\t\t<span class="snippet-value1" id="snippet-value1-${t.id}">
-\t\t\t\t\t\t<i class="material-icons md-48">trending_flat</i>
+\t\t\t\t\t\t<i class="material-icons md-48">trending_flat</i> ◾◾ ◾◾
 \t\t\t\t\t</span>
 \t\t\t\t\t<hr style="">
 \t\t\t\t\t<span class="snippet-value2" id="snippet-value2-${t.id}">
-\t\t\t\t\t\t<i class="material-icons">trending_down</i>
+\t\t\t\t\t\t<i class="material-icons">trending_flat</i> ◾◾ ◾◾
 \t\t\t\t\t</span>
 \t\t\t\t\t<hr style="">
 \t\t\t\t\t<span class="snippet-value3" id="snippet-value3-${t.id}">
-\t\t\t\t\t\t<i class="material-icons">trending_up</i>
+\t\t\t\t\t\t<i class="material-icons">trending_flat</i> ◾◾ ◾◾
 \t\t\t\t\t</span>
 \t\t\t\t</div>
 \t\t\t</div>
-\t\t\t<div class="mdl-list__item-sub-title" id="snippet-time-${t.id}">${t.time}</div>
+\t\t\t<div class="mdl-list__item-sub-title" id="snippet-time-${t.id}">◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</div>
 \t\t</div>`}};snippet.getOptions=function(t){return t.options},app.snippetTypes.push(snippet);var snippet={name:"graphDisplay",value:"Graph DEPRECATED !!!!",options:{},activateOnce:function(t){},getHtml:function(t){}},snippet={name:"flowgraph",value:"Graph a Flow over axis",options:{width:{defaultValue:"12",value:"12",type:"select",availableValues:["4","6","8","12"]},type:{defaultValue:"top",value:"line",type:"select",availableValues:["bar","line","radar","pie","polarArea","bubble","scatter"]},color:{defaultValue:"#FF0000",type:"text",value:"#0d87b0"},legendFontColor:{defaultValue:"#FF0000",type:"text",value:"#0d87b0"},borderColor:{defaultValue:"#FF0000",type:"text",value:"#0d87b0"},backgroundColor:{defaultValue:"#FF0000",type:"text",value:"#0d87b0"},pointBackgroundColor:{defaultValue:"#FF0000",type:"text",value:"#0d87b0"},limit:{defaultValue:15,value:50,type:"integer"},fill:{defaultValue:!1,value:!1,type:"switch",availableValues:[!0,!1]},showLine:{defaultValue:!1,value:!0,type:"switch",availableValues:[!0,!1]},steppedLine:{defaultValue:!1,value:!1,type:"select",availableValues:[!0,!1,"before","after"]},titleDisplay:{defaultValue:!1,value:!1,type:"switch",availableValues:[!0,!1]},titleFontSize:{defaultValue:28,value:28,type:"integer"},titleFontFamily:{defaultValue:"Helvetica",value:"Helvetica",type:"select",availableValues:["Helvetica","Helvetica Neue","Arial","sans-serif"]},legend:{defaultValue:"top",value:"bottom",type:"select",availableValues:[!0,!1,"top","bottom"]},legendPosition:{defaultValue:!1,value:"bottom",type:"select",availableValues:["top","bottom","left","right"]},legendDisplay:{defaultValue:!1,value:!1,type:"switch",availableValues:[!0,!1]}},activateOnce:function(t){this.options.width.value=null!==this.options.width.value?this.options.width.value:this.options.width.defaultValue,document.getElementById(t.id).parentNode.classList.add("mdl-cell--"+this.options.width.value+"-col");var e=new Headers;e.append("Authorization","Bearer "+localStorage.getItem("bearer")),e.append("Content-Type","application/json");var a={method:"GET",headers:e},i=this.getOptions(this),n=i.limit&&void 0!==i.limit.value?i.limit.value:5,o=app.baseUrl+"/"+app.api_version+"/data/"+t.attributes.flows[0]+"?sort=desc&limit="+n;fetch(o,a).then(app.fetchStatusHandler).then(function(t){return t.json()}).then(function(e){var a=document.getElementById("chart-"+t.id).getContext("2d"),n=[];e.data.forEach(function(t){n.push({x:new Date(t.attributes.timestamp),y:t.attributes.value})});var o=i.type&&void 0!==i.type.value?i.type.value:"line",s=" ("+sprintf(void 0!==e.links.unit?e.links.unit:"","")+")",l={datasets:[{label:void 0!==t.flowNames?t.flowNames[0]:"",backgroundColor:i.backgroundColor&&void 0!==i.backgroundColor.value?i.backgroundColor.value:"rgb(255, 99, 132)",borderColor:i.borderColor&&void 0!==i.borderColor.value?i.borderColor.value:"rgb(255, 99, 132)",fill:!(!i.fill||void 0===i.fill.value)&&i.fill.value,showLine:!(!i.showLine||void 0===i.showLine.value)&&i.showLine.value,steppedLine:!(!i.steppedLine||void 0===i.steppedLine.value)&&i.steppedLine.value,pointBackgroundColor:i.pointBackgroundColor&&void 0!==i.pointBackgroundColor.value?i.pointBackgroundColor.value:"rgb(255, 99, 132)",data:n}]},r={title:{display:!i.titleDisplay||void 0===i.titleDisplay.value||i.titleDisplay.value,text:"Snippet Title",fontSize:i.titleFontSize&&void 0!==i.titleFontSize.value?i.titleFontSize.value:28,fontFamily:i.titleFontFamily&&void 0!==i.titleFontFamily.value?i.titleFontFamily.value:"Helvetica"},legend:{display:!i.legendDisplay||void 0===i.legendDisplay.value||i.legendDisplay.value,position:i.legendPosition&&void 0!==i.legendPosition.value?i.legendPosition.value:"bottom",labels:{fontColor:i.legendFontColor&&void 0!==i.legendFontColor.value?i.legendFontColor.value:"rgb(255, 99, 132)"}},tooltips:{enable:!1},scales:{xAxes:[{type:"time",time:{unit:"hour"},ticks:{source:"auto"}}]},maintainAspectRatio:!1,responsive:!0,animation:{duration:0}};document.getElementById("chart-"+t.id).height=250;var d=(new Chart(a,{type:o,data:l,options:r}),e.data[0].attributes.id,e.data[0].attributes.time);e.data[0].attributes.value,e.links.ttl;document.getElementById("unit-"+t.id).innerHTML=s,setInterval(function(){app.refreshFromNow("snippet-time-"+t.id,d,!0)},6e3)}).catch(function(t){"true"==localStorage.getItem("settings.debug")&&toast("getSnippet Inside error..."+t,{timeout:3e3,type:"error"})})},getHtml:function(t){return t||(t={}),t.unit,`
 \t\t<div id="${t.id}" class="flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp">
 \t\t\t<div class="contextual">
@@ -50,7 +50,7 @@ o+="\t\t<button id='"+s[0]+"' class='back-button mdl-cell mdl-button mdl-button-
 \t\t\t\t\t</div>
 \t\t\t\t</div>
 \t\t\t</div>
-\t\t\t<div class="mdl-list__item-sub-title" id="snippet-time-${t.id}"></span>
+\t\t\t<div class="mdl-list__item-sub-title" id="snippet-time-${t.id}">◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</span>
 \t\t</div>`}};snippet.getOptions=function(t){return t.options},app.snippetTypes.push(snippet);var snippet={name:"simpleclock",value:"Realtime clock",options:{width:{defaultValue:"12",value:"12",type:"select",availableValues:["4","6","8","12"]},color:{defaultValue:"#FF0000",type:"text"},legend:{defaultValue:"top",type:"select",availableValues:[!0,!1,"top","bottom"]}},activateOnce:function(t){this.options.width.value=null!==this.options.width.value?this.options.width.value:this.options.width.defaultValue,document.getElementById(t.id).parentNode.classList.add("mdl-cell--"+this.options.width.value+"-col"),setInterval(function(){app.refreshFromNow("snippet-clock-"+t.id,moment(),null)},1e3)},getHtml:function(t){return t||(t={}),t.time=moment().format(app.date_format),`
 \t\t<div id="${t.id}" class="clock tile card-simpleclock material-animate margin-top-4 material-animated">
 \t\t\t<span class='mdl-list__item mdl-list__item--two-line'>
@@ -61,7 +61,7 @@ o+="\t\t<button id='"+s[0]+"' class='back-button mdl-cell mdl-button mdl-button-
 \t\t\t\t</span>
 \t\t\t\t<span class='mdl-list__item-secondary-content'>
 \t\t\t\t\t<span class='mdl-list__item'>
-\t\t\t\t\t\t<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-${t.id}'>${t.time}</span>
+\t\t\t\t\t\t<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text' id='snippet-clock-${t.id}'>◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</span>
 \t\t\t\t\t</span>
 \t\t\t\t</span>
 \t\t\t</span>
@@ -72,7 +72,7 @@ o+="\t\t<button id='"+s[0]+"' class='back-button mdl-cell mdl-button mdl-button-
 \t\t\t\t\t<i class="material-icons">widgets</i>
 \t\t\t\t\t<span class="heading">${t.name}</span>
 \t\t\t\t\t<span class="mdl-list__item-sub-title" id="snippet-time-${t.id}">
-\t\t\t\t\t\t${t.time}
+\t\t\t\t\t\t◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾
 \t\t\t\t\t</span>
 \t\t\t\t</span>
 \t\t\t\t<span class="mdl-list__item-secondary-content">
@@ -107,7 +107,7 @@ o+="\t\t<button id='"+s[0]+"' class='back-button mdl-cell mdl-button mdl-button-
 \t\t\t\t<span class="mdl-list__item-primary-content">
 \t\t\t\t\t<i class="material-icons">trending_up</i>
 \t\t\t\t\t<span class="heading">${t.title}</span>
-\t\t\t\t\t<span class="mdl-list__item-sub-title" id="snippet-time-${t.id}"></span>
+\t\t\t\t\t<span class="mdl-list__item-sub-title" id="snippet-time-${t.id}">◾◾/◾◾/◾◾◾◾ ◾◾:◾◾:◾◾</span>
 \t\t\t\t</span>
 \t\t\t\t<span class="mdl-list__item-secondary-content">
 \t\t\t\t\t<span class="mdl-list__item-sub-title mdl-chip mdl-chip__text" id="snippet-value-${t.id}"></span>

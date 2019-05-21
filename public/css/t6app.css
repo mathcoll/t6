@@ -54,6 +54,39 @@ html {
 a {
 	text-decoration: none;
 }
+
+/* Home - Hall of fame */
+#hof {
+	background-color: rgba(122, 103, 96, 0.36);
+	color: white;
+}
+#hof-container h1 {
+	font-weight: 500;
+	font-size: 35px;
+	position: relative;
+	font-variant: normal;
+}
+}
+#hof-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	padding-bottom: 20px;
+	color: white;
+	font-size: 16px;
+}
+#hof-container #illustration-container {
+	max-width: 60%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	padding-left: 10px;
+}
+#hof-container #illustration-container img {
+	max-width: 100%;
+	object-fit: scale-down;
+}
+/* end Home */
 .mdl-button a {
 	color: rgb(43, 51, 87);
 }
@@ -378,25 +411,42 @@ div.valuedisplay .snippet-unit {
 	vertical-align: super;
 }
 div.mdl-list__item-primary-content span.heading {
-	/*width: calc(100% - 24px);
 	float: right;*/
 	display: inline;
 	overflow: auto;
 	white-space: nowrap;
 }
-
 @media only screen and (min-device-width: 801px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		/*width: 80%;*/
 		display: inline-block;
+	}
+	#hof-container {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		padding-bottom: 20px;
+		color: white;
+		font-size: 16px;
+	}
+	#hof-container #illustration-container {
+		max-width: 60%;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding-left: 10px;
 	}
 }
 @media only screen and (min-device-width: 481px) and (max-device-width: 800px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		/*width: 70%;*/
 		display: inline-block;
+	}
+	#hof-container {
+		display: block;
+	}
+	#hof-container #illustration-container {
+		max-width: 100%;
 	}
 }
 @media only screen and (min-device-width: 351px) and (max-device-width: 480px) {
@@ -413,21 +463,30 @@ div.mdl-list__item-primary-content span.heading {
 	}
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		/*width: 70%;*/
 		display: inline-block;
+	}
+	#hof-container {
+		display: block;
+	}
+	#hof-container #illustration-container {
+		max-width: 100%;
 	}
 }
 @media screen and (max-width: 350px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
-		/*width: 50%;*/
 		display: inline-block;
+	}
+	#hof-container {
+		display: block;
+	}
+	#hof-container #illustration-container {
+		max-width: 100%;
 	}
 }
 div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 	width: 100%;
 }
-
 /* End Snippets */
 
 
