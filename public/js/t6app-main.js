@@ -2686,6 +2686,13 @@ var touchStartPoint, touchMovePoint;
 	app.authenticate = function() {
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
+		app.auth.pushSubscription = {
+			endpoint: app.getSetting('settings.pushSubscription.endpoint'),
+			keys: {
+				auth: app.getSetting('settings.pushSubscription.keys.auth'),
+				p256dh: app.getSetting('settings.pushSubscription.keys.p256dh')
+			}
+		};
 		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(app.auth) };
 		var url = app.baseUrl+"/"+app.api_version+"/authenticate";
 		

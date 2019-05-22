@@ -34,6 +34,7 @@ global.useragent		= require("useragent");
 global.strength			= require("strength");
 global.stringformat		= require("string-format");
 global.serialport		= require("serialport");
+global.webpush			= require("web-push");
 
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
@@ -41,6 +42,7 @@ global.t6decisionrules	= require("./t6decisionrules");
 global.t6mqtt			= require("./t6mqtt");
 global.t6mailer			= require("./t6mailer");
 global.t6events			= require("./t6events");
+global.t6notifications	= require("./t6notifications");
 global.t6events.setMeasurement("events");
 global.t6events.setRP("autogen");
 global.algorithm		= "aes-256-cbc";

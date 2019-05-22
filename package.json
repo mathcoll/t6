@@ -59,7 +59,8 @@
     "strength": "^0.1.4",
     "string-format": "^2.0.0",
     "suncalc": "^1.8.0",
-    "useragent": "^2.3.0"
+    "useragent": "^2.3.0",
+    "web-push": "^3.3.5"
   },
   "readmeFilename": "README.md",
   "devDependencies": {

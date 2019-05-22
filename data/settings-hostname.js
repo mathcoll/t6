@@ -67,3 +67,14 @@ quota = {
 
 /* Localization settings */
 localization = {latitude: 39.800327, longitude: 6.343530};
+
+/* pushSubscription */
+pushSubscriptionOptions = {
+	gcmAPIKey: "",
+	vapidDetails: {
+		subject: "mailto:",
+		publicKey: "",
+		privateKey: ""
+	},
+	TTL: 3600
+};

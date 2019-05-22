@@ -12,7 +12,7 @@ var tokens;
 /**
  * @api {get} /notifications/debug/:mail Get html of email
  * @apiName Get html of email
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * @apiHeader {String} [Content-Type] text/html
  * @apiUse AuthAdmin
@@ -36,7 +36,7 @@ router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret}), function(re
 /**
  * @api {get} /notifications/list/unsubscribed Get list of unsubscribed notifications
  * @apiName Get list of unsubscribed notifications
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -57,7 +57,7 @@ router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret}), funct
 /**
  * @api {get} /notifications/mail/reminder Send reminder Email to Users
  * @apiName Send reminder Email to Users
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -129,7 +129,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret}), function 
 /**
  * @api {get} /notifications/mail/changePassword Send Password Expiration Email to Users
  * @apiName Send Password Expiration Email to Users
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -206,7 +206,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 /**
  * @api {get} /notifications/mail/newsletter Send newsletter to subscribers
  * @apiName Send Password Expiration Email to Users
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -277,7 +277,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 /**
  * @api {post} /notifications/resetAllUsersTokens Reset tokens for all users
  * @apiName Reset tokens for all users
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

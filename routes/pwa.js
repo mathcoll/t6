@@ -29,7 +29,7 @@ router.get("/networkError", function(req, res) {
 /**
  * @api {get} /mail/:mail/unsubscribe/:list/:unsubscription_token/ Unsubscribe from a Notification list
  * @apiName Unsubscribe from a Notification list
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -73,7 +73,7 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 /**
  * @api {get} /mail/:mail/subscribe/:list/:unsubscription_token/ Subscribe from a Notification list
  * @apiName Subscribe from a Notification list
- * @apiGroup 8. Notifications Email
+ * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

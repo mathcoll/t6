@@ -10,6 +10,40 @@ var users;
 var tokens;
 var accessTokens;
 
+
+/**
+ * @api {get} /users/newcomers Get the list of 20 latest user Account created
+ * @apiName Get the list of 20 latest user Account created
+ * @apiGroup 8. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 201
+ * @apiUse 403
+ */
+router.get("/newcomers", function (req, res) {
+	if ( req.user.role === "admin" ) {
+		var query = squel.select()
+		.from("events")
+		.where("what=?", "user add")
+		.limit(20)
+		.order("time", false)
+		;
+		query.field("who");
+		dbInfluxDB.query(query.toString()).then(data => {
+			users	= db.getCollection("users");
+			data.map(function(u) {
+				u.email = users.findOne({"id": { "$eq": u.who }}).email;
+			});
+			res.status(200).send(data);
+		}).catch(err => {
+			res.status(500).send({query: query, err: err, "id": 19.1, "code": 500, "message": "Internal Error"});
+		});
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 19.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
+	}
+});
 /**
  * @api {get} /users/list Get Users list
  * @apiName Get Users list

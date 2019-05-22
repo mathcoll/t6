@@ -5,6 +5,12 @@ var ErrorSerializer = require("../serializers/error");
 var tokens;
 var users;
 
+var timeoutNotification;
+function sendNotification(pushSubscription, payload) {
+	t6notifications.sendPush(pushSubscription, payload);
+	clearTimeout(timeoutNotification);
+}
+
 /**
  * @apiDefine 200
  * @apiSuccess 200 Success
@@ -329,6 +335,7 @@ router.delete("/tokens/all", function (req, res) {
  */
 router.post("/authenticate", function (req, res) {
 	tokens	= dbTokens.getCollection("tokens");
+	var pushSubscription = req.body.pushSubscription;
 	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === "password") ) {
 		var email = req.body.username;
 		var password = req.body.password;
@@ -343,7 +350,13 @@ router.post("/authenticate", function (req, res) {
 				}
 				users.update(user);
 				db.save();
-				
+
+				/* pushSubscription */
+				if ( typeof pushSubscription !== "undefined" ) {
+					var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null}"
+					timeoutNotification = setTimeout(sendNotification, 5000, pushSubscription, payload);
+				}
+
 				var payload = JSON.parse(JSON.stringify(user));
 				payload.unsubscription = user.unsubscription;
 				payload.permissions = undefined;
@@ -405,7 +418,7 @@ router.post("/authenticate", function (req, res) {
 			}
 			users.update(user);
 			db.save();
-			
+
 			var payload = JSON.parse(JSON.stringify(user));
 			payload.permissions = undefined;
 			payload.token = undefined;
@@ -465,7 +478,7 @@ router.post("/authenticate", function (req, res) {
 			}
 			users.update(user);
 			db.save();
-			
+
 			var payload = JSON.parse(JSON.stringify(user));
 			payload.permissions = undefined;
 			payload.token = undefined;
