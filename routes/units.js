@@ -40,7 +40,7 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
 /**
  * @api {post} /units Create a Unit
  * @apiName Create a Unit
- \* @apiGroup 7. Administration
+ * @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -75,7 +75,7 @@ router.post("/", bearerAdmin, function (req, res) {
 /**
  * @api {put} /units/:unit_id Edit a Unit
  * @apiName Edit a Unit
- \* @apiGroup 7. Administration
+ * @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -115,7 +115,7 @@ router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 /**
  * @api {delete} /units/:unit_id Delete a Unit
  * @apiName Delete a Unit
- \* @apiGroup 7. Administration
+ * @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

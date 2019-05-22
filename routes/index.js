@@ -295,7 +295,7 @@ function checkForTooManyFailure(req, res, email) {
 /**
  * @api {delete} /tokens/all Clean and delete all tokens
  * @apiName Clean and delete all tokens ; no restriction
- \* @apiGroup 7. Administration
+ * @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
