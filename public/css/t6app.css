@@ -57,22 +57,27 @@ a {
 
 /* Home - Hall of fame */
 #hof {
-	background-color: rgba(122, 103, 96, 0.36);
-	color: white;
+	background-color: rgba(122, 103, 96, 0.35);
+	box-shadow: 0 12px 12px 0 rgba(0,0,0,.2),0 5px 5px 0px rgba(0,0,0,.2),0 5px 5px 0 rgba(0,0,0,.2);
+	color: black;
 }
 #hof-container h1 {
 	font-weight: 500;
 	font-size: 35px;
 	position: relative;
 	font-variant: normal;
+	line-height: 42px;
+	text-shadow: 2px 2px rgba(121, 85, 72, 0.3);
 }
 #hof-container {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	padding-bottom: 20px;
-	color: white;
-	font-size: 16px;
+}
+#hof-container p.sep {
+	width: 15px;
+	margin: 20px auto 20px auto;
 }
 #hof-container #illustration-container {
 	max-width: 60%;
@@ -424,8 +429,6 @@ div.mdl-list__item-primary-content span.heading {
 		flex-direction: row;
 		justify-content: space-between;
 		padding-bottom: 20px;
-		color: white;
-		font-size: 16px;
 	}
 	#hof-container #illustration-container {
 		max-width: 60%;

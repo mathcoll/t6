@@ -176,9 +176,20 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
             .container(style='width: 80%;margin: 0 auto;padding-top: 10px;padding-bottom: 10px;')
               #hof-container.content
                 #description-container
-                  h1.mdl-subheader-content Connect physical Objects with timeseries database
+                  h1.mdl-subheader-content Connect 
+                    i physical Objects* 
+                    | to 
+                    i timeseries db*
+                  p.sep &mdash;
                   p Objects collect data from Sensors and POST them to t6 using the encrypted + signed payload.
                   p Do any actions you need, once facts match conditions (Email, Mqtt, webhook notification...) &mdash; rule based events.
+                  p.sep &mdash;
+                  span
+                    quote 
+                      i *Objects: sensors, chipsets, devices...
+                  span
+                    quote 
+                      i *db: database
                 #illustration-container
                   img(src=baseUrlCdn + '/img/m/t6.png')
           .mdl-grid.mdl-cell--12-col
