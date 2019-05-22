@@ -411,7 +411,6 @@ div.valuedisplay .snippet-unit {
 	vertical-align: super;
 }
 div.mdl-list__item-primary-content span.heading {
-	float: right;*/
 	display: inline;
 	overflow: auto;
 	white-space: nowrap;
