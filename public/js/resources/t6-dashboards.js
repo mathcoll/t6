@@ -9,7 +9,7 @@ app.resources.dashboards = {
 			var body = {
 				name: myForm.querySelector("input[name='Name']").value,
 				description: myForm.querySelector("textarea[name='Description']").value,
-				snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem('snippets')))[snippet.getAttribute('data-id')]).id; }),
+				snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem("snippets")))[snippet.getAttribute("data-id")]).id; }),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 			if ( localStorage.getItem("settings.debug") == "true" ) {
@@ -289,24 +289,24 @@ app.resources.dashboards = {
 		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 		node += "</section>";
 
-		(app.containers.dashboard_add).querySelector('.page-content').innerHTML = node;
+		(app.containers.dashboard_add).querySelector(".page-content").innerHTML = node;
 		componentHandler.upgradeDom();
-		document.getElementById('snippetsChipsSelect').parentNode.querySelector('div.mdl-selectfield__list-option-box ul').addEventListener('click', function(evt) {
-			var id = evt.target.getAttribute('data-value');
+		document.getElementById("snippetsChipsSelect").parentNode.querySelector("div.mdl-selectfield__list-option-box ul").addEventListener("click", function(evt) {
+			var id = evt.target.getAttribute("data-value");
 			var n=0;
-			var s = JSON.parse(localStorage.getItem('snippets')).find(function(snippet) {
+			var s = JSON.parse(localStorage.getItem("snippets")).find(function(snippet) {
 				if ( n == id ) return snippet;
 			else n++;
 			});
 			var sType = s.sType;
 			var name = evt.target.innerText;
-			app.addChipSnippetTo('snippetsChips', {name: name, id: id, sType: sType, type: 'snippets'});
+			app.addChipSnippetTo("snippetsChips", {name: name, id: id, sType: sType, type: "snippets"});
 			evt.preventDefault();
 		}, false);
 		
 		app.refreshButtonsSelectors();
-		app.buttons.addDashboardBack.addEventListener('click', function(evt) { app.setSection('dashboards'); evt.preventDefault(); }, false);
-		app.buttons.addDashboard.addEventListener('click', function(evt) { app.resources.dashboards.onAdd(evt); }, false);
+		app.buttons.addDashboardBack.addEventListener("click", function(evt) { app.setSection("dashboards"); evt.preventDefault(); }, false);
+		app.buttons.addDashboard.addEventListener("click", function(evt) { app.resources.dashboards.onAdd(evt); }, false);
 
 		app.setExpandAction();
 	},
@@ -323,7 +323,7 @@ app.resources.dashboards = {
 		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
 		element += "		</div>";
-		element += app.getField(null, null, description, {type: 'textarea', isEdit: false});
+		element += app.getField(null, null, description, {type: "textarea", isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		element += "			<span class=\"pull-left mdl-card__date\">";
 		element += "				<button data-id=\""+dashboard.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";

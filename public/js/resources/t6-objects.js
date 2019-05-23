@@ -10,14 +10,14 @@ app.resources.objects = {
 				type: myForm.querySelector("select[name='Type']").value,
 				name: myForm.querySelector("input[name='Name']").value,
 				description: myForm.querySelector("textarea[name='Description']").value,
-				position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
-				longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
-				latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
-				ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
-				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
-				secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
-				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
-				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?'true':'false',
+				position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:"",
+				longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:"",
+				latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:"",
+				ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:"",
+				ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:"",
+				secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:"",
+				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:"",
+				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
@@ -60,14 +60,14 @@ app.resources.objects = {
 			type: myForm.querySelector("select[name='Type']").value,
 			name: myForm.querySelector("input[name='Name']").value,
 			description: myForm.querySelector("textarea[name='Description']").value,
-			position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:'',
-			longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:'',
-			latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:'',
-			ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:'',
-			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:'',
-			secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:'',
-			secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:'',
-			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?'true':'false',
+			position: myForm.querySelector("input[name='Position']")!==null?myForm.querySelector("input[name='Position']").value:"",
+			longitude: myForm.querySelector("input[name='Longitude']")!==null?myForm.querySelector("input[name='Longitude']").value:"",
+			latitude: myForm.querySelector("input[name='Latitude']")!==null?myForm.querySelector("input[name='Latitude']").value:"",
+			ipv4: myForm.querySelector("input[name='IPv4']")!==null?myForm.querySelector("input[name='IPv4']").value:"",
+			ipv6: myForm.querySelector("input[name='IPv6']")!==null?myForm.querySelector("input[name='IPv6']").value:"",
+			secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:"",
+			secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:"",
+			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 		};
 
 		var myHeaders = new Headers();
@@ -194,11 +194,11 @@ app.resources.objects = {
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.secret_key || isEdit===true ) {
-					node += app.getField('verified_user', 'Secret Key in symmetric signature', object.attributes.secret_key!==undefined?object.attributes.secret_key:'', {type: 'text', id: 'secret_key', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key, error:''});
-					node += app.getField('', '', 'When flow require signed payload, you should provide your secret to verify signature.', {type: 'text', isEdit: false});
+					node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", id: "secret_key", style:"text-transform: none !important;", isEdit: isEdit, pattern: app.patterns.secret_key, error:""});
+					node += app.getField("", "", "When flow require signed payload, you should provide your secret to verify signature.", {type: "text", isEdit: false});
 				}
 				if ( object.attributes.secret_key_crypt || isEdit===true ) {
-					node += app.getField('vpn_key', 'Secret Key in symmetric cryptography', object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:'', {type: 'text', id: 'secret_key_crypt', style:'text-transform: none !important;', isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:'This must be a 64 hexadecimal chars length A-F & 0-9'});
+					node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:"This must be a 64 hexadecimal chars length A-F & 0-9"});
 				}
 				if ( object.attributes.is_public == "true" && isEdit===false ) {
 					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
@@ -227,10 +227,10 @@ app.resources.objects = {
 					node += app.getSubtitle('Localization');
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += app.getField('place', 'Longitude', object.attributes.longitude, {type: 'text', id: 'Longitude', isEdit: isEdit, pattern: app.patterns.longitude, error:'Longitude should be valid.'});
-					node += app.getField('place', 'Latitude', object.attributes.latitude, {type: 'text', id: 'Latitude', isEdit: isEdit, pattern: app.patterns.latitude, error:'Latitude should be valid.'});
-					node += app.getField('pin_drop', 'Position', object.attributes.position, {type: 'text', id: 'Position', isEdit: isEdit, pattern: app.patterns.position, error:'Should not be longer than 255 chars.'});
-					node += app.getMap('my_location', 'osm', object.attributes.longitude, object.attributes.latitude, false, false, false);
+					node += app.getField("place", "Longitude", object.attributes.longitude, {type: "text", id: "Longitude", isEdit: isEdit, pattern: app.patterns.longitude, error:"Longitude should be valid."});
+					node += app.getField("place", "Latitude", object.attributes.latitude, {type: "text", id: "Latitude", isEdit: isEdit, pattern: app.patterns.latitude, error:"Latitude should be valid."});
+					node += app.getField("pin_drop", "Position", object.attributes.position, {type: "text", id: "Position", isEdit: isEdit, pattern: app.patterns.position, error:"Should not be longer than 255 chars."});
+					node += app.getMap("my_location", "osm", object.attributes.longitude, object.attributes.latitude, false, false, false);
 					node += "	</div>";
 					node += "</section>";
 				}
@@ -283,7 +283,7 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				(app.containers.object).querySelector('.page-content').innerHTML = node;
+				(app.containers.object).querySelector(".page-content").innerHTML = node;
 				componentHandler.upgradeDom();
 				
 				app.refreshButtonsSelectors();
@@ -303,13 +303,13 @@ app.resources.objects = {
 					// buttons.deleteObject2.addEventListener("click",
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
-					app.buttons.editObject2.addEventListener('click', function(evt) { app.resources.objects.display(object.id, false, true, false); evt.preventDefault(); }, false);
+					app.buttons.editObject2.addEventListener("click", function(evt) { app.resources.objects.display(object.id, false, true, false); evt.preventDefault(); }, false);
 				}
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					/* Localization Map */
 					var iconFeature = new ol.Feature({
-						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], 'EPSG:4326', 'EPSG:3857')),
+						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], "EPSG:4326", "EPSG:3857")),
 						name: object.attributes.name,
 						position: object.attributes.position,
 					});

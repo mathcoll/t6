@@ -105,7 +105,7 @@ app.resources.snippets = {
 		evt.preventDefault();
 	},
 	onDelete: function(snippet_id) {
-		var snippetsList = JSON.parse(localStorage.getItem('snippets'));
+		var snippetsList = JSON.parse(localStorage.getItem("snippets"));
 		app.snippets = [];
 		snippetsList.filter(function(sn) {
 			if( sn.id != snippet_id ) {

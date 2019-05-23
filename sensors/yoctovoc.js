@@ -1,14 +1,14 @@
 #!/usr/bin/env nodejs
 
 "use strict";
-var exec		= require('exec');
-var moment		= require('moment');
-var request		= require('request');
-var yoctolib	= require('yoctolib');
+var exec		= require("exec");
+var moment		= require("moment");
+var request		= require("request");
+var yoctolib	= require("yoctolib");
 var YAPI = yoctolib.YAPI;
 var YVoc = yoctolib.YVoc;
 
-var res =YAPI.RegisterHub('http://192.168.0.22:4444/'); //127.0.0.1
+var res =YAPI.RegisterHub("http://192.168.0.22:4444/"); //127.0.0.1
 var sensor;
 if(process.argv.length < 3 ||  process.argv[2]=="any" ) {
     sensor  = YVoc.FirstVoc();   

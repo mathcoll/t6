@@ -13,8 +13,8 @@ app.resources.flows = {
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 				data_type: myForm.querySelector("select[name='DataType']").value,
 				unit: myForm.querySelector("select[name='Unit']").value,
-				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?'true':'false',
-				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?'true':'false',
+				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?"true":"false",
+				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 
@@ -67,8 +67,8 @@ app.resources.flows = {
 			mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 			data_type: myForm.querySelector("select[name='DataType']").value,
 			unit: myForm.querySelector("select[name='Unit']").value,
-			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?'true':'false',
-			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?'true':'false',
+			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?"true":"false",
+			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 		};
 		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log("DEBUG onAddFlow", JSON.stringify(body));
@@ -195,8 +195,8 @@ app.resources.flows = {
 					//var description = flow.attributes.description!==undefined?app.nl2br(flow.attributes.description):"";
 					//node += app.getField(app.icons.description, "Description", description, {type: "text", id: "Description", isEdit: isEdit});
 					node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic!==undefined?flow.attributes.mqtt_topic:"", {type: "text", id: "MQTTTopic", isEdit: isEdit});
-					node += app.getField(app.icons.units, 'Unit', flow.attributes.unit, {type: 'select', id: 'Unit', isEdit: true, options: allUnits });
-					node += app.getField(app.icons.datatypes, 'DataType', flow.attributes.data_type, {type: 'select', id: 'DataType', isEdit: true, options: allDatatypes });
+					node += app.getField(app.icons.units, "Unit", flow.attributes.unit, {type: "select", id: "Unit", isEdit: true, options: allUnits });
+					node += app.getField(app.icons.datatypes, "DataType", flow.attributes.data_type, {type: "select", id: "DataType", isEdit: true, options: allDatatypes });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "edit_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
 					node += "	</div>";

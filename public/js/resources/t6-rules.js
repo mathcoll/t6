@@ -6,7 +6,7 @@ app.resources.rules = {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
 			name: myForm.querySelector("input[name='Name']").value,
-			active: !myForm.querySelector("input[id='switch-active']").parentNode.classList.contains('is-checked')?false:true,
+			active: !myForm.querySelector("input[id='switch-active']").parentNode.classList.contains("is-checked")?false:true,
 			rule: {
 				priority: myForm.querySelector("input[name='Priority']").value,
 				conditions: JSON.parse(myForm.querySelector("textarea[name='Event Conditions']").value),
