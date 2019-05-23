@@ -207,9 +207,9 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					data.limit = limit;
 					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
 					
-					if (output == "json") {
+					if (output === "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output == "svg") {
+					} else if(output === "svg") {
 						res.status(404).send("SVG Not Implemented with influxDB");
 					};
 				} else {
@@ -267,9 +267,9 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					data.timestamp = moment(data.timestamp).format("x");
 					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
 					
-					if (output == "json") {
+					if (output === "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output == "svg") {
+					} else if(output === "svg") {
 						var D3Node = require("d3-node");
 						var d3 = require("d3");
 						data.reverse();
@@ -278,8 +278,8 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 						
 						var chartWidth = 800, chartHeight = 400;
 						var margin = {top: 10, right: 10, bottom: 10, left: 100},
-						    width = chartWidth - margin.left - margin.right,
-						    height = chartHeight - margin.top - margin.bottom;
+							width = chartWidth - margin.left - margin.right,
+							height = chartHeight - margin.top - margin.bottom;
 
 						var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
 						var y = d3.scale.linear().range([height, 0]);
@@ -400,7 +400,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 	} else {
 		var limit = 1;
 		var page = 1;
-		var sorting = req.query.order=="asc"?true:false;
+		var sorting = req.query.order==="asc"?true:false;
 		
 		flows	= db.getCollection("flows");
 		units	= db.getCollection("units");
@@ -488,9 +488,9 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 					data.id = data_id;
 					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
 					
-					if (output == "json") {
+					if (output === "json") {
 						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output == "svg") {
+					} else if(output === "svg") {
 						res.status(404).send("SVG Not Implemented with influxDB");
 					};
 				} else {
@@ -510,7 +510,9 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 				.toString();
 
 			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
+				if (err) {
+					console.log(err);
+				}
 				//data.id = moment(data.timestamp).format("x"); //BUG
 				data.flow_id = flow_id;
 				data.page = page;
@@ -578,7 +580,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		objects	= db.getCollection("objects");
 
 		var query;
-		if ( typeof object_id !== "undefine" ) {
+		if ( typeof object_id !== "undefined" ) {
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
