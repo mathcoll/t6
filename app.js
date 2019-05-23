@@ -249,7 +249,7 @@ mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split("objects/status/")[1];
 	let stat = message.toString();
 	console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("Object Status Changed: %s is %s", object, stat==="1"?"connected":"disconnected"), "("+message+")");
-	if ( stat === "1" ) {
+	if ( stat === "1" && t6ConnectedObjects.indexOf(object)<0 ) {
 		t6ConnectedObjects.push(object);
 	} else {
 		let i = t6ConnectedObjects.indexOf(object);
