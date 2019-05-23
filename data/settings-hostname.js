@@ -35,7 +35,6 @@ logAccessFile		= "/var/log/node/t6-access.log";
 logErrorFile		= "/var/log/node/t6-error.log";
 
 /* Email settings */
-nodemailer			= require("nodemailer");
 from				= "t6 <contact@domain.tld>"; // The Sender email address
 bcc					= "t6 <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
 mailhost			= "my_smtp.domain.tld"; // Your Smtp server
@@ -51,7 +50,7 @@ transporter = nodemailer.createTransport({
 	}
 });
 /* Database settings - Storage */
-db_type				= {
+db_type	= {
 	influxdb: true,
 	sqlite3: true,
 };

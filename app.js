@@ -35,6 +35,7 @@ global.strength			= require("strength");
 global.stringformat		= require("string-format");
 global.serialport		= require("serialport");
 global.webpush			= require("web-push");
+global.nodemailer		= require("nodemailer");
 
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
