@@ -35,8 +35,8 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 });
 
 /**
- * @api {post} /datatypes Create DataType
- * @apiName Create DataType
+ * @api {post} /datatypes Add DataType
+ * @apiName Add DataType
  * @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -56,7 +56,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 		datatypes.insert(newDatatype);
 		
 		res.header("Location", "/v"+version+"/datatypes/"+newDatatype.id);
-		res.status(201).send(new ErrorSerializer({ "code": 201, message: "Created", datatype: new DataTypeSerializer(newDatatype).serialize() }).serialize());
+		res.status(201).send({ "code": 201, message: "Created", unit: new DataTypeSerializer(newDatatype).serialize() }, 201);
 	} else {
 		res.status(401).send(new ErrorSerializer({"id": 49, "code": 401, "message": "Unauthorized"}).serialize());
 	}
@@ -90,7 +90,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}
 		db.save();
 		
 		res.header("Location", "/v"+version+"/datatypes/"+datatype_id);
-		res.status(200).send(new ErrorSerializer({ "code": 200, message: "Successfully updated", datatype: new DataTypeSerializer(result).serialize() }).serialize());
+		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new DataTypeSerializer(result).serialize() });
 	} else {
 		res.status(401).send(new ErrorSerializer({"id": 50, "code": 401, "message": "Unauthorized"}).serialize());
 	}
@@ -117,7 +117,7 @@ router.delete("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secr
 		if (d) {
 			datatypes.remove(d);
 			db.save();
-			res.status(200).send(new ErrorSerializer({ "code": 200, message: "Successfully deleted", removed_id: datatype_id }).serialize());
+			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: datatype_id }); // TODO: missing serializer
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 51, "code": 404, "message": "Not Found"}).serialize());
 		}

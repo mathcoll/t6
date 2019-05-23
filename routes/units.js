@@ -38,8 +38,8 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
 });
 
 /**
- * @api {post} /units Create a Unit
- * @apiName Create a Unit
+ * @api {post} /units Add a Unit
+ * @apiName Add a Unit
  * @apiGroup 7. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -52,10 +52,9 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
  * @apiUse 201
  * @apiUse 401
  */
-router.post("/", bearerAdmin, function (req, res) {
-	if ( req.token ) {
+router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role == "admin" ) {
 		units	= db.getCollection("units");
-		//console.log(units);
 		var new_unit = {
 			id: uuid.v4(),
 			name:	typeof req.body.name!=="undefined"?req.body.name:"unamed",
@@ -63,8 +62,7 @@ router.post("/", bearerAdmin, function (req, res) {
 			type:	typeof req.body.type!=="undefined"?req.body.type:"",
 		};
 		units.insert(new_unit);
-		//console.log(units);
-		
+
 		res.header("Location", "/v"+version+"/units/"+new_unit.id);
 		res.status(201).send({ "code": 201, message: "Created", unit: new UnitSerializer(new_unit).serialize() }, 201);
 	} else {
@@ -88,11 +86,10 @@ router.post("/", bearerAdmin, function (req, res) {
  * @apiUse 200
  * @apiUse 401
  */
-router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
-	if ( req.token ) {
+router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role == "admin" ) {
 		var unit_id = req.params.unit_id;
 		units	= db.getCollection("units");
-		//console.log(units);
 		var result;
 		units.findAndUpdate(
 			function(i){return i.id==unit_id},
@@ -104,7 +101,7 @@ router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 			}
 		);
 		db.save();
-		
+
 		res.header("Location", "/v"+version+"/units/"+unit_id);
 		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new UnitSerializer(result).serialize() });
 	} else {
@@ -126,12 +123,11 @@ router.put("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
  * @apiUse 401
  * @apiUse 404
  */
-router.delete("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
-	if ( req.token ) {
+router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role == "admin" ) {
 		var unit_id = req.params.unit_id;
 		units	= db.getCollection("units");
 		var u = units.find({"id": { "$eq": unit_id }});
-		//console.log(u);
 		if (u) {
 			units.remove(u);
 			db.save();
@@ -143,34 +139,5 @@ router.delete("/:unit_id([0-9a-z\-]+)", bearerAdmin, function (req, res) {
 		res.status(401).send(new ErrorSerializer({"id": 21, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
-
-function bearerAdmin(req, res, next) {
-	var bearerToken;
-	var bearerHeader = req.headers["authorization"];
-	tokens	= db.getCollection("tokens");
-	users	= db.getCollection("users");
-	if ( typeof bearerHeader !== "undefined" ) {
-		var bearer = bearerHeader.split(" ");// TODO split with Bearer as prefix!
-		bearerToken = bearer[1];
-		req.token = bearerToken;
-		req.bearer = tokens.findOne(
-			{ "$and": [
-				{"token": { "$eq": req.token }},
-				{"expiration": { "$gte": moment().format("x") }},
-			]}
-		);
-		if ( !req.bearer ) {
-			res.status(403).send(new ErrorSerializer({"id": 22, "code": 431, "message": "Forbidden"}).serialize());
-		} else {
-			if ( req.user = users.findOne({"id": { "$eq": req.bearer.user_id }, "role": "admin"}) ) {
-				next();
-			} else {
-				res.status(404).send(new ErrorSerializer({"id": 23, "code": 404, "message": "Not Found"}).serialize());
-			}
-		}
-	} else {
-		res.status(401).send(new ErrorSerializer({"id": 24, "code": 401, "message": "Unauthorized"}).serialize());
-	}
-}
 
 module.exports = router;
