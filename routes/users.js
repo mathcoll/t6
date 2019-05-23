@@ -56,7 +56,7 @@ router.get("/newcomers", function (req, res) {
  * @apiUse 401
  */
 router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role == "admin" ) {
+	if ( req.user.role === "admin" ) {
 		var size = typeof req.query.size!=="undefined"?req.query.size:20;
 		var page = typeof req.query.page!=="undefined"?req.query.page:1;
 		page = page>0?page:1;
@@ -176,7 +176,7 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req,
  */
 router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var user_id = req.params.user_id;
-	if ( req.user.id == user_id ) {
+	if ( req.user.id == user_id || req.user.role === "admin" ) {
 		users	= db.getCollection("users");
 		res.status(200).send(new UserSerializer(users.chain().find({"id": { "$eq": user_id }}).simplesort("expiration", true).data()).serialize());
 	} else {
@@ -427,9 +427,9 @@ router.post("/instruction", function (req, res) {
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} user_id User ID
- * @apiParam {String} [firstName] The updated User First Name
- * @apiParam {String} [lastName] The updated User Last Name
- * @apiParam {String} [email] The updated User Email address
+ * @apiParam {String} [firstName] The new User First Name
+ * @apiParam {String} [lastName] The new User Last Name
+ * @apiParam {String} [email] The new User Email address
  * 
  * @apiUse 200
  * @apiUse 403
@@ -442,18 +442,15 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		res.status(412).send(new ErrorSerializer({"id": 8,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
 		users	= db.getCollection("users");
-		if ( req.user.id == user_id ) {
+		if ( req.user.id === user_id || req.user.role === "admin" ) {
 			var result;
 			users.findAndUpdate(
 				function(i){return i.id==user_id},
 				function(item){
 					item.firstName		= typeof req.body.firstName!=="undefined"?req.body.firstName:item.firstName;
 					item.lastName		= typeof req.body.lastName!=="undefined"?req.body.lastName:item.lastName;
-					item.email			= typeof req.body.email!=="undefined"?req.body.email:item.email;
+					item.email			= typeof req.body.email!=="undefined"&&req.body.email!==""?req.body.email:item.email;
 					item.update_date	= moment().format("x");
-					if ( req.body.password ) {
-						item.password = bcrypt.hashSync(req.body.password, 10);
-					}
 					result = item;
 				}
 			);
@@ -482,13 +479,13 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var key = req.params.key;
 	if ( key ) {
-		accessTokens	= db.getCollection("tokens");
+		accessTokens = db.getCollection("tokens");
 		var queryT = {
-				"$and": [
-							{ "key": key },
-							{ "user_id": req.user.id },
-						]
-				};
+			"$and": [
+				{ "key": key },
+				{ "user_id": req.user.id },
+			]
+		};
 		var u = accessTokens.findOne(queryT);
 		if (u) {
 			accessTokens.remove(u);
@@ -517,8 +514,8 @@ router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsetting
  */
 router.delete("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var user_id = req.params.user_id;
-	if ( req.user.id == user_id ) { //Well ... not sure
-		users	= db.getCollection("users");
+	if ( req.user.id === user_id ) { //Well ... not sure
+		users = db.getCollection("users");
 		var u = users.find({"id": { "$eq": user_id }});
 		if (u) {
 			users.remove(u);
