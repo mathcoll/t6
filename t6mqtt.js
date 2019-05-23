@@ -7,24 +7,13 @@ t6mqtt.publish = function(user_id, topic, payload, retain) {
 		if ( payload && typeof payload !== "string" ) {
 			payload = JSON.parse(payload);
 			if ( payload && typeof payload === "object" ) {
-				if ( !payload.environment ) {
-					payload.environment = process.env.NODE_ENV;
-				}
-				if ( payload.dtepoch ) {
-					payload.datetime = moment((payload.dtepoch/1000)*1000).format("MMMM Do YYYY, H:mm:ss");
-				}
+				payload.environment=typeof payload.environment==="undefined"?process.env.NODE_ENV:payload.environment;
+				payload.datetime=typeof payload.dtepoch!=="undefined"?moment((payload.dtepoch/1000)*1000).format("MMMM Do YYYY, H:mm:ss"):"";
 			}
 			mqttClient.publish(mqttRoot+user_id+topic, JSON.stringify(payload), {retain: retain});
 		} else {
 			mqttClient.publish(mqttRoot+user_id+topic, payload, {retain: retain});
 		}
-		/*
-		console.log(mqttRoot, user_id, topic, payload);
-		console.log("Message sent.");
-		console.log("clientId", mqttClient.options.clientId);
-		console.log("host", mqttClient.options.host);
-		console.log("port", mqttClient.options.port);
-		*/
 	} catch(e) {
 		console.log("Failure on mqtt", payload);
 	}
