@@ -460,7 +460,7 @@ router.post("/authenticate", function (req, res) {
 	} else if ( req.body.refresh_token && req.body.grant_type === "refresh_token" ) {
 		var user_id = req.body.refresh_token.split(".")[0];
 		var token = req.body.refresh_token.split(".")[1];
-		
+
 		var queryT = {
 			"$and": [
 						{ "user_id": user_id },
@@ -509,6 +509,15 @@ router.post("/authenticate", function (req, res) {
 					"device": agent.device.toString(),
 			};
 			tokens.insert(t);
+			/* Added the new refresh token, then we should remove the one used in the refresh process */
+			let tQ = {
+				"$and": [
+					{ "user_id": user.id },
+					{ "refresh_token": req.body.refresh_token.split(".")[1] },
+				]
+			};
+			tokens.findAndRemove(tQ);
+
 			var refresh_token = user.id + "." + refreshPayload;
 			return res.status(200).json( {status: "ok", token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
