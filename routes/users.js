@@ -176,7 +176,7 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req,
  */
 router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var user_id = req.params.user_id;
-	if ( req.user.id == user_id || req.user.role === "admin" ) {
+	if ( req.user.id === user_id || req.user.role === "admin" ) {
 		users	= db.getCollection("users");
 		res.status(200).send(new UserSerializer(users.chain().find({"id": { "$eq": user_id }}).simplesort("expiration", true).data()).serialize());
 	} else {
@@ -202,7 +202,7 @@ router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
  */
 router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var user_id = req.params.user_id;
-	if ( req.user.id == user_id ) {
+	if ( req.user.id === user_id ) {
 		users	= db.getCollection("users");
 		res.status(200).send( {token: users.findOne({"id": { "$eq": user_id }}).token} );
 	} else {
