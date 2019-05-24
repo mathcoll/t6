@@ -173,25 +173,27 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
         //- List Index
         section#index.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
           #hof
-            .container(style='width: 80%;margin: 0 auto;padding-top: 10px;padding-bottom: 10px;')
+            .container
               #hof-container.content
                 #description-container
                   h1.mdl-subheader-content Connect 
                     i physical Objects* 
                     | to 
                     i timeseries db*
-                  p.sep &mdash;
                   p Objects collect data from Sensors and POST them to t6 using the encrypted + signed payload.
                   p Do any actions you need, once facts match conditions (Email, Mqtt, webhook notification...) &mdash; rule based events.
-                  p.sep &mdash;
-                  span
+                  p
                     quote 
                       i *Objects: sensors, chipsets, devices...
-                  span
+                    br/
                     quote 
                       i *db: database
                 #illustration-container
                   img(src=baseUrlCdn + '/img/m/t6.png')
+                  span
+                    quote
+                      i t6 general overview
+                  a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="/docs") Explore documentation
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content How does t6 works?
           .page-content.mdl-grid.mdl-grid--no-spacing
