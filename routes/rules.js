@@ -78,8 +78,8 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 });
 
 /**
- * @api {post} /rules Create New Rule
- * @apiName Create New Rule
+ * @api {post} /rules Create new Rule
+ * @apiName Create new Rule
  * @apiGroup 5. Rule
  * @apiVersion 2.0.1
  * 

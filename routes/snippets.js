@@ -74,8 +74,8 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 });
 
 /**
- * @api {post} /snippets Create New Snippet
- * @apiName Create New Snippet
+ * @api {post} /snippets Create new Snippet
+ * @apiName Create new Snippet
  * @apiGroup 4. Snippet
  * @apiVersion 2.0.1
  * 

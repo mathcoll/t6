@@ -105,8 +105,8 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (
 });
 
 /**
- * @api {get} /users/me/sessions Get User active sessions JWT list
- * @apiName Get User active sessions JWT list
+ * @api {get} /users/me/sessions Get User active sessions from JWT claim
+ * @apiName Get User active sessions from JWT claim
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -131,8 +131,8 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret}), function (r
 });
 
 /**
- * @api {get} /users/me/token Get self Current Token
- * @apiName Get self Current Token
+ * @api {get} /users/me/token Get User from JWT claim
+ * @apiName Get User from JWT claim
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -223,8 +223,8 @@ router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secre
 });
 
 /**
- * @api {post} /users Create New User
- * @apiName Create New User
+ * @api {post} /users Create new User
+ * @apiName Create new User
  * @apiGroup User
  * @apiVersion 2.0.1
  * 

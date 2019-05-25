@@ -74,8 +74,8 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
 });
 
 /**
- * @api {post} /dashboards Create New Dashboard
- * @apiName Create New Dashboard
+ * @api {post} /dashboards Create new Dashboard
+ * @apiName Create new Dashboard
  * @apiGroup 3. Dashboard
  * @apiVersion 2.0.1
  * 

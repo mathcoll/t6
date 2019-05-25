@@ -90,8 +90,8 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret}), 
 });
 
 /**
- * @api {post} /flows Create New Flow
- * @apiName Create New Flow
+ * @api {post} /flows Create new Flow
+ * @apiName Create new Flow
  * @apiGroup 2. Flow
  * @apiVersion 2.0.1
  * 
