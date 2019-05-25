@@ -85,8 +85,20 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
 router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( typeof req.user !== "undefined" ) {
 		tokens	= db.getCollection("tokens");
-		var accessTokens = tokens.chain().find({"user_id": req.user.id}).simplesort("expiration", true).data();
+		var accessTokens = tokens.chain().find({ "$and": [ {"user_id": req.user.id}, { "expiration" : { "$gt": moment().format("x") } } ]}).simplesort("expiration", true).data();
 		res.status(200).send(new AccessTokenSerializer(accessTokens).serialize());
+
+		var expired = tokens.find(
+			{ "$and": [
+				{"user_id" : req.user.id},
+				{ "expiration" : { "$lt": moment().format("x") } },
+				{ "expiration" : { "$ne": "" } },
+			]}
+		);
+		if ( expired ) {
+			tokens.remove(expired);
+			db.save();
+		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 204,"code": 403, "message": "Forbidden"}).serialize());
 	}
