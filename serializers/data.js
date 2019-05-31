@@ -5,7 +5,7 @@ function DataSerializer(data) {
 	this.serialize = function() {
 		return new JSONAPISerializer("data", {
 			keyForAttribute: "underscore_case",
-			attributes : [ "id", "flow_id", "time", "timestamp", "value", "publish", "mqtt_topic", "datatype" ],
+			attributes : [ "flow_id", "time", "timestamp", "value", "publish", "mqtt_topic", "datatype" ],
 			topLevelLinks : {
 				parent	: data.parent>0?sprintf("%s/v%s/flows/%s", baseUrl_https, version, data.flow_id):undefined,
 				first	: data.first>0?sprintf("%s/v%s/data/%s?limit=%s&page=1&order=%s", baseUrl_https, version, data.flow_id, data.limit, data.prev, data.order):undefined,
@@ -19,7 +19,6 @@ function DataSerializer(data) {
 			},
 			dataLinks : {
 				self	:  sprintf("%s/v%s/data/%s/%s", baseUrl_https, version, data.flow_id, data.id)//TODO: this is too buggy
-				
 			},
 		}).serialize(data);
 	};

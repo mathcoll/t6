@@ -40,6 +40,32 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 		return false;
 	}
 }
+function getFieldsFromDatatype(datatype, asValue) {
+	let fields;
+	if ( datatype === "boolean" ) {
+		fields = "time, valueBoolean";
+	} else if ( datatype === "date" ) {
+		fields = "time, valueDate";
+	} else if ( datatype === "integer" ) {
+		fields = "time, valueInteger";
+	} else if ( datatype === "json" ) {
+		fields = "time, valueJson";
+	} else if ( datatype === "string" ) {
+		fields = "time, valueString";
+	} else if ( datatype === "time" ) {
+		fields = "time, valueTime";
+	} else if ( datatype === "float" ) {
+		fields = "time, valueFloat";
+	} else if ( datatype === "geo" ) {
+		fields = "time, valueString";
+	} else {
+		fields = "time, value";
+	}
+	if( asValue ) {
+		fields += " as value";
+	}
+	return fields;
+}
 
 /**
  * @api {get} /data/:flow_id Get DataPoint List
@@ -50,10 +76,10 @@ function decryptPayload(encryptedPayload, sender, encoding) {
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {String} [order] Field to order results
- * @apiParam {String} [sort=desc] Sorting order asc OR desc
+ * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
  * @apiParam {Number} [page] Page offset
- * @apiParam {Number{1-5000}} [limit] Pagination, results limit
+ * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
+ * @apiParam {String="min","max","first","last"} [funct] Function to modify the results
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -72,29 +98,41 @@ function decryptPayload(encryptedPayload, sender, encoding) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
-	var output = typeof req.query.output!=="undefined"?req.query.output:"json";
+	var funct = req.query.funct;
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
-	}
-	if ( !req.user.id ){
-		// Not Authorized because token is invalid
-		res.status(401).send(new ErrorSerializer({"id": 57, "code": 401, "message": "Not Authorized"}).serialize());
 	} else {
-		//var limit = typeof req.params.limit!=="undefined"?parseInt(req.params.limit):10;
-		//var page = typeof req.params.page!=="undefined"?parseInt(req.params.page):1;
-		//var sort = typeof req.query.sort!=="undefined"?req.query.sort:"time";
+		flows = db.getCollection("flows");
+		units	= db.getCollection("units");
+		var query = squel.select().from("data").where("flow_id=?", flow_id);
+
+		if ( typeof req.query.start !== "undefined" ) {
+			if ( !isNaN(req.query.start) ) {
+				query.where("time>="+req.query.start*1000000);
+			} else {
+				query.where("time>="+moment(req.query.start).format("x")*1000000); 
+			}
+		}	
+		if ( typeof req.query.end !== "undefined" ) {
+			if ( !isNaN(req.query.end) ) {
+				query.where("time<="+req.query.end*1000000);
+			} else {
+				query.where("time<="+moment(req.query.end).format("x")*1000000); 
+			}
+		}
 		var sorting = typeof req.query.order!=="undefined"?req.query.order:undefined;
 		sorting = req.query.order==="asc"?true:false;
 		sorting = typeof req.query.sort!=="undefined"?req.query.sort:undefined;
 		sorting = req.query.sort==="asc"?true:false;
+		query.order("time", sorting);
+
 		var page = parseInt(req.query.page, 10);
 		if (isNaN(page) || page < 1) {
 			page = 1;
 		}
-
 		var limit = parseInt(req.query.limit, 10);
 		if (isNaN(limit)) {
 			limit = 10;
@@ -103,9 +141,8 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		} else if (limit < 1) {
 			limit = 1;
 		}
+		query.limit(limit).offset((page - 1) * limit);
 
-		flows = db.getCollection("flows");
-		units	= db.getCollection("units");
 		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit_id", "id");
 
@@ -114,249 +151,50 @@ router.get("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
-		
+		let fields;
 		//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id="5" AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
-		if ( db_type.influxdb === true ) {
-			/* InfluxDB database */
-			
-			var query = squel.select()
-				.from("data")
-				.where("flow_id=?", flow_id)
-				.limit(limit)
-				.offset((page - 1) * limit)
-				.order("time", sorting)
-			;
-			
-			// Cast value according to Flow settings
-			if ( datatype == "boolean" ) {
-				query.field("time, valueBoolean");
-			} else if ( datatype == "date" ) {
-				query.field("time, valueDate");
-			} else if ( datatype == "integer" ) {
-				query.field("time, valueInteger");
-			} else if ( datatype == "json" ) {
-				query.field("time, valueJson");
-			} else if ( datatype == "string" ) {
-				query.field("time, valueString");
-			} else if ( datatype == "time" ) {
-				query.field("time, valueTime");
-			} else if ( datatype == "float" ) {
-				query.field("time, valueFloat");
-			} else if ( datatype == "geo" ) {
-				query.field("time, valueString");
-			} else {
-				query.field("time, value");
+		if ( typeof funct!=="undefined" ) {
+			fields = getFieldsFromDatatype(datatype, false);
+			switch(funct) {
+				case "min": fields += ", MIN(valueFloat) as value";break;
+				case "max": fields += ", MAX(valueFloat) as value";break;
+				case "first": fields += ", FIRST(valueFloat) as value";break;
+				case "last": fields += ", LAST(valueFloat) as value";break;
+				//case "count": fields += ", COUNT(time)";break;
+				//case "median": fields += ", MEDIAN(valueFloat)";break;
+				//case "mean": fields += ", MEAN(valueFloat)";break;
 			}
-			// End casting
-
-			if ( typeof req.query.start !== "undefined" ) {
-				if ( !isNaN(req.query.start) ) {
-					//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
-					query.where("time>="+req.query.start*1000000);
-				} else {
-					query.where("time>="+moment(req.query.start).format("x")*1000000); 
-				}
-			}	
-			if ( typeof req.query.end !== "undefined" ) {
-				if ( !isNaN(req.query.end) ) {
-					//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
-					query.where("time<="+req.query.end*1000000);
-				} else {
-					query.where("time<="+moment(req.query.end).format("x")*1000000); 
-				}
-			}
-
-			query = query.toString();
-			//console.log("query: "+query);
-
-			dbInfluxDB.query(query).then(data => {
-				if ( data.length > 0 ) {
-					data.map(function(d) {
-						d.id = Date.parse(d.time);
-						d.timestamp = Date.parse(d.time);
-						d.time = Date.parse(d.time);
-						if ( datatype == "boolean" ) {
-							d.value = d.valueBoolean=="true"?true:false;
-						} else if ( datatype == "date" ) {
-							d.value = d.valueDate;
-						} else if ( datatype == "integer" ) {
-							d.value = (d.valueInteger).length>0?parseInt((d.valueInteger).substring(-1)):parseInt((d.valueInteger));
-						} else if ( datatype == "json" ) {
-							d.value = d.valueJson;
-						} else if ( datatype == "string" ) {
-							d.value = d.valueString;
-						} else if ( datatype == "time" ) {
-							d.value = d.valueTime;
-						} else if ( datatype == "float" ) {
-							d.value = parseFloat(d.valueFloat);
-						} else if ( datatype == "geo" ) {
-							d.value = d.valueString;
-						} else {
-							d.value = d.value;
-						}
-					});
-
-					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
-					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
-					data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
-					data.ttl = 3600;
-					data.flow_id = flow_id;
-					data.page = page;
-					data.next = page+1;
-					data.prev = page-1;
-					data.limit = limit;
-					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
-					
-					if (output === "json") {
-						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output === "svg") {
-						res.status(404).send("SVG Not Implemented with influxDB");
-					};
-				} else {
-					res.status(204).send(new ErrorSerializer({"id": 898, "code": 204, "message": "No Content"}).serialize());
-				};
-			}).catch(err => {
-				res.status(500).send({query: query, err: err, "id": 899, "code": 500, "message": "Internal Error"});
-			});
-
-		} else if ( db_type.sqlite3 === true ) {
-			/* sqlite3 database */
-			// SELECT strftime("%Y", timestamp), AVG(value), MIN(value), MAX(value), count(value) FROM data WHERE flow_id=5 GROUP BY strftime("%Y", timestamp);
-			var query = squel.select()
-				.field("timestamp, value, flow_id, timestamp AS id")
-				.from("data")
-				.where("flow_id=?", flow_id)
-				.limit(limit)
-				.offset((page - 1) * limit)
-				.order("timestamp", sorting)
-			;
-			
-			if ( typeof req.query.start !== "undefined" ) {
-				if ( !isNaN(req.query.start) ) {
-					//if ( req.query.start.length <= 10 ) req.query.start *= 1000;
-					query.where("timestamp>=?", req.query.start);
-				} else {
-					query.where("timestamp>=?", moment(req.query.start).format("X")); // TODO, should be "x" lower case 
-				}
-			}	
-			if ( typeof req.query.end !== "undefined" ) {
-				if ( !isNaN(req.query.end) ) {
-					//if ( req.query.end.length <= 10 ) req.query.end *= 1000; 
-					query.where("timestamp<=?", req.query.end);
-				} else {
-					query.where("timestamp<=?", moment(req.query.end).format("X")); // TODO, should be "x" lower case 
-				}
-			}	
-				
-			query = query.toString();
-			//console.log(query);
-			dbSQLite3.all(query, function(err, data) {
-				if (err) console.log(err);
-				if ( data.length > 0 ) {
-					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
-					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
-					data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
-					data.ttl = 3600;
-					data.flow_id = flow_id;
-					data.page = page;
-					data.next = page+1;
-					data.prev = page-1;
-					data.limit = limit;
-					data.id = moment(data.timestamp).format("x");
-					data.time = moment(data.timestamp).format("x");
-					data.timestamp = moment(data.timestamp).format("x");
-					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
-					
-					if (output === "json") {
-						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output === "svg") {
-						var D3Node = require("d3-node");
-						var d3 = require("d3");
-						data.reverse();
-						var svgStyles = ".text {color: #fff;} .bar { fill: steelblue; } .bar:hover { fill: brown; } .axis {font: 10px sans-serif;} .axis path, .axis line { fill: none; shape-rendering: crispedges; stroke: #000000; }";
-						var d3n = new D3Node({svgStyles:svgStyles});
-						
-						var chartWidth = 800, chartHeight = 400;
-						var margin = {top: 10, right: 10, bottom: 10, left: 100},
-							width = chartWidth - margin.left - margin.right,
-							height = chartHeight - margin.top - margin.bottom;
-
-						var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
-						var y = d3.scale.linear().range([height, 0]);
-						var xAxis = d3.svg.axis()
-						.scale(x)
-						.orient("bottom")
-						.ticks(data.limit)
-						//.tickFormat(d3.time.format("%d/%m/%Y %H:%M"));
-						.tickFormat(d3.time.format("%H:%M"));
-
-						var yAxis = d3.svg.axis()
-						.scale(y)
-						.orient("left")
-						.ticks(10);
-						var svg = d3n.createSVG()
-						.attr("width", chartWidth)
-						.attr("height", chartHeight)
-						.append("g")
-						.attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
-
-						data.forEach(function(d) {
-							x.domain(data.map(function (d) {
-								return new Date(d.timestamp);
-							}));
-							y.domain([0, d3.max(data, function (d) {
-								return d.value;
-							})]);
-
-							svg.append("g")
-							.attr("class", "x axis")
-							.attr("transform", "translate(0," + (height-margin.top-margin.bottom) + ")")
-							.call(xAxis)
-							.selectAll("text")
-							.style("text-anchor", "middle")
-							.attr("x", function(d, i) { return ((i * ((width-margin.left-margin.right) / data.length))+(x.rangeBand()/2)); })
-							.attr("y", "20");
-
-							svg.append("g")
-							.attr("class", "y axis")
-							.attr("transform", "rotate(0)")
-							.call(yAxis)
-							.append("text")
-							.attr("y", "")
-							.attr("dy", "")
-							.style("text-anchor", "middle")
-							.text(data.unit);
-
-							svg.selectAll("bar")
-							.data(data)
-							.enter().append("rect")
-							.attr("class", "bar")
-							.attr("x", function(d) { return x(new Date(d.timestamp)); })
-							.attr("y", function(d) { return y(d.value); })
-							.attr("width", x.rangeBand())
-							.attr("height", function(d) { return (height-margin.top-margin.bottom) - y(d.value); });
-
-							svg.selectAll("bar")
-							.data(data)
-							.enter().append("text")
-							.attr("class", "text")
-							.text(function(d, i) { return (d.value); })
-							.attr("x", function(d, i) { return ((i * (width / data.length))+(x.rangeBand()/2)); })
-							.attr("y", function(d, i) { return y(d.value)-margin.top+30; })
-							.attr("dx", "0em")
-							.attr("dy", "0em")
-							.attr("fill", "white")
-							.style("text-anchor", "middle");
-
-							res.setHeader("Content-Type", "image/svg+xml");
-							res.status(200).send( d3n.svgString() );
-						});
-					}
-				} else {
-					res.status(404).send(new ErrorSerializer({"id": 598, "code": 404, "message": "Not Found"}).serialize());
-				}
-			});
+		} else {
+			fields = getFieldsFromDatatype(datatype, true);
 		}
+		query.field( fields );
+		query = query.toString();
+		console.log("query: "+query);
+		dbInfluxDB.query(query).then(data => {
+			if ( data.length > 0 ) {
+				data.map(function(d) {
+					d.id = Date.parse(d.time);
+					d.timestamp = Date.parse(d.time);
+					d.time = Date.parse(d.time);
+				});
+				data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
+				data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
+				data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
+				data.ttl = 3600; // TODO
+				data.flow_id = flow_id;
+				data.page = page;
+				data.next = page+1;
+				data.prev = page-1;
+				data.limit = limit;
+				data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
+
+				res.status(200).send(new DataSerializer(data).serialize());
+			} else {
+				res.status(204).send(new ErrorSerializer({"id": 898, "code": 204, "message": "No Content"}).serialize());
+			};
+		}).catch(err => {
+			res.status(500).send({query: query, err: err, "id": 899, "code": 500, "message": "Internal Error"});
+		});
 	}
 });
 
