@@ -128,6 +128,8 @@ app.resources.objects = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var object = response.data[i];
+				var description = object.attributes.description!==undefined?object.attributes.description:"";
+
 				document.title = (app.sectionsPageTitles["object"]).replace(/%s/g, object.attributes.name);
 				var node = "";
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
@@ -147,7 +149,6 @@ app.resources.objects = {
 
 				node += app.getField(app.icons.objects, "Id", object.id, {type: "text"});
 				if ( object.attributes.description && isEdit!==true ) {
-					var description = object.attributes.description!==undefined?object.attributes.description:"";
 					node += app.getField(app.icons.description, "Description", description, {type: "text"});
 				}
 				if ( object.attributes.meta.created ) {
@@ -167,7 +168,6 @@ app.resources.objects = {
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( isEdit===true ) {
-					var description = object.attributes.description!==undefined?object.attributes.description:"";
 					node += app.getField(null, "meta.revision", object.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.name, "Name", object.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 					node += app.getField(app.icons.description, "Description", description, {type: "textarea", id: "Description", isEdit: isEdit});

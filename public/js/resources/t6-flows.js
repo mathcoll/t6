@@ -187,7 +187,7 @@ app.resources.flows = {
 						app.getDatatypes();
 					}
 					var allDatatypes = JSON.parse(localStorage.getItem("datatypes"));
-					
+
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, "meta.revision", flow.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
@@ -201,8 +201,7 @@ app.resources.flows = {
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
-					
-					var allDatatypes = JSON.parse(localStorage.getItem("datatypes"));
+
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";

@@ -185,8 +185,8 @@ app.resources.dashboards = {
 					node += "</section>"
 				} else {
 					/* View mode */
-					for ( var i=0; i < dashboard.attributes.snippets.length; i++ ) {
-						app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[i], (app.containers.dashboard).querySelector('.page-content'));
+					for ( var j=0; j < dashboard.attributes.snippets.length; j++ ) {
+						app.getSnippet(app.icons.snippets, dashboard.attributes.snippets[j], (app.containers.dashboard).querySelector(".page-content"));
 					}
 				}
 				(app.containers.dashboard).querySelector(".page-content").innerHTML = node;

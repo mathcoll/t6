@@ -417,8 +417,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 	let isEncrypted = false;
 	let isSigned = false;
 	let prerequisite = 0;
+	var object_id = payload.object_id;
+
 	if ( payload.signedPayload || payload.encryptedPayload ) {
-		var object_id = payload.object_id;
 		var cert = jwtsettings.secret; //- fs.readFileSync("private.key");
 		objects	= db.getCollection("objects");
 
@@ -484,7 +485,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		var latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
 		var longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
 		var text		= typeof payload.text!=="undefined"?payload.text:"";
-		var object_id	= payload.object_id;
 
 		if ( !flow_id || !req.user.id ) {
 			// Not Authorized because token is invalid
