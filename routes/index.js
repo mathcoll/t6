@@ -327,6 +327,13 @@ router.delete("/tokens/all", function (req, res) {
  * @apiParam {String} [key=undefined] In "access_token" context, Client Api Key
  * @apiParam {String} [secret=undefined] In "access_token" context, Client Api Secret
  * @apiParam {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
+ * 
+ * @apiSuccess {String} status Status of the Authentication
+ * @apiSuccess {String} token JWT Token
+ * @apiSuccess {timestamp} tokenExp Expiration timestamp of the JWT Token
+ * @apiSuccess {String} refresh_token Token that can be used to refresh the Token
+ * @apiSuccess {timestamp} refreshTokenExp Expiration timestamp of the Refresh Token
+ * 
  * @apiUse 200
  * @apiUse 400
  * @apiUse 401
@@ -369,8 +376,9 @@ router.post("/authenticate", function (req, res) {
 				payload.scope = "Application";
 				payload.sub = "/users/"+user.id;
 
+				let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("X");
 				if ( user.location && user.location.ip ) payload.iss = req.ip+" - "+user.location.ip;
-				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 
 				var refreshPayload = crypto.randomBytes(40).toString("hex");
 				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
@@ -392,7 +400,7 @@ router.post("/authenticate", function (req, res) {
 				tokens.insert(t);
 
 				var refresh_token = user.id + "." + refreshPayload;
-				return res.status(200).json( {status: "ok", token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+				return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 			} else {
 				checkForTooManyFailure(req, res, email);
 				return res.status(403).send(new ErrorSerializer({"id": 102.1, "code": 403, "message": "Forbidden"}).serialize());
@@ -431,7 +439,8 @@ router.post("/authenticate", function (req, res) {
 			payload.sub = "/users/"+user.id;
 			
 			if ( user.location && user.location.ip ) payload.iss = req.ip+" - "+user.location.ip;
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("X");
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
@@ -453,7 +462,7 @@ router.post("/authenticate", function (req, res) {
 			tokens.insert(t);
 
 			var refresh_token = user.id + "." + refreshPayload;
-			return res.status(200).json( {status: "ok", token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(403).send(new ErrorSerializer({"id": 102.1, "code": 403, "message": "Forbidden"}).serialize());
 		}
@@ -490,7 +499,8 @@ router.post("/authenticate", function (req, res) {
 			payload.scope = "ClientApi";
 			payload.sub = "/users/"+user.id;
 
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("X");
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
 
@@ -519,7 +529,7 @@ router.post("/authenticate", function (req, res) {
 			tokens.findAndRemove(tQ);
 
 			var refresh_token = user.id + "." + refreshPayload;
-			return res.status(200).json( {status: "ok", token: token, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(400).send(new ErrorSerializer({"id": 102.4, "code": 400, "message": "Invalid Refresh Token"}).serialize());
 		}
