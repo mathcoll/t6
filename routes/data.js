@@ -123,10 +123,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 				query.where("time<="+moment(req.query.end).format("x")*1000000); 
 			}
 		}
-		var sorting = typeof req.query.order!=="undefined"?req.query.order:undefined;
-		sorting = req.query.order==="asc"?true:false;
-		sorting = typeof req.query.sort!=="undefined"?req.query.sort:undefined;
-		sorting = req.query.sort==="asc"?true:false;
+		var sorting = req.query.order==="asc"?true:(req.query.sort==="asc"?true:false);
 		query.order("time", sorting);
 
 		var page = parseInt(req.query.page, 10);
