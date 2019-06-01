@@ -302,7 +302,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 						} else if ( datatype == "date" ) {
 							d.value = d.valueDate;
 						} else if ( datatype == "integer" ) {
-							d.value = parseInt((d.valueInteger).substring(-1));
+							d.value = parseInt((d.valueInteger).substring(-1), 10);
 						} else if ( datatype == "json" ) {
 							d.value = d.valueJson;
 						} else if ( datatype == "string" ) {
@@ -474,7 +474,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 	if ( typeof payload !== "undefined" && !error ) {
 		payload = getJson(payload);
 		var flow_id		= typeof req.params.flow_id!=="undefined"?req.params.flow_id:payload.flow_id;
-		var time		= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp):moment().format("x");
+		var time		= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
 		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); };
 		var value		= typeof payload.value!=="undefined"?payload.value:"";
 		var publish		= typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
@@ -525,7 +525,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 					value = value;
 					fields[0] = {time:""+time, valueDate: value,};
 				} else if ( datatype == "integer" ) {
-					value = parseInt(value);
+					value = parseInt(value, 10);
 					fields[0] = {time:""+time, valueInteger: value+"i",};
 				} else if ( datatype == "json" ) {
 					value = {value:value,};
