@@ -149,7 +149,7 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 				}
 		var dashboard = dashboards.findOne( query );
 		if ( dashboard ) {
-			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - dashboard.meta.revision) != 0 ) {
+			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - dashboard.meta.revision) !== 0 ) {
 				res.status(400).send(new ErrorSerializer({"id": 39.2, "code": 400, "message": "Bad Request"}).serialize());
 			} else {
 				var result;

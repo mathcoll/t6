@@ -191,7 +191,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 					}
 			var flow = flows.findOne( query );
 			if ( flow ) {
-				if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - flow.meta.revision) != 0 ) {
+				if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - flow.meta.revision) !== 0 ) {
 					res.status(400).send(new ErrorSerializer({"id": 39.2, "code": 400, "message": "Bad Request"}).serialize());
 				} else {
 					var result;
