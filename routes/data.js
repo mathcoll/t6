@@ -183,11 +183,18 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 				data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 				data.ttl = 3600; // TODO
 				data.flow_id = flow_id;
-				data.page = page;
-				data.next = page+1;
-				data.prev = page-1;
+				data.pageSelf = page;
+				data.pageNext = page+1;
+				data.pagePrev = page-1;
+				data.sort = typeof req.query.sort!=="undefined"?req.query.sort:"asc";
+				let total = 9999999999999;//TODO, we should get totoal from influxdb
+				data.pageLast = Math.ceil(total/limit);
 				data.limit = limit;
-				data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
+				
+				data.group = undefined;
+				data.groupRows = undefined;
+				data.groupsTagsKeys = undefined;
+				data.groups = undefined;
 
 				res.status(200).send(new DataSerializer(data).serialize());
 			} else {

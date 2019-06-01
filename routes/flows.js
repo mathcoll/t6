@@ -32,7 +32,7 @@ function str2bool(v) {
 router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var results = Array();
 	var flow_id = req.params.flow_id;
-	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20; // TODO WTF: should be "limit" !!
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
@@ -82,7 +82,7 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret}), 
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
 		//flow.unit = (join.data())[0].right.name;
-				
+console.log(flow);
 		res.status(200).send(new FlowSerializer(flow).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({"id": 37, "code": 401, "message": "Unauthorized"}).serialize());
