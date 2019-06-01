@@ -79,7 +79,7 @@ function getFieldsFromDatatype(datatype, asValue) {
  * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
  * @apiParam {Number} [page] Page offset
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {String="min","max","first","last"} [funct] Function to modify the results
+ * @apiParam {String="min","max","first","last","sum","count"} [modifier] Modifier function to modify the results
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -100,7 +100,7 @@ function getFieldsFromDatatype(datatype, asValue) {
  */
 router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
-	var funct = req.query.funct;
+	var modifier = req.query.modifier;
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
@@ -153,14 +153,15 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 		let fields;
 		//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id="5" AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
-		if ( typeof funct!=="undefined" ) {
+		if ( typeof modifier!=="undefined" ) {
 			fields = getFieldsFromDatatype(datatype, false);
-			switch(funct) {
+			switch(modifier) {
 				case "min": fields += ", MIN(valueFloat) as value";break;
 				case "max": fields += ", MAX(valueFloat) as value";break;
 				case "first": fields += ", FIRST(valueFloat) as value";break;
 				case "last": fields += ", LAST(valueFloat) as value";break;
-				//case "count": fields += ", COUNT(time)";break;
+				case "sum": fields = "SUM(valueFloat) as value";break;
+				case "count": fields = "COUNT(valueFloat) as value";break;
 				//case "median": fields += ", MEDIAN(valueFloat)";break;
 				//case "mean": fields += ", MEAN(valueFloat)";break;
 			}
