@@ -28,7 +28,7 @@ t6events.add = function(where, what, who) {
 		}).catch(err => {
 			console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "Error writting event to influxDb:\n"+err);
 		});
-	};
+	}
 };
 
 module.exports = t6events;

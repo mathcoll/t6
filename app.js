@@ -78,13 +78,27 @@ console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "Initializing Database..."
 /* Main Database settings */
 db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //db.loadDatabase({}, function() {
-	if ( db.getCollection("objects") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Objects is failing");
-	if ( db.getCollection("flows") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Flows is failing");
-	if ( db.getCollection("users") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Users is failing");
-	if ( db.getCollection("tokens") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Keys is failing");
-	if ( db.getCollection("units") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Units is failing");
-	if ( db.getCollection("datatypes") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Datatypes is failing");
-	if ( db.getCollection("users") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Users is failing");
+	if ( db.getCollection("objects") === null ) {
+		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Objects is failing");
+	}
+	if ( db.getCollection("flows") === null ) {
+		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Flows is failing");
+	}
+	if ( db.getCollection("users") === null ) {
+		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Users is failing");
+	}
+	if ( db.getCollection("tokens") === null ) {
+		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Keys is failing");
+	}
+	if ( db.getCollection("units") === null ) {
+		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Units is failing");
+	}
+	if ( db.getCollection("datatypes") === null ) {
+		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Datatypes is failing");
+	}
+	if ( db.getCollection("users") === null ) {
+		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Users is failing");
+	}
 	console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Db Main is loaded");
 //});
 

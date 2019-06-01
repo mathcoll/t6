@@ -218,7 +218,9 @@ app.resources.objects = {
 					for ( var i in object.attributes.parameters ) {
 						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text', id: object.attributes.parameters[i].name, isEdit: isEdit});
 					}
-					if ( isEdit ) node += app.getField("note", ["Name", "Value"], ["", ""], {type: "2inputs", pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ["Name should not contains any space nor special char.", "Value is free."], id: ["Name[]", "Value[]"], isEdit: true});
+					if ( isEdit ) {
+						node += app.getField("note", ["Name", "Value"], ["", ""], {type: "2inputs", pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ["Name should not contains any space nor special char.", "Value is free."], id: ["Name[]", "Value[]"], isEdit: true});
+					}
 					node += "	</div>";
 					node += "</section>";
 				}

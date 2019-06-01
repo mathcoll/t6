@@ -560,9 +560,13 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 						/* InfluxDB database */
 						var tags = {};
 						var timestamp = time*1000000;
-						if (flow_id!== "") tags.flow_id = flow_id;
+						if (flow_id!== "") {
+							tags.flow_id = flow_id;
+						}
 						tags.user_id = req.user.id;
-						if (text!== "") fields[0].text = text;
+						if (text!== "") {
+							fields[0].text = text;
+						}
 
 						dbInfluxDB.writePoints([{
 							measurement: "data",
@@ -570,7 +574,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 							fields: fields[0],
 							timestamp: timestamp,
 						}], { retentionPolicy: "autogen", }).then(err => {
-							if (err) console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							if (err) {
+								console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							}
 							//else console.log("DEBUG", {"message": "Success on writePoints to influxDb", "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						}).catch(err => {
 							console.log("DEBUG", {"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});

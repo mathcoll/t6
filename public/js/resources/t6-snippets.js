@@ -372,7 +372,9 @@ app.resources.snippets = {
 		
 		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
-		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( app.isLtr() ) {
+			node += "	<div class='mdl-layout-spacer'></div>";
+		}
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
@@ -387,7 +389,9 @@ app.resources.snippets = {
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Snippet</label>";
 		node += "		</button>";
 		node += "	</div>";
-		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( !app.isLtr() ) {
+			node += "	<div class='mdl-layout-spacer'></div>";
+		}
 		node += "</section>";
 
 		(app.containers.snippet_add).querySelector(".page-content").innerHTML = node;
@@ -434,7 +438,9 @@ app.resources.snippets = {
 			var s = app.snippetTypes.find(function(sn) {
 				return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
 			});
-			if ( !s ) console.log("type not found !!!", (snippet.attributes.type).toLowerCase());
+			if ( !s ) {
+				console.log("type not found !!!", (snippet.attributes.type).toLowerCase());
+			}
 			element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetTypes.find( function(s) { return (s.name).toLowerCase() == (snippet.attributes.type).toLowerCase(); }).value;
 			element += "	</div>";
 		}
