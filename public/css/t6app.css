@@ -1635,38 +1635,26 @@ section > button {
 .mdl-layout__tab-bar-button {
 	width: 30px !important;
 }
-
-
-// mdl-selectfield
-
-/*
-.mdl-selectfield.is-dirty .mdl-selectfield__label,
-.mdl-selectfield.is-focused .mdl-selectfield__label {
-	visibility: visible !important;
-}
-*/
-
 .mdl-selectfield {
-    position: relative;
-    display: inline-block;
-    box-sizing: border-box;
-    width: 300px;
-    max-width: 100%;
-    margin: 0;
-    vertical-align: middle;
-    line-height: 20px;
-    font-size: 16px;
-    padding: 20px 0;
-    z-index: inherit
+	position: relative;
+	display: inline-block;
+	box-sizing: border-box;
+	width: 300px;
+	max-width: 100%;
+	margin: 0;
+	vertical-align: middle;
+	line-height: 20px;
+	font-size: 16px;
+	padding: 20px 0;
+	z-index: inherit
 }
 .mdl-selectfield__select {
-    visibility: visible;
-    font-size: 16px;
-    margin: 2px 0 3px 0;
-    padding: 0;
-    width: 100%
+	visibility: visible;
+	font-size: 16px;
+	margin: 2px 0 3px 0;
+	padding: 0;
+	width: 100%
 }
-
 .half {
 	width: 50% !important;
 }
@@ -1685,59 +1673,54 @@ input#signup\.lastName {
 
 .mdl-selectfield.is-dirty .mdl-selectfield__label,
 .mdl-selectfield.is-focused .mdl-selectfield__label {
-    visibility: hidden
+	visibility: hidden
 }
 
 .mdl-selectfield--floating-label .mdl-selectfield__label {
-    transition-duration: .2s;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
+	transition-duration: .2s;
+	transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
 }
 
-.mdl-selectfield--floating-label.is-dirty .mdl-selectfield__label,
-.mdl-selectfield--floating-label.is-focused .mdl-selectfield__label {
-    color: rgb(63, 81, 181);
-    font-size: 12px;
-    top: 4px;
-    visibility: visible
+.mdl-selectfield--floating-label.is-dirty .mdl-selectfield__label, .mdl-selectfield--floating-label.is-focused .mdl-selectfield__label {
+	color: rgb(63, 81, 181);
+	font-size: 12px;
+	top: 4px;
+	visibility: visible
 }
 
 .mdl-selectfield.is-disabled.is-disabled .mdl-selectfield__label {
-    color: rgba(0, 0, 0, 0.26)
+	color: rgba(0, 0, 0, 0.26)
 }
 
 .mdl-selectfield.is-invalid .mdl-selectfield__label {
-    color: rgb(213, 0, 0)
+	color: rgb(213, 0, 0)
 }
 
 .mdl-selectfield__error {
-    color: rgb(213, 0, 0);
-    position: absolute;
-    font-size: 12px;
-    margin-top: 3px;
-    visibility: hidden;
-    display: block;
-    white-space: nowrap
+	color: rgb(213, 0, 0);
+	position: absolute;
+	font-size: 12px;
+	margin-top: 3px;
+	visibility: hidden;
+	display: block;
+	white-space: nowrap;
 }
-
 .mdl-selectfield.is-invalid .mdl-selectfield__error {
-    visibility: visible
+	visibility: visible
 }
-
-.mdl-selectfield.is-focused .mdl-selectfield__error,
-.mdl-selectfield--floating-label.is-focused .mdl-selectfield__error {
-    visibility: hidden
+.mdl-selectfield.is-focused .mdl-selectfield__error, .mdl-selectfield--floating-label.is-focused .mdl-selectfield__error {
+	visibility: hidden
 }
-
 .mdl-selectfield__box {
-    position: relative;
-    top: -25px;
-    left: 0;
-    right: 0;
-    bottom: 0px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.12);
-    outline: none;
-    overflow: hidden;
-    cursor: pointer
+	position: relative;
+	top: -25px;
+	left: 0;
+	right: 0;
+	bottom: 0px;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+	outline: none;
+	overflow: hidden;
+	cursor: pointer
 }
 .mdl-chips__arrow-down__container {
 	position: absolute;
