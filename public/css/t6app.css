@@ -90,7 +90,6 @@ a {
 	padding: 5px;
 }
 #hof-container #illustration-container {
-	max-width: 60%;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -98,6 +97,7 @@ a {
 }
 #hof-container #illustration-container img {
 	max-width: 100%;
+	max-height: 500px;
 	object-fit: scale-down;
 }
 #hof-container #illustration-container a {
