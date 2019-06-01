@@ -476,7 +476,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		payload = getJson(payload);
 		var flow_id		= typeof req.params.flow_id!=="undefined"?req.params.flow_id:payload.flow_id;
 		var time		= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
-		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); };
+		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
 		var value		= typeof payload.value!=="undefined"?payload.value:"";
 		var publish		= typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
 		var save		= typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
@@ -585,9 +585,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 							.set("value", value)
 							.set("flow_id", flow_id)
 							.toString();
-						dbSQLite3.run(query, function(err) {
-							if (err) { }
-						});
+						dbSQLite3.run(query, function(err) { });
 					};
 				}
 
@@ -628,7 +626,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			} else {
 				res.status(412).send(new ErrorSerializer({"id": 64.2, "code": 412, "message": "Precondition Failed "+prerequisite,}).serialize());
 			}
-		};
+		}
 	} else {
 		res.status(412).send(new ErrorSerializer({"id": 65, "code": 412, "message": "Precondition Failed "+error,}).serialize());
 	}
