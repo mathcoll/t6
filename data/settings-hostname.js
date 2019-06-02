@@ -52,9 +52,7 @@ transporter = nodemailer.createTransport({
 /* Database settings - Storage */
 db_type	= {
 	influxdb: true,
-	sqlite3: true,
 };
-SQLite3Settings		= path.join(__dirname, "data.db");
 influxSettings		= { host : "localhost", port : 8086, protocol : "http", username : "datawarehouse", password : "datawarehouse", database : "datawarehouse" }
 
 /* Quota settings */
