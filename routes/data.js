@@ -342,40 +342,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 			}).catch(err => {
 				res.status(500).send({query: query, err: err, "id": 901, "code": 500, "message": "Internal Error",});
 			});
-		} else if ( db_type.sqlite3 === true ) {
-			/* sqlite3 database */
-			var query = squel.select()
-				.field("timestamp, value, flow_id, timestamp AS id")
-				.from("data")
-				.where("flow_id=?", flow_id)
-				.where("timestamp=?", data_id)
-				.limit(limit)
-				.toString();
-
-			dbSQLite3.all(query, function(err, data) {
-				if (err) {
-					console.log(err);
-				}
-				//data.id = moment(data.timestamp).format("x"); //BUG
-				data.flow_id = flow_id;
-				data.page = page;
-				data.next = page+1;
-				data.prev = page-1;
-				data.limit = limit;
-				data.id = data[0].timestamp;
-				data.time = data[0].timestamp;
-				data.timestamp = data[0].timestamp;
-				data.mqtt_topic = mqtt_topic;
-				data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
-				//console.log(data);
-				
-				if ( data.length > 0 ) {
-					res.status(200).send(new DataSerializer(data).serialize());
-				} else {
-					res.status(404).send(new ErrorSerializer({"id": 61, "code": 404, "message": "Not Found",}).serialize());
-				}
-			});
-		};
+		}
 	};
 });
 
@@ -583,16 +550,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 							console.error("Error catched on writting to influxDb:\n"+err);
 						});
 					}
-					if ( db_type.sqlite3 === true ) {
-						/* sqlite3 database */
-						var query = squel.insert()
-							.into("data")
-							.set("timestamp", time)
-							.set("value", value)
-							.set("flow_id", flow_id)
-							.toString();
-						dbSQLite3.run(query, function(err) { });
-					};
 				}
 
 				if ( publish === true ) {
