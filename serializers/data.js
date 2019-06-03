@@ -14,6 +14,7 @@ function DataSerializer(data) {
 				next	: data.pageNext>0?sprintf("%s/v%s/data/%s?limit=%s&page=%s&sort=%s", baseUrl_https, version, data.flow_id, data.limit, data.pageNext, data.sort):undefined,
 				last	: data.pageLast>0?sprintf("%s/v%s/data/%s?limit=%s&page=%s&sort=%s", baseUrl_https, version, data.flow_id, data.limit, data.pageLast, data.sort):undefined,
 				title	: data.title,
+				ttl		: data.ttl,
 				unit	: data.unit,
 				datatype: data.datatype,
 			},
