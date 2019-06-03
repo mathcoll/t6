@@ -105,7 +105,7 @@ var snippet = {
 			var value = response.data[0].attributes.value;
 			var ttl = response.links.ttl;
 			document.getElementById("unit-"+params.id).innerHTML = unit;
-			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 6000);
+			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 2000);
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem("settings.debug") == "true" ) {
