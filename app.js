@@ -42,8 +42,8 @@ global.appName			= require("./package.json").name;
 global.t6decisionrules	= require("./t6decisionrules");
 global.t6mqtt			= require("./t6mqtt");
 global.t6mailer			= require("./t6mailer");
-global.t6events			= require("./t6events");
 global.t6notifications	= require("./t6notifications");
+global.t6events			= require("./t6events");
 global.t6events.setMeasurement("events");
 global.t6events.setRP("autogen");
 global.algorithm		= "aes-256-cbc";
@@ -51,11 +51,6 @@ global.t6ConnectedObjects = [];
 
 /* Environment settings */
 require(sprintf("./data/settings-%s.js", os.hostname()));
-if ( db_type.sqlite3 === true ) {
-	var sqlite3	= require("sqlite3").verbose();
-	dbSQLite3		= new sqlite3.Database(SQLite3Settings);
-	console.log("Activating sqlite3");
-}
 if( db_type.influxdb === true ) {
 	var influx		= require("influx");
 	var dbString	= influxSettings.protocol+"://"+influxSettings.host+":"+influxSettings.port+"/"+influxSettings.database;
