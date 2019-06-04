@@ -20,6 +20,7 @@ data/certificates/*
 # Website auths
 public/BingSiteAuth.xml
 public/google*.html
+well-known/*
 **/settings.lua
 test/screenshots/*
 
