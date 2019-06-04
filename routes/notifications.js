@@ -147,7 +147,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 					{"changePassword": { "$lte": moment().subtract(3, "months") }},
 					{"token": null},
 					{ "$or": [{"unsubscription": undefined}, {"unsubscription.changePassword": undefined}, {"unsubscription.changePassword": null}] },
-	 			]};
+				]};
 		var json = users.find( query );
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
