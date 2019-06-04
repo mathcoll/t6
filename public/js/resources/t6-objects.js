@@ -353,7 +353,7 @@ app.resources.objects = {
 				}
 
 				app.setExpandAction();
-				app.setSection('object');
+				app.setSection("object");
 			}
 		})
 		.catch(function (error) {
@@ -399,7 +399,7 @@ app.resources.objects = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
-				node += app.getField(app.icons.objects, 'Id', object.id, {type: 'input'});
+				node += app.getField(app.icons.objects, "Id", object.id, {type: "input"});
 				if ( object.attributes.description || isEdit!==true ) {
 					var description = object.attributes.description!==undefined?object.attributes.description:"";
 					node += app.getField(app.icons.description, "Description", description, {type: "text"});
@@ -430,8 +430,8 @@ app.resources.objects = {
 					node += app.getSubtitle("Custom Parameters");
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					for ( var i in object.attributes.parameters ) {
-						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text'});
+					for ( var j in object.attributes.parameters ) {
+						node += app.getField('note', object.attributes.parameters[j].name, object.attributes.parameters[j].value, {type: "text"});
 					}
 					node += "	</div>";
 					node += "</section>";
@@ -463,7 +463,7 @@ app.resources.objects = {
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					/* Localization Map */
 					var iconFeature = new ol.Feature({
-						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], 'EPSG:4326', 'EPSG:3857')),
+						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], "PSG:4326", "EPSG:3857")),
 						name: object.attributes.name,
 						position: object.attributes.position,
 					});
@@ -596,7 +596,7 @@ app.resources.objects = {
 				anchor: [12, 12],
 				anchorXUnits: "pixels",
 				anchorYUnits: "pixels",
-				opacity: .8,
+				opacity: 0.8,
 				size: [24, 24],
 				src: app.baseUrl+"/js/OpenLayers/img/marker.png"
 			}))
