@@ -27,7 +27,7 @@ function DashboardTypeSerializer(dashboard) {
 					}
 				}
 			},
-	    }).serialize(dashboard);
+		}).serialize(dashboard);
 	};
 }
 
