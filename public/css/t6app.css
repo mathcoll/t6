@@ -453,6 +453,11 @@ div.mdl-list__item-primary-content span.heading {
 	}
 }
 @media only screen and (min-device-width: 481px) and (max-device-width: 800px) {
+	.mdl-grid--no-spacing > .mdl-cell--6-col, .mdl-grid--no-spacing > .mdl-cell--6-col-tablet.mdl-cell--6-col-tablet {
+		width: 50%;
+	}
+}
+@media only screen and (min-device-width: 481px) and (max-device-width: 800px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
 		display: inline-block;
