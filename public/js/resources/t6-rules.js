@@ -157,6 +157,20 @@ app.resources.rules = {
 					}
 					node += "	</div>"; // mdl-shadow--2dp
 					node +=	"</section>";
+
+					node += app.getSubtitle("Event Conditions");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.description, "Event Conditions", app.nl2br(JSON.stringify(rule.attributes.rule.conditions, null, "\t")), {type: "textarea", id: "EventConditions", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
+					
+					node += app.getSubtitle("Event Parameters");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.description, "Event Parameters", app.nl2br(JSON.stringify(rule.attributes.rule.event.params, null, "\t")), {type: "textarea", id: "EventParams", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
 					
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -217,7 +231,6 @@ app.resources.rules = {
 		node += app.getField("traffic", rule.attributes.active!="false"?"Rule is active":"Rule is disabled", rule.attributes.active!==undefined?rule.attributes.active:true, {type: "switch", id:"active", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
-
 
 		node += app.getSubtitle("Event Conditions");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
