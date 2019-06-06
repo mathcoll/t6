@@ -32,12 +32,51 @@
                             "save": {
                                 "saved.key": "body.token.key",
                                 "saved.secret": "body.token.secret",
-                                "saved.token": "body.token.token",
                                 "saved.user_id": "body.user.data.id",
                                 "saved.subscription_date": "body.user.data.attributes.subscription_date",
                                 "saved.username": "body.user.data.attributes.email"
                             },
                             "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "get instruction to reset a User password",
+                	"description": "get instruction to reset a User password",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users/instruction",
+                            "params": {
+                                "email": "m.lory+{{$run_id}}@free.fr"
+                            },
+                            "assert": [],
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "get User token to reset password",
+                	"description": "get User token to reset password",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/{{saved.user_id}}/token",
+                            "status": "201",
+                            "save": {
+                                "saved.token": "body.token"
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "set User password using token",
+                	"description": "set User password using token",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users/token/{{saved.token}}",
+                            "params": {
+                                "password": "{{$run_id}}"
+                            },
+                            "status": "200"
                         }
                     ]
                 },
