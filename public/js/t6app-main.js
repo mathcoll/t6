@@ -24,6 +24,7 @@ var app = {
 	date_format: "DD/MM/YYYY, HH:mm",
 	cardMaxChars: 256,
 	cookieconsent: 30,
+	dataCacheName: "t6-cache-2019-06-07",
 	refreshExpiresInSeconds: 280000,
 	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15},
 	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
@@ -560,10 +561,10 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.registerServiceWorker = function() {
-		return navigator.serviceWorker.register('/service-worker.js')
+		return navigator.serviceWorker.register("/service-worker.js", { scope: "/" })
 		.then(function(registration) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('[ServiceWorker] Registered');
+				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
 			return registration;
 		})
@@ -2838,13 +2839,13 @@ var touchStartPoint, touchMovePoint;
 		settings += app.getField('voice_over_off', 'Do Not Track (DNT) header', navigator.doNotTrack=='1'?"Enabled, you are not being tracked. This setting is customized on your browser.":"Disabled, you are tracked :-) and it can be customized on your browser settings.", {type: 'switch', isEdit: false});
 		settings += "	</div>";
 		settings += "</section>";
-		
+
 		settings += app.getSubtitle('API Notifications');
 		settings += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		settings += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 		settings += app.getField('notifications', app.getSetting('settings.notifications')!='false'?"Notifications are enabled":"Notifications are disabled", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
-		if ( app.getSetting('settings.pushSubscription.keys.p256dh') ) {
+		if ( app.getSetting('settings.pushSubscription.keys.p256dh') && app.getSetting('settings.notifications')!="false" && app.getSetting('settings.debug')!="false" ) {
 			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true});
 			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', id:'settings.pushSubscription.keys.p256dh', isEdit: true});
 			settings += app.getField('vpn_lock', 'Auth', app.getSetting('settings.pushSubscription.keys.auth'), {type: 'input', id:'settings.pushSubscription.keys.auth', isEdit: true});
@@ -2932,9 +2933,10 @@ var touchStartPoint, touchMovePoint;
 				if ( document.getElementById('switch-settings.debug').checked === true ) {
 					app.setSetting('settings.debug', true);
 					label.innerText = "Debug is enabled";
+					document.dispatchEvent(new Event("clearCache"));
 					app.debug = true;
 					if ( localStorage.getItem('settings.debug') == 'true' ) {
-						toast('Awsome, Debug mode is activated.', {timeout:3000, type: 'done'});
+						toast('Awsome, Debug mode is activated and cache is now cleared.', {timeout:3000, type: 'done'});
 					}
 				} else {
 					app.setSetting('settings.debug', false);
@@ -3187,6 +3189,7 @@ var touchStartPoint, touchMovePoint;
 	/*
 	 * *********************************** indexedDB ***********************************
 	 */
+	/*
 	var db;
 	var idbkr;
 	var objectStore;
@@ -3268,6 +3271,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		return jwt;
 	};
+	*/
 
 	app.showOrientation = function() {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
@@ -3560,6 +3564,8 @@ var touchStartPoint, touchMovePoint;
 	var h=function(e){console.log(e.type,e)};
 	screen.orientation.addEventListener("change", app.showOrientation);
 	//screen.orientation.unlock();
+
+	/*
 	if (!('indexedDB' in window)) {
 		if ( localStorage.getItem('settings.debug') == 'true' ) {
 			console.log('[indexedDB]', 'This browser doesn\'t support IndexedDB.');
@@ -3597,6 +3603,7 @@ var touchStartPoint, touchMovePoint;
 			}
 		};
 	}
+	*/
 	
 	// Cookie Consent
 	var d = new Date();
@@ -3870,6 +3877,25 @@ var touchStartPoint, touchMovePoint;
 			app.subscribeUserToPush();
 		}
 	};
+	document.addEventListener("clearCache", function(event) {
+		if ( localStorage.getItem('settings.debug') == 'true' ) {
+			console.log("[clearCache]", "Clearing... ");
+		}
+		window.caches.keys().then(function(keyList) {
+			//app.dataCacheName = navigator.serviceWorker.controller.postMessage("getDataCacheName");
+			caches.open(app.dataCacheName).then(function(cache) { 
+				cache.keys().then(function(cachedRequests) { 
+					cachedRequests.forEach(function(request, index, array) {
+						if ( localStorage.getItem('settings.debug') == 'true' ) {
+							console.log('[clearCache]', request, "-> DELETED");
+						}
+						window.caches.delete(request);
+					});
+				});
+			});
+			
+		});
+	}, false);
 
 	/*
 	 * *********************************** Offline ***********************************

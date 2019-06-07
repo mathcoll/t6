@@ -1,5 +1,5 @@
 
-var dataCacheName= "t6-cache-2019-04-30";
+var dataCacheName= "t6-cache-2019-06-07";
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -34,8 +34,7 @@ var filesToCache = [
 	"https://fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2",
 	"https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext",
 	"https://cdn.jsdelivr.net/emojione/2.2.7/assets/css/emojione.min.css",
-	"https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js",
-	"https://static-v.tawk.to/a-v3-45/fonts/tawk-widget.ttf?yh9epr"
+	"https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js"
 ];
 function refresh(response) {
 	return self.clients.matchAll().then(function(clients) {
@@ -148,8 +147,15 @@ self.addEventListener("push", function(event) {
 	}
 });
 self.addEventListener("message", function(event){
-
+	console.log("[onMessage]");
+	if ( event.data === "getDataCacheName" ) {
+		console.log("returning", dataCacheName);
+		return dataCacheName;
+	}
+});
+self.addEventListener("error", function(e) {
+	console.log("[onError]", e.filename, e.lineno, e.colno, e.message);
 });
 self.addEventListener("notificationclick", function(event) {
-	
+	console.log("[onNotificationClick]", event);
 });
