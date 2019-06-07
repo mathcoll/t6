@@ -171,8 +171,8 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
           #spinner.mdl-progress.mdl-js-progress.mdl-progress__indeterminate.loader(style='width:auto;')
 
         //- List Index
-        section#index.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
-          #hof
+        section#index.mdl-grid.mdl-cell--12-col.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
+          #hof.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
             .container
               #hof-container.content
                 #description-container
@@ -189,10 +189,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                     quote 
                       i *db: database
                 #illustration-container
-                  img(src=baseUrlCdn + '/img/m/t6.png')
                   span
                     quote
                       i t6 general overview
+                  img(src=baseUrlCdn + '/img/m/t6.png')
+                  div &nbsp;
                   a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="/docs") Explore documentation
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content How does t6 works?

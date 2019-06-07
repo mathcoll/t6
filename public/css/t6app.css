@@ -59,7 +59,6 @@ a {
 #hof {
 	box-shadow: 0 12px 12px 0 rgba(0,0,0,.2),0 5px 5px 0px rgba(0,0,0,.2),0 5px 5px 0 rgba(0,0,0,.2);
 	color: #fff;
-	margin: 10px;
 	border-top: rgba(178, 178, 178, 0.4) solid 1px;
 }
 #description-container {
@@ -92,7 +91,7 @@ a {
 #hof-container #illustration-container {
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	justify-content: flex-start;
 	padding-left: 10px;
 }
 #hof-container #illustration-container img {
@@ -448,7 +447,7 @@ div.mdl-list__item-primary-content span.heading {
 		max-width: 60%;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
+		justify-content: flex-start;
 		padding-left: 10px;
 	}
 }
