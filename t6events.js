@@ -16,6 +16,7 @@ t6events.setRP = function(rp) {
 };
 
 t6events.add = function(where, what, who) {
+	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
 		var tags = {what: what, where: where};
 		var fields = {who: who};
