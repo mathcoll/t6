@@ -23,7 +23,7 @@ public/google*.html
 /.well-known/
 **/settings.lua
 test/screenshots/*
-t6android/*
+/t6android/
 
 # Runtime data
 pids
