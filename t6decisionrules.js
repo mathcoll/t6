@@ -38,7 +38,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	let engine = new Engine();
 	if ( r.length > 0 ) {
 		r.forEach(function(theRule) {
-			//console.log('theRule', theRule.name);
+			theRule.rule.event.params.rule_id = theRule.id;
 			engine.addRule(new Rule(theRule.rule));
 		});
 	}
@@ -82,6 +82,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		}
 
+		//console.log("t6App", JSON.stringify({rule_id: event.params.rule_id}), user_id);
+		t6events.add("t6App", JSON.stringify({rule_id: event.params.rule_id}), user_id);
 		if( event.type === "mqttPublish" ) {
 			console.log("Matching EventType", "mqttPublish");
 			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};
