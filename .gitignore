@@ -22,6 +22,7 @@ public/BingSiteAuth.xml
 public/google*.html
 /.well-known/
 **/settings.lua
+**/settings.h
 test/screenshots/*
 /t6android/
 
