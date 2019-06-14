@@ -56,3 +56,4 @@ node_modules
 .node_repl_history
 
 decisionrules/node_modules
+/t6android/
