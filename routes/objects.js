@@ -155,7 +155,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 		} else {
 			o.is_connected = false;
 		}
-		console.log("is_connected=", o.is_connected);
+		//console.log("is_connected=", o.is_connected);
 		return o;
 	});
 	//console.log(query);
