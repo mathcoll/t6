@@ -1,4 +1,4 @@
-#!/usr/bin/env nodejs
+#!/home/mathieu/.nvm/versions/node/v11.6.0/bin/node
 
 "use strict";
 var exec		= require("exec");
