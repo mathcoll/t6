@@ -47,7 +47,7 @@ if ( config.exec ) {
 				if ( body ) {
 					bearer = body.token!==undefined?body.token:null;
 					if ( bearer && !error ) {
-						var body = {flow_id: config.flow_id, value: stdout, timestamp: timestamp, publish: config.publish, save: config.save, unit: config.unit, mqtt_topic: config.mqtt_topic, };
+						var body = {flow_id: config.flow_id, value: stdout, timestamp: timestamp, object_id: config.object_id, publish: config.publish, save: config.save, unit: config.unit, mqtt_topic: config.mqtt_topic, };
 						request({
 							url: config.api+"data/",
 							method: "POST",
