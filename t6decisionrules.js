@@ -161,6 +161,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		} else if ( event.type === "slackMessage" ) {
 			console.log("Matching EventType", "slackMessage");
 			// TODO
+		} else {
+			console.log("No matching EventType", event.type);
 		}
 	});
 	engine.run(payload);
