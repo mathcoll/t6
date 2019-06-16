@@ -95,11 +95,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 			if ( typeof payload.object_id !== "undefined" ) {
 				mqttPayload.object_id = payload.object_id;
-				if( user_id ) {
+				if( typeof user_id!=="undefined" && typeof payload.object_id!=="undefined" ) {
 					let objects	= db.getCollection("objects");
 					let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
-					if ( object && object.secret_key_crypt ) { // TODO: Should also get the Flow.requireCrypted flag.
-						mqttPayload.value = cryptPayload(mqttPayload.value, {secret_key_crypt: object.secret_key_crypt}); // ascii, binary, base64, hex, utf8
+					if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
+						mqttPayload.value = cryptPayload(""+mqttPayload.value, {secret_key_crypt: object.secret_key_crypt}); // ascii, binary, base64, hex, utf8
 					}
 				}
 			}
