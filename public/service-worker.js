@@ -1,5 +1,5 @@
 
-var dataCacheName= "t6-cache-2019-06-07";
+var dataCacheName= "t6-cache-2019-06-17";
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -22,7 +22,6 @@ var filesToCache = [
 	"https://cdn.internetcollaboratif.info/css/t6app.min.css",
 	"https://cdn.internetcollaboratif.info/js/t6app-min.js",
 	"https://cdn.internetcollaboratif.info/js/vendor.min.js",
-	"https://cdn.internetcollaboratif.info/js/vendor/Chart/Chart-min-2.7.3.js",
 	"https://cdn.internetcollaboratif.info/img/opl_img3.jpg",
 	"https://cdn.internetcollaboratif.info/img/opl_img2.jpg",
 	"https://cdn.internetcollaboratif.info/img/opl_img.jpg",
