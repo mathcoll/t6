@@ -2765,7 +2765,14 @@ var touchStartPoint, touchMovePoint;
 	app.refreshAuthenticate = function() {
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
-		var refreshPOST = {"grant_type": "refresh_token", "refresh_token": localStorage.getItem('refresh_token')};
+		app.auth.pushSubscription = {
+			endpoint: app.getSetting('settings.pushSubscription.endpoint'),
+			keys: {
+				auth: app.getSetting('settings.pushSubscription.keys.auth'),
+				p256dh: app.getSetting('settings.pushSubscription.keys.p256dh')
+			}
+		};
+		var refreshPOST = {"grant_type": "refresh_token", "refresh_token": localStorage.getItem('refresh_token'), pushSubscription: app.auth.pushSubscription};
 		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(refreshPOST) };
 		var url = app.baseUrl+"/"+app.api_version+"/authenticate";
 		
