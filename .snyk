@@ -115,11 +115,15 @@ ignore:
   SNYK-JS-LODASHMERGE-173732:
     - geoip-lite > ip-address > lodash.merge:
         reason: None given
-        expires: '2019-06-14T19:27:25.748Z'
+        expires: '2019-07-21T08:14:08.064Z'
   SNYK-JS-LODASHMERGE-173733:
     - geoip-lite > ip-address > lodash.merge:
         reason: None given
-        expires: '2019-06-14T19:27:25.748Z'
+        expires: '2019-07-21T08:14:08.064Z'
+  SNYK-JS-USERAGENT-174737:
+    - useragent:
+        reason: None given
+        expires: '2019-07-21T08:14:08.064Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
