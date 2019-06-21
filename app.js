@@ -142,6 +142,7 @@ var units			= require("./routes/units");
 var datatypes		= require("./routes/datatypes");
 var pwa				= require("./routes/pwa");
 var notifications	= require("./routes/notifications");
+var ifttt			= require("./routes/ifttt");
 app					= express();
 
 var CrossDomain = function(req, res, next) {
@@ -190,6 +191,7 @@ app.use("/v"+version+"/data", data);
 app.use("/v"+version+"/units", units);
 app.use("/v"+version+"/datatypes", datatypes);
 app.use("/v"+version+"/notifications", notifications);
+app.use("/v"+version+"/ifttt", ifttt);
 app.use("/", pwa);
 
 // catch 404 and forward to error handler

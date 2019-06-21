@@ -75,3 +75,10 @@ pushSubscriptionOptions = {
 	},
 	TTL: 3600
 };
+
+/* IFTTT settings */
+ifttt = {
+	apiUrl: "https://api.internetcollaboratif.info/v2.0.1/ifttt",
+	realtimeApi: { url: "https://realtime.ifttt.com/v1/notifications", port: 443 },
+	serviceKey: ""
+}
