@@ -10,7 +10,6 @@ var users;
 var tokens;
 var accessTokens;
 
-
 /**
  * @api {get} /users/newcomers Get the list of 20 latest user Account created
  * @apiName Get the list of 20 latest user Account created
@@ -24,17 +23,14 @@ var accessTokens;
  */
 router.get("/newcomers", function (req, res) {
 	if ( req.user.role === "admin" ) {
-		var query = squel.select()
-		.from("events")
-		.where("what=?", "user add")
-		.limit(20)
-		.order("time", false)
-		;
-		query.field("who");
-		dbInfluxDB.query(query.toString()).then(data => {
+		var query = sprintf("SELECT who FROM events WHERE what='user add' ORDER BY time desc LIMIT 20");
+		dbInfluxDB.query(query).then(data => {
 			users	= db.getCollection("users");
 			data.map(function(u) {
-				u.email = users.findOne({"id": { "$eq": u.who }}).email;
+				if( u.who !== "" ) {
+					let us = users.findOne({"id": { "$eq": u.who }});
+					u.email = us!==null?us.email:"";
+				}
 			});
 			res.status(200).send(data);
 		}).catch(err => {

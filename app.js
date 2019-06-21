@@ -23,7 +23,6 @@ global.moment			= require("moment");
 global.passgen			= require("passgen");
 global.md5				= require("md5");
 global.bcrypt			= require("bcrypt");
-global.squel			= require("squel");
 global.uuid				= require("node-uuid");
 global.os				= require("os");
 global.qrCode			= require("qrcode-npm");

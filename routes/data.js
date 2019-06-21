@@ -107,24 +107,23 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 	} else {
 		flows = db.getCollection("flows");
 		units	= db.getCollection("units");
-		var query = squel.select().from("data").where("flow_id=?", flow_id);
 
+		let where = "";
 		if ( typeof req.query.start !== "undefined" ) {
 			if ( !isNaN(req.query.start) ) {
-				query.where("time>="+req.query.start*1000000);
+				where = " AND time>="+req.query.start*1000000;
 			} else {
-				query.where("time>="+moment(req.query.start).format("x")*1000000); 
+				where = " AND time>="+moment(req.query.start).format("x")*1000000; 
 			}
 		}	
 		if ( typeof req.query.end !== "undefined" ) {
 			if ( !isNaN(req.query.end) ) {
-				query.where("time<="+req.query.end*1000000);
+				where += " AND time<="+req.query.end*1000000;
 			} else {
-				query.where("time<="+moment(req.query.end).format("x")*1000000); 
+				where += " AND time<="+moment(req.query.end).format("x")*1000000; 
 			}
 		}
-		var sorting = req.query.order==="asc"?true:(req.query.sort==="asc"?true:false);
-		query.order("time", sorting);
+		var sorting = req.query.order==="asc"?"ASC":(req.query.sort==="asc"?"ASC":"DESC");
 
 		var page = parseInt(req.query.page, 10);
 		if (isNaN(page) || page < 1) {
@@ -138,7 +137,6 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 		} else if (limit < 1) {
 			limit = 1;
 		}
-		query.limit(limit).offset((page - 1) * limit);
 
 		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit_id", "id");
@@ -165,9 +163,8 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 		} else {
 			fields = getFieldsFromDatatype(datatype, true);
 		}
-		query.field( fields );
-		query = query.toString();
-		console.log("query: "+query);
+		var query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page-1)*limit);
+		//console.log("query: "+query);
 		dbInfluxDB.query(query).then(data => {
 			if ( data.length > 0 ) {
 				data.map(function(d) {
@@ -259,37 +256,31 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 
 		if ( db_type.influxdb === true ) {
 			/* InfluxDB database */
-			var query = squel.select()
-				.from("data")
-				.where("flow_id=?", flow_id)
-				.where("time="+data_id)
-				.limit(limit)
-			;
+			let fields;
 			
 			// Cast value according to Flow settings
 			if ( datatype == "boolean" ) {
-				query.field("time, valueBoolean");
+				fields = "time, valueBoolean";
 			} else if ( datatype == "date" ) {
-				query.field("time, valueDate");
+				fields = "time, valueDate";
 			} else if ( datatype == "integer" ) {
-				query.field("time, valueInteger");
+				fields = "time, valueInteger";
 			} else if ( datatype == "json" ) {
-				query.field("time, valueJson");
+				fields = "time, valueJson";
 			} else if ( datatype == "string" ) {
-				query.field("time, valueString");
+				fields = "time, valueString";
 			} else if ( datatype == "time" ) {
-				query.field("time, valueTime");
+				fields = "time, valueTime";
 			} else if ( datatype == "float" ) {
-				query.field("time, valueFloat");
+				fields = "time, valueFloat";
 			} else if ( datatype == "geo" ) {
-				query.field("time, valueString");
+				fields = "time, valueString";
 			} else {
-				query.field("time, value");
+				fields = "time, value";
 			}
 			// End casting
 
-			query = query.toString();
-			//console.log(query);
+			var query = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND time='%s' LIMIT %s", fields, flow_id, data_id, limit);
 			
 			dbInfluxDB.query(query).then(data => {
 				if ( data.length > 0 ) {

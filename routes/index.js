@@ -198,14 +198,7 @@ router.all("*", function (req, res, next) {
 			res.header("X-RateLimit-Limit", limit);
 		}
 		var i;
-		
-		var query = squel.select()
-			.field("count(url)")
-			.from("requests")
-			.where("user_id=?", typeof req.user.id!=="undefined"?req.user.id:o.user_id)
-			.where("time>now() - 7d")
-			.limit(1)
-			.toString();
+		var query = sprintf("SELECT count(url) FROM requests WHERE (user_id='%s') AND (time>now() - 7d) LIMIT 1", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
 
 		dbInfluxDB.query(query).then(data => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
@@ -255,17 +248,9 @@ router.all("*", function (req, res, next) {
 
 function checkForTooManyFailure(req, res, email) {
 	// Invalid Credentials
-	var query = squel.select()
-		.field("count(*)")
-		.from(t6events.getMeasurement())
-		.where("what=?", "user login failure")
-		.where("who=?", email)
-		.where("time>now() - 1h")
-		.toString()
-		;
+	var query = sprintf("SELECT count(*) FROM %s WHERE (what='user login failure') AND (who='%s') AND (time>now() - 1h)", t6events.getMeasurement(), email);
 	dbInfluxDB.query(query).then(data => {
-		console.log(data[0]);
-		if( data[0].count_who > 2 && data[0].count_who < 4 ) {
+		if( typeof data==="object" && typeof data[0]!=="undefined" && data[0].count_who > 2 && data[0].count_who < 4 ) {
 			// when >4, then we should block the account and maybe ban the IP address
 			var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 			geo.ip = req.ip;
