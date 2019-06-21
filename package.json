@@ -28,7 +28,7 @@
     "cookie-parser": "^1.4.4",
     "crc": "^3.8.0",
     "debug": "^2.6.9",
-    "express": "^4.16.4",
+    "express": "^4.17.1",
     "express-http-proxy": "^0.6.0",
     "express-jwt": "^5.3.1",
     "express-session": "^1.16.1",
@@ -47,13 +47,12 @@
     "nodemailer": "^5.1.1",
     "passgen": "^1.0.1",
     "path": "^0.12.7",
-    "pug": "^2.0.3",
+    "pug": "^2.0.4",
     "qrcode-npm": "0.0.3",
     "request": "^2.88.0",
     "serialport": "^7.1.5",
     "serve-favicon": "^2.4.5",
     "session-file-store": "^0.2.0",
-    "snyk": "^1.165.0",
     "sprintf-js": "^1.1.2",
     "strength": "^0.1.4",
     "string-format": "^2.0.0",
@@ -64,6 +63,7 @@
   "readmeFilename": "README.md",
   "devDependencies": {
     "lighthouse": "^4.3.1",
+    "snyk": "^1.180.0",
     "uglify-js-es6": "^2.8.9"
   },
   "snyk": true
