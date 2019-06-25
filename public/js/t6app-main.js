@@ -3597,7 +3597,6 @@ var touchStartPoint, touchMovePoint;
 	};
 	logout_button.addEventListener('click', function(evt) {
 		app.auth={};
-		app.clearJWT();
 		app.resetDrawer();
 		app.sessionExpired();
 		toast('You have been disconnected :-(', {timeout:3000, type: 'done'});
