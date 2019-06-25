@@ -1,4 +1,4 @@
-<img src="https://github.com/mathcoll/t6/blob/master/public/img/t6.png" alt="t6 logo" title="t6 logo" align="left" height="96" width="96"/>
+<img src="https://github.com/mathcoll/t6/blob/master/bin/faviconDescription/apple-touch-icon-120x120.png" alt="t6 logo" title="t6 logo" align="left" height="96" width="96"/>
 
 # t6 - Connect real world Object to Digital Api
 t6 is an "oriented-Data" platform to connect physical Objects with timeseries DB.
