@@ -634,4 +634,18 @@ router.get("/terms", function(req, res, next) {
 	res.status(200).render("terms-json");
 });
 
+
+/**
+ * @api {get} /compatible-devices  for PWA
+ * @apiName Get compatible devices for PWA
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
+ */
+router.get("/compatible-devices", function(req, res, next) {
+	res.set("Content-Type", "application/json; charset=utf-8");
+	res.status(200).render("compatible-devices-json");
+});
+
 module.exports = router;

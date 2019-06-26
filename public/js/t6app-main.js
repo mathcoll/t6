@@ -64,6 +64,7 @@ var app = {
 		"terms": "t6 Terms of Service and License Agreement",
 		"docs": "t6 Api first documentation",
 		"users-list": "t6 Users Accounts",
+		"compatible-devices": "t6 Compatible Devices",
 	},
 	icons: {
 		"color": "format_color_fill",
@@ -739,6 +740,7 @@ var touchStartPoint, touchMovePoint;
 			terms: document.querySelector('section#terms'),
 			docs: document.querySelector('section#docs'),
 			usersList: document.querySelector('section#users-list'),
+			compatibleDevices: document.querySelector('section#compatible-devices'),
 			
 			objects: document.querySelector('section#objects'),
 			object: document.querySelector('section#object'),
@@ -951,7 +953,13 @@ var touchStartPoint, touchMovePoint;
 			window.location.hash = '#'+section;
 			app.displayLoginForm( document.querySelector('#login').querySelector('.page-content') );
 		} else if ( section === 'users-list' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
 			app.getUsersList();
+		} else if ( section === 'compatible-devices' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
+			app.getCompatibleDevices();
 		} else {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
@@ -990,6 +998,7 @@ var touchStartPoint, touchMovePoint;
 					section !== 'settings' &&
 					section !== 'docs' &&
 					section !== 'terms' &&
+					section !== 'compatible-devices' &&
 					section !== 'manage_notifications'
 				)
 			) {
@@ -3091,13 +3100,51 @@ var touchStartPoint, touchMovePoint;
 			}
 			
 			(app.containers.terms).querySelector('.page-content').innerHTML = terms;
-			if ( !app.isLogged ) {
-				app.displayLoginForm( (app.containers.terms).querySelector('.page-content') );
-			}
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
 				toast('Can\'t display Terms...' + error, {timeout:3000, type: "error"});
+			}
+		});
+		app.containers.spinner.setAttribute('hidden', true);
+	};
+
+	app.getCompatibleDevices = function() {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/compatible-devices";
+		
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			var compatibledevices = "";
+			for (var i=0; i < (response).length ; i++ ) {
+				compatibledevices += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				compatibledevices += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				if( response[i].title ) {
+					compatibledevices += "	<div class=\"mdl-card__title\" style=\"background: url('"+response[i].image+"') bottom  -25px right 15px no-repeat #fff;\">";
+					compatibledevices += "		<span class=\"mdl-typography--headline\">";
+					compatibledevices += "			<i class=\"material-icons md-48\">devices_other</i>"+response[i].title+"</span>";
+					compatibledevices += "	</div>";
+				}
+				compatibledevices += "		</div>";
+				compatibledevices += "		<div class=\"mdl-card__supporting-text no-padding\">";
+				compatibledevices += response[i].description;
+				compatibledevices += "		</div>";
+				compatibledevices += "	</div>";
+				compatibledevices += "</section>";
+			}
+			
+			(app.containers.compatibleDevices).querySelector('.page-content').innerHTML = compatibledevices;
+		})
+		.catch(function (error) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
+				toast('Can\'t display compatible devices...' + error, {timeout:3000, type: "error"});
 			}
 		});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3280,6 +3327,9 @@ var touchStartPoint, touchMovePoint;
 			currentPage = window.location.hash.substr(1);
 			if ( currentPage === 'terms' ) {
 				app.onTermsButtonClick();
+			} else if ( currentPage === 'compatible-devices' ) {
+				app.getCompatibleDevices();
+				app.setSection('compatible-devices');
 			} else if ( currentPage === 'docs' ) {
 				app.onDocsButtonClick();
 			} else if ( currentPage === 'status' ) {
