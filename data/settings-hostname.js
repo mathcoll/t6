@@ -76,6 +76,12 @@ pushSubscriptionOptions = {
 	TTL: 3600
 };
 
+/* Trackings */
+trackings = {
+	gtm: "GTM-xxxxx",
+	ggads: "ca-pub-xxxxx"
+};
+
 /* IFTTT settings */
 ifttt = {
 	apiUrl: "https://api.internetcollaboratif.info/v2.0.1/ifttt",

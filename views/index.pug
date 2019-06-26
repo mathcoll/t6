@@ -32,7 +32,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
   body
     //-<!-- Google Tag Manager (noscript) -->
     noscript
-      iframe(src="//www.googletagmanager.com/ns.html?id=GTM-PH7923", height="0", width="0", style="display:none;visibility:hidden")
+      iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
     //-<!-- End Google Tag Manager (noscript) -->
 
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
@@ -661,6 +661,6 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
         script(async='', src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')
         script.
           (adsbygoogle = window.adsbygoogle || []).push({
-          google_ad_client: "ca-pub-1540450623748539",
+          google_ad_client: trackings.ggads,
           enable_page_level_ads: true
           });
