@@ -2,21 +2,25 @@ doctype html
 html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
   head
     if process.env.NODE_ENV === 'development'
-      title DEV t6 IoT App
+      title DEV t6 IoT
     else
-      title t6 IoT App
+      title t6 IoT
 
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0')
+    meta(name='Description' content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='apple-mobile-web-app-title', content='t6 IoT App')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
-    meta(name='apple-mobile-web-app-title', content='t6 IoT App')
     meta(name='msapplication-TileImage', content=baseUrlCdn + '/img/m/icons/icon-152x152.png')
-    link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-640x1136.png', media='(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
     meta(name='msapplication-TileColor', content='#795548')
-    meta(name='theme-color', content='#795548')
-    meta(name='Description' content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='msapplication-TileImage', content=href=baseUrlCdn + '/img/m/icons/mstile-144x144.png')
+    meta(name='theme-color', content='#ffffff')
+    link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-640x1136.png', media='(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
+    link(rel='icon', type="image/png", sizes='32x32', href=baseUrlCdn + '/img/m/icons/icon-32x32.png')
+    link(rel='icon', type="image/png", sizes='16x16', href=baseUrlCdn + '/img/m/icons/icon-16x16.png')
+    link(rel='mask-icon', color="#795548", href=baseUrlCdn + '/img/m/icons/safari-pinned-tab.svg')
     if process.env.NODE_ENV === 'development'
       link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
@@ -25,7 +29,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
 
     link(rel='manifest', href='/manifest.json')
-    link(rel='apple-touch-icon', href=baseUrlCdn + '/img/m/icons/icon-152x152.png')
+    link(rel='apple-touch-icon', sizes="180x180", href=baseUrlCdn + '/img/m/icons/icon-180x180.png')
   body
     //-<!-- Google Tag Manager (noscript) -->
     noscript
@@ -655,3 +659,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor.min.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/Chart/Chart-min-2.7.3.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js')
+        script(async='', src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')
+        script.
+          (adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: "ca-pub-1540450623748539",
+          enable_page_level_ads: true
+          });
