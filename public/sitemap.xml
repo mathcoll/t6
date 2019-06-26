@@ -72,6 +72,11 @@
   <priority>0.70</priority>
 </url>
 <url>
+  <loc>https://api.internetcollaboratif.info/#compatible-devices</loc>
+  <changefreq>daily</changefreq>
+  <priority>0.70</priority>
+</url>
+<url>
   <loc>https://api.internetcollaboratif.info/#signup</loc>
   <changefreq>daily</changefreq>
   <priority>0.70</priority>
