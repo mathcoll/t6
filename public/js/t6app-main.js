@@ -3127,20 +3127,19 @@ var touchStartPoint, touchMovePoint;
 				compatibledevices += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				compatibledevices += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if( response[i].title ) {
-					compatibledevices += "	<div class=\"mdl-card__title\" style=\"background: url('"+response[i].image+"') bottom  -25px right 15px no-repeat #fff;\">";
-					compatibledevices += "		<span class=\"mdl-typography--headline\">";
-					compatibledevices += "			<i class=\"material-icons md-48\">devices_other</i>"+response[i].title+"</span>";
+					compatibledevices += "	<div class=\"mdl-card__title\">";
+					compatibledevices += "		<span class=\"mdl-typography--headline\"><i class=\"material-icons md-48\">devices_other</i>"+response[i].title+"</span>";
 					compatibledevices += "	</div>";
 				}
-				compatibledevices += "		</div>";
 				compatibledevices += "		<div class=\"mdl-card__supporting-text no-padding\">";
+				compatibledevices += "			<img src=\"/img/m/placeholder.png\" class=\"lazyloading img-responsive\" data-src=\""+app.baseUrlCdn + response[i].image+"\" align=\"left\" style=\"margin-right: 5px;\" width=\"100\" alt=\""+app.baseUrlCdn + response[i].title+"\" />"
 				compatibledevices += response[i].description;
 				compatibledevices += "		</div>";
 				compatibledevices += "	</div>";
 				compatibledevices += "</section>";
 			}
-			
 			(app.containers.compatibleDevices).querySelector('.page-content').innerHTML = compatibledevices;
+			app.imageLazyLoading();
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem('settings.debug') == 'true' ) {
@@ -3313,6 +3312,36 @@ var touchStartPoint, touchMovePoint;
 		}
 		return "";
 	};
+
+	app.imageLazyLoading = function() {
+		/* Lazy loading on images */
+		if (!('IntersectionObserver' in window)) {
+			var LL = document.querySelectorAll('img.lazyloading');
+			for (var image in LL) {
+				if ( (LL[image]).childElementCount > -1 ) {
+					app.preloadImage(LL[image]);
+				}
+			}
+		} else {
+			var io = new IntersectionObserver(
+				entries => {
+					entries.map(function(IOentry) {
+						if (IOentry.intersectionRatio > 0 && navigator.onLine) {
+							io.unobserve(IOentry.target);
+							app.preloadImage(IOentry.target);
+						}
+					});
+				}, {}
+			);
+			var LL = document.querySelectorAll('img.lazyloading');
+			for (var image in LL) {
+				if ( (LL[image]).childElementCount > -1 ) {
+					(LL[image]).src = app.baseUrlCdn + '/img/m/placeholder.png';
+					io.observe(LL[image]);
+				}
+			}
+		}
+	}; // Lazy loading on images
 	
 	/*
 	 * *********************************** Run the App ***********************************
@@ -3534,46 +3563,6 @@ var touchStartPoint, touchMovePoint;
 	var h=function(e){console.log(e.type,e)};
 	screen.orientation.addEventListener("change", app.showOrientation);
 	//screen.orientation.unlock();
-
-	/*
-	if (!('indexedDB' in window)) {
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
-			console.log('[indexedDB]', 'This browser doesn\'t support IndexedDB.');
-		}
-	} else {
-		db = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-		idbkr = window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
-		var request = db.open('t6-app', 1, function(upgradeDb) {
-			if (!upgradeDb.objectStoreNames.contains('jwt')) {
-				objectStore = upgradeDb.createObjectStore('jwt', { keyPath: 'exp', autoIncrement: true });
-				objectStore.createIndex("exp", "exp", { unique: false, autoIncrement: true });
-			}
-		});
-		request.onerror = function(event) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('[indexedDB]', 'Database is on-error: ' + event.target.errorCode);
-			}
-		};
-		request.onsuccess = function(event) {
-			db = request.result;
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('[indexedDB]', 'Database is on-success');
-				console.log('[indexedDB]', 'searchJWT(): ');
-			}
-			if ( app.autologin === true ) {
-				app.searchJWT();
-			}
-		};
-		request.onupgradeneeded = function(event) {
-			db = event.target.result;
-			objectStore = db.createObjectStore("jwt", {keyPath: "exp", autoIncrement: true});
-			objectStore.createIndex("exp", "exp", { unique: false, autoIncrement: true });
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
-				console.log('[indexedDB]', 'Database is on-upgrade-needed');
-			}
-		};
-	}
-	*/
 	
 	// Cookie Consent
 	var d = new Date();
@@ -3771,34 +3760,7 @@ var touchStartPoint, touchMovePoint;
 			}
 		});
 	}); // Lazy loading
-	
-	/* Lazy loading on images */
-	if (!('IntersectionObserver' in window)) {
-		var LL = document.querySelectorAll('img.lazyloading');
-		for (var image in LL) {
-			if ( (LL[image]).childElementCount > -1 ) {
-				app.preloadImage(LL[image]);
-			}
-		}
-	} else {
-		var io = new IntersectionObserver(
-			entries => {
-				entries.map(function(IOentry) {
-					if (IOentry.intersectionRatio > 0 && navigator.onLine) {
-						io.unobserve(IOentry.target);
-						app.preloadImage(IOentry.target);
-					}
-				});
-			}, {}
-		);
-		var LL = document.querySelectorAll('img.lazyloading');
-		for (var image in LL) {
-			if ( (LL[image]).childElementCount > -1 ) {
-				(LL[image]).src = app.baseUrlCdn + '/img/m/placeholder.png';
-				io.observe(LL[image]);
-			}
-		}
-	} // Lazy loading on images
+	app.imageLazyLoading();
 	
 	var pMatches = document.querySelectorAll('.passmatch');
 	for (var p in pMatches) {
