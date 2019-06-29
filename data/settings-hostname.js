@@ -2,19 +2,17 @@
 version				= "2.0.1";
 appName				= process.env.NAME;
 baseUrl				= process.env.BASE_URL;
-baseUrlCdn			= "//cdn.domain.tld";
+baseUrlCdn			= "//cdn.domain.tld"; // Your CDN base domain name, if any. You can use Cloudflare for instance.
 
 /* Mqtt settings */
 mqttHost			= "localhost"; // Your Mqtt server host
 mqttPort			= 1883; // Your Mqtt server port
-mqttRoot			= "t6/"+os.hostname()+"/"; // Mqtt root
-mqttInfo			= mqttRoot+"api"; // Mqtt topic for t6 api basic logs
+mqttRoot			= "t6/"+os.hostname()+"/"; // Mqtt root, this is used to have a generic topic
+mqttInfo			= mqttRoot+"api"; // Mqtt topic for t6 api
 
 /* Session settings */
-session				= require("express-session");
-FileStore			= require("session-file-store")(session);
 secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz"; // Keyboard-cat
-sessionDuration		= 3600*24*10; // 10 days cookie session
+sessionDuration		= 3600*24*10; // Cookie session duration, 10 days
 store				= new FileStore({ttl: sessionDuration, path: "/sessions"}); // Force session folder as absolute path in settings
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
@@ -22,7 +20,8 @@ staticOptions		= { etag: true, maxAge: 10*24*3600*1000 };//10 Days
 
 /* JWT */
 jwtsettings = {
-	expiresInSeconds: 3600,
+	expiresInSeconds: 5*60, // JWT session duration in seconds, it should be short: 5 minutes
+	refreshExpiresInSeconds: 60*60*24, // JWT session duration in seconds for refreshToken, it can be longer: 24 hours
 	secret: "ThisIsAVeryGoodSecretForMyAPI" // Keyboard-cat
 };
 
@@ -66,6 +65,7 @@ quota = {
 localization = {latitude: 39.800327, longitude: 6.343530};
 
 /* pushSubscription */
+//https://console.firebase.google.com/u/0/project/t6-app/settings/cloudmessaging/
 pushSubscriptionOptions = {
 	gcmAPIKey: "",
 	vapidDetails: {
