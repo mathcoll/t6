@@ -219,6 +219,12 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			secret_key:		typeof req.body.secret_key!=="undefined"?req.body.secret_key:"",
 			secret_key_crypt:typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:"",
 		};
+		if ( req.body.parameters.length > 0 ) {
+			newObject.parameters = [];
+			req.body.parameters.map(function(param) {
+				newObject.parameters.push({ name: typeof param.name!=="undefined"?param.name:uuid.v4(), value: typeof param.value!=="undefined"?param.value:"" , type: typeof param.type!=="undefined"?param.type:"String"});
+			});
+		}
 		t6events.add("t6Api", "object add", newObject.id);
 		objects.insert(newObject);
 		//console.log(objects);
@@ -287,6 +293,12 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;
 				result = item;
 			});
+			if ( req.body.parameters.length > 0 ) {
+				result.parameters = [];
+				req.body.parameters.map(function(param) {
+					result.parameters.push({ name: typeof param.name!=="undefined"?param.name:uuid.v4(), value: typeof param.value!=="undefined"?param.value:"" , type: typeof param.type!=="undefined"?param.type:"String"});
+				});
+			}
 			if ( typeof result !== "undefined" ) {
 				db.save();
 				
