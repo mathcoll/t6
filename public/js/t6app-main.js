@@ -2412,6 +2412,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		var hidden = options.isVisible!==false?"":" hidden";
 		var expand = options.isExpand===false?"":" mdl-card--expand";
+		var enterkeyhint = typeof options.enterkeyhint!=="undefined"?sprintf(" enterkeyhint=\"%s\"", options.enterkeyhint):"";
 		var inputmode = typeof options.inputmode!=="undefined"?sprintf(" inputmode=\"%s\"", options.inputmode):"";
 		var field = "";
 		field += "<div class='mdl-list__item--three-line small-padding "+hidden+expand+"'>";
@@ -2424,7 +2425,7 @@ var touchStartPoint, touchMovePoint;
 					var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='text' "+style+" "+inputmode+" value='"+app.escapeHtml(value)+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+					field += "	<input type='text' "+style+" "+inputmode+" "+enterkeyhint+" value='"+app.escapeHtml(value)+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
