@@ -41,6 +41,7 @@ global.webpush			= require("web-push");
 
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
+global.t6BuildVersion	= require("./t6BuildVersion.json").t6BuildVersion;
 global.t6decisionrules	= require("./t6decisionrules");
 global.t6mqtt			= require("./t6mqtt");
 global.t6mailer			= require("./t6mailer");
@@ -246,7 +247,7 @@ if (app.get("env") === "development") {
 }
 
 t6events.add("t6App", "start", "self");
-console.log(sprintf("%s %s has started and listening to %s", moment().format("MMMM Do YYYY, H:mm:ss"), appName, process.env.BASE_URL_HTTPS));
+console.log(sprintf("%s %s has started and listening to %s (using Build-Version=%s)", moment().format("MMMM Do YYYY, H:mm:ss"), appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
