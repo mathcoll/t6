@@ -2254,7 +2254,7 @@ var touchStartPoint, touchMovePoint;
 			"			<div class='mdl-card__supporting-text'>" +
 			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
-			"					<input name='username' pattern=\""+app.patterns.username+"\" class='mdl-textfield__input' type='text' id='signin.username'>" +
+			"					<input name='username' inputmode='email' pattern=\""+app.patterns.username+"\" class='mdl-textfield__input' type='text' id='signin.username'>" +
 			"					<label for='signin.username' class='mdl-textfield__label'>Username</label>" +
 			"					<span class='mdl-textfield__error'>Username should be your email address</span>" +
 			"				</div>" +
@@ -2412,6 +2412,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		var hidden = options.isVisible!==false?"":" hidden";
 		var expand = options.isExpand===false?"":" mdl-card--expand";
+		var inputmode = typeof options.inputmode!=="undefined"?sprintf(" inputmode=\"%s\"", options.inputmode):"";
 		var field = "";
 		field += "<div class='mdl-list__item--three-line small-padding "+hidden+expand+"'>";
 		if ( typeof options === 'object' ) {
@@ -2423,7 +2424,7 @@ var touchStartPoint, touchMovePoint;
 					var pattern = options.pattern!==undefined?"pattern='"+options.pattern+"'":"";
 					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
-					field += "	<input type='text' "+style+" value='"+app.escapeHtml(value)+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
+					field += "	<input type='text' "+style+" "+inputmode+" value='"+app.escapeHtml(value)+"' "+pattern+" class='mdl-textfield__input' name='"+label+"' id='"+id+"' />";
 					if (label) field += "	<label class='mdl-textfield__label' for='"+id+"'>"+label+"</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
