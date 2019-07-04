@@ -3563,8 +3563,10 @@ var touchStartPoint, touchMovePoint;
 	};
 	for(var a in touch){document.addEventListener(a,touch[a],false);}
 	var h=function(e){console.log(e.type,e)};
-	screen.orientation.addEventListener("change", app.showOrientation);
-	//screen.orientation.unlock();
+	var orientation = screen.msOrientation || screen.mozOrientation || (screen.orientation || {}).type;
+	if (typeof orientation!=="undefined") {
+		orientation.addEventListener("change", app.showOrientation);
+	}
 	
 	// Cookie Consent
 	var d = new Date();
