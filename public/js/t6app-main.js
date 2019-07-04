@@ -3563,9 +3563,8 @@ var touchStartPoint, touchMovePoint;
 	};
 	for(var a in touch){document.addEventListener(a,touch[a],false);}
 	var h=function(e){console.log(e.type,e)};
-	var orientation = screen.msOrientation || screen.mozOrientation || (screen.orientation || {}).type;
-	if (typeof orientation!=="undefined") {
-		orientation.addEventListener("change", app.showOrientation);
+	if (typeof screen.orientation!=="undefined") {
+		screen.orientation.addEventListener("change", app.showOrientation);
 	}
 	
 	// Cookie Consent
