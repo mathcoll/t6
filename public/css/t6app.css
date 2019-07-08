@@ -22,7 +22,7 @@
 	vertical-align: middle;
 }
 .animatedIcon {
-	animation: rotate 1s ease-in-out infinite;
+	animation: rotate 2s cubic-bezier(0,.9,.9,0) infinite;
 }
 * {
 	box-sizing: border-box;
