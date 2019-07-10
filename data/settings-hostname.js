@@ -86,5 +86,7 @@ trackings = {
 ifttt = {
 	apiUrl: "https://api.internetcollaboratif.info/v2.0.1/ifttt",
 	realtimeApi: { url: "https://realtime.ifttt.com/v1/notifications", port: 443 },
-	serviceKey: ""
+	serviceKey: "",
+	serviceClientId: "",
+	serviceSecret: ""
 }

@@ -215,6 +215,10 @@ router.all("*", function (req, res, next) {
 			} else {
 				var tags = {user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 				var fields = {url: o.url};
+
+				req.session.cookie.secure = true;
+				req.session.user_id = req.user.id;
+				
 				dbInfluxDB.writePoints([{
 					measurement: "requests",
 					tags: tags,
@@ -342,6 +346,9 @@ router.post("/authenticate", function (req, res) {
 				}
 				users.update(user);
 				db.save();
+
+				req.session.cookie.secure = true;
+				req.session.cookie.user_id = user.id;
 
 				/* pushSubscription */
 				if ( typeof pushSubscription !== "undefined" ) {
