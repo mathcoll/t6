@@ -130,7 +130,7 @@ router.post("/OAuth2/token", function(req, res) {
 	users	= db.getCollection("users");
 	var queryU = { "iftttCode": code };
 	var user = users.findOne(queryU);
-	if ( user && client_secret === ifttt.serviceSecret ) {
+	if ( user && client_secret === ifttt.serviceSecret && client_id === ifttt.serviceClientId ) {
 		var tokens	= db.getCollection("tokens");
 		var queryT = { "$and": [
 			{ "user_id" : user.id },
@@ -166,7 +166,11 @@ router.get("/v1/user/destroy-session", function (req, res) {
 });
 
 router.get("/v1/user/info", function (req, res) {
-	let bearer = req.headers["authorization"].split(" ")[1];
+	let authorization = req.headers["authorization"];
+	let bearer;
+	if ( authorization ) {
+		bearer = authorization.split(" ")[1];
+	}
 	if ( bearer === result.data.accessToken ) {
 		res.status(200).send(resultUser);
 	} else {
@@ -201,8 +205,8 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 	let ServiceKey = req.headers["ifttt-service-key"];
 	let authorization = req.headers["authorization"];
 	let bearer;
-	if ( req.headers["authorization"] ) {
-		bearer = req.headers["authorization"].split(" ")[1];
+	if ( authorization ) {
+		bearer = authorization.split(" ")[1];
 	}
 	if ( bearer && bearer === result.data.accessToken ) {
 		//req.body.triggerFields.flow
@@ -210,8 +214,8 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 		//req.body.trigger_identity
 		
 		let resultT = {
-				data:[],
-				eventTrigger: result.data.samples.triggers.eventTrigger
+			data:[],
+			eventTrigger: result.data.samples.triggers.eventTrigger
 		};
 		let limit = parseInt(req.body.limit, 10);
 		if (!limit && limit !== 0) { limit = 3; }
@@ -223,6 +227,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 		//if ( ChannelKey == ServiceKey && ChannelKey === ifttt.serviceKey ) {
 		if ( authorization.split(" ")[1] === result.data.accessToken ) {
 			if ( req.body.triggerFields && typeof req.body.triggerFields.user_id !== "undefined" ) {
+				//console.log("resultT", resultT);
 				res.status(200).send(resultT);
 			} else {
 				res.status(400).send({ "errors": [ {"status": "SKIP", "message": "missing Trigger Fields/key"} ] });
@@ -232,15 +237,70 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 		}
 	} else {
 		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
-			res.status(200).send( {} ); // TODO
+			if( !err && decoded ) {
+				users	= db.getCollection("users");
+				let queryU = { "id": decoded.id };
+				console.log(queryU);
+				let user = users.findOne(queryU);
+				user.iftttTrigger_identity = req.body.trigger_identity;
+				let resultSuccess = {
+					data:[
+						{
+							"meta": {
+								"id": user.id,
+								"timestamp": getTs()-3600
+							},
+							"user_id": user.id,
+							"environment": process.env.NODE_ENV,
+							"dtepoch": getTs(),
+							"value": getUuid(),
+							"flow": getUuid(),
+							"datetime": getIsoDate()
+						}
+					],
+					eventTrigger: {
+						user_id: user.id,
+						environment: process.env.NODE_ENV,
+						dtepoch: getTs(),
+						value: "",
+						flow: "",
+						datetime: getIsoDate()
+					}
+				};
+				//console.log("resultSuccess", resultSuccess);
+				res.status(200).send( resultSuccess );
+			} else {
+				res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });
+			}
 		});
 	}
-	
 });
 
 router.delete("/v1/triggers/eventTrigger/trigger_identity/:trigger_identity([0-9a-z\-]+)", function (req, res) {
-	console.log(req.params.trigger_identity);
-	res.status(400).send({ "errors": [ {"status": "SKIP", "message": "Not Authorized"} ] });
+	let authorization = req.headers["authorization"];
+	let bearer;
+	if ( authorization ) {
+		bearer = authorization.split(" ")[1];
+	}
+	if ( bearer && bearer === result.data.accessToken ) {
+		res.status(201).send( {} ); // FAKE MODE
+	} else {
+		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
+			if( !err && decoded ) {
+				users	= db.getCollection("users");
+				let queryU = { "$and": [
+					{ "id": decoded.id },
+					{ "iftttTrigger_identity": req.params.trigger_identity },
+				]};
+				let user = users.findOne(queryU);
+				user.iftttCode = null;
+				user.iftttTrigger_identity = null;
+				res.status(201).send({ "errors": [ ] });
+			} else {
+				res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });
+			}
+		});
+	}
 });
 
 module.exports = router;
