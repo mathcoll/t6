@@ -1,37 +1,64 @@
--if ( user && list != null )
-  p Email 
-    strong #{mail} 
-    | have successfully been added to the list 
-    strong #{list}
-    | .
-  p Your subscriptions:
-    ul
-      -if ( user && user.unsubscription.reminder > 0 )
-        li Reminder Welcome email - 
-          a(href="/mail/"+user.email+"/subscribe/reminder/"+user.unsubscription_token+"/") Subscribe
-      -else
-        li Reminder Welcome email - 
-          a(href="/mail/"+user.email+"/unsubscribe/reminder/"+user.unsubscription_token+"/") Unsubscribe
-      -endif
+doctype html
+html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
+  head
+    title Authorize Application
 
-      -if ( user && user.unsubscription.changePassword > 0 )
-        li Reminder to change Password - 
-          a(href="/mail/"+user.email+"/subscribe/changePassword/"+user.unsubscription_token+"/") Subscribe
-      -else
-        li Reminder to change Password - 
-          a(href="/mail/"+user.email+"/unsubscribe/changePassword/"+user.unsubscription_token+"/") Unsubscribe
-      -endif
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    if process.env.NODE_ENV === 'development'
+      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+    else
+      link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
 
-      -if ( user && user.unsubscription.newsletter > 0 )
-        li t6 Newsletters - 
-          a(href="/mail/"+user.email+"/subscribe/newsletter/"+user.unsubscription_token+"/") Subscribe
-      -else
-        li t6 Newsletters - 
-          a(href="/mail/"+user.email+"/unsubscribe/newsletter/"+user.unsubscription_token+"/") Unsubscribe
-      -endif
-      
-      li Security notification related to your account
+  body(style="background: #fff;")
+    noscript
+      iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
 
--else
-  p Something goes wrong. Your request have not been taken into account.
--endif
+    main.mdl-layout__content
+      section.mdl-grid.mdl-cell--6-col
+        -if ( user && list != null )
+          form(name="authorize", action=redirect_uri, method="get")
+            .page-content.mdl-card.mdl-grid.mdl-grid--no-spacing
+              .mdl-grid.mdl-cell--12-col(data-action="view")
+                .mdl-card.mdl-shadow--2dp
+                  .mdl-card__title(style="cursor: auto;")
+                    h3.mdl-card__title-text
+                      img(src=baseUrlCdn+"/img/m/icons/icon-72x72.png", style="width: 40%;height: 40%;")
+                      span(style="margin: auto 0; white-space: initial;") Email 
+                        strong #{mail} 
+                        | have successfully been added to the list 
+                        strong #{list}
+                        | .
+                  .mdl-list__item--three-line.small-padding Your subscriptions:
+                    p
+                      ul
+                        -if ( user && user.unsubscription.reminder > 0 )
+                          li Reminder Welcome email - 
+                            a(href="/mail/"+user.email+"/subscribe/reminder/"+user.unsubscription_token+"/") Subscribe
+                        -else
+                          li Reminder Welcome email - 
+                            a(href="/mail/"+user.email+"/unsubscribe/reminder/"+user.unsubscription_token+"/") Unsubscribe
+                        -endif
+                        
+                        -if ( user && user.unsubscription.changePassword > 0 )
+                          li Reminder to change Password - 
+                            a(href="/mail/"+user.email+"/subscribe/changePassword/"+user.unsubscription_token+"/") Subscribe
+                        -else
+                          li Reminder to change Password - 
+                            a(href="/mail/"+user.email+"/unsubscribe/changePassword/"+user.unsubscription_token+"/") Unsubscribe
+                        -endif
+                        
+                        -if ( user && user.unsubscription.newsletter > 0 )
+                          li t6 Newsletters - 
+                            a(href="/mail/"+user.email+"/subscribe/newsletter/"+user.unsubscription_token+"/") Subscribe
+                        -else
+                          li t6 Newsletters - 
+                            a(href="/mail/"+user.email+"/unsubscribe/newsletter/"+user.unsubscription_token+"/") Unsubscribe
+                        -endif
+                        
+                        li Security notification related to your account (Subscribed)
+        -else
+          p Something goes wrong. Your request have not been taken into account.
+        -endif
