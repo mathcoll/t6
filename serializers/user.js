@@ -5,7 +5,7 @@ function UserSerializer(user) {
 	this.serialize = function () {
 		return new JSONAPISerializer("user", {
 			keyForAttribute: "underscore_case",
-			attributes: ["firstName", "lastName", "login", "email", "role", "location", "unsubscription", "unsubscription_token", "passwordLastUpdated", "reminderMail", "changePasswordMail", "subscription_date", "update_date", "permissions", "gravatar"],
+			attributes: ["firstName", "lastName", "login", "email", "role", "iftttCode", "iftttTrigger_identity", "location", "unsubscription", "unsubscription_token", "passwordLastUpdated", "reminderMail", "changePasswordMail", "subscription_date", "update_date", "permissions", "gravatar"],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/users", baseUrl_https, version)
 			},

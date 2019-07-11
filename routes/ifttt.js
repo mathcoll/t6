@@ -208,11 +208,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 	if ( authorization ) {
 		bearer = authorization.split(" ")[1];
 	}
-	if ( bearer && bearer === result.data.accessToken ) {
-		//req.body.triggerFields.flow
-		//req.body.triggerFields.user_id
-		//req.body.trigger_identity
-		
+	if ( (bearer && bearer === result.data.accessToken) || (ChannelKey == ServiceKey && ChannelKey === ifttt.serviceKey) ) {
 		let resultT = {
 			data:[],
 			eventTrigger: result.data.samples.triggers.eventTrigger
@@ -224,18 +220,15 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 		for (let i=0; i<limit; i++) {
 			(resultT.data).push(getDataItem(i));
 		}
-		//if ( ChannelKey == ServiceKey && ChannelKey === ifttt.serviceKey ) {
-		if ( authorization.split(" ")[1] === result.data.accessToken ) {
-			if ( req.body.triggerFields && typeof req.body.triggerFields.user_id !== "undefined" ) {
-				//console.log("resultT", resultT);
-				res.status(200).send(resultT);
-			} else {
-				res.status(400).send({ "errors": [ {"status": "SKIP", "message": "missing Trigger Fields/key"} ] });
-			}
+
+		if ( req.body.triggerFields && typeof req.body.triggerFields.user_id !== "undefined" ) {
+			//console.log("resultT", resultT);
+			res.status(200).send(resultT);
 		} else {
-			res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });
+			res.status(400).send({ "errors": [ {"status": "SKIP", "message": "missing Trigger Fields/key"} ] });
 		}
-	} else {
+
+	} else if(bearer) {
 		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if( !err && decoded ) {
 				users	= db.getCollection("users");
@@ -248,7 +241,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 						{
 							"meta": {
 								"id": user.id,
-								"timestamp": getTs()-3600
+								"timestamp": getTs()
 							},
 							"user_id": user.id,
 							"environment": process.env.NODE_ENV,
@@ -262,17 +255,20 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 						user_id: user.id,
 						environment: process.env.NODE_ENV,
 						dtepoch: getTs(),
-						value: "",
-						flow: "",
+						value: "1234 FAKE",
+						flow: "FAKE flow",
 						datetime: getIsoDate()
 					}
 				};
-				//console.log("resultSuccess", resultSuccess);
+				console.log("resultSuccess");
+				console.log(JSON.stringify(resultSuccess, null, 2));
 				res.status(200).send( resultSuccess );
 			} else {
 				res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });
 			}
 		});
+	} else {
+		res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });
 	}
 });
 
