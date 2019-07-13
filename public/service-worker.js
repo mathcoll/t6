@@ -1,8 +1,8 @@
 
-var dataCacheName= "t6-cache-2019-06-17";
+var dataCacheName= "t6-cache-2019-07-12";
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
-var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
+var cacheBlacklist = ["object%20", "v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
 var filesToCache = [
 	"/",
 	"/applicationStart",
@@ -17,8 +17,7 @@ var filesToCache = [
 	"/img/m/placeholder.png",
 	"/img/m/welcome_card.jpg",
 	"/img/m/side-nav-bg.webp",
-	"/img/m/icons/icon-128x128.png",
-
+	"/img/m/icons/icon-128x128.png",/*
 	"https://cdn.internetcollaboratif.info/css/t6app.min.css",
 	"https://cdn.internetcollaboratif.info/js/t6app-min.js",
 	"https://cdn.internetcollaboratif.info/js/vendor.min.js",
@@ -28,12 +27,9 @@ var filesToCache = [
 	"https://cdn.internetcollaboratif.info/img/m/placeholder.png",
 	"https://cdn.internetcollaboratif.info/img/m/welcome_card.jpg",
 	"https://cdn.internetcollaboratif.info/img/m/side-nav-bg.webp",
-	"https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png",
-
+	"https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png",*/
 	"https://fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2",
-	"https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext",
-	"https://cdn.jsdelivr.net/emojione/2.2.7/assets/css/emojione.min.css",
-	"https://cdn.jsdelivr.net/emojione/2.2.7/lib/js/emojione.min.js"
+	"https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext"
 ];
 function refresh(response) {
 	return self.clients.matchAll().then(function(clients) {
@@ -73,27 +69,39 @@ function fromServer(request){
 	return fetch(request).then(function(response){ return response; });
 }
 self.addEventListener("install", function(e) {
-	console.log("[ServiceWorker]", "Install.");
+	console.log("[ServiceWorker]", "Installing");
 	e.waitUntil(
 		caches.open(cacheName).then(function(cache) {
-			console.log("[ServiceWorker]", "Caching app shell.", cacheName);
-			cache.addAll(filesToCache.map(function(filesToCache) {
-				const request = new Request(filesToCache, { mode: "no-cors" });
-				return fetch(request).then(response => cache.put(request, response));
-			})).then(function() {
-				console.log("[ServiceWorker]", "All resources have been fetched and cached.");
+			console.log("[ServiceWorker]", "Caching to", cacheName);
+			//return cache.addAll(filesToCache.map(function(file) {
+				//console.log("[ServiceWorker]", "Caching", file);
+				//fetch(file, { mode: "no-cors" }).then(function (response) {
+				//	cache.put(file, response);
+				//});
+			//}))
+			return cache.addAll(filesToCache).then(function() {
+				console.log('All resources have been fetched and cached.');
 			});
+		}).then(function() {
+			console.log("[ServiceWorker]", "Install completed");
+		}).catch((error) =>  {
+			console.log("[ServiceWorker]", "Error:", error);
 		})
 	);
-	/*
-	e.waitUntil(precache().then(function() {
-		console.log("[ServiceWorker]", "Skip waiting on install");
-		return self.skipWaiting();
-	}));
-	*/
 });
 self.addEventListener("activate", function(e) {
-	console.log("[ServiceWorker]", "Activate.");
+	console.log("[ServiceWorker]", "Activate and cleaning old caches.");
+	event.waitUntil(
+		caches.keys().then((cacheNames) => {
+			return Promise.all(
+				cacheNames.map((cache) => {
+					if (cache !== cacheName) {     //cacheName = 'cache-v1'
+						return caches.delete(cache); //Deleting the cache
+					}
+				})
+			);
+		})
+	);
 	return self.clients.claim();
 });
 function matchInArray(string, expressions) {

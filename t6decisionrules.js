@@ -124,7 +124,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			// TODO
 		} else if ( event.type === "httpWebhook" ) {
 			console.log("Matching EventType", "httpWebhook");
-			var options = {
+			let options = {
 				url: event.params.url,
 				port: event.params.port,
 				method: event.params.method,
@@ -146,9 +146,49 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					console.log("success", options.url, statusCode, body);
 				}
 			)
-		} else if ( event.type === "Ifttt" ) {
+		} else if ( event.type === "Ifttt" || event.type === "ifttt" ) {
 			console.log("Matching EventType", "Ifttt");
-			// TODO
+			let body = {
+				"data": [
+					{
+						"trigger_identity": "d1ffe1edf047abc4da8a1d43402fd0bce12ab279",
+						"user_id": user_id,
+						"value": payload.value,
+						"environment": typeof payload.environment!=="undefined"?payload.environment:process.env.NODE_ENV,
+						"dtepoch": payload.dtepoch,
+						"flow": payload.flow,
+						"datetime": payload.datetime
+					}
+				]
+			};
+			let options = {
+				url: ifttt.realtimeApi.url,
+				port: ifttt.realtimeApi.port,
+				method: "POST",
+				strictSSL: true,
+				headers: {
+					"IFTTT-Service-Key": ifttt.serviceKey,
+					"Accept": "application/json",
+					"Accept-Charset": "utf-8",
+					"Accept-Encoding": "gzip, deflate",
+					"Content-Type": "application/json",
+					"X-Request-ID": uuid.v4()
+				},
+				body: JSON.stringify(body)
+			};
+			request(options,
+				function (error, response, body) {
+					var statusCode = response ? response.statusCode : null
+							body = body || null
+							console.log("Request sent - Server responded with:", statusCode);
+					
+					if ( error ) {
+						return console.error("HTTP failed: ", error, options.url, statusCode, body)
+					}
+					
+					console.log("success", options.url, statusCode, body);
+				}
+			)
 		} else if ( event.type === "serial" ) {
 			console.log("Matching EventType", "serial");
 			// Arduino is using CmdMessenger
@@ -157,7 +197,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			// "kSetValue,{value};"
 			// "kSetDtEpoch,{dtepoch};"
 			// "kSetFlow,{flow};"
-			serialport.write(event.params.serialMessage?stringformat(event.params.serialMessage, payload):stringformat("kSetLed,{payload.value};", payload));
+			serialport.write(event.params.serialMessage?stringformat(event.params.serialMessage, payload):stringformat("kSetLed,{value};", payload));
 		} else if ( event.type === "slackMessage" ) {
 			console.log("Matching EventType", "slackMessage");
 			// TODO
