@@ -65,6 +65,7 @@ var app = {
 		"docs": "t6 Api first documentation",
 		"users-list": "t6 Users Accounts",
 		"compatible-devices": "t6 Compatible Devices",
+		"openSourceLicenses": "Open-Source licenses",
 	},
 	icons: {
 		"color": "format_color_fill",
@@ -741,6 +742,7 @@ var touchStartPoint, touchMovePoint;
 			docs: document.querySelector('section#docs'),
 			usersList: document.querySelector('section#users-list'),
 			compatibleDevices: document.querySelector('section#compatible-devices'),
+			openSourceLicenses: document.querySelector('section#openSourceLicenses'),
 			
 			objects: document.querySelector('section#objects'),
 			object: document.querySelector('section#object'),
@@ -960,12 +962,15 @@ var touchStartPoint, touchMovePoint;
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.getCompatibleDevices();
+		} else if ( section === 'openSourceLicenses' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
+			app.getOpenSourceLicenses();
 		} else {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.fetchItemsPaginated(section, undefined, app.itemsPage[section], app.itemsSize[section]);
 		}
-
 		app.refreshButtonsSelectors();
 		var act = document.querySelectorAll('section.is-active');
 		for (var i in act) {
@@ -999,6 +1004,7 @@ var touchStartPoint, touchMovePoint;
 					section !== 'docs' &&
 					section !== 'terms' &&
 					section !== 'compatible-devices' &&
+					section !== 'openSourceLicenses' &&
 					section !== 'manage_notifications'
 				)
 			) {
@@ -3150,6 +3156,53 @@ var touchStartPoint, touchMovePoint;
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	};
+
+	app.getOpenSourceLicenses = function() {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/open-source-licenses";
+		
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			var openSourceLicenses = "";
+			for (var i=0; i < (response).length ; i++ ) {
+				openSourceLicenses += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				openSourceLicenses += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				if( response[i].title ) {
+					openSourceLicenses += "	<div class=\"mdl-card__title\">";
+					openSourceLicenses += "		<span class=\"mdl-typography--headline\"><i class=\"material-icons md-48\">book</i>"+response[i].title+"</span>";
+					openSourceLicenses += response[i].license+"	</div>";
+				}
+				openSourceLicenses += "		<div class=\"mdl-card__supporting-text no-padding\">";
+				openSourceLicenses += response[i].description;
+				openSourceLicenses += "		</div>";
+				if ( response[i].dependencies ) {
+					openSourceLicenses += "		<pre>";
+					openSourceLicenses += response[i].dependencies;
+					openSourceLicenses += "		</pre>";
+				}
+				openSourceLicenses += "		<div class=\"mdl-card__actions mdl-card--border\">";
+				openSourceLicenses += "			<button class=\"mdl-button mdl-js-button mdl-js-ripple-effect\" onclick=\"document.location.href=\'"+response[i].linkFullReport+"\';\"> Get dependencies full report</button>";
+				openSourceLicenses += "		</div>";
+				openSourceLicenses += "	</div>";
+				openSourceLicenses += "</section>";
+			}
+			(app.containers.openSourceLicenses).querySelector('.page-content').innerHTML = openSourceLicenses;
+			app.imageLazyLoading();
+		})
+		.catch(function (error) {
+			if ( localStorage.getItem('settings.debug') == 'true' ) {
+				toast('Can\'t display Open-Source Licenses...' + error, {timeout:3000, type: "error"});
+			}
+		});
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 	
 	app.toggleElement = function(id) {
 		document.querySelector('#'+id).classList.toggle('hidden');
@@ -3361,6 +3414,9 @@ var touchStartPoint, touchMovePoint;
 			} else if ( currentPage === 'compatible-devices' ) {
 				app.getCompatibleDevices();
 				app.setSection('compatible-devices');
+			} else if ( currentPage === 'openSourceLicenses' ) {
+				app.getOpenSourceLicenses();
+				app.setSection('openSourceLicenses');
 			} else if ( currentPage === 'docs' ) {
 				app.onDocsButtonClick();
 			} else if ( currentPage === 'status' ) {

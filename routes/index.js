@@ -641,7 +641,6 @@ router.get("/terms", function(req, res, next) {
 	res.status(200).render("terms-json");
 });
 
-
 /**
  * @api {get} /compatible-devices  for PWA
  * @apiName Get compatible devices for PWA
@@ -653,6 +652,19 @@ router.get("/terms", function(req, res, next) {
 router.get("/compatible-devices", function(req, res, next) {
 	res.set("Content-Type", "application/json; charset=utf-8");
 	res.status(200).render("compatible-devices-json");
+});
+
+/**
+ * @api {get} /open-source-licenses  for PWA
+ * @apiName Get open-source-licenses for PWA
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
+ */
+router.get("/open-source-licenses", function(req, res, next) {
+	res.set("Content-Type", "application/json; charset=utf-8");
+	res.status(200).render("open-source-licenses-json");
 });
 
 module.exports = router;
