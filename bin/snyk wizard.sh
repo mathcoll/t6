@@ -1,5 +1,6 @@
 #!/bin/sh
 
+npm update snyk
 snyk wizard
 npm i --package-lock-only
 npm audit
