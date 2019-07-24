@@ -1,5 +1,6 @@
 User-agent: *
 Disallow: /admin
+Disallow: /v2.0.1/users/newcomers
 Allow: /humans.txt
 Allow: /manifest.json
 Allow: /sitemap.xml

@@ -22,7 +22,7 @@ var accessTokens;
  * @apiUse 403
  */
 router.get("/newcomers", function (req, res) {
-	if ( req.user.role === "admin" ) {
+	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
 		var query = sprintf("SELECT who FROM events WHERE what='user add' ORDER BY time desc LIMIT 20");
 		dbInfluxDB.query(query).then(data => {
 			users	= db.getCollection("users");
