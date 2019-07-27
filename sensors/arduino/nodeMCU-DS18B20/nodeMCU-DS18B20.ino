@@ -1,6 +1,6 @@
 
 #include <ESP8266WiFi.h>
-#include <ArduinoJson.h>
+#include <ArduinoJson.h> /* ArduinoJson 5.13.14 tested fine */
 #include "settings.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -21,8 +21,6 @@ struct sAverage {
 
 struct sAverage sampleAve;
 int16_t sensorTValue = 0;
-int16_t sensorHValue = 0;
-
 
 /*******************************************************
  postRequest
@@ -92,7 +90,7 @@ void getJWToken() {
       return;
     }
   }
-  Serial.print("response length:");
+  Serial.print("Response length:");
   Serial.println(client.available());
 
   client.setTimeout(5000); //in case things get stuck
@@ -100,7 +98,7 @@ void getJWToken() {
   //read http header lines
   while (client.available()) {
     String line = client.readStringUntil('\n');
-    Serial.println(line);
+    //Serial.println(line);
     if (line.length() == 1) { //empty line means end of headers
       break;
     }
@@ -149,26 +147,28 @@ int16_t addSampleToAverage(struct sAverage *ave, int16_t newSample) {
 void readSample() {
   float t;
   int count=0;
+  Serial.println("\nTemperatures: "); 
   do {
     DS18B20.requestTemperatures(); 
     t = DS18B20.getTempCByIndex(0);
-    count++;
-    Serial.println(t);
-    delay(2000);
-  } while (t == 85.0 || t == (-127.0) || count == 10);
-
-  Serial.println();
+    
+    Serial.print(t);
+    Serial.print(" *C, ");
+    Serial.print(" -> ");
+    sensorTValue = constrain(t, -20.0, 50.0);
+    Serial.print(sensorTValue);
+    Serial.print(" (");
+    Serial.print(count);
+    Serial.println(")");
+    
+    if ( sensorTValue != -20.0 && sensorTValue != 50.0 ) {
+      count++;
+      addSampleToAverage(&sampleAve, sensorTValue);
+    }
+    
+    delay(100);
+  } while (count <= 10);
   Serial.println("------------------------------");
-  Serial.print("\tTemperature: "); 
-  Serial.print(t);
-  Serial.println(" *C");
-  Serial.println("------------------------------");
-  Serial.println();
-  
-  sensorTValue = t;
-  addSampleToAverage(&sampleAve, sensorTValue);
-  
-  delay(3000);
 }
 
 /*******************************************************
@@ -177,7 +177,8 @@ void readSample() {
 int16_t getAverage(struct sAverage *ave) {
   int16_t average = ave->blockSum / ave->numSamples;
   // get ready for the next block
-  ave->blockSum = 0; ave->numSamples = 0;
+  ave->blockSum = 0;
+  ave->numSamples = 0;
   return average;
 }
 
@@ -185,7 +186,6 @@ int16_t getAverage(struct sAverage *ave) {
  wifi
  *******************************************************/
 void wifi() {
-  Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -227,6 +227,14 @@ void pleaseGoToBed() {
  *******************************************************/
 void loop() {
   readSample();
+  sensorTValue = getAverage(&sampleAve);
+  Serial.println();
+  Serial.println("------------------------------");
+  Serial.print("\tAverage Temperature: "); 
+  Serial.print(sensorTValue);
+  Serial.println(" *C");
+  Serial.println("------------------------------");
+  Serial.println();
   
   wifi();
   
@@ -250,6 +258,7 @@ void loop() {
       JsonObject& dataRootT = jsonBufferT.createObject();
       dataRootT["value"] = sensorTValue;
       dataRootT["flow_id"] = T_flow_id;
+      dataRootT["object_id"] = object_id;
       dataRootT["mqtt_topic"] = T_mqtt_topic;
       dataRootT["unit"] = T_unit;
       dataRootT["save"] = T_save;
