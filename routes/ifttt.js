@@ -16,13 +16,14 @@ function getDate() {
 function getIsoDate() {
 	return moment().toISOString();
 }
-function getDataItem(delay) {
+function getDataItem(delay, userId) {
+	let user_id = typeof userId!=="undefined"?userId:getUuid();
 	let dataItem = {
 		"meta": {
 			"id": getUuid(),
 			"timestamp": getTs()-3600*delay
 		},
-		"user_id": getUuid(),
+		"user_id": user_id,
 		"environment": process.env.NODE_ENV,
 		"dtepoch": getTs(),
 		"value": getUuid(),
@@ -91,7 +92,7 @@ router.get("/OAuth2/authorize", function (req, res) {
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("X") });
 			var new_token = {
 				user_id:			user.id,
-				key:		code,
+				key:				code,
 				bearer:				token,
 				memo:				"Ifttt No-end Bearer Token", // Not sure this is compatible nor necessary
 				// or maybe it should be the "code" above ????
@@ -117,7 +118,76 @@ router.get("/OAuth2/authorize", function (req, res) {
 	} else {
 		res.render("login", {});
 	}
+});
 
+router.post("/OAuth2/authorize", function (req, res) {
+	let client_id = req.body.client_id;
+	let response_type = req.query.response_type;
+	let redirect_uri = req.query.redirect_uri;
+	let scope = req.query.scope;
+	let state = req.query.state;
+	let application_name = req.query.application_name;
+	let SCOPE_DESCRIPTIONS = {
+		"ifttt": "Event when Datapoint is posted to t6.",
+	};
+	if ( (req.body.Username && req.body.Password) && (!req.body.grant_type || req.body.grant_type === "password") ) {
+		users	= db.getCollection("users");
+		var email = req.body.Username;
+		var password = req.body.Password;
+
+		var queryU = { "$and": [ { "email": email } ] };
+		var user = users.findOne(queryU);
+		if ( user ) {
+			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
+				req.session.user_id = user.id;
+				// Add the code to the connected user
+				let code = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.");
+				user.iftttCode = code; // We add the unic token to the user
+
+				var payload = JSON.parse(JSON.stringify(user));
+				payload.unsubscription = user.unsubscription;
+				payload.permissions = undefined;
+				payload.token = undefined;
+				payload.password = undefined;
+				payload.gravatar = undefined;
+				payload.meta = undefined;
+				payload.$loki = undefined;
+				payload.token_type = "Bearer";
+				payload.scope = "Application";
+				payload.sub = "/users/"+user.id;
+
+				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("X") });
+				var new_token = {
+					user_id:			user.id,
+					key:				code,
+					bearer:				token,
+					memo:				"Ifttt No-end Bearer Token", // Not sure this is compatible nor necessary
+					// or maybe it should be the "code" above ????
+					expiration:			moment().add(24, "years").format("x"),
+				};
+				var tokens	= db.getCollection("tokens");
+				tokens.insert(new_token);
+				db.save();
+				
+				res.render("authorization", {
+					response_type: response_type,
+					redirect_uri: redirect_uri,
+					scope: scope,
+					state: state,
+					code: code,
+					user: typeof user!=="undefined"?user:resultUser.data,
+					application_name: application_name,
+					SCOPE_DESCRIPTIONS: SCOPE_DESCRIPTIONS,
+				});
+			} else {
+				res.status(403).send({ "errors": {"message": ["Invalid Username+Password"]} });
+			}
+		} else {
+			res.status(404).send({ "errors": {"message": ["User not found"]} });
+		}
+	} else {
+		res.status(412).send({ "errors": {"message": ["Invalid Username+Password"]} });
+	}
 });
 
 router.post("/OAuth2/token", function(req, res) {
@@ -213,16 +283,17 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 			data:[],
 			eventTrigger: result.data.samples.triggers.eventTrigger
 		};
-		let limit = parseInt(req.body.limit, 10);
-		if (!limit && limit !== 0) { limit = 3; }
-		if (limit==0) { limit = 0; }
-		if (limit>10) { limit = 3; }
-		for (let i=0; i<limit; i++) {
-			(resultT.data).push(getDataItem(i));
-		}
 
 		if ( req.body.triggerFields && typeof req.body.triggerFields.user_id !== "undefined" ) {
 			//console.log("resultT", resultT);
+			let limit = parseInt(req.body.limit, 10);
+			if (!limit && limit !== 0) { limit = 3; }
+			if (limit==0) { limit = 0; }
+			if (limit>10) { limit = 3; }
+			for (let i=0; i<limit; i++) {
+				(resultT.data).push(getDataItem(i, req.body.triggerFields.user_id));
+			}
+			resultT.eventTrigger.user_id = req.body.triggerFields.user_id;
 			res.status(200).send(resultT);
 		} else {
 			res.status(400).send({ "errors": [ {"status": "SKIP", "message": "missing Trigger Fields/key"} ] });
@@ -233,7 +304,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 			if( !err && decoded ) {
 				users	= db.getCollection("users");
 				let queryU = { "id": decoded.id };
-				console.log(queryU);
+				//console.log(queryU);
 				let user = users.findOne(queryU);
 				user.iftttTrigger_identity = req.body.trigger_identity;
 				let resultSuccess = {
@@ -260,7 +331,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 						datetime: getIsoDate()
 					}
 				};
-				console.log("resultSuccess");
+				//console.log("resultSuccess");
 				console.log(JSON.stringify(resultSuccess, null, 2));
 				res.status(200).send( resultSuccess );
 			} else {
