@@ -138,6 +138,7 @@ int16_t addSampleToAverage(struct sAverage *ave, int16_t newSample) {
   readSample
  *******************************************************/
 void readSample() {
+  digitalWrite(dhtPower, HIGH); //turn "On"
   float t;
   float f;
   float h;
@@ -168,6 +169,7 @@ void readSample() {
   addSampleToAverage(&sampleAve, sensorTValue);
 
   delay(3000);
+  digitalWrite(dhtPower, LOW); //turn "Off"
 }
 
 /*******************************************************
@@ -206,6 +208,9 @@ void setup() {
   Serial.begin(115200);
   delay(100);
   dht.begin();
+  
+  Serial.println("Set to LOW so no power is flowing through the sensor");
+  pinMode(dhtPower, OUTPUT);
 }
 
 /*******************************************************

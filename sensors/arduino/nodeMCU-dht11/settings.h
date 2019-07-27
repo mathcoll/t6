@@ -30,6 +30,7 @@ const char* H_mqtt_topic = ""; // Mqtt topic (optional)
 const char* H_unit = "%"; // Maesure Unit (optional)
 const char* H_save = "true"; // (optional)
 const char* H_publish = "true"; // (optional)
+const int dhtPower = 13; //Variable for dht Power
 
 // DHT
 #define DHTPIN D1         // Pin for DHT sensor
