@@ -2606,7 +2606,7 @@ var touchStartPoint, touchMovePoint;
 				var s = app.snippetTypes.find(function(snippet) {
 					return (snippet.name).toLowerCase()===(my_snippet.attributes.type).toLowerCase();
 				});
-				var snippet = s.getHtml({name: my_snippet.attributes.name, id: my_snippet.id, icon: my_snippet.attributes.icon});
+				var snippet = s.getHtml({name: my_snippet.attributes.name, id: my_snippet.id, icon: my_snippet.attributes.icon, color: my_snippet.attributes.color});
 				
 				var c= document.createElement("div");
 				c.setAttribute('class','mdl-grid mdl-cell');

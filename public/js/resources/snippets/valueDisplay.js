@@ -72,15 +72,15 @@ var snippet = {
 					</span>
 				</div>
 				<div class="mdl-list__item-secondary-content">
-					<span class="snippet-value1" id="snippet-value1-${params.id}">
+					<span class="snippet-value1" id="snippet-value1-${params.id}" style="color:${params.color} !important">
 						<i class="material-icons md-48">trending_flat</i> ◾◾ ◾◾
 					</span>
 					<hr style="">
-					<span class="snippet-value2" id="snippet-value2-${params.id}">
+					<span class="snippet-value2" id="snippet-value2-${params.id}" style="color:${params.color} !important">
 						<i class="material-icons">trending_flat</i> ◾◾ ◾◾
 					</span>
 					<hr style="">
-					<span class="snippet-value3" id="snippet-value3-${params.id}">
+					<span class="snippet-value3" id="snippet-value3-${params.id}" style="color:${params.color} !important">
 						<i class="material-icons">trending_flat</i> ◾◾ ◾◾
 					</span>
 				</div>
