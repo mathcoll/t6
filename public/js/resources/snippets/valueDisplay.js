@@ -63,7 +63,7 @@ var snippet = {
 		<div id="${params.id}" class="valuedisplay tile card-valuedisplay material-animate margin-top-4 material-animated mdl-shadow--2dp is-ontime">
 			<div class="contextual">
 				<div class="mdl-list__item-primary-content">
-					<i class="material-icons">widgets</i>
+					<i class="material-icons">${params.icon}</i>
 					<span class="heading">${params.name}</span>
 					<span class="heading pull-right">
 						<button data-snippet-id="${params.id}" class="edit-snippet mdl-button mdl-js-button mdl-button--icon">
