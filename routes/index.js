@@ -605,6 +605,7 @@ router.post("/refresh", function (req, res) {
 router.get("/status", function(req, res, next) {
 	var status = {
 		version: version,
+		t6BuildVersion: t6BuildVersion,
 		status: "running",
 		mqttInfo: mqttInfo,
 		appName: process.env.NAME,
