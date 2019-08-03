@@ -2630,7 +2630,7 @@ var touchStartPoint, touchMovePoint;
 				for (var b in editSnippetButtons) {
 					if ( (editSnippetButtons[b]).childElementCount > -1 ) {
 						(editSnippetButtons[b]).addEventListener("click", function(evt) {
-							app.resources.snippets.display(evt.target.getAttribute("data-snippet-id"), false, true, false);
+							app.resources.snippets.display(evt.target.parentNode.getAttribute("data-snippet-id"), false, true, false);
 							evt.preventDefault();
 						});
 					}
