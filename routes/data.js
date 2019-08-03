@@ -91,7 +91,6 @@ function getFieldsFromDatatype(datatype, asValue) {
  * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
  * @apiSuccess {String} data.attributes.value Value of Data point
  * @apiUse 200
- * @apiUse 204
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
@@ -192,7 +191,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 
 				res.status(200).send(new DataSerializer(data).serialize());
 			} else {
-				res.status(204).send(new ErrorSerializer({"id": 898, "code": 204, "message": "No Content"}).serialize());
+				res.status(404).send(new ErrorSerializer({"id": 898, "code": 404, "message": "Not Found"}).serialize());
 			};
 		}).catch(err => {
 			res.status(500).send({query: query, err: err, "id": 899, "code": 500, "message": "Internal Error"});
