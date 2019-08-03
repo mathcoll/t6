@@ -2,7 +2,7 @@
 var dataCacheName= "t6-cache-2019-07-12";
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
-var cacheBlacklist = ["object%20", "v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
+var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
 var filesToCache = [
 	"/",
 	"/applicationStart",
@@ -73,12 +73,6 @@ self.addEventListener("install", function(e) {
 	e.waitUntil(
 		caches.open(cacheName).then(function(cache) {
 			console.log("[ServiceWorker]", "Caching to", cacheName);
-			//return cache.addAll(filesToCache.map(function(file) {
-				//console.log("[ServiceWorker]", "Caching", file);
-				//fetch(file, { mode: "no-cors" }).then(function (response) {
-				//	cache.put(file, response);
-				//});
-			//}))
 			return cache.addAll(filesToCache).then(function() {
 				console.log('All resources have been fetched and cached.');
 			});
@@ -95,7 +89,7 @@ self.addEventListener("activate", function(e) {
 		caches.keys().then((cacheNames) => {
 			return Promise.all(
 				cacheNames.map((cache) => {
-					if (cache !== cacheName) {     //cacheName = 'cache-v1'
+					if (cache !== cacheName) {
 						return caches.delete(cache); //Deleting the cache
 					}
 				})
