@@ -90,4 +90,5 @@ echo ""
 t6BuildVersion=`md5sum ../public/js/t6app-min.js | awk '{print $1}'`
 echo "{\"t6BuildVersion\": \"${t6BuildVersion}\"}" > ../t6BuildVersion.json
 echo t6BuildVersion: $t6BuildVersion
+sed -i "1 s/^.*$/var dataCacheName= 't6-cache-$t6BuildVersion';/i" ../public/service-worker.js
 echo Full Minification Completed.
