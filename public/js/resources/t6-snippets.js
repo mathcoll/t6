@@ -232,7 +232,7 @@ app.resources.snippets = {
 						var s = app.snippetTypes.find(function(sn) {
 							return (sn.value).toLowerCase()===value.toLowerCase();
 						});
-						(app.containers.snippet).querySelector("#TypeSample").innerHTML = s.getHtml({id: snippet.id, icon: snippet.icon, name: snippet.name, color: snippet.color});
+						(app.containers.snippet).querySelector("#TypeSample").innerHTML = s.getHtml({id: snippet.id, icon: snippet.attributes.icon, name: snippet.attributes.name, color: snippet.attributes.color});
 						s.activateOnce(snippet);
 						evt.preventDefault();
 					}, false);
@@ -240,7 +240,7 @@ app.resources.snippets = {
 						var s = app.snippetTypes.find(function(sn) {
 							return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
 						});
-						(app.containers.snippet).querySelector("#TypeSample").innerHTML = s.getHtml({id: snippet.id, icon: snippet.icon, name: snippet.name, color: snippet.color});
+						(app.containers.snippet).querySelector("#TypeSample").innerHTML = s.getHtml({id: snippet.id, icon: snippet.attributes.icon, name: snippet.attributes.name, color: snippet.attributes.color});
 						s.activateOnce(snippet);
 					}
 
