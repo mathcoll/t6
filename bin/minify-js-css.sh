@@ -87,7 +87,7 @@ echo Completed
 echo ""
 
 
-t6BuildVersion=`echo -n ../public/js/t6app-min.js | md5sum | awk '{print $1}'`
+t6BuildVersion=`md5sum ../public/js/t6app-min.js | awk '{print $1}'`
 echo "{\"t6BuildVersion\": \"${t6BuildVersion}\"}" > ../t6BuildVersion.json
 echo t6BuildVersion: $t6BuildVersion
 echo Full Minification Completed.
