@@ -6,27 +6,6 @@ echo "Using uglifyjs version:"
 ../node_modules/uglify-js-es6/bin/uglifyjs -V
 echo ""
 
-#echo 0. PWA Javascript T6 concat:
-#cat \
-#	../public/js/t6app-main.js \
-#	../public/js/resources/t6-objects.js \
-#	../public/js/resources/t6-flows.js \
-#	../public/js/resources/t6-snippets.js \
-#	../public/js/resources/t6-dashboards.js \
-#	../public/js/resources/t6-rules.js \
-#	../public/js/resources/t6-mqtts.js \
-#	../public/js/resources/snippets/valueDisplay.js \
-#	../public/js/resources/snippets/graphDisplay.js \
-#	../public/js/resources/snippets/flowGraph.js \
-#	../public/js/resources/snippets/simpleClock.js \
-#	../public/js/resources/snippets/simpleRow.js \
-#	../public/js/resources/snippets/cardChart.js \
-#	../public/js/resources/snippets/sparkline.js \
-#	> ../public/js/t6app-cat.js
-######node minify.js > ../public/js/t6app-min.js
-#echo Completed
-#echo ""
-
 echo 1. PWA Javascript T6 minify:
 ../node_modules/uglify-js-es6/bin/uglifyjs \
 	../public/js/t6app-main.js \
@@ -88,7 +67,9 @@ echo ""
 
 
 t6BuildVersion=`md5sum ../public/js/t6app-min.js | awk '{print $1}'`
-echo "{\"t6BuildVersion\": \"${t6BuildVersion}\"}" > ../t6BuildVersion.json
+t6BuildDate=`date -R`
+echo "{\"t6BuildVersion\": \"${t6BuildVersion}\", \"t6BuildDate\": \"${t6BuildDate}\"}" > ../t6BuildVersion.json
 echo t6BuildVersion: $t6BuildVersion
+echo t6BuildDate: $t6BuildDate
 sed -i "1 s/^.*$/var dataCacheName= 't6-cache-$t6BuildVersion';/i" ../public/service-worker.js
 echo Full Minification Completed.

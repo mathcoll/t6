@@ -1,14 +1,14 @@
 /*
- * Debug console filters
- * DEBUG
- * [gtm]
- * [indexedDB]
- * [JWT]
- * [History]
- * [Orientation]
- * [pushSubscription]
- * [ServiceWorker]
- * [setSection]
+ * Debug console filters:
+ *  DEBUG
+ *  [gtm]
+ *  [indexedDB]
+ *  [JWT]
+ *  [History]
+ *  [Orientation]
+ *  [pushSubscription]
+ *  [ServiceWorker]
+ *  [setSection]
  */
 "use strict";
 var app = {
@@ -203,7 +203,6 @@ var touchStartPoint, touchMovePoint;
 		toastMsg.appendChild(span);
 		toastContainer.appendChild(toastMsg);
 
-		// Show toast for 3secs and hide it
 		setTimeout(function () {
 			toastMsg.classList.add("toast__msg--hide");
 		}, options.timeout);
@@ -213,7 +212,7 @@ var touchStartPoint, touchMovePoint;
 			event.target.parentNode.removeChild(event.target);
 		});
 	}
-	exports.toast = toast; // Make this method available in global
+	exports.toast = toast;
 	
 	function getParameterByName(name, url) {
 		if (!url) url = window.location.href;
@@ -565,7 +564,7 @@ var touchStartPoint, touchMovePoint;
 	app.registerServiceWorker = function() {
 		return navigator.serviceWorker.register("/service-worker.js", { scope: "/" })
 		.then(function(registration) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
 			return registration;
@@ -580,7 +579,7 @@ var touchStartPoint, touchMovePoint;
 					'event': 'Error'
 				});
 			}
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] error occured...'+ err);
 			}
 		});
@@ -606,7 +605,7 @@ var touchStartPoint, touchMovePoint;
 				app.setSetting('settings.pushSubscription.keys.p256dh', j.keys.p256dh);
 				app.setSetting('settings.pushSubscription.keys.auth', j.keys.auth);
 			}
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', j);
 			}
 			return pushSubscription;
@@ -621,7 +620,7 @@ var touchStartPoint, touchMovePoint;
 					'event': 'Error'
 				});
 			}
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', 'subscribeUserToPush'+error);
 			}
 		});
@@ -803,7 +802,7 @@ var touchStartPoint, touchMovePoint;
 	
 	app.setSection = function(section, direction) {
 		section = section.split("?")[0];
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log('[setSection]', section);
 		}
 		window.scrollTo(0, 0);
@@ -1015,7 +1014,7 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.setItemsClickAction = function(type) {
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log('DEBUG setItemsClickAction', type);
 		}
 		var items = document.querySelectorAll("[data-action='view']");
@@ -1176,7 +1175,7 @@ var touchStartPoint, touchMovePoint;
 				toast(text+' has been copied to clipboard.', {timeout:3000, type: 'done'});
 				return true;
 			}, function(err) {
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					console.log('DEBUG clipboard', 'Could not copy text: ', err);
 				}
 				toast('Could not copy text: '+text, {timeout:5000, type: 'warning'});
@@ -1831,7 +1830,7 @@ var touchStartPoint, touchMovePoint;
 				app.getStatus();
 				
 			} else {
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					console.log('DEBUG Error no Type defined: '+type);
 					toast('Error no Type defined.', {timeout:3000, type: "error"});
 				}
@@ -1880,7 +1879,7 @@ var touchStartPoint, touchMovePoint;
 						resolve();
 					})
 					.catch(function (error) {
-						if ( localStorage.getItem('settings.debug') == 'true' ) {
+						if ( localStorage.getItem("settings.debug") == "true" ) {
 							toast('fetchItemsPaginated '+type+' error occured...'+ error, {timeout:3000, type: "error"});
 						}
 					});
@@ -1956,7 +1955,7 @@ var touchStartPoint, touchMovePoint;
 			app.setItemsClickAction('usersList');
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('getUsersList error out...' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -2068,7 +2067,7 @@ var touchStartPoint, touchMovePoint;
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('fetchProfile error out...' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -2093,7 +2092,7 @@ var touchStartPoint, touchMovePoint;
 			localStorage.setItem("notifications.unsubscribed", JSON.stringify(notifications));
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('fetchUnsubscriptions error' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -2143,12 +2142,12 @@ var touchStartPoint, touchMovePoint;
 						toast('Subscription '+name+' ('+type+') updated.', {timeout:3000, type: 'done'});
 					})
 					.catch(function (error) {
-						if ( localStorage.getItem('settings.debug') == 'true' ) {
+						if ( localStorage.getItem("settings.debug") == "true" ) {
 							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast('Error occured on saving Notifications...', {timeout:3000, type: "error"});
 					}
 				}
@@ -2180,12 +2179,12 @@ var touchStartPoint, touchMovePoint;
 						toast('Subscription '+name+' ('+type+') updated.', {timeout:3000, type: 'done'});
 					})
 					.catch(function (error) {
-						if ( localStorage.getItem('settings.debug') == 'true' ) {
+						if ( localStorage.getItem("settings.debug") == "true" ) {
 							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast('Error occured on saving Notifications...', {timeout:3000, type: "error"});
 					}
 				}
@@ -2210,12 +2209,12 @@ var touchStartPoint, touchMovePoint;
 						toast('Subscription '+name+' ('+type+') updated.', {timeout:3000, type: 'done'});
 					})
 					.catch(function (error) {
-						if ( localStorage.getItem('settings.debug') == 'true' ) {
+						if ( localStorage.getItem("settings.debug") == "true" ) {
 							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast('Error occured on saving Notifications...', {timeout:3000, type: "error"});
 					}
 				}
@@ -2329,7 +2328,7 @@ var touchStartPoint, touchMovePoint;
 			.catch(function (error) {
 				container.innerHTML = app.getCard( {image: app.baseUrlCdn+'/img/opl_img2.webp', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)'} );
 				app.displayLoginForm(container);
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					toast('fetchIndex error out...' + error, {timeout:3000, type: "error"});
 				}
 			});
@@ -2687,7 +2686,7 @@ var touchStartPoint, touchMovePoint;
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('fetch Qrcode error out...' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -2764,14 +2763,14 @@ var touchStartPoint, touchMovePoint;
 				app.getFlows();
 				app.getSnippets();
 			} else {
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					toast('Auth internal error', {timeout:3000, type: "error"});
 				}
 				app.resetDrawer();
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('We can\'t process your identification. Please resubmit your credentials!', {timeout:3000, type: 'warning'});
 				document.querySelectorAll(".mdl-spinner").forEach( function(e) {e.parentNode.removeChild(e);} );
 			}
@@ -2811,14 +2810,14 @@ var touchStartPoint, touchMovePoint;
 				app.setHiddenElement("signin_button"); 
 				app.setVisibleElement("logout_button");
 			} else {
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					toast('Auth internal error', {timeout:3000, type: "error"});
 				}
 				app.resetDrawer();
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('We can\'t process your identification. Please resubmit your credentials on login page!', {timeout:3000, type: 'warning'});
 				document.querySelectorAll(".mdl-spinner").forEach( function(div) {e.parentNode.removeChild(e);} );
 			}
@@ -2924,7 +2923,7 @@ var touchStartPoint, touchMovePoint;
 					app.askPermission();
 					app.subscribeUserToPush();
 					label.innerText = "Notifications are enabled";
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast('Awsome, Notifications are enabled.', {timeout:3000, type: 'done'});
 					}
 				} else {
@@ -2941,7 +2940,7 @@ var touchStartPoint, touchMovePoint;
 					app.setSetting('settings.geolocalization', true);
 					label.innerText = "Geolocalization is enabled";
 					app.getLocation();
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast('Awsome, Geolocalization is enabled.', {timeout:3000, type: 'done'});
 					}
 				} else {
@@ -2959,7 +2958,7 @@ var touchStartPoint, touchMovePoint;
 					label.innerText = "Debug is enabled";
 					document.dispatchEvent(new Event("clearCache"));
 					app.debug = true;
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast('Awsome, Debug mode is activated and cache is now cleared.', {timeout:3000, type: 'done'});
 					}
 				} else {
@@ -3070,7 +3069,7 @@ var touchStartPoint, touchMovePoint;
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('Can\'t display Status...' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -3110,7 +3109,7 @@ var touchStartPoint, touchMovePoint;
 			(app.containers.terms).querySelector('.page-content').innerHTML = terms;
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('Can\'t display Terms...' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -3150,7 +3149,7 @@ var touchStartPoint, touchMovePoint;
 			app.imageLazyLoading();
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('Can\'t display compatible devices...' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -3197,7 +3196,7 @@ var touchStartPoint, touchMovePoint;
 			app.imageLazyLoading();
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('Can\'t display Open-Source Licenses...' + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -3278,7 +3277,7 @@ var touchStartPoint, touchMovePoint;
 	
 	app.resetSections = function() {
 		/* reset views to default */
-		if (localStorage.getItem('settings.debug') == 'true') { console.log('DEBUG resetSections()'); }
+		if (localStorage.getItem("settings.debug") == "true") { console.log('DEBUG resetSections()'); }
 		(app.containers.objects).querySelector('.page-content').innerHTML = '';
 		(app.containers.object).querySelector('.page-content').innerHTML = '';
 		(app.containers.flows).querySelector('.page-content').innerHTML = '';
@@ -3295,7 +3294,7 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.showOrientation = function() {
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
 			toast("[Orientation]", screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
 		}
 	};
@@ -3303,7 +3302,7 @@ var touchStartPoint, touchMovePoint;
 	app.setPosition = function(position) {
 		app.defaultResources.object.attributes.longitude = position.coords.longitude;
 		app.defaultResources.object.attributes.latitude = position.coords.latitude;
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
 			toast("Geolocation (Accuracy="+position.coords.accuracy+") is set to: L"+position.coords.longitude+" - l"+position.coords.latitude, {timeout:3000, type: 'info'});
 		}
 	};
@@ -3311,31 +3310,31 @@ var touchStartPoint, touchMovePoint;
 	app.setPositionError = function(error) {
 		switch (error.code) {
 			case error.TIMEOUT:
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					toast("Browser geolocation error !\n\nTimeout.", {timeout:3000, type: "error"});
 				}
 				break;
 			case error.POSITION_UNAVAILABLE:
 				// dirty hack for safari
 				if(error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast("Origin does not have permission to use Geolocation service - no fallback.", {timeout:3000, type: "error"});
 					}
 				} else {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast("Browser geolocation error !\n\nPosition unavailable.", {timeout:3000, type: "error"});
 					}
 				}
 				break;
 			case error.PERMISSION_DENIED:
 				if(error.message.indexOf("Only secure origins are allowed") == 0) {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast("Only secure origins are allowed - no fallback.", {timeout:3000, type: "error"});
 					}
 				}
 				break;
 			case error.UNKNOWN_ERROR:
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					toast("Can't find your position - no fallback.", {timeout:3000, type: "error"});
 				}
 				break;
@@ -3347,7 +3346,7 @@ var touchStartPoint, touchMovePoint;
 			var options = { enableHighAccuracy: false, timeout: 200000, maximumAge: 500000 };
 			navigator.geolocation.getCurrentPosition(app.setPosition, app.setPositionError, options);
 		} else {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast("Geolocation is not supported by this browser.", {timeout:3000, type: 'warning'});
 			}
 		}
@@ -3446,7 +3445,7 @@ var touchStartPoint, touchMovePoint;
 			} else {
 				app.setSection(currentPage);
 			}
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast("Back to last page view if available in browser storage", {timeout:3000, type: 'info'});
 			}
 		} else {
@@ -3514,12 +3513,12 @@ var touchStartPoint, touchMovePoint;
 						toast('Settings updated.', {timeout:3000, type: 'done'});
 					})
 					.catch(function (error) {
-						if ( localStorage.getItem('settings.debug') == 'true' ) {
+						if ( localStorage.getItem("settings.debug") == "true" ) {
 							toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 						}
 					});
 				} else {
-					if ( localStorage.getItem('settings.debug') == 'true' ) {
+					if ( localStorage.getItem("settings.debug") == "true" ) {
 						toast('Error occured on saving Notifications...' + error, {timeout:3000, type: "error"});
 					}
 				}
@@ -3530,7 +3529,7 @@ var touchStartPoint, touchMovePoint;
 	app.refreshButtonsSelectors();
 	if ( document.querySelector('.sticky') ) {
 		if (!window.getComputedStyle(document.querySelector('.sticky')).position.match('sticky')) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast("Your browser does not support 'position: sticky'!!.", {timeout:3000, type: 'info'});
 			}
 		}
@@ -3540,7 +3539,7 @@ var touchStartPoint, touchMovePoint;
 			if(e.keyCode === 13) {
 				e.preventDefault();
 				var input = this.value;
-				if ( localStorage.getItem('settings.debug') == 'true' ) {
+				if ( localStorage.getItem("settings.debug") == "true" ) {
 					alert("Searching for "+input);
 				}
 			}
@@ -3576,7 +3575,7 @@ var touchStartPoint, touchMovePoint;
 			} else {
 				localStorage.setItem("currentResourceId", null);
 			}
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[History]', 'hashchange');
 				console.log('[History]', window.location.hash.substr(1));
 				console.log('[History]', 'resource id', id2);
@@ -3843,24 +3842,24 @@ var touchStartPoint, touchMovePoint;
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 			'//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 			})(window,document,'script','dataLayer',app.gtm);
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log('[gtm]', 'gtm.start');
 		}
 	}
 
 	if (!('serviceWorker' in navigator)) {
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log('[ServiceWorker]', 'Service Worker isn\'t supported on this browser.');
 		}
 		return;
 	} else {
 		if (!('PushManager' in window)) {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', 'Push isn\'t supported on this browser.');
 			}
 			return;
 		} else {
-			if ( localStorage.getItem('settings.debug') == 'true' ) {
+			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', 'askPermission && subscribeUserToPush');
 			}
 			app.askPermission();
@@ -3868,7 +3867,7 @@ var touchStartPoint, touchMovePoint;
 		}
 	};
 	document.addEventListener("clearCache", function(event) {
-		if ( localStorage.getItem('settings.debug') == 'true' ) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log("[clearCache]", "Clearing... ");
 		}
 		window.caches.keys().then(function(keyList) {
@@ -3876,7 +3875,7 @@ var touchStartPoint, touchMovePoint;
 			caches.open(app.dataCacheName).then(function(cache) { 
 				cache.keys().then(function(cachedRequests) { 
 					cachedRequests.forEach(function(request, index, array) {
-						if ( localStorage.getItem('settings.debug') == 'true' ) {
+						if ( localStorage.getItem("settings.debug") == "true" ) {
 							console.log('[clearCache]', request, "-> DELETED");
 						}
 						window.caches.delete(request);
@@ -3890,29 +3889,29 @@ var touchStartPoint, touchMovePoint;
 	/*
 	 * *********************************** Offline ***********************************
 	 */
-	document.addEventListener('DOMContentLoaded', function(event) {
+	document.addEventListener("DOMContentLoaded", function(event) {
 		if (!navigator.onLine) { updateNetworkStatus(); }
-		window.addEventListener('online', updateNetworkStatus, false);
-		window.addEventListener('offline', updateNetworkStatus, false);
+		window.addEventListener("online", updateNetworkStatus, false);
+		window.addEventListener("offline", updateNetworkStatus, false);
 	});
 	function updateNetworkStatus() {
 		var msg = ''; var type= '';
 		if (navigator.onLine) {
-			msg = 'You are now online...';
-			type: 'done';
+			msg = "You are now online...";
+			type: "done";
 			app.setHiddenElement("notification");
 			if ( self.dataLayer !== undefined ) {
 				self.dataLayer.push({
-					'eventCategory': 'navigator.onLine',
-					'eventAction': 'change',
-					'eventLabel': msg,
-					'event': true
+					"eventCategory": "navigator.onLine",
+					"eventAction": "change",
+					"eventLabel": msg,
+					"event": true
 				});
 			}
 		}
 		else {
-			msg = 'You are now offline...';
-			type: 'warning';
+			msg = "You are now offline...";
+			type: "warning";
 			app.setVisibleElement("notification");
 		}
 		

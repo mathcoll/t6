@@ -439,7 +439,7 @@ app.resources.snippets = {
 				return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
 			});
 			if ( !s ) {
-				console.log("type not found !!!", (snippet.attributes.type).toLowerCase());
+				console.log("DEBUG", "type not found !!!", (snippet.attributes.type).toLowerCase());
 			}
 			element += "		<i class='material-icons md-28'>add_circle_outline</i>"+app.snippetTypes.find( function(s) { return (s.name).toLowerCase() == (snippet.attributes.type).toLowerCase(); }).value;
 			element += "	</div>";
