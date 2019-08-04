@@ -258,17 +258,17 @@ body {
 }
 .mdl-chip .close,
 .mdl-chip .edit {
-dis	
+	display:none;
 }
 .mdl-chip[draggable="true"] .close {
-righ	
+	right: 25px;
 }
 .mdl-chip:hover .close,
 .mdl-chip:hover .edit {
-    display:inline;
+	display:inline;
 }
 .mdl-chip .edit {
-    right: 60px;
+	right: 60px;
 }
 .mdl-textfield {
 	width: calc(100% - 48px) !important;
@@ -370,17 +370,17 @@ section.fixedActionButtons button.mdl-button {
 	margin: 0 !important;
 }
 .spacer {
-    min-height: 68px;
-    display: block;
+	min-height: 68px;
+	display: block;
 }
 /* Snippets */
 div .heading {
 	font-weight: 600;
 }
 div.valuedisplay hr {
-    display: block;
-    border-top: 1px solid #815786;
-    margin: .7em 0;
+	display: block;
+	border-top: 1px solid #815786;
+	margin: .7em 0;
 }
 
 div.valuedisplay .snippet-value,
