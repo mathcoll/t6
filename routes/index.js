@@ -606,7 +606,7 @@ router.get("/status", function(req, res, next) {
 	var status = {
 		version: version,
 		t6BuildVersion: t6BuildVersion,
-		t6BuildDate: t6BuildDate,
+		t6BuildDate: moment(t6BuildDate).format("DD/MM/Y H:mm:s"),
 		status: "running",
 		mqttInfo: mqttInfo,
 		appName: process.env.NAME,
