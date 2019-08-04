@@ -3024,7 +3024,7 @@ var touchStartPoint, touchMovePoint;
 				status += "		<div class=\"card-body\">";
 				status += "			<div class='mdl-list__item--three-line small-padding  mdl-card--expand' id='status-details'>";
 				status += app.getField('thumb_up', 'Name', response.appName, {type: 'text', isEdit: false});
-				status += app.getField('verified_user', 'Version / Build', response.version+" / "+response.t6BuildVersion, {type: 'text', style:'text-transform: none !important;', isEdit: false});
+				status += app.getField('verified_user', 'Version / Build / Date', response.version+" / "+response.t6BuildVersion+" / "+response.t6BuildDate, {type: 'text', style:'text-transform: none !important;', isEdit: false});
 				status += app.getField(app.icons.status, 'Status', response.status, {type: 'text', isEdit: false});
 				status += app.getField(app.icons.mqtts, 'Mqtt Topic Info', response.mqttInfo, {type: 'text', isEdit: false});
 				status += app.getField('alarm', 'Last Update', response.started_at, {type: 'text', isEdit: false});
