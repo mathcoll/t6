@@ -138,7 +138,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 		}
 
 		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
-		var join = flow.eqJoin(units.chain(), "unit_id", "id");
+		var join = flow.eqJoin(units.chain(), "unit", "id");
 
 		var flowsDT = db.getCollection("flows");
 		datatypes	= db.getCollection("datatypes");
@@ -245,7 +245,7 @@ router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: j
 		units	= db.getCollection("units");
 		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id, }, }).limit(1);
 		var mqtt_topic = typeof ((flow.data())[0].mqtt_topic!=="undefined")?(flow.data())[0].mqtt_topic:null;
-		var join = flow.eqJoin(units.chain(), "unit_id", "id");
+		var join = flow.eqJoin(units.chain(), "unit", "id");
 
 		var flowsDT = db.getCollection("flows");
 		datatypes	= db.getCollection("datatypes");
