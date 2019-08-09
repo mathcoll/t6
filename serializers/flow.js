@@ -16,8 +16,8 @@ function FlowSerializer(flow) {
 			},
 			dataLinks : {
 				unit : function(flow) {
-					if ( flow.unit_id!="" ) {
-						return sprintf("%s/v%s/units/%s", baseUrl_https, version, flow.unit_id);
+					if ( flow.unit!="" ) {
+						return sprintf("%s/v%s/units/%s", baseUrl_https, version, flow.unit);
 					} else {
 						return null;
 					}
