@@ -172,10 +172,8 @@ app.resources.snippets = {
 					node += app.getField(null, "meta.revision", snippet.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.name, "Name", snippet.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 					node += app.getField(app.icons.icon, "Icon", snippet.attributes.icon, {type: "select", id: "Icon", isEdit: isEdit, options: app.types });
-					node += app.getField(app.icons.color, "Color", snippet.attributes.color, {type: "text", id: "Color", isEdit: isEdit});
+					node += app.getField(app.icons.color, "Color", snippet.attributes.color, {type: "text", style:"text-transform: none !important;", id: "Color", isEdit: isEdit});
 					node += app.getField("add_circle_outline", "Type", snippet.attributes.type, {type: "select", id: "Type", options: app.snippetTypes, isEdit: isEdit });
-					node += app.getField(null, "Sample", null, {type: "container", id: "TypeSample", options: {}, isEdit: false });
-
 					if ( localStorage.getItem("flows") !== "null" ) {
 						var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
 							return {value: flow.name, name: flow.id};
@@ -185,6 +183,7 @@ app.resources.snippets = {
 						app.getFlows();
 						node += app.getField(app.icons.flows, "Flows to add (you should add some flows first)", "", {type: "select", id: "flowsChipsSelect", isEdit: true, options: {} });
 					}
+					node += app.getField(null, "Sample", null, {type: "container", id: "TypeSample", options: {}, isEdit: false });
 					node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
 					node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
 					node += "		</div>";
@@ -279,7 +278,7 @@ app.resources.snippets = {
 						node += app.getField(app.icons.update, "Revision", snippet.attributes.meta.revision, {type: "text"});
 					}
 					node += app.getField(app.icons.icon, "Icon", snippet.attributes.icon, {type: "select", id: "Icon", isEdit: isEdit, options: app.types });
-					node += app.getField(app.icons.color, "Color", snippet.attributes.color, {type: "text", id: "Color", isEdit: isEdit});
+					node += app.getField(app.icons.color, "Color", snippet.attributes.color, {type: "text", style:"text-transform: none !important;", id: "Color", isEdit: isEdit});
 					node += app.getField("add_circle_outline", "Type", snippet.attributes.type, {type: "select", id: "Type", options: app.snippetTypes, isEdit: isEdit });
 					node += app.getField(app.icons.flows, "Linked Flows #", snippet.attributes.flows.length, {type: "text"});
 					node += "	</div>"; // mdl-shadow--2dp

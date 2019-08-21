@@ -332,8 +332,10 @@ div[data-type="mqtts"].removed {
 	-o-transform: scale(.99);
 	-ms-transform: scale(.99);
 	transform: scale(.99);
-	transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) .3s;
-	
+	/*transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) .3s;*/
+}
+.is-hover div.mdl-card.mdl-shadow--2dp {
+	background: #ffffff3d;
 }
 section.is-active .mdl-button--fab.is-not-here {
 	opacity: 0;

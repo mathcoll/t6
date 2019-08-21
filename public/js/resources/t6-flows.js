@@ -194,7 +194,7 @@ app.resources.flows = {
 					node += app.getField(app.icons.name, "Name", flow.attributes.name!==undefined?flow.attributes.name:"", {type: "text", id: "Name", isEdit: isEdit});
 					//var description = flow.attributes.description!==undefined?app.nl2br(flow.attributes.description):"";
 					//node += app.getField(app.icons.description, "Description", description, {type: "text", id: "Description", isEdit: isEdit});
-					node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic!==undefined?flow.attributes.mqtt_topic:"", {type: "text", id: "MQTTTopic", isEdit: isEdit});
+					node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic!==undefined?flow.attributes.mqtt_topic:"", {type: "text", style:"text-transform: none !important;", id: "MQTTTopic", isEdit: isEdit});
 					node += app.getField(app.icons.units, "Unit", flow.attributes.unit, {type: "select", id: "Unit", isEdit: true, options: allUnits });
 					node += app.getField(app.icons.datatypes, "DataType", flow.attributes.data_type, {type: "select", id: "DataType", isEdit: true, options: allDatatypes });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "edit_require_signed", isEdit: isEdit});
@@ -228,7 +228,7 @@ app.resources.flows = {
 						node += app.getField("extension", "Type", flow.attributes.type, {type: "text", id: "Type", isEdit: isEdit});
 					}
 					if ( flow.attributes.mqtt_topic ) {
-						node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic, {type: "text", id: "MQTTTopic", isEdit: isEdit});
+						node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic, {type: "text", style:"text-transform: none !important;", id: "MQTTTopic", isEdit: isEdit});
 					}
 					if ( flow.attributes.unit && localStorage.getItem("units") !== "null" && JSON.parse(localStorage.getItem("units")) ) {
 						var unit = JSON.parse(localStorage.getItem("units")).find( function(u) { return u.name == flow.attributes.unit; });

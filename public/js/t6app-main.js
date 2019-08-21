@@ -1923,8 +1923,9 @@ var touchStartPoint, touchMovePoint;
 				usersList += "			<i class=\"material-icons\">perm_identity</i>";
 				usersList += "			<h3 class=\"mdl-card__title-text\">"+num+". "+user.attributes.first_name + " " + user.attributes.last_name+"</h3>";
 				usersList += "		</div>";
-				usersList += app.getField('card_membership', 'User id', user.id, {type: 'text', isEdit: false });
-				usersList += app.getField('mail', 'Email', user.attributes.email, {type: 'text', isEdit: false });
+				usersList += "		<div class=\"mdl-card__title\"><img src=\"//secure.gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\"></div>";
+				usersList += app.getField('card_membership', 'User id', user.id, {type: 'text', style:"text-transform: none !important;", isEdit: false });
+				usersList += app.getField('mail', 'Email', user.attributes.email, {type: 'text', style:"text-transform: none !important;", isEdit: false });
 				if ( user.attributes.location ) {
 					if ( user.attributes.location.geo ) {
 						usersList += app.getField('dns', 'Location', user.attributes.location.geo.city+" ("+user.attributes.location.geo.country+")", {type: 'text', isEdit: false });
@@ -3025,11 +3026,11 @@ var touchStartPoint, touchMovePoint;
 				status += "			<div class='mdl-list__item--three-line small-padding  mdl-card--expand' id='status-details'>";
 				status += app.getField('thumb_up', 'Application Name', response.appName, {type: 'text', style:'text-transform: none !important;', isEdit: false});
 				status += app.getField('favorite', 'Status', response.status, {type: 'text', isEdit: false});
-				status += app.getField('volume_down', 'Mqtt Topic Info', response.mqttInfo, {type: 'text', isEdit: false});
+				status += app.getField('volume_down', 'Mqtt Topic Info', response.mqttInfo, {type: 'text', style:'text-transform: none !important;', isEdit: false});
 				status += app.getField('verified_user', 'Api Version', response.version, {type: 'text', style:'text-transform: none !important;', isEdit: false});
 				status += app.getField('verified_user', 'Build Version', response.t6BuildVersion, {type: 'text', style:'text-transform: none !important;', isEdit: false});
-				status += app.getField('alarm', 'Build Date', moment(response.t6BuildDate).format(app.date_format), {type: 'text', style:'text-transform: none !important;', isEdit: false});
-				status += app.getField('alarm', 'Server Last Update', moment(response.started_at).format(app.date_format), {type: 'text', isEdit: false});
+				status += app.getField('alarm', 'Build Date', moment(response.t6BuildDate, "DD/MM/YYYY HH:mm:ss").format(app.date_format), {type: 'text', style:'text-transform: none !important;', isEdit: false});
+				status += app.getField('alarm', 'Server Last Update', moment(response.started_at, "DD/MM/YYYY HH:mm:ss").format(app.date_format), {type: 'text', isEdit: false});
 				status += "			</div>";
 				status += "		</div>";
 				status += "	</div>";

@@ -194,11 +194,11 @@ app.resources.objects = {
 				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if ( object.attributes.secret_key || isEdit===true ) {
-					node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", id: "secret_key", style:"text-transform: none !important;", isEdit: isEdit, pattern: app.patterns.secret_key, error:""});
+					node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", style:"text-transform: none !important;", id: "secret_key", style:"text-transform: none !important;", isEdit: isEdit, pattern: app.patterns.secret_key, error:""});
 					node += app.getField("", "", "When flow require signed payload, you should provide your secret to verify signature.", {type: "text", isEdit: false});
 				}
 				if ( object.attributes.secret_key_crypt || isEdit===true ) {
-					node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:"This must be a 64 hexadecimal chars length A-F & 0-9"});
+					node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", style:"text-transform: none !important;", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:"This must be a 64 hexadecimal chars length A-F & 0-9"});
 				}
 				if ( object.attributes.is_public == "true" && isEdit===false ) {
 					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
@@ -537,9 +537,9 @@ app.resources.objects = {
 		node += app.getSubtitle("Security");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", id: "secret_key", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key, error:""});
+		node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", style:"text-transform: none !important;", id: "secret_key", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key, error:""});
 		node += app.getField("", "", "When flow require signed payload, you should provide your secret to verify signature.", {type: "text", isEdit: false});
-		node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key_crypt, error:""});
+		node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", style:"text-transform: none !important;", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key_crypt, error:""});
 		node += app.getField("visibility", "Object is only visible to you", object.attributes.is_public!==undefined?object.attributes.is_public:false, {type: "switch", id: "Visibility", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
