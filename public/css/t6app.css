@@ -420,7 +420,7 @@ div.valuedisplay .snippet-unit3 {
 	font-size: 1vh;
 }
 div.valuedisplay .mdl-list__item-secondary-content {
-	background: url(/img/m/snippets/valuedisplay.jpg) 50% 60%;
+	background: url(/img/m/snippets/valuedisplay.jpg) top / cover;
 	width: 100% !important;
 	min-height: 190px;
 	text-align: center;
