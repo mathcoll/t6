@@ -425,8 +425,8 @@ app.resources.flows = {
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.flows, "Name", flow.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 		node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic, {type: "text", id: "MQTTTopic", isEdit: true});
-		node += app.getField(app.icons.units, "Unit", flow.attributes.unit, {type: "select", id: "Unit", isEdit: true, id: "Unit", options: allUnits });
-		node += app.getField(app.icons.datatypes, "DataType", flow.attributes.datatype, {type: "select", id: "DataType", isEdit: true, id: "DataType", options: allDatatypes });
+		node += app.getField(app.icons.units, "Unit", flow.attributes.unit, {type: "select", id: "Unit", isEdit: true, options: allUnits });
+		node += app.getField(app.icons.datatypes, "DataType", flow.attributes.datatype, {type: "select", id: "DataType", isEdit: true, options: allDatatypes });
 		node += app.getField("verified_user", flow.attributes.require_signed!==false?"Does not require signed payload  from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "add_require_signed", isEdit: true});
 		node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Does not require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "add_require_encrypted", isEdit: true});
 		node += "	</div>";
