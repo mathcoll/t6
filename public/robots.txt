@@ -1,5 +1,9 @@
 User-agent: *
 Disallow: /admin
+Disallow: /storm/
+Disallow: /sendtoafriend/
+Disallow: /utilisateurs/
+Disallow: /users/
 Disallow: /v2.0.1/users/newcomers
 Allow: /humans.txt
 Allow: /manifest.json
