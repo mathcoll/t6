@@ -115,9 +115,9 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 
 		let where = "";
 		if ( data_id ) {
-			if ( data_id.toString().length == 10 ) { data_id *= 1000000000; }
-			else if ( data_id.toString().length == 13 ) { data_id *= 1000000; }
-			else if ( data_id.toString().length == 16 ) { data_id *= 1000; }
+			if ( data_id.toString().length === 10 ) { data_id *= 1000000000; }
+			else if ( data_id.toString().length === 13 ) { data_id *= 1000000; }
+			else if ( data_id.toString().length === 16 ) { data_id *= 1000; }
 			where += " AND time="+data_id;
 		} else {
 			if ( typeof req.query.start !== "undefined" ) {
