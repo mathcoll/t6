@@ -178,14 +178,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			};
 			request(options,
 				function (error, response, body) {
-					var statusCode = response ? response.statusCode : null
-							body = body || null
-							console.log("Request sent - Server responded with:", statusCode);
-					
+					var statusCode = typeof response!=="undefined"?response.statusCode:null;
+					var body = body || null;
+					console.log("Request sent - Server responded with:", statusCode);
 					if ( error ) {
 						return console.error("HTTP failed: ", error, options.url, statusCode, body)
 					}
-					
 					console.log("success", options.url, statusCode, body);
 				}
 			)
