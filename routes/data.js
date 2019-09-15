@@ -106,6 +106,8 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	var modifier = req.query.modifier;
 	//var output = req.accepts("json"); svg
 	var query;
+	var start;
+	var end;
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
@@ -121,17 +123,23 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			where += " AND time="+data_id;
 		} else {
 			if ( typeof req.query.start !== "undefined" ) {
-				if ( !isNaN(req.query.start) ) {
-					where = " AND time>="+req.query.start*1000000;
+				if ( req.query.start.toString().length === 10 ) { start = req.query.start*1000000000; }
+				else if ( req.query.start.toString().length === 13 ) { start = req.query.start*1000000; }
+				else if ( req.query.start.toString().length === 16 ) { start = req.query.start*1000; }
+				if ( !isNaN(start) ) {
+					where = " AND time>="+start;
 				} else {
-					where = " AND time>="+moment(req.query.start).format("x")*1000000; 
+					where = " AND time>="+moment(start).format("x"); 
 				}
 			}	
 			if ( typeof req.query.end !== "undefined" ) {
-				if ( !isNaN(req.query.end) ) {
-					where += " AND time<="+req.query.end*1000000;
+				if ( req.query.end.toString().length === 10 ) { end = req.query.end*1000000000; }
+				else if ( req.query.end.toString().length === 13 ) { end = req.query.end*1000000; }
+				else if ( req.query.end.toString().length === 16 ) { end = req.query.end*1000; }
+				if ( !isNaN(end) ) {
+					where += " AND time<="+end;
 				} else {
-					where += " AND time<="+moment(req.query.end).format("x")*1000000; 
+					where += " AND time<="+moment(end).format("x"); 
 				}
 			}
 		}
@@ -178,7 +186,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page-1)*limit);
 		
-		//console.log("query: "+query);
+		console.log("query: "+query);
 		dbInfluxDB.query(query).then(data => {
 			if ( data.length > 0 ) {
 				data.map(function(d) {
