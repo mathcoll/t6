@@ -1,4 +1,4 @@
-var dataCacheName= 't6-cache-f1780ae3e7c7b5c610211888b0f0141a';
+var dataCacheName= 't6-cache-3065fd8f7f5ab60591bd4fcc617dd03b';
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -72,7 +72,7 @@ self.addEventListener("install", function(e) {
 		caches.open(cacheName).then(function(cache) {
 			console.log("[ServiceWorker]", "Caching to", cacheName);
 			return cache.addAll(filesToCache).then(function() {
-				console.log('All resources have been fetched and cached.');
+				console.log("All resources have been fetched and cached.");
 			});
 		}).then(function() {
 			console.log("[ServiceWorker]", "Install completed");
