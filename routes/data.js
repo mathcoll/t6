@@ -68,14 +68,15 @@ function getFieldsFromDatatype(datatype, asValue) {
 }
 
 /**
- * @api {get} /data/:flow_id Get DataPoint List
- * @apiName Get DataPoint List
+ * @api {get} /data/:flow_id Get DataPoint(s)
+ * @apiName Get DataPoint(s)
  * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiParam {uuid-v4} [flow_id] Datapoint ID
  * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
  * @apiParam {Number} [page] Page offset
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
@@ -97,9 +98,12 @@ function getFieldsFromDatatype(datatype, asValue) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var flow_id = req.params.flow_id;
+	var data_id = req.params.data_id;
 	var modifier = req.query.modifier;
+	//var output = req.accepts("json"); svg
+	var query;
 	
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
@@ -108,18 +112,25 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 		units	= db.getCollection("units");
 
 		let where = "";
-		if ( typeof req.query.start !== "undefined" ) {
-			if ( !isNaN(req.query.start) ) {
-				where = " AND time>="+req.query.start*1000000;
-			} else {
-				where = " AND time>="+moment(req.query.start).format("x")*1000000; 
-			}
-		}	
-		if ( typeof req.query.end !== "undefined" ) {
-			if ( !isNaN(req.query.end) ) {
-				where += " AND time<="+req.query.end*1000000;
-			} else {
-				where += " AND time<="+moment(req.query.end).format("x")*1000000; 
+		if ( data_id ) {
+			if ( data_id.toString().length == 10 ) { data_id *= 1000000000; }
+			else if ( data_id.toString().length == 13 ) { data_id *= 1000000; }
+			else if ( data_id.toString().length == 16 ) { data_id *= 1000; }
+			where += " AND time="+data_id;
+		} else {
+			if ( typeof req.query.start !== "undefined" ) {
+				if ( !isNaN(req.query.start) ) {
+					where = " AND time>="+req.query.start*1000000;
+				} else {
+					where = " AND time>="+moment(req.query.start).format("x")*1000000; 
+				}
+			}	
+			if ( typeof req.query.end !== "undefined" ) {
+				if ( !isNaN(req.query.end) ) {
+					where += " AND time<="+req.query.end*1000000;
+				} else {
+					where += " AND time<="+moment(req.query.end).format("x")*1000000; 
+				}
 			}
 		}
 		var sorting = req.query.order==="asc"?"ASC":(req.query.sort==="asc"?"ASC":"DESC");
@@ -162,12 +173,14 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 		} else {
 			fields = getFieldsFromDatatype(datatype, true);
 		}
-		var query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page-1)*limit);
+		
+		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page-1)*limit);
+		
 		//console.log("query: "+query);
 		dbInfluxDB.query(query).then(data => {
 			if ( data.length > 0 ) {
 				data.map(function(d) {
-					d.id = Date.parse(d.time);
+					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);
 					d.timestamp = Date.parse(d.time);
 					d.time = Date.parse(d.time);
 				});
@@ -180,7 +193,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 				data.pageNext = page+1;
 				data.pagePrev = page-1;
 				data.sort = typeof req.query.sort!=="undefined"?req.query.sort:"asc";
-				let total = 9999999999999;//TODO, we should get totoal from influxdb
+				let total = 9999999999999;//TODO, we should get total from influxdb
 				data.pageLast = Math.ceil(total/limit);
 				data.limit = limit;
 				
@@ -197,143 +210,6 @@ router.get("/:flow_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret}),
 			res.status(500).send({query: query, err: err, "id": 899, "code": 500, "message": "Internal Error"});
 		});
 	}
-});
-
-/**
- * @api {get} /data/:flow_id/:data_id Get DataPoint
- * @apiName Get DataPoint
- * @apiGroup 0 DataPoint
- * @apiVersion 2.0.1
- *
- * @apiUse Auth
- * 
- * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {Number} [data_id] DataPoint ID you want to get
- * @apiSuccess {Object[]} data Data point Object
- * @apiSuccess {String} data.type Data point Type
- * @apiSuccess {String} data.id Data point Identifier
- * @apiSuccess {Object[]} data.links
- * @apiSuccess {String} data.links.self Data point Url
- * @apiSuccess {Object[]} data.attributes Data point attributes
- * @apiSuccess {Number} data.attributes.time Time of Data point 
- * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
- * @apiSuccess {String} data.attributes.value Value of Data point
- * @apiUse 200
- * @apiUse 401
- * @apiUse 404
- * @apiUse 405
- * @apiUse 429
- * @apiUse 500
- */
-router.get("/:flow_id([0-9a-z\-]+)/:data_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var flow_id = req.params.flow_id;
-	var data_id = req.params.data_id;
-	var output = typeof req.query.output!=="undefined"?req.query.output:"json";
-	
-	if ( !flow_id ) {
-		res.status(405).send(new ErrorSerializer({"id": 59, "code": 405, "message": "Method Not Allowed"}).serialize());
-	}
-	if ( !req.user.id ){
-		// Not Authorized because token is invalid
-		res.status(401).send(new ErrorSerializer({"id": 60, "code": 401, "message": "Not Authorized"}).serialize());
-	} else {
-		var limit = 1;
-		var page = 1;
-		var sorting = req.query.order==="asc"?true:false;
-		
-		flows	= db.getCollection("flows");
-		units	= db.getCollection("units");
-		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id, }, }).limit(1);
-		var mqtt_topic = typeof ((flow.data())[0].mqtt_topic!=="undefined")?(flow.data())[0].mqtt_topic:null;
-		var join = flow.eqJoin(units.chain(), "unit", "id");
-
-		var flowsDT = db.getCollection("flows");
-		datatypes	= db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
-		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
-		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
-
-		if ( db_type.influxdb === true ) {
-			/* InfluxDB database */
-			let fields;
-			
-			// Cast value according to Flow settings
-			if ( datatype == "boolean" ) {
-				fields = "time, valueBoolean";
-			} else if ( datatype == "date" ) {
-				fields = "time, valueDate";
-			} else if ( datatype == "integer" ) {
-				fields = "time, valueInteger";
-			} else if ( datatype == "json" ) {
-				fields = "time, valueJson";
-			} else if ( datatype == "string" ) {
-				fields = "time, valueString";
-			} else if ( datatype == "time" ) {
-				fields = "time, valueTime";
-			} else if ( datatype == "float" ) {
-				fields = "time, valueFloat";
-			} else if ( datatype == "geo" ) {
-				fields = "time, valueString";
-			} else {
-				fields = "time, value";
-			}
-			// End casting
-
-			var query = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND time='%s' LIMIT %s", fields, flow_id, data_id, limit);
-			
-			dbInfluxDB.query(query).then(data => {
-				if ( data.length > 0 ) {
-					data.map(function(d) {
-						d.id = Date.parse(d.time);
-						d.timestamp = Date.parse(d.time);
-						d.time = Date.parse(d.time);
-						if ( datatype == "boolean" ) {
-							d.value = d.valueBoolean=="true"?true:false;
-						} else if ( datatype == "date" ) {
-							d.value = d.valueDate;
-						} else if ( datatype == "integer" ) {
-							d.value = parseInt((d.valueInteger).substring(-1), 10);
-						} else if ( datatype == "json" ) {
-							d.value = d.valueJson;
-						} else if ( datatype == "string" ) {
-							d.value = d.valueString;
-						} else if ( datatype == "time" ) {
-							d.value = d.valueTime;
-						} else if ( datatype == "float" ) {
-							d.value = parseFloat(d.valueFloat);
-						} else if ( datatype == "geo" ) {
-							d.value = d.valueString;
-						} else {
-							d.value = d.value;
-						}
-					});
-
-					data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
-					data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
-					data.datatype = datatype;
-					data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
-					data.ttl = 3600;
-					data.flow_id = flow_id;
-					data.page = page;
-					data.next = page+1;
-					data.prev = page-1;
-					data.limit = limit;
-					data.id = data_id;
-					data.order = typeof req.query.order!=="undefined"?req.query.order:"asc";
-					
-					if (output === "json") {
-						res.status(200).send(new DataSerializer(data).serialize());
-					} else if(output === "svg") {
-						res.status(404).send("SVG Not Implemented with influxDB");
-					};
-				} else {
-					res.status(404).send(new ErrorSerializer({"id": 900, "code": 404, "message": "Not Found",}).serialize());
-				};
-			}).catch(err => {
-				res.status(500).send({query: query, err: err, "id": 901, "code": 500, "message": "Internal Error",});
-			});
-		}
-	};
 });
 
 /**
