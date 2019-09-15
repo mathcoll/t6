@@ -68,7 +68,7 @@ function getFieldsFromDatatype(datatype, asValue) {
 }
 
 /**
- * @api {get} /data/:flow_id Get DataPoint(s)
+ * @api {get} /data/:flow_id/:data_id? Get DataPoint(s)
  * @apiName Get DataPoint(s)
  * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
@@ -79,6 +79,8 @@ function getFieldsFromDatatype(datatype, asValue) {
  * @apiParam {uuid-v4} [flow_id] Datapoint ID
  * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
  * @apiParam {Number} [page] Page offset
+ * @apiParam {Integer} [start] Timestamp
+ * @apiParam {Integer} [end] Timestamp
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
  * @apiParam {String="min","max","first","last","sum","count"} [modifier] Modifier function to modify the results
  * @apiSuccess {Object[]} data DataPoint from the Flow
