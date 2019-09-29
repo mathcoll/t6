@@ -21,7 +21,7 @@ function DataSerializer(data) {
 			dataLinks : {
 				self : function(d) {
 					if ( typeof d.id!=="undefined" ) {
-						return sprintf("%s/v%s/data/%s/%s", baseUrl_https, version, data.flow_id, d.id);
+						return sprintf("%s/v%s/data/%s", baseUrl_https, version, d.id);
 					} else {
 						return null;
 					}
