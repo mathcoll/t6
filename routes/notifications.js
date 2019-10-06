@@ -205,7 +205,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 
 /**
  * @api {get} /notifications/mail/newsletter Send newsletter to subscribers
- * @apiName Send Password Expiration Email to Users
+ * @apiName Send newsletter to subscribers
  * @apiGroup 8. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -244,7 +244,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 						text: "Html email client is required",
 						html: html
 					};
-					console.log("DEBUG", mailOptions);
+					//console.log("DEBUG", mailOptions);
 					t6mailer.sendMail(mailOptions).then(function(info){
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
