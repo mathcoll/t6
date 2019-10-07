@@ -163,7 +163,7 @@ var app = {
 		customAttributeValue: "^.*?$",
 		secret_key: "^.*?$",
 		secret_key_crypt: "^[a-fA-F0-9]{64}$",
-		integerNotNegative: "[1-999]+",
+		integerNotNegative: "^[^a-zA-Z]{1,4}$",
 		meta_revision: "^[0-9]{1,}$",
 		ttl: "^[1-9]+$",
 	},

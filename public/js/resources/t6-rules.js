@@ -1,6 +1,56 @@
 "use strict";
 app.resources.rules = {
 	onEdit: function(evt) {
+		var rule_id = evt.target.parentNode.getAttribute("data-id")?evt.target.parentNode.getAttribute("data-id"):evt.target.getAttribute("data-id");
+		if ( !rule_id ) {
+			toast("No Rule id found!", {timeout:3000, type: "error"});
+		} else {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			var body = {
+				name: myForm.querySelector("input[name='Name']").value,
+				active: !myForm.querySelector("input[id='switch-active']").parentNode.classList.contains("is-checked")?false:true,
+				rule: {
+					priority: myForm.querySelector("input[name='Priority']").value,
+					conditions: JSON.parse(myForm.querySelector("textarea[name='Event Conditions']").value),
+					event: {
+						type: myForm.querySelector("select[name='Event Type']").value,
+						params: JSON.parse(myForm.querySelector("textarea[name='Event Parameters']").value),
+					}
+				},
+				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
+			};
+			if ( localStorage.getItem("settings.debug") == "true" ) {
+				console.log("DEBUG onEditRule", JSON.stringify(body));
+			}
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: "PUT", headers: myHeaders, body: JSON.stringify(body) };
+			var url = app.baseUrl+"/"+app.api_version+"/rules/"+rule_id;
+			fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				app.setSection("rules");
+				toast("Rule has been edited.", {timeout:3000, type: "done"});
+			})
+			.catch(function (error) {
+				if ( dataLayer !== undefined ) {
+					dataLayer.push({
+						"eventCategory": "Interaction",
+						"eventAction": "Edit Rule ",
+						"eventLabel": "Rule has not been edited.",
+						"eventValue": "0",
+						"event": "Error"
+					});
+				}
+				toast("Rule has not been edited.", {timeout:3000, type: "error"});
+			});
+			evt.preventDefault();
+		}
 	},
 	onAdd: function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -73,8 +123,8 @@ app.resources.rules = {
 				document.title = (app.sectionsPageTitles["rule"]).replace(/%s/g, rule.attributes.name);
 				var node;
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
+				
 				if ( isEdit ) {
-
 					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += "		<div class=\"mdl-list__item\">";
@@ -82,7 +132,7 @@ app.resources.rules = {
 					node += "				<i class=\"material-icons\">"+app.icons.rules+"</i>";
 					node += "				<h2 class=\"mdl-card__title-text\">"+rule.attributes.name+"</h2>";
 					node += "			</span>";
-					node += "			<span class='mdl-list__item-secondary-action'>";
+					node += "			<s&pan class='mdl-list__item-secondary-action'>";
 					node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='description-"+rule.id+"'>";
 					node += "					<i class='material-icons'>expand_more</i>";
 					node += "				</button>";
@@ -98,8 +148,33 @@ app.resources.rules = {
 						node += app.getField(app.icons.date, "Updated", moment(rule.attributes.meta.updated).format(app.date_format), {type: "text"});
 					}
 					if ( rule.attributes.meta.revision ) {
-						rule += app.getField(app.icons.update, "Revision", rule.attributes.meta.revision, {type: "text"});
+						node += app.getField(app.icons.update, "Revision", rule.attributes.meta.revision, {type: "text"});
 					}
+					node += "	</div>";
+					node += "</section>";
+
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(null, "meta.revision", rule.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
+					node += app.getField(app.icons.name, "Name", rule.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+					node += app.getField("add_circle_outline", "Event Type", rule.attributes.rule.event.type, {type: "select", id: "EventType", options: app.EventTypes, isEdit: isEdit });
+					node += app.getField("swap_vert", "Priority", rule.attributes.rule.priority, {type: "text", id: "Priority", isEdit: isEdit, pattern: app.patterns.integerNotNegative, error:"Should be a positive integer."});
+					node += app.getField("traffic", rule.attributes.active!==false?"Rule is active":"Rule is disabled", rule.attributes.active!==false?true:false, {type: "switch", id:"active", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
+
+					node += app.getSubtitle("Event Conditions");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.description, "Event Conditions", JSON.stringify(rule.attributes.rule.conditions), {type: "textarea", id: "EventConditions", isEdit: true});
+					node += "	</div>";
+					node += "</section>";
+					
+					node += app.getSubtitle("Event Parameters");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					//node += app.getField("note", ["Name", "Value"], ["", ""], {type: "2inputs", pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ["Name should not contains any space nor special char.", "Value is free."], id: ["Name[]", "Value[]"], isEdit: true});
+					node += app.getField(app.icons.description, "Event Parameters", JSON.stringify(rule.attributes.rule.event.params), {type: "textarea", id: "EventParams", isEdit: true});
 					node += "	</div>";
 					node += "</section>";
 					
@@ -127,6 +202,16 @@ app.resources.rules = {
 					app.setExpandAction();
 					
 					app.refreshButtonsSelectors();
+					if ( document.getElementById("switch-active") ) {
+						document.getElementById("switch-active").addEventListener("change", function(e) {
+							var label = e.target.parentElement.querySelector("div.mdl-switch__label");
+							if ( document.getElementById("switch-active").checked === true ) {
+								label.innerText = "Rule is active";
+							} else {
+								label.innerText = "Rule is disabled";
+							}
+						});
+					}
 					app.buttons.backRule.addEventListener("click", function(evt) { app.resources.rules.display(rule.id, false, false, false); }, false);
 					app.buttons.saveRule.addEventListener("click", function(evt) { app.resources.rules.onEdit(evt); }, false);
 						
@@ -146,6 +231,7 @@ app.resources.rules = {
 					node += "			</span>";
 					node += "		</div>";
 					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+					node += app.getField(app.icons.rules, "Id", rule.id, {type: "text"});
 					if ( rule.attributes.meta.created ) {
 						node += app.getField(app.icons.date, "Created", moment(rule.attributes.meta.created).format(app.date_format), {type: "text"});
 					}
@@ -157,6 +243,14 @@ app.resources.rules = {
 					}
 					node += "	</div>"; // mdl-shadow--2dp
 					node +=	"</section>";
+
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField("add_circle_outline", "Event Type", rule.attributes.rule.event.type, {type: "select", id: "EventType", options: app.EventTypes, isEdit: isEdit });
+					node += app.getField("swap_vert", "Priority", rule.attributes.rule.priority, {type: "text", id: "Priority", isEdit: isEdit, pattern: app.patterns.integerNotNegative, error:"Should be a positive integer."});
+					node += app.getField("traffic", rule.attributes.active!==false?"Rule is active":"Rule is disabled", "", {type: "switch", id:"active", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
 
 					node += app.getSubtitle("Event Conditions");
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
