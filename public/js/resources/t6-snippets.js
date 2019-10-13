@@ -154,7 +154,7 @@ app.resources.snippets = {
 					node += "		</div>";
 					node += "		<div class='mdl-cell--12-col hidden' id='description-"+snippet.id+"'>";
 
-					node += app.getField(app.icons.snippets, "Id", snippet.id, {type: "text"});
+					node += app.getField(app.icons.snippets, "Id", snippet.id, {type: "text", style:"text-transform: none !important;"});
 					if ( snippet.attributes.meta.created ) {
 						node += app.getField(app.icons.date, "Created", moment(snippet.attributes.meta.created).format(app.date_format), {type: "text"});
 					}

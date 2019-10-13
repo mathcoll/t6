@@ -140,7 +140,7 @@ app.resources.rules = {
 					node += "		</div>";
 					node += "		<div class='mdl-cell--12-col hidden' id='description-"+rule.id+"'>";
 
-					node += app.getField(app.icons.rules, "Id", rule.id, {type: "text"});
+					node += app.getField(app.icons.rules, "Id", rule.id, {type: "text", style:"text-transform: none !important;"});
 					if ( rule.attributes.meta.created ) {
 						node += app.getField(app.icons.date, "Created", moment(rule.attributes.meta.created).format(app.date_format), {type: "text"});
 					}

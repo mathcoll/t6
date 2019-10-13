@@ -159,7 +159,7 @@ app.resources.flows = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+flow.id+"'>";
 
-				node += app.getField(app.icons.flows, "Id", flow.id, {type: "text"});
+				node += app.getField(app.icons.flows, "Id", flow.id, {type: "text", style:"text-transform: none !important;"});
 				if ( flow.attributes.description && isEdit!==true ) {
 					node += app.getField(app.icons.description, "Description", app.nl2br(flow.attributes.description), {type: "text"});
 				}

@@ -147,7 +147,7 @@ app.resources.objects = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
-				node += app.getField(app.icons.objects, "Id", object.id, {type: "text"});
+				node += app.getField(app.icons.objects, "Id", object.id, {type: "text", style:"text-transform: none !important;"});
 				if ( object.attributes.description && isEdit!==true ) {
 					node += app.getField(app.icons.description, "Description", description, {type: "text"});
 				}
