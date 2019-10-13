@@ -2870,9 +2870,9 @@ var touchStartPoint, touchMovePoint;
 		settings += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 		settings += app.getField('notifications', app.getSetting('settings.notifications')!='false'?"Notifications are enabled":"Notifications are disabled", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'settings.notifications', isEdit: true});
 		if ( app.getSetting('settings.pushSubscription.keys.p256dh') && app.getSetting('settings.notifications')!="false" && app.getSetting('settings.debug')!="false" ) {
-			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true});
-			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', id:'settings.pushSubscription.keys.p256dh', isEdit: true});
-			settings += app.getField('vpn_lock', 'Auth', app.getSetting('settings.pushSubscription.keys.auth'), {type: 'input', id:'settings.pushSubscription.keys.auth', isEdit: true});
+			settings += app.getField('cloud', 'Endpoint', app.getSetting('settings.pushSubscription.endpoint'), {type: 'input', id:'settings.pushSubscription.endpoint', isEdit: true, style:"text-transform: none !important;"});
+			settings += app.getField('vpn_key', 'Key', app.getSetting('settings.pushSubscription.keys.p256dh'), {type: 'input', id:'settings.pushSubscription.keys.p256dh', isEdit: true, style:"text-transform: none !important;"});
+			settings += app.getField('vpn_lock', 'Auth', app.getSetting('settings.pushSubscription.keys.auth'), {type: 'input', id:'settings.pushSubscription.keys.auth', isEdit: true, style:"text-transform: none !important;"});
 		}
 		settings += "	</div>";
 		settings += "</section>";
