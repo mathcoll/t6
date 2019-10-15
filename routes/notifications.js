@@ -219,6 +219,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 	if ( req.user.role === "admin" ) {
 		var year = req.query.year;
 		var template = req.query.template;
+		var subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰  t6 updates";
 		users	= db.getCollection("users");
 		var query = { "$and": [
 					{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
@@ -240,7 +241,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 								comment: "Unsubscribe from this newsletter"
 							},
 						},
-						subject: "📰  t6 updates",
+						subject: subject,
 						text: "Html email client is required",
 						html: html
 					};
