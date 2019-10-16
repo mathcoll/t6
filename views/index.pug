@@ -1,11 +1,10 @@
 doctype html
-html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
+html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6BuildVersion=t6BuildVersion)
   head
     if process.env.NODE_ENV === 'development'
       title DEV t6 IoT
     else
       title t6 IoT
-
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0')
