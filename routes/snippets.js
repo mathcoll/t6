@@ -19,7 +19,6 @@ var tokens;
  * 
  * @apiUse 200
  * @apiUse 401
- * @apiUse 404
  * @apiUse 405
  * @apiUse 429
  * @apiUse 500
@@ -66,11 +65,7 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
 	json.pageLast = Math.ceil(total/size);
 	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
-	if ( json.length>0 ) {
-		res.status(200).send(new SnippetSerializer(json).serialize());
-	} else {
-		res.status(404).send(new ErrorSerializer({"id": 128, "code": 404, "message": "Not Found",}).serialize());
-	}
+	res.status(200).send(new SnippetSerializer(json).serialize());
 });
 
 /**

@@ -18,7 +18,6 @@ var rules;
  * 
  * @apiUse 200
  * @apiUse 401
- * @apiUse 404
  * @apiUse 405
  * @apiUse 429
  * @apiUse 500
