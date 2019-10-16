@@ -295,18 +295,21 @@ app.resources.flows = {
 						datapoints += "			</span>";
 						datapoints += "		</div>";
 						datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
-						var dataset = [data.data.map(function(i) {
-							var value;
-							if( datatype == "geo" ) {
-								var geoPosition = {longitude: "", latitude: ""};
-								[geoPosition.longitude, geoPosition.latitude] = (i.attributes.value).split(";");
-								value = geoPosition.longitude + ", " + geoPosition.latitude;
-							} else {
-								value = (unit.format).replace(/%s/g, i.attributes.value);
-							}
-							datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), value, {type: "text", isEdit: false});
-							return [i.attributes.timestamp, i.attributes.value];
-						})];
+						var dataset = [];
+						if (data && data.data && data.data.type!=="errors") {
+							dataset = [data.data.map(function(i) {
+								var value;
+								if( datatype == "geo" ) {
+									var geoPosition = {longitude: "", latitude: ""};
+									[geoPosition.longitude, geoPosition.latitude] = (i.attributes.value).split(";");
+									value = geoPosition.longitude + ", " + geoPosition.latitude;
+								} else {
+									value = (unit.format).replace(/%s/g, i.attributes.value);
+								}
+								datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), value, {type: "text", isEdit: false});
+								return [i.attributes.timestamp, i.attributes.value];
+							})];
+						}
 						componentHandler.upgradeDom();
 						//$.plot($("#flow-graph-"+flow.id), dataset, options);
 						datapoints += "		</div>";
