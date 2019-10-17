@@ -614,7 +614,7 @@ var touchStartPoint, touchMovePoint;
 			if ( dataLayer !== undefined ) {
 				dataLayer.push({
 					'eventCategory': 'Interaction',
-					'eventAction': 'pushSubscription',
+					'eventAction': 'subscribeUserToPush',
 					'eventLabel': 'pushSubscription',
 					'eventValue': 'error',
 					'event': 'Error'
@@ -2052,6 +2052,20 @@ var touchStartPoint, touchMovePoint;
 				if ( gravatar.profileBackground && gravatar.profileBackground.url ) {
 					localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
 				}
+				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && self.dataLayer !== undefined ) {
+					self.dataLayer.push({
+						"userEmail": user.attributes.email,
+						"userId": user.id
+					});
+				}
+				if ( Tawk_API && typeof Tawk_API.setAttributes == 'function' ) {
+					Tawk_API.setAttributes({
+						'name' : user.attributes.first_name+" "+user.attributes.last_name,
+						'email': user.attributes.email
+					}, function (error) {
+						console.log("DEBUG", error);
+					});
+				}
 				app.setDrawer();
 				app.fetchUnsubscriptions();
 				app.displayUnsubscriptions((app.containers.profile).querySelector('.page-content'));
@@ -2750,14 +2764,6 @@ var touchStartPoint, touchMovePoint;
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
-				if ( Tawk_API && typeof Tawk_API.setAttributes == 'function' ) {
-					Tawk_API.setAttributes({
-						'name' : localStorage.getItem('currentUserName')?localStorage.getItem('currentUserName'):null,
-						'email': localStorage.getItem('currentUserEmail')?localStorage.getItem('currentUserEmail'):null
-					}, function (error) {
-						console.log("DEBUG", error);
-					});
-				}
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
 				app.getDatatypes();
