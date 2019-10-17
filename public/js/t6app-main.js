@@ -3644,6 +3644,9 @@ var touchStartPoint, touchMovePoint;
 		document.getElementById('cookieconsent').classList.add('hidden');
 		document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
 		document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
+		if ( typeof mixpanel!=="undefined" ) {
+			mixpanel.opt_out_tracking();
+		}
 		evt.preventDefault();
 	}, false);
 	document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
