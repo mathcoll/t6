@@ -608,10 +608,19 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', j);
 			}
+			if ( typeof dataLayer!=="undefined" ) {
+				dataLayer.push({
+					'eventCategory': 'Interaction',
+					'eventAction': 'subscribeUserToPush',
+					'eventLabel': 'pushSubscription',
+					'eventValue': 'success',
+					'event': 'Info'
+				});
+			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
-			if ( dataLayer !== undefined ) {
+			if ( typeof dataLayer!=="undefined" ) {
 				dataLayer.push({
 					'eventCategory': 'Interaction',
 					'eventAction': 'subscribeUserToPush',
