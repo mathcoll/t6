@@ -2064,6 +2064,7 @@ var touchStartPoint, touchMovePoint;
 				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && self.dataLayer !== undefined ) {
 					self.dataLayer.push({
 						"userEmail": user.attributes.email,
+						"userRole": user.attributes.role,
 						"userId": user.id
 					});
 				}

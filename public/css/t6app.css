@@ -95,6 +95,7 @@ code.nostyle br {
 #hof-container div p, #hof-container div span {
 	background: rgba(121, 85, 72, 0.7);
 	padding: 5px;
+	margin: 0;
 }
 #hof-container #illustration-container {
 	display: flex;
