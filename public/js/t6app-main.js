@@ -474,7 +474,7 @@ var touchStartPoint, touchMovePoint;
 				toast('Your password has been reset; please login again.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
-				if ( dataLayer !== undefined ) {
+				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 					dataLayer.push({
 						'eventCategory': 'Interaction',
 						'eventAction': 'password',
@@ -486,7 +486,7 @@ var touchStartPoint, touchMovePoint;
 				toast('We can\'t process your password reset. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 			});
 		} else {
-			if ( dataLayer !== undefined ) {
+			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 				dataLayer.push({
 					'eventCategory': 'Interaction',
 					'eventAction': 'password',
@@ -526,7 +526,7 @@ var touchStartPoint, touchMovePoint;
 				toast('Instructions has been sent to your email.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
-				if ( dataLayer !== undefined ) {
+				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 					dataLayer.push({
 						'eventCategory': 'Interaction',
 						'eventAction': 'password',
@@ -570,7 +570,7 @@ var touchStartPoint, touchMovePoint;
 			return registration;
 		})
 		.catch(function(err) {
-			if ( dataLayer !== undefined ) {
+			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 				dataLayer.push({
 					'eventCategory': 'Interaction',
 					'eventAction': 'ServiceWorker',
@@ -608,7 +608,7 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', j);
 			}
-			if ( typeof dataLayer!=="undefined" ) {
+			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 				dataLayer.push({
 					'eventCategory': 'Interaction',
 					'eventAction': 'subscribeUserToPush',
@@ -620,7 +620,7 @@ var touchStartPoint, touchMovePoint;
 			return pushSubscription;
 		})
 		.catch(function (error) {
-			if ( typeof dataLayer!=="undefined" ) {
+			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 				dataLayer.push({
 					'eventCategory': 'Interaction',
 					'eventAction': 'subscribeUserToPush',
@@ -2061,7 +2061,7 @@ var touchStartPoint, touchMovePoint;
 				if ( gravatar.profileBackground && gravatar.profileBackground.url ) {
 					localStorage.setItem("currentUserBackground", gravatar.profileBackground.url);
 				}
-				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && self.dataLayer !== undefined ) {
+				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 					self.dataLayer.push({
 						"userEmail": user.attributes.email,
 						"userRole": user.attributes.role,
@@ -2822,6 +2822,7 @@ var touchStartPoint, touchMovePoint;
 				localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
 				
 				app.isLogged = true;
+				app.fetchProfile();
 				//app.resetSections();
 
 				app.setHiddenElement("signin_button"); 
@@ -3680,7 +3681,7 @@ var touchStartPoint, touchMovePoint;
 		app.containers.menuElement.classList.add('menu--show');
 		app.containers.menuOverlayElement.classList.add('menu__overlay--show');
 		app.containers.drawerObfuscatorElement.remove();
-		if ( dataLayer !== undefined ) {
+		if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 			dataLayer.push({
 				'eventCategory': 'Interaction',
 				'eventAction': 'change',
@@ -3697,7 +3698,7 @@ var touchStartPoint, touchMovePoint;
 		app.containers.menuOverlayElement.classList.remove('menu__overlay--show');
 		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
 		app.containers.menuElement.classList.remove('is-visible');
-		if ( dataLayer !== undefined ) {
+		if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 			dataLayer.push({
 				'eventCategory': 'Interaction',
 				'eventAction': 'change',
@@ -3922,7 +3923,7 @@ var touchStartPoint, touchMovePoint;
 			msg = "You are now online...";
 			type: "done";
 			app.setHiddenElement("notification");
-			if ( self.dataLayer !== undefined ) {
+			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
 				self.dataLayer.push({
 					"eventCategory": "navigator.onLine",
 					"eventAction": "change",
