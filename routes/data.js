@@ -341,11 +341,11 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				mqtt_topic = (f.data())[0].left.mqtt_topic;
 			}
 			var datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:null;
-			if ( (f.data())[0].left.require_encrypted && !isEncrypted ) {
+			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_encrypted && !isEncrypted ) {
 				//console.log("(f.data())[0].left", (f.data())[0].left);
 				prerequisite += 1;
 			}
-			if ( (f.data())[0].left.require_signed && !isSigned ) {
+			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_signed && !isSigned ) {
 				//console.log("(f.data())[0].left", (f.data())[0].left);
 				prerequisite += 1;
 			}

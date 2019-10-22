@@ -6,8 +6,9 @@
     "diskusage": "^0.1.4",
     "exec": "^0.2.1",
     "minimist": "^1.2.0",
-    "moment": "^2.11.2",
+    "moment": "^2.24.0",
     "request": "^2.69.0",
+    "speedtest-net": "^1.6.0",
     "sprintf-js": "^1.0.3",
     "ustat": "0.0.2",
     "yoctolib": "^1.10.22835"
