@@ -48,6 +48,8 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
  * @apiParam {String} [name=unamed] Unit Name
  * @apiParam {String} [format=""] Unit Format
  * @apiParam {String} [type=""] Unit Type
+ * @apiParam {String} [system=""] System
+ * @apiParam {String{1024}} [description=""] Description
  * 
  * @apiUse 201
  * @apiUse 401
@@ -60,6 +62,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			name:	typeof req.body.name!=="undefined"?req.body.name:"unamed",
 			format:	typeof req.body.format!=="undefined"?req.body.format:"",
 			type:	typeof req.body.type!=="undefined"?req.body.type:"",
+			system:	typeof req.body.system!=="undefined"?req.body.system:"",
+			description:typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):"",
 		};
 		units.insert(new_unit);
 
@@ -82,6 +86,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {String} [name] Unit Name
  * @apiParam {String} [format] Unit Format
  * @apiParam {String} [type] Unit Type
+ * @apiParam {String} [system=""] System
+ * @apiParam {String{1024}} [description=""] Description
  * 
  * @apiUse 200
  * @apiUse 401
@@ -97,6 +103,8 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 				item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
 				item.format		= typeof req.body.format!=="undefined"?req.body.format:item.format;
 				item.type		= typeof req.body.type!=="undefined"?req.body.type:item.type;
+				item.system		= typeof req.body.system!=="undefined"?req.body.system:"";
+				item.description= typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):"";
 				result = item;
 			}
 		);
