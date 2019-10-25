@@ -1395,7 +1395,7 @@ var touchStartPoint, touchMovePoint;
 		node += "</section>";
 		return node;
 	};
-	
+
 	app.getUnits = function() {
 		if ( localStorage.getItem('units') == 'null' || !JSON.parse(localStorage.getItem('units')) ) {
 			var myHeaders = new Headers();
@@ -1412,8 +1412,13 @@ var touchStartPoint, touchMovePoint;
 				if ( response.data ) {
 					for (var i=0; i < (response.data).length ; i++ ) {
 						var u = response.data[i];
-						app.units.push( {name: u.id, value:u.attributes.type+' '+u.attributes.name, format: u.attributes.format} );
+						app.units.push( {name: u.id, value:u.attributes.type+' - '+u.attributes.name, format: u.attributes.format, system: u.attributes.system, description: u.attributes.description} );
 					}
+					(app.units) = (app.units).sort(function(a, b){
+						if(a.value.toLowerCase() < b.value.toLowerCase()) { return -1; }
+						if(a.value.toLowerCase() > b.value.toLowerCase()) { return 1; }
+						return 0;
+					});
 					localStorage.setItem('units', JSON.stringify(app.units));
 				}
 			});
@@ -1488,6 +1493,11 @@ var touchStartPoint, touchMovePoint;
 						var d = response.data[i];
 						app.datatypes.push( {name: d.id, value:d.attributes.name} );
 					}
+					(app.datatypes) = (app.datatypes).sort(function(a, b){
+						if(a.value.toLowerCase() < b.value.toLowerCase()) { return -1; }
+						if(a.value.toLowerCase() > b.value.toLowerCase()) { return 1; }
+						return 0;
+					});
 					localStorage.setItem('datatypes', JSON.stringify(app.datatypes));
 				}
 			});
@@ -2490,9 +2500,11 @@ var touchStartPoint, touchMovePoint;
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
 					if (label) field += "	<label class='mdl-selectfield__label' for='"+id+"'>"+label+"</label>";
 					field += "	<select class='mdl-textfield__input mdl-selectfield__select' name='"+label+"' id='"+id+"' "+isMultiple+">";
-					for (var n=0; n<options.options.length; n++) {
-						var selected = value==options.options[n].name?'selected':'';
-						field += "	<option "+selected+" value='"+options.options[n].name+"' data-stype='"+options.options[n].sType+"'>"+options.options[n].value+"</option>";
+					if( options.options ) {
+						for (var n=0; n<options.options.length; n++) {
+							var selected = value==options.options[n].name?'selected':'';
+							field += "	<option "+selected+" value='"+options.options[n].name+"' data-stype='"+options.options[n].sType+"'>"+options.options[n].value+"</option>";
+						}
 					}
 					field += "	</select>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
