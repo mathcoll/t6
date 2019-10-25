@@ -43,15 +43,6 @@ app.resources.snippets = {
 				//snippetContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
-				if ( dataLayer !== undefined ) {
-					dataLayer.push({
-						"eventCategory": "Interaction",
-						"eventAction": "Save Snippet",
-						"eventLabel": "Snippet has not been saved.",
-						"eventValue": "0",
-						"event": "Error"
-					});
-				}
 				toast("Snippet has not been saved.", {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
@@ -91,15 +82,6 @@ app.resources.snippets = {
 			toast("Snippet has been added.", {timeout:3000, type: "done"});
 		})
 		.catch(function (error) {
-			if ( dataLayer !== undefined ) {
-				dataLayer.push({
-					"eventCategory": "Interaction",
-					"eventAction": "Add Snippet",
-					"eventLabel": "Snippet has not been added.",
-					"eventValue": "0",
-					"event": "Error"
-				});
-			}
 			toast("Snippet has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();

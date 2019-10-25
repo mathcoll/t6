@@ -46,15 +46,6 @@ app.resources.flows = {
 				//flowContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
-				if ( dataLayer !== undefined ) {
-					dataLayer.push({
-						"eventCategory": "Interaction",
-						"eventAction": "Save Flow",
-						"eventLabel": "Flow has not been saved.",
-						"eventValue": "0",
-						"event": "Error"
-					});
-				}
 				toast("Flow has not been saved."+error, {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
@@ -95,15 +86,6 @@ app.resources.flows = {
 			toast("Flow has been added.", {timeout:3000, type: "done"});
 		})
 		.catch(function (error) {
-			if ( dataLayer !== undefined ) {
-				dataLayer.push({
-					"eventCategory": "Interaction",
-					"eventAction": "Add Flow",
-					"eventLabel": "Flow has not been added.",
-					"eventValue": "0",
-					"event": "Error"
-				});
-			}
 			toast("Flow has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();

@@ -38,15 +38,6 @@ app.resources.rules = {
 				toast("Rule has been edited.", {timeout:3000, type: "done"});
 			})
 			.catch(function (error) {
-				if ( dataLayer !== undefined ) {
-					dataLayer.push({
-						"eventCategory": "Interaction",
-						"eventAction": "Edit Rule ",
-						"eventLabel": "Rule has not been edited.",
-						"eventValue": "0",
-						"event": "Error"
-					});
-				}
 				toast("Rule has not been edited.", {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
@@ -85,15 +76,6 @@ app.resources.rules = {
 			toast("Rule has been added.", {timeout:3000, type: "done"});
 		})
 		.catch(function (error) {
-			if ( dataLayer !== undefined ) {
-				dataLayer.push({
-					"eventCategory": "Interaction",
-					"eventAction": "Add Rule ",
-					"eventLabel": "Rule has not been added.",
-					"eventValue": "0",
-					"event": "Error"
-				});
-			}
 			toast("Rule has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();

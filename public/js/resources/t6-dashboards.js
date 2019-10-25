@@ -33,15 +33,6 @@ app.resources.dashboards = {
 				//dashboardContainer.querySelector("h2").innerHTML = body.name;
 			})
 			.catch(function (error) {
-				if ( dataLayer !== undefined ) {
-					dataLayer.push({
-						"eventCategory": "Interaction",
-						"eventAction": "Save Dashboard",
-						"eventLabel": "Dashboard has not been saved.",
-						"eventValue": "0",
-						"event": "Error"
-					});
-				}
 				toast("Dashboard has not been saved.", {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
@@ -73,15 +64,6 @@ app.resources.dashboards = {
 			toast("Dashboard has been added.", {timeout:3000, type: "done"});
 		})
 		.catch(function (error) {
-			if ( dataLayer !== undefined ) {
-				dataLayer.push({
-					"eventCategory": "Interaction",
-					"eventAction": "Add Dashboard",
-					"eventLabel": "Dashboard has not been added.",
-					"eventValue": "0",
-					"event": "Error"
-				});
-			}
 			toast("Dashboard has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();

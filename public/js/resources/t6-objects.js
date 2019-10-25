@@ -40,15 +40,6 @@ app.resources.objects = {
 				//objectContainer.querySelector("div.mdl-list__item--three-line.small-padding span.mdl-list__item-sub-title").innerHTML = app.nl2br(body.description.substring(0, app.cardMaxChars));
 			})
 			.catch(function (error) {
-				if ( dataLayer !== undefined ) {
-					dataLayer.push({
-						"eventCategory": "Interaction",
-						"eventAction": "Save Object",
-						"eventLabel": "Object has not been saved.",
-						"eventValue": "0",
-						"event": "Error"
-					});
-				}
 				toast("Object has not been saved.", {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
@@ -86,15 +77,6 @@ app.resources.objects = {
 			toast("Object has been added.", {timeout:3000, type: "done"});
 		})
 		.catch(function (error) {
-			if ( dataLayer !== undefined ) {
-				dataLayer.push({
-					"eventCategory": "Interaction",
-					"eventAction": "Add Object",
-					"eventLabel": "Object has not been added.",
-					"eventValue": "0",
-					"event": "Error"
-				});
-			}
 			toast("Object has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();
