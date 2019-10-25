@@ -474,27 +474,9 @@ var touchStartPoint, touchMovePoint;
 				toast('Your password has been reset; please login again.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
-				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-					dataLayer.push({
-						'eventCategory': 'Interaction',
-						'eventAction': 'password',
-						'eventLabel': 'reset',
-						'eventValue': 'We can\'t process your password reset. Please resubmit the form later!',
-						'event': 'Error'
-					});
-				}
 				toast('We can\'t process your password reset. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 			});
 		} else {
-			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-				dataLayer.push({
-					'eventCategory': 'Interaction',
-					'eventAction': 'password',
-					'eventLabel': 'reset',
-					'eventValue': 'We can\'t process your password reset.',
-					'event': 'Error'
-				});
-			}
 			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
 			document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 		}
@@ -526,15 +508,6 @@ var touchStartPoint, touchMovePoint;
 				toast('Instructions has been sent to your email.', {timeout:3000, type: 'done'});
 			})
 			.catch(function (error) {
-				if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-					dataLayer.push({
-						'eventCategory': 'Interaction',
-						'eventAction': 'password',
-						'eventLabel': 'forgot',
-						'eventValue': 'We can\'t process your password reset. Please resubmit the form later!',
-						'event': 'Error'
-					});
-				}
 				toast('We can\'t process your request. Please resubmit the form later!', {timeout:3000, type: 'warning'});
 			});
 		} else {
@@ -570,15 +543,6 @@ var touchStartPoint, touchMovePoint;
 			return registration;
 		})
 		.catch(function(err) {
-			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-				dataLayer.push({
-					'eventCategory': 'Interaction',
-					'eventAction': 'ServiceWorker',
-					'eventLabel': 'registration',
-					'eventValue': '[ServiceWorker] error occured...',
-					'event': 'Error'
-				});
-			}
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] error occured...'+ err);
 			}
@@ -608,27 +572,9 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', j);
 			}
-			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-				dataLayer.push({
-					'eventCategory': 'Interaction',
-					'eventAction': 'subscribeUserToPush',
-					'eventLabel': 'pushSubscription',
-					'eventValue': 'success',
-					'event': 'Info'
-				});
-			}
 			return pushSubscription;
 		})
 		.catch(function (error) {
-			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-				dataLayer.push({
-					'eventCategory': 'Interaction',
-					'eventAction': 'subscribeUserToPush',
-					'eventLabel': 'pushSubscription',
-					'eventValue': 'error',
-					'event': 'Error'
-				});
-			}
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[pushSubscription]', 'subscribeUserToPush'+error);
 			}
@@ -2067,14 +2013,14 @@ var touchStartPoint, touchMovePoint;
 						"userRole": user.attributes.role,
 						"userId": user.id
 					});
-				}
-				if ( Tawk_API && typeof Tawk_API.setAttributes == 'function' ) {
-					Tawk_API.setAttributes({
-						'name' : user.attributes.first_name+" "+user.attributes.last_name,
-						'email': user.attributes.email
-					}, function (error) {
-						console.log("DEBUG", error);
-					});
+					if ( Tawk_API && typeof Tawk_API.setAttributes == 'function' ) {
+						Tawk_API.setAttributes({
+							'name' : user.attributes.first_name+" "+user.attributes.last_name,
+							'email': user.attributes.email
+						}, function (error) {
+							console.log("DEBUG", error);
+						});
+					}
 				}
 				app.setDrawer();
 				app.fetchUnsubscriptions();
@@ -3681,15 +3627,6 @@ var touchStartPoint, touchMovePoint;
 		app.containers.menuElement.classList.add('menu--show');
 		app.containers.menuOverlayElement.classList.add('menu__overlay--show');
 		app.containers.drawerObfuscatorElement.remove();
-		if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-			dataLayer.push({
-				'eventCategory': 'Interaction',
-				'eventAction': 'change',
-				'eventLabel': 'show',
-				'eventValue': '1',
-				'event': 'Menu'
-			});
-		}
 	};
 	app.hideMenu = function() {
 		app.containers.menuElement.style.transform = "translateX(-120%) !important";
@@ -3698,15 +3635,6 @@ var touchStartPoint, touchMovePoint;
 		app.containers.menuOverlayElement.classList.remove('menu__overlay--show');
 		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
 		app.containers.menuElement.classList.remove('is-visible');
-		if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-			dataLayer.push({
-				'eventCategory': 'Interaction',
-				'eventAction': 'change',
-				'eventLabel': 'hide',
-				'eventValue': '1',
-				'event': 'Menu'
-			});
-		}
 	};
 	app.onTransitionEnd = function() {
 		if (touchStartPoint < 10) {
@@ -3923,14 +3851,6 @@ var touchStartPoint, touchMovePoint;
 			msg = "You are now online...";
 			type: "done";
 			app.setHiddenElement("notification");
-			if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" && typeof self.dataLayer!=="undefined" ) {
-				self.dataLayer.push({
-					"eventCategory": "navigator.onLine",
-					"eventAction": "change",
-					"eventLabel": msg,
-					"event": true
-				});
-			}
 		}
 		else {
 			msg = "You are now offline...";
