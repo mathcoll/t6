@@ -332,6 +332,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 					}
 				};
 				//console.log("resultSuccess");
+				console.log(JSON.stringify(req.body, null, 2));
 				console.log(JSON.stringify(resultSuccess, null, 2));
 				res.status(200).send( resultSuccess );
 			} else {
