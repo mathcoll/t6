@@ -1,4 +1,4 @@
-var dataCacheName= 't6-cache-85080e0a150a1e1a93f561488de8cf22';
+var dataCacheName= 't6-cache-ffe25d1ea16fbfb8e88ec89b408a1961';
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -133,15 +133,26 @@ self.addEventListener("push", function(event) {
 	if( event.data && event.data.text() ) {
 		var notif = JSON.parse(event.data.text());
 		const title = notif.title!==null?notif.title:"t6 notification";
+		const body = notif.body!==null?notif.body:"Welcome to t6.";
+		const icon = notif.icon!==null?notif.icon:"/img/m/icons/icon-128x128.png";
+		const tag = notif.tag!==null?notif.tag:"t6notification";
+		const actions = notif.actions!==null?notif.actions:[{action: "goObjects", title: "Go!", icon: "/img/m/icons/icon-128x128.png"}];
+		const vibrate = notif.vibrate!==null?notif.vibrate:[200, 100, 200, 100, 200, 100, 200];
 		const options = {
-			body: notif.body,
-			icon: notif.icon!==null?notif.icon:"/img/m/icons/icon-128x128.png",
+			body: body,
+			icon: icon,
+			actions: actions,
+			tag: tag,
+			vibrate: vibrate
 		};
-		console.log("[pushSubscription]", notif.type);
+		console.log("[pushSubscription] notif.type", notif.type);
 		if ( notif.type == "message" ) {
 			event.waitUntil(self.registration.showNotification(title, options));
+			if ( typeof firebase !== "undefined" ) {
+				firebase.analytics().setUserProperties({'notification_receive': 1});
+			}
 		} else {
-			console.log("[pushSubscription]", notif);
+			console.log("[pushSubscription] notif", notif);
 		}
 	}
 });
@@ -156,5 +167,55 @@ self.addEventListener("error", function(e) {
 	console.log("[onError]", e.filename, e.lineno, e.colno, e.message);
 });
 self.addEventListener("notificationclick", function(event) {
+	event.notification.close();
+	if ( event.action === "goObjects" ) {
+		clients.openWindow("/#objects");
+		synchronizeReader();
+	} else if( event.action === "goSignUp" ) {
+		clients.openWindow("/#signup");
+		synchronizeReader();
+	} else {
+		clients.openWindow("/");
+	}
+	if ( typeof firebase !== "undefined" ) {
+		firebase.analytics().setUserProperties({'notification_click': 1});
+	}
 	console.log("[onNotificationClick]", event);
 });
+
+if ( typeof firebase !== "undefined" ) {
+	// Get Instance ID token. Initially this makes a network call, once retrieved
+	// subsequent calls to getToken will return from cache.
+	firebase.messaging().getToken().then((currentToken) => {
+		if (currentToken) {
+			console.log("[pushSubscription] currentToken", currentToken);
+			sendTokenToServer(currentToken);
+			updateUIForPushEnabled(currentToken);
+		} else {
+			// Show permission request.
+			console.log("[pushSubscription]", "No Instance ID token available. Request permission to generate one.");
+			// Show permission UI.
+			updateUIForPushPermissionRequired();
+			setTokenSentToServer(false);
+		}
+	}).catch((err) => {
+		console.log("[pushSubscription]", "An error occurred while retrieving token. ", err);
+		showToken("Error retrieving Instance ID token. ", err);
+		setTokenSentToServer(false);
+	});
+
+	firebase.messaging().onTokenRefresh(() => {
+		firebase.messaging().getToken().then((refreshedToken) => {
+			console.log("[pushSubscription]", "Token refreshed.");
+			// Indicate that the new Instance ID token has not yet been sent to the
+			// app server.
+			setTokenSentToServer(false);
+			// Send Instance ID token to app server.
+			sendTokenToServer(refreshedToken);
+			// ...
+		}).catch((err) => {
+			console.log("[pushSubscription]", "Unable to retrieve refreshed token ", err);
+			showToken("Unable to retrieve refreshed token ", err);
+		});
+	});
+}

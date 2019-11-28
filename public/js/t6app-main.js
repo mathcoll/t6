@@ -31,7 +31,8 @@ var app = {
 	currentSection: "index",
 	tawktoid: "58852788bcf30e71ac141187",
 	gtm: "GTM-PH7923",
-	applicationServerKey: "BHa70a3DUtckAOHGltzLmQVI6wed8pkls7lOEqpV71uxrv7RrIY-KCjMNzynYGt4LJI9Dn2EVP3_0qFAnVxoy6I",
+	applicationServerKey: "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1Gt2zrKknJQX91a8RR87w8KGP_1gDSy8x6U7s",
+	registration: null,
 	defaultPageTitle: "t6 IoT App",
 	sectionsPageTitles: {
 		"index": "t6 IoT App",
@@ -540,6 +541,10 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
+			firebase.initializeApp(firebaseConfig);
+			firebase.messaging().useServiceWorker(registration);
+			console.log("[pushSubscription]", firebase.messaging().getToken());
+			firebase.analytics();
 			return registration;
 		})
 		.catch(function(err) {
@@ -966,6 +971,10 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 		app.currentSection = section;
+
+		if ( typeof firebase !== "undefined" ) {
+			firebase.analytics().setCurrentScreen(section, null);
+		}
 	};
 
 	app.setItemsClickAction = function(type) {
@@ -2732,6 +2741,10 @@ var touchStartPoint, touchMovePoint;
 				app.setVisibleElement("logout_button");
 				
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
+				if ( typeof firebase !== "undefined" ) {
+					firebase.analytics().setUserProperties({'isLoggedIn': 1});
+					firebase.analytics().logEvent('authenticate');
+				}
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
 				app.getDatatypes();
@@ -2780,6 +2793,10 @@ var touchStartPoint, touchMovePoint;
 				localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
 				
 				app.isLogged = true;
+				if ( typeof firebase !== "undefined" ) {
+					firebase.analytics().setUserProperties({'isLoggedIn': 1});
+					firebase.analytics().logEvent('refreshAuthenticate');
+				}
 				app.fetchProfile();
 				//app.resetSections();
 

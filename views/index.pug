@@ -6,6 +6,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     else
       title t6 IoT
     meta(charset='utf-8')
+    meta(name='fragment', content='#')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0')
     meta(name='Description' content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
@@ -51,11 +52,18 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     meta(name='og:description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
     meta(name='og:type', content='website')
     meta(property='og:image:type', content='image/jpeg')
+    if trackings.googleSigninClientId
+      meta(name="google-signin-client_id", content=""+trackings.googleSigninClientId)
   body
-    //-<!-- Google Tag Manager (noscript) -->
-    noscript
-      iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
-    //-<!-- End Google Tag Manager (noscript) -->
+    if trackings.gtm
+      noscript
+        iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
+    if trackings.firebaseConfig
+      script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-app.js")
+      script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js")
+      script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-messaging.js")
+      script.
+        var firebaseConfig = !{JSON.stringify(trackings.firebaseConfig)};
 
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
       header.mdl-layout__header.mdl-layout__header--waterfall.mdl-layout__header--waterfall-hide-top
@@ -696,7 +704,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/Chart/Chart-min-2.7.3.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js?build=' + t6BuildVersion)
         if trackings.ggads
-          script(async='', src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js')
+          script(src='//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', async='')
           script.
             (adsbygoogle = window.adsbygoogle || []).push({
               google_ad_client: #{trackings.ggads},

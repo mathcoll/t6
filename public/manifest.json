@@ -1,5 +1,6 @@
 {
   "name": "t6 IoT App",
+  "gcm_sender_id": "91119083860",
   "short_name": "t6 IoT",
   "version": "1.0.2",
   "description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
