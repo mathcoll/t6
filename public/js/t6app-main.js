@@ -432,6 +432,9 @@ var touchStartPoint, touchMovePoint;
 					app.setSetting('notifications.email', response.user.data.attributes.email);
 					app.setSetting('notifications.unsubscription_token', response.user.data.attributes.unsubscription_token);
 					toast('Welcome, you should have received an email to set your password.', {timeout:3000, type: 'done'});
+					if ( typeof firebase !== "undefined" ) {
+						firebase.analytics().logEvent('sign_up');
+					}
 					app.setSection('manage_notifications');
 				})
 				.catch(function (error) {
@@ -541,9 +544,11 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
-			firebase.initializeApp(firebaseConfig);
+			firebase.initializeApp(firebaseConfig);// TODO TBC
 			firebase.messaging().useServiceWorker(registration);
-			console.log("[pushSubscription]", firebase.messaging().getToken());
+			if ( localStorage.getItem("settings.debug") == "true" ) {
+				console.log("[pushSubscription]", firebase.messaging().getToken());
+			}
 			firebase.analytics();
 			return registration;
 		})
@@ -2743,7 +2748,7 @@ var touchStartPoint, touchMovePoint;
 				toast('Hey. Welcome Back! :-)', {timeout:3000, type: 'done'});
 				if ( typeof firebase !== "undefined" ) {
 					firebase.analytics().setUserProperties({'isLoggedIn': 1});
-					firebase.analytics().logEvent('authenticate');
+					firebase.analytics().logEvent('login');
 				}
 				setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 				app.getUnits();
