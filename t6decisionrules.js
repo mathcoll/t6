@@ -47,17 +47,31 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
 	//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
 	
+	// Event Condition example: 
+	// {"all":[{"fact":"dtepoch","operator":"isDayTime","value":true}]}
 	engine.addOperator("isDayTime", (factValue, jsonValue) => {
 		var factLatitude = payload.latitude?payload.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
 		var factLongitude = payload.longitude?payload.longitude:localization.longitude;
 		
-		var times = SunCalc.getTimes(new Date(), factLatitude, factLongitude);
-		if ( moment().isAfter(times.sunrise) && moment().isBefore(times.sunset) ) {
-			//console.log("isDayTime", "(true) daytime.");
-			return true;
+		var times = SunCalc.getTimes(typeof payload.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
+		if ( moment(payload.dtepoch).isAfter(times.sunrise) && moment(payload.dtepoch).isBefore(times.sunset) ) {
+			//console.log("isDayTime", "(true) daytime / ", "Expecting "+jsonValue);
+			if ( jsonValue === true ) {
+				//console.log("matching on the "+jsonValue);
+				return true;
+			} else {
+				//console.log("not matching on the "+jsonValue);
+				return false;
+			}
 		} else {
-			//console.log("isDayTime", "(false) night.");
-			return false;
+			//console.log("isDayTime", "(false) night / ", "Expecting "+jsonValue);
+			if ( jsonValue === false ) {
+				//console.log("matching on the "+jsonValue);
+				return true;
+			} else {
+				//console.log("not matching on the "+jsonValue);
+				return false;
+			}
 		}
 	});
 	engine.addOperator("anormalityChange", (factValue, jsonValue) => {
@@ -121,9 +135,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 			t6mailer.sendMail(envelope);
 		} else if ( event.type === "sms" ) {
+			console.log("Matching EventType", "sms");
 			// TODO
 		} else if ( event.type === "httpWebhook" ) {
 			console.log("Matching EventType", "httpWebhook");
+			if ( typeof event.params.body === "string" ) {
+				event.params.body = stringformat(event.params.body, payload);
+			}
 			let options = {
 				url: event.params.url,
 				port: event.params.port,
