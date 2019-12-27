@@ -527,14 +527,14 @@ router.post("/authenticate", function (req, res) {
 			var refresh_token = user.id + "." + refreshPayload;
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			return res.status(400).send(new ErrorSerializer({"id": 102.4, "code": 400, "message": "Invalid Refresh Token"}).serialize());
+			return res.status(403).send(new ErrorSerializer({"id": 102.4, "code": 403, "message": "Invalid Refresh Token"}).serialize());
 		}
 	} else {
 		// TODO
 		return res.status(400).send(new ErrorSerializer({"id": 102.3, "code": 400, "message": "Required param grant_type"}).serialize());
 	}
 
-	var expired = tokens.find( { "expiration" : { "$lt": moment().format("X") } } );
+	var expired = tokens.find({ "expiration" : { "$lt": moment().format("x") } } );
 	if ( expired ) {
 		tokens.remove(expired);
 		db.save();
