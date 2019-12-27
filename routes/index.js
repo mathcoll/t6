@@ -295,8 +295,12 @@ function checkForTooManyFailure(req, res, email) {
 router.delete("/tokens/all", function (req, res) {
 	if ( req.user.role === "admin" ) {
 		tokens	= dbTokens.getCollection("tokens");
-		var expired = tokens.chain().find( {} ).remove();
-		return res.status(201).json( {status: "ok", "expired": expired} );
+		var expired = tokens.find({ "expiration" : { "$lt": moment().format("x") } } );
+		if ( expired ) {
+			tokens.remove(expired);
+			db.save();
+		}
+		return res.status(201).json( {status: "ok", "cleaned": expired.length} );
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 102.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
