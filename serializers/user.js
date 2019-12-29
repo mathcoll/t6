@@ -7,7 +7,15 @@ function UserSerializer(user) {
 			keyForAttribute: "underscore_case",
 			attributes: ["firstName", "lastName", "login", "email", "role", "iftttCode", "iftttTrigger_identity", "location", "unsubscription", "unsubscription_token", "passwordLastUpdated", "reminderMail", "changePasswordMail", "subscription_date", "update_date", "permissions", "gravatar"],
 			topLevelLinks : {
-				parent : sprintf("%s/v%s/users", baseUrl_https, version)
+				parent : sprintf("%s/v%s/users", baseUrl_https, version),
+				meta: {
+					count: user.totalcount,
+					pageSelf: user.pageSelf,
+					pageFirst: user.pageFirst,
+					pageNext: user.pageNext,
+					pagePrev: user.pagePrev,
+					pageLast: user.pageLast,
+				},
 			},
 			dataLinks : {
 				self : function(user) {

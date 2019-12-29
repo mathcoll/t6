@@ -136,7 +136,7 @@ var app = {
 		{name: "watch", value:"Watch"},
 	],
 	snippetTypes: [],
-	EventTypes: [{name: "mqttPublish", value:"mqtt Publish"}, {name: "email", value:"Email"}, {name: "httpWebhook", value:"http(s) Webhook"}, {name: "sms", value:"Sms/Text message"}, {name: "ifttt", value:"Trigger event to Ifttt"}, {name: "serial", value:"Serial using Arduino CmdMessenger"}],
+	EventTypes: [{name: "mqttPublish", value:"mqtt Publish"}, {name: "email", value:"Email"}, {name: "webPush", value:"Notification webPush (beta)"}, {name: "httpWebhook", value:"http(s) Webhook"}, {name: "sms", value:"Sms/Text message"}, {name: "ifttt", value:"Trigger event to Ifttt"}, {name: "serial", value:"Serial using Arduino CmdMessenger"}],
 	units: [],
 	datatypes: [],
 	flows: [],
@@ -1895,7 +1895,7 @@ var touchStartPoint, touchMovePoint;
 			document.title = app.sectionsPageTitles['users-list'];
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var user = response.data[i];
-				var num = (response.data).length-i;
+				var num = (response.links.meta.count)-i;
 				usersList += "<div class=\"mdl-grid mdl-cell\" data-action=\"nothing\" data-type=\"user\" data-id=\""+user.id+"\">";
 				usersList += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 				usersList += "		<div class=\"mdl-card__title\">";
@@ -1929,7 +1929,7 @@ var touchStartPoint, touchMovePoint;
 				usersList += "	</div>";
 				usersList += "</div>";
 			}
-			container.innerHTML = usersList;
+			container.innerHTML += usersList;
 			
 			componentHandler.upgradeDom();
 			app.setItemsClickAction('usersList');
@@ -2037,6 +2037,10 @@ var touchStartPoint, touchMovePoint;
 						"userRole": user.attributes.role,
 						"userId": user.id
 					});
+					if ( typeof firebase !== "undefined" ) {
+						firebase.analytics().setUserProperties({'userId': user.id});
+						firebase.analytics().setUserProperties({'userRole': user.attributes.role});
+					}
 					if ( Tawk_API && typeof Tawk_API.setAttributes == 'function' ) {
 						Tawk_API.setAttributes({
 							'name' : user.attributes.first_name+" "+user.attributes.last_name,

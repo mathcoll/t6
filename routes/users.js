@@ -60,6 +60,12 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
 		
 		users	= db.getCollection("users");
 		var json = users.chain().find().simplesort("subscription_date", true).offset(offset).limit(size).data();
+		json.totalcount = users.chain().data().length;
+		json.pageSelf	= page;
+		json.pageFirst	= 1;
+		json.pageNext	= page+1<=json.totalcount?page+1:page;
+		json.pagePrev	= page-1>0?page-1:page;
+		json.pageLast	= Math.ceil(json.totalcount/size);
 		res.status(200).send(new UserSerializer(json).serialize());
 	} else {
 		res.status(401).send(new ErrorSerializer({"id": 502, "code": 401, "message": "Unauthorized"}).serialize());
