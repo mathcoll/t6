@@ -1,4 +1,4 @@
-var dataCacheName= 't6-cache-e46b43a3cea3b04dc4b11a9fcb8e040c';
+var dataCacheName= 't6-cache-e8eca2c431523b4d69a263a5785baf9a';
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -173,6 +173,9 @@ self.addEventListener("notificationclick", function(event) {
 		synchronizeReader();
 	} else if( event.action === "goSignUp" ) {
 		clients.openWindow("/#signup");
+		synchronizeReader();
+	} else if( event.action === "goGooglePlay" ) {
+		clients.openWindow("https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=notificationClick&utm_campaign=notification");
 		synchronizeReader();
 	} else {
 		clients.openWindow("/");

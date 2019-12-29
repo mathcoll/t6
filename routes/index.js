@@ -348,17 +348,17 @@ router.post("/authenticate", function (req, res) {
 				if ( typeof user.location === "undefined" || user.location === null ) {
 					user.location = {geo: geo, ip: req.ip,};
 				}
+				/* pushSubscription */
+				if ( typeof pushSubscription !== "undefined" ) {
+					var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+					timeoutNotification = setTimeout(sendNotification, 5000, pushSubscription, payload);
+					user.pushSubscription = pushSubscription;
+				}
 				users.update(user);
 				db.save();
 
 				req.session.cookie.secure = true;
 				req.session.cookie.user_id = user.id;
-
-				/* pushSubscription */
-				if ( typeof pushSubscription !== "undefined" ) {
-					var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null}"
-					timeoutNotification = setTimeout(sendNotification, 5000, pushSubscription, payload);
-				}
 
 				var payload = JSON.parse(JSON.stringify(user));
 				payload.unsubscription = user.unsubscription;
@@ -416,6 +416,17 @@ router.post("/authenticate", function (req, res) {
 		if ( u && typeof u.user_id !== "undefined" ) {
 			var user = users.findOne({ "id": u.user_id });
 			var geo = geoip.lookup(req.ip);
+			if ( typeof user.location === "undefined" || user.location === null ) {
+				user.location = {geo: geo, ip: req.ip,};
+			}
+			/* pushSubscription */
+			if ( typeof pushSubscription !== "undefined" ) {
+				var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+				timeoutNotification = setTimeout(sendNotification, 5000, pushSubscription, payload);
+				user.pushSubscription = pushSubscription;
+			}
+			users.update(user);
+			db.save();
 			
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
@@ -477,7 +488,6 @@ router.post("/authenticate", function (req, res) {
 			// Sign a new token
 			var user = users.findOne({ "id": user_id });
 			var geo = geoip.lookup(req.ip);
-			
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
 			}

@@ -4,6 +4,7 @@ var SunCalc	= require("suncalc");
 var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
 var rules;
+var users;
 
 function cryptPayload(payload, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
@@ -217,6 +218,20 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		} else if ( event.type === "slackMessage" ) {
 			console.log("Matching EventType", "slackMessage");
 			// TODO
+		} else if ( event.type === "webPush" ) {
+			console.log("Matching EventType", "webPush");
+			let p = {
+				"title": stringformat(event.params.title, payload),
+				"body": stringformat(event.params.body, payload),
+				"icon": event.params.icon,
+				"actions": event.params.actions,
+				"tag": event.params.tag,
+				"vibrate": event.params.vibrate
+			}
+			users	= db.getCollection("users");
+			let user = users.findOne({ "id": user_id });
+			console.log("pushSubscription: ", user.pushSubscription);
+			t6notifications.sendPush(user.pushSubscription, p);
 		} else {
 			console.log("No matching EventType", event.type);
 		}
