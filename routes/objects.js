@@ -293,13 +293,13 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;
 				result = item;
 			});
-			if ( req.body.parameters.length > 0 ) {
+			if ( typeof req.body.parameters!=="undefined" && req.body.parameters.length > 0 ) {
 				result.parameters = [];
 				req.body.parameters.map(function(param) {
 					result.parameters.push({ name: typeof param.name!=="undefined"?param.name:uuid.v4(), value: typeof param.value!=="undefined"?param.value:"" , type: typeof param.type!=="undefined"?param.type:"String"});
 				});
 			}
-			if ( typeof result !== "undefined" ) {
+			if ( typeof result!=="undefined" ) {
 				db.save();
 				
 				res.header("Location", "/v"+version+"/objects/"+object_id);
