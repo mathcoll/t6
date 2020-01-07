@@ -26,7 +26,7 @@
 }
 * {
 	box-sizing: border-box;
-}
+}is-outdated
 html,
 body {
 	padding: 0;
@@ -323,9 +323,13 @@ div[data-type="mqtts"].removed {
 }
 .is-ontime {}
 .is-outdated {
-	background: linear-gradient( to right top, transparent 15%, #7d2020, #7d2020 33%, transparent 50% ) !important;
-	background-size: 2px 2px !important;
+	background-color: gray !important;
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,.5) 15px, rgba(255,255,255,.5) 35px) !important;
 	color: #7d2020 !important;
+}
+.is-disabled {
+	background-color: gray;
+	background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,.5) 15px, rgba(255,255,255,.5) 35px);
 }
 .is-hover {
 	-moz-transform: scale(.99);
@@ -335,7 +339,7 @@ div[data-type="mqtts"].removed {
 	transform: scale(.99);
 	/*transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) .3s;*/
 }
-.is-hover div.mdl-card.mdl-shadow--2dp {
+.is-hover div.mdl-card.mdl-shadow--2dp:not(.is-disabled) {
 	background: #ffffff3d;
 }
 section.is-active .mdl-button--fab.is-not-here {
@@ -838,6 +842,7 @@ div[data-action='view'] .mdl-list__item--three-line {
 }
 div[data-action='view'] .mdl-list__item--three-line {
 	flex: auto;
+	overflow: hidden;
 }
 div:not([data-action='view']) .mdl-card__title h3.mdl-card__title-text,
 div:not([data-action='nothing']) .mdl-card__title h3.mdl-card__title-text {
@@ -851,6 +856,8 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	background: none !important;
 	color: #000 !important;
 	white-space: nowrap;
+	text-overflow: ellipsis;
+	display: block;
 }
 .loader {
 	left: 50%;

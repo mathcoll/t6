@@ -377,10 +377,11 @@ app.resources.rules = {
 		var name = rule.attributes.name!==undefined?rule.attributes.name:"";
 		var description = rule.attributes.description!==undefined?rule.attributes.description.substring(0, app.cardMaxChars):"";
 		var attributeType = rule.attributes.type!==undefined?rule.attributes.type:"";
+		var cssDisabled = rule.attributes.active!==true?"is-disabled":"";
 		
 		var element = "";
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+rule.id+"\">";
-		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
+		element += "	<div class=\"mdl-card mdl-shadow--2dp "+cssDisabled+"\">";
 		element += "		<div class=\"mdl-card__title\">";
 		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
