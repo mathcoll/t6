@@ -292,45 +292,30 @@ app.resources.objects = {
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					/* Localization Map */
-					var iconFeature = new ol.Feature({
-						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], "EPSG:4326", "EPSG:3857")),
-						name: object.attributes.name,
-						position: object.attributes.position,
-					});
-					var iconStyle = new ol.style.Style({
-						image: new ol.style.Icon(({
-							anchor: [12, 12],
-							anchorXUnits: "pixels",
-							anchorYUnits: "pixels",
-							opacity: .8,
-							size: [24, 24],
-							src: app.baseUrl+"/js/OpenLayers/img/marker.png"
-						}))
-					});
-					iconFeature.setStyle(iconStyle);
-					var vectorSource = new ol.source.Vector({});
-					vectorSource.addFeature(iconFeature);
-					var vectorLayer = new ol.layer.Vector({
-						source: vectorSource
-					});
-					var popup = new ol.Overlay({
-						element: document.getElementById("popup"),
-						// positioning: 'top',
-						stopEvent: false
-					});
-					var map = new ol.Map({
-						layers: [
-							new ol.layer.Tile({ source: new ol.source.OSM() }),
-							vectorLayer,
-						],
-						target: 'osm',
-						interactions: [],
-						view: new ol.View({
-							center: ol.proj.fromLonLat([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)]),
-							zoom: 18,
-						}),
-					});
-					setTimeout(function() {map.updateSize();}, 1000);
+					var map = L.map("osm").setView([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], 13);
+					L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+						attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
+						minZoom: 1,
+						maxZoom: 20,
+						trackResize: true,
+						dragging: isEdit
+					}).addTo(map);
+					var popup = L.popup();
+					var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {draggable: isEdit}).addTo(map);
+					if (isEdit !== true) {
+						map.dragging.disable();
+					} else {
+						marker.on('dragend', function(event) {
+							var position = marker.getLatLng();
+							marker.setLatLng(position, {
+								draggable: true
+							}).bindPopup(position).update();
+							document.getElementById('Latitude').value = parseFloat(position.lat, 10).toFixed(6);
+							document.getElementById('Longitude').value = parseFloat(position.lng, 10).toFixed(6);
+						});
+					}
+					//map.on('click', onMapClick);
+					setTimeout(function() {map.invalidateSize(true);}, 1000);
 					/* End Localization Map */
 				}
 
@@ -444,45 +429,17 @@ app.resources.objects = {
 				
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					/* Localization Map */
-					var iconFeature = new ol.Feature({
-						geometry: new ol.geom.Point(new ol.proj.transform([object.attributes.longitude, object.attributes.latitude], "PSG:4326", "EPSG:3857")),
-						name: object.attributes.name,
-						position: object.attributes.position,
-					});
-					var iconStyle = new ol.style.Style({
-						image: new ol.style.Icon(({
-							anchor: [12, 12],
-							anchorXUnits: "pixels",
-							anchorYUnits: "pixels",
-							opacity: .8,
-							size: [24, 24],
-							src: app.baseUrl+"/js/OpenLayers/img/marker.png"
-						}))
-					});
-					iconFeature.setStyle(iconStyle);
-					var vectorSource = new ol.source.Vector({});
-					vectorSource.addFeature(iconFeature);
-					var vectorLayer = new ol.layer.Vector({
-						source: vectorSource
-					});
-					var popup = new ol.Overlay({
-						element: document.getElementById("popup"),
-						// positioning: "top",
-						stopEvent: false
-					});
-					var map = new ol.Map({
-						layers: [
-							new ol.layer.Tile({ source: new ol.source.OSM() }),
-							vectorLayer,
-						],
-						target: "osm",
-						interactions: [],
-						view: new ol.View({
-							center: ol.proj.fromLonLat([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)]),
-							zoom: 18,
-						}),
-					});
-					setTimeout(function() {map.updateSize();}, 1000);
+					var map = L.map("osm").setView([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], 13);
+					L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+						attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
+						minZoom: 1,
+						maxZoom: 20,
+						trackResize: true,
+						dragging: false
+					}).addTo(map);
+					var popup = L.popup();
+					var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {draggable: false}).addTo(map);
+					setTimeout(function() {map.invalidateSize(true);}, 1000);
 					/* End Localization Map */
 				}
 
@@ -539,7 +496,7 @@ app.resources.objects = {
 		node += app.getField("place", "Longitude", object.attributes.longitude, {type: "text", id: "Longitude", isEdit: true, inputmode: "numeric", pattern: app.patterns.longitude, error:"Longitude should be valid."});
 		node += app.getField("place", "Latitude", object.attributes.latitude, {type: "text", id: "Latitude", isEdit: true, inputmode: "numeric", pattern: app.patterns.latitude, error:"Latitude should be valid."});
 		node += app.getField("pin_drop", "Position/Localization (should be descriptive)", object.attributes.position, {type: "text", id: "Position", isEdit: true, pattern: app.patterns.position, error:"Should not be longer than 255 chars."});
-		node += app.getMap("my_location", "osm", object.attributes.longitude, object.attributes.latitude, false, false, false);
+		node += app.getMap("my_location", "osmAdd", object.attributes.longitude, object.attributes.latitude, false, false, false);
 		node += "	</div>";
 		node += "</section>";
 		
@@ -568,46 +525,25 @@ app.resources.objects = {
 
 		app.getLocation();
 		/* Localization Map */
-		var iconFeature = new ol.Feature({
-			geometry: new ol.geom.Point(new ol.proj.transform([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)], "EPSG:4326", "EPSG:3857")),
-			name: "",
-			position: "",
+		var map = L.map("osmAdd").setView([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], 13);
+		L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+			attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
+			minZoom: 1,
+			maxZoom: 20,
+			trackResize: true,
+			dragging: true
+		}).addTo(map);
+		var popup = L.popup();
+		var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {draggable: true}).addTo(map);
+		marker.on('dragend', function(event) {
+			var position = marker.getLatLng();
+			marker.setLatLng(position, {
+				draggable: true
+			}).bindPopup(position).update();
+			document.getElementById('Latitude').value = parseFloat(position.lat, 10).toFixed(6);
+			document.getElementById('Longitude').value = parseFloat(position.lng, 10).toFixed(6);
 		});
-		var iconStyle = new ol.style.Style({
-			image: new ol.style.Icon(({
-				anchor: [12, 12],
-				anchorXUnits: "pixels",
-				anchorYUnits: "pixels",
-				opacity: 0.8,
-				size: [24, 24],
-				src: app.baseUrl+"/js/OpenLayers/img/marker.png"
-			}))
-		});
-		iconFeature.setStyle(iconStyle);
-		var vectorSource = new ol.source.Vector({});
-		vectorSource.addFeature(iconFeature);
-		var vectorLayer = new ol.layer.Vector({
-			source: vectorSource
-		});
-		var popup = new ol.Overlay({
-			element: document.getElementById("popup"),
-			// positioning: 'top',
-			stopEvent: false
-		});
-
-		var map = new ol.Map({
-			layers: [
-				new ol.layer.Tile({ source: new ol.source.OSM() }),
-				vectorLayer,
-			],
-			target: 'osm',
-			interactions: ol.interaction.defaults().extend([ new ol.interaction.DragRotateAndZoom() ]),
-			view: new ol.View({
-				center: ol.proj.fromLonLat([parseFloat(object.attributes.longitude), parseFloat(object.attributes.latitude)]),
-				zoom: 18,
-			}),
-		});
-		setTimeout(function() {map.updateSize();}, 1000);
+		setTimeout(function() {map.invalidateSize(true);}, 1000);
 		/* End Localization Map */
 		
 		app.refreshButtonsSelectors();

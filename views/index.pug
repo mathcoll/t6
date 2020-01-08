@@ -24,9 +24,13 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     if process.env.NODE_ENV === 'development'
       link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      //- link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel="stylesheet", href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css", integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==", crossorigin="")
+      script(src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js", integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==", crossorigin="")
     else
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel="stylesheet", href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css", integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==", crossorigin="")
+      script(src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js", integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==", crossorigin="")
     link(rel='manifest', href='/manifest.json')
     //- Search Engine
     meta(name='description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
