@@ -78,8 +78,31 @@ pushSubscriptionOptions = {
 
 /* Trackings */
 trackings = {
-	gtm: "GTM-xxxxx",
-	ggads: "ca-pub-xxxxx"
+	gtm: "GTM-xxxx",
+	googleSigninClientId: "",
+	ggads: "ca-pub-xxxx",
+	firebaseConfig: {
+		web: {
+			apiKey: "xxxx",
+			authDomain: "xxxx.firebaseapp.com",
+			databaseURL: "https://xxxx.firebaseio.com",
+			projectId: "xxxx",
+			storageBucket: "xxxx.appspot.com",
+			messagingSenderId: "xxxx",
+			appId: "1:xxxx:web:xxxx",
+			measurementId: "G-xxxx"
+		},
+		android: {
+			apiKey: "xxxx",
+			authDomain: "xxxx.firebaseapp.com",
+			databaseURL: "https://xxxx.firebaseio.com",
+			projectId: "xxxx",
+			storageBucket: "xxxx.appspot.com",
+			messagingSenderId: "xxxx",
+			appId: "1:xxxx:android:xxxx",
+			measurementId: "G-xxxx"
+		}
+	}
 };
 
 /* IFTTT settings */

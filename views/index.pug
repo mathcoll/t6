@@ -67,7 +67,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
       script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js")
       script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-messaging.js")
       script.
-        var firebaseConfig = !{JSON.stringify(trackings.firebaseConfig)};
+        var firebaseConfig = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')===false?!{JSON.stringify(trackings.firebaseConfig.web)}:!{JSON.stringify(trackings.firebaseConfig.android)};
 
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
       header.mdl-layout__header.mdl-layout__header--waterfall.mdl-layout__header--waterfall-hide-top

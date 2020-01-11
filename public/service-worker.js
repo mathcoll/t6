@@ -143,7 +143,9 @@ self.addEventListener("push", function(event) {
 			icon: icon,
 			actions: actions,
 			tag: tag,
-			vibrate: vibrate
+			vibrate: vibrate,
+			requireInteraction: true,
+			renotify: true
 		};
 		console.log("[pushSubscription] notif.type", notif.type);
 		if ( notif.type == "message" ) {
@@ -167,6 +169,8 @@ self.addEventListener("error", function(e) {
 	console.log("[onError]", e.filename, e.lineno, e.colno, e.message);
 });
 self.addEventListener("notificationclick", function(event) {
+	//console.log("[onNotificationClick]", event);
+	//alert(event);
 	event.notification.close();
 	if ( event.action === "goObjects" ) {
 		clients.openWindow("/#objects");
@@ -183,7 +187,6 @@ self.addEventListener("notificationclick", function(event) {
 	if ( typeof firebase !== "undefined" ) {
 		firebase.analytics().setUserProperties({'notification_click': 1});
 	}
-	console.log("[onNotificationClick]", event);
 });
 
 if ( typeof firebase !== "undefined" ) {
