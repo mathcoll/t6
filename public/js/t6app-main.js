@@ -544,7 +544,9 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
-			firebase.initializeApp(firebaseConfig, firebaseConfig.projectId);
+			if ( typeof firebase !== "undefined" && !firebase.apps.length ) {
+				firebase.initializeApp(firebaseConfig, firebaseConfig.projectId);
+			}
 			firebase.messaging().useServiceWorker(registration);
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log("[pushSubscription]", firebase.messaging().getToken());
@@ -2037,7 +2039,7 @@ var touchStartPoint, touchMovePoint;
 						"userRole": user.attributes.role,
 						"userId": user.id
 					});
-					if ( typeof firebase !== "undefined" ) {
+					if ( typeof firebase !== "undefined" && !firebase.apps.length ) {
 						firebase.analytics().setUserProperties({'userId': user.id});
 						firebase.analytics().setUserProperties({'userRole': user.attributes.role});
 					}
@@ -2059,7 +2061,7 @@ var touchStartPoint, touchMovePoint;
 					evt.preventDefault();
 				});
 				
-				if ( user.attributes.role == 'admin' ) {
+				if ( user.attributes.role === "admin" && !document.querySelector('#drawer nav a.mdl-navigation__link[href="#users-list"]') ) {
 					localStorage.setItem("role", 'admin');
 					app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
 				}
