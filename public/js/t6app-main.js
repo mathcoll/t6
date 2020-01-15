@@ -544,7 +544,7 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
-			firebase.initializeApp(firebaseConfig);// TODO TBC
+			firebase.initializeApp(firebaseConfig, firebaseConfig.projectId);
 			firebase.messaging().useServiceWorker(registration);
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log("[pushSubscription]", firebase.messaging().getToken());
