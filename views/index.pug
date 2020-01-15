@@ -709,10 +709,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor.min.js?build=' + t6BuildVersion)
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/Chart/Chart-min-2.7.3.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js?build=' + t6BuildVersion)
-        if trackings.ggads
-          script(src='//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', async='')
-          script.
-            (adsbygoogle = window.adsbygoogle || []).push({
-              google_ad_client: #{trackings.ggads},
-              enable_page_level_ads: true
-            });
+      if trackings.ggads
+        script(src='//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', async='')
+        script.
+          (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "#{trackings.ggads}",
+            enable_page_level_ads: true
+          });
