@@ -82,6 +82,7 @@ trackings = {
 	googleSigninClientId: "",
 	ggads: "ca-pub-xxxx",
 	firebaseConfig: {
+		firebaseJsVersion: "7.6.2", // https://firebase.google.com/docs/web/setup
 		web: {
 			apiKey: "xxxx",
 			authDomain: "xxxx.firebaseapp.com",

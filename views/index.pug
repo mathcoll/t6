@@ -62,10 +62,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     if trackings.gtm
       noscript
         iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
-    if trackings.firebaseConfig
-      script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-app.js")
-      script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-analytics.js")
-      script(src="//www.gstatic.com/firebasejs/7.5.0/firebase-messaging.js")
+    if trackings.firebaseConfig.firebaseJsVersion
+      script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-app.js")
+      script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-analytics.js")
+      script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-messaging.js")
       script.
         var firebaseConfig = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')===false?!{JSON.stringify(trackings.firebaseConfig.web)}:!{JSON.stringify(trackings.firebaseConfig.android)};
 
