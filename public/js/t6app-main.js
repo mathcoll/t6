@@ -544,8 +544,8 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
-			if ( typeof firebase !== "undefined" && !firebase.apps.length ) {
-				firebase.initializeApp(firebaseConfig, firebaseConfig.projectId);
+			if ( typeof firebase !== "undefined" && typeof firebase.apps !== "undefined" && typeof firebase.apps.length !== "undefined" ) {
+				firebase.initializeApp(firebaseConfig);
 			}
 			firebase.messaging().useServiceWorker(registration);
 			if ( localStorage.getItem("settings.debug") == "true" ) {
@@ -916,7 +916,7 @@ var touchStartPoint, touchMovePoint;
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.getSettings();
-		}  else if ( section === 'login' ) {
+		} else if ( section === 'login' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.displayLoginForm( document.querySelector('#login').querySelector('.page-content') );
@@ -979,7 +979,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		app.currentSection = section;
 
-		if ( typeof firebase !== "undefined" ) {
+		if ( typeof firebase !== "undefined" && typeof firebase.apps !== "undefined" && typeof firebase.apps.length !== "undefined" ) {
 			firebase.analytics().setCurrentScreen(section, null);
 		}
 	};
