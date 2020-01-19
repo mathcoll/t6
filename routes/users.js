@@ -248,6 +248,7 @@ router.post("/", function (req, res) {
 			res.status(409).send(new ErrorSerializer({"id": 9.5,"code": 409, "message": "Conflict: User email already exists"}).serialize());
 		} else {
 			var my_id = uuid.v4();
+			var pushSubscription = typeof req.body.pushSubscription!=="undefined"?req.body.pushSubscription:null;
 
 			var token = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.");
 			var new_token = {
@@ -263,9 +264,10 @@ router.post("/", function (req, res) {
 				lastName:			typeof req.body.lastName!=="undefined"?req.body.lastName:"",
 				email:				typeof req.body.email!=="undefined"?req.body.email:"",
 				role:				"free", // no admin creation from the API
-				subscription_date:  moment().format("x"),
+				subscription_date:	moment().format("x"),
 				token:				token,
 				unsubscription_token: passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
+				pushSubscription	: pushSubscription,
 				//key:				new_token.key,
 				//secret:				new_token.secret
 			};

@@ -417,6 +417,15 @@ var touchStartPoint, touchMovePoint;
 				var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
 				var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
 				var postData = {"email":email, "firstName":firstName, "lastName":lastName};
+				if( app.getSetting('settings.pushSubscription.endpoint') && app.getSetting('settings.pushSubscription.keys.auth') && app.getSetting('settings.pushSubscription.keys.p256dh') ) {
+					postData.pushSubscription = {
+						endpoint: app.getSetting('settings.pushSubscription.endpoint'),
+						keys: {
+							auth: app.getSetting('settings.pushSubscription.keys.auth'),
+							p256dh: app.getSetting('settings.pushSubscription.keys.p256dh')
+						}
+					};
+				}
 				var myHeaders = new Headers();
 				myHeaders.append("Content-Type", "application/json");
 				var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
@@ -1907,6 +1916,9 @@ var touchStartPoint, touchMovePoint;
 				usersList += "		<div class=\"mdl-card__title\"><img src=\"//secure.gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\"></div>";
 				usersList += app.getField('card_membership', 'User id', user.id, {type: 'text', style:"text-transform: none !important;", isEdit: false });
 				usersList += app.getField('mail', 'Email', user.attributes.email, {type: 'text', style:"text-transform: none !important;", isEdit: false });
+				if ( typeof user.attributes.push_subscription!=="undefined" ) {
+					usersList += app.getField('sms', 'Push notification Auth', user.attributes.push_subscription.keys.auth, {type: 'text', style:"text-transform: none !important;", isEdit: false });
+				}
 				if ( user.attributes.location ) {
 					if ( user.attributes.location.geo ) {
 						usersList += app.getField('dns', 'Location', user.attributes.location.geo.city+" ("+user.attributes.location.geo.country+")", {type: 'text', isEdit: false });
