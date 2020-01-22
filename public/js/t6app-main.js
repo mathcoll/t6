@@ -1916,7 +1916,7 @@ var touchStartPoint, touchMovePoint;
 				usersList += "		<div class=\"mdl-card__title\"><img src=\"//secure.gravatar.com/avatar/"+hex_md5(user.attributes.email)+"\" alt=\"\" class=\"user-image\"></div>";
 				usersList += app.getField('card_membership', 'User id', user.id, {type: 'text', style:"text-transform: none !important;", isEdit: false });
 				usersList += app.getField('mail', 'Email', user.attributes.email, {type: 'text', style:"text-transform: none !important;", isEdit: false });
-				if ( typeof user.attributes.push_subscription!=="undefined" ) {
+				if ( user.attributes.push_subscription && typeof user.attributes.push_subscription==="object" && typeof user.attributes.push_subscription.keys==="object" && typeof user.attributes.push_subscription.keys.auth==="string" ) {
 					usersList += app.getField('sms', 'Push notification Auth', user.attributes.push_subscription.keys.auth, {type: 'text', style:"text-transform: none !important;", isEdit: false });
 				}
 				if ( user.attributes.location ) {

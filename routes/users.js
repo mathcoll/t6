@@ -55,12 +55,13 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
 	if ( req.user.role === "admin" ) {
 		var size = typeof req.query.size!=="undefined"?req.query.size:20;
 		var page = typeof req.query.page!=="undefined"?req.query.page:1;
+		var filter = req.query.filter==="pushSubscription"?{"pushSubscription": { "$ne": undefined }}:null;
 		page = page>0?page:1;
 		var offset = Math.ceil(size*(page-1));
 		
 		users	= db.getCollection("users");
-		var json = users.chain().find().simplesort("subscription_date", true).offset(offset).limit(size).data();
-		json.totalcount = users.chain().data().length;
+		var json = users.chain().find(filter).simplesort("subscription_date", true).offset(offset).limit(size).data();
+		json.totalcount = users.chain().find(filter).data().length;
 		json.pageSelf	= page;
 		json.pageFirst	= 1;
 		json.pageNext	= page+1<=json.totalcount?page+1:page;
