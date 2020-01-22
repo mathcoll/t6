@@ -941,6 +941,12 @@ var touchStartPoint, touchMovePoint;
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.getOpenSourceLicenses();
+		} else if ( section === 'manage_notifications' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
+			if ( typeof firebase !== "undefined" ) {
+				firebase.analytics().logEvent('manage_notifications');
+			}
 		} else {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
