@@ -61,14 +61,18 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 			result = user;
 		});
 		db.save();
-		
-		res.render("notifications-unsubscribe", {
-			currentUrl: req.path,
-			user: result,
-			mail: mail,
-			list: list,
-			moment: moment,
-		});
+
+		if (!req.headers["Content-Type"] || req.headers["Content-Type"].indexOf("application/json") !== 0) {
+			res.status(200).send({"status": "unsubscribed", "list": list});
+		} else {
+			res.render("notifications-unsubscribe", {
+				currentUrl: req.path,
+				user: result,
+				mail: mail,
+				list: list,
+				moment: moment,
+			});
+		}
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 10.4, "code": 404, "message": "Not Found"}).serialize());
 	}
@@ -105,14 +109,18 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 			result = user;
 		});
 		db.save();
-		
-		res.render("notifications-subscribe", {
-			currentUrl: req.path,
-			user: result,
-			mail: mail,
-			list: list,
-			moment: moment,
-		});
+
+		if (!req.headers["Content-Type"] || req.headers["Content-Type"].indexOf("application/json") !== 0) {
+			res.status(200).send({"status": "subscribed", "list": list});
+		} else {
+			res.render("notifications-subscribe", {
+				currentUrl: req.path,
+				user: result,
+				mail: mail,
+				list: list,
+				moment: moment,
+			});
+		}
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 10.5, "code": 404, "message": "Not Found"}).serialize());
 	}

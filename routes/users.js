@@ -285,7 +285,6 @@ router.post("/", function (req, res) {
 					html: html
 				};
 				t6mailer.sendMail(mailOptions).then(function(info){
-					//console.log("info", info);
 					t6events.add("t6App", "user welcome mail", new_user.id);
 					res.header("Location", "/v"+version+"/users/"+new_user.id);
 					res.status(201).send({ "code": 201, message: "Created", user: new UserSerializer(new_user).serialize(), token: new_token });
