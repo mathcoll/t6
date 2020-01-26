@@ -14,6 +14,7 @@ var tokens;
  * @apiVersion 2.0.1
  * 
  * @apiParam {uuid-v4} [unit_id] Unit ID
+ * @apiParam {String="Work" "Energy (E)" "Power" "Radiant Flux (P)" "Electric Charge (Q)" "Voltage, Electrical (U)" "Electrical Conductance (S)" "Electrical Capacitance (F)" "Magnetic Flux (Wb)" "Electrical Inductance (H)" "Illuminance (E)" "Torque (M)" "Time (t)" "Current (I)" "Area" "Length" "Power (P)" "Luminance (L)" "Luminous Intensity (l)" "Température" "Temperature (T)" "Volume" "Volume (V)" "Other" "Sound" "Frequency (f)" "Pressure, Stress" "Force, Weight (F)"} [type] Unit Type
  * 
  * @apiUse 200
  * @apiUse 404
@@ -47,7 +48,7 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
  * 
  * @apiParam {String} [name=unamed] Unit Name
  * @apiParam {String} [format=""] Unit Format
- * @apiParam {String} [type=""] Unit Type
+ * @apiParam {String="Work" "Energy (E)" "Power" "Radiant Flux (P)" "Electric Charge (Q)" "Voltage, Electrical (U)" "Electrical Conductance (S)" "Electrical Capacitance (F)" "Magnetic Flux (Wb)" "Electrical Inductance (H)" "Illuminance (E)" "Torque (M)" "Time (t)" "Current (I)" "Area" "Length" "Power (P)" "Luminance (L)" "Luminous Intensity (l)" "Température" "Temperature (T)" "Volume" "Volume (V)" "Other" "Sound" "Frequency (f)" "Pressure, Stress" "Force, Weight (F)"} [type] Unit Type
  * @apiParam {String} [system=""] System
  * @apiParam {String{1024}} [description=""] Description
  * 
@@ -84,8 +85,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * 
  * @apiParam {uuid-v4} unit_id Unit ID
  * @apiParam {String} [name] Unit Name
+ * @apiParam {String="Work" "Energy (E)" "Power" "Radiant Flux (P)" "Electric Charge (Q)" "Voltage, Electrical (U)" "Electrical Conductance (S)" "Electrical Capacitance (F)" "Magnetic Flux (Wb)" "Electrical Inductance (H)" "Illuminance (E)" "Torque (M)" "Time (t)" "Current (I)" "Area" "Length" "Power (P)" "Luminance (L)" "Luminous Intensity (l)" "Température" "Temperature (T)" "Volume" "Volume (V)" "Other" "Sound" "Frequency (f)" "Pressure, Stress" "Force, Weight (F)"} [type] Unit Type
  * @apiParam {String} [format] Unit Format
- * @apiParam {String} [type] Unit Type
  * @apiParam {String} [system=""] System
  * @apiParam {String{1024}} [description=""] Description
  * 
