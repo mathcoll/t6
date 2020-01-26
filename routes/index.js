@@ -258,7 +258,9 @@ function checkForTooManyFailure(req, res, email) {
 			// when >4, then we should block the account and maybe ban the IP address
 			var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 			geo.ip = req.ip;
-			res.render("emails/loginfailure", {device: device(req.headers["user-agent"]), geoip: geo}, function(err, html) {
+
+			var agent = useragent.parse(req.headers["user-agent"]);
+			res.render("emails/loginfailure", {device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"", geoip: geo}, function(err, html) {
 				var to = email;
 				var mailOptions = {
 					from: from,
@@ -405,16 +407,14 @@ router.post("/authenticate", function (req, res) {
 			return res.status(403).send(new ErrorSerializer({"id": 102.2, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
-		var queryT = {
+		var queryU = {
 		"$and": [
 					{ "key": req.body.key },
 					{ "secret": req.body.secret },
 				]
 		};
-		var accessTokens	= db.getCollection("tokens");
-		var u = accessTokens.findOne(queryT)
-		if ( u && typeof u.user_id !== "undefined" ) {
-			var user = users.findOne({ "id": u.user_id });
+		var user = users.findOne(queryU);
+		if ( user && typeof user.id !== "undefined" ) {
 			var geo = geoip.lookup(req.ip);
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
@@ -471,7 +471,7 @@ router.post("/authenticate", function (req, res) {
 			var refresh_token = user.id + "." + refreshPayload;
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			return res.status(403).send(new ErrorSerializer({"id": 102.1, "code": 403, "message": "Forbidden"}).serialize());
+			return res.status(403).send(new ErrorSerializer({"id": 102.3, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( req.body.refresh_token && req.body.grant_type === "refresh_token" ) {
 		var user_id = req.body.refresh_token.split(".")[0];

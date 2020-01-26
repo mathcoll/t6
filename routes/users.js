@@ -221,7 +221,7 @@ router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secre
 		users	= db.getCollection("users");
 		res.status(200).send( {token: users.findOne({"id": { "$eq": user_id }}).token} );
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 16, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 17, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -269,8 +269,8 @@ router.post("/", function (req, res) {
 				token:				token,
 				unsubscription_token: passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 				pushSubscription	: pushSubscription,
-				//key:				new_token.key,
-				//secret:				new_token.secret
+				key:				new_token.key,
+				secret:				new_token.secret
 			};
 			t6events.add("t6Api", "user add", new_user.id);
 			users.insert(new_user);
@@ -365,8 +365,6 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
 	} else {
 		users	= db.getCollection("users");
 		var user = (users.chain().find({ "token": req.params.token }).data())[0];
-		//console.log({ "token": req.params.token });
-		//console.log(users);
 		if ( user ) {
 			user.password = bcrypt.hashSync(req.body.password, 10);
 			user.passwordLastUpdated = parseInt(moment().format("x"), 10);
