@@ -23,10 +23,16 @@ var tokens;
  */
 router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret}), function(req, res) {
 	var mail = req.params.mail;
+	var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
+	geo.ip = req.ip;
+	var agent = useragent.parse(req.headers["user-agent"]);
+	
 	if ( req.user.role === "admin" ) {
 		res.render("emails/"+mail, {
 			currentUrl: req.path,
-			user: req.user
+			user: req.user,
+			device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"",
+			geoip: geo
 		});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
