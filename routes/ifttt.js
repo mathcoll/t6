@@ -8,7 +8,7 @@ function getUuid() {
 	return uuid.v4();
 }
 function getTs() {
-	return moment().format("X");
+	return moment().format("x");
 }
 function getDate() {
 	return moment().format("MMMM Do YYYY, H:mm:ss");
@@ -89,7 +89,7 @@ router.get("/OAuth2/authorize", function (req, res) {
 			payload.scope = "Application";
 			payload.sub = "/users/"+user.id;
 
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("X") });
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("x") });
 			var new_token = {
 				user_id:			user.id,
 				key:				code,
@@ -156,7 +156,7 @@ router.post("/OAuth2/authorize", function (req, res) {
 				payload.scope = "Application";
 				payload.sub = "/users/"+user.id;
 
-				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("X") });
+				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("x") });
 				var new_token = {
 					user_id:			user.id,
 					key:				code,

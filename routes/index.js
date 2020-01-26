@@ -374,12 +374,12 @@ router.post("/authenticate", function (req, res) {
 				payload.scope = "Application";
 				payload.sub = "/users/"+user.id;
 
-				let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("X");
+				let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
 				if ( user.location && user.location.ip ) payload.iss = req.ip+" - "+user.location.ip;
 				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 
 				var refreshPayload = crypto.randomBytes(40).toString("hex");
-				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
+				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
 				var agent = useragent.parse(req.headers["user-agent"]);
 				var t = {
@@ -447,11 +447,11 @@ router.post("/authenticate", function (req, res) {
 			payload.sub = "/users/"+user.id;
 			
 			if ( user.location && user.location.ip ) payload.iss = req.ip+" - "+user.location.ip;
-			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("X");
+			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
-			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
+			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
 			var agent = useragent.parse(req.headers["user-agent"]);
 			var t = {
@@ -482,7 +482,7 @@ router.post("/authenticate", function (req, res) {
 			"$and": [
 						{ "user_id": user_id },
 						{ "refresh_token": token },
-						{ "expiration": { "$gte": moment().format("X") } },
+						{ "expiration": { "$gte": moment().format("x") } },
 					]
 		};
 		if ( user_id && token && tokens.findOne(queryT) ) {
@@ -506,10 +506,10 @@ router.post("/authenticate", function (req, res) {
 			payload.scope = "ClientApi";
 			payload.sub = "/users/"+user.id;
 
-			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("X");
+			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
-			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
+			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
 			var agent = useragent.parse(req.headers["user-agent"]);
 			var t = {
@@ -602,7 +602,7 @@ router.post("/refresh", function (req, res) {
 			// Add the refresh token to the list
 			tokens	= dbTokens.getCollection("tokens");
 			var refreshPayload = user.id + "." + crypto.randomBytes(40).toString("hex");
-			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
+			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 			tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
 			return res.status(200).json( {status: "ok", token: token, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp} );
 		}

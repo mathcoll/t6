@@ -122,7 +122,7 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (
 router.get("/me/sessions", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.id ) {
 		tokens	= dbTokens.getCollection("tokens");
-		var expired = tokens.find( { "expiration" : { "$lt": moment().format("X") } } );
+		var expired = tokens.find( { "expiration" : { "$lt": moment().format("x") } } );
 		if ( expired ) {
 			tokens.remove(expired);
 			db.save();
