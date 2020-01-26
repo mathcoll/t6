@@ -407,14 +407,15 @@ router.post("/authenticate", function (req, res) {
 			return res.status(403).send(new ErrorSerializer({"id": 102.2, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
-		var queryU = {
+		var queryT = {
 		"$and": [
 					{ "key": req.body.key },
 					{ "secret": req.body.secret },
 				]
 		};
-		var user = users.findOne(queryU);
-		if ( user && typeof user.id !== "undefined" ) {
+		var u = tokens.findOne(queryT);
+		if ( u && typeof u.user_id !== "undefined" ) {
+			var user = users.findOne({id: u.user_id});
 			var geo = geoip.lookup(req.ip);
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
@@ -570,7 +571,7 @@ router.post("/refresh", function (req, res) {
 	// get the refreshToken from body
 	var refreshToken = req.body.refreshToken;
 	// Find that refreshToken in Db
-	tokens	= db.getCollection("tokens");
+	tokens	= dbTokens.getCollection("tokens");
 	var queryT = {
 		"$and": [
 					{ "refreshToken": refreshToken },
@@ -599,7 +600,7 @@ router.post("/refresh", function (req, res) {
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 			// Add the refresh token to the list
-			tokens	= db.getCollection("tokens");
+			tokens	= dbTokens.getCollection("tokens");
 			var refreshPayload = user.id + "." + crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("X");
 			tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });

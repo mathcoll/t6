@@ -87,7 +87,7 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
  */
 router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( typeof req.user !== "undefined" ) {
-		tokens	= db.getCollection("tokens");
+		tokens	= dbTokens.getCollection("tokens");
 		var accessTokens = tokens.chain().find({ "$and": [ {"user_id": req.user.id}, { "expiration" : { "$gt": moment().format("x") } } ]}).simplesort("expiration", true).data();
 		res.status(200).send(new AccessTokenSerializer(accessTokens).serialize());
 
@@ -258,6 +258,7 @@ router.post("/", function (req, res) {
 				secret:				passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ."),
 				token:				token,
 				expiration:			"",
+				memo:				"Automatically generated during user creation phase.",
 			};
 			var new_user = {
 				id:					my_id,
@@ -269,11 +270,25 @@ router.post("/", function (req, res) {
 				token:				token,
 				unsubscription_token: passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 				pushSubscription	: pushSubscription,
-				key:				new_token.key,
-				secret:				new_token.secret
+				//key:				new_token.key,
+				//secret:				new_token.secret
 			};
 			t6events.add("t6Api", "user add", new_user.id);
 			users.insert(new_user);
+
+			var tokens	= dbTokens.getCollection("tokens");
+			tokens.insert(new_token);
+			db.save();
+			var expired = tokens.find(
+				{ "$and": [
+					{ "expiration" : { "$lt": moment().format("x") } },
+					{ "expiration" : { "$ne": "" } },
+				]}
+			);
+			if ( expired ) {
+				tokens.remove(expired);
+				db.save();
+			}
 
 			res.render("emails/welcome", {user: new_user, token: new_token.token}, function(err, html) {
 				var mailOptions = {
@@ -323,7 +338,7 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret}), function 
 				memo:				(req.body.memo).substring(0, 128),
 				expiration:			moment().add(24, "hours").format("x"),
 			};
-			var tokens	= db.getCollection("tokens");
+			var tokens	= dbTokens.getCollection("tokens");
 			tokens.insert(new_token);
 			db.save();
 			var expired = tokens.find(
@@ -493,7 +508,7 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var key = req.params.key;
 	if ( key ) {
-		accessTokens = db.getCollection("tokens");
+		accessTokens = dbTokens.getCollection("tokens");
 		var queryT = {
 			"$and": [
 				{ "key": key },

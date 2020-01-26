@@ -98,7 +98,7 @@ router.get("/OAuth2/authorize", function (req, res) {
 				// or maybe it should be the "code" above ????
 				expiration:			moment().add(24, "years").format("x"),
 			};
-			var tokens	= db.getCollection("tokens");
+			var tokens	= dbTokens.getCollection("tokens");
 			tokens.insert(new_token);
 			db.save();
 			
@@ -165,7 +165,7 @@ router.post("/OAuth2/authorize", function (req, res) {
 					// or maybe it should be the "code" above ????
 					expiration:			moment().add(24, "years").format("x"),
 				};
-				var tokens	= db.getCollection("tokens");
+				var tokens	= dbTokens.getCollection("tokens");
 				tokens.insert(new_token);
 				db.save();
 				
@@ -201,7 +201,7 @@ router.post("/OAuth2/token", function(req, res) {
 	var queryU = { "iftttCode": code };
 	var user = users.findOne(queryU);
 	if ( user && client_secret === ifttt.serviceSecret && client_id === ifttt.serviceClientId ) {
-		var tokens	= db.getCollection("tokens");
+		var tokens	= dbTokens.getCollection("tokens");
 		var queryT = { "$and": [
 			{ "user_id" : user.id },
 			{ "key": code },
