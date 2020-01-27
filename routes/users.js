@@ -472,6 +472,35 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret}), fu
 });
 
 /**
+ * @api {post} /users/sendPush Send Push notification to a specific user
+ * @apiName Send Push notification to a specific user
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var user_id = req.params.user_id;
+	if ( req.user.role === "admin" ) {
+		users	= db.getCollection("users");
+		var user = users.findOne({"id": { "$eq": user_id }});
+		if (user && typeof user.pushSubscription !== "undefined" ) {
+			var payload = req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+			t6notifications.sendPush(user.pushSubscription, payload);
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());
+		}
+		res.status(200).send({"status": "sent", "count": 1});
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 181, "code": 403, "message": "Forbidden"}).serialize());
+	}
+});
+
+/**
  * @api {put} /users/:user_id Edit a User
  * @apiName Edit a User
  * @apiGroup User
