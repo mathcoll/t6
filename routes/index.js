@@ -177,7 +177,6 @@ function sendNotification(pushSubscription, payload) {
 //catch API calls for quotas
 router.all("*", function (req, res, next) {
 	users	= db.getCollection("users");
-
 	var o = {
 		key:		typeof req.user!=="undefined"?req.user.key:"",
 		secret:		typeof req.user!=="undefined"?req.user.secret:null,
@@ -394,6 +393,7 @@ router.post("/authenticate", function (req, res) {
 							"osVersion": agent.os.toVersion(),
 						},
 						"device": agent.device.toString(),
+						"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
 				};
 				tokens.insert(t);
 
@@ -466,6 +466,7 @@ router.post("/authenticate", function (req, res) {
 						"osVersion": agent.os.toVersion(),
 					},
 					"device": agent.device.toString(),
+					"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
 			};
 			tokens.insert(t);
 
@@ -524,6 +525,7 @@ router.post("/authenticate", function (req, res) {
 						"osVersion": agent.os.toVersion(),
 					},
 					"device": agent.device.toString(),
+					"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
 			};
 			tokens.insert(t);
 			/* Added the new refresh token, then we should remove the one used in the refresh process */
