@@ -23,8 +23,6 @@ var tokens;
  */
 router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret}), function(req, res) {
 	var mail = req.params.mail;
-	var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
-	geo.ip = req.ip;
 	var agent = useragent.parse(req.headers["user-agent"]);
 	
 	if ( req.user.role === "admin" ) {
@@ -32,7 +30,7 @@ router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret}), function(re
 			currentUrl: req.path,
 			user: req.user,
 			device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"",
-			geoip: geo
+			geoip: geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{}
 		});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
@@ -276,31 +274,6 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
 		}
-	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
-	}
-});
-
-/**
- * @api {post} /notifications/resetAllUsersTokens Reset tokens for all users
- * @apiName Reset tokens for all users
- * @apiGroup 8. Notifications
- * @apiVersion 2.0.1
- * @apiUse AuthAdmin
- * @apiPermission Admin
- * 
- * @apiUse 200
- * @apiUse 403
- * @apiUse 404
- */
-router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	if ( req.user.role === "admin" ) {
-		users	= db.getCollection("users");
-		users.chain().find().update(function(user) {
-			user.unsubscription_token = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
-		});
-		db.save();
-		res.status(200).send({"status": "done"});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
 	}

@@ -270,8 +270,6 @@ router.post("/", function (req, res) {
 				token:				token,
 				unsubscription_token: passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 				pushSubscription	: pushSubscription,
-				//key:				new_token.key,
-				//secret:				new_token.secret
 			};
 			t6events.add("t6Api", "user add", new_user.id);
 			users.insert(new_user);
@@ -445,6 +443,31 @@ router.post("/instruction", function (req, res) {
 		} else {
 			res.status(404).send({ "code": 404, message: "Error updating user" }); 
 		}
+	}
+});
+
+/**
+ * @api {post} /users/resetAllUsersTokens Reset unsubscription tokens for all users
+ * @apiName Reset unsubscription tokens for all users
+ * @apiGroup User
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	if ( req.user.role === "admin" ) {
+		users	= db.getCollection("users");
+		users.chain().find().update(function(user) {
+			user.unsubscription_token = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
+		});
+		db.save();
+		res.status(200).send({"status": "done", "count": users.chain().find().data().length});
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
 	}
 });
 
