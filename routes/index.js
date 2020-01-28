@@ -296,7 +296,7 @@ function checkForTooManyFailure(req, res, email) {
 router.delete("/tokens/all", function (req, res) {
 	if ( req.user.role === "admin" ) {
 		tokens	= dbTokens.getCollection("tokens");
-		var expired = tokens.find({ "expiration" : { "$lt": moment().format("x") } } );
+		var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 		if ( expired ) {
 			tokens.remove(expired);
 			db.save();
@@ -396,6 +396,11 @@ router.post("/authenticate", function (req, res) {
 						"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
 				};
 				tokens.insert(t);
+				var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+				if ( expired ) {
+					tokens.remove(expired);
+					dbTokens.save();
+				}
 
 				var refresh_token = user.id + "." + refreshPayload;
 				return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
@@ -469,6 +474,11 @@ router.post("/authenticate", function (req, res) {
 					"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
 			};
 			tokens.insert(t);
+			var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+			if ( expired ) {
+				tokens.remove(expired);
+				dbTokens.save();
+			}
 
 			var refresh_token = user.id + "." + refreshPayload;
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
@@ -536,6 +546,11 @@ router.post("/authenticate", function (req, res) {
 				]
 			};
 			tokens.findAndRemove(tQ);
+			var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+			if ( expired ) {
+				tokens.remove(expired);
+				dbTokens.save();
+			}
 
 			var refresh_token = user.id + "." + refreshPayload;
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
@@ -545,12 +560,6 @@ router.post("/authenticate", function (req, res) {
 	} else {
 		// TODO
 		return res.status(400).send(new ErrorSerializer({"id": 102.3, "code": 400, "message": "Required param grant_type"}).serialize());
-	}
-
-	var expired = tokens.find({ "expiration" : { "$lt": moment().format("x") } } );
-	if ( expired ) {
-		tokens.remove(expired);
-		db.save();
 	}
 });
 
@@ -608,6 +617,11 @@ router.post("/refresh", function (req, res) {
 			tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
 			return res.status(200).json( {status: "ok", token: token, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp} );
 		}
+	}
+	var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+	if ( expired ) {
+		tokens.remove(expired);
+		dbTokens.save();
 	}
 });
 

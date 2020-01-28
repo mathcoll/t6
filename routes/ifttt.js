@@ -98,8 +98,18 @@ router.get("/OAuth2/authorize", function (req, res) {
 				// or maybe it should be the "code" above ????
 				expiration:			moment().add(24, "years").format("x"),
 			};
-			var tokens	= dbTokens.getCollection("tokens");
 			tokens.insert(new_token);
+			var tokens	= dbTokens.getCollection("tokens");
+			var expired = tokens.find(
+				{ "$and": [
+					{ "expiration" : { "$lt": moment().format("x") } },
+					{ "expiration" : { "$ne": "" } },
+				]}
+			);
+			if ( expired ) {
+				tokens.remove(expired);
+				db.save();
+			}
 			db.save();
 			
 			res.render("authorization", {
@@ -165,8 +175,18 @@ router.post("/OAuth2/authorize", function (req, res) {
 					// or maybe it should be the "code" above ????
 					expiration:			moment().add(24, "years").format("x"),
 				};
-				var tokens	= dbTokens.getCollection("tokens");
 				tokens.insert(new_token);
+				var tokens	= dbTokens.getCollection("tokens");
+				var expired = tokens.find(
+					{ "$and": [
+						{ "expiration" : { "$lt": moment().format("x") } },
+						{ "expiration" : { "$ne": "" } },
+					]}
+				);
+				if ( expired ) {
+					tokens.remove(expired);
+					db.save();
+				}
 				db.save();
 				
 				res.render("authorization", {

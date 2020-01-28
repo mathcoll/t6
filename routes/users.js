@@ -91,13 +91,7 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (
 		var accessTokens = tokens.chain().find({ "$and": [ {"user_id": req.user.id}, { "expiration" : { "$gt": moment().format("x") } } ]}).simplesort("expiration", true).data();
 		res.status(200).send(new AccessTokenSerializer(accessTokens).serialize());
 
-		var expired = tokens.find(
-			{ "$and": [
-				{"user_id" : req.user.id},
-				{ "expiration" : { "$lt": moment().format("x") } },
-				{ "expiration" : { "$ne": "" } },
-			]}
-		);
+		var expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
 		if ( expired ) {
 			tokens.remove(expired);
 			db.save();
@@ -122,7 +116,7 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (
 router.get("/me/sessions", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	if ( req.user.id ) {
 		tokens	= dbTokens.getCollection("tokens");
-		var expired = tokens.find( { "expiration" : { "$lt": moment().format("x") } } );
+		var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 		if ( expired ) {
 			tokens.remove(expired);
 			db.save();
@@ -489,7 +483,7 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 		users	= db.getCollection("users");
 		var user = users.findOne({"id": { "$eq": user_id }});
 		if (user && typeof user.pushSubscription !== "undefined" ) {
-			var payload = req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+			var payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 			t6notifications.sendPush(user.pushSubscription, payload);
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());
