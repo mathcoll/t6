@@ -99,8 +99,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 
 		//console.log("t6App", JSON.stringify({rule_id: event.params.rule_id}), user_id);
 		t6events.add("t6App", JSON.stringify({rule_id: event.params.rule_id, event_type: event.type}), user_id);
+		console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("Matching EventType: %s", event.type));
+		
 		if( event.type === "mqttPublish" ) {
-			console.log("Matching EventType", "mqttPublish");
 			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};
 			if ( typeof payload.message !== "undefined" ) {
 				mqttPayload.message = payload.message;
@@ -121,11 +122,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			t6mqtt.publish(payload.user_id, payload.mqtt_topic, JSON.stringify(mqttPayload), true);
 
 		} else if ( event.type === "mqttCommand" && typeof payload.object_id !== "undefined" ) {
-			console.log("Matching EventType", "mqttCommand");
 			t6mqtt.publish(payload.user_id, "object_id/"+payload.object_id+"/cmd", payload.value, true);
 
 		} else if ( event.type === "email" ) {
-			console.log("Matching EventType", "email");
 			var envelope = {
 				from:		event.params.from?event.params.from:from,
 				bcc:		event.params.bcc?event.params.bcc:bcc,
@@ -136,10 +135,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 			t6mailer.sendMail(envelope);
 		} else if ( event.type === "sms" ) {
-			console.log("Matching EventType", "sms");
 			// TODO
 		} else if ( event.type === "httpWebhook" ) {
-			console.log("Matching EventType", "httpWebhook");
 			if ( typeof event.params.body === "string" ) {
 				event.params.body = stringformat(event.params.body, payload);
 			}
@@ -166,7 +163,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			)
 		} else if ( event.type === "Ifttt" || event.type === "ifttt" ) {
-			console.log("Matching EventType", "Ifttt");
 			let body = {
 				"data": [
 					{
@@ -207,7 +203,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			)
 		} else if ( event.type === "serial" ) {
-			console.log("Matching EventType", "serial");
 			// Arduino is using CmdMessenger
 			serialport = new serialport(event.params.serialPort?event.params.serialPort:"/dev/ttyUSB0", { baudRate:event.params.baudRate?event.params.baudRate:9600 })
 			// Some examples:
@@ -216,10 +211,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			// "kSetFlow,{flow};"
 			serialport.write(event.params.serialMessage?stringformat(event.params.serialMessage, payload):stringformat("kSetLed,{value};", payload));
 		} else if ( event.type === "slackMessage" ) {
-			console.log("Matching EventType", "slackMessage");
 			// TODO
 		} else if ( event.type === "webPush" ) {
-			console.log("Matching EventType", "webPush");
 			let p = {
 				"title": stringformat(event.params.title, payload),
 				"body": stringformat(event.params.body, payload),
@@ -233,7 +226,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			console.log("pushSubscription: ", user.pushSubscription);
 			t6notifications.sendPush(user.pushSubscription, p);
 		} else {
-			console.log("No matching EventType", event.type);
+			console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("No matching EventType: %s", event.type));
 		}
 	});
 	engine.run(payload);

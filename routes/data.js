@@ -186,7 +186,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page-1)*limit);
 		
-		console.log("query: "+query);
+		console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("Query: %s", query));
 		dbInfluxDB.query(query).then(data => {
 			if ( data.length > 0 ) {
 				data.map(function(d) {
@@ -420,12 +420,10 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 							timestamp: timestamp,
 						}], { retentionPolicy: "autogen", }).then(err => {
 							if (err) {
-								console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+								console.log(moment().format("MMMM Do YYYY, H:mm:ss"), {"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 							}
-							//else console.log("DEBUG", {"message": "Success on writePoints to influxDb", "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						}).catch(err => {
-							console.log("DEBUG", {"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
-							console.error("Error catched on writting to influxDb:\n"+err);
+							console.log(moment().format("MMMM Do YYYY, H:mm:ss"), {"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						});
 					}
 				}

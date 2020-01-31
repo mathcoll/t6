@@ -225,12 +225,23 @@ router.all("*", function (req, res, next) {
 				}], { precision: "s", })
 				.then(err => {
 					if (err) {
-						console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0]});
+						console.log(
+							sprintf(
+								"%s Error on writePoints to influxDb %s",
+								moment().format("MMMM Do YYYY, H:mm:ss"),
+								{"err": err, "tags": tags, "fields": fields[0]}
+							)
+						);
 					}
 					next();
 				}).catch(err => {
-					console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0]});
-					console.error("Error catched on writting to influxDb:\n"+err);
+					console.log(
+						sprintf(
+							"%s Error catched on writting to influxDb %s",
+							moment().format("MMMM Do YYYY, H:mm:ss"),
+							{"err": err, "tags": tags, "fields": fields[0]}
+						)
+					);
 					next();
 				});
 			}
