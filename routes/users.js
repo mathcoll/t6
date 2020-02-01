@@ -296,7 +296,7 @@ router.post("/", function (req, res) {
 					res.header("Location", "/v"+version+"/users/"+new_user.id);
 					res.status(201).send({ "code": 201, message: "Created", user: new UserSerializer(new_user).serialize(), token: new_token });
 				}).catch(function(error) {
-					console.log("t6mailer.sendMail error", error.info.code, error.info.response, error.info.responseCode, error.info.command);
+					t6console.error("t6mailer.sendMail error" + error.info.code, error.info.response, error.info.responseCode, error.info.command);
 					res.status(500).send({ "code": 500, message: "Internal Error"});
 				});
 			});

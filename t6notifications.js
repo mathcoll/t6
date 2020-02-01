@@ -13,7 +13,7 @@ t6notifications.sendPush = function(subscriber, payload) {
 		payload.type = typeof payload.type!=="undefined"?payload.type:"message";
 		payload = JSON.stringify(payload);
 	}
-	console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "t6notifications.sendPush", subscriber, payload);
+	t6console.log("t6notifications.sendPush" + subscriber + payload);
 	if ( subscriber.endpoint ) {
 		webpush.setGCMAPIKey(pushSubscriptionOptions.gcmAPIKey);
 		webpush.setVapidDetails(
@@ -23,7 +23,7 @@ t6notifications.sendPush = function(subscriber, payload) {
 		);
 		webpush.sendNotification(subscriber, payload, pushSubscriptionOptions);
 	} else {
-		console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "t6notifications.sendPush", "failed with no endpoint. Didn't sent.");
+		t6console.log("t6notifications.sendPush failed with no endpoint. Didn't sent.");
 	}
 };
 t6notifications.sendFCM = function(subscriber, payload) {
@@ -41,7 +41,7 @@ t6notifications.sendFCM = function(subscriber, payload) {
 					failedTokens.push(registrationTokens[idx]);
 				}
 			});
-			console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "t6notifications.sendFCM", "List of tokens that caused failures: " + failedTokens);
+			t6console.log("t6notifications.sendFCM List of tokens that caused failures: " + failedTokens);
 		}
 	});
 };

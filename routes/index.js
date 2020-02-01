@@ -198,7 +198,7 @@ router.all("*", function (req, res, next) {
 		}
 		var i;
 		var query = sprintf("SELECT count(url) FROM requests WHERE (user_id='%s') AND (time>now() - 7d) LIMIT 1", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-
+		t6console.debug(query);
 		dbInfluxDB.query(query).then(data => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			
@@ -210,7 +210,7 @@ router.all("*", function (req, res, next) {
 			
 			if( (req.user && i >= limit) ) {
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-				res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
+				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 			} else {
 				var tags = {user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 				var fields = {url: o.url};
@@ -225,20 +225,18 @@ router.all("*", function (req, res, next) {
 				}], { precision: "s", })
 				.then(err => {
 					if (err) {
-						console.log(
+						t6console.error(
 							sprintf(
-								"%s Error on writePoints to influxDb %s",
-								moment().format("MMMM Do YYYY, H:mm:ss"),
+								"Error on writePoints to influxDb %s",
 								{"err": err, "tags": tags, "fields": fields[0]}
 							)
 						);
 					}
 					next();
 				}).catch(err => {
-					console.log(
+					t6console.error(
 						sprintf(
-							"%s Error catch on writting to influxDb %s",
-							moment().format("MMMM Do YYYY, H:mm:ss"),
+							"Error catch on writting to influxDb %s",
 							{"err": err, "tags": tags, "fields": fields[0]}
 						)
 					);
@@ -246,7 +244,7 @@ router.all("*", function (req, res, next) {
 				});
 			}
 		}).catch(err => {
-			res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
+			return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
 		});
 	} else {
 		var tags = {user_id: "anonymous", session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
@@ -257,25 +255,23 @@ router.all("*", function (req, res, next) {
 			fields: fields,
 		}], { precision: "s", }).then(err => {
 			if (err) {
-				console.log(
+				t6console.error(
 					sprintf(
-						"%s Error on writePoints to influxDb for anonymous %s",
-						moment().format("MMMM Do YYYY, H:mm:ss"),
+						"Error on writePoints to influxDb for anonymous %s",
 						{"err": err, "tags": tags, "fields": fields[0]}
 					)
 				);
 			}
-			next();
+			next(); // no User Auth..
 		}).catch(err => {
-			console.log(
+			t6console.error(
 				sprintf(
-					"%s Error catch on writePoints to influxDb for anonymous %s",
-					moment().format("MMMM Do YYYY, H:mm:ss"),
+					"Error catch on writePoints to influxDb for anonymous %s",
 					{"err": err, "tags": tags, "fields": fields[0]}
 				)
 			);
+			next(); // no User Auth..
 		});
-		next(); // no User Auth..
 	}
 });
 
@@ -300,14 +296,14 @@ function checkForTooManyFailure(req, res, email) {
 					html: html
 				};
 				t6mailer.sendMail(mailOptions).then(function(info){
-					console.log("info", info);
+					t6console.info("info" + info);
 				}).catch(function(error){
-					console.log("t6mailer.sendMail error", error.info.code, error.info.response, error.info.responseCode, error.info.command);
+					t6console.error("t6mailer.sendMail error" + error.info.code + error.info.response + error.info.responseCode + error.info.command);
 				});
 			});
 		}
 	}).catch(err => {
-		console.log(err);
+		t6console.error(err);
 	});
 	t6events.add("t6App", "user login failure", email);
 }
@@ -372,6 +368,7 @@ router.post("/authenticate", function (req, res) {
 		var password = req.body.password;
 
 		var queryU = { "$and": [ { "email": email } ] };
+		t6console.debug(queryU);
 		var user = users.findOne(queryU);
 		if ( user ) {
 			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {

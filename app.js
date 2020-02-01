@@ -48,6 +48,7 @@ global.t6mqtt			= require("./t6mqtt");
 global.t6mailer			= require("./t6mailer");
 global.t6notifications	= require("./t6notifications");
 global.t6events			= require("./t6events");
+global.t6console		= require("./t6console");
 global.t6events.setMeasurement("events");
 global.t6events.setRP("autogen");
 global.algorithm		= "aes-256-cbc";
@@ -59,78 +60,78 @@ if( db_type.influxdb === true ) {
 	var influx		= require("influx");
 	var dbString	= influxSettings.protocol+"://"+influxSettings.host+":"+influxSettings.port+"/"+influxSettings.database;
 	dbInfluxDB		= new influx.InfluxDB(dbString);
-	console.log("Activating influxdb: "+dbString);
+	t6console.log("Activating influxdb: "+dbString);
 }
 
 /* Logging */
 var error = fs.createWriteStream(logErrorFile, { flags: "a" });
 process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on("uncaughtException", function(err) {
-	console.error(moment().format("MMMM Do YYYY, H:mm:ss"), (err && err.stack) ? err.stack : err);
+	t6console.error((err && err.stack) ? err.stack : err);
 });
-console.log(sprintf("%s Starting %s v%s", moment().format("MMMM Do YYYY, H:mm:ss"), appName, VERSION));
-console.log(sprintf("%s Using node v%s", moment().format("MMMM Do YYYY, H:mm:ss"), process.versions.node));
-console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "Setting Access Logs to", logAccessFile);
-console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "Setting Error Logs to", logErrorFile);
+t6console.log(sprintf("Starting %s v%s", appName, VERSION));
+t6console.log(sprintf("Using node v%s", process.versions.node));
+t6console.log(sprintf("Setting Access Logs to %s", logAccessFile));
+t6console.log(sprintf("Setting Error Logs to %s", logErrorFile));
 
-console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "Initializing Database...");
+t6console.log("Initializing Database...");
 /* Main Database settings */
 db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //db.loadDatabase({}, function() {
 	if ( db.getCollection("objects") === null ) {
-		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Objects is failing");
+		t6console.log("- Collection Objects is failing");
 	}
 	if ( db.getCollection("flows") === null ) {
-		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Flows is failing");
+		t6console.log("- Collection Flows is failing");
 	}
 	if ( db.getCollection("users") === null ) {
-		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Users is failing");
+		t6console.log("- Collection Users is failing");
 	}
 	if ( db.getCollection("tokens") === null ) {
-		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Keys is failing");
+		t6console.log("- Collection Keys is failing");
 	}
 	if ( db.getCollection("units") === null ) {
-		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Units is failing");
+		t6console.log("- Collection Units is failing");
 	}
 	if ( db.getCollection("datatypes") === null ) {
-		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Datatypes is failing");
+		t6console.log("- Collection Datatypes is failing");
 	}
 	if ( db.getCollection("users") === null ) {
-		console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Users is failing");
+		t6console.log("- Collection Users is failing");
 	}
-	console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Db Main is loaded");
+	t6console.log("- Db Main is loaded");
 //});
 
 /* Rules settings */
 dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbRules.loadDatabase({}, function() {
-	if ( dbRules === null ) console.log("db Rules is failing");
-	if ( dbRules.getCollection("rules") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Rules is failing");
-	console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Db Rules is loaded");
+	if ( dbRules === null ) t6console.log("db Rules is failing");
+	if ( dbRules.getCollection("rules") === null ) t6console.error("- Collection Rules is failing");
+	t6console.log("- Db Rules is loaded");
 //});
 
 /* Snippets settings */
 dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbSnippets.loadDatabase({}, function() {
 	if ( dbSnippets === null ) console.error("db Snippets is failing");
-	if ( dbSnippets.getCollection("snippets") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Snippets is failing");
-	console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Db Snippets is loaded");
+	if ( dbSnippets.getCollection("snippets") === null ) t6console.error("- Collection Snippets is failing");
+	t6console.log("- Db Snippets is loaded");
 //});
 
 /* Dashboards settings */
 dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbDashboards.loadDatabase({}, function() {
-	if ( dbDashboards === null ) console.log("db Dashboards is failing");
-	if ( dbDashboards.getCollection("dashboards") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Dashboards is failing");
-	console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Db Dashboards is loaded");
+	if ( dbDashboards === null ) t6console.log("db Dashboards is failing");
+	if ( dbDashboards.getCollection("dashboards") === null ) t6console.error("- Collection Dashboards is failing");
+	t6console.log("- Db Dashboards is loaded");
 //});
 
 /* Tokens settings */
 dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbTokens.loadDatabase({}, function() {
-	if ( dbTokens === null ) console.log("db Tokens is failing");
-	if ( dbTokens.getCollection("tokens") === null ) console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Collection Tokens is failing");
-	console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "- Db Tokens is loaded");
+	if ( dbTokens === null ) t6console.log("db Tokens is failing");
+	if ( dbTokens.getCollection("tokens") === null ) t6console.error("- Collection Tokens is failing");
+	t6console.log("- Db Tokens is loaded");
 //});
 
 var index			= require("./routes/index");
@@ -230,6 +231,7 @@ if (app.get("env") === "development") {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack });
 			res.end();
 		}
+		t6console.error(err.status + err.name);
 	});
 } else {
 	app.use(function(err, req, res, next) {
@@ -244,26 +246,27 @@ if (app.get("env") === "development") {
 		} else {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message }).end();
 		}
+		t6console.error(err.status + err.name);
 	});
 }
 
 t6events.add("t6App", "start", "self");
-console.log(sprintf("%s %s has started and listening to %s (using Build-Version=%s)", moment().format("MMMM Do YYYY, H:mm:ss"), appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
+t6console.info(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
 	mqttClient.publish(mqttInfo, JSON.stringify({"dtepoch": moment().format("x"), message: "Hello mqtt, "+appName+" just have started. :-)", environment: process.env.NODE_ENV}), {retain: false});
-	console.log(sprintf("%s Connected to Mqtt broker on %s:%s - %s", moment().format("MMMM Do YYYY, H:mm:ss"), mqttHost, mqttPort, mqttRoot));
+	t6console.info(sprintf("Connected to Mqtt broker on %s:%s - %s", mqttHost, mqttPort, mqttRoot));
 	mqttClient.subscribe("objects/status/#", function (err) {
 		if (!err) {
-			console.log(sprintf("%s Subscribed to Mqtt topic \"objects/status/#\"", moment().format("MMMM Do YYYY, H:mm:ss")));
+			t6console.info("Subscribed to Mqtt topic \"objects/status/#\"");
 		}
 	})
 });
 mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split("objects/status/")[1];
 	let stat = message.toString();
-	console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("Object Status Changed: %s is %s", object, stat==="1"?"connected":"disconnected"), "("+message+")");
+	t6console.info(sprintf("Object Status Changed: %s is %s", object, stat==="1"?"connected":"disconnected"), "("+message+")");
 	if ( stat === "1" && t6ConnectedObjects.indexOf(object)<0 ) {
 		t6ConnectedObjects.push(object);
 	} else {
@@ -272,7 +275,7 @@ mqttClient.on("message", function (topic, message) {
 			t6ConnectedObjects.splice(i, 1);
 		}
 	}
-	console.log(moment().format("MMMM Do YYYY, H:mm:ss"), "Connected Objects:", t6ConnectedObjects);
+	t6console.info(sprintf("Connected Objects: %s", t6ConnectedObjects));
 })
 
 module.exports = app;

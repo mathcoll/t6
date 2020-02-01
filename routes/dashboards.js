@@ -60,7 +60,7 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
 		}
 	}
 	var json = dashboards.chain().find(query).offset(offset).limit(size).data();
-	//console.log(query);
+	//t6console.log(query);
 
 	var total = dashboards.find(query).length;
 	json.size = size;
@@ -107,7 +107,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			};
 			t6events.add("t6Api", "dashboard add", new_dashboard.id);
 			dashboards.insert(new_dashboard);
-			//console.log(dashboards);
+			//t6console.log(dashboards);
 			
 			res.header("Location", "/v"+version+"/dashboards/"+new_dashboard.id);
 			res.status(201).send({ "code": 201, message: "Created", flow: new DashboardSerializer(new_dashboard).serialize() });
@@ -196,7 +196,7 @@ router.delete("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.sec
 		],
 	};
 	var d = dashboards.find(query);
-	//console.log(d);
+	//t6console.log(d);
 	if ( d.length > 0 ) {
 		dashboards.remove(d);
 		dbDashboards.saveDatabase();

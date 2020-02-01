@@ -56,7 +56,7 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 		}
 	}
 	var json = snippets.chain().find(query).offset(offset).limit(size).data();
-	//console.log(query);
+	//t6console.log(query);
 
 	var total = snippets.find(query).length;
 	json.size = size;
@@ -106,7 +106,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			};
 			t6events.add("t6Api", "snippet add", newSnippet.id);
 			snippets.insert(newSnippet);
-			//console.log(snippets);
+			//t6console.log(snippets);
 			
 			res.header("Location", "/v"+version+"/snippets/"+newSnippet.id);
 			res.status(201).send({ "code": 201, message: "Created", snippet: new SnippetSerializer(newSnippet).serialize() });
@@ -198,7 +198,7 @@ router.delete("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secre
 		],
 	};
 	var s = snippets.find(query);
-	//console.log(s);
+	//t6console.log(s);
 	if ( s.length > 0 ) {
 		snippets.remove(s);
 		dbSnippets.saveDatabase();

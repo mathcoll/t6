@@ -55,7 +55,7 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		}
 	}
 	var json = rules.chain().find(query).offset(offset).limit(size).data();
-	//console.log(query);
+	//t6console.log(query);
 
 	var total = rules.find(query).length;
 	json.size = size;
@@ -68,7 +68,7 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 
 	/*
 	json.forEach(function(theRule) {
-		console.log(theRule);
+		t6console.log(theRule);
 		//if (theRule.rule) theRule.rule = JSON.parse(theRule.rule);
 	});
 	*/
@@ -110,7 +110,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			};
 			t6events.add("t6Api", "rule add", newRule.id);
 			rules.insert(newRule);
-			//console.log(rules);
+			//t6console.log(rules);
 			
 			res.header("Location", "/v"+version+"/rules/"+newRule.id);
 			res.status(201).send({ "code": 201, message: "Created", rule: new RuleSerializer(newRule).serialize() });
@@ -152,8 +152,8 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 				}
 		var rule = rules.findOne( query );
 		if ( rule ) {
-			//console.log(req.body.meta.revision, rule.meta.revision);
-			//console.log((req.body.meta.revision - rule.meta.revision));
+			t6console.debug(req.body.meta.revision + rule.meta.revision);
+			t6console.debug((req.body.meta.revision - rule.meta.revision));
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) !== 0 ) {
 				res.status(400).send(new ErrorSerializer({"id": 39.2, "code": 400, "message": "Bad Request"}).serialize());
 			} else {

@@ -51,7 +51,7 @@ router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret}), funct
 	if ( req.user && user_id ) {
 		users	= db.getCollection("users");
 		var json = users.findOne( { id: user_id } );
-		//console.log(json.unsubscription);
+		//t6console.log(json.unsubscription);
 		res.status(200).send({unsubscription: json.unsubscription, unsubscription_token: json.unsubscription_token });
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
@@ -100,7 +100,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret}), function 
 						text: "Html email client is required",
 						html: html
 					};
-					console.log("DEBUG", mailOptions);
+					t6console.debug(mailOptions);
 					t6mailer.sendMail(mailOptions).then(function(info){
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
@@ -156,11 +156,11 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
 			json.forEach(function(user) {
-				//console.log(user.firstName+" "+user.lastName+" <"+user.email+">");
-				//console.log(" --> 3months"+ moment().subtract(3, "months"));
-				//console.log(" --> subscription_date:" + user.subscription_date + " = " + moment(user.subscription_date, "x").format("DD/MM/YYYY, HH:mm"));
-				//console.log(" --> changePasswordMail:" + user.changePasswordMail + " = " + moment(user.changePasswordMail, "x").format("DD/MM/YYYY, HH:mm"));
-				//console.log(" --> passwordLastUpdated:" + user.passwordLastUpdated + " = " + moment(user.passwordLastUpdated, "x").format("DD/MM/YYYY, HH:mm"));
+				//t6console.debug(user.firstName+" "+user.lastName+" <"+user.email+">");
+				//t6console.debug(" --> 3months"+ moment().subtract(3, "months"));
+				//t6console.debug(" --> subscription_date:" + user.subscription_date + " = " + moment(user.subscription_date, "x").format("DD/MM/YYYY, HH:mm"));
+				//t6console.debug(" --> changePasswordMail:" + user.changePasswordMail + " = " + moment(user.changePasswordMail, "x").format("DD/MM/YYYY, HH:mm"));
+				//t6console.debug(" --> passwordLastUpdated:" + user.passwordLastUpdated + " = " + moment(user.passwordLastUpdated, "x").format("DD/MM/YYYY, HH:mm"));
 				res.render("emails/change-password", {user: user}, function(err, html) {
 					var to = user.firstName+" "+user.lastName+" <"+user.email+">";
 					var mailOptions = {
@@ -177,7 +177,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
 						text: "Html email client is required",
 						html: html
 					};
-					//console.log("DEBUG", mailOptions);
+					//t6console.debug(mailOptions);
 					t6mailer.sendMail(mailOptions).then(function(info){
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},
@@ -232,7 +232,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 		if ( json.length > 0 && year && template ) {
 			/* Send a newsletter to each subscribers */
 			json.forEach(function(user) {
-				console.log(user.firstName+" "+user.lastName+" <"+user.email+">");
+				t6console.info("Rendering email bod yfor" + user.firstName+" "+user.lastName+" <"+user.email+">");
 				res.render("emails/newsletters/"+year+"/"+template, {user: user}, function(err, html) {
 					var to = user.firstName+" "+user.lastName+" <"+user.email+">";
 					var mailOptions = {
@@ -249,7 +249,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 						text: "Html email client is required",
 						html: html
 					};
-					//console.log("DEBUG", mailOptions);
+					t6console.debug(mailOptions);
 					t6mailer.sendMail(mailOptions).then(function(info){
 						users.findAndUpdate(
 								function(i){return i.id==user.id;},

@@ -16,7 +16,7 @@ sessionDuration		= 3600*24*10; // Cookie session duration, 10 days
 store				= new FileStore({ttl: sessionDuration, path: "/sessions"}); // Force session folder as absolute path in settings
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
 cookie				= sessionSettings.cookie;
-staticOptions		= { etag: true, maxAge: 10*24*3600*1000 };//10 Days
+staticOptions		= { etag: true, maxAge: 10*24*3600*1000 }; // 10 Days
 
 /* JWT */
 jwtsettings = {
@@ -30,8 +30,10 @@ timeoutDuration		= "10s";
 
 /* Logs settings */
 logFormat			= "combined"; // common|dev|combined|tiny|short
-logAccessFile		= "/var/log/node/t6-access.log";
-logErrorFile		= "/var/log/node/t6-error.log";
+logLevel			= "LOG|DEBUG|INFO|WARNING|ERROR"; // LOG|DEBUG|INFO|WARNING|ERROR
+logAccessFile		= "/var/log/node/t6-access.log"; // The absolute file on the server for access logs
+logErrorFile		= "/var/log/node/t6-error.log"; // The absolute file on the server for error logs
+logDateFormat		= "DD/MMM/YYYY:H:mm:ss ZZ"; // The "moment.js" date format for logging time
 
 /* Email settings */
 from				= "t6 <contact@domain.tld>"; // The Sender email address

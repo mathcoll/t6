@@ -15,7 +15,7 @@ t6mqtt.publish = function(user_id, topic, payload, retain) {
 			mqttClient.publish(mqttRoot+user_id+topic, payload, {retain: retain});
 		}
 	} catch(e) {
-		console.log("Failure on mqtt", payload);
+		t6console.error("Failure on mqtt" + payload);
 	}
 };
 

@@ -66,11 +66,11 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret}), 
 		var flow = flows.chain().find(query).offset(offset).limit(size);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 		
-		console.log("query", query);
-		console.log("offset", offset);
-		console.log("size", size);
-		console.log("flow", flow.data()[0].left);
-		console.log("join", join.data()[0].left);
+		t6console.log("query" + query);
+		t6console.log("offset" + offset);
+		t6console.log("size" + size);
+		t6console.log("flow" + flow.data()[0].left);
+		t6console.log("join" + join.data()[0].left);
 		flow = (join.data()).length>0?join.data()[0].left:[];
 		*/
 		
@@ -139,7 +139,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 				};
 				t6events.add("t6Api", "flow add", newFlow.id);
 				flows.insert(newFlow);
-				//console.log(flows);
 				
 				res.header("Location", "/v"+version+"/flows/"+newFlow.id);
 				res.status(201).send({ "code": 201, message: "Created", flow: new FlowSerializer(newFlow).serialize() }); // TODO: missing serializer
@@ -245,7 +244,6 @@ router.delete("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret})
 		],
 	};
 	var f = flows.find(query);
-	//console.log(f);
 	if ( f.length > 0 ) {
 		flows.remove(f);
 		db.saveDatabase();

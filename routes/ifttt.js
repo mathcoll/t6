@@ -305,7 +305,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 		};
 
 		if ( req.body.triggerFields && typeof req.body.triggerFields.user_id !== "undefined" ) {
-			//console.log("resultT", resultT);
+			//t6console.log("resultT" + resultT);
 			let limit = parseInt(req.body.limit, 10);
 			if (!limit && limit !== 0) { limit = 3; }
 			if (limit==0) { limit = 0; }
@@ -324,7 +324,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 			if( !err && decoded ) {
 				users	= db.getCollection("users");
 				let queryU = { "id": decoded.id };
-				//console.log(queryU);
+				//t6console.log(queryU);
 				let user = users.findOne(queryU);
 				user.iftttTrigger_identity = req.body.trigger_identity;
 				let resultSuccess = {
@@ -351,9 +351,8 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 						datetime: getIsoDate()
 					}
 				};
-				//console.log("resultSuccess");
-				console.log(JSON.stringify(req.body, null, 2));
-				console.log(JSON.stringify(resultSuccess, null, 2));
+				t6console.log(JSON.stringify(req.body, null, 2));
+				t6console.log(JSON.stringify(resultSuccess, null, 2));
 				res.status(200).send( resultSuccess );
 			} else {
 				res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });

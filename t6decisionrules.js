@@ -15,7 +15,7 @@ function cryptPayload(payload, sender, encoding) {
 		encrypted = Buffer.concat([encrypted, cipher.final()]);
 		return iv.toString("hex") + ':' + encrypted.toString("hex");
 	} else {
-		//console.log("payload", "Error: Missing secret_key_crypt");
+		t6console.debug("payload", "Error: Missing secret_key_crypt");
 		return "Error: Missing secret_key_crypt";
 	}
 }
@@ -56,21 +56,21 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		
 		var times = SunCalc.getTimes(typeof payload.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
 		if ( moment(payload.dtepoch).isAfter(times.sunrise) && moment(payload.dtepoch).isBefore(times.sunset) ) {
-			//console.log("isDayTime", "(true) daytime / ", "Expecting "+jsonValue);
+			t6console.debug("isDayTime" + "(true) daytime / " + "Expecting " + jsonValue);
 			if ( jsonValue === true ) {
-				//console.log("matching on the "+jsonValue);
+				t6console.debug("matching on the "+jsonValue);
 				return true;
 			} else {
-				//console.log("not matching on the "+jsonValue);
+				t6console.debug("not matching on the "+jsonValue);
 				return false;
 			}
 		} else {
-			//console.log("isDayTime", "(false) night / ", "Expecting "+jsonValue);
+			t6console.debug("isDayTime" + "(false) night / " + "Expecting " + jsonValue);
 			if ( jsonValue === false ) {
-				//console.log("matching on the "+jsonValue);
+				t6console.debug("matching on the "+jsonValue);
 				return true;
 			} else {
-				//console.log("not matching on the "+jsonValue);
+				t6console.debug("not matching on the "+jsonValue);
 				return false;
 			}
 		}
@@ -97,9 +97,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		}
 
-		//console.log("t6App", JSON.stringify({rule_id: event.params.rule_id}), user_id);
+		t6console.debug(JSON.stringify({rule_id: event.params.rule_id, user_id: user_id}));
 		t6events.add("t6App", JSON.stringify({rule_id: event.params.rule_id, event_type: event.type}), user_id);
-		console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("Matching EventType: %s", event.type));
+		t6console.debug(sprintf("Matching EventType: %s", event.type));
 		
 		if( event.type === "mqttPublish" ) {
 			let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};
@@ -153,13 +153,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				function (error, response, body) {
 					var statusCode = response ? response.statusCode : null
 							body = body || null
-							console.log("Request sent - Server responded with:", statusCode);
+							t6console.debug("Request sent - Server responded with:", statusCode);
 					
 					if ( error ) {
 						return console.error("HTTP failed: ", error, options.url, statusCode, body)
 					}
 					
-					console.log("success", options.url, statusCode, body);
+					t6console.log("success", options.url, statusCode, body);
 				}
 			)
 		} else if ( event.type === "Ifttt" || event.type === "ifttt" ) {
@@ -195,11 +195,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				function (error, response, body) {
 					var statusCode = typeof response!=="undefined"?response.statusCode:null;
 					var body = body || null;
-					console.log("Request sent - Server responded with:", statusCode);
+					t6console.log("Request sent - Server responded with:" + statusCode);
 					if ( error ) {
-						return console.error("HTTP failed: ", error, options.url, statusCode, body)
+						return t6console.error("HTTP failed: ", error, options.url, statusCode, body)
 					}
-					console.log("success", options.url, statusCode, body);
+					t6console.log("success" + options.url + statusCode + body);
 				}
 			)
 		} else if ( event.type === "serial" ) {
@@ -223,10 +223,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 			users	= db.getCollection("users");
 			let user = users.findOne({ "id": user_id });
-			console.log("pushSubscription: ", user.pushSubscription);
+			t6console.log("pushSubscription: " + user.pushSubscription);
 			t6notifications.sendPush(user.pushSubscription, p);
 		} else {
-			console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("No matching EventType: %s", event.type));
+			t6console.log(sprintf("No matching EventType: %s", event.type));
 		}
 	});
 	engine.run(payload);

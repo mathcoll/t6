@@ -29,7 +29,6 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 	} else {
 		json = datatypes.find({ "id": { "$eq": ""+datatype_id } });
 	}
-	//console.log(json);
 	json = json.length>0?json:[];
 	res.status(200).send(new DataTypeSerializer(json).serialize());
 });

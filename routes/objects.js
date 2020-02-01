@@ -43,7 +43,7 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 	}
 	
 	var json = objects.find(query);
-	//console.log(query);
+	//t6console.debug(query);
 	if ( json.length > 0 ) {
 		var qr = qrCode.qrcode(typenumber, errorcorrectionlevel);
 		qr.addData(baseUrl+"/m?id=/"+object_id+"#public-object");
@@ -93,7 +93,7 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 		}
 	}
 	var json = objects.find(query);
-	//console.log(query);
+	//t6console.debug(query);
 	json = json.length>0?json:[];
 	res.status(200).send(new ObjectSerializer(json).serialize());
 });
@@ -155,10 +155,10 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 		} else {
 			o.is_connected = false;
 		}
-		//console.log("is_connected=", o.is_connected);
+		t6console.debug("is_connected=" + o.is_connected);
 		return o;
 	});
-	//console.log(query);
+	t6console.debug(query);
 
 	var total = objects.find(query).length;
 	json.size = size;
@@ -227,7 +227,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 		}
 		t6events.add("t6Api", "object add", newObject.id);
 		objects.insert(newObject);
-		//console.log(objects);
+		//t6console.log(objects);
 		
 		res.header("Location", "/v"+version+"/objects/"+newObject.id);
 		res.status(201).send({ "code": 201, message: "Created", object: new ObjectSerializer(newObject).serialize() });
@@ -265,7 +265,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection("objects");
-	//console.log(objects);
+	//t6console.log(objects);
 	var query = {
 			"$and": [
 					{ "id": object_id },
@@ -336,7 +336,7 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 		],
 	};
 	var o = objects.find(query);
-	//console.log(o);
+	//t6console.log(o);
 	if ( o.length > 0 ) {
 		objects.remove(o);
 		db.saveDatabase();

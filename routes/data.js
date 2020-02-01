@@ -33,10 +33,10 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 		decryptedPayload = decipher.update(encryptedPayload, "base64", encoding || "utf8");// ascii, binary, base64, hex, utf8
 		decryptedPayload += decipher.final(encoding || "utf8");
 
-		//console.log("\nPayload decrypted:\n", decryptedPayload);
+		//t6console.log("\nPayload decrypted:\n decryptedPayload);
 		return decryptedPayload!==""?decryptedPayload:false;
 	} else {
-		//console.log("decryptPayload", "Error: Missing secret_key_crypt");
+		//t6console.log("decryptPayload Error: Missing secret_key_crypt");
 		return false;
 	}
 }
@@ -186,7 +186,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page-1)*limit);
 		
-		console.log(moment().format("MMMM Do YYYY, H:mm:ss"), sprintf("Query: %s", query));
+		t6console.log(sprintf("Query: %s", query));
 		dbInfluxDB.query(query).then(data => {
 			if ( data.length > 0 ) {
 				data.map(function(d) {
@@ -286,28 +286,24 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			let decrypted = decryptPayload(payload.encryptedPayload.trim(), object); // ascii, binary, base64, hex, utf8
 			payload = decrypted!==false?decrypted:payload;
 			payload = getJson(payload);
-			//console.log("DEBUG", "\nPayload after decryption (1)", payload);
 		}
 
 		if ( typeof payload !== "undefined" && payload.signedPayload ) {
 			// The payload is signed
-			//console.log("payload.signedPayload", payload.signedPayload);
 			isSigned = true;
 			jwt.verify(payload.signedPayload, cert, function(err, decoded) {
 				if ( !err ) {
 					payload = decoded;
-					//console.log("DEBUG", "\nPayload Unsigned", payload);
 					if ( payload.encryptedPayload ) {
 						// The payload is encrypted
 						isEncrypted = true;
 						let decrypted = decryptPayload(payload.encryptedPayload.trim(), object); // ascii, binary, base64, hex, utf8
 						payload = decrypted!==false?decrypted:payload;
-						//console.log("DEBUG", "\nPayload after unsigned & decryption", payload);
 					}
 				} else {
 					payload = undefined;
 					error = err;
-					console.log("Error "+error);
+					t6console.error("Error "+error);
 					res.status(401).send(new ErrorSerializer({"id": 62.4, "code": 401, "message": "Invalid Signature",}).serialize());
 					next();
 				}
@@ -342,20 +338,20 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 			}
 			var datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:null;
 			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_encrypted && !isEncrypted ) {
-				//console.log("(f.data())[0].left", (f.data())[0].left);
+				//t6console.log("(f.data())[0].left", (f.data())[0].left);
 				prerequisite += 1;
 			}
 			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_signed && !isSigned ) {
-				//console.log("(f.data())[0].left", (f.data())[0].left);
+				//t6console.log("(f.data())[0].left", (f.data())[0].left);
 				prerequisite += 1;
 			}
 			/*
-			console.log("DEBUG", "payload=", payload);
-			console.log("DEBUG", "Flow require isSigned -", (f.data())[0].left.require_signed);
-			console.log("DEBUG", ".. & Payload isSigned", isSigned);
-			console.log("DEBUG", "Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
-			console.log("DEBUG", ".. & Payload isEncrypted", isEncrypted);
-			console.log("DEBUG", "Prerequisite Index=", prerequisite, "(>0 means something is required.)");
+			t6console.debug("payload=", payload);
+			t6console.debug("Flow require isSigned -", (f.data())[0].left.require_signed);
+			t6console.debug(".. & Payload isSigned", isSigned);
+			t6console.debug("Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
+			t6console.debug(".. & Payload isEncrypted", isEncrypted);
+			t6console.debug("Prerequisite Index=", prerequisite, "(>0 means something is required.)");
 			*/
 			if ( prerequisite <= 0 ) {
 				// Cast value according to Flow settings
@@ -391,14 +387,14 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 				// End casting
 				
 				/*
-				console.log("DEBUG", "value = ", value);
-				console.log("DEBUG", "datatype = ", datatype);
-				console.log("DEBUG", "text = ", text);
-				console.log("DEBUG", "influxdb = ", db_type.influxdb);
-				console.log("DEBUG", "save = ", save);
-				console.log("DEBUG", "tags = ", tags);
-				console.log("DEBUG", "fields = ", fields[0]);
-				console.log("DEBUG", "timestamp = ", timestamp);
+				t6console.debug("value = "+ value);
+				t6console.debug("datatype = "+ datatype);
+				t6console.debug("text = "+ text);
+				t6console.debug("influxdb = "+ db_type.influxdb);
+				t6console.debug("save = "+ save);
+				t6console.debug("tags = "+ tags);
+				t6console.debug("fields = "+ fields[0]);
+				t6console.debug("timestamp = "+ timestamp);
 				*/
 				if ( save === true ) {
 					if ( db_type.influxdb === true ) {
@@ -420,10 +416,10 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 							timestamp: timestamp,
 						}], { retentionPolicy: "autogen", }).then(err => {
 							if (err) {
-								console.log(moment().format("MMMM Do YYYY, H:mm:ss"), {"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+								t6console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 							}
 						}).catch(err => {
-							console.log(moment().format("MMMM Do YYYY, H:mm:ss"), {"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							t6console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						});
 					}
 				}
