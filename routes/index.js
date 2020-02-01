@@ -217,7 +217,7 @@ router.all("*", function (req, res, next) {
 
 				req.session.cookie.secure = true;
 				req.session.user_id = req.user.id;
-				
+
 				dbInfluxDB.writePoints([{
 					measurement: "requests",
 					tags: tags,
@@ -237,7 +237,7 @@ router.all("*", function (req, res, next) {
 				}).catch(err => {
 					console.log(
 						sprintf(
-							"%s Error catched on writting to influxDb %s",
+							"%s Error catch on writting to influxDb %s",
 							moment().format("MMMM Do YYYY, H:mm:ss"),
 							{"err": err, "tags": tags, "fields": fields[0]}
 						)
@@ -255,7 +255,26 @@ router.all("*", function (req, res, next) {
 			measurement: "requests",
 			tags: tags,
 			fields: fields,
-		}], { precision: "s", });
+		}], { precision: "s", }).then(err => {
+			if (err) {
+				console.log(
+					sprintf(
+						"%s Error on writePoints to influxDb for anonymous %s",
+						moment().format("MMMM Do YYYY, H:mm:ss"),
+						{"err": err, "tags": tags, "fields": fields[0]}
+					)
+				);
+			}
+			next();
+		}).catch(err => {
+			console.log(
+				sprintf(
+					"%s Error catch on writePoints to influxDb for anonymous %s",
+					moment().format("MMMM Do YYYY, H:mm:ss"),
+					{"err": err, "tags": tags, "fields": fields[0]}
+				)
+			);
+		});
 		next(); // no User Auth..
 	}
 });
