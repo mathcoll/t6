@@ -26,10 +26,10 @@ jwtsettings = {
 };
 
 /* Http settings */
-timeoutDuration		= "10s";
+timeoutDuration		= "10s"; // Serve Http response with a timeout status after this period 
 
 /* Logs settings */
-logFormat			= "combined"; // common|dev|combined|tiny|short
+logFormat			= "combined"; // Can be either: common|dev|combined|tiny|short
 logLevel			= "LOG|DEBUG|INFO|WARNING|ERROR"; // LOG|DEBUG|INFO|WARNING|ERROR
 logAccessFile		= "/var/log/node/t6-access.log"; // The absolute file on the server for access logs
 logErrorFile		= "/var/log/node/t6-error.log"; // The absolute file on the server for error logs
@@ -42,6 +42,7 @@ mailhost			= "my_smtp.domain.tld"; // Your Smtp server
 mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smtp credentials
 transporter = nodemailer.createTransport({
 	host : mailhost,
+	port: 587,
 	ignoreTLS : true,
 	auth : mailauth,
 	dkim : {
@@ -52,7 +53,7 @@ transporter = nodemailer.createTransport({
 });
 /* Database settings - Storage */
 db_type	= {
-	influxdb: true,
+	influxdb: true, // Does not make any sense to disable this feature... but...
 };
 influxSettings		= { host : "localhost", port : 8086, protocol : "http", username : "datawarehouse", password : "datawarehouse", database : "datawarehouse" }
 
@@ -64,7 +65,7 @@ quota = {
 };
 
 /* Localization settings */
-localization = {latitude: 39.800327, longitude: 6.343530};
+localization = {latitude: 39.800327, longitude: 6.343530}; // The physicl location of the webserver, this helps to calculate daytime on decisionRules
 
 /* pushSubscription */
 //https://console.firebase.google.com/u/0/project/t6-app/settings/cloudmessaging/
@@ -84,7 +85,7 @@ trackings = {
 	googleSigninClientId: "",
 	ggads: "ca-pub-xxxx",
 	firebaseConfig: {
-		firebaseJsVersion: "7.6.2", // https://firebase.google.com/docs/web/setup
+		firebaseJsVersion: "7.8.0", // https://firebase.google.com/docs/web/setup
 		web: {
 			apiKey: "xxxx",
 			authDomain: "xxxx.firebaseapp.com",
@@ -109,6 +110,7 @@ trackings = {
 };
 
 /* IFTTT settings */
+// Please note Ifttt is beta only
 ifttt = {
 	apiUrl: "https://api.internetcollaboratif.info/v2.0.1/ifttt",
 	realtimeApi: { url: "https://realtime.ifttt.com/v1/notifications", port: 443 },
