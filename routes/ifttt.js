@@ -324,7 +324,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 			if( !err && decoded ) {
 				users	= db.getCollection("users");
 				let queryU = { "id": decoded.id };
-				//t6console.log(queryU);
+				t6console.debug(queryU);
 				let user = users.findOne(queryU);
 				user.iftttTrigger_identity = req.body.trigger_identity;
 				let resultSuccess = {

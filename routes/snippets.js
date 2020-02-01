@@ -56,7 +56,7 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 		}
 	}
 	var json = snippets.chain().find(query).offset(offset).limit(size).data();
-	//t6console.log(query);
+	t6console.debug(query);
 
 	var total = snippets.find(query).length;
 	json.size = size;

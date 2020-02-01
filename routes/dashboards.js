@@ -60,7 +60,7 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
 		}
 	}
 	var json = dashboards.chain().find(query).offset(offset).limit(size).data();
-	//t6console.log(query);
+	t6console.debug(query);
 
 	var total = dashboards.find(query).length;
 	json.size = size;

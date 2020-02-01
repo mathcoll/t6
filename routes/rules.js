@@ -55,7 +55,7 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 		}
 	}
 	var json = rules.chain().find(query).offset(offset).limit(size).data();
-	//t6console.log(query);
+	t6console.debug(query);
 
 	var total = rules.find(query).length;
 	json.size = size;
