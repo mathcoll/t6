@@ -333,7 +333,9 @@ app.resources.rules = {
 		
 		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+rule.id+"'>";
-		if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( app.isLtr() ) {
+			node += "	<div class='mdl-layout-spacer'></div>";
+		}
 		node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 		node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+rule.id+"'>";
 		node += "			<i class='material-icons'>chevron_left</i>";
@@ -348,7 +350,9 @@ app.resources.rules = {
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Rule</label>";
 		node += "		</button>";
 		node += "	</div>";
-		if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+		if( !app.isLtr() ) {
+			node += "	<div class='mdl-layout-spacer'></div>";
+		}
 		node += "</section>";
 
 		(app.containers.rule_add).querySelector(".page-content").innerHTML = node;

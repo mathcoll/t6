@@ -105,7 +105,9 @@ db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autolo
 /* Rules settings */
 dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbRules.loadDatabase({}, function() {
-	if ( dbRules === null ) t6console.warn("db Rules is failing");
+	if ( dbRules === null ) {
+		t6console.warn("db Rules is failing");
+	}
 	if ( dbRules.getCollection("rules") === null ) {
 		t6console.warn("- Collection Rules is failing");
 	}
@@ -115,7 +117,9 @@ dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"),
 /* Snippets settings */
 dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbSnippets.loadDatabase({}, function() {
-	if ( dbSnippets === null ) console.warn("db Snippets is failing");
+	if ( dbSnippets === null ) {
+		console.warn("db Snippets is failing");
+	}
 	if ( dbSnippets.getCollection("snippets") === null ) {
 		t6console.warn("- Collection Snippets is failing");
 	}
@@ -125,7 +129,9 @@ dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".j
 /* Dashboards settings */
 dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbDashboards.loadDatabase({}, function() {
-	if ( dbDashboards === null ) t6console.warn("db Dashboards is failing");
+	if ( dbDashboards === null ) {
+		t6console.warn("db Dashboards is failing");
+	}
 	if ( dbDashboards.getCollection("dashboards") === null ) {
 		t6console.warn("- Collection Dashboards is failing");
 	}
@@ -135,7 +141,9 @@ dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()
 /* Tokens settings */
 dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbTokens.loadDatabase({}, function() {
-	if ( dbTokens === null ) t6console.warn("db Tokens is failing");
+	if ( dbTokens === null ) {
+		t6console.warn("db Tokens is failing");
+	}
 	if ( dbTokens.getCollection("tokens") === null ) {
 		t6console.warn("- Collection Tokens is failing");
 	}

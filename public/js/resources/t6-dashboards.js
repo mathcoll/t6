@@ -148,7 +148,9 @@ app.resources.dashboards = {
 					node += "</section>";
 					
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
-					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) {
+						node += "	<div class='mdl-layout-spacer'></div>";
+					}
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -163,7 +165,9 @@ app.resources.dashboards = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save changes to Dashboard</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) {
+						node += "	<div class='mdl-layout-spacer'></div>";
+					}
 					node += "</section>"
 				} else {
 					/* View mode */
@@ -185,8 +189,11 @@ app.resources.dashboards = {
 						var n=0;
 						if ( localStorage.getItem("snippets") != "null" ) {
 							var s = JSON.parse(localStorage.getItem("snippets")).find(function(snippet) {
-								if ( n == id ) return snippet;
-								else n++;
+								if ( n == id ) {
+									return snippet;
+								} else {
+									n++;
+								};
 							});
 						}
 						var sType = s.sType;
