@@ -106,7 +106,9 @@ db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autolo
 dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbRules.loadDatabase({}, function() {
 	if ( dbRules === null ) t6console.warn("db Rules is failing");
-	if ( dbRules.getCollection("rules") === null ) t6console.warn("- Collection Rules is failing");
+	if ( dbRules.getCollection("rules") === null ) {
+		t6console.warn("- Collection Rules is failing");
+	}
 	t6console.info("- Db Rules is loaded");
 //});
 
@@ -114,7 +116,9 @@ dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"),
 dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbSnippets.loadDatabase({}, function() {
 	if ( dbSnippets === null ) console.warn("db Snippets is failing");
-	if ( dbSnippets.getCollection("snippets") === null ) t6console.warn("- Collection Snippets is failing");
+	if ( dbSnippets.getCollection("snippets") === null ) {
+		t6console.warn("- Collection Snippets is failing");
+	}
 	t6console.info("- Db Snippets is loaded");
 //});
 
@@ -122,7 +126,9 @@ dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".j
 dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbDashboards.loadDatabase({}, function() {
 	if ( dbDashboards === null ) t6console.warn("db Dashboards is failing");
-	if ( dbDashboards.getCollection("dashboards") === null ) t6console.warn("- Collection Dashboards is failing");
+	if ( dbDashboards.getCollection("dashboards") === null ) {
+		t6console.warn("- Collection Dashboards is failing");
+	}
 	t6console.info("- Db Dashboards is loaded");
 //});
 
@@ -130,7 +136,9 @@ dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()
 dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true});
 //dbTokens.loadDatabase({}, function() {
 	if ( dbTokens === null ) t6console.warn("db Tokens is failing");
-	if ( dbTokens.getCollection("tokens") === null ) t6console.warn("- Collection Tokens is failing");
+	if ( dbTokens.getCollection("tokens") === null ) {
+		t6console.warn("- Collection Tokens is failing");
+	}
 	t6console.info("- Db Tokens is loaded");
 //});
 
