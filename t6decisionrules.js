@@ -197,7 +197,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					var body = body || null;
 					t6console.log("Request sent - Server responded with:" + statusCode);
 					if ( error ) {
-						return t6console.error("HTTP failed: ", error, options.url, statusCode, body)
+						return t6console.error("HTTP failed: ", error, options.url, statusCode, body);
 					}
 					t6console.log("success" + options.url + statusCode + body);
 				}
