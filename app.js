@@ -257,7 +257,6 @@ if (app.get("env") === "development") {
 		t6console.error(err.status + err.name);
 	});
 }
-
 t6events.add("t6App", "start", "self");
 t6console.info(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
 
