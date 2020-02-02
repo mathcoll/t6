@@ -355,7 +355,7 @@ app.resources.flows = {
 
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
-					app.buttons.backFlow.addEventListener("click", function(evt) { app.resources.flows.display(flow.id, false, false, false) }, false);
+					app.buttons.backFlow.addEventListener("click", function(evt) { app.resources.flows.display(flow.id, false, false, false); }, false);
 					app.buttons.saveFlow.addEventListener("click", function(evt) { app.resources.flows.onEdit(evt); }, false);
 
 					var element1 = document.getElementById("switch-edit_require_signed").parentNode;
@@ -494,12 +494,12 @@ app.resources.flows = {
 		}
 		if ( flow.attributes.require_signed === true ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>verified_user</i> Require signed payload from Object"
+			element += "		<i class='material-icons md-28'>verified_user</i> Require signed payload from Object";
 			element += "	</div>";
 		}
 		if ( flow.attributes.require_encrypted === true ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>vpn_key</i> Require encrypted payload from Object"
+			element += "		<i class='material-icons md-28'>vpn_key</i> Require encrypted payload from Object";
 			element += "	</div>";
 		}
 		element += "</div>";

@@ -151,8 +151,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			options.url = options.url.replace(/^\s*|\s*$/g, "");
 			request(options,
 				function (error, response, body) {
-					var statusCode = response ? response.statusCode : null
-							body = body || null
+					var statusCode = response ? response.statusCode : null;
+							body = body || null;
 							t6console.debug("Request sent - Server responded with:", statusCode);
 					
 					if ( error ) {
@@ -220,7 +220,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				"actions": event.params.actions,
 				"tag": event.params.tag,
 				"vibrate": event.params.vibrate
-			}
+			};
 			users	= db.getCollection("users");
 			let user = users.findOne({ "id": user_id });
 			t6console.log("pushSubscription: " + user.pushSubscription);

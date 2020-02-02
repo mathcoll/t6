@@ -31,7 +31,7 @@ t6notifications.sendFCM = function(subscriber, payload) {
 	const message = {
 		data: {score: '850', time: '2:45'},
 		tokens: registrationTokens,
-	}
+	};
 	admin.messaging().sendMulticast(message)
 	.then((response) => {
 		if (response.failureCount > 0) {

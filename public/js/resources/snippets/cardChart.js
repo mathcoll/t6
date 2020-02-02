@@ -20,7 +20,7 @@ var snippet = {
 	},
 	getHtml: function(params) {
 		if (!params) {
-			params = {}
+			params = {};
 		}
 		//else snippet += "		<div class='card-header' style='background: linear-gradient(60deg,#66bb6a,#66bb6a);'>";
 		var html = `
@@ -38,7 +38,7 @@ var snippet = {
 					<i class="material-icons" id="snippet-time-${params.id}">access_time</i> Last
 				</div>
 			</div>
-		</div>`
+		</div>`;
 		return html;
 	},
 };

@@ -183,11 +183,11 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 		} else {
 			flows	= db.getCollection("flows");
 			var query = {
-					"$and": [
-							{ "id": flow_id },
-							{ "user_id": req.user.id },
-						]
-					}
+				"$and": [
+						{ "id": flow_id },
+						{ "user_id": req.user.id },
+					]
+				};
 			var flow = flows.findOne( query );
 			if ( flow ) {
 				if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - flow.meta.revision) !== 0 ) {

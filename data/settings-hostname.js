@@ -117,4 +117,4 @@ ifttt = {
 	serviceKey: "",
 	serviceClientId: "",
 	serviceSecret: ""
-}
+};

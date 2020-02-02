@@ -142,11 +142,11 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret})
 	if ( snippet_id ) {
 		snippets	= dbSnippets.getCollection("snippets");
 		var query = {
-				"$and": [
-						{ "id": snippet_id },
-						{ "user_id": req.user.id },
-					]
-				}
+			"$and": [
+					{ "id": snippet_id },
+					{ "user_id": req.user.id },
+				]
+			};
 		var snippet = snippets.findOne( query );
 		if ( snippet ) {
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - snippet.meta.revision) !== 0 ) {

@@ -227,7 +227,7 @@ router.post("/OAuth2/token", function(req, res) {
 			{ "key": code },
 			{ "expiration" : { "$gt": moment().format("x") } }, // Actually, it should be very very long last Token here
 			{ "expiration" : { "$ne": "" } },
-		]}
+		]};
 		var token = tokens.findOne(queryT);
 		if ( token ) {
 			res.status(200).send( {"token_type": "Bearer", "access_token": token.bearer} );

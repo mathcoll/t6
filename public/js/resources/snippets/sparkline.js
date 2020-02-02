@@ -14,7 +14,7 @@ var snippet = {
 	},
 	getHtml: function(params) {
 		if (!params) {
-			params = {}
+			params = {};
 		}
 		var html = `
 		<div id="${params.id}" class="sparkline tile card-sparkline material-animate margin-top-4 material-animated mdl-shadow--2dp">
@@ -35,5 +35,5 @@ var snippet = {
 		return html;
 	},
 };
-snippet.getOptions = function(s) { return s.options; }
+snippet.getOptions = function(s) { return s.options; };
 app.snippetTypes.push(snippet);

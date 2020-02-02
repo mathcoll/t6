@@ -142,11 +142,11 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 	if ( dashboard_id ) {
 		dashboards	= dbDashboards.getCollection("dashboards");
 		var query = {
-				"$and": [
-						{ "id": dashboard_id },
-						{ "user_id": req.user.id },
-					]
-				}
+			"$and": [
+					{ "id": dashboard_id },
+					{ "user_id": req.user.id },
+				]
+			};
 		var dashboard = dashboards.findOne( query );
 		if ( dashboard ) {
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - dashboard.meta.revision) !== 0 ) {
