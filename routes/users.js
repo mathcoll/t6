@@ -373,16 +373,19 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
 		users	= db.getCollection("users");
 		var user = (users.chain().find({ "token": req.params.token }).data())[0];
 		if ( user ) {
+			t6console.debug("Found user", user, "From token", req.params.token);
 			user.password = bcrypt.hashSync(req.body.password, 10);
 			user.passwordLastUpdated = parseInt(moment().format("x"), 10);
 			user.token = null;
 			users.update(user);
 			db.save();
+			t6console.debug("Saved user", user, req.body.password);
 			t6events.add("t6App", "user reset password", user.id);
 			res.header("Location", "/v"+version+"/users/"+user.id);
 			res.status(200).send({ "code": 200, message: "Successfully updated", user: new UserSerializer(user).serialize() }); 
 			
 		} else {
+			t6console.debug("No user found with that token");
 			res.status(404).send(new ErrorSerializer({"id": 8.4,"code": 404, "message": "Not Found"}).serialize());
 		}
 	}

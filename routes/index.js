@@ -370,7 +370,7 @@ router.post("/authenticate", function (req, res) {
 		var queryU = { "$and": [ { "email": email } ] };
 		t6console.debug(queryU);
 		var user = users.findOne(queryU);
-		if ( user ) {
+		if ( user && typeof user.password!=="undefined" ) {
 			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
 				var geo = geoip.lookup(req.ip);
 				if ( typeof user.location === "undefined" || user.location === null ) {
@@ -436,6 +436,7 @@ router.post("/authenticate", function (req, res) {
 				return res.status(403).send(new ErrorSerializer({"id": 102.1, "code": 403, "message": "Forbidden"}).serialize());
 			}
 		} else {
+			t6console.debug("No user found or no password set yet.");
 			return res.status(403).send(new ErrorSerializer({"id": 102.2, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
