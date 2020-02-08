@@ -136,8 +136,8 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
             |  Mqtt
 
       #drawer.mdl-layout__drawer
-        div.side-nav__header#currentUserBackground(style="height: 148px; position: relative; width: 100%; background: #795548 url(" + baseUrlCdn + "/img/m/side-nav-bg.webp) repeat scroll 0 0 / cover ;")
-          img#currentUserHeader(src="", alt="Current user avatar", style="border-radius: 50%; width: 90px; padding: 10px 10px 10px 10px;border: 3px solid #fff;margin: 10px 10px;")
+        div.side-nav__header#currentUserBackground(style="height: 160px; position: relative; width: 100%; background: #795548 url(" + baseUrlCdn + "/img/m/side-nav-bg.webp) repeat scroll 0 0 / cover ;")
+          img#currentUserHeader(src="", alt="Current user avatar", style="border-radius: 50%; width: 90px; height: 90px; padding: 10px 10px 10px 10px;border: 3px solid #fff;margin: 10px 10px;")
           div#currentUserName.mdl-layout-title(style="bottom:auto !important;") 
           div#currentUserEmail.mdl-layout-subheader(style="color: #ffffff;") 
         nav.mdl-navigation.menu__list
@@ -212,29 +212,18 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
 
         //- List Index
         section#index.mdl-grid.mdl-cell--12-col.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
-          #hof.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
+          h1.mdl-subheader-content Connect 
+            i physical Objects* 
+            br/
+            | to 
+            i timeseries database
+          #hof.mdl-cell--12-col.mdl-card
             .container
               #hof-container.content
                 #description-container
-                  h1.mdl-subheader-content Connect 
-                    i physical Objects* 
-                    | to 
-                    i timeseries db*
-                  p Objects collect data from Sensors and POST them to t6 using the encrypted + signed payload.
+                  p Objects (any device, sensors, chipsets, devices...) collect data from Sensors and POST them to t6 using the encrypted + signed payload.
                   p Do any actions you need, once facts match conditions (Email, Mqtt, webhook notification...) &mdash; rule based events.
-                  p
-                    quote 
-                      i *Objects: sensors, chipsets, devices...
-                    br/
-                    quote 
-                      i *db: database
-                #illustration-container
-                  span
-                    quote
-                      i t6 general overview
-                  img.lazyloading.img-responsive(src=baseUrlCdn+"/img/m/placeholder.png", data-src=baseUrlCdn + "/img/m/t6.webp", alt="t6 IoT Application general overview")
-                  div &nbsp;
-                  a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="/docs") Explore documentation
+              a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="/docs") Explore documentation
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content How does t6 works?
           .page-content.mdl-grid.mdl-grid--no-spacing

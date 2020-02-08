@@ -65,14 +65,14 @@ code.nostyle br {
 }
 /* Home - Hall of fame */
 #hof {
-	box-shadow: 0 12px 12px 0 rgba(0,0,0,.2),0 5px 5px 0px rgba(0,0,0,.2),0 5px 5px 0 rgba(0,0,0,.2);
+	background: #fff;
 	color: #fff;
-	border-top: rgba(178, 178, 178, 0.4) solid 1px;
 }
 #description-container {
 	background: url(/img/background.webp);
 	background-size: cover;
 	padding: 20px;
+	width: 100%;
 }
 #hof-container h1 {
 	font-weight: 500;
@@ -83,14 +83,16 @@ code.nostyle br {
 	color: #fff !important;
 	position: unset;
 }
-#hof .container {
-	padding: 10px;
+@media only screen and (max-device-width: 480px) {
+	#hof-container h1 {
+		font-size: 24px;
+		line-height: 28px;
+	}
 }
 #hof-container {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
-	padding: 20px;
 }
 #hof-container div p, #hof-container div span {
 	background: rgba(121, 85, 72, 0.7);
@@ -579,6 +581,13 @@ section#profile .mdl-card--small .mdl-card__title {
 	right: 0;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	border-radius: 8px 8px 0 0;
+}
+.mdl-card__actions.mdl-card--border {
+	border-width: thick;
+}
+.mdl-card__title {
+	border-radius: 8px 8px 0 0;
 }
 .mdl-card__date {
     font-size: 1rem;
@@ -721,10 +730,11 @@ section#profile .subhead {
 	color: rgba(0, 0, 0, 0.54);
 }
 .mdl-cell {
-	margin: 5px 0 !important;
+	margin: 0 !important;
+	border-radius: 8px;
 }
 div.page-content {
-	margin-bottom: 50px;
+	margin-bottom: 80px;
 }
 #terms .mdl-grid {
 	word-break: normal;
@@ -757,12 +767,13 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 .mdl-subheader-content {
 	color: rgb(121, 85, 72) !important;
 	font-weight: 700;
-	padding: 5px;
-	width: 100%;
-	position: sticky;
-	top: 0px;
-	z-index: 2;
 	font-variant: small-caps;
+}
+h1.mdl-subheader-content {
+	font-size: 22px;
+	color: #fff !important;
+	margin: 0 0 50px 0 !important;
+	padding: 0 10px;
 }
 .sticky {
 	position: -webkit-sticky;
@@ -1017,9 +1028,9 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 .card-user .card-header {
 	margin: 0 0 1em 0;
 }
-.demo-card-wide.mdl-card {
-	margin: .5em;
-	float: left;
+#index {
+	background: linear-gradient(175deg, rgba(121, 85, 72, 1) 14.5%, #fff 15%);
+	height: 100%;
 }
 #index .mdl-card__menu {
 	color: #fff;
@@ -1028,6 +1039,7 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	min-height: auto !important;
 	overflow: visible !important;
 	width: 100%;
+	border-radius: 8px;
 }
 
 form.signin > div.mdl-shadow--2dp,
@@ -1051,16 +1063,15 @@ form.resetpassword > div.mdl-shadow--2dp img {
 	border: 5px solid #fff;
 	margin: -60px 0px 0px 0px;
 	background: url(/img/opl_img.webp);
-    background-size: auto auto;
-    background-size: 130px 130px;
+	background-size: auto auto;
+	background-size: 130px 130px;
 }
 
 .toast__container {
 	position: fixed;
 	bottom: 20px;
 	left: 50%;
-	pointer-events: none;
-	z-index: 9999 !important;
+	z-index: 10000 !important;
 }
 .toast__msg {
 	width: 300px;
@@ -1156,7 +1167,7 @@ form.resetpassword > div.mdl-shadow--2dp img {
 	opacity: 0;
 }
 .toast__msg span {
-	width: 100%;
+	width: calc(100% - 80px);
 	padding-left: 10px;
 	word-break: break-word;
 }
@@ -1528,11 +1539,11 @@ section > button {
 	font-weight: 600 !important;
 }
 .mdl-layout__tab-bar {
-	padding:0 0 0 40px !important;
-	width: calc(100% - 40px) !important;
+	padding: 0 0 0 10px !important;
+	width: calc(100% - 30px) !important;
 }
 .mdl-layout__tab-bar-button {
-	width: 30px !important;
+	width: 22px !important;
 }
 .mdl-selectfield {
 	position: relative;

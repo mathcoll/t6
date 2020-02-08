@@ -19,7 +19,7 @@ var snippet = {
 		}
 		params.time = moment().format(app.date_format);
 		var html = `
-		<div id="${params.id}" class="clock tile card-simpleclock material-animate margin-top-4 material-animated">
+		<div id="${params.id}" class="clock tile card-simpleclock material-animate margin-top-4 material-animated mdl-shadow--2dp">
 			<span class='mdl-list__item mdl-list__item--two-line'>
 				<span class='mdl-list__item-primary-content'>
 					<i class='material-icons'>${params.icon}</i>

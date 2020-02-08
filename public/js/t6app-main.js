@@ -187,11 +187,10 @@ var touchStartPoint, touchMovePoint;
 	// To show notification
 	function toast(msg, options) {
 		if (!msg) return;
-
 		options = options || {timeout:3000, type: "info"};
 		// type = error, done, warning, help, info
-		options.timeout = options.timeout!==undefined?options.timeout:3000;
-		options.type = options.type!==undefined?options.type:"info";
+		options.timeout = typeof options.timeout!==undefined?options.timeout:3000;
+		options.type = typeof options.type!==undefined?options.type:"info";
 
 		var toastMsg = document.createElement("div");
 		toastMsg.className = "toast__msg "+options.type;
@@ -199,19 +198,22 @@ var touchStartPoint, touchMovePoint;
 		icon.className = "material-icons";
 		icon.textContent = options.type;
 		var span = document.createElement("span");
+		var dismiss = document.createElement("a");
 		span.textContent = msg;
+		dismiss.textContent = "Dismiss";
+		dismiss.className = "mdl-button";
 		toastMsg.appendChild(icon);
 		toastMsg.appendChild(span);
+		toastMsg.appendChild(dismiss);
 		toastContainer.appendChild(toastMsg);
-
+		dismiss.addEventListener("click", function() {
+			event.target.parentNode.classList.add("toast__msg--hide");
+			event.target.parentNode.remove(1);
+		});
 		setTimeout(function () {
 			toastMsg.classList.add("toast__msg--hide");
+			toastMsg.remove(1);
 		}, options.timeout);
-
-		// Remove the element after hiding
-		toastMsg.addEventListener("transitionend", function (event) {
-			event.target.parentNode.removeChild(event.target);
-		});
 	}
 	exports.toast = toast;
 	
@@ -2248,7 +2250,7 @@ var touchStartPoint, touchMovePoint;
 		else { document.getElementById("currentUserEmail").innerHTML = ""; }
 		if ( document.getElementById("imgIconMenu") && localStorage.getItem("currentUserHeader") != 'null' && localStorage.getItem("currentUserHeader") ) {
 			document.getElementById("currentUserHeader").setAttribute('src', localStorage.getItem("currentUserHeader"));
-			document.getElementById("imgIconMenu").outerHTML = "<img id=\"imgIconMenu\" src=\""+localStorage.getItem("currentUserHeader")+"\" alt=\"Current user avatar\" style=\"border-radius: 50%; width: 30px; padding: 0px;border: 1px solid #fff;margin: 0px 0px;\">";
+			document.getElementById("imgIconMenu").outerHTML = "<img id=\"imgIconMenu\" src=\""+localStorage.getItem("currentUserHeader")+"\" alt=\"Current user avatar\" style=\"border-radius: 50%; width: 30px; height: 30px; padding: 0px;border: 2px solid #fff;margin: 0px 0px;\">";
 		}
 		else { document.getElementById("currentUserHeader").setAttribute('src', app.baseUrlCdn+"/img/m/icons/icon-128x128.png"); }
 		if ( localStorage.getItem("currentUserBackground") !== null ) { document.getElementById("currentUserBackground").style.background="#795548 url("+localStorage.getItem("currentUserBackground")+") 50% 50% / cover" }
