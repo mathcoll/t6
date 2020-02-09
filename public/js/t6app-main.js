@@ -2004,7 +2004,6 @@ var touchStartPoint, touchMovePoint;
 				}
 				node += "	</div>";
 				
-				node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 				node += "	<div class=\"card-body\">";
 				node += app.getField('face', 'First name', user.attributes.first_name, {type: 'input', id:'firstName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});
 				node += app.getField('face', 'Last name', user.attributes.last_name, {type: 'input', id:'lastName', isEdit: true, pattern: app.patterns.name, error:'Must be greater than 3 chars.'});

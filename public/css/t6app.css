@@ -66,13 +66,13 @@ code.nostyle br {
 /* Home - Hall of fame */
 #hof {
 	background: #fff;
-	color: #fff;
+	color: rgb(121,85,72,1);
 }
 #description-container {
-	background: url(/img/background.webp);
-	background-size: cover;
 	padding: 20px;
 	width: 100%;
+	background: rgba(121, 85, 72, 0.3);
+	padding: 10px;
 }
 #hof-container h1 {
 	font-weight: 500;
@@ -95,8 +95,6 @@ code.nostyle br {
 	justify-content: space-between;
 }
 #hof-container div p, #hof-container div span {
-	background: rgba(121, 85, 72, 0.7);
-	padding: 5px;
 	margin: 0;
 }
 #hof-container #illustration-container {
@@ -558,6 +556,7 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 	position: relative;
 	padding: 16px;
 	margin: 5px 0;
+	border-radius: 8px;
 }
 .card-sparkline,
 .card-simplerow,
@@ -567,6 +566,7 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 	overflow: hidden;
 	position: relative;
 	margin: 5px 0;
+	border-radius: 8px;
 }
 section#profile .mdl-card--small .mdl-card__title {
 	left: 90px;
@@ -1022,11 +1022,15 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	margin: 0;
 }
 .card-user .card-heading {
-	min-height: 150px;
+	min-height: 250px;
 	margin: 0 0 1em 0;
+	border-radius: 8px 8px 0 0;
 }
 .card-user .card-header {
 	margin: 0 0 1em 0;
+}
+.card-user .card-header.heading-left {
+	margin: 0;
 }
 #index {
 	background: linear-gradient(175deg, rgba(121, 85, 72, 1) 14.5%, #fff 15%);
