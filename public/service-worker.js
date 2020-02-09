@@ -144,7 +144,7 @@ self.addEventListener("push", function(event) {
 			tag: tag,
 			vibrate: vibrate,
 			requireInteraction: true,
-			renotify: true
+			renotify: tag!==null?false:true
 		};
 		console.log("[pushSubscription] notif.type", notif.type);
 		if ( notif.type == "message" ) {
@@ -168,20 +168,19 @@ self.addEventListener("error", function(e) {
 	console.log("[onError]", e.filename, e.lineno, e.colno, e.message);
 });
 self.addEventListener("notificationclick", function(event) {
-	//console.log("[onNotificationClick]", event);
-	//alert(event);
-	event.notification.close();
-	if ( event.action === "goObjects" ) {
+	console.log("[onNotificationClick]", "event.notification.actions", event.notification.actions);
+	//{"type": "message", "title":"You like t6 IoT? ⭐⭐⭐⭐⭐ ", "body": "Give a review for t6 IoT on Google Play Store!", "actions": [{"action": "goGooglePlay", "title": "Review t6", "icon": "/img/m/icons/icon-128x128.png"}]}
+	if ( event.notification.actions[0].action === "goObjects" ) {
 		clients.openWindow("/#objects");
 		synchronizeReader();
-	} else if( event.action === "goSignUp" ) {
+	} else if( event.notification.actions[0].action === "goSignUp" ) {
 		clients.openWindow("/#signup");
 		synchronizeReader();
-	} else if( event.action === "goGooglePlay" ) {
+	} else if( event.notification.actions[0].action === "goGooglePlay" ) {
 		clients.openWindow("https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=notificationClick&utm_campaign=notification");
 		synchronizeReader();
-	} else if( event.action === "goExternal" && event.url ) {
-		clients.openWindow(event.url);
+	} else if( event.notification.actions[0].action === "goExternal" && event.notification.actions[0].url ) {
+		clients.openWindow(event.notification.actions[0].url);
 		synchronizeReader();
 	} else {
 		clients.openWindow("/");
@@ -189,6 +188,7 @@ self.addEventListener("notificationclick", function(event) {
 	if ( typeof firebase !== "undefined" ) {
 		firebase.analytics().setUserProperties({'notification_click': 1});
 	}
+	event.notification.close();
 });
 
 if ( typeof firebase !== "undefined" ) {

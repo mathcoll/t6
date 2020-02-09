@@ -555,10 +555,10 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
-			if ( typeof firebase !== "undefined" && typeof firebase.apps !== "undefined" && typeof firebase.apps.length !== "undefined" ) {
+			if ( typeof firebase !== "object" && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
 				firebase.initializeApp(firebaseConfig);
 			}
-			firebase.messaging().useServiceWorker(registration);
+			//firebase.messaging().useServiceWorker(registration);
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log("[pushSubscription]", firebase.messaging().getToken());
 			}
@@ -996,7 +996,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		app.currentSection = section;
 
-		if ( typeof firebase !== "undefined" && typeof firebase.apps !== "undefined" && typeof firebase.apps.length !== "undefined" ) {
+		if ( typeof firebase !== "object" && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
 			firebase.analytics().setCurrentScreen(section, null);
 		}
 	};
