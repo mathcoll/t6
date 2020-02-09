@@ -72,6 +72,7 @@ code.nostyle br {
 	padding: 20px;
 	width: 100%;
 	background: rgba(121, 85, 72, 0.3);
+	color: rgb(121,85,72,1);
 	padding: 10px;
 }
 #hof-container h1 {
