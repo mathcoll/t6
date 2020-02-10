@@ -20,7 +20,7 @@ global.geoip			= require("geoip-lite");
 global.jwt				= require("jsonwebtoken");
 global.loki				= require("lokijs");
 global.passgen			= require("passgen");
-global.path				= require("path");	
+global.path				= require("path");
 global.md5				= require("md5");
 global.moment			= require("moment");
 global.mqtt				= require("mqtt");
@@ -168,14 +168,14 @@ app					= express();
 
 var CrossDomain = function(req, res, next) {
 	if (req.method == "OPTIONS") {
-		res.header("Access-Control-Allow-Origin", "*");
+		//res.header("Access-Control-Allow-Origin", "*");
 		res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.status(200).send("");
 	}
 	else {
 		res.setHeader("X-Powered-By", appName+"@"+version);
-		res.header("Access-Control-Allow-Origin", "*");
+		//res.header("Access-Control-Allow-Origin", "*");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
 			res.setHeader("Cache-Control", "public, max-age=3600");

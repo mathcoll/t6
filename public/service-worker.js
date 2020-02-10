@@ -3,6 +3,7 @@ var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
 var filesToCache = [
+	"/",
 	"/applicationStart",
 	"/networkError",
 	"/manifest.json",
@@ -15,7 +16,7 @@ var filesToCache = [
 	"/img/m/placeholder.png",
 	"/img/m/welcome_card.jpg",
 	"/img/m/side-nav-bg.webp",
-	"/img/m/icons/icon-128x128.png",/*
+	"/img/m/icons/icon-128x128.png",
 	"https://cdn.internetcollaboratif.info/css/t6app.min.css",
 	"https://cdn.internetcollaboratif.info/js/t6app-min.js",
 	"https://cdn.internetcollaboratif.info/js/vendor.min.js",
@@ -25,9 +26,9 @@ var filesToCache = [
 	"https://cdn.internetcollaboratif.info/img/m/placeholder.png",
 	"https://cdn.internetcollaboratif.info/img/m/welcome_card.jpg",
 	"https://cdn.internetcollaboratif.info/img/m/side-nav-bg.webp",
-	"https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png",*/
-	"https://fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2",
-	"https://fonts.googleapis.com/css?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext"
+	"https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png",
+	"https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2",
+	"https://fonts.googleapis.com/icon?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext"
 ];
 function refresh(response) {
 	return self.clients.matchAll().then(function(clients) {

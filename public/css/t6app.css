@@ -3,7 +3,7 @@
 	font-family: 'Material Icons';
 	font-style: normal;
 	font-weight: 400;
-	src: url(https://fonts.gstatic.com/s/materialicons/v29/2fcrYFNaTjcS6g4U3t-Y5ZjZjT5FdEJ140U2DJYC3mY.woff2) format('woff2');
+	src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
 }
 .material-icons {
 	font-family: 'Material Icons';
@@ -26,7 +26,8 @@
 }
 * {
 	box-sizing: border-box;
-}is-outdated
+}
+is-outdated
 html,
 body {
 	padding: 0;
@@ -72,7 +73,7 @@ code.nostyle br {
 	padding: 20px;
 	width: 100%;
 	background: rgba(121, 85, 72, 0.3);
-	color: rgb(121,85,72,1);
+	color: rgb(121,85,72);
 	padding: 10px;
 }
 #hof-container h1 {
