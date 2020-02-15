@@ -66,7 +66,6 @@ code.nostyle br {
 }
 /* Home - Hall of fame */
 #hof {
-	background: #fff;
 	color: rgb(121,85,72,1);
 }
 #description-container {
@@ -75,12 +74,14 @@ code.nostyle br {
 	background: rgba(121, 85, 72, 0.3);
 	color: rgb(121,85,72);
 	padding: 10px;
+	border-radius: 8px;
 }
 #hof-container h1 {
 	font-weight: 500;
 	font-size: 35px;
 	font-variant: normal;
 	line-height: 48px;
+	padding: 8px;
 	text-shadow: 2px 2px rgba(121, 85, 72, 0.3);
 	color: #fff !important;
 	position: unset;
@@ -370,7 +371,7 @@ section.fixedActionButtons {
 	bottom: 0;
 	margin-bottom: 0;
 	height: 50px;
-	background: rgb(121,85,72);
+	background: rgb(121,85,72,.5);
 }
 section.fixedActionButtons button.mdl-button {
 	color: #fff !important;
@@ -458,7 +459,7 @@ div.mdl-list__item-primary-content span.heading {
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
-		padding-bottom: 20px;
+		padding: 8px;
 	}
 	#hof-container #illustration-container {
 		max-width: 60%;
@@ -503,6 +504,7 @@ div.mdl-list__item-primary-content span.heading {
 	}
 	#hof-container {
 		display: block;
+		padding: 8px;
 	}
 	#hof-container #illustration-container {
 		max-width: 100%;
@@ -734,9 +736,6 @@ section#profile .subhead {
 .mdl-cell {
 	margin: 0 !important;
 	border-radius: 8px;
-}
-div.page-content {
-	margin-bottom: 80px;
 }
 #terms .mdl-grid {
 	word-break: normal;
@@ -1035,7 +1034,7 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	margin: 0;
 }
 #index {
-	background: linear-gradient(175deg, rgba(121, 85, 72, 1) 14.5%, #fff 15%);
+	background: linear-gradient(175deg, rgba(121, 85, 72, 1) 14.5%, #ececec 15%);
 	height: 100%;
 }
 #index .mdl-card__menu {
@@ -1473,9 +1472,23 @@ section > button {
 	right: 8px !important;
 	z-index: 99 !important;
 }
+.mdl-layout__content {
+	background: linear-gradient(175deg, #ececec 84.5%, rgb(121, 85, 72) 100%);
+}
 .page-content section.mdl-grid[data-action="view"] > div {
 	cursor: pointer;
 	cursor: hand;
+}
+.page-content div.mdl-grid:last-child {
+	padding-bottom: 80px;
+}
+.page-content .mdl-grid:after {
+	background: #e0efe3;
+}
+svg.footer {
+	position: fixed;
+	bottom: 0;
+	z-index: -10;
 }
 @-webkit-keyframes enter {
 	from {
@@ -1544,9 +1557,14 @@ section > button {
 	font-size: 16px !important;
 	font-weight: 600 !important;
 }
-.mdl-layout__tab-bar {
-	padding: 0 0 0 10px !important;
-	width: calc(100% - 30px) !important;
+@media screen and (max-width:1024px) {
+	.mdl-layout__tab-bar {
+		width: calc(100% - 60px);
+		padding: 0 0 0 40px;
+	}
+	.mdl-layout__tab-bar {
+		width: calc(100% - 30px) !important;
+	}
 }
 .mdl-layout__tab-bar-button {
 	width: 22px !important;

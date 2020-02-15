@@ -556,12 +556,16 @@ var touchStartPoint, touchMovePoint;
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
 			if ( typeof firebase !== "object" && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
+				//console.log("firebase", "Should Initialize Firebase");
 				firebase.initializeApp(firebaseConfig);
 			}
-			//firebase.messaging().useServiceWorker(registration);
+			
+			firebase.messaging().useServiceWorker(registration);
 			if ( localStorage.getItem("settings.debug") == "true" ) {
+				//console.log("firebase.messaging-sw", "Should load Firebase Messaging SW");
 				console.log("[pushSubscription]", firebase.messaging().getToken());
 			}
+			
 			firebase.analytics();
 			return registration;
 		})
