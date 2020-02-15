@@ -513,7 +513,7 @@ router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings
 	var token = req.params.token;
 	if ( req.user.role === "admin" ) {
 		var payload = typeof req.body!=="undefined"?req.body:"{}";
-		t6notifications.sendFCM(typeof token!=="undefined"?token:req.body.tokens, payload);
+		t6notifications.sendFCM(typeof token!=="undefined"?[token]:req.body.tokens, payload);
 		res.status(200).send({"status": "sent", "count": 1});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 181, "code": 403, "message": "Forbidden"}).serialize());

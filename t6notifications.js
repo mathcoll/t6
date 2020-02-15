@@ -13,7 +13,7 @@ t6notifications.sendPush = function(subscriber, payload) {
 		payload.type = typeof payload.type!=="undefined"?payload.type:"message";
 		payload = JSON.stringify(payload);
 	}
-	t6console.log("t6notifications.sendPush" + subscriber + payload);
+	t6console.log("t6notifications.sendPush", subscriber, payload);
 	if ( subscriber.endpoint ) {
 		webpush.setGCMAPIKey(pushSubscriptionOptions.gcmAPIKey);
 		webpush.setVapidDetails(
@@ -28,10 +28,8 @@ t6notifications.sendPush = function(subscriber, payload) {
 };
 t6notifications.sendFCM = function(subscriber, payload) {
 	const registrationTokens = typeof subscriber!=="object"?[subscriber]:subscriber;
-	const message = {
-		data: {score: '850', time: '2:45'},
-		tokens: registrationTokens,
-	};
+	const message = payload;
+	message.tokens = registrationTokens;
 	admin.messaging().sendMulticast(message)
 	.then((response) => {
 		if (response.failureCount > 0) {
