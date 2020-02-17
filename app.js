@@ -176,6 +176,7 @@ var CrossDomain = function(req, res, next) {
 	else {
 		res.setHeader("X-Powered-By", appName+"@"+version);
 		//res.header("Access-Control-Allow-Origin", "*");
+		res.header("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
 			res.setHeader("Cache-Control", "public, max-age=3600");
