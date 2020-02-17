@@ -68,13 +68,14 @@ code.nostyle br {
 #hof {
 	color: rgb(121,85,72,1);
 }
-#description-container {
+#hof-container .carousel-item {
 	padding: 20px;
 	width: 100%;
 	background: rgba(121, 85, 72, 0.3);
 	color: rgb(121,85,72);
 	padding: 10px;
 	border-radius: 8px;
+	margin: 0 0 10px 0;
 }
 #hof-container h1 {
 	font-weight: 500;
@@ -1473,7 +1474,7 @@ section > button {
 	z-index: 99 !important;
 }
 .mdl-layout__content {
-	background: linear-gradient(175deg, #ececec 84.5%, rgb(121, 85, 72) 100%);
+	background: linear-gradient(180deg, #ececec 84.5%, rgb(121, 85, 72) 100%);
 }
 .page-content section.mdl-grid[data-action="view"] > div {
 	cursor: pointer;

@@ -1543,7 +1543,11 @@ var touchStartPoint, touchMovePoint;
 	
 	app.getCard = function(card) {
 		var output = "";
-		output += "<div class=\"mdl-grid mdl-cell\">";
+		if( typeof card.class!=="undefined" ) {
+			output += "<div class=\""+card.class+"\">";
+		} else {
+			output += "<div class=\"mdl-grid mdl-cell\">";
+		}
 		output += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 		if( card.image ) {
 			output += "	<div class=\"mdl-card__title\" style=\"background:url("+card.image+") no-repeat 50% 50%;\">";
