@@ -103,6 +103,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 				icon:		typeof req.body.icon!=="undefined"?req.body.icon:"",
 				color:		typeof req.body.color!=="undefined"?req.body.color:"",
 				flows:		typeof req.body.flows!=="undefined"?req.body.flows:new Array(),
+				options:	typeof req.body.options!=="undefined"?req.body.options:undefined,
 			};
 			t6events.add("t6Api", "snippet add", newSnippet.id);
 			snippets.insert(newSnippet);
@@ -153,12 +154,14 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret})
 				res.status(400).send(new ErrorSerializer({"id": 39.2, "code": 400, "message": "Bad Request"}).serialize());
 			} else {
 				var result;
+				console.log(req.body.options);
 				snippets.chain().find({ "id": snippet_id }).update(function(item) {
 					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.type		= typeof req.body.type!=="undefined"?req.body.type:item.type;
 					item.icon		= typeof req.body.icon!=="undefined"?req.body.icon:item.icon;
 					item.color		= typeof req.body.color!=="undefined"?req.body.color:item.color;
 					item.flows		= typeof req.body.flows!=="undefined"?req.body.flows:item.flows;
+					item.options	= typeof req.body.options!=="undefined"?req.body.options:item.options;
 					item.meta.revision = ++(req.body.meta.revision);
 					result = item;
 				});

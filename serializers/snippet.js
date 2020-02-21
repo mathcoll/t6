@@ -5,7 +5,7 @@ function SnippetTypeSerializer(snippet) {
 	this.serialize = function () {
 		return new JSONAPISerializer("snippet", {
 			keyForAttribute: "underscore_case",
-			attributes: ["name", "user_id", "description", "type", "icon", "color", "flows", "meta"],
+			attributes: ["name", "user_id", "description", "type", "icon", "color", "flows", "options", "meta"],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/snippets", baseUrl_https, version),
 				self : snippet.pageSelf!==undefined?sprintf("%s/v%s/snippets/?page=%s&size=%s", baseUrl_https, version, snippet.pageSelf, snippet.size):undefined,
