@@ -186,6 +186,7 @@ li.delete-button:hover {
 	min-height: auto !important;
 	padding: 5px 16px !important;
 }
+#TypeSample { margin-left: 0px !important; }
 #TypeSample > div { width: calc(100% - 48px) !important; }
 body {
 	display: -webkit-box;
@@ -541,13 +542,16 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 	line-height: 46px;
 }
 .mdl-layout__header {
-    min-height: 50px !important;
+	min-height: 50px !important;
 }
 .is-inactive {
 	display: none !important;
 }
 .is-active {
 	display: block !important;
+}
+section.is-active {
+	padding-bottom: 80px;
 }
 .mdl-list__item .mdl-list__item-secondary-content {
 	margin-left: 0 !important;
@@ -1479,9 +1483,6 @@ section > button {
 .page-content section.mdl-grid[data-action="view"] > div {
 	cursor: pointer;
 	cursor: hand;
-}
-.page-content div.mdl-grid:last-child {
-	padding-bottom: 80px;
 }
 .page-content .mdl-grid:after {
 	background: #e0efe3;

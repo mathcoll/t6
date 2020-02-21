@@ -4,29 +4,31 @@ var snippet = {
 	value: "Graph a Flow over axis",
 	
 	options: {
-		width: {defaultValue: "12", value: "12", type: "select", availableValues: ["4", "6", "8", "12"]},
+		width: {default_value: "12", type: "select", available_values: ["4", "6", "8", "12"]},
 		
-		type: {defaultValue: "top", value: "line", type: "select", availableValues: ["bar", "line", "radar", "pie", "polarArea", "bubble", "scatter"]},
-		color: {defaultValue: "#FF0000", type: "text", value: "#0d87b0"},
-		legendFontColor: {defaultValue: "#FF0000", type: "text", value: "#0d87b0"},
-		borderColor: {defaultValue: "#FF0000", type: "text", value: "#0d87b0"},
-		backgroundColor: {defaultValue: "#FF0000", type: "text", value: "#0d87b0"},
-		pointBackgroundColor: {defaultValue: "#FF0000", type: "text", value: "#0d87b0"},
-		limit: {defaultValue: 15, value: 50, type: "integer"},
-		fill: {defaultValue: false, value: false, type: "switch", availableValues: [true, false]},
-		showLine: {defaultValue: false, value: true, type: "switch", availableValues: [true, false]},
-		steppedLine: {defaultValue: false, value: false, type: "select", availableValues: [true, false, "before", "after"]},
+		type: {default_value: "line", type: "select", available_values: ["bar", "line", "radar", "pie", "polarArea", "bubble", "scatter"]},
+		color: {default_value: "#FF0000", type: "text"},
+		legend_font_color: {default_value: "#FF0000", type: "text"},
+		border_color: {default_value: "#FF0000", type: "text"},
+		border_width: {default_value: 4, type: "select", available_values: [2, 4, 6, 8, 10, 12]},
+		background_color: {default_value: "#FF0000", type: "text"},
+		point_background_color: {default_value: "#FF0000", type: "text"},
+		limit: {default_value: 15, type: "integer"},
+		fill: {default_value: false, type: "switch", available_values: [true, false, "origin", "start", "end"]},
+		show_line: {default_value: false, type: "switch", available_values: [true, false]},
+		stepped_line: {default_value: false, type: "select", available_values: [true, false, "before", "after"]},
 
-		titleDisplay: {defaultValue: false, value: false, type: "switch", availableValues: [true, false]},
-		titleFontSize: {defaultValue: 28, value: 28, type: "integer"},
-		titleFontFamily: {defaultValue: "Helvetica", value: "Helvetica", type: "select", availableValues: ["Helvetica", "Helvetica Neue", "Arial", "sans-serif"]},
+		title_display: {default_value: false, type: "switch", available_values: [true, false]},
+		title_font_size: {default_value: 12, type: "integer"},
+		title_font_family: {default_value: "Helvetica", type: "select", available_values: ["Helvetica", "Helvetica Neue", "Arial", "sans-serif"]},
 
-		legend: {defaultValue: "top", value: "bottom", type: "select", availableValues: [true, false, "top", "bottom"]},
-		legendPosition: {defaultValue: false, value: "bottom", type: "select", availableValues: ["top", "bottom", "left", "right"]},
-		legendDisplay: {defaultValue: false, value: false, type: "switch", availableValues: [true, false]},
+		legend_display: {default_value: false, type: "select", available_values: [true, false]},
+		legend_position: {default_value: false, type: "select", available_values: ["top", "bottom", "left", "right"]},
+		legend_align: {default_value: false, type: "select", available_values: ["start", "center", "end"]},
+		legend_display: {default_value: false, type: "switch", available_values: [true, false]},
 	},
 	activateOnce: function(params) {
-		this.options.width.value = this.options.width.value!==null?this.options.width.value:this.options.width.defaultValue;
+		this.options.width.value = typeof params.attributes.options!=="undefined"?(params.attributes.options.width.value!==null?params.attributes.options.width.value:this.options.width.default_value):this.options.width.default_value;
 		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -44,68 +46,80 @@ var snippet = {
 		.then(function(response) {
 			var ctx = document.getElementById("chart-"+params.id).getContext("2d");
 			var datapoints = [];
-			response.data.forEach(function(d) {
-				datapoints.push({ x: new Date(d.attributes.timestamp), y: d.attributes.value });
-			});
-			var type = opt.type&&typeof opt.type.value!=="undefined"?opt.type.value:"line";
-			var unit = " ("+sprintf(typeof response.links.unit!=="undefined"?response.links.unit:"", "")+")";
-			var data = {
-				datasets: [{
-					label: typeof params.flowNames!=="undefined"?params.flowNames[0]:"",
-					backgroundColor: opt.backgroundColor&&typeof opt.backgroundColor.value!=="undefined"?opt.backgroundColor.value:"rgb(255, 99, 132)",
-					borderColor: opt.borderColor&&typeof opt.borderColor.value!=="undefined"?opt.borderColor.value:"rgb(255, 99, 132)",
-					fill: opt.fill&&typeof opt.fill.value!=="undefined"?opt.fill.value:false,
-					showLine: opt.showLine&&typeof opt.showLine.value!=="undefined"?opt.showLine.value:false,
-					steppedLine: opt.steppedLine&&typeof opt.steppedLine.value!=="undefined"?opt.steppedLine.value:false,
-					pointBackgroundColor: opt.pointBackgroundColor&&typeof opt.pointBackgroundColor.value!=="undefined"?opt.pointBackgroundColor.value:"rgb(255, 99, 132)",
-					data: datapoints,
-				}]
-			};
-			var options = {
-				title: {
-					display: opt.titleDisplay&&typeof opt.titleDisplay.value!=="undefined"?opt.titleDisplay.value:true,
-					text: "Snippet Title",
-					fontSize: opt.titleFontSize&&typeof opt.titleFontSize.value!=="undefined"?opt.titleFontSize.value:28,
-					fontFamily: opt.titleFontFamily&&typeof opt.titleFontFamily.value!=="undefined"?opt.titleFontFamily.value:"Helvetica", //""Helvetica Neue", "Helvetica", "Arial", sans-serif"
-				},
-				legend: {
-					display: opt.legendDisplay&&typeof opt.legendDisplay.value!=="undefined"?opt.legendDisplay.value:true,
-					position: opt.legendPosition&&typeof opt.legendPosition.value!=="undefined"?opt.legendPosition.value:"bottom",
-					labels: {
-						fontColor: opt.legendFontColor&&typeof opt.legendFontColor.value!=="undefined"?opt.legendFontColor.value:"rgb(255, 99, 132)"
-					}
-				},
-				tooltips: {
-					enable: false
-				},
-				scales: {
-					xAxes: [{
-						type: "time",
-						time: {
-							unit: "hour"
-						},
-						ticks: {
-							source: "auto",
-						}
+			if( typeof response.data!=="undefined" && response.data.type!=="errors" ) {
+				response.data.forEach(function(d) {
+					datapoints.push({ x: new Date(d.attributes.timestamp), y: d.attributes.value });
+				});
+				var type = opt.type&&typeof opt.type.value!=="undefined"?opt.type.value:opt.type.default_value;
+				var unit = " ("+sprintf(typeof response.links.unit!=="undefined"?response.links.unit:"", "")+")";
+				var data = {
+					datasets: [{
+						label: typeof params.flowNames!=="undefined"?params.flowNames[0]:"",
+						backgroundColor: opt.background_color&&typeof opt.background_color.value!=="undefined"?opt.background_color.value:opt.background_color.default_value,
+						borderColor: opt.border_color&&typeof opt.border_color.value!=="undefined"?opt.border_color.value:opt.border_color.default_value,
+						borderWidth: opt.border_width&&typeof opt.border_width.value!=="undefined"?opt.border_width.value:opt.border_width.default_value,
+						fill: opt.fill&&typeof opt.fill.value!=="undefined"?opt.fill.value:opt.fill.default_value,
+						showLine: opt.show_line&&typeof opt.show_line.value!=="undefined"?opt.show_line.value:opt.show_line.default_value,
+						steppedLine: opt.stepped_line&&typeof opt.stepped_line.value!=="undefined"?opt.stepped_line.value:opt.stepped_line.default_value,
+						pointStyle: "rectRounded",
+						hoverRadius: 10,
+						pointBackgroundColor: opt.point_background_color&&typeof opt.point_background_color.value!=="undefined"?opt.point_background_color.value:opt.point_background_color.default_value,
+						data: datapoints,
 					}]
-				},
-				maintainAspectRatio: false,
-				responsive: true,
-				animation: { duration: 0, },
-			};
-			var c = document.getElementById("chart-"+params.id);
-			c.height = 250;
-			var myChart = new Chart(ctx, {
-				type: type,
-				data: data,
-				options: options
-			});
-			var id = response.data[0].attributes.id;
-			var time = response.data[0].attributes.time;
-			var value = response.data[0].attributes.value;
-			var ttl = response.links.ttl;
-			document.getElementById("unit-"+params.id).innerHTML = unit;
-			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 2000);
+				};
+				var options = {
+					title: {
+						display: opt.title_display&&typeof opt.title_display.value!=="undefined"?opt.title_display.value:opt.title_display.default_value,
+						text: typeof params.flowNames!=="undefined"?params.flowNames[0]:"Snippet Title",
+						fontSize: opt.title_font_size&&typeof opt.title_font_size.value!=="undefined"?opt.title_font_size.value:opt.title_font_size.default_value,
+						fontFamily: opt.title_font_family&&typeof opt.title_font_family.value!=="undefined"?opt.title_font_family.value:opt.title_font_family.default_value,
+					},
+					legend: {
+						display: opt.legend_display&&typeof opt.legend_display.value!=="undefined"?opt.legend_display.value:opt.legend_display.default_value,
+						position: opt.legend_position&&typeof opt.legend_position.value!=="undefined"?opt.legend_position.value:opt.legend_position.default_value,
+								align: opt.legend_align&&typeof opt.legend_align.value!=="undefined"?opt.legend_align.value:opt.legend_align.default_value,
+						labels: {
+							fontColor: opt.legend_font_color&&typeof opt.legend_font_color.value!=="undefined"?opt.legend_font_color.value:opt.legend_font_color.default_value
+						}
+					},
+					tooltips: {
+						enable: false
+					},
+					scales: {
+						xAxes: [{
+							type: "time",
+							time: {
+								unit: "hour"
+							},
+							ticks: {
+								source: "auto",
+							}
+						}]
+					},
+					maintainAspectRatio: false,
+					responsive: true,
+					animation: { duration: 0, },
+				};
+				var c = document.getElementById("chart-"+params.id);
+				c.height = 250;
+				var myChart = new Chart(ctx, {
+					type: type,
+					data: data,
+					options: options
+				});
+				var id = response.data[0].attributes.id;
+				var time = response.data[0].attributes.time;
+				var value = response.data[0].attributes.value;
+				var ttl = response.links.ttl;
+				document.getElementById("unit-"+params.id).innerHTML = unit;
+				setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 2000);
+			} else {
+				var c = document.getElementById("chart-"+params.id);
+				c.height = 250;
+				var ctx = c.getContext("2d");
+				ctx.textAlign = "center";
+				ctx.fillText("Data error occured; please check Snippet settings :-(", c.width/2, c.height/2);
+			}
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem("settings.debug") == "true" ) {
@@ -142,4 +156,11 @@ var snippet = {
 	},
 };
 snippet.getOptions = function(s) { return s.options; };
+snippet.setOptions = function(opt) {
+	var merged = {};
+	for (var attrname in this.options) { merged[attrname] = this.options[attrname]; }
+	for (var attrname in opt) { merged[attrname] = opt[attrname]; }
+	this.options = merged;
+	return merged;
+};
 app.snippetTypes.push(snippet);

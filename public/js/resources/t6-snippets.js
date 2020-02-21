@@ -12,6 +12,7 @@ app.resources.snippets = {
 				icon: myForm.querySelector("select[name='Icon']").value,
 				color: myForm.querySelector("input[name='Color']").value,
 				flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; }),
+				options: myForm.querySelector("textarea[name='Graph Options']").value&&JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value)!=="undefined"?JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value):undefined,
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 
@@ -55,6 +56,7 @@ app.resources.snippets = {
 			type: myForm.querySelector("select[name='Type']").value,
 			icon: myForm.querySelector("select[name='Icon']").value,
 			color: myForm.querySelector("input[name='Color']").value,
+			options: myForm.querySelector("textarea[name='Graph Options']").value&&JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value)!=="undefined"?JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value):undefined,
 			flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; }),
 		};
 		if ( localStorage.getItem("settings.debug") == "true" ) {
@@ -98,7 +100,7 @@ app.resources.snippets = {
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "snippet" }, window.location.hash.substr(1), "#snippet?id="+id );
-		
+
 		window.scrollTo(0, 0);
 		app.containers.spinner.removeAttribute("hidden");
 		app.containers.spinner.classList.remove("hidden");
@@ -172,6 +174,13 @@ app.resources.snippets = {
 					node += "	</div>"; // mdl-shadow--2dp
 					
 					node +=	"</section>";
+					
+					node += app.getSubtitle("Graph Options");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.description, "Graph Options", typeof snippet.attributes.options!=="undefined"?JSON.stringify(snippet.attributes.options):"", {type: "textarea", id: "Graph_Options", isEdit: true});
+					node += "	</div>";
+					node += "</section>";
 
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -305,8 +314,8 @@ app.resources.snippets = {
 					var s = app.snippetTypes.find(function(sn) {
 						return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
 					});
-					//s.activateOnce(snippet); // looks to be activated from somewhere else :-)
-
+					s.setOptions(snippet.attributes.options);
+					
 					app.setExpandAction();
 					
 					app.refreshButtonsSelectors();
@@ -352,6 +361,13 @@ app.resources.snippets = {
 		node += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
 		node += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
 		node += "		</div>";
+		node += "	</div>";
+		node += "</section>";
+		
+		node += app.getSubtitle("Graph Options");
+		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField(app.icons.description, "Graph Options", typeof snippet.attributes.options!=="undefined"?JSON.stringify(snippet.attributes.options):"", {type: "textarea", id: "Graph_Options", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		

@@ -2,14 +2,14 @@
 var snippet = {
 	name: "valueDisplay",
 	value: "Value Display",
-	
+
 	options: {
-		width: {defaultValue: "6", value: "6", type: "select", availableValues: ["4", "6", "8", "12"]},
+		width: {default_value: "6", type: "select", available_values: ["4", "6", "8", "12"]},
 		color: {defaultValue: "#FF0000", type: "text"},
 		legend: {defaultValue: "top", type: "select", availableValues: [true, false, "top", "bottom"]}
 	},
 	activateOnce: function(params) {
-		this.options.width.value = this.options.width.value!==null?this.options.width.value:this.options.width.defaultValue;
+		this.options.width.value = typeof params.attributes.options!=="undefined"?(params.attributes.options.width.value!==null?params.attributes.options.width.value:this.options.width.default_value):this.options.width.default_value;
 		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -91,4 +91,12 @@ var snippet = {
 	},
 };
 snippet.getOptions = function(s) { return s.options; };
+snippet.setOptions = function(opt) {
+	var merged = {};
+	var s = this;
+	for (var attrname in s.options) { merged[attrname] = s.options[attrname]; }
+	for (var attrname in opt) { merged[attrname] = opt[attrname]; }
+	this.options = merged;
+	return merged;
+};
 app.snippetTypes.push(snippet);

@@ -200,7 +200,7 @@ var touchStartPoint, touchMovePoint;
 		var span = document.createElement("span");
 		var dismiss = document.createElement("a");
 		span.textContent = msg;
-		dismiss.textContent = "Dismiss";
+		dismiss.textContent = "Dismiss";snippet
 		dismiss.className = "mdl-button";
 		toastMsg.appendChild(icon);
 		toastMsg.appendChild(span);
@@ -1745,8 +1745,7 @@ var touchStartPoint, touchMovePoint;
 				}
 				var title = 'My Flows';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: false, action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'}; // ,
-																																																																			// action:
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.'};
 			} else if (type == 'dashboards') {
 				var container = (app.containers.dashboards).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
@@ -2652,6 +2651,7 @@ var touchStartPoint, touchMovePoint;
 						}
 					}
 				});
+				s.setOptions(my_snippet.attributes.options);
 				s.activateOnce(my_snippet);
 				
 				// Set the buttons on edit Snippets
