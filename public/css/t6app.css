@@ -471,7 +471,7 @@ div.mdl-list__item-primary-content span.heading {
 		padding-left: 10px;
 	}
 }
-@media only screen and (min-device-width: 481px) and (max-device-width: 800px) {
+@media only screen and (min-width: 480px) and (max-width: 839px) {
 	.mdl-grid--no-spacing > .mdl-cell--6-col, .mdl-grid--no-spacing > .mdl-cell--6-col-tablet.mdl-cell--6-col-tablet {
 		width: 50%;
 	}

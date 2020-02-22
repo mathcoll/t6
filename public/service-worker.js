@@ -1,15 +1,12 @@
-var dataCacheName= 't6-cache-2637f4c3ee629e81e4d35d561eaaa354';
+var dataCacheName= 't6-cache-1e28a916c4c64e729af3c4ff6f1c3928';
 var cacheName= dataCacheName;
-var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to"];
+var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to", "cloudflare", "leaflet"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
 var filesToCache = [
 	"/",
+	"/manifest.json",
 	"/applicationStart",
 	"/networkError",
-	"/manifest.json",
-	"/css/t6app.min.css",
-	"/js/t6app-min.js",
-	"/js/vendor.min.js",
 	"/img/opl_img3.webp",
 	"/img/opl_img2.webp",
 	"/img/opl_img.webp",
@@ -28,7 +25,10 @@ var filesToCache = [
 	"https://cdn.internetcollaboratif.info/img/m/side-nav-bg.webp",
 	"https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png",
 	"https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2",
-	"https://fonts.googleapis.com/icon?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext"
+	"https://fonts.googleapis.com/icon?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext",
+	"https://unpkg.com/leaflet@1.6.0/dist/leaflet.css",
+	"https://unpkg.com/leaflet@1.6.0/dist/leaflet.js",
+	"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
 ];
 function refresh(response) {
 	return self.clients.matchAll().then(function(clients) {
@@ -76,7 +76,7 @@ self.addEventListener("install", function(e) {
 			});
 		}).then(function() {
 			console.log("[ServiceWorker]", "Install completed");
-		}).catch((error) =>  {
+		}).catch((error) => {
 			console.log("[ServiceWorker]", "Error:", error);
 		})
 	);
@@ -114,12 +114,12 @@ self.addEventListener("fetch", function(e) {
 		e.respondWith(
 			caches.match(e.request).then(function(response) {
 				console.log("[ServiceWorker]", "Serving the asset from cache (Whitelisted & found).", e.request.url);
-				return response || fetch(e.request);
-			})
-			.catch(function() {
 				caches.add(e.request.url).then(function() {
 					console.log("[ServiceWorker]", "Added "+e.request.url+" to cached.");
 				});
+				return response || fetch(e.request);
+			})
+			.catch(function() {
 				console.log("[ServiceWorker]", "Serving the asset from server (Whitelisted but not found).", e.request.url);
 				return fromServer(e.request);
 			})
