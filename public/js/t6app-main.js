@@ -347,7 +347,6 @@ var touchStartPoint, touchMovePoint;
 	
 	app.onLoginButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		//myForm.querySelector("form.signin button.login_button").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.signin button.login_button i.material-icons").textContent = "cached";
 		myForm.querySelector("form.signin button.login_button i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
@@ -407,7 +406,6 @@ var touchStartPoint, touchMovePoint;
 	
 	app.onSignupButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		//myForm.querySelector("form.signup button.createUser").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.signup button.createUser i.material-icons").textContent = "cached";
 		myForm.querySelector("form.signup button.createUser i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
@@ -453,18 +451,15 @@ var touchStartPoint, touchMovePoint;
 				});
 			} else {
 				toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', {timeout:3000, type: 'warning'});
-				document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 			}
 		} else {
 			toast('We can\'t process your signup. Please check your inputs.', {timeout:3000, type: 'warning'});
-			document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 		}
 		evt.preventDefault();
 	};
 	
 	app.onPasswordResetButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		//myForm.querySelector("form.resetpassword button.setPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.resetpassword button.setPassword i.material-icons").textContent = "cached";
 		myForm.querySelector("form.resetpassword button.setPassword i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
@@ -493,14 +488,12 @@ var touchStartPoint, touchMovePoint;
 			});
 		} else {
 			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
-			document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 		}
 		evt.preventDefault();
 	};
 	
 	app.onForgotPasswordButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		//myForm.querySelector("form.forgotpassword button.forgotPassword").insertAdjacentHTML("afterbegin", "<span class='mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active'></span>");
 		myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").textContent = "cached";
 		myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
@@ -527,7 +520,6 @@ var touchStartPoint, touchMovePoint;
 			});
 		} else {
 			toast('We can\'t send the instructions. Please check your inputs.', {timeout:3000, type: 'warning'});
-			document.querySelectorAll(".mdl-spinner").forEach( function(e) { e.parentNode.removeChild(e);} );
 		}
 		evt.preventDefault();
 	};
@@ -2286,13 +2278,13 @@ var touchStartPoint, touchMovePoint;
 			"			<div class='mdl-card__supporting-text'>" +
 			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
-			"					<input name='username' inputmode='email' pattern=\""+app.patterns.username+"\" class='mdl-textfield__input' type='text' id='signin.username'>" +
+			"					<input name='username' inputmode='email' autocomplete='username email' pattern=\""+app.patterns.username+"\" class='mdl-textfield__input' type='text' id='signin.username'>" +
 			"					<label for='signin.username' class='mdl-textfield__label'>Username</label>" +
 			"					<span class='mdl-textfield__error'>Username should be your email address</span>" +
 			"				</div>" +
 			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 			"					<i class='material-icons mdl-textfield__icon'>vpn_key</i>" +
-			"					<input name='password' pattern=\""+app.patterns.password+"\" class='mdl-textfield__input' type='password' id='signin.password'>" +
+			"					<input name='password' pattern=\""+app.patterns.password+"\" class='mdl-textfield__input' type='password' autocomplete='current-password' id='signin.password'>" +
 			"					<label for='signin.password' class='mdl-textfield__label'>Password</label>" +
 			"					<span class='mdl-textfield__error'>Password must be provided</span>" +
 			"				</div>" +
@@ -2850,7 +2842,6 @@ var touchStartPoint, touchMovePoint;
 		.catch(function (error) {
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast('We can\'t process your identification. Please resubmit your credentials on login page!', {timeout:3000, type: 'warning'});
-				document.querySelectorAll(".mdl-spinner").forEach( function(div) {e.parentNode.removeChild(e);} );
 			}
 		});
 		app.auth = {};
@@ -3328,7 +3319,7 @@ var touchStartPoint, touchMovePoint;
 
 	app.showOrientation = function() {
 		if ( localStorage.getItem("settings.debug") == "true" ) {
-			toast("[Orientation]", screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
+			toast(screen.orientation.type + " - " + screen.orientation.angle + "°.", {timeout:3000, type: 'info'});
 		}
 	};
 	
@@ -3712,6 +3703,21 @@ var touchStartPoint, touchMovePoint;
 			app.containers.menuElement.removeEventListener('transitionend', app.onTransitionEnd, false);
 		}
 	};
+	app.updateNetworkStatus = function() {
+		let msg = "";
+		let type= "";
+		if (navigator.onLine) {
+			msg = "You are now online...";
+			type = "done";
+			app.setHiddenElement("notification");
+		}
+		else {
+			msg = "You are now offline...";
+			type = "warning";
+			app.setVisibleElement("notification");
+		}
+		toast(msg, {timeout:3000, type: type});
+	};
 	logout_button.addEventListener('click', function(evt) {
 		app.auth={};
 		app.resetDrawer();
@@ -3761,7 +3767,7 @@ var touchStartPoint, touchMovePoint;
 		touchStartPoint = event.changedTouches[0].pageX;
 		touchMovePoint = touchStartPoint;
 
-		var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab');
+		var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab, div.play-fab');
 		for (var f in fabs) {
 			if ( fabs[f].classList ) {
 				fabs[f].classList.remove('is-here');
@@ -3776,7 +3782,7 @@ var touchStartPoint, touchMovePoint;
 		}
 	}, false);
 	document.body.addEventListener('touchend', function(event) {
-		var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab');
+		var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab, div.play-fab');
 		for (var f in fabs) {
 			if ( fabs[f].classList ) {
 				fabs[f].classList.remove('is-not-here');
@@ -3784,47 +3790,6 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 	}, false);
-	/*
-	document.querySelector('.mdl-layout__content').addEventListener('touchend', function(event) {
-		if(event.handled !== true) {
-			//console.log(touchStartPoint, touchMovePoint, touchStartPoint-touchMovePoint);
-			if ( touchMovePoint < touchStartPoint && touchMovePoint-touchStartPoint < -50 ) {
-				// swipe left
-				if ( app.currentSection === 'index' ) {
-					app.setSection('objects', 'ltr');
-				} else if ( app.currentSection === 'objects' || app.currentSection === 'object' || app.currentSection === 'object_add' ) {
-					app.setSection('flows', 'ltr');
-				} else if ( app.currentSection === 'flows' || app.currentSection === 'flow' || app.currentSection === 'flow_add' ) {
-					app.setSection('dashboards', 'ltr');
-				} else if ( app.currentSection === 'dashboards' || app.currentSection === 'dashboard' || app.currentSection === 'dashboard_add' ) {
-					app.setSection('snippets', 'ltr');
-				} else if ( app.currentSection === 'snippets' || app.currentSection === 'snippet' || app.currentSection === 'snippet_add' ) {
-					app.setSection('rules', 'ltr');
-				} else if ( app.currentSection === 'rules' || app.currentSection === 'rule' || app.currentSection === 'rule_add' ) {
-					app.setSection('mqtts', 'ltr');
-				} else if ( app.currentSection === 'mqtts' || app.currentSection === 'mqtt' || app.currentSection === 'mqtt_add' ) {
-				}
-			} else if ( touchMovePoint-touchStartPoint > 50 ) {
-				// swipe right
-				if ( app.currentSection === 'index' ) {
-				} else if ( app.currentSection === 'objects' || app.currentSection === 'object' || app.currentSection === 'object_add' ) {
-					app.setSection('index', 'rtl');
-				} else if ( app.currentSection === 'flows' || app.currentSection === 'flow' || app.currentSection === 'flow_add' ) {
-					app.setSection('objects', 'rtl');
-				} else if ( app.currentSection === 'dashboards' || app.currentSection === 'dashboard' || app.currentSection === 'dashboard_add' ) {
-					app.setSection('flows', 'rtl');
-				} else if ( app.currentSection === 'snippets' || app.currentSection === 'snippet' || app.currentSection === 'snippet_add' ) {
-					app.setSection('dashboards', 'rtl');
-				} else if ( app.currentSection === 'rules' || app.currentSection === 'rule' || app.currentSection === 'rule_add' ) {
-					app.setSection('snippets', 'rtl');
-				} else if ( app.currentSection === 'mqtts' || app.currentSection === 'mqtt' || app.currentSection === 'mqtt_add' ) {
-					app.setSection('rules', 'rtl');
-				}
-			}
-			event.handled = true;
-		}
-	}, false);
-	*/
 
 	/* Lazy loading */
 	var paginatedContainer = Array(Array(app.containers.objects, 'objects'), Array(app.containers.flows, 'flows'), Array(app.containers.snippets, 'snippets'), Array(app.containers.dashboards, 'dashboards'), Array(app.containers.mqtts, 'mqtts'), Array(app.containers.rules, 'rules'));
@@ -3906,32 +3871,8 @@ var touchStartPoint, touchMovePoint;
 		});
 	}, false);
 
-	/*
-	 * *********************************** Offline ***********************************
-	 */
 	document.addEventListener("DOMContentLoaded", function(event) {
-		if (!navigator.onLine) { updateNetworkStatus(); }
-		window.addEventListener("online", updateNetworkStatus, false);
-		window.addEventListener("offline", updateNetworkStatus, false);
+		window.addEventListener("online", app.updateNetworkStatus, false);
+		window.addEventListener("offline", app.updateNetworkStatus, false);
 	});
-	function updateNetworkStatus() {
-		var msg = ''; var type= '';
-		if (navigator.onLine) {
-			msg = "You are now online...";
-			type: "done";
-			app.setHiddenElement("notification");
-		}
-		else {
-			msg = "You are now offline...";
-			type: "warning";
-			app.setVisibleElement("notification");
-		}
-		
-		var spacers = document.querySelectorAll(".spacer");
-		for (var s in spacers) {
-			if ( (spacers[s]).childElementCount > -1 ) {
-				spacers[s].innerHTML = msg;
-			}
-		}
-	}
 })();
