@@ -43,6 +43,36 @@ firebase.initializeApp( firebaseConfig );
 const messaging = firebase.messaging();
 messaging.usePublicVapidKey("BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1Gt2zrKknJQX91a8RR87w8KGP_1gDSy8x6U7s");
 
+function showToken(currentToken) {
+	console.log("firebase.messaging-sw", "showToken", currentToken);
+}
+function updateUIForPushPermissionRequired() {
+	console.log("firebase.messaging-sw", "updateUIForPushPermissionRequired");
+}
+
+//Send the Instance ID token your application server, so that it can:
+//- send messages back to this app
+//- subscribe/unsubscribe the token from topics
+function sendTokenToServer(currentToken) {
+	if (!isTokenSentToServer()) {
+		console.log("firebase.messaging-sw", "Sending token to server...");
+		setTokenSentToServer(true);
+	} else {
+		console.log("firebase.messaging-sw", "Token already sent to server so won't send it again unless it changes");
+	}
+}
+
+function isTokenSentToServer() {
+	console.log("firebase.messaging-sw", "get sentToServer from LocalStorage", localStorage.getItem("sentToServer"));
+	return localStorage.getItem("sentToServer") === "1";
+	return false;
+}
+
+function setTokenSentToServer(sent) {
+	console.log("firebase.messaging-sw", "set sentToServer to LocalStorage");
+	localStorage.setItem("sentToServer", sent ? "1" : "0");
+}
+
 //Get Instance ID token. Initially this makes a network call, once retrieved
 //subsequent calls to getToken will return from cache.
 messaging.getToken().then((currentToken) => {
@@ -87,37 +117,6 @@ messaging.onTokenRefresh(() => {
 		//showToken('Unable to retrieve refreshed token ', err);
 	});
 });
-
-function showToken(currentToken) {
-	console.log("firebase.messaging-sw", "showToken", currentToken);
-}
-function updateUIForPushPermissionRequired() {
-	console.log("firebase.messaging-sw", "updateUIForPushPermissionRequired");
-}
-
-//Send the Instance ID token your application server, so that it can:
-//- send messages back to this app
-//- subscribe/unsubscribe the token from topics
-function sendTokenToServer(currentToken) {
-	if (!isTokenSentToServer()) {
-		console.log("firebase.messaging-sw", "Sending token to server...");
-		setTokenSentToServer(true);
-	} else {
-		console.log("firebase.messaging-sw", "Token already sent to server so won't send it again unless it changes");
-	}
-}
-
-function isTokenSentToServer() {
-	console.log("firebase.messaging-sw", "get sentToServer from LocalStorage", localStorage.getItem("sentToServer"));
-	return localStorage.getItem("sentToServer") === "1";
-	return false;
-}
-
-function setTokenSentToServer(sent) {
-	console.log("firebase.messaging-sw", "set sentToServer to LocalStorage");
-	localStorage.setItem("sentToServer", sent ? "1" : "0");
-}
-
 
 //Handle incoming messages. Called when:
 //- a message is received while the app has focus
