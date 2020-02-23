@@ -2,9 +2,9 @@
 // These scripts are made available when the app is served or deployed on Firebase Hosting
 // If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup
 
-importScripts('//www.gstatic.com/firebasejs/7.9.1/firebase-app.js');
-importScripts('//www.gstatic.com/firebasejs/7.9.1/firebase-analytics.js');
-importScripts('//www.gstatic.com/firebasejs/7.9.1/firebase-messaging.js');
+importScripts("//www.gstatic.com/firebasejs/7.9.1/firebase-app.js");
+importScripts("//www.gstatic.com/firebasejs/7.9.1/firebase-analytics.js");
+importScripts("//www.gstatic.com/firebasejs/7.9.1/firebase-messaging.js");
 var trackings = {
 	gtm: "GTM-PH7923",
 	googleSigninClientId: "91119083860-6eb566ij9t4n83dm21rcqgts0g5ood2o.apps.googleusercontent.com",
@@ -51,23 +51,23 @@ messaging.getToken().then((currentToken) => {
 		updateUIForPushEnabled(currentToken);
 	} else {
 		// Show permission request.
-		console.log("firebase.messaging-sw", 'No Instance ID token available. Request permission to generate one.');
+		console.log("firebase.messaging-sw", "No Instance ID token available. Request permission to generate one.");
 		// Show permission UI.
 		updateUIForPushPermissionRequired();
 		setTokenSentToServer(false);
 	}
 }).catch((err) => {
-	console.log("firebase.messaging-sw", 'An error occurred while retrieving token. ', err);
-	showToken('Error retrieving Instance ID token. ', err);
+	console.log("firebase.messaging-sw", "An error occurred while retrieving token.", err);
+	showToken("Error retrieving Instance ID token.", err);
 	setTokenSentToServer(false);
 });
 
 messaging.setBackgroundMessageHandler(function(payload) {
-	console.log("firebase.messaging-sw", "Received background message ", payload);
+	console.log("firebase.messaging-sw", "Received background message", payload);
 	// Customize notification here
-	const notificationTitle = 'Background Message Title';
+	const notificationTitle = "Background Message Title";
 	const notificationOptions = {
-		body: 'Background Message body.'
+		body: "Background Message body."
 	};
 	return self.registration.showNotification(notificationTitle, notificationOptions);
 });
@@ -83,7 +83,7 @@ messaging.onTokenRefresh(() => {
 		sendTokenToServer(refreshedToken);
 		// ...
 	}).catch((err) => {
-		console.log("firebase.messaging-sw", 'Unable to retrieve refreshed token ', err);
+		console.log("firebase.messaging-sw", "Unable to retrieve refreshed token", err);
 		//showToken('Unable to retrieve refreshed token ', err);
 	});
 });
@@ -100,22 +100,22 @@ function updateUIForPushPermissionRequired() {
 //- subscribe/unsubscribe the token from topics
 function sendTokenToServer(currentToken) {
 	if (!isTokenSentToServer()) {
-		console.log("firebase.messaging-sw", 'Sending token to server...');
+		console.log("firebase.messaging-sw", "Sending token to server...");
 		setTokenSentToServer(true);
 	} else {
-		console.log("firebase.messaging-sw", 'Token already sent to server so won\'t send it again unless it changes');
+		console.log("firebase.messaging-sw", "Token already sent to server so won't send it again unless it changes");
 	}
 }
 
 function isTokenSentToServer() {
-	console.log("firebase.messaging-sw", 'get sentToServer from LocalStorage', localStorage.getItem('sentToServer'));
-	return localStorage.getItem('sentToServer') === '1';
+	console.log("firebase.messaging-sw", "get sentToServer from LocalStorage", localStorage.getItem("sentToServer"));
+	return localStorage.getItem("sentToServer") === "1";
 	return false;
 }
 
 function setTokenSentToServer(sent) {
-	console.log("firebase.messaging-sw", 'set sentToServer to LocalStorage');
-	localStorage.setItem('sentToServer', sent ? '1' : '0');
+	console.log("firebase.messaging-sw", "set sentToServer to LocalStorage");
+	localStorage.setItem("sentToServer", sent ? "1" : "0");
 }
 
 
@@ -124,5 +124,5 @@ function setTokenSentToServer(sent) {
 //- the user clicks on an app notification created by a service worker
 //`messaging.setBackgroundMessageHandler` handler.
 messaging.onMessage((payload) => {
-	console.log("firebase.messaging-sw", 'Message received. ', payload);
+	console.log("firebase.messaging-sw", "Message received.", payload);
 });
