@@ -25,7 +25,6 @@ var snippet = {
 		legend_display: {default_value: false, type: "select", available_values: [true, false]},
 		legend_position: {default_value: false, type: "select", available_values: ["top", "bottom", "left", "right"]},
 		legend_align: {default_value: false, type: "select", available_values: ["start", "center", "end"]},
-		legend_display: {default_value: false, type: "switch", available_values: [true, false]},
 	},
 	activateOnce: function(params) {
 		this.options.width.value = typeof params.attributes.options.width.value!=="undefined"?params.attributes.options.width.value:this.options.width.default_value;
