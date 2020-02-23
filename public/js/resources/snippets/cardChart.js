@@ -42,7 +42,7 @@ var snippet = {
 		return html;
 	},
 };
-snippet.getOptions = function(s) { return s.options; }
+snippet.getOptions = function(s) { return s.options; };
 snippet.setOptions = function(opt) {
 	var merged = {};
 	var s = this;
