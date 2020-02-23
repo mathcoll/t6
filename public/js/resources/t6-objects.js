@@ -476,9 +476,9 @@ app.resources.objects = {
 		node += app.getSubtitle("Security");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", style:"text-transform: none !important;", id: "secret_key", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key, error:""});
+		node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", id: "secret_key", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key, error:""});
 		node += app.getField("", "", "When flow require signed payload, you should provide your secret to verify signature.", {type: "text", isEdit: false});
-		node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", style:"text-transform: none !important;", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key_crypt, error:""});
+		node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key_crypt, error:""});
 		node += app.getField("visibility", "Object is only visible to you", object.attributes.is_public!==undefined?object.attributes.is_public:false, {type: "switch", id: "Visibility", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
