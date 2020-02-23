@@ -65,7 +65,6 @@ function sendTokenToServer(currentToken) {
 function isTokenSentToServer() {
 	console.log("firebase.messaging-sw", "get sentToServer from LocalStorage", localStorage.getItem("sentToServer"));
 	return localStorage.getItem("sentToServer") === "1";
-	return false;
 }
 
 function setTokenSentToServer(sent) {
