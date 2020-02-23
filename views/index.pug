@@ -25,12 +25,12 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
       link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       //- link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel="stylesheet", href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css", integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==", crossorigin="")
-      script(src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js", integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==", crossorigin="")
+      link(rel="stylesheet", href="//unpkg.com/leaflet@1.6.0/dist/leaflet.css", integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==", crossorigin="")
+      script(src="//unpkg.com/leaflet@1.6.0/dist/leaflet.js", integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==", crossorigin="")
     else
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel="stylesheet", href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css", integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==", crossorigin="")
-      script(src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js", integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==", crossorigin="")
+      link(rel="stylesheet", href="//unpkg.com/leaflet@1.6.0/dist/leaflet.css", integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==", crossorigin="")
+      script(src="//unpkg.com/leaflet@1.6.0/dist/leaflet.js", integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==", crossorigin="")
     link(rel='manifest', href='/manifest.json')
     //- Search Engine
     meta(name='description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
@@ -62,13 +62,14 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     if trackings.gtm
       noscript
         iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
+
     if trackings.firebaseConfig.firebaseJsVersion
       script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-app.js")
       script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-analytics.js")
       script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-messaging.js")
       script.
         var firebaseConfig = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')===false?!{JSON.stringify(trackings.firebaseConfig.web)}:!{JSON.stringify(trackings.firebaseConfig.android)};
-
+    
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
       header.mdl-layout__header.mdl-layout__header--waterfall.mdl-layout__header--waterfall-hide-top
         .mdl-layout__header-row
@@ -136,10 +137,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
             |  Mqtt
 
       #drawer.mdl-layout__drawer
-        div.side-nav__header#currentUserBackground(style="height: 160px; position: relative; width: 100%; background: #795548 url(" + baseUrlCdn + "/img/m/side-nav-bg.webp) repeat scroll 0 0 / cover ;")
-          img#currentUserHeader(src="", alt="Current user avatar", style="border-radius: 50%; width: 90px; height: 90px; padding: 10px 10px 10px 10px;border: 3px solid #fff;margin: 10px 10px;")
-          div#currentUserName.mdl-layout-title(style="bottom:auto !important;") 
-          div#currentUserEmail.mdl-layout-subheader(style="color: #ffffff;") 
+        div.side-nav__header#currentUserBackground
+          img#currentUserHeader(src="", alt="Current user avatar")
+          div#currentUserName.mdl-layout-title 
+          div#currentUserEmail.mdl-layout-subheader
         nav.mdl-navigation.menu__list
           a.mdl-navigation__link(href='#index')
             i.material-icons home
@@ -291,7 +292,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Add Snippet
           .page-content.mdl-grid.mdl-grid--no-spacing
-            
+
         //- List Dashboards
         section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='5')
           .mdl-grid.mdl-cell--12-col
@@ -302,11 +303,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         //- View Dashboard
         section#dashboard.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content.mdl-grid.mdl-grid--no-spacing
-  
+
         //- Edit Dashboard
         section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content.mdl-grid.mdl-grid--no-spacing
-  
+
         //- Add Dashboard
         section#dashboard_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
@@ -348,7 +349,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         //- Edit Mqtt
         section#mqtt_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .page-content.mdl-grid.mdl-grid--no-spacing
-  
+
         //- Add Mqtt
         section#mqtt_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
@@ -374,7 +375,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon email
-                      input.mdl-textfield__input(type='text', name='email', id='signup.email', inputmode='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
+                      input.mdl-textfield__input(type='text', name='email', id='signup.email', inputmode='email', autocomplete='username email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='signup.email') Email/Username
                       span.mdl-textfield__error Username is your email address, so should looks like an email address. :-)
                     .half.mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
@@ -442,7 +443,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                       | Skip this step
                     | (I will do it later)
               div.mdl-layout-spacer
-          
+
         section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Forgot Password
@@ -456,7 +457,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon email
-                      input.mdl-textfield__input(type='text', name='email', id='forgotpassword.email', inputmode='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
+                      input.mdl-textfield__input(type='text', name='email', id='forgotpassword.email', inputmode='email', autocomplete='email', pattern='[a-z0-9!#$%&\'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&\'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?')
                       label.mdl-textfield__label(for='forgotpassword.email') Email/Username
                       span.mdl-textfield__error Username should be your email address
                   .mdl-card__supporting-text.mdl-grid
@@ -479,6 +480,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
             section.content-grid.mdl-grid
               div.mdl-layout-spacer
               form.resetpassword
+                input.mdl-textfield__input(type='hidden', name='username', autocomplete='username email', value='')
                 .mdl-card.mdl-card__title.mdl-shadow--2dp
                   img(src=baseUrlCdn + '/img/opl_img.webp', alt='t6 Connect your Objects', aria-hidden='true') 
                   .mdl-card__title Set you new password to connect your t6 account.
@@ -486,12 +488,12 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   .mdl-card__supporting-text
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon lock
-                      input.mdl-textfield__input.passmatch#p1(type='password', name='password', pattern='^(?=.{8,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[!@#$&*]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$')
+                      input.mdl-textfield__input.passmatch#p1(type='password', name='password', autocomplete='new-password', pattern='^(?=.{8,})(((?=.*[A-Z])(?=.*[a-z]))|((?=.*[!@#$&*]))|((?=.*[A-Z])(?=.*[0-9]))|((?=.*[a-z])(?=.*[0-9]))).*$')
                       label.mdl-textfield__label(for='p1') Password
                       span.mdl-textfield__error Password is not strong enough
                     .mdl-textfield.mdl-js-textfield.mdl-textfield--floating-label
                       i.material-icons.mdl-textfield__icon lock
-                      input.mdl-textfield__input.passmatch#p2(type='password', name='password2')
+                      input.mdl-textfield__input.passmatch#p2(type='password', name='password2', autocomplete='new-password')
                       label.mdl-textfield__label(for='p2') Password Verification
                       span.mdl-textfield__error Password does not match
                   .mdl-card__supporting-text.mdl-grid
@@ -564,7 +566,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   p
                     a.mdl-button.mdl-js-button(href="/docs", target='_blank', rel='noopener') Explore the full Api documentation
                       i.material-icons chevron_right
-                  
+
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
@@ -580,7 +582,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                         div Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
                         a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Object") More details
                       div.mdl-layout-spacer &nbsp;
-                      
+
                     li.mdl-list__item-primary-content
                       div
                         i.material-icons.md-24 settings_input_component
@@ -590,7 +592,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                         div Objects are sending their Data to Flow-containers using the API.
                         a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Flow") More details
                       div.mdl-layout-spacer &nbsp;
-                      
+
                     li.mdl-list__item-primary-content
                       div
                         i.material-icons.md-24 dashboard
@@ -598,7 +600,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                         div Dashboard includes one or many Snippets to visualize your data. You can create as many dashboards as you like.
                         a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Dashboard") More details
                       div.mdl-layout-spacer &nbsp;
-                      
+
                     li.mdl-list__item-primary-content
                       div
                         i.material-icons.md-24 widgets
@@ -606,7 +608,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                         div Snippets refers to small component containing a dashboard. Multiple variety are available and the library aim to growth regularly.
                         a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Snippet") More details
                       div.mdl-layout-spacer &nbsp;
-                      
+
                     li.mdl-list__item-primary-content
                       div
                         i.material-icons.md-24 call_split
@@ -614,7 +616,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                         div Decision-Rule is the event-based engine that trigger Actions following matching Conditions. Engine is watching for fact matching conditions on payloads coming from datapoint POST, and handle Action(s) according to rules.
                         a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Decision-Rule") More details
                       div.mdl-layout-spacer &nbsp;
-                      
+
                     li.mdl-list__item-primary-content
                       div
                         i.material-icons.md-24 volume_down
@@ -622,7 +624,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                         div 
                         a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Mqtt-Topic") More details
                       div.mdl-layout-spacer &nbsp;
-                      
+
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
@@ -630,7 +632,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   span.mdl-typography--headline General Structure and scenario
                 div.mdl-card__supporting-text.no-padding 
                   img.lazyloading.img-responsive(src=baseUrlCdn+"/img/m/placeholder.png", data-src="//raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png", alt="t6 General structure")
-                  
+
             section.mdl-grid.mdl-cell--12-col
               div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
@@ -641,7 +643,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   p
                     a.mdl-button.mdl-js-button(href="/docs", target='_blank', rel='noopener') Explore the full Api documentation
                       i.material-icons chevron_right
-            
+
         //- View users-list
         section#users-list.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
