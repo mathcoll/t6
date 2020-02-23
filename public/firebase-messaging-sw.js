@@ -50,6 +50,16 @@ function updateUIForPushPermissionRequired() {
 	console.log("firebase.messaging-sw", "updateUIForPushPermissionRequired");
 }
 
+function isTokenSentToServer() {
+	console.log("firebase.messaging-sw", "get sentToServer from LocalStorage", localStorage.getItem("sentToServer"));
+	return localStorage.getItem("sentToServer") === "1";
+}
+
+function setTokenSentToServer(sent) {
+	console.log("firebase.messaging-sw", "set sentToServer to LocalStorage");
+	localStorage.setItem("sentToServer", sent ? "1" : "0");
+}
+
 //Send the Instance ID token your application server, so that it can:
 //- send messages back to this app
 //- subscribe/unsubscribe the token from topics
@@ -60,16 +70,6 @@ function sendTokenToServer(currentToken) {
 	} else {
 		console.log("firebase.messaging-sw", "Token already sent to server so won't send it again unless it changes");
 	}
-}
-
-function isTokenSentToServer() {
-	console.log("firebase.messaging-sw", "get sentToServer from LocalStorage", localStorage.getItem("sentToServer"));
-	return localStorage.getItem("sentToServer") === "1";
-}
-
-function setTokenSentToServer(sent) {
-	console.log("firebase.messaging-sw", "set sentToServer to LocalStorage");
-	localStorage.setItem("sentToServer", sent ? "1" : "0");
 }
 
 //Get Instance ID token. Initially this makes a network call, once retrieved
