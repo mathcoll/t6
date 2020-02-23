@@ -401,7 +401,9 @@ router.post("/authenticate", function (req, res) {
 				payload.sub = "/users/"+user.id;
 
 				let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
-				if ( user.location && user.location.ip ) payload.iss = req.ip+" - "+user.location.ip;
+				if ( user.location && user.location.ip ) {
+					payload.iss = req.ip+" - "+user.location.ip;
+				}
 				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 
 				var refreshPayload = crypto.randomBytes(40).toString("hex");
