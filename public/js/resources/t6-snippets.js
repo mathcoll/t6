@@ -318,7 +318,7 @@ app.resources.snippets = {
 					var s = app.snippetTypes.find(function(sn) {
 						return (sn.name).toLowerCase()===(snippet.attributes.type).toLowerCase();
 					});
-					s.setOptions(snippet.attributes.options);
+					let setOpt = typeof snippet.attributes.options!=="undefined"?s.setOptions(snippet.attributes.options):null;
 					
 					app.setExpandAction();
 					

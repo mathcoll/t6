@@ -9,7 +9,11 @@ var snippet = {
 		legend: {defaultValue: "top", type: "select", availableValues: [true, false, "top", "bottom"]}
 	},
 	activateOnce: function(params) {
-		this.options.width.value = typeof params.attributes.options.width.value!=="undefined"?params.attributes.options.width.value:this.options.width.default_value;
+		if ( typeof params.attributes.options !== "undefined" ) {
+			this.options.width.value = typeof params.attributes.options.width.value!=="undefined"?params.attributes.options.width.value:this.options.width.default_value;
+		} else  {
+			this.options.width.value = "12";
+		}
 		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));

@@ -2643,7 +2643,9 @@ var touchStartPoint, touchMovePoint;
 						}
 					}
 				});
-				s.setOptions(my_snippet.attributes.options);
+				if ( typeof my_snippet.attributes.options!=="undefined" ){
+					s.setOptions(my_snippet.attributes.options);
+				}
 				s.activateOnce(my_snippet);
 				
 				// Set the buttons on edit Snippets
