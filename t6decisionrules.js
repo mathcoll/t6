@@ -44,7 +44,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	}
 	// retrieve latest values
 	let flow_id = payload.flow;
-	let limit = 5;
+	let limit = 50;
 	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", flow_id, limit);
 	t6console.debug("DB retrieve latest values from", influxQuery);
 	let valuesFromDb = [];
@@ -56,7 +56,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				indexesFromDb.push(i);
 			});
 		}
-		
+		valuesFromDb.reverse();
+		//t6console.debug("indexesFromDb", indexesFromDb);
+		//t6console.debug("valuesFromDb", valuesFromDb);
+
 		//conditions.facts = [user_id, environment, dtepoch, value, flow, datetime]
 		//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
 		//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
@@ -88,13 +91,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			}
 		});
+
 		engine.addOperator("anomalyDetection", (factValue, threashold) => {
-			t6console.debug("ANOMALY indexesFromDb", indexesFromDb);
-			t6console.debug("ANOMALY valuesFromDb", valuesFromDb);
 			let lr = predict.linearRegression(valuesFromDb, indexesFromDb);
 			payload.predicted = lr.predict(limit);
 			payload.diff = Math.abs(payload.predicted - factValue);
-
+			payload.threashold = threashold;
 			if ( payload.diff <= threashold ) {
 				t6console.debug("NO ANOMALY", { "predictedValue": payload.predicted, "factValue": factValue, "threashold": threashold, "diff": payload.diff });
 				return false;
@@ -103,9 +105,18 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				return true;
 			}
 		});
-		
-		engine.addOperator("diffFromPrevious", (factValue, jsonValue) => {
-			
+
+		engine.addOperator("diffFromPrevious", (factValue, threashold) => {
+			payload.previous = valuesFromDb.slice(-1);
+			payload.diff = Math.abs(payload.previous - factValue);
+			payload.threashold = threashold;
+			if ( payload.diff <= threashold ) {
+				t6console.debug("NO diffFromPrevious", { "previousValue": payload.previous, "factValue": factValue, "threashold": threashold, "diff": payload.diff });
+				return false;
+			} else {
+				t6console.debug("diffFromPrevious DETECTED", { "previousValue": payload.previous, "factValue": factValue, "threashold": threashold, "diff": payload.diff });
+				return true;
+			}
 		});
 
 		engine.on("success", function(event, almanac, ruleResult) {
