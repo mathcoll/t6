@@ -154,7 +154,6 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret})
 				res.status(400).send(new ErrorSerializer({"id": 39.2, "code": 400, "message": "Bad Request"}).serialize());
 			} else {
 				var result;
-				console.log(req.body.options);
 				snippets.chain().find({ "id": snippet_id }).update(function(item) {
 					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.type		= typeof req.body.type!=="undefined"?req.body.type:item.type;
