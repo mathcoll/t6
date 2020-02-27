@@ -193,7 +193,7 @@ app.resources.dashboards = {
 									return snippet;
 								} else {
 									n++;
-								};
+								}
 							});
 						}
 						var sType = s.sType;
