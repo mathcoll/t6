@@ -150,7 +150,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					if( typeof user_id!=="undefined" && typeof payload.object_id!=="undefined" ) {
 						let objects	= db.getCollection("objects");
 						let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
-						if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
+						if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
 							mqttPayload.value = cryptPayload(""+mqttPayload.value, {secret_key_crypt: object.secret_key_crypt}); // ascii, binary, base64, hex, utf8
 						}
 					}
@@ -198,7 +198,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						t6console.log("success", options.url, statusCode, body);
 					}
 				)
-			} else if ( event.type === "Ifttt" || event.type === "ifttt" ) {
+			} else if ( event.type === "Ifttt" || event.type === "ifttt" ) {
 				let body = {
 					"data": [
 						{
@@ -227,17 +227,16 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					},
 					body: JSON.stringify(body)
 				};
-				request(options,
-					function (error, response, body) {
+				request(options, function (error, response, body) {
 						var statusCode = typeof response!=="undefined"?response.statusCode:null;
-						var body = body || null;
+						body = body || null;
 						t6console.log("Request sent - Server responded with:" + statusCode);
 						if ( error ) {
 							return t6console.error("HTTP failed: ", error, options.url, statusCode, body);
 						}
 						t6console.log("success" + options.url + statusCode + body);
 					}
-				)
+				);
 			} else if ( event.type === "serial" ) {
 				// Arduino is using CmdMessenger
 				serialport = new serialport(event.params.serialPort?event.params.serialPort:"/dev/ttyUSB0", { baudRate:event.params.baudRate?event.params.baudRate:9600 })
