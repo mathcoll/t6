@@ -43,16 +43,20 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 	}
 	// retrieve latest values
-	let flow_id = payload.flow;
+	
+	// TODO: should we check the flow_id to confirm it belongs to the current user ????? !!!!!!!!! as we can post to any flow_id and set any Decision Rule.
+	let p = payload;
 	let limit = 50;
-	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", flow_id, limit);
-	t6console.debug("DB retrieve latest values from", influxQuery);
+	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, limit);
+	t6console.info("DB retrieve latest values");
 	let valuesFromDb = [];
 	let indexesFromDb = [];
+	let timesFromDb = [];
 	dbInfluxDB.query(influxQuery).then(data => {
 		if ( data.length > 0 ) {
 			data.map(function(d, i) {
 				valuesFromDb.push(d.value);
+				timesFromDb.push(d.time);
 				indexesFromDb.push(i);
 			});
 		}
@@ -64,14 +68,34 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
 		//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
 		
-		// Event Condition example: 
-		// {"all":[{"fact":"dtepoch","operator":"isDayTime","value":true}]}
+		/* Custom Operators:
+		// 1. isDayTime: will match only when data-timestamp according to geolocalization is during daylight or not.
+		{"all":[{"fact":"dtepoch","operator":"isDayTime","value":true}]}
+		
+		// 2. lastEventGreaterThanInclusive: will match only when last event occurs more than the threashold value in seconds.
+		{"all":[{"fact":"value","operator":"lastEventGreaterThanInclusive","value":3600}]}
+		
+		// 3. lastEventLessThanInclusive: will match only when last event occurs less than the threashold value in seconds.
+		{"all":[{"fact":"value","operator":"lastEventLessThanInclusive","value":3600}]}
+		
+		// 4. anomalyGreaterThanInclusive: will match only when measured value is greater than predicted value.
+		{"all":[{"fact":"value","operator":"anomalyGreaterThanInclusive","value":1234}]}
+		
+		// 5. anomalyLessThanInclusive: will match only when measured value is less than predicted value.
+		{"all":[{"fact":"value","operator":"anomalyLessThanInclusive","value":1234}]}
+		
+		// 6. changeGreaterThanInclusive: will match only when the difference in time with previous value is greater than threashold value in seconds
+		{"all":[{"fact":"value","operator":"changeGreaterThanInclusive","value":1234}]}
+		
+		// 7. changeLessThanInclusive: will match only when the difference between in time with previous value is less than threashold value in seconds
+		{"all":[{"fact":"value","operator":"changeLessThanInclusive","value":1234}]}
+		*/
 		engine.addOperator("isDayTime", (factValue, jsonValue) => {
-			var factLatitude = payload.latitude?payload.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
-			var factLongitude = payload.longitude?payload.longitude:localization.longitude;
+			var factLatitude = p.latitude?p.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
+			var factLongitude = p.longitude?p.longitude:localization.longitude;
 			
-			var times = SunCalc.getTimes(typeof payload.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
-			if ( moment(payload.dtepoch).isAfter(times.sunrise) && moment(payload.dtepoch).isBefore(times.sunset) ) {
+			var times = SunCalc.getTimes(typeof p.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
+			if ( moment(p.dtepoch).isAfter(times.sunrise) && moment(p.dtepoch).isBefore(times.sunset) ) {
 				t6console.debug("isDayTime" + "(true) daytime / " + "Expecting " + jsonValue);
 				if ( jsonValue === true ) {
 					t6console.debug("matching on the "+jsonValue);
@@ -92,30 +116,81 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		});
 
-		engine.addOperator("anomalyDetection", (factValue, threashold) => {
-			let lr = predict.linearRegression(valuesFromDb, indexesFromDb);
-			payload.predicted = lr.predict(limit);
-			payload.diff = Math.abs(payload.predicted - factValue);
-			payload.threashold = threashold;
-			if ( payload.diff <= threashold ) {
-				t6console.debug("NO ANOMALY", { "predictedValue": payload.predicted, "factValue": factValue, "threashold": threashold, "diff": payload.diff });
-				return false;
-			} else {
-				t6console.debug("ANOMALY DETECTED", { "predictedValue": payload.predicted, "factValue": factValue, "threashold": threashold, "diff": payload.diff });
+		engine.addOperator("lastEventGreaterThanInclusive", (factValue, jsonValue) => {
+			if ( Number.parseFloat(jsonValue).toString() !== 'NaN' && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isBefore(moment(p.dtepoch*1)) ) {
+				//t6console.debug("lastEventGreaterThanInclusive DETECTED");
 				return true;
+			} else {
+				//t6console.debug("lastEventGreaterThanInclusive NOT DETECTED");
+				return false;
 			}
 		});
 
-		engine.addOperator("diffFromPrevious", (factValue, threashold) => {
-			payload.previous = valuesFromDb.slice(-1);
-			payload.diff = Math.abs(payload.previous - factValue);
-			payload.threashold = threashold;
-			if ( payload.diff <= threashold ) {
-				t6console.debug("NO diffFromPrevious", { "previousValue": payload.previous, "factValue": factValue, "threashold": threashold, "diff": payload.diff });
-				return false;
-			} else {
-				t6console.debug("diffFromPrevious DETECTED", { "previousValue": payload.previous, "factValue": factValue, "threashold": threashold, "diff": payload.diff });
+		engine.addOperator("lastEventLessThanInclusive", (factValue, jsonValue) => {
+			if ( Number.parseFloat(jsonValue).toString() !== 'NaN' && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isAfter(moment(p.dtepoch*1)) ) {
+				//t6console.debug("lastEventLessThanInclusive DETECTED");
 				return true;
+			} else {
+				//t6console.debug("lastEventLessThanInclusive NOT DETECTED");
+				return false;
+			}
+		});
+
+		engine.addOperator("anomalyGreaterThanInclusive", (factValue, jsonValue) => {
+			p.anomalyDetection = {};
+			let lr = predict.linearRegression(valuesFromDb, indexesFromDb);
+			p.anomalyDetection.predicted = lr.predict(limit);
+			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
+			p.anomalyDetection.threashold = jsonValue;
+			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.anomalyDetection.diff >= p.anomalyDetection.threashold ) {
+				//t6console.debug("anomalyGreaterThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
+				return true;
+			} else {
+				//t6console.debug("anomalyGreaterThanInclusive NOT DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
+				return false;
+			}
+		});
+
+		engine.addOperator("anomalyLessThanInclusive", (factValue, jsonValue) => {
+			p.anomalyDetection = {};
+			let lr = predict.linearRegression(valuesFromDb, indexesFromDb);
+			p.anomalyDetection.predicted = lr.predict(limit);
+			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
+			p.anomalyDetection.threashold = jsonValue;
+			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.anomalyDetection.diff <= p.anomalyDetection.threashold ) {
+				//t6console.debug("anomalyLessThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
+				return true;
+			} else {
+				//t6console.debug("anomalyLessThanInclusive NOT DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
+				return false;
+			}
+		});
+
+		engine.addOperator("changeGreaterThanInclusive", (factValue, jsonValue) => {
+			p.diffFromPrevious = {};
+			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
+			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
+			p.diffFromPrevious.threashold = jsonValue;
+			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.diffFromPrevious.diff >= p.diffFromPrevious.threashold ) {
+				//t6console.debug("changeGreaterThanInclusive DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
+				return true;
+			} else {
+				//t6console.debug("changeGreaterThanInclusive NOT DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
+				return false;
+			}
+		});
+
+		engine.addOperator("changeLessThanInclusive", (factValue, jsonValue) => {
+			p.diffFromPrevious = {};
+			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
+			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
+			p.diffFromPrevious.threashold = jsonValue;
+			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.diffFromPrevious.diff <= p.diffFromPrevious.threashold ) {
+				//t6console.debug("changeLessThanInclusive DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
+				return true;
+			} else {
+				//t6console.debug("changeLessThanInclusive NOT DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
+				return false;
 			}
 		});
 
@@ -133,10 +208,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			}
 
-			t6console.debug(JSON.stringify({rule_id: event.params.rule_id, user_id: user_id}));
 			t6events.add("t6App", JSON.stringify({rule_id: event.params.rule_id, event_type: event.type}), user_id);
-			t6console.debug(sprintf("Matching EventType: %s", event.type));
-			
+			t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 			if( event.type === "mqttPublish" ) {
 				let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};
 				if ( typeof payload.message !== "undefined" ) {
@@ -258,10 +331,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				};
 				users	= db.getCollection("users");
 				let user = users.findOne({ "id": user_id });
-				t6console.log("pushSubscription: " + user.pushSubscription);
 				t6notifications.sendPush(user.pushSubscription, p);
 			} else {
-				t6console.log(sprintf("No matching EventType: %s", event.type));
+				t6console.warn(sprintf("No matching EventType: %s", event.type));
 			}
 		});
 
@@ -281,9 +353,10 @@ t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 	if ( !user_id ) {
 		user_id = "unknown_user";
 	} else {
-		t6console.debug(sprintf("Loading rules for User: %s", user_id));
+		t6console.info(sprintf("Loading rules for User: %s", user_id));
 		t6decisionrules.checkRulesFromUser(user_id, payload);
 	}
+	payload = null;
 };
 
 module.exports = t6decisionrules;
