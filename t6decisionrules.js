@@ -117,7 +117,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("lastEventGreaterThanInclusive", (factValue, jsonValue) => {
-			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isBefore(moment(p.dtepoch*1)) ) {
+			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, "seconds")).isBefore(moment(p.dtepoch*1)) ) {
 				//t6console.debug("lastEventGreaterThanInclusive DETECTED");
 				return true;
 			} else {
@@ -127,7 +127,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("lastEventLessThanInclusive", (factValue, jsonValue) => {
-			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isAfter(moment(p.dtepoch*1)) ) {
+			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, "seconds")).isAfter(moment(p.dtepoch*1)) ) {
 				//t6console.debug("lastEventLessThanInclusive DETECTED");
 				return true;
 			} else {
