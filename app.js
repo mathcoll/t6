@@ -69,86 +69,97 @@ process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on("uncaughtException", function(err) {
 	t6console.error((err && err.stack) ? err.stack : err);
 });
-t6console.info(sprintf("Starting %s v%s", appName, VERSION));
-t6console.info(sprintf("Using node v%s", process.versions.node));
+t6console.info(sprintf("Starting %s v%s, using node v%s", appName, VERSION, process.versions.node));
 t6console.info(sprintf("Setting Access Logs to %s", logAccessFile));
 t6console.info(sprintf("Setting Error Logs to %s", logErrorFile));
+t6console.info("Log level:", logLevel);
+t6console.info("Environment:", process.env.NODE_ENV);
 
-t6console.info("Initializing Database...");
 /* Main Database settings */
-db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true});
-//db.loadDatabase({}, function() {
+var initDbMain = function() {
 	if ( db.getCollection("objects") === null ) {
 		t6console.warn("- Collection Objects is failing");
+	} else {
+		t6console.info(db.getCollection("objects").count(), "resources in Objects collection.");
 	}
 	if ( db.getCollection("flows") === null ) {
 		t6console.warn("- Collection Flows is failing");
+	} else {
+		t6console.info(db.getCollection("flows").count(), "resources in Flows collection.");
 	}
 	if ( db.getCollection("users") === null ) {
 		t6console.warn("- Collection Users is failing");
+	} else {
+		t6console.info(db.getCollection("users").count(), "resources in Users collection.");
 	}
 	if ( db.getCollection("tokens") === null ) {
-		t6console.warn("- Collection Keys is failing");
+		t6console.warn("- Collection Tokens is failing");
+	} else {
+		t6console.info(db.getCollection("tokens").count(), "resources in Tokens collection.");
 	}
 	if ( db.getCollection("units") === null ) {
 		t6console.warn("- Collection Units is failing");
+	} else {
+		t6console.info(db.getCollection("units").count(), "resources in Units collection.");
 	}
 	if ( db.getCollection("datatypes") === null ) {
 		t6console.warn("- Collection Datatypes is failing");
+	} else {
+		t6console.info(db.getCollection("datatypes").count(), "resources in Datatypes collection.");
 	}
 	if ( db.getCollection("users") === null ) {
 		t6console.warn("- Collection Users is failing");
+	} else {
+		t6console.info(db.getCollection("users").count(), "resources in Users collection.");
 	}
-	t6console.info("- Db Main is loaded");
-//});
-
-/* Rules settings */
-dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"), {autoload: true, autosave: true});
-//dbRules.loadDatabase({}, function() {
+}
+var initDbRules = function() {
 	if ( dbRules === null ) {
 		t6console.warn("db Rules is failing");
 	}
 	if ( dbRules.getCollection("rules") === null ) {
 		t6console.warn("- Collection Rules is failing");
+	} else {
+		t6console.info(dbRules.getCollection("rules").count(), "resources in Rules collection.");
 	}
-	t6console.info("- Db Rules is loaded");
-//});
-
-/* Snippets settings */
-dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".json"), {autoload: true, autosave: true});
-//dbSnippets.loadDatabase({}, function() {
+}
+var initDbSnippets = function() {
 	if ( dbSnippets === null ) {
 		console.warn("db Snippets is failing");
 	}
 	if ( dbSnippets.getCollection("snippets") === null ) {
 		t6console.warn("- Collection Snippets is failing");
+	} else {
+		t6console.info(dbSnippets.getCollection("snippets").count(), "resources in Snippets collection.");
 	}
-	t6console.info("- Db Snippets is loaded");
-//});
-
-/* Dashboards settings */
-dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true});
-//dbDashboards.loadDatabase({}, function() {
+}
+var initDbDashboards = function() {
 	if ( dbDashboards === null ) {
 		t6console.warn("db Dashboards is failing");
 	}
 	if ( dbDashboards.getCollection("dashboards") === null ) {
 		t6console.warn("- Collection Dashboards is failing");
+	} else {
+		t6console.info(dbDashboards.getCollection("dashboards").count(), "resources in Dashboards collection.");
 	}
-	t6console.info("- Db Dashboards is loaded");
-//});
-
-/* Tokens settings */
-dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true});
-//dbTokens.loadDatabase({}, function() {
+}
+var initDbTokens = function() {
 	if ( dbTokens === null ) {
 		t6console.warn("db Tokens is failing");
 	}
 	if ( dbTokens.getCollection("tokens") === null ) {
 		t6console.warn("- Collection Tokens is failing");
+	} else {
+		t6console.info(dbTokens.getCollection("tokens").count(), "resources in Tokens collection.");
 	}
-	t6console.info("- Db Tokens is loaded");
-//});
+}
+
+t6console.info("Initializing Databases...");
+db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbMain});
+dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbRules});
+dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
+dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
+dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
 
 var index			= require("./routes/index");
 var objects			= require("./routes/objects");
@@ -229,8 +240,10 @@ app.use(function(req, res, next) {
 	//next(err);
 });
 
-if (app.get("env") === "development") {
+if ( logLevel.indexOf("DEBUG") > -1 ) {
 	request.debug = true;
+}
+if (app.get("env") === "development") {
 	app.use(function(err, req, res, next) {
 		if (err.name === "UnauthorizedError") {
 			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
