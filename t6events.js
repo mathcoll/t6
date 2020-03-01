@@ -27,7 +27,7 @@ t6events.add = function(where, what, who) {
 		}], { retentionPolicy: retention, }).then(err => {
 			return true;
 		}).catch(err => {
-			console.error(moment().format("MMMM Do YYYY, H:mm:ss"), "Error writting event to influxDb:\n"+err);
+			console.error("Error writting event to influxDb:", err);
 		});
 	}
 };

@@ -336,10 +336,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				t6console.warn(sprintf("No matching EventType: %s", event.type));
 			}
 		});
-
 		engine.run(payload);
 	}).catch(err => {
-		t6console.debug("dbInfluxDB ERR", err);
+		t6console.error("dbInfluxDB ERR", err);
 	});
 }; // t6decisionrules.checkRulesFromUser
 
