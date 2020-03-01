@@ -218,9 +218,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				if ( typeof payload.text !== "undefined" ) {
 					mqttPayload.text = payload.text;
 				}
-				if ( typeof payload.object_id !== "undefined" ) {
+				if ( typeof payload.object_id!=="undefined" ) {
 					mqttPayload.object_id = payload.object_id;
-					if( typeof user_id!=="undefined" && typeof payload.object_id!=="undefined" ) {
+					if( typeof user_id!=="undefined" ) {
 						let objects	= db.getCollection("objects");
 						let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
 						if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
