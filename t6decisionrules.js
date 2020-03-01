@@ -117,7 +117,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("lastEventGreaterThanInclusive", (factValue, jsonValue) => {
-			if ( Number.parseFloat(jsonValue).toString() !== 'NaN' && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isBefore(moment(p.dtepoch*1)) ) {
+			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isBefore(moment(p.dtepoch*1)) ) {
 				//t6console.debug("lastEventGreaterThanInclusive DETECTED");
 				return true;
 			} else {
@@ -127,7 +127,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("lastEventLessThanInclusive", (factValue, jsonValue) => {
-			if ( Number.parseFloat(jsonValue).toString() !== 'NaN' && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isAfter(moment(p.dtepoch*1)) ) {
+			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, 'seconds')).isAfter(moment(p.dtepoch*1)) ) {
 				//t6console.debug("lastEventLessThanInclusive DETECTED");
 				return true;
 			} else {
@@ -142,7 +142,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.anomalyDetection.predicted = lr.predict(limit);
 			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
 			p.anomalyDetection.threashold = jsonValue;
-			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.anomalyDetection.diff >= p.anomalyDetection.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.anomalyDetection.diff >= p.anomalyDetection.threashold ) {
 				//t6console.debug("anomalyGreaterThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
 				return true;
 			} else {
@@ -157,7 +157,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.anomalyDetection.predicted = lr.predict(limit);
 			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
 			p.anomalyDetection.threashold = jsonValue;
-			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.anomalyDetection.diff <= p.anomalyDetection.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.anomalyDetection.diff <= p.anomalyDetection.threashold ) {
 				//t6console.debug("anomalyLessThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
 				return true;
 			} else {
@@ -171,7 +171,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
 			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
 			p.diffFromPrevious.threashold = jsonValue;
-			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.diffFromPrevious.diff >= p.diffFromPrevious.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.diffFromPrevious.diff >= p.diffFromPrevious.threashold ) {
 				//t6console.debug("changeGreaterThanInclusive DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
 				return true;
 			} else {
@@ -185,7 +185,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
 			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
 			p.diffFromPrevious.threashold = jsonValue;
-			if ( Number.parseFloat(factValue).toString() !== 'NaN' && p.diffFromPrevious.diff <= p.diffFromPrevious.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.diffFromPrevious.diff <= p.diffFromPrevious.threashold ) {
 				//t6console.debug("changeLessThanInclusive DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
 				return true;
 			} else {
