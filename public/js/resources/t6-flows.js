@@ -485,7 +485,7 @@ app.resources.flows = {
 		if ( flow.attributes.unit ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
 			if ( localStorage.getItem("units") !== "null" && JSON.parse(localStorage.getItem("units")) ) {
-				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem('units')).find( function(u) { return u.name == flow.attributes.unit; }).value;
+				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i>"+JSON.parse(localStorage.getItem("units")).find( function(u) { return u.name == flow.attributes.unit; }).value;
 			} else {
 				element += "		<i class='material-icons md-28'>"+app.icons.units+"</i> ?";
 			}
@@ -493,7 +493,7 @@ app.resources.flows = {
 		}
 		if ( flow.attributes.data_type ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem('datatypes')).find( function(d) { return d.name == flow.attributes.data_type; }).value;
+			element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem("datatypes")).find( function(d) { return d.name == flow.attributes.data_type; }).value;
 			element += "	</div>";
 		}
 		if ( flow.attributes.require_signed === true ) {

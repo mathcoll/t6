@@ -229,7 +229,7 @@ app.resources.dashboards = {
 				toast("displayDashboard error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});
-		app.containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.setAttribute("hidden", true);
 	},
 	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},

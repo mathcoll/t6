@@ -198,7 +198,7 @@ app.resources.objects = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var i in object.attributes.parameters ) {
-						node += app.getField('note', object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: 'text', id: object.attributes.parameters[i].name, isEdit: isEdit});
+						node += app.getField("note", object.attributes.parameters[i].name, object.attributes.parameters[i].value, {type: "text", id: object.attributes.parameters[i].name, isEdit: isEdit});
 					}
 					if ( isEdit ) {
 						node += app.getField("note", ["Name", "Value"], ["", ""], {type: "2inputs", pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ["Name should not contains any space nor special char.", "Value is free."], id: ["Name[]", "Value[]"], isEdit: true});
@@ -208,7 +208,7 @@ app.resources.objects = {
 				}
 
 				if ( isEdit || (object.attributes.longitude || object.attributes.latitude || object.attributes.position) ) {
-					node += app.getSubtitle('Localization');
+					node += app.getSubtitle("Localization");
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField("place", "Longitude", object.attributes.longitude, {type: "text", id: "Longitude", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.longitude, error:"Longitude should be valid."});
@@ -402,7 +402,7 @@ app.resources.objects = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					for ( var j in object.attributes.parameters ) {
-						node += app.getField('note', object.attributes.parameters[j].name, object.attributes.parameters[j].value, {type: "text"});
+						node += app.getField("note", object.attributes.parameters[j].name, object.attributes.parameters[j].value, {type: "text"});
 					}
 					node += "	</div>";
 					node += "</section>";
@@ -490,7 +490,7 @@ app.resources.objects = {
 		node += app.getSubtitle("Custom Parameters");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField('note', ['Name', 'Value'], ['', ''], {type: '2inputs', pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ['Name should not contains any space nor special char.', 'Value is free.'], id: ['Name[]', 'Value[]'], isEdit: true});
+		node += app.getField("note", ['Name', 'Value'], ["", ""], {type: "2inputs", pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ["Name should not contains any space nor special char.", "Value is free."], id: ["Name[]", "Value[]"], isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 
@@ -534,8 +534,8 @@ app.resources.objects = {
 		app.getLocation();
 		/* Localization Map */
 		var map = L.map("osmAdd").setView([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], 13);
-		L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-			attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
+		L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
+			attribution: "© <a href='//osm.org/copyright'>OpenStreetMap</a>",
 			minZoom: 1,
 			maxZoom: 20,
 			trackResize: true,

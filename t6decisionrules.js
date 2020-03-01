@@ -3,7 +3,7 @@ var t6decisionrules = module.exports = {};
 var SunCalc	= require("suncalc");
 var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
-var predict = require('predict');
+var predict = require("predict");
 var rules;
 var users;
 
@@ -14,7 +14,7 @@ function cryptPayload(payload, sender, encoding) {
 		let cipher = crypto.createCipheriv(algorithm, Buffer.from(sender.secret_key_crypt, "hex"), iv);
 		let encrypted = cipher.update(payload);
 		encrypted = Buffer.concat([encrypted, cipher.final()]);
-		return iv.toString("hex") + ':' + encrypted.toString("hex");
+		return iv.toString("hex") + ":" + encrypted.toString("hex");
 	} else {
 		t6console.debug("payload", "Error: Missing secret_key_crypt");
 		return "Error: Missing secret_key_crypt";
