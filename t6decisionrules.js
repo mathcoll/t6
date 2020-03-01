@@ -46,7 +46,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	
 	// TODO: should we check the flow_id to confirm it belongs to the current user ????? !!!!!!!!! as we can post to any flow_id and set any Decision Rule.
 	let p = payload;
-	let limit = 50;
+	let limit = 10;
 	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, limit);
 	t6console.info("DB retrieve latest values");
 	let valuesFromDb = [];
@@ -142,6 +142,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.anomalyDetection.predicted = lr.predict(limit);
 			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
 			p.anomalyDetection.threashold = jsonValue;
+			p.anomalyDetection.allvalues = valuesFromDb;
 			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.anomalyDetection.diff >= p.anomalyDetection.threashold ) {
 				//t6console.debug("anomalyGreaterThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
 				return true;
@@ -157,6 +158,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.anomalyDetection.predicted = lr.predict(limit);
 			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
 			p.anomalyDetection.threashold = jsonValue;
+			p.anomalyDetection.allvalues = valuesFromDb;
 			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.anomalyDetection.diff <= p.anomalyDetection.threashold ) {
 				//t6console.debug("anomalyLessThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
 				return true;
