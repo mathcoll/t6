@@ -119,9 +119,8 @@ var snippet = {
 			} else {
 				var c = document.getElementById("chart-"+params.id);
 				c.height = 250;
-				var ctx = c.getContext("2d");
-				ctx.textAlign = "center";
-				ctx.fillText("Data error occured; please check Snippet settings :-(", c.width/2, c.height/2);
+				c.getContext("2d").textAlign = "center";
+				c.getContext("2d").fillText("Data error occured; please check Snippet settings :-(", c.width/2, c.height/2);
 			}
 		})
 		.catch(function (error) {
