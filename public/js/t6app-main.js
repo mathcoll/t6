@@ -762,7 +762,7 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.expand = function(evt) {
-		console.log(evt.target);
+		//console.log(evt.target);
 		var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
 		if ( id != null ) {
 			document.getElementById(id).classList.toggle('hidden');
