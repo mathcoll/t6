@@ -40,6 +40,7 @@ var snippet = {
 		var opt = this.getOptions(this);
 		var limit = opt.limit&&typeof opt.limit.value!=="undefined"?opt.limit.value:5;
 		var url = app.baseUrl+"/"+app.api_version+"/data/"+params.attributes.flows[0]+"?sort=desc&limit="+limit;
+		var ctx;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -47,7 +48,9 @@ var snippet = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			var ctx = document.getElementById("chart-"+params.id).getContext("2d");
+			var c = document.getElementById("chart-"+params.id);
+			c.height = 250;
+			ctx = c.getContext("2d");
 			var datapoints = [];
 			if( typeof response.data!=="undefined" && response.data.type!=="errors" ) {
 				response.data.forEach(function(d) {
@@ -103,8 +106,6 @@ var snippet = {
 					responsive: true,
 					animation: { duration: 0, },
 				};
-				var c = document.getElementById("chart-"+params.id);
-				c.height = 250;
 				var myChart = new Chart(ctx, {
 					type: type,
 					data: data,
@@ -117,8 +118,6 @@ var snippet = {
 				document.getElementById("unit-"+params.id).innerHTML = unit;
 				setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 2000);
 			} else {
-				var c = document.getElementById("chart-"+params.id);
-				c.height = 250;
 				c.getContext("2d").textAlign = "center";
 				c.getContext("2d").fillText("Data error occured; please check Snippet settings :-(", c.width/2, c.height/2);
 			}
