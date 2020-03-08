@@ -10,7 +10,6 @@ t6mqtt.publish = function(user_id, topic, payload, retain) {
 	}
 	while( topic.charAt(0)==="/" ) { topic = topic.substr(1) };
 	try {
-		t6console.error("try on mqtt", topic);
 		if ( payload && typeof payload !== "string" ) {
 			payload = JSON.parse(payload);
 			if ( payload && typeof payload === "object" ) {
