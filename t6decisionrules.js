@@ -337,6 +337,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			} else {
 				t6console.warn(sprintf("No matching EventType: %s", event.type));
 			}
+			t6mqtt.publish(null, mqttInfo+"/ruleEvents/"+user_id, JSON.stringify({"dtepoch":moment().format("x"),"message":sprintf("Rule %s, EventType: %s", event.params.rule_id, event.type), "environment": process.env.NODE_ENV}), true);
 		});
 		engine.run(payload);
 	}).catch(err => {
