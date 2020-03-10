@@ -3,7 +3,7 @@ var t6decisionrules = module.exports = {};
 var SunCalc	= require("suncalc");
 var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
-var predict = require("predict");
+var statistics = require('simple-statistics')
 var rules;
 var users;
 
@@ -52,11 +52,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	let valuesFromDb = [];
 	let indexesFromDb = [];
 	let timesFromDb = [];
+	let indexesValuesFromDb = [];
 	dbInfluxDB.query(influxQuery).then(data => {
 		if ( data.length > 0 ) {
 			data.map(function(d, i) {
 				valuesFromDb.push(d.value);
 				timesFromDb.push(d.time);
+				indexesValuesFromDb.push([i, d.value]);
 				indexesFromDb.push(i);
 			});
 		}
@@ -138,11 +140,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 
 		engine.addOperator("anomalyGreaterThanInclusive", (factValue, jsonValue) => {
 			p.anomalyDetection = {};
-			let lr = predict.linearRegression(valuesFromDb, indexesFromDb);
-			p.anomalyDetection.predicted = lr.predict(limit);
+			let lr = statistics.linearRegression(indexesValuesFromDb);
+			p.anomalyDetection.predicted = Math.abs(lr.m)+lr.b;
 			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
 			p.anomalyDetection.threashold = jsonValue;
 			p.anomalyDetection.allvalues = valuesFromDb;
+			
 			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.anomalyDetection.diff >= p.anomalyDetection.threashold ) {
 				//t6console.debug("anomalyGreaterThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
 				return true;
@@ -154,8 +157,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 
 		engine.addOperator("anomalyLessThanInclusive", (factValue, jsonValue) => {
 			p.anomalyDetection = {};
-			let lr = predict.linearRegression(valuesFromDb, indexesFromDb);
-			p.anomalyDetection.predicted = lr.predict(limit);
+			let lr = statistics.linearRegression(indexesValuesFromDb);
+			p.anomalyDetection.predicted = Math.abs(lr.m)+lr.b;
 			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
 			p.anomalyDetection.threashold = jsonValue;
 			p.anomalyDetection.allvalues = valuesFromDb;
