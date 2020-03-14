@@ -4,8 +4,6 @@ var router = express.Router();
 var DataTypeSerializer = require("../serializers/datatype");
 var ErrorSerializer = require("../serializers/error");
 var datatypes;
-var users;
-var tokens;
 
 /**
  * @api {get} /datatypes/:datatype_id Get DataType(s)
