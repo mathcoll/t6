@@ -1,7 +1,6 @@
 "use strict";
 var express = require("express");
 var router	= express.Router();
-var DataSerializer = require("../serializers/data");
 var ErrorSerializer = require("../serializers/error");
 var users;
 
@@ -10,11 +9,6 @@ router.get("/", function(req, res) {
 		currentUrl: req.path,
 		user: req.session.user
 	});
-});
-
-router.get("/%5Bobject%20Promise%5D", function (req, res, next) {
-	console.error("Called /%5Bobject%20Promise%5D");
-	res.status(404).send("err");
 });
 
 router.get("/applicationStart", function(req, res) {

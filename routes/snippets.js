@@ -4,8 +4,6 @@ var router = express.Router();
 var SnippetSerializer = require("../serializers/snippet");
 var ErrorSerializer = require("../serializers/error");
 var snippets;
-var users;
-var tokens;
 
 /**
  * @api {get} /snippets/:snippet_id Get Snippet(s)

@@ -2,12 +2,8 @@
 var express = require("express");
 var router = express.Router();
 var DashboardSerializer = require("../serializers/dashboard");
-var SnippetSerializer = require("../serializers/snippet");
 var ErrorSerializer = require("../serializers/error");
 var dashboards;
-var users;
-var snippets;
-var tokens;
 
 /**
  * @api {get} /dashboards/:dashboard_id Get Dashboard(s)
@@ -34,7 +30,6 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
 	dashboards	= dbDashboards.getCollection("dashboards");
-	snippets = dbSnippets.getCollection("snippets"); // WTF ??
 	var query;
 	if ( typeof dashboard_id !== "undefined" ) {
 		query = {

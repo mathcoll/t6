@@ -2,12 +2,8 @@
 var express = require("express");
 var router = express.Router();
 var UserSerializer = require("../serializers/user");
-var PermissionSerializer = require("../serializers/permission");
 var ErrorSerializer = require("../serializers/error");
-var AccessTokenSerializer = require("../serializers/accessToken");
 var users;
-var tokens;
-
 
 /**
  * @api {get} /notifications/debug/:mail Get html of email

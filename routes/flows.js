@@ -4,10 +4,6 @@ var router = express.Router();
 var FlowSerializer = require("../serializers/flow");
 var ErrorSerializer = require("../serializers/error");
 var flows;
-var users;
-var tokens;
-var datatypes;
-var units;
 
 function str2bool(v) {
 	return [true, "yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
@@ -30,7 +26,6 @@ function str2bool(v) {
  * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var results = Array();
 	var flow_id = req.params.flow_id;
 	var size = typeof req.query.size!=="undefined"?req.query.size:20; // TODO WTF: should be "limit" !!
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;

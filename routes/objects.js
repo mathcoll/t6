@@ -4,9 +4,6 @@ var router = express.Router();
 var ObjectSerializer = require("../serializers/object");
 var ErrorSerializer = require("../serializers/error");
 var objects;
-var users;
-var tokens;
-
 
 /**
  * @api {get} /objects/:object_id/qrcode/:typenumber/:errorcorrectionlevel Get qrcode for an Object

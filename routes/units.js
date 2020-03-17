@@ -4,8 +4,6 @@ var router = express.Router();
 var UnitSerializer = require("../serializers/unit");
 var ErrorSerializer = require("../serializers/error");
 var units;
-var users;
-var tokens;
 
 /**
  * @api {get} /units/:unit_id Get Unit(s)
@@ -19,7 +17,7 @@ var tokens;
  * @apiUse 200
  * @apiUse 404
  */
-router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res, next) {
+router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res) {
 	var json;
 	var unit_id = req.params.unit_id;
 	var type = req.query.type;
