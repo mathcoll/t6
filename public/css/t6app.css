@@ -3,7 +3,7 @@
 	font-family: 'Material Icons';
 	font-style: normal;
 	font-weight: 400;
-	src: url(https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
+	src: url(../fonts/Material-Icons.woff2) format('woff2');
 }
 .material-icons {
 	font-family: 'Material Icons';
@@ -105,6 +105,11 @@ code.nostyle br {
 	color: #fff !important;
 	position: unset;
 }
+#hof-container article h2 {
+	font-weight: 500;
+	font-size: 28px;
+	margin: 0;
+}
 @media only screen and (max-device-width: 480px) {
 	#hof-container h1 {
 		font-size: 24px;
@@ -112,12 +117,20 @@ code.nostyle br {
 	}
 }
 #hof-container {
-	display: flex;
-	flex-direction: row;
+	display: grid !important;
 	justify-content: space-between;
+	grid-template-rows: 1fr;
+	grid-auto-flow: column;
+	grid-auto-columns: 90%;
+	grid-gap: 20px;
+	overflow-x: scroll;
+	scroll-snap-type: x mandatory;
 }
 #hof-container div p, #hof-container div span {
 	margin: 0;
+}
+#hof-container > article {
+	scroll-snap-align: start;
 }
 #hof-container #illustration-container {
 	display: flex;
@@ -624,7 +637,6 @@ section#profile .mdl-card--small .mdl-card__title {
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
-    width: calc(100% - 36px);
     display: inline-block;
     vertical-align: middle;
 }

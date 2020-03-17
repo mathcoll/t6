@@ -21,7 +21,7 @@ var filesToCache = [
 	"https://cdn.internetcollaboratif.info/img/m/welcome_card.jpg",
 	"https://cdn.internetcollaboratif.info/img/m/side-nav-bg.webp",
 	"https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png",
-	"https://fonts.gstatic.com/s/materialicons/v48/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2",
+	"https://cdn.internetcollaboratif.info/fonts/Material-Icons.woff2",
 	"https://fonts.googleapis.com/icon?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext",
 	"https://unpkg.com/leaflet@1.6.0/dist/leaflet.css",
 	"https://unpkg.com/leaflet@1.6.0/dist/leaflet.js",
