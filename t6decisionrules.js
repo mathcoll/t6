@@ -43,11 +43,39 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 	}
 	// retrieve latest values
+
+	//conditions.facts = [user_id, environment, dtepoch, value, flow, datetime]
+	//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
+	//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
+	engine.addOperator("isDayTime", (factValue, jsonValue) => {
+		var factLatitude = p.latitude?p.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
+		var factLongitude = p.longitude?p.longitude:localization.longitude;
+		
+		var times = SunCalc.getTimes(typeof p.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
+		if ( moment(p.dtepoch).isAfter(times.sunrise) && moment(p.dtepoch).isBefore(times.sunset) ) {
+			t6console.debug("isDayTime" + "(true) daytime / " + "Expecting " + jsonValue);
+			if ( jsonValue === true ) {
+				t6console.debug("matching on the "+jsonValue);
+				return true;
+			} else {
+				t6console.debug("not matching on the "+jsonValue);
+				return false;
+			}
+		} else {
+			t6console.debug("isDayTime" + "(false) night / " + "Expecting " + jsonValue);
+			if ( jsonValue === false ) {
+				t6console.debug("matching on the "+jsonValue);
+				return true;
+			} else {
+				t6console.debug("not matching on the "+jsonValue);
+				return false;
+			}
+		}
+	});
 	
-	// TODO: should we check the flow_id to confirm it belongs to the current user ????? !!!!!!!!! as we can post to any flow_id and set any Decision Rule.
 	let p = payload;
 	let limit = 10;
-	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, limit);
+	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, p.user_id, limit);
 	t6console.info("DB retrieve latest values");
 	let valuesFromDb = [];
 	let indexesFromDb = [];
@@ -62,61 +90,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				indexesFromDb.push(i);
 			});
 		}
-		valuesFromDb.reverse();
+		valuesFromDb.reverse(); // TODO: Need to check if we'd also require to reverse the other arrays
 		//t6console.debug("indexesFromDb", indexesFromDb);
 		//t6console.debug("valuesFromDb", valuesFromDb);
-
-		//conditions.facts = [user_id, environment, dtepoch, value, flow, datetime]
-		//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
-		//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
-		
-		/* Custom Operators:
-		// 1. isDayTime: will match only when data-timestamp according to geolocalization is during daylight or not.
-		{"all":[{"fact":"dtepoch","operator":"isDayTime","value":true}]}
-		
-		// 2. lastEventGreaterThanInclusive: will match only when last event occurs more than the threashold value in seconds.
-		{"all":[{"fact":"value","operator":"lastEventGreaterThanInclusive","value":3600}]}
-		
-		// 3. lastEventLessThanInclusive: will match only when last event occurs less than the threashold value in seconds.
-		{"all":[{"fact":"value","operator":"lastEventLessThanInclusive","value":3600}]}
-		
-		// 4. anomalyGreaterThanInclusive: will match only when measured value is greater than predicted value.
-		{"all":[{"fact":"value","operator":"anomalyGreaterThanInclusive","value":1234}]}
-		
-		// 5. anomalyLessThanInclusive: will match only when measured value is less than predicted value.
-		{"all":[{"fact":"value","operator":"anomalyLessThanInclusive","value":1234}]}
-		
-		// 6. changeGreaterThanInclusive: will match only when the difference in time with previous value is greater than threashold value in seconds
-		{"all":[{"fact":"value","operator":"changeGreaterThanInclusive","value":1234}]}
-		
-		// 7. changeLessThanInclusive: will match only when the difference between in time with previous value is less than threashold value in seconds
-		{"all":[{"fact":"value","operator":"changeLessThanInclusive","value":1234}]}
-		*/
-		engine.addOperator("isDayTime", (factValue, jsonValue) => {
-			var factLatitude = p.latitude?p.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
-			var factLongitude = p.longitude?p.longitude:localization.longitude;
-			
-			var times = SunCalc.getTimes(typeof p.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
-			if ( moment(p.dtepoch).isAfter(times.sunrise) && moment(p.dtepoch).isBefore(times.sunset) ) {
-				t6console.debug("isDayTime" + "(true) daytime / " + "Expecting " + jsonValue);
-				if ( jsonValue === true ) {
-					t6console.debug("matching on the "+jsonValue);
-					return true;
-				} else {
-					t6console.debug("not matching on the "+jsonValue);
-					return false;
-				}
-			} else {
-				t6console.debug("isDayTime" + "(false) night / " + "Expecting " + jsonValue);
-				if ( jsonValue === false ) {
-					t6console.debug("matching on the "+jsonValue);
-					return true;
-				} else {
-					t6console.debug("not matching on the "+jsonValue);
-					return false;
-				}
-			}
-		});
 
 		engine.addOperator("lastEventGreaterThanInclusive", (factValue, jsonValue) => {
 			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, "seconds")).isBefore(moment(p.dtepoch*1)) ) {
