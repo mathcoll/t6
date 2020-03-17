@@ -10,6 +10,8 @@ data/*-bleu.js
 data/*-blanc.js
 data/*-pink.js
 data/*-guruplug.js
+/*-pink.json
+/*-pink.js
 data/certificates/*
 
 # Website auths
