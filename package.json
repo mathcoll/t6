@@ -6,6 +6,9 @@
     "name": "Mathieu Lory",
     "email": "mathieu@internetcollaboratif.info"
   },
+  "funding": {
+    "url": "https://github.com/sponsors/mathcoll"
+  },
   "contributors": [],
   "license": "GPL-3.0",
   "private": true,
