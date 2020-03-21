@@ -2,10 +2,8 @@
 var snippet = {
 	name: "flowgraph",
 	value: "Graph a Flow over axis",
-	
 	options: {
 		width: {default_value: "12", type: "select", available_values: ["4", "6", "8", "12"]},
-		
 		type: {default_value: "line", type: "select", available_values: ["bar", "line", "radar", "pie", "polarArea", "bubble", "scatter"]},
 		color: {default_value: "#FF0000", type: "text"},
 		legend_font_color: {default_value: "#FF0000", type: "text"},
@@ -40,7 +38,7 @@ var snippet = {
 		var opt = this.getOptions(this);
 		var limit = opt.limit&&typeof opt.limit.value!=="undefined"?opt.limit.value:5;
 		var url = app.baseUrl+"/"+app.api_version+"/data/"+params.attributes.flows[0]+"?sort=desc&limit="+limit;
-		var ctx;
+		let ctx;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -48,17 +46,17 @@ var snippet = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			var c = document.getElementById("chart-"+params.id);
+			let c = document.getElementById("chart-"+params.id);
 			c.height = 250;
 			ctx = c.getContext("2d");
-			var datapoints = [];
+			let datapoints = [];
 			if( typeof response.data!=="undefined" && response.data.type!=="errors" ) {
 				response.data.forEach(function(d) {
 					datapoints.push({ x: new Date(d.attributes.timestamp), y: d.attributes.value });
 				});
-				var type = opt.type&&typeof opt.type.value!=="undefined"?opt.type.value:opt.type.default_value;
-				var unit = " ("+sprintf(typeof response.links.unit!=="undefined"?response.links.unit:"", "")+")";
-				var data = {
+				let type = opt.type&&typeof opt.type.value!=="undefined"?opt.type.value:opt.type.default_value;
+				let unit = " ("+sprintf(typeof response.links.unit!=="undefined"?response.links.unit:"", "")+")";
+				let data = {
 					datasets: [{
 						label: typeof params.flowNames!=="undefined"?params.flowNames[0]:"",
 						backgroundColor: opt.background_color&&typeof opt.background_color.value!=="undefined"?opt.background_color.value:opt.background_color.default_value,
@@ -73,7 +71,7 @@ var snippet = {
 						data: datapoints,
 					}]
 				};
-				var options = {
+				let options = {
 					title: {
 						display: opt.title_display&&typeof opt.title_display.value!=="undefined"?opt.title_display.value:opt.title_display.default_value,
 						text: typeof params.flowNames!=="undefined"?params.flowNames[0]:"Snippet Title",
@@ -106,17 +104,15 @@ var snippet = {
 					responsive: true,
 					animation: { duration: 0, },
 				};
-				var myChart = new Chart(ctx, {
+				new Chart(ctx, {
 					type: type,
 					data: data,
 					options: options
 				});
-				var id = response.data[0].attributes.id;
-				var time = response.data[0].attributes.time;
-				var value = response.data[0].attributes.value;
-				var ttl = response.links.ttl;
+				let id = response.data[0].attributes.id;
+				let time = response.data[0].attributes.time;
 				document.getElementById("unit-"+params.id).innerHTML = unit;
-				setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 2000);
+				setInterval(function() {app.refreshFromNow("snippet-time-"+id, time, true)}, 2000);
 			} else {
 				c.getContext("2d").textAlign = "center";
 				c.getContext("2d").fillText("Data error occured; please check Snippet settings :-(", c.width/2, c.height/2);
