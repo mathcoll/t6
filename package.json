@@ -54,6 +54,7 @@
     "pug": "^2.0.4",
     "qrcode-npm": "0.0.3",
     "request": "^2.88.0",
+    "sentiment": "^5.0.2",
     "serialport": "^7.1.5",
     "serve-favicon": "^2.4.5",
     "session-file-store": "^0.2.0",

@@ -3,6 +3,7 @@ var t6decisionrules = module.exports = {};
 var SunCalc	= require("suncalc");
 var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
+var Sentiment = require("sentiment");
 var statistics = require('simple-statistics')
 var rules;
 var users;
@@ -26,11 +27,14 @@ t6decisionrules.export = function(rule) {
 };
 
 t6decisionrules.checkRulesFromUser = function(user_id, payload) {
-	payload.user_id = user_id;
+	let p = payload;
+	let limit = 10;
+	p.user_id = user_id;
 	rules = dbRules.getCollection("rules");
+	
 	var query = {
 	"$and": [
-			{ "user_id": { "$eq": user_id } },
+			{ "user_id": { "$eq": p.user_id } },
 			{ "active": true },
 		]
 	}
@@ -72,9 +76,27 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		}
 	});
-	
-	let p = payload;
-	let limit = 10;
+	engine.addOperator("sentimentScoreGreaterThanInclusive", (factValue, jsonValue) => {
+		let sentiment = new Sentiment();
+		let result = sentiment.analyze(factValue);
+		t6console.debug("sentimentScoreGreaterThanInclusive", result);
+		if ( result.score >= jsonValue ) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+	engine.addOperator("sentimentScoreLessThanInclusive", (factValue, jsonValue) => {
+		let sentiment = new Sentiment();
+		let result = sentiment.analyze(factValue);
+		t6console.debug("sentimentScoreLessThanInclusive", result);
+		if ( result.score <= jsonValue ) {
+			return true;
+		} else {
+			return false;
+		}
+	});
+
 	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, p.user_id, limit);
 	t6console.info("DB retrieve latest values");
 	let valuesFromDb = [];
