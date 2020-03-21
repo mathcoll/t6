@@ -80,6 +80,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		let sentiment = new Sentiment();
 		let result = sentiment.analyze(factValue);
 		t6console.debug("sentimentScoreGreaterThanInclusive", result);
+		p.SentimentScore = result.score;
 		if ( result.score >= jsonValue ) {
 			return true;
 		} else {
@@ -90,6 +91,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		let sentiment = new Sentiment();
 		let result = sentiment.analyze(factValue);
 		t6console.debug("sentimentScoreLessThanInclusive", result);
+		p.SentimentScore = result.score;
 		if ( result.score <= jsonValue ) {
 			return true;
 		} else {
