@@ -56,7 +56,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		let factLatitude = p.latitude?p.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
 		let factLongitude = p.longitude?p.longitude:localization.longitude;
 		let times = SunCalc.getTimes(typeof p.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
-		if ( moment(p.dtepoch).isAfter(times.sunrise) && moment(p.dtepoch).isBefore(times.sunset) ) {
+		if ( moment(parseInt(p.dtepoch)).isAfter(times.sunrise) && moment(parseInt(p.dtepoch)).isBefore(times.sunset) ) {
 			t6console.debug("isDayTime" + "(true) daytime / " + "Expecting " + jsonValue);
 			if ( jsonValue === true ) {
 				t6console.debug("matching on the "+jsonValue);
@@ -77,23 +77,31 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		}
 	});
 	engine.addOperator("sentimentScoreGreaterThanInclusive", (factValue, jsonValue) => {
-		let sentiment = new Sentiment();
-		let result = sentiment.analyze(factValue);
-		t6console.debug("sentimentScoreGreaterThanInclusive", result);
-		p.SentimentScore = result.score;
-		if ( result.score >= jsonValue ) {
-			return true;
+		if ( typeof factValue==="string" ) {
+			let sentiment = new Sentiment();
+			let result = sentiment.analyze(factValue);
+			t6console.debug("sentimentScoreGreaterThanInclusive", result.score);
+			p.SentimentScore = result.score;
+			if ( result.score >= jsonValue ) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
 	});
 	engine.addOperator("sentimentScoreLessThanInclusive", (factValue, jsonValue) => {
-		let sentiment = new Sentiment();
-		let result = sentiment.analyze(factValue);
-		t6console.debug("sentimentScoreLessThanInclusive", result);
-		p.SentimentScore = result.score;
-		if ( result.score <= jsonValue ) {
-			return true;
+		if ( typeof factValue==="string" ) {
+			let sentiment = new Sentiment();
+			let result = sentiment.analyze(factValue);
+			t6console.debug("sentimentScoreLessThanInclusive", result.score);
+			p.SentimentScore = result.score;
+			if ( result.score <= jsonValue ) {
+				return true;
+			} else {
+				return false;
+			}
 		} else {
 			return false;
 		}
@@ -103,7 +111,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		let factLongitude = p.longitude?p.longitude:localization.longitude;
 		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
 			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: jsonValue});
-			t6console.debug("distanceGreaterThan", dist, p.object);
+			t6console.debug("distanceGreaterThan", dist);
 			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
 			return !dist;
 		} else {
@@ -115,7 +123,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		let factLongitude = p.longitude?p.longitude:localization.longitude;
 		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
 			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: jsonValue});
-			t6console.debug("distanceLessThan", dist, p.object);
+			t6console.debug("distanceLessThan", dist);
 			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
 			return dist;
 		} else {
