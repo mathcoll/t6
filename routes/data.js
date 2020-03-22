@@ -424,8 +424,19 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
 
 				if ( publish === true ) {
 					let payloadFact = {"dtepoch": time, "value": value, "flow": flow_id}; // This is the minimal payload
-					if ( object_id ) {
+					if ( typeof object_id !== "undefined" ) {
 						payloadFact.object_id = object_id;
+						objects	= db.getCollection("objects");
+						let query = {
+						"$and": [
+								{ "user_id" : req.user.id },
+								{ "id" : object_id },
+							]
+						};
+						var object = objects.findOne(query);
+						if ( object ) {
+							payloadFact.object = object;
+						}
 					}
 					if ( text ) {
 						payloadFact.text = text;

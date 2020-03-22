@@ -4,6 +4,7 @@ var SunCalc	= require("suncalc");
 var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
 var Sentiment = require("sentiment");
+var geodist = require("geodist");
 var statistics = require('simple-statistics')
 var rules;
 var users;
@@ -52,10 +53,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	//conditions.operators = [isDayTime:<boolean>, user_id:<String>, environment:<List>, dtepoch:<Int>, value:<String>, flow:<String>, datetime:<String>]
 	//https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#operators
 	engine.addOperator("isDayTime", (factValue, jsonValue) => {
-		var factLatitude = p.latitude?p.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
-		var factLongitude = p.longitude?p.longitude:localization.longitude;
-		
-		var times = SunCalc.getTimes(typeof p.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
+		let factLatitude = p.latitude?p.latitude:localization.latitude; // TODO: we should use https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#condition-helpers-params
+		let factLongitude = p.longitude?p.longitude:localization.longitude;
+		let times = SunCalc.getTimes(typeof p.dtepoch!=="undefined"?factValue:new Date(), factLatitude, factLongitude);
 		if ( moment(p.dtepoch).isAfter(times.sunrise) && moment(p.dtepoch).isBefore(times.sunset) ) {
 			t6console.debug("isDayTime" + "(true) daytime / " + "Expecting " + jsonValue);
 			if ( jsonValue === true ) {
@@ -94,6 +94,30 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		p.SentimentScore = result.score;
 		if ( result.score <= jsonValue ) {
 			return true;
+		} else {
+			return false;
+		}
+	});
+	engine.addOperator("distanceGreaterThan", (factValue, jsonValue) => {
+		let factLatitude = p.latitude?p.latitude:localization.latitude;
+		let factLongitude = p.longitude?p.longitude:localization.longitude;
+		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
+			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: jsonValue});
+			t6console.debug("distanceGreaterThan", dist, p.object);
+			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
+			return !dist;
+		} else {
+			return false;
+		}
+	});
+	engine.addOperator("distanceLessThan", (factValue, jsonValue) => {
+		let factLatitude = p.latitude?p.latitude:localization.latitude;
+		let factLongitude = p.longitude?p.longitude:localization.longitude;
+		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
+			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: jsonValue});
+			t6console.debug("distanceLessThan", dist, p.object);
+			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
+			return dist;
 		} else {
 			return false;
 		}
