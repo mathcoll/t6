@@ -2343,6 +2343,7 @@ var touchStartPoint, touchMovePoint;
 				}
 				localStorage.setItem('index', JSON.stringify(response));
 				container.innerHTML = node;
+				app.imageLazyLoading();
 			})
 			.catch(function (error) {
 				container.innerHTML = app.getCard( {image: app.baseUrlCdn+'/img/opl_img2.webp', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)'} );
