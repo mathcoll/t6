@@ -1073,6 +1073,13 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 #index .mdl-card__menu {
 	color: #fff;
 }
+#index .mdl-card__title {
+	background: #795548;
+	padding: 5px 10px;
+}
+#index .mdl-card__title h3.mdl-card__title-text {
+	background: transparent;
+}
 .mdl-card {
 	min-height: auto !important;
 	overflow: visible !important;
