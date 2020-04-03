@@ -210,6 +210,42 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         //- Loading
         section#loading-spinner.hidden
           #spinner.mdl-progress.mdl-js-progress.mdl-progress__indeterminate.loader(style='width:auto;')
+  
+        //- Use cases
+        section#use-cases.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-grid.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content IoT application and Use cases
+          .page-content.mdl-grid.mdl-grid--no-spacing
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart City
+                div.mdl-card__supporting-text.mdl-card--expand t6 ease IoT sensors & actuators deployment within the city. Data are stored on t6 and trigger actions to prevent traffic congestion, road lighting, car park management, safety and so on.
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Home
+                div.mdl-card__supporting-text.mdl-card--expand 
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Energy
+                div.mdl-card__supporting-text.mdl-card--expand 
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Fleet
+                div.mdl-card__supporting-text.mdl-card--expand 
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Data
+                div.mdl-card__supporting-text.mdl-card--expand 
 
         //- List Index
         section#index.mdl-grid.mdl-cell--12-col.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
@@ -231,6 +267,32 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
             h2.mdl-card__title-text.mdl-subheader-content How does t6 works?
           .page-content.mdl-grid.mdl-grid--no-spacing
             span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;') 
+
+          footer
+            ul
+              li IoT platform
+                ul
+                  li
+                  li
+                  li
+                    a(href="https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=badge&utm_campaign=badge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1") Google Play Application
+              li IoT Api
+                ul
+                  li
+                    a(href="/#status") Api Status
+                  li
+                    a(href="/#docs") Developer
+                  li
+                    a(href="/docs") Api Explorer
+                  li
+              li About t6
+                ul
+                  li
+                    a(href="/#compatible-devices") Compatible Devices
+                  li
+                    a(href="/#terms") Privacy and Terms
+            div
+              img(src="/img/icon.png", style="background: #fff;")
 
         //- List Objects
         section#objects.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='2')

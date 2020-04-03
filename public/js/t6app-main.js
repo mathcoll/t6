@@ -984,7 +984,8 @@ var touchStartPoint, touchMovePoint;
 					section !== 'terms' &&
 					section !== 'compatible-devices' &&
 					section !== 'openSourceLicenses' &&
-					section !== 'manage_notifications'
+					section !== 'manage_notifications' &&
+					section !== 'use-cases'
 				)
 			) {
 				app.displayLoginForm( document.querySelector('#'+section).querySelector('.page-content') );

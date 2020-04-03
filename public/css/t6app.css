@@ -148,6 +148,43 @@ code.nostyle br {
 	margin: 5px auto;
 }
 /* end Home */
+footer {
+	background: linear-gradient(178deg, #ececec 10%, rgb(121, 85, 72) 10%);
+	min-height: 240px;
+	margin: 30px 0 30px 0;
+	padding: 50px 0;
+}
+footer a {
+	color: #fff;
+	text-decoration: underline !important;
+}
+footer > ul {
+	padding: 10px;
+}
+footer > ul li {
+	float: left;
+	margin: 0 !important;
+	padding: 0px 0px;
+	width: 33%;
+	color: #fff;
+	font-weight: 700;
+}
+footer > ul li ul {
+	padding: 0px;
+}
+footer > ul li ul li {
+	width: 100%;
+}
+footer div {
+	clear: both;
+	width: 100%;
+	padding: 30px 0 0 0;
+}
+footer div > img {
+	background: #fff;
+	margin: 0 calc(50% - 30px);
+	width: 60px;
+}
 .mdl-button a {
 	color: rgb(43, 51, 87);
 }
@@ -1073,11 +1110,13 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 #index .mdl-card__menu {
 	color: #fff;
 }
-#index .mdl-card__title {
+#index .mdl-card__title,
+#use-cases .mdl-card__title {
 	background: #795548;
 	padding: 5px 10px;
 }
-#index .mdl-card__title h3.mdl-card__title-text {
+#index .mdl-card__title h3.mdl-card__title-text,
+#use-cases .mdl-card__title h3.mdl-card__title-text {
 	background: transparent;
 }
 .mdl-card {
