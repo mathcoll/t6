@@ -61,9 +61,6 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 				
 				t6console.log("Deploying");
 				let myShellScript = exec(`${cmd}`);
-				myShellScript.stdout.on("data", (data)=>{
-					//t6console.log(data); 
-				});
 				myShellScript.stderr.on("data", (data)=>{
 					t6console.error(data);
 				});

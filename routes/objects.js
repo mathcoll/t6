@@ -214,9 +214,6 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 				t6console.log("File is created successfully.", `${dir}/${object.source_id}.ino`);
 			});  
 			let myShellScript = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${ota.fqbn} --verbose compile ${dir}`);
-			myShellScript.stdout.on("data", (data)=>{
-				//t6console.log(data);
-			});
 			myShellScript.stderr.on("data", (data)=>{
 				t6console.error(data);
 			});
@@ -230,10 +227,6 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 142, "code": 404, "message": "Not Found"}).serialize());
 	}
-});
-
-router.post("/:object_id/deploy/(:source_id)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// We'll implement it later ; should be the same as the /ota/deploy except it deploy only the selected object
 });
 
 /**
