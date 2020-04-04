@@ -89,7 +89,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var queryQ = { "user_id" : req.user.id };
 	var i = (snippets.find(queryQ)).length;
 	if( i >= (quota[req.user.role]).snippets ) {
-		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
+		res.status(429).send(new ErrorSerializer({"id": 429, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
 		if ( typeof req.user.id !== "undefined" ) {
 			var snippet_id = uuid.v4();
@@ -149,7 +149,7 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret})
 		var snippet = snippets.findOne( query );
 		if ( snippet ) {
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - snippet.meta.revision) !== 0 ) {
-				res.status(400).send(new ErrorSerializer({"id": 39.2, "code": 400, "message": "Bad Request"}).serialize());
+				res.status(400).send(new ErrorSerializer({"id": 439.2, "code": 400, "message": "Bad Request"}).serialize());
 			} else {
 				var result;
 				snippets.chain().find({ "id": snippet_id }).update(function(item) {
@@ -168,14 +168,14 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret})
 					res.header("Location", "/v"+version+"/snippets/"+snippet_id);
 					res.status(200).send({ "code": 200, message: "Successfully updated", snippet: new SnippetSerializer(result).serialize() });
 				} else {
-					res.status(404).send(new ErrorSerializer({"id": 40, "code": 404, "message": "Not Found"}).serialize());
+					res.status(404).send(new ErrorSerializer({"id": 440, "code": 404, "message": "Not Found"}).serialize());
 				}
 			}
 		} else {
-			res.status(401).send(new ErrorSerializer({"id": 42, "code": 401, "message": "Forbidden ??"}).serialize());
+			res.status(401).send(new ErrorSerializer({"id": 442, "code": 401, "message": "Forbidden ??"}).serialize());
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 40.5, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 440.5, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -204,7 +204,7 @@ router.delete("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secre
 		dbSnippets.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: snippet_id }); // TODO: missing serializer
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 32, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 432, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

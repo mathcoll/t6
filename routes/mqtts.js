@@ -6,7 +6,7 @@ var MqttSerializer = require("../serializers/mqtt");
 /**
  * @api {get} /mqtts/:mqtt_id Get Mqtt(s)
  * @apiName Get Mqtt(s)
- * @apiGroup 6. Mqtt
+ * @apiGroup 7. Mqtt
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

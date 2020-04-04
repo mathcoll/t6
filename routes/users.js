@@ -33,10 +33,10 @@ router.get("/newcomers", function (req, res) {
 			});
 			res.status(200).send(data);
 		}).catch(err => {
-			res.status(500).send({query: query, err: err, "id": 19.1, "code": 500, "message": "Internal Error"});
+			res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 		});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 819.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 /**
@@ -68,7 +68,7 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
 		json.pageLast	= Math.ceil(json.totalcount/size);
 		res.status(200).send(new UserSerializer(json).serialize());
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 502, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 702, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
