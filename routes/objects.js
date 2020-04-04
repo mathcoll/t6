@@ -170,10 +170,6 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 	res.status(200).send(new ObjectSerializer(json).serialize());
 });
 
-router.post("/:object_id/source", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	// We'll implement it later ; should be the same as the /ota/deploy except it deploy only the selected object
-});
-
 /**
  * @api {post} /objects/:object_id/build Build an Arduino source for the selected object
  * @apiName Build an Arduino source for the selected object
