@@ -153,6 +153,16 @@ var initDbTokens = function() {
 		t6console.info(dbTokens.getCollection("tokens").count(), "resources in Tokens collection.");
 	}
 }
+var initDbSources = function() {
+	if ( dbSources === null ) {
+		t6console.warn("db Sources is failing");
+	}
+	if ( dbSources.getCollection("sources") === null ) {
+		t6console.warn("- Collection Sources is failing");
+	} else {
+		t6console.info(dbSources.getCollection("sources").count(), "resources in Sources collection.");
+	}
+}
 
 t6console.info("Initializing Databases...");
 db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbMain});
@@ -160,6 +170,7 @@ dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"),
 dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
 dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
 dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
+dbSources = new loki(path.join(__dirname, "data", "sources-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbSources});
 
 var index			= require("./routes/index");
 var objects			= require("./routes/objects");
@@ -175,6 +186,8 @@ var datatypes		= require("./routes/datatypes");
 var pwa				= require("./routes/pwa");
 var notifications	= require("./routes/notifications");
 var ifttt			= require("./routes/ifttt");
+var ota				= require("./routes/ota");
+var sources			= require("./routes/sources");
 app					= express();
 
 var CrossDomain = function(req, res, next) {
@@ -225,6 +238,8 @@ app.use("/v"+version+"/units", units);
 app.use("/v"+version+"/datatypes", datatypes);
 app.use("/v"+version+"/notifications", notifications);
 app.use("/v"+version+"/ifttt", ifttt);
+app.use("/v"+version+"/ota", ota);
+app.use("/v"+version+"/sources", sources);
 app.use("/", pwa);
 
 // catch 404 and forward to error handler
