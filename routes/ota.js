@@ -7,7 +7,7 @@ var objects;
 /**
  * @api {get} /ota/:source_id/deploy Deploy arduino built file to Object
  * @apiName Deploy arduino built file to Object
- * @apiGroup 6. Source & Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air (OTA)
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

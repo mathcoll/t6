@@ -12,7 +12,7 @@ var accessTokens;
 /**
  * @api {get} /users/newcomers Get the list of 20 latest user Account created
  * @apiName Get the list of 20 latest user Account created
- * @apiGroup 8. Notifications
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

@@ -1,6 +1,12 @@
 body {background: rgba(0, 0, 0, 0	);}
 h1, h2, h3, h4, h5, h6 {
-    color: #337ab7;
+    color: #795548 !important;
+}
+.label-primary {
+    background-color: #795548 !important;
+}
+a, a:hover, a:focus {
+    color: #795548 !important;
 }
 .sidenav-search, .sidenav {
     background-color: #fff !important;
@@ -182,12 +188,12 @@ footer.footer.navbar-fixed-bottom div.visible-xs-block div.btn-group.btn-group-j
     position: absolute;
     width: 100%;
     text-shadow: 1px 1px 2px #000000;
-    background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* FF3.6-15 */
-    background: -webkit-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* Chrome,Safari4+ */
-    background: -o-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* Opera 11.10+ */
-    background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%, #337ab7 100%); /* Chrome10-25,Safari5.1-6 */
-    background: -ms-linear-gradient(to bottom, rgba(0,0,0,0) 0%, #337ab7 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #337ab7 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, #795548 100%); /* FF3.6-15 */
+    background: -webkit-gradient(top, rgba(0,0,0,0) 0%, #795548 100%); /* Chrome,Safari4+ */
+    background: -o-linear-gradient(top, rgba(0,0,0,0) 0%, #795548 100%); /* Opera 11.10+ */
+    background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%, #795548 100%); /* Chrome10-25,Safari5.1-6 */
+    background: -ms-linear-gradient(to bottom, rgba(0,0,0,0) 0%, #795548 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, #795548 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#a64d4d4d',GradientType=0 ); /* IE6-9 */
 }
 .iamgurdeeposahan {
@@ -397,7 +403,7 @@ a:focus {
  	transition: all 0.25s ease;
 }
 .submenu a:hover {
- 	background: #337ab7;
+ 	background: #795548 !important;
  	color: #FFF;
 }
 .dropdown {
@@ -443,7 +449,7 @@ a:focus {
 .table-header {
 	padding: 8px;
 	line-height: 1.4;
-	color:#337ab7;
+	color:#795548 !important;
 }
 /* End Ellipsis */
 
@@ -599,7 +605,7 @@ a:focus {
 }
 .login-title
 {
-    color: #2973ac;
+    color: #795548 !important;
     font-size: 18px;
     font-weight: bold;
     display: block;
@@ -836,20 +842,20 @@ a:focus {
 .side-menu .navbar-nav .active a {
   background-color: transparent;
   margin-right: -1px;
-  border-right: 5px solid #337ab7;
+  border-right: 5px solid #795548 !important;
 }
 .side-menu .navbar-nav a {
     border-right: 4px solid transparent;
 }
 .navbar-fixed-top .navbar-nav > li > a {/*border-bottom: 4px solid transparent;*/}
-.navbar-fixed-top .navbar-nav > li > a:hover {/*border-bottom: 5px solid #337ab7;*/}
+.navbar-fixed-top .navbar-nav > li > a:hover {/*border-bottom: 5px solid #795548 !important;*/}
 .side-menu .navbar-nav li {
   display: block;
   width: 100%;
   border-bottom: 1px solid #e7e7e7;
 }
 #navbar {
-	border-bottom: 5px solid #337ab7;
+	border-bottom: 5px solid #795548 !important;
 	position: fixed;
 	top: 0;
 	left: 0;
