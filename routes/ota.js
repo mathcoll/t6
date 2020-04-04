@@ -2,9 +2,22 @@
 var express = require("express");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
-var sources;
 var objects;
 
+/**
+ * @api {get} /ota/:source_id/deploy Deploy arduino built file to Object
+ * @apiName Deploy arduino built file to Object
+ * @apiGroup 6. Source & Over The Air (OTA)
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} source_id Source Id to deploy
+ * 
+ * @apiUse 201
+ * @apiUse 404
+ * @apiUse 429
+ * @apiUse 500
+ */
 router.post("/(:source_id([0-9a-z\-]+))?/deploy", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var source_id = req.params.source_id;
 	// find all objects linked to this source

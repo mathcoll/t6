@@ -34,7 +34,7 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 /**
  * @api {post} /datatypes Add DataType
  * @apiName Add DataType
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -62,7 +62,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 /**
  * @api {put} /datatypes/:datatype_id Edit a DataType
  * @apiName Edit a DataType
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -96,7 +96,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}
 /**
  * @api {delete} /datatypes/:datatype_id Delete a DataType
  * @apiName Delete a DataType
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

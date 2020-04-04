@@ -25,9 +25,10 @@
 		"3 Dashboard",
 		"4 Snippet",
 		"5 Rule",
-		"6 Mqtt",
-		"7 Admin User",
-		"8 Notifications email",
+		"6 Source & Over The Air (OTA)",
+		"7 Mqtt",
+		"8 Administration",
+		"9 Notifications email",
 		"General"
 	]
 }

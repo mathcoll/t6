@@ -42,7 +42,7 @@ router.get("/newcomers", function (req, res) {
 /**
  * @api {get} /users/list Get Users list
  * @apiName Get Users list
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

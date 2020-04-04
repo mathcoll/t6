@@ -311,7 +311,7 @@ function checkForTooManyFailure(req, res, email) {
 /**
  * @api {delete} /tokens/all Clean and delete all expired users tokens
  * @apiName Clean and delete all expired users tokens
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

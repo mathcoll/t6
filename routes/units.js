@@ -39,7 +39,7 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res) {
 /**
  * @api {post} /units Add a Unit
  * @apiName Add a Unit
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -76,7 +76,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 /**
  * @api {put} /units/:unit_id Edit a Unit
  * @apiName Edit a Unit
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
@@ -119,7 +119,7 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 /**
  * @api {delete} /units/:unit_id Delete a Unit
  * @apiName Delete a Unit
- * @apiGroup 7. Administration
+ * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin

@@ -171,9 +171,23 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 router.post("/:object_id/source", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	
+	// We'll implement it later ; should be the same as the /ota/deploy except it deploy only the selected object
 });
 
+/**
+ * @api {post} /objects/:object_id/build Build an Arduino source for the selected object
+ * @apiName Build an Arduino source for the selected object
+ * @apiGroup 1. Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * 
+ * @apiUse 201
+ * @apiUse 403
+ * @apiUse 404
+ * @apiUse 429
+ */
 router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection("objects");
@@ -218,23 +232,8 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 	}
 });
 
-router.post("/:object_id/upload/(:source_id)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
-
-	var query = {
-			"$and": [
-					{ "id": object_id },
-					{ "user_id": req.user.id },
-				]
-			}
-	var object = objects.findOne( query );
-	if ( object ) {
-		t6console.log(object.ipv4);
-		t6console.log(object.ipv6);
-		t6console.log(`${ota.python3} ${ota.espota.py} -i ${object.ipv4} -p 8266 --auth= -f ./OTA/OTA.esp8266.esp8266.nodemcu.bin`);
-	}
-	res.status(201).send({ "code": 201, message: "Uploading", object: new ObjectSerializer(object).serialize() });
+router.post("/:object_id/deploy/(:source_id)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	// We'll implement it later ; should be the same as the /ota/deploy except it deploy only the selected object
 });
 
 /**

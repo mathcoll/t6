@@ -8,7 +8,7 @@ var sources;
 /**
  * @api {get} /sources/:rule_id Get Source(s)
  * @apiName Get Source(s)
- * @apiGroup 6. Source
+ * @apiGroup 6. Source & Over The Air (OTA)
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -70,7 +70,7 @@ router.get("/?(:source_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 /**
  * @api {post} /sources Create new Source
  * @apiName Create new Source
- * @apiGroup 6. Source
+ * @apiGroup 6. Source & Over The Air (OTA)
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -109,7 +109,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 /**
  * @api {put} /rules/:rule_id Edit a Source
  * @apiName Edit a Source
- * @apiGroup 6. Source
+ * @apiGroup 6. Source & Over The Air (OTA)
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -175,7 +175,7 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 /**
  * @api {delete} /sources/:source_id Delete a Source
  * @apiName Delete a Source
- * @apiGroup 6. Source
+ * @apiGroup 6. Source & Over The Air (OTA)
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
