@@ -6,7 +6,7 @@ var ErrorSerializer = require("../serializers/error");
 var sources;
 
 /**
- * @api {get} /sources/:rule_id Get Source(s)
+ * @api {get} /sources/:source_id Get Source(s)
  * @apiName Get Source(s)
  * @apiGroup 6. Source and Over The Air (OTA)
  * @apiVersion 2.0.1
@@ -14,7 +14,6 @@ var sources;
  * @apiUse Auth
  * @apiParam {uuid-v4} [rule_id] Rule Id
  * @apiParam {String} [name] Rule name
- * @apiParam {String} [rule] Stringified Rule
  * 
  * @apiUse 200
  * @apiUse 401
@@ -107,7 +106,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 });
 
 /**
- * @api {put} /rules/:rule_id Edit a Source
+ * @api {put} /sources/:source_id Edit a Source
  * @apiName Edit a Source
  * @apiGroup 6. Source and Over The Air (OTA)
  * @apiVersion 2.0.1
