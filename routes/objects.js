@@ -201,7 +201,7 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 			});  
 			let myShellScript = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${ota.fqbn} --verbose compile ${dir}`);
 			myShellScript.stdout.on("data", (data)=>{
-				t6console.log(data);
+				//t6console.log(data);
 			});
 			myShellScript.stderr.on("data", (data)=>{
 				t6console.error(data);
