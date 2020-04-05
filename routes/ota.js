@@ -3,6 +3,8 @@ var express = require("express");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 var ObjectSerializer = require("../serializers/object");
+var exec = require("child_process").exec;
+var nmap = require("libnmap");
 var objects;
 var sources;
 
@@ -20,14 +22,52 @@ var sources;
  */
 router.get("/board-listall", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	// This is a temporary solution...
-	let exec = require("child_process").exec;
-	let myShellScript = exec(`${ota.arduino_binary_cli} board listall`, function(error, stdout, stderr) {
+	exec(`${ota.arduino_binary_cli} board listall`, function(error, stdout, stderr) {
 		if (!error && stdout) {
 			res.status(200).send({ "board-listall": stdout.split("\n") });
 		} else {
 			res.status(500).send(stderr + error);
 		}
 	});
+});
+
+/**
+ * @api {get} /ota/:object_id Get the current state of OTA on Object
+ * @apiName Get the current state of OTA on Object
+ * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * 
+ * @apiUse 201
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/(:object_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection("objects");
+	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
+	if ( object && object.ipv4 && object.fqbn ) {
+		let opts = {
+			range: [object.ipv4!==null?object.ipv4:null],
+			ports: String(ota.defaultPort),
+			udp: false,
+			timeout: 3,
+			json: true,
+		};
+		nmap.scan(opts, function(err, report) {
+			if (!err && report) {
+				for (let item in report) {
+					res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "status": report[item].runstats[0].hosts[0].item.up, "summary": report[item].runstats[0].finished[0].item.summary });
+				}
+			} else {
+				throw new Error(err);
+				res.status(500).send(stderr + error);
+			}
+		});
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+	}
 });
 
 /**
@@ -82,7 +122,7 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 				// only on default port 8266
 				let exec = require("child_process").exec;
 				let password = s.password!==""?s.password:"";
-				let cmd = `${ota.python3} ${ota.espota_py} -i ${o.ipv4} -p 8266 --auth=${password} -f ${binFile}`;
+				let cmd = `${ota.python3} ${ota.espota_py} -i ${o.ipv4} -p ${ota.defaultPort} --auth=${password} -f ${binFile}`;
 				
 				t6console.log("Deploying");
 				let myShellScript = exec(`${cmd}`);
@@ -93,7 +133,7 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 			}
 		});
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 602, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

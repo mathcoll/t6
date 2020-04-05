@@ -127,5 +127,6 @@ ota = {
 	"config" : "/home/mathieu/.arduino15/arduino-cli.yaml", // Arduino-CLI configuration, created using `arduino-cli config init`
 	"python3" : "/home/mathieu/.arduino15/packages/esp8266/tools/python3/3.7.2-post1/python3", // Used in the deploy to OTA
 	"espota_py" : "/home/mathieu/.arduino15/packages/esp8266/hardware/esp8266/2.6.3/tools/espota.py", // Used in the deploy to OTA
-	"fqbn" : "esp8266:esp8266:nodemcu:xtal=80,vt=flash,exception=legacy,ssl=all,eesz=4M2M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200"
+	"fqbn" : "esp8266:esp8266:nodemcu:xtal=80,vt=flash,exception=legacy,ssl=all,eesz=4M2M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
+	"defaultPort": 8266
 };
