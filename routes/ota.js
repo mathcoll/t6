@@ -7,6 +7,30 @@ var objects;
 var sources;
 
 /**
+ * @api {get} /ota/board-listall List all known boards and their corresponding FQBN
+ * @apiName List all known boards and their corresponding FQBN
+ * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * 
+ * @apiUse 201
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/board-listall", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	// This is a temporary solution...
+	let exec = require("child_process").exec;
+	let myShellScript = exec(`${ota.arduino_binary_cli} board listall`, function(error, stdout, stderr) {
+		if (!error && stdout) {
+			res.status(200).send({ "board-listall": stdout.split("\n") });
+		} else {
+			res.status(500).send(stderr + error);
+		}
+	});
+});
+
+/**
  * @api {post} /ota/:source_id/deploy Deploy a Source to all linked Objects Over The Air
  * @apiName Deploy a Source to all linked Objects Over The Air
  * @apiGroup 6. Source and Over The Air (OTA)
