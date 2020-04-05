@@ -210,7 +210,8 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 				if (err) throw err;
 				t6console.log("File is created successfully.", `${dir}/${object.source_id}.ino`);
 			});  
-			let myShellScript = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${ota.fqbn} --verbose compile ${dir}`);
+			let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
+			let myShellScript = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
 			myShellScript.stderr.on("data", (data)=>{
 				t6console.error(data);
 			});
@@ -271,6 +272,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			ipv6:			typeof req.body.ipv6!=="undefined"?req.body.ipv6:"",
 			user_id:		req.user.id,
 			source_id:		typeof req.body.source_id!=="undefined"?req.body.source_id:"",
+			fqbn:			typeof req.body.fqbn!=="undefined"?req.body.fqbn:"",
 			secret_key:		typeof req.body.secret_key!=="undefined"?req.body.secret_key:"",
 			secret_key_crypt:typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:"",
 		};
@@ -344,6 +346,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 				item.ipv4				= typeof req.body.ipv4!=="undefined"?req.body.ipv4:item.ipv4;
 				item.ipv6				= typeof req.body.ipv6!=="undefined"?req.body.ipv6:item.ipv6;
 				item.source_id			= typeof req.body.source_id!=="undefined"?req.body.source_id:item.source_id;
+				item.fqbn				= typeof req.body.fqbn!=="undefined"?req.body.fqbn:item.fqbn;
 				item.secret_key			= typeof req.body.secret_key!=="undefined"?req.body.secret_key:item.secret_key;
 				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;
 				result = item;
