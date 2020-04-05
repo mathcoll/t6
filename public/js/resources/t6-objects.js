@@ -183,7 +183,6 @@ app.resources.objects = {
 					node += app.getQrcodeImg(app.icons.date, "", object.id, {type: "text", isEdit: isEdit});
 					app.getQrcode(app.icons.date, "", object.id, {type: "text", isEdit: isEdit});
 				} else {
-					console.log(object.attributes.is_public);
 					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
 				}
 				node += "	</div>";
