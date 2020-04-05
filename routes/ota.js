@@ -70,6 +70,7 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 	}
 	var json = objects.find(query);
 	if ( json.length > 0 ) {
+		let s = sources.find({ "id" : source_id });
 		json.map(function(o) {
 			let dir = `${ota.build_dir}/${o.source_id}`;
 			let binFile = `${dir}/${o.source_id}.esp8266.esp8266.nodemcu.bin`;
@@ -77,11 +78,11 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 				res.status(409).send(new ErrorSerializer({"id": 600, "code": 409, "message": "Build is required first"}).serialize());
 			} else {
 				// This is a temporary solution...
-				// only on ipv4
-				// only on esp8266.esp8266.nodemcu
+				// only on ipv4 because I don't know if ipv6 can work
 				// only on default port 8266
 				let exec = require("child_process").exec;
-				let cmd = `${ota.python3} ${ota.espota_py} -i ${o.ipv4} -p 8266 --auth= -f ${binFile}`;
+				let password = s.password!==""?s.password:"";
+				let cmd = `${ota.python3} ${ota.espota_py} -i ${o.ipv4} -p 8266 --auth=${password} -f ${binFile}`;
 				
 				t6console.log("Deploying");
 				let myShellScript = exec(`${cmd}`);
