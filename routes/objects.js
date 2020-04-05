@@ -202,13 +202,13 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 		if ( source.content ) {
 			// This is a temporary solution...
 			let exec = require("child_process").exec;
-			let dir = `${ota.build_dir}/${object.source_id}`;
+			let dir = `${ota.build_dir}/${object.source_id}/${object.id}`;
 			
 			t6console.log("Building ino sketch");
 			if (!fs.existsSync(dir)) fs.mkdirSync(dir);
-			fs.writeFile(`${dir}/${object.source_id}.ino`, source.content, function (err) {
+			fs.writeFile(`${dir}/${object.id}.ino`, source.content, function (err) {
 				if (err) throw err;
-				t6console.log("File is created successfully.", `${dir}/${object.source_id}.ino`);
+				t6console.log("File is created successfully.", `${dir}/${object.id}.ino`);
 			});  
 			let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
 			let myShellScript = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
@@ -216,7 +216,7 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 				t6console.error(data);
 			});
 			
-			res.status(201).send({ "code": 201, message: "Building", object: new ObjectSerializer(object).serialize() });
+			res.status(201).send({ "code": 201, message: "Building ino sketch", object: new ObjectSerializer(object).serialize() });
 		} else {
 			res.status(409).send(new ErrorSerializer({"id": 140, "code": 409, "message": "Source is empty"}).serialize());
 		}

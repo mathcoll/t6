@@ -111,27 +111,50 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 	var json = objects.find(query);
 	if ( json.length > 0 ) {
 		let s = sources.find({ "id" : source_id });
+		let binFileErrors = new Array();
 		json.map(function(o) {
-			let dir = `${ota.build_dir}/${o.source_id}`;
-			let binFile = `${dir}/${o.source_id}.esp8266.esp8266.nodemcu.bin`;
+			let dir = `${ota.build_dir}/${o.source_id}/${o.id}`;
+			t6console.info("Deploying from dir", dir);
+			let pai = o.fqbn.split(":");
+			let packager = pai[0];
+			let architecture = pai[1];
+			let id = pai[2];
+			let binFile = `${dir}/${o.id}.${packager}.${architecture}.${id}.bin`;
 			if ( !fs.existsSync(dir) || !fs.existsSync(binFile) ) {
-				res.status(409).send(new ErrorSerializer({"id": 600, "code": 409, "message": "Build is required first"}).serialize());
-			} else {
-				// This is a temporary solution...
-				// only on ipv4 because I don't know if ipv6 can work
-				// only on default port 8266
-				let exec = require("child_process").exec;
-				let password = s.password!==""?s.password:"";
-				let cmd = `${ota.python3} ${ota.espota_py} -i ${o.ipv4} -p ${ota.defaultPort} --auth=${password} -f ${binFile}`;
-				
-				t6console.log("Deploying");
-				let myShellScript = exec(`${cmd}`);
-				myShellScript.stderr.on("data", (data)=>{
-					t6console.error(data);
-				});
-				res.status(201).send({ "code": 201, message: "Deploying", deploying_to_objects: json });
+				binFileErrors.push(o.id);
 			}
 		});
+		if( binFileErrors.length > 0 ) {
+			t6console.info("binFileErrors", binFileErrors);
+			res.status(409).send(new ErrorSerializer({"id": 600, "code": 409, "message": "Build is required first", "missing_builds": binFileErrors}).serialize());
+		} else {
+			if( !req.query.dryrun || req.query.dryrun === "false" ) {
+				res.status(201).send({ "code": 201, message: "Deploying", deploying_to_objects: new ObjectSerializer(json).serialize() });
+				json.map(function(o) {
+					// This is a temporary solution...
+					// only on ipv4 because I don't know if ipv6 can work
+					// only on default port 8266
+					//let exec = require("child_process").exec;
+					let dir = `${ota.build_dir}/${o.source_id}/${o.id}`;
+					let pai = o.fqbn.split(":");
+					let packager = pai[0];
+					let architecture = pai[1];
+					let id = pai[2];
+					let binFile = `${dir}/${o.id}.${packager}.${architecture}.${id}.bin`;
+					let password = typeof s.password!=="undefined"?s.password:"";
+					let cmd = `${ota.python3} ${ota.espota_py} -i ${o.ipv4} -p ${ota.defaultPort} --auth=${password} -f ${binFile}`;
+
+					t6console.info("Deploying to", o.id);
+					t6console.info("Using", cmd);
+					let myShellScript = exec(`${cmd}`);
+					myShellScript.stderr.on("data", (data)=>{
+						t6console.error(data);
+					});
+				});
+			} else {
+				res.status(201).send({ "code": 201, message: "Deploying (Dry Run)", deploying_to_objects: new ObjectSerializer(json).serialize() });
+			}
+		}
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 602, "code": 404, "message": "Not Found"}).serialize());
 	}
