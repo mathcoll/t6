@@ -1,4 +1,4 @@
-var dataCacheName= 't6-cache-37725aa336ee8bde4bf90c35d2f02946';
+var dataCacheName= 't6-cache-59d5a3e52e0106ea1aa344714ccc16cf';
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to", "cloudflare", "leaflet"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];

@@ -167,6 +167,7 @@ var app = {
 		integerNotNegative: "^[^a-zA-Z]{1,4}$",
 		meta_revision: "^[0-9]{1,}$",
 		ttl: "^[1-9]+$",
+		uuidv4: "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
 	},
 	resources: {},
 	buttons: {}, // see function app.refreshButtonsSelectors()
