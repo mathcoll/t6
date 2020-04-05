@@ -18,6 +18,7 @@ app.resources.objects = {
 				secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:"",
 				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:"",
 				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
+				fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
@@ -59,6 +60,7 @@ app.resources.objects = {
 			secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:"",
 			secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:"",
 			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
+			fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 		};
 
 		var myHeaders = new Headers();
@@ -163,12 +165,6 @@ app.resources.objects = {
 						node += app.getField(app.icons.type, "Type", d.value, {type: "select", id: "Type", isEdit: isEdit, options: app.types });
 					}
 				}
-				if ( object.attributes.ipv4 || isEdit===true ) {
-					node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
-				}
-				if ( object.attributes.ipv6 || isEdit===true ) {
-					node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
-				}
 				node += "	</div>";
 				node += "</section>";
 				
@@ -192,6 +188,21 @@ app.resources.objects = {
 				}
 				node += "	</div>";
 				node += "</section>";
+
+				if ( isEdit || (object.attributes.fqbn !== undefined ) ) {
+					node += app.getSubtitle("Over The Air (OTA)");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField("code", "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: isEdit});
+					if ( object.attributes.ipv4 || isEdit===true ) {
+						node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
+					}
+					if ( object.attributes.ipv6 || isEdit===true ) {
+						node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
+					}
+					node += "	</div>";
+					node += "</section>";
+				}
 
 				if ( isEdit || (object.attributes.parameters !== undefined && object.attributes.parameters.length > -1 ) ) {
 					node += app.getSubtitle("Custom Parameters");
@@ -472,8 +483,6 @@ app.resources.objects = {
 		node += app.getField(app.icons.name, "Name", object.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 		node += app.getField(app.icons.description, "Description", description, {type: "textarea", id: "Description", isEdit: true});
 		node += app.getField(app.icons.type, "Type", object.attributes.type, {type: "select", id: "Type", options: app.types, isEdit: true });
-		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
-		node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -484,6 +493,15 @@ app.resources.objects = {
 		node += app.getField("", "", "When flow require signed payload, you should provide your secret to verify signature.", {type: "text", isEdit: false});
 		node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key_crypt, error:""});
 		node += app.getField("visibility", "Object is only visible to you", object.attributes.is_public!==undefined?object.attributes.is_public:false, {type: "switch", id: "Visibility", isEdit: true});
+		node += "	</div>";
+		node += "</section>";
+		
+		node += app.getSubtitle("Over The Air (OTA)");
+		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField("code", "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: true});
+		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
+		node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 		node += "	</div>";
 		node += "</section>";
 		
