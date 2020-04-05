@@ -61,8 +61,8 @@ router.get("/(:object_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret}
 					res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "status": report[item].runstats[0].hosts[0].item.up, "summary": report[item].runstats[0].finished[0].item.summary });
 				}
 			} else {
-				throw new Error(err);
 				res.status(500).send(stderr + error);
+				throw new Error(err);
 			}
 		});
 	} else {
