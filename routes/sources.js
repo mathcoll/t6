@@ -49,6 +49,7 @@ router.get("/?(:source_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
+					{ "version" : 0 },
 				]
 			};
 		}
@@ -90,10 +91,12 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 		}
 		var newSource = {
 			id:			source_id,
+			root_source_id: source_id,
+			version:	0,
+			latest_version:	0,
 			user_id:	req.user.id,
 			name:		typeof req.body.name!=="undefined"?req.body.name:"",
 			content:	content,
-			version:	typeof req.body.version!=="undefined"?req.body.version:"",
 			password:	typeof req.body.password!=="undefined"?req.body.password:"",
 		};
 		t6events.add("t6Api", "source add", newSource.id);
@@ -124,48 +127,48 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 500
  */
 router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var source_id = req.params.source_id;
-	if ( source_id ) {
-		sources	= dbSources.getCollection("sources");
-		var query = {
+	var parent_source_id = req.params.source_id;
+	sources	= dbSources.getCollection("sources");
+	var query = {
+		"$and": [
+				{ "id": parent_source_id },
+				{ "user_id": req.user.id },
+			]
+		};
+	let parent = sources.findOne( query );
+	var queryRoot = {
 			"$and": [
-					{ "id": source_id },
+					{ "id": parent.root_source_id },
 					{ "user_id": req.user.id },
 				]
 			};
-		var source = sources.findOne( query );
-		if ( source ) {
-			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - source.meta.revision) !== 0 ) {
-				res.status(400).send(new ErrorSerializer({"id": 639.2, "code": 400, "message": "Bad Request"}).serialize());
-			} else {
-				let result;
-				let content;
-				if ( Array.isArray(req.body.content) ) {
-					content = req.body.content.join("\n");
-				} else {
-					content = req.body.content;
-				}
-				sources.chain().find({ "id": source_id }).update(function(item) {
-					item.user_id	= item.user_id,
-					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
-					item.content	= content;
-					item.version	= typeof req.body.version!=="undefined"?req.body.version:item.version;
-					item.password	= typeof req.body.password!=="undefined"?req.body.password:item.password;
-					//item.meta.revision = (req.body.meta.revision)+1;
-					result = item;
-				});
-				if ( typeof result !== "undefined" ) {
-					dbSources.save();
-					
-					res.header("Location", "/v"+version+"/sources/"+source_id);
-					res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(result).serialize() });
-				} else {
-					res.status(404).send(new ErrorSerializer({"id": 640, "code": 404, "message": "Not Found"}).serialize());
-				}
-			}
+	let root = sources.findOne( queryRoot );
+	
+	// This will create a new version instead of overwritting the current id
+	if (parent && parent_source_id) {
+		var source_id = uuid.v4();
+		let content;
+		if ( Array.isArray(req.body.content) ) {
+			content = req.body.content.join("\n");
 		} else {
-			res.status(401).send(new ErrorSerializer({"id": 642, "code": 401, "message": "Forbidden ??"}).serialize());
+			content = req.body.content;
 		}
+		var newSource = {
+			id:					source_id,
+			parent_source_id:	parent_source_id,
+			root_source_id:		root.id,
+			user_id:			req.user.id,
+			name:				typeof req.body.name!=="undefined"?req.body.name:parent.name,
+			content:			content,
+			version:			root.latest_version+1,
+			password:			typeof req.body.password!=="undefined"?req.body.password:parent.password,
+		};
+		t6events.add("t6Api", "source add child", newSource.id);
+		sources.insert(newSource);
+		sources.chain().find({ id: root.id }).update(function(s) { s.latest_version = s.latest_version+1; s.latest_version_id = source_id; });
+
+		res.header("Location", "/v"+version+"/sources/"+source_id);
+		res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(newSource).serialize() });
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 640.5, "code": 404, "message": "Not Found"}).serialize());
 	}
@@ -181,7 +184,32 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
  * @apiParam {uuid-v4} [source_id] Source Id
  */
 router.delete("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	res.status(404).send(new ErrorSerializer({"id": 650, "code": 404, "message": "Not Found"}).serialize());
+	var source_id = req.params.source_id;
+	if ( !source_id ) {
+		res.status(405).send(new ErrorSerializer({"id": 636, "code": 405, "message": "Method Not Allowed"}).serialize());
+	}
+	if ( !req.user.id ){
+		// Not Authorized because token is invalid
+		res.status(401).send(new ErrorSerializer({"id": 637, "code": 401, "message": "Not Authorized"}).serialize());
+	} else if ( source_id ) {
+		sources	= dbSources.getCollection("sources");
+		var query = {
+			"$and": [
+					{ "user_id" : req.user.id },
+					{ "id" : source_id },
+				]
+			};
+		let source = sources.findOne(query);
+		if ( source ) {
+			sources.remove(source);
+			dbSources.saveDatabase();
+			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: source_id }); // TODO: missing serializer
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 639, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 640.2, "code": 403, "message": "Forbidden"}).serialize());
+	}
 });
 
 module.exports = router;

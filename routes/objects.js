@@ -212,9 +212,9 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 			});  
 			let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
 			let myShellScript = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
-			myShellScript.stderr.on("data", (data)=>{
-				t6console.error(data);
-			});
+			//myShellScript.stderr.on("data", (data)=>{
+			//	t6console.error(data);
+			//});
 			
 			res.status(201).send({ "code": 201, message: "Building ino sketch", object: new ObjectSerializer(object).serialize() });
 		} else {

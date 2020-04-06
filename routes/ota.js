@@ -120,15 +120,15 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 			let architecture = pai[1];
 			let id = pai[2];
 			let binFile = `${dir}/${o.id}.${packager}.${architecture}.${id}.bin`;
-			if ( !fs.existsSync(dir) || !fs.existsSync(binFile) ) {
+			if (!fs.existsSync(dir) || !fs.existsSync(binFile)) {
 				binFileErrors.push(o.id);
 			}
 		});
-		if( binFileErrors.length > 0 ) {
+		if(binFileErrors.length > 0) {
 			t6console.info("binFileErrors", binFileErrors);
 			res.status(409).send(new ErrorSerializer({"id": 600, "code": 409, "message": "Build is required first", "missing_builds": binFileErrors}).serialize());
 		} else {
-			if( !req.query.dryrun || req.query.dryrun === "false" ) {
+			if(!req.query.dryrun || req.query.dryrun === "false") {
 				res.status(201).send({ "code": 201, message: "Deploying", deploying_to_objects: new ObjectSerializer(json).serialize() });
 				json.map(function(o) {
 					// This is a temporary solution...
@@ -147,9 +147,9 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 					t6console.info("Deploying to", o.id);
 					t6console.info("Using", cmd);
 					let myShellScript = exec(`${cmd}`);
-					myShellScript.stderr.on("data", (data)=>{
-						t6console.error(data);
-					});
+					//myShellScript.stderr.on("data", (data)=>{
+					//	t6console.error(data);
+					//});
 				});
 			} else {
 				res.status(201).send({ "code": 201, message: "Deploying (Dry Run)", deploying_to_objects: new ObjectSerializer(json).serialize() });

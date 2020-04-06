@@ -5,7 +5,7 @@ function SourceSerializer(source) {
 	this.serialize = function() {
 		return new JSONAPISerializer("source", {
 			keyForAttribute: "underscore_case",
-			attributes : [ "name", "user_id", "content", "version", "password", "meta" ],
+			attributes : [ "name", "user_id", "parent_source_id", "root_source_id", "latest_version", "latest_version_id", "content", "version", "password", "meta" ],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/sources", baseUrl_https, version),
 				self : source.pageSelf!==undefined?sprintf("%s/v%s/sources/?page=%s&size=%s", baseUrl_https, version, source.pageSelf, source.size):undefined,
