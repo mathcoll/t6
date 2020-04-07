@@ -132,9 +132,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link.mdl-layout__tab(href='#rules', for='rules')
             i.material-icons call_split
             |  Decision Rules
-          a.mdl-navigation__link.mdl-layout__tab(href='#mqtts', for='mqtts')
-            i.material-icons volume_down
-            |  Mqtt
+          a.mdl-navigation__link.mdl-layout__tab(href='#sources', for='sources')
+            i.material-icons code
+            |  Sources
 
       #drawer.mdl-layout__drawer
         div.side-nav__header#currentUserBackground
@@ -160,9 +160,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link(href='#rules')
             i.material-icons call_split
             |  Decision Rules
-          a.mdl-navigation__link(href='#mqtts')
-            i.material-icons volume_down
-            |  Mqtt
+          a.mdl-navigation__link(href='#sources')
+            i.material-icons code
+            |  Sources
           span.mdl-menu__item--full-bleed-divider 
           a.mdl-navigation__link(href='#settings')
             i.material-icons settings
@@ -418,6 +418,27 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         section#mqtt_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Add Mqtt
+          .page-content.mdl-grid.mdl-grid--no-spacing
+
+        //- List Sources
+        section#sources.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='7')
+          .mdl-grid.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content Sources
+          .page-content.mdl-grid.mdl-grid--no-spacing
+            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
+
+        //- View Sources
+        section#source.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .page-content.mdl-grid.mdl-grid--no-spacing
+
+        //- Edit Source
+        section#source_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .page-content.mdl-grid.mdl-grid--no-spacing
+
+        //- Add Source
+        section#source_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+          .mdl-grid.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content Add Source
           .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Sign In
@@ -756,6 +777,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-dashboards.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-mqtts.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-rules.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-sources.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/valueDisplay.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/graphDisplay.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/flowGraph.js')

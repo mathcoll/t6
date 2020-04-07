@@ -26,8 +26,8 @@ var app = {
 	cookieconsent: 30,
 	dataCacheName: "t6-cache-2019-07-12",
 	refreshExpiresInSeconds: 280000,
-	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15},
-	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1},
+	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15, sources: 15,},
+	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1, sources: 1,},
 	currentSection: "index",
 	tawktoid: "58852788bcf30e71ac141187",
 	gtm: "GTM-PH7923",
@@ -55,6 +55,9 @@ var app = {
 		"mqtt": "t6 Mqtt topic %s",
 		"mqtts": "t6 Mqtt topics",
 		"mqtt_add": "Add Mqtt topic to t6",
+		"source": "t6 Source %s",
+		"sources": "t6 Sources",
+		"source_add": "Add Source to t6",
 		"settings": "t6 Settings",
 		"signin": "Signin to t6",
 		"login": "Signin to t6",
@@ -85,6 +88,7 @@ var app = {
 		"login": "email",
 		"menu": "menu",
 		"mqtts": "volume_down",
+		"sources": "code",
 		"name": "list",
 		"objects": "devices_other",
 		"rules": "call_split",
@@ -147,6 +151,7 @@ var app = {
 		dashboard: {id:"", attributes: {name: "", description: ""}},
 		snippet: {id:"", attributes: {name: "", icon: "", color: ""}},
 		mqtt: {id:"", attributes: {name: ""}},
+		source: {id:"", attributes: {name: ""}},
 		rule: {id:'', active: true, attributes: {name: '', priority: 1, event: {type:"email", conditions: '{"all":[ { "fact":"environment", "operator":"equal", "value":"production" }]}', parameters: "{}"}}},
 	},
 	offlineCard: {},
@@ -702,6 +707,10 @@ var touchStartPoint, touchMovePoint;
 			deleteMqtt: document.querySelectorAll('#mqtts .delete-button'),
 			editMqtt: document.querySelectorAll('#mqtts .edit-button'),
 			createMqtt: document.querySelector('#mqtts button#createMqtt'),
+			
+			deleteSource: document.querySelectorAll('#sources .delete-button'),
+			editSource: document.querySelectorAll('#sources .edit-button'),
+			createSource: document.querySelector('#sources button#createSource'),
 		};
 	};
 	
@@ -741,6 +750,10 @@ var touchStartPoint, touchMovePoint;
 			mqtts: document.querySelector('section#mqtts'),
 			mqtt: document.querySelector('section#mqtt'),
 			mqtt_add: document.querySelector('section#mqtt_add'),
+			
+			sources: document.querySelector('section#sources'),
+			source: document.querySelector('section#source'),
+			source_add: document.querySelector('section#source_add'),
 			
 			menuIconElement: document.querySelector('.mdl-layout__drawer-button'),
 			menuElement: document.getElementById('drawer'),
@@ -915,6 +928,24 @@ var touchStartPoint, touchMovePoint;
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.resources.mqtts.displayAdd(app.defaultResources.mqtt, true, false, false);
+		} else if ( section === 'source' ) {
+			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var params = {};
+			if ( Array.from(urlParams).length > -1 ) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if ( params['id'] == "" ) {
+					app.setSection('sources'); // TODO, recursive?
+				} else if (params['id'] ) {
+					app.resources.sources.display(params['id'], false, false, false);
+				}
+			}
+		} else if ( section === 'source_add' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
+			app.resources.sources.displayAdd(app.defaultResources.source, true, false, false);
 		} else if ( section === 'profile' ) {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
@@ -1413,6 +1444,8 @@ var touchStartPoint, touchMovePoint;
 			}
 		} else if ( type == 'mqtts' ) {
 			// TODO
+		} else if ( type == 'sources' ) {
+			// TODO
 		}
 	};
 	
@@ -1686,7 +1719,7 @@ var touchStartPoint, touchMovePoint;
 
 	app.fetchItemsPaginated = function(type, filter, page, size) {
 		let promise = new Promise((resolve, reject) => {
-			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' ) {
+			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' && type !== 'sources' ) {
 				resolve();
 				return false;
 			}
@@ -1805,6 +1838,22 @@ var touchStartPoint, touchMovePoint;
 				var title = 'My Mqtts';
 				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
 				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
+				
+			} else if (type == 'sources') {
+				var container = (app.containers.sources).querySelector('.page-content');
+				var url = app.baseUrl+'/'+app.api_version+'/sources';
+				if ( page || size ) {
+					url += '?';
+					if ( page !== undefined ) {
+						url += 'page='+page+'&';
+					}
+					if ( size !== undefined ) {
+						url += 'size='+size+'&';
+					}
+				}
+				var title = 'My Sources';
+				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any source yet.', action: {id: 'source_add', label: '<i class=\'material-icons\'>add</i>Add my first Source'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
 				
 			} else if (type == 'tokens') {
 				var container = (app.containers.tokens).querySelector('.page-content');
@@ -2397,6 +2446,11 @@ var touchStartPoint, touchMovePoint;
 			container = (app.containers.mqtts).querySelector('.page-content');
 			showFAB = true;
 		}
+		if( type == 'sources' ) {
+			var id = 'createSource';
+			container = (app.containers.sources).querySelector('.page-content');
+			showFAB = true;
+		}
 		if ( showFAB  && container ) {
 			var fabClass = app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom';
 			var fab = "<div class='mdl-button--fab_flinger-container "+fabClass+"'>";
@@ -2430,6 +2484,7 @@ var touchStartPoint, touchMovePoint;
 			if ( app.buttons.createDashboard ) app.buttons.createDashboard.addEventListener('click', function() {app.setSection('dashboard_add');}, false);
 			if ( app.buttons.createRule ) app.buttons.createRule.addEventListener('click', function() {app.setSection('rule_add');}, false);
 			if ( app.buttons.createMqtt ) app.buttons.createMqtt.addEventListener('click', function() {app.setSection('mqtt_add')}, false);
+			if ( app.buttons.createSource ) app.buttons.createSource.addEventListener('click', function() {app.setSection('source_add')}, false);
 		}
 	};
 	
@@ -2767,6 +2822,8 @@ var touchStartPoint, touchMovePoint;
 					app.displayAddRule(app.defaultResources.rule);
 				} else if ( window.location.hash && window.location.hash.substr(1) === 'mqtt_add' ) {
 					app.displayAddMqtt(app.defaultResources.mqtt);
+				} else if ( window.location.hash && window.location.hash.substr(1) === 'source_add' ) {
+					app.displayAddSource(app.defaultResources.source);
 				} else if ( window.location.hash && window.location.hash.substr(1) !== 'login' ) {
 					app.setSection(window.location.hash.substr(1));
 				} else {
@@ -3266,8 +3323,8 @@ var touchStartPoint, touchMovePoint;
 		
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
-		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15};
-		app.itemsPage = {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1};
+		app.itemsSize = {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15, sources: 15};
+		app.itemsPage = {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1, sources: 1};
 		if ( !app.isLogged ) toast('Your session has expired. You must sign-in again.', {timeout:3000, type: "error"});
 		app.isLogged = false;
 		app.resetDrawer();
@@ -3291,6 +3348,8 @@ var touchStartPoint, touchMovePoint;
 		app.displayLoginForm( (app.containers.rules).querySelector('.page-content') );
 		(app.containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 		app.displayLoginForm( (app.containers.mqtts).querySelector('.page-content') );
+		(app.containers.sources).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+		app.displayLoginForm( (app.containers.sources).querySelector('.page-content') );
 		
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
 		for (var i=0; i<updated.length;i++) {
@@ -3320,6 +3379,8 @@ var touchStartPoint, touchMovePoint;
 		(app.containers.rule).querySelector('.page-content').innerHTML = '';
 		(app.containers.mqtts).querySelector('.page-content').innerHTML = '';
 		(app.containers.mqtt).querySelector('.page-content').innerHTML = '';
+		(app.containers.sources).querySelector('.page-content').innerHTML = '';
+		(app.containers.source).querySelector('.page-content').innerHTML = '';
 	};
 
 	app.showOrientation = function() {
@@ -3471,6 +3532,8 @@ var touchStartPoint, touchMovePoint;
 				app.setSection('rules');
 			} else if ( (currentPage === 'mqtt' || currentPage === 'mqtts') ) {
 				app.setSection('mqtts');
+			} else if ( (currentPage === 'source' || currentPage === 'sources') ) {
+				app.setSection('sources');
 			} else {
 				app.setSection(currentPage);
 			}
@@ -3797,7 +3860,7 @@ var touchStartPoint, touchMovePoint;
 	}, false);
 
 	/* Lazy loading */
-	var paginatedContainer = Array(Array(app.containers.objects, 'objects'), Array(app.containers.flows, 'flows'), Array(app.containers.snippets, 'snippets'), Array(app.containers.dashboards, 'dashboards'), Array(app.containers.mqtts, 'mqtts'), Array(app.containers.rules, 'rules'));
+	var paginatedContainer = Array(Array(app.containers.objects, 'objects'), Array(app.containers.flows, 'flows'), Array(app.containers.snippets, 'snippets'), Array(app.containers.dashboards, 'dashboards'), Array(app.containers.mqtts, 'mqtts'), Array(app.containers.sources, 'sources'), Array(app.containers.rules, 'rules'));
 	paginatedContainer.map(function(c) {
 		c[0].addEventListener('DOMMouseScroll', function(event) {
 			var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);

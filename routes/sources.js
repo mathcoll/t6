@@ -68,6 +68,49 @@ router.get("/?(:source_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 });
 
 /**
+ * @api {get} /sources/:source_id/child Get Children of Source
+ * @apiName Get Children of Source
+ * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [rule_id] Parent Rule Id
+ * @apiParam {String} [name] Rule name
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/:source_id([0-9a-z\-]+)/child", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var source_id = req.params.source_id;
+	var name = req.query.name;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
+	sources	= dbSources.getCollection("sources");
+	var query = {
+	"$and": [
+			{ "user_id" : req.user.id },
+			{ "parent_source_id" : source_id },
+		]
+	};
+	var json = sources.chain().find(query).offset(offset).limit(size).data();
+	t6console.debug(query);
+
+	var total = sources.find(query).length;
+	json.size = size;
+	json.pageSelf = page;
+	json.pageFirst = 1;
+	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
+	json.pageLast = Math.ceil(total/size);
+	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
+	res.status(200).send(new SourceSerializer(json).serialize());
+});
+
+/**
  * @api {post} /sources Create new Source
  * @apiName Create new Source
  * @apiGroup 6. Source and Over The Air (OTA)
