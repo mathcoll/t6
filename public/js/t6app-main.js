@@ -89,6 +89,7 @@ var app = {
 		"menu": "menu",
 		"mqtts": "volume_down",
 		"sources": "code",
+		"code": "code",
 		"name": "list",
 		"objects": "devices_other",
 		"rules": "call_split",
@@ -711,6 +712,13 @@ var touchStartPoint, touchMovePoint;
 			deleteSource: document.querySelectorAll('#sources .delete-button'),
 			editSource: document.querySelectorAll('#sources .edit-button'),
 			createSource: document.querySelector('#sources button#createSource'),
+			addSource: document.querySelector('#source_add section.fixedActionButtons button.add-button'),
+			addSourceBack: document.querySelector('#source_add section.fixedActionButtons button.back-button'),
+			backSource: document.querySelector('#source section.fixedActionButtons button.back-button'),
+			saveSource: document.querySelector('#source section.fixedActionButtons button.save-button'),
+			listSource: document.querySelector('#source section.fixedActionButtons button.list-button'),
+			editSource2: document.querySelector('#source section.fixedActionButtons button.edit-button'),
+			editSourceChild: document.querySelectorAll('#source section button.child_edit_btn'),
 		};
 	};
 	
@@ -1118,6 +1126,23 @@ var touchStartPoint, touchMovePoint;
 						var item = evt.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.rules.display(item.dataset.id, false, false, false);
+						evt.preventDefault();
+					}, {passive: false,});
+				});
+			} else if ( type == 'sources' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type ) {
+				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
+					var item = evt.currentTarget.parentNode.parentNode;
+					item.classList.add('is-hover');
+					app.resources.sources.display(item.dataset.id, false, false, false);
+					evt.preventDefault();
+				}, {passive: false,});
+				
+				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
+				Array.from(divs).forEach( function(div) {
+					(div).addEventListener('click', function(evt) {
+						var item = evt.currentTarget.parentNode.parentNode;
+						item.classList.add('is-hover');
+						app.resources.sources.display(item.dataset.id, false, false, false);
 						evt.preventDefault();
 					}, {passive: false,});
 				});

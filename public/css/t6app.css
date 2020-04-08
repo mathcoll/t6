@@ -193,6 +193,10 @@ footer div > img {
 	background: #fff;
 	color: rgb(68,138,255);
 }
+.edit_children_source {
+	position: absolute;
+	right: 10px;
+}
 .mdl-cell--12-col, .mdl-cell--12-col-desktop.mdl-cell--12-col-desktop {
 	width: calc(100%);
 }

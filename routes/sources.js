@@ -188,7 +188,7 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 	let root = sources.findOne( queryRoot );
 	
 	// This will create a new version instead of overwritting the current id
-	if (parent && parent_source_id) {
+	if (root && parent && parent_source_id) {
 		var source_id = uuid.v4();
 		let content;
 		if ( Array.isArray(req.body.content) ) {
@@ -206,12 +206,31 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 			version:			root.latest_version+1,
 			password:			typeof req.body.password!=="undefined"?req.body.password:parent.password,
 		};
-		t6events.add("t6Api", "source add child", newSource.id);
-		sources.insert(newSource);
-		sources.chain().find({ id: root.id }).update(function(s) { s.latest_version = s.latest_version+1; s.latest_version_id = source_id; });
+		var result;
+		
+		sources.data = sources.data.filter(doc => typeof doc.$loki === 'number' && typeof doc.meta === 'object')
+		sources.ensureId();
+		sources.ensureAllIndexes(true);
+		  
+		sources.chain().find({ "id": root.id }).update(function(r) {
+			t6console.log("r", r);
+			r.latest_version	= r.latest_version+1;
+			r.latest_version_id = source_id
+			result = r;
+			t6console.log("result123", result);
+		});
+		t6console.log("result456", result);
+		if (typeof result!=="undefined") {
+			dbSources.save();
+			t6console.log("result789", result);
+			sources.insert(newSource);
+			t6events.add("t6Api", "source add child", newSource.id);
 
-		res.header("Location", "/v"+version+"/sources/"+source_id);
-		res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(newSource).serialize() });
+			res.header("Location", "/v"+version+"/sources/"+source_id);
+			res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(newSource).serialize() });
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 641.5, "code": 404, "message": "Not Found"}).serialize());
+		}
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 640.5, "code": 404, "message": "Not Found"}).serialize());
 	}
