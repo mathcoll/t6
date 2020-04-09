@@ -134,7 +134,7 @@ app.resources.sources = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += app.getField(null, "meta.revision", source.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
 				node += app.getField(app.icons.name, "Name", source.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
-				node += app.getField(app.icons.code, "Code Source", content, {type: "textarea", id: "Code", isEdit: isEdit});
+				node += app.getField(app.icons.code, "Arduino Source Code", content, {type: "textarea", id: "Code", isEdit: isEdit});
 				node += "	</div>";
 				node += "</section>";
 				
@@ -284,7 +284,7 @@ app.resources.sources = {
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.name, "Name", source.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
-		node += app.getField(app.icons.code, "Code Source", content, {type: "textarea", id: "Code", isEdit: true});
+		node += app.getField(app.icons.code, "Arduino Source Code", content, {type: "textarea", id: "Code", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
