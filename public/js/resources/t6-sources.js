@@ -272,7 +272,6 @@ app.resources.sources = {
 		source.id = source.id!==""?source.id:app.getUniqueId();
 		var content = source.attributes.content!==undefined?source.attributes.content:"";
 
-		
 		node += app.getSubtitle("Security");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -329,7 +328,7 @@ app.resources.sources = {
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+source.id+"\">";
 		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 		element += "		<div class=\"mdl-card__title\">";
-		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<i class=\"material-icons\">"+app.icons.sources+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
 		element += "		</div>";
 		element += app.getField(null, null, description, {type: "textarea", isEdit: false});
