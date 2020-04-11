@@ -98,7 +98,25 @@ app.resources.sources = {
 					// let's wait
 				});
 			}
-			toast("Source is building all "+(response.data).length+" Objects. This can take several minutes.", {timeout:3000, type: "info"});
+			toast("Source is building all "+(response.data).length+" Objects. This can take several minutes.", {timeout:10000, type: "info"});
+		});
+		
+	},
+	onDeploy: function(id) {
+		// Get all objects linked to the source
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: "POST", headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/ota/"+id+"/deploy";
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			toast("Source is deploying to all "+(response.deploying_to_objects.data).length+" available Objects. This can take several minutes.", {timeout:10000, type: "info"});
 		});
 		
 	},
@@ -222,7 +240,7 @@ app.resources.sources = {
 					}
 				});
 
-				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
+				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+source.id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -263,16 +281,23 @@ app.resources.sources = {
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button id='"+btnId[0]+"' class='build-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+source.id+"'>";
-					node += "			<i class='arduino-icon'> </i>";
+					node += "			<i class='arduino-icon build'> </i>";
 					node += "			<label>Build</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Build Arduino</label>";
+					node += "		</button>";
+					node += "	</div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+					node += "		<button id='"+btnId[0]+"' class='deploy-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+source.id+"'>";
+					node += "			<i class='arduino-icon deploy'> </i>";
+					node += "			<label>Deploy</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[3]+"'>Deploy to Objects</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+source.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[3]+"'>Edit Source</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[4]+"'>Edit Source</label>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) {
@@ -295,6 +320,7 @@ app.resources.sources = {
 					// }, false);
 					app.buttons.editSource2.addEventListener("click", function(evt) { app.resources.sources.display(source.id, false, true, false); evt.preventDefault(); }, false);
 					app.buttons.buildSource.addEventListener("click", function(evt) { app.resources.sources.onBuild(source.id); evt.preventDefault(); }, false);
+					app.buttons.deploySource.addEventListener("click", function(evt) { app.resources.sources.onDeploy(source.id); evt.preventDefault(); }, false);
 				}
 				
 				app.setExpandAction();

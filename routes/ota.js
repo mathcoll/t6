@@ -4,6 +4,7 @@ var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 var ObjectSerializer = require("../serializers/object");
 var exec = require("child_process").exec;
+var users;
 var objects;
 var sources;
 
@@ -106,7 +107,24 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 
 					t6console.info("Deploying to", o.id);
 					t6console.info("Using", cmd);
-					let myShellScript = exec(`${cmd}`);
+					
+					const child = exec(`${cmd}`);
+					child.on("close", (code) => {
+						t6console.log(`child process exited with code ${code}`);
+						users = db.getCollection("users");
+						let user = users.findOne({"id": req.user.id });
+						if (code === 0) {
+							if (user && typeof user.pushSubscription !== "undefined" ) {
+								var payload = "{\"type\": \"message\", \"title\": \"Arduino Deploy\", \"body\": \"Deploy is completed on Object "+o.id+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+								t6notifications.sendPush(user.pushSubscription, payload);
+							}
+						} else {
+							if (user && typeof user.pushSubscription !== "undefined" ) {
+								var payload = "{\"type\": \"message\", \"title\": \"Arduino Deploy\", \"body\": \"An error occured during deployment of Object "+o.id+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+								t6notifications.sendPush(user.pushSubscription, payload);
+							}
+						}
+					});
 					//myShellScript.stderr.on("data", (data)=>{
 					//	t6console.error(data);
 					//});

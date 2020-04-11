@@ -22,8 +22,6 @@
 	vertical-align: middle;
 }
 .arduino-icon {
-	background: transparent url("../img/arduino_icon.ico") repeat scroll 0 0 / cover;
-	font-weight: normal;
 	font-style: normal;
 	font-size: 24px;
 	line-height: 1;
@@ -32,12 +30,15 @@
 	display: inline-block;
 	white-space: nowrap;
 	word-wrap: normal;
-	direction: ltr;
-	-moz-font-feature-settings: 'liga';
-	-moz-osx-font-smoothing: grayscale;
 	vertical-align: middle;
 	width: 20px;
 	height: 20px;
+}
+.arduino-icon.build {
+	background: transparent url("../img/arduinobuild-icon.png") repeat scroll 0 0 / cover;
+}
+.arduino-icon.deploy {
+	background: transparent url("../img/arduinodeploy-icon.png") repeat scroll 0 0 / cover;
 }
 .animatedIcon {
 	animation: rotate 2s cubic-bezier(0,.9,.9,0) infinite;

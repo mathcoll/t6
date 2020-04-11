@@ -719,6 +719,7 @@ var touchStartPoint, touchMovePoint;
 			listSource: document.querySelector('#source section.fixedActionButtons button.list-button'),
 			editSource2: document.querySelector('#source section.fixedActionButtons button.edit-button'),
 			buildSource: document.querySelector('#source section.fixedActionButtons button.build-button'),
+			deploySource: document.querySelector('#source section.fixedActionButtons button.deploy-button'),
 			editSourceChild: document.querySelectorAll('#source section button.child_edit_btn'),
 		};
 	};
