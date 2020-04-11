@@ -1,8 +1,10 @@
 "use strict";
 var express = require("express");
 var router = express.Router();
+var nmap = require("libnmap");
 var ObjectSerializer = require("../serializers/object");
 var ErrorSerializer = require("../serializers/error");
+var users;
 var objects;
 var sources;
 
@@ -172,6 +174,46 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 /**
+ * @api {get} /ota/:object_id/ota-status Get Object OTA status
+ * @apiName Get Object OTA status
+ * @apiGroup 1. Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * 
+ * @apiUse 201
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/(:object_id([0-9a-z\-]+))/ota-status", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection("objects");
+	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
+	if ( object && object.ipv4 && object.fqbn ) {
+		let opts = {
+			range: [object.ipv4!==null?object.ipv4:null],
+			ports: String(ota.defaultPort),
+			udp: false,
+			timeout: 3,
+			json: true,
+		};
+		nmap.scan(opts, function(err, report) {
+			if (!err && report) {
+				for (let item in report) {
+					res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "status": report[item].runstats[0].hosts[0].item.up, "summary": report[item].runstats[0].finished[0].item.summary });
+				}
+			} else {
+				res.status(500).send(stderr + error);
+				throw new Error(err);
+			}
+		});
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
  * @api {post} /objects/:object_id/build Build an Arduino source for the selected object
  * @apiName Build an Arduino source for the selected object
  * @apiGroup 1. Object
@@ -202,20 +244,39 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 		if ( source.content ) {
 			// This is a temporary solution...
 			let exec = require("child_process").exec;
-			let dir = `${ota.build_dir}/${object.source_id}/${object.id}`;
+			let spawn = require("child_process").spawn;
 			
-			t6console.log("Building ino sketch");
+			let odir = `${ota.build_dir}/${object.source_id}`;
+			if (!fs.existsSync(odir)) fs.mkdirSync(odir);
+			
+			let dir = `${ota.build_dir}/${object.source_id}/${object.id}`;
 			if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 			fs.writeFile(`${dir}/${object.id}.ino`, source.content, function (err) {
 				if (err) throw err;
 				t6console.log("File is created successfully.", `${dir}/${object.id}.ino`);
+				
+				let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
+				t6console.log("Building ino sketch using fqbn=", fqbn);
+				
+				const child = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
+				child.on("close", (code) => {
+					t6console.log(`child process exited with code ${code}`);
+					users	= db.getCollection("users");
+					let user = users.findOne({"id": req.user.id });
+					if (code === 0) {
+						if (user && typeof user.pushSubscription !== "undefined" ) {
+							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"Build is completed.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+							t6notifications.sendPush(user.pushSubscription, payload);
+						}
+					} else {
+						if (user && typeof user.pushSubscription !== "undefined" ) {
+							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"An error occured during build (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+							t6notifications.sendPush(user.pushSubscription, payload);
+						}
+					}
+				});
 			});  
-			let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
-			let myShellScript = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
-			//myShellScript.stderr.on("data", (data)=>{
-			//	t6console.error(data);
-			//});
-			
+
 			res.status(201).send({ "code": 201, message: "Building ino sketch", object: new ObjectSerializer(object).serialize() });
 		} else {
 			res.status(409).send(new ErrorSerializer({"id": 140, "code": 409, "message": "Source is empty"}).serialize());

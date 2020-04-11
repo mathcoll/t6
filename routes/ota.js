@@ -4,7 +4,6 @@ var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 var ObjectSerializer = require("../serializers/object");
 var exec = require("child_process").exec;
-var nmap = require("libnmap");
 var objects;
 var sources;
 
@@ -29,45 +28,6 @@ router.get("/board-listall", expressJwt({secret: jwtsettings.secret}), function 
 			res.status(500).send(stderr + error);
 		}
 	});
-});
-
-/**
- * @api {get} /ota/:object_id Get the current state of OTA on Object
- * @apiName Get the current state of OTA on Object
- * @apiGroup 6. Source and Over The Air (OTA)
- * @apiVersion 2.0.1
- * 
- * @apiUse Auth
- * 
- * @apiUse 201
- * @apiUse 429
- * @apiUse 500
- */
-router.get("/(:object_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
-	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
-	if ( object && object.ipv4 && object.fqbn ) {
-		let opts = {
-			range: [object.ipv4!==null?object.ipv4:null],
-			ports: String(ota.defaultPort),
-			udp: false,
-			timeout: 3,
-			json: true,
-		};
-		nmap.scan(opts, function(err, report) {
-			if (!err && report) {
-				for (let item in report) {
-					res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "status": report[item].runstats[0].hosts[0].item.up, "summary": report[item].runstats[0].finished[0].item.summary });
-				}
-			} else {
-				res.status(500).send(stderr + error);
-				throw new Error(err);
-			}
-		});
-	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
-	}
 });
 
 /**

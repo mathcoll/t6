@@ -718,6 +718,7 @@ var touchStartPoint, touchMovePoint;
 			saveSource: document.querySelector('#source section.fixedActionButtons button.save-button'),
 			listSource: document.querySelector('#source section.fixedActionButtons button.list-button'),
 			editSource2: document.querySelector('#source section.fixedActionButtons button.edit-button'),
+			buildSource: document.querySelector('#source section.fixedActionButtons button.build-button'),
 			editSourceChild: document.querySelectorAll('#source section button.child_edit_btn'),
 		};
 	};
@@ -1239,7 +1240,7 @@ var touchStartPoint, touchMovePoint;
 			});
 		}
 		
-		if ( type == 'objects' ) {
+		if ( type === "objects" ) {
 			for (var d=0;d<app.buttons.deleteObject.length;d++) {
 				app.buttons.deleteObject[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Object';
@@ -1284,7 +1285,7 @@ var touchStartPoint, touchMovePoint;
 					evt.preventDefault();
 				});
 			}
-		} else if ( type == 'flows' ) {
+		} else if ( type === "flows" ) {
 			for (var d=0;d<app.buttons.deleteFlow.length;d++) {
 				//console.log(buttons.deleteFlow[d]);
 				app.buttons.deleteFlow[d].addEventListener('click', function(evt) {
@@ -1331,7 +1332,7 @@ var touchStartPoint, touchMovePoint;
 					evt.preventDefault();
 				});
 			}
-		} else if ( type == 'dashboards' ) {
+		} else if ( type === "dashboards" ) {
 			for (var d=0;d<app.buttons.deleteDashboard.length;d++) {
 				//console.log(buttons.deleteDashboard[d]);
 				app.buttons.deleteDashboard[d].addEventListener('click', function(evt) {
@@ -1377,7 +1378,7 @@ var touchStartPoint, touchMovePoint;
 					evt.preventDefault();
 				});
 			}
-		} else if ( type == 'snippets' ) {
+		} else if ( type === "snippets" ) {
 			for (var d=0;d<app.buttons.deleteSnippet.length;d++) {
 				app.buttons.deleteSnippet[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete Snippet';
@@ -1422,7 +1423,7 @@ var touchStartPoint, touchMovePoint;
 					evt.preventDefault();
 				});
 			}
-		} else if ( type == 'rules' ) {
+		} else if ( type === "rules" ) {
 			for (var d=0;d<app.buttons.deleteRule.length;d++) {
 				app.buttons.deleteRule[d].addEventListener('click', function(evt) {
 					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete rule';
@@ -1467,10 +1468,53 @@ var touchStartPoint, touchMovePoint;
 					evt.preventDefault();
 				});
 			}
-		} else if ( type == 'mqtts' ) {
+		} else if ( type === "mqtts" ) {
 			// TODO
-		} else if ( type == 'sources' ) {
-			// TODO
+		} else if ( type === "sources" ) {
+			for (var d=0;d<app.buttons.deleteSource.length;d++) {
+				app.buttons.deleteSource[d].addEventListener('click', function(evt) {
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">'+app.icons.delete_question+'</i> Delete source';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"'+evt.target.parentNode.dataset.name+'\"? This action will remove all reference to the Source in t6.</p>';
+					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
+					
+					app.showModal();
+					var myId = evt.target.parentNode.dataset.id;
+					evt.preventDefault();
+					
+					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
+						app.hideModal();
+						evt.preventDefault();
+					});
+					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
+						app.hideModal();
+						var myHeaders = new Headers();
+						myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'DELETE', headers: myHeaders };
+						var url = app.baseUrl+'/'+app.api_version+'/sources/'+myId;
+						fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						).then(function(fetchResponse){ 
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							document.querySelector('[data-id="'+myId+'"]').classList.add('removed');
+							toast('Source has been deleted.', {timeout:3000, type: 'done'});
+						})
+						.catch(function (error) {
+							toast('Source has not been deleted.', {timeout:3000, type: "error"});
+						});
+						evt.preventDefault();
+					});
+				});
+			}
+			for (var s=0;s<app.buttons.editSource.length;s++) {
+				app.buttons.editSource[s].addEventListener('click', function(evt) {
+					app.resources.sources.display(evt.currentTarget.dataset.id, false, true, false);
+					evt.preventDefault();
+				});
+			}
 		}
 	};
 	
@@ -1744,7 +1788,7 @@ var touchStartPoint, touchMovePoint;
 
 	app.fetchItemsPaginated = function(type, filter, page, size) {
 		let promise = new Promise((resolve, reject) => {
-			if( type !== 'objects' && type !== 'flows' && type !== 'dashboards' && type !== 'snippets' && type !== 'rules' && type !== 'mqtts' && type !== 'sources' ) {
+			if( type !== "objects" && type !== "flows" && type !== "dashboards" && type !== "snippets" && type !== "rules" && type !== "mqtts" && type !== "sources" ) {
 				resolve();
 				return false;
 			}

@@ -2,6 +2,7 @@
 var express = require("express");
 var router = express.Router();
 var SourceSerializer = require("../serializers/source");
+var ObjectSerializer = require("../serializers/object");
 var ErrorSerializer = require("../serializers/error");
 var sources;
 

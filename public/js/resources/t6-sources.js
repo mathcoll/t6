@@ -66,6 +66,42 @@ app.resources.sources = {
 	},
 	onDelete: function(id) {
 	},
+	onBuild: function(id) {
+		// Get all objects linked to the source
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: "GET", headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/ota/"+id;
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			// build all objects
+			for (var i=0; i < (response.data).length ; i++ ) {
+				let object_id = response.data[i].id;
+				var myHeaders = new Headers();
+				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+				myHeaders.append("Content-Type", "application/json");
+				var myInit = { method: "POST", headers: myHeaders };
+				var url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/build";
+				fetch(url, myInit)
+				.then(
+					app.fetchStatusHandler
+				).then(function(fetchResponse){ 
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					// let's wait
+				});
+			}
+			toast("Source is building all "+(response.data).length+" Objects. This can take several minutes.", {timeout:3000, type: "info"});
+		});
+		
+	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		if (id instanceof Object && isAdd) {
@@ -186,7 +222,7 @@ app.resources.sources = {
 					}
 				});
 
-				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
+				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+source.id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -225,11 +261,18 @@ app.resources.sources = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Delete Source...</label>";
 					node += "		</button>";
 					node += "	</div>";
+					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+					node += "		<button id='"+btnId[0]+"' class='build-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+source.id+"'>";
+					node += "			<i class='arduino-icon'> </i>";
+					node += "			<label>Build</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Build Arduino</label>";
+					node += "		</button>";
+					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
 					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+source.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Source</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[3]+"'>Edit Source</label>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) {
@@ -251,6 +294,7 @@ app.resources.sources = {
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
 					app.buttons.editSource2.addEventListener("click", function(evt) { app.resources.sources.display(source.id, false, true, false); evt.preventDefault(); }, false);
+					app.buttons.buildSource.addEventListener("click", function(evt) { app.resources.sources.onBuild(source.id); evt.preventDefault(); }, false);
 				}
 				
 				app.setExpandAction();
@@ -322,7 +366,7 @@ app.resources.sources = {
 	displayItem: function(source) {
 		var type = "sources";
 		var name = source.attributes.name!==undefined?source.attributes.name:"";
-		var description = source.attributes.description!==undefined?source.attributes.description.substring(0, app.cardMaxChars):"";
+		var content = source.attributes.content!==undefined?source.attributes.content.substring(0, app.cardMaxChars):"";
 
 		var element = "";
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+source.id+"\">";
@@ -331,7 +375,7 @@ app.resources.sources = {
 		element += "			<i class=\"material-icons\">"+app.icons.sources+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
 		element += "		</div>";
-		element += app.getField(null, null, description, {type: "textarea", isEdit: false});
+		element += app.getField(null, null, content, {type: "textarea", isEdit: false});
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		element += "			<span class=\"pull-left mdl-card__date\">";
 		element += "				<button data-id=\""+source.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
