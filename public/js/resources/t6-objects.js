@@ -19,7 +19,7 @@ app.resources.objects = {
 				secret_key: myForm.querySelector("input[id='secret_key']")!==null?myForm.querySelector("input[id='secret_key']").value:"",
 				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 				fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
-				source_id: myForm.querySelector("input[id='source_id']")!==null?myForm.querySelector("input[id='source_id']").value:"",
+				source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
@@ -62,7 +62,7 @@ app.resources.objects = {
 			secret_key_crypt: myForm.querySelector("input[id='secret_key_crypt']")!==null?myForm.querySelector("input[id='secret_key_crypt']").value:"",
 			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 			fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
-			source_id: myForm.querySelector("input[id='source_id']")!==null?myForm.querySelector("input[id='source_id']").value:"",
+			source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
 		};
 
 		var myHeaders = new Headers();
@@ -195,7 +195,13 @@ app.resources.objects = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField("code", "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: isEdit});
-					node += app.getField("code", "Source", object.attributes.source_id!==undefined?object.attributes.source_id:"", {type: "text", style:"text-transform: none !important;", id: "source_id", isEdit: isEdit, pattern: app.patterns.uuidv4, error:"Should be a valid uuid-v4."});
+
+					if ( localStorage.getItem("sources") != "null" ) {
+						var sources = JSON.parse(localStorage.getItem("sources")).map(function(source) {
+							return {value: source.name, name: source.id};
+						});
+					}
+					node += app.getField(app.icons.sources, "Source (restricted to root source)", object.attributes.source_id, {type: "select", id: "source_id", isEdit: isEdit, options: sources });
 					if ( object.attributes.ipv4 || isEdit===true ) {
 						node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 					}
@@ -502,8 +508,12 @@ app.resources.objects = {
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField("code", "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: true});
-		node += app.getField("code", "Source", object.attributes.source_id!==undefined?object.attributes.source_id:"", {type: "text", style:"text-transform: none !important;", id: "source_id", isEdit: true, pattern: app.patterns.uuidv4, error:"Should be a valid uuid-v4."});
-		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
+		if ( localStorage.getItem("sources") != "null" ) {
+			var sources = JSON.parse(localStorage.getItem("sources")).map(function(source) {
+				return {value: source.name, name: source.id};
+			});
+		}
+		node += app.getField(app.icons.sources, "Source (restricted to root source)", object.attributes.source_id, {type: "select", id: "source_id", isEdit: true, options: sources });		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 		node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 		node += "	</div>";
 		node += "</section>";
