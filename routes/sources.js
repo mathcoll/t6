@@ -56,16 +56,18 @@ router.get("/?(:source_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 		}
 	}
 	var json = sources.chain().find(query).offset(offset).limit(size).data();
-	t6console.debug(query);
-
-	var total = sources.find(query).length;
-	json.size = size;
-	json.pageSelf = page;
-	json.pageFirst = 1;
-	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
-	json.pageLast = Math.ceil(total/size);
-	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
-	res.status(200).send(new SourceSerializer(json).serialize());
+	if ( json.length > 0 ) {
+		var total = sources.find(query).length;
+		json.size = size;
+		json.pageSelf = page;
+		json.pageFirst = 1;
+		json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
+		json.pageLast = Math.ceil(total/size);
+		json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
+		res.status(200).send(new SourceSerializer(json).serialize());
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 627, "code": 404, "message": "Not Found"}).serialize());
+	}
 });
 
 /**
@@ -209,21 +211,13 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 		};
 		var result;
 		
-		sources.data = sources.data.filter(doc => typeof doc.$loki === 'number' && typeof doc.meta === 'object')
-		sources.ensureId();
-		sources.ensureAllIndexes(true);
-		  
 		sources.chain().find({ "id": root.id }).update(function(r) {
-			t6console.log("r", r);
 			r.latest_version	= r.latest_version+1;
 			r.latest_version_id = source_id
 			result = r;
-			t6console.log("result123", result);
 		});
-		t6console.log("result456", result);
 		if (typeof result!=="undefined") {
 			dbSources.save();
-			t6console.log("result789", result);
 			sources.insert(newSource);
 			t6events.add("t6Api", "source add child", newSource.id);
 
