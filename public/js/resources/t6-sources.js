@@ -102,6 +102,24 @@ app.resources.sources = {
 		});
 		
 	},
+	onUnlinkObject: function(source_id, object_id) {
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: "POST", headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/unlink/"+source_id;
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			document.getElementById("object_"+object_id).classList.add("removed");
+			toast("Object is unlinked from this source.", {timeout:3000, type: "info"});
+		});
+		
+	},
 	onDeploy: function(id) {
 		// Get all objects linked to the source
 		var myHeaders = new Headers();
@@ -194,6 +212,9 @@ app.resources.sources = {
 				
 				node += "<section class=\"mdl-cell--12-col\" id=\"children\">";
 				node += "</section>";
+				
+				node += "<section class=\"mdl-cell--12-col\" id=\"objects_linked\">";
+				node += "</section>";
 
 				var myHeaders = new Headers();
 				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -234,6 +255,66 @@ app.resources.sources = {
 						if ( app.buttons.editSourceChild[i].childElementCount > -1 ) {
 							app.buttons.editSourceChild[i].addEventListener("click", function(evt) {
 								app.resources.sources.display(evt.target.parentNode.getAttribute("data-id"), false, true, false);
+								evt.preventDefault();
+							}, false);
+						}
+					}
+				});
+
+				var myHeaders = new Headers();
+				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+				myHeaders.append("Content-Type", "application/json");
+				var myInit = { method: "GET", headers: myHeaders };
+				var url = app.baseUrl+"/"+app.api_version+"/ota/"+source.id;
+				fetch(url, myInit)
+				.then(
+					app.fetchStatusHandler
+				).then(function(fetchResponse){ 
+					return fetchResponse.json();
+				})
+				.then(function(o_links) {
+					var node_objects_linked = "";
+					if((o_links.data).length>0) {
+						var elObjects = document.createElement("div");
+						elObjects.innerHTML = app.getSubtitle("Objects linked");
+						document.getElementById("objects_linked").appendChild(elObjects);
+					}
+					for (var i=0; i < (o_links.data).length ; i++ ) {
+						var o = o_links.data[i];
+						node_objects_linked += "<section class=\"mdl-grid mdl-cell--12-col\" id=\"object_"+o.id+"\" data-type=\"linkedObject\">";
+						node_objects_linked += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+						node_objects_linked += "	<span class=\"pull-left mdl-card__date\">";
+						node_objects_linked += app.getField(app.icons.objects, null, o.attributes.name!==undefined?o.attributes.name:"", {type: "text", isEdit: false});
+						node_objects_linked += app.getField("my_location", null, o.attributes.ipv4!==undefined?o.attributes.ipv4:"", {type: "text", isEdit: false});
+						node_objects_linked += app.getField(app.icons.code, null, o.attributes.fqbn!==undefined?o.attributes.fqbn:"", {type: "text", isEdit: false});
+						node_objects_linked += "	</span>";
+						node_objects_linked += "	<span class=\"pull-right mdl-card__menuaction edit_object_source\">";
+						node_objects_linked += "		<button data-id=\""+o.id+"\" class=\"object_link_off_btn mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+						node_objects_linked += "			<i class=\"material-icons\">"+app.icons.link_off+"</i>";
+						node_objects_linked += "		</button>";
+						node_objects_linked += "	</span>";
+						node_objects_linked += "	<span class=\"pull-right mdl-card__menuaction link_off_object_source\">";
+						node_objects_linked += "		<button data-id=\""+o.id+"\" class=\"object_edit_btn mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
+						node_objects_linked += "			<i class=\"material-icons\">"+app.icons.edit+"</i>";
+						node_objects_linked += "		</button>";
+						node_objects_linked += "	</span>";
+						node_objects_linked += "	</div>";
+						node_objects_linked += "</section>";
+					}
+					document.getElementById("objects_linked").innerHTML += node_objects_linked;
+					app.refreshButtonsSelectors();
+					for (var i in app.buttons.editSourceObject) {
+						if ( app.buttons.editSourceObject[i].childElementCount > -1 ) {
+							app.buttons.editSourceObject[i].addEventListener("click", function(evt) {
+								app.resources.object.display(evt.target.parentNode.getAttribute("data-id"), false, true, false);
+								evt.preventDefault();
+							}, false);
+						}
+					}
+					for (var i in app.buttons.link_offSourceObject) {
+						if ( app.buttons.link_offSourceObject[i].childElementCount > -1 ) {
+							app.buttons.link_offSourceObject[i].addEventListener("click", function(evt) {
+								app.resources.sources.onUnlinkObject(source.id, evt.target.parentNode.getAttribute("data-id"));
 								evt.preventDefault();
 							}, false);
 						}
