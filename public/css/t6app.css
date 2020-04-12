@@ -212,7 +212,8 @@ footer div > img {
 	background: #fff;
 	color: rgb(68,138,255);
 }
-.edit_children_source {
+.edit_children_source,
+.edit_object_source {
 	position: absolute;
 	right: 10px;
 }
@@ -410,7 +411,9 @@ div[data-type="flows"].removed,
 div[data-type="dashboards"].removed,
 div[data-type="snippets"].removed,
 div[data-type="rules"].removed,
-div[data-type="mqtts"].removed {
+div[data-type="mqtts"].removed,
+div[data-type="sources"].removed,
+section[data-type="linkedObject"].removed {
 	visibility: collapse;
 	opacity: 0;
 	transition: visibility 2s, opacity 2s !important;
@@ -1417,6 +1420,9 @@ dialog .mdl-dialog__title {
 .pull-left {
 	float: left!important;
 	text-align: left!important;
+}
+.mdl-cell--1-col, .mdl-cell--1-col-phone.mdl-cell--1-col-phone {
+	width: calc(20% - 24px) !important;
 }
 .mdl-list__item-primary-content {
 	align-self: flex-start;

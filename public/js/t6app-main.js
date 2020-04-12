@@ -100,6 +100,7 @@ var app = {
 		"type": "label",
 		"units": "hourglass_empty",
 		"update": "update",
+		"link_off": "link_off",
 	},
 	types: [
 		{name: "cast", value:"Cast"},
@@ -145,6 +146,7 @@ var app = {
 	units: [],
 	datatypes: [],
 	flows: [],
+	sources: [],
 	snippets: [],
 	defaultResources: {
 		object: {id:"", attributes: {name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: "", latitude: "", position: ""}},
@@ -721,6 +723,8 @@ var touchStartPoint, touchMovePoint;
 			buildSource: document.querySelector('#source section.fixedActionButtons button.build-button'),
 			deploySource: document.querySelector('#source section.fixedActionButtons button.deploy-button'),
 			editSourceChild: document.querySelectorAll('#source section button.child_edit_btn'),
+			link_offSourceObject: document.querySelectorAll('#source section button.object_link_off_btn'),
+			editSourceObject: document.querySelectorAll('#source section button.object_edit_btn'),
 		};
 	};
 	
@@ -1633,6 +1637,31 @@ var touchStartPoint, touchMovePoint;
 						return 0;
 					});
 					localStorage.setItem('datatypes', JSON.stringify(app.datatypes));
+				}
+			});
+		}
+	};
+	
+	app.getSources = function() {
+		if ( app.sources.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
+			var myHeaders = new Headers();
+			myHeaders.append("Content-Type", "application/json");
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			var myInit = { method: 'GET', headers: myHeaders };
+			var url = app.baseUrl+'/'+app.api_version+'/sources/?size=99999';
+			fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse){ 
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				if ( response.data ) {
+					for (var i=0; i < (response.data).length ; i++ ) {
+						var s = response.data[i];
+						app.sources.push( {id: s.id, name:s.attributes.name} );
+					}
+					localStorage.setItem('sources', JSON.stringify(app.sources));
 				}
 			});
 		}
@@ -2912,6 +2941,7 @@ var touchStartPoint, touchMovePoint;
 				app.getDatatypes();
 				app.getFlows();
 				app.getSnippets();
+				app.getSources();
 			} else {
 				if ( localStorage.getItem("settings.debug") == "true" ) {
 					toast('Auth internal error', {timeout:3000, type: "error"});
@@ -3634,6 +3664,7 @@ var touchStartPoint, touchMovePoint;
 			app.getDatatypes();
 			app.getSnippets();
 			app.getFlows();
+			app.getSources();
 			setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
 			if ( localStorage.getItem('role') == 'admin' ) {
 				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
