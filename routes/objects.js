@@ -214,6 +214,48 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status", expressJwt({secret: jwtsetti
 });
 
 /**
+ * @api {post} /objects/:object_id/unlink/:source_id Unlink Object from the selected Source
+ * @apiName Unlink Object from the selected Source
+ * @apiGroup 1. Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * @apiParam {uuid-v4} [source_id] Source Id
+ * 
+ * @apiUse 201
+ * @apiUse 412
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var object_id = req.params.object_id;
+	var source_id = req.params.source_id;
+	objects	= db.getCollection("objects");
+	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
+	if ( object ) {
+		if(object.source_id == source_id) {
+			let result;
+			objects.chain().find({ "id": object_id }).update(function(item) {
+				item.source_id = "";
+				result = item;
+			});
+			if ( typeof result!=="undefined" ) {
+				db.save();
+				res.header("Location", "/v"+version+"/objects/"+object_id);
+				res.status(200).send({ "code": 200, message: "Successfully updated", object: new ObjectSerializer(result).serialize() });
+			} else {
+				res.status(412).send(new ErrorSerializer({"id": 185, "code": 412, "message": "Not Found"}).serialize());
+			}
+		} else {
+			res.status(412).send(new ErrorSerializer({"id": 186, "code": 412, "message": "Source not match: Precondition Failed"}).serialize());
+		}
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 187, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
  * @api {post} /objects/:object_id/build Build an Arduino source for the selected object
  * @apiName Build an Arduino source for the selected object
  * @apiGroup 1. Object
@@ -225,6 +267,7 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status", expressJwt({secret: jwtsetti
  * @apiUse 201
  * @apiUse 403
  * @apiUse 404
+ * @apiUse 412
  * @apiUse 429
  */
 router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), function (req, res) {
@@ -279,10 +322,10 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 
 			res.status(201).send({ "code": 201, message: "Building ino sketch", object: new ObjectSerializer(object).serialize() });
 		} else {
-			res.status(409).send(new ErrorSerializer({"id": 140, "code": 409, "message": "Source is empty"}).serialize());
+			res.status(409).send(new ErrorSerializer({"id": 140, "code": 412, "message": "Source is empty"}).serialize());
 		}
 	} else if ( !object.source_id ) {
-		res.status(409).send(new ErrorSerializer({"id": 141, "code": 409, "message": "Source is required"}).serialize());
+		res.status(409).send(new ErrorSerializer({"id": 141, "code": 412, "message": "Source is required"}).serialize());
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 142, "code": 404, "message": "Not Found"}).serialize());
 	}
