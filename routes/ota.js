@@ -115,12 +115,12 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 						let user = users.findOne({"id": req.user.id });
 						if (code === 0) {
 							if (user && typeof user.pushSubscription !== "undefined" ) {
-								var payload = "{\"type\": \"message\", \"title\": \"Arduino Deploy\", \"body\": \"Deploy is completed on Object "+o.id+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+								var payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"Deploy is completed on "+o.ipv4+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 								t6notifications.sendPush(user.pushSubscription, payload);
 							}
 						} else {
 							if (user && typeof user.pushSubscription !== "undefined" ) {
-								var payload = "{\"type\": \"message\", \"title\": \"Arduino Deploy\", \"body\": \"An error occured during deployment of Object "+o.id+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+								var payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"An error occured during deployment of "+o.ipv4+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 								t6notifications.sendPush(user.pushSubscription, payload);
 							}
 						}
