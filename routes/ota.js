@@ -1,5 +1,6 @@
 "use strict";
 var express = require("express");
+var nmap = require("libnmap");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 var ObjectSerializer = require("../serializers/object");
@@ -32,7 +33,7 @@ router.get("/board-listall", expressJwt({secret: jwtsettings.secret}), function 
 });
 
 /**
- * @api {post} /ota/:source_id/deploy Deploy a Source to all linked Objects Over The Air
+ * @api {post} /ota/:source_id/deploy/:object_id Deploy a Source to all linked Objects Over The Air
  * @apiName Deploy a Source to all linked Objects Over The Air
  * @apiGroup 6. Source and Over The Air (OTA)
  * @apiVersion 2.0.1
@@ -154,6 +155,7 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
  */
 router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var source_id = req.params.source_id;
+	var otaStatus = typeof req.query["ota-status"]!=="undefined"?req.query["ota-status"]:false;
 	var name = req.query.name;
 	var size = typeof req.query.size!=="undefined"?req.query.size:20;
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
@@ -178,27 +180,34 @@ router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 		};
 	}
 	var json = objects.chain().find(query).offset(offset).limit(size).data();
-	json.map(function(o) {
-		let i = t6ConnectedObjects.indexOf(o.id);
-		if (i > -1) {
-			o.is_connected = true;
-		} else {
-			o.is_connected = false;
+	if (otaStatus==="true" && json.length>0) {
+		for (const o of json) {
+			let opts = {
+				range: [o.ipv4!==null?o.ipv4:null],
+				ports: String(ota.defaultPort),
+				udp: false,
+				timeout: 3,
+				json: true,
+			};
+			nmap.scan(opts, function(err, report) {
+				if (err) throw new Error(err);
+			});
 		}
-		t6console.debug("is_connected=" + o.is_connected);
-		return o;
-	});
-
-	var total = objects.find(query).length;
-	json.size = size;
-	json.pageSelf = page;
-	json.pageFirst = 1;
-	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
-	json.pageLast = Math.ceil(total/size);
-	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
-	
-	json = json.length>0?json:[];
-	res.status(200).send(new ObjectSerializer(json).serialize());
+		json = json.length>0?json:[];
+		res.status(200).send(new ObjectSerializer(json).serialize());
+	} else {
+		json.map(function(o) {
+			let i = t6ConnectedObjects.indexOf(o.id);
+			if (i > -1) {
+				o.is_connected = true;
+			} else {
+				o.is_connected = false;
+			}
+			return o;
+		});
+		json = json.length>0?json:[];
+		res.status(200).send(new ObjectSerializer(json).serialize());
+	}
 });
 
 module.exports = router;
