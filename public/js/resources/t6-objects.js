@@ -507,13 +507,14 @@ app.resources.objects = {
 		node += app.getSubtitle("Over The Air (OTA)");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField("code", "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: true});
+		node += app.getField(app.icons.code, "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: true});
 		if ( localStorage.getItem("sources") != "null" ) {
 			var sources = JSON.parse(localStorage.getItem("sources")).map(function(source) {
 				return {value: source.name, name: source.id};
 			});
 		}
-		node += app.getField(app.icons.sources, "Source (restricted to root source)", object.attributes.source_id, {type: "select", id: "source_id", isEdit: true, options: sources });		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
+		node += app.getField(app.icons.sources, "Source (restricted to root source)", object.attributes.source_id, {type: "select", id: "source_id", isEdit: true, options: sources });
+		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 		node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 		node += "	</div>";
 		node += "</section>";

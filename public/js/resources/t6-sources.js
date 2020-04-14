@@ -120,13 +120,14 @@ app.resources.sources = {
 		});
 		
 	},
-	onDeploy: function(id) {
+	onDeploy: function(id, object_id) {
 		// Get all objects linked to the source
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: "POST", headers: myHeaders };
-		var url = app.baseUrl+"/"+app.api_version+"/ota/"+id+"/deploy";
+		var o = typeof object_id!=="undefined"?"/"+object_id:"";
+		var url = app.baseUrl+"/"+app.api_version+"/ota/"+id+"/deploy"+o;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -265,7 +266,7 @@ app.resources.sources = {
 				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 				myHeaders.append("Content-Type", "application/json");
 				var myInit = { method: "GET", headers: myHeaders };
-				var url = app.baseUrl+"/"+app.api_version+"/ota/"+source.id;
+				var url = app.baseUrl+"/"+app.api_version+"/ota/"+source.id+"?ota-status=true";
 				fetch(url, myInit)
 				.then(
 					app.fetchStatusHandler
@@ -283,21 +284,23 @@ app.resources.sources = {
 						var o = o_links.data[i];
 						node_objects_linked += "<section class=\"mdl-grid mdl-cell--12-col\" id=\"object_"+o.id+"\" data-type=\"linkedObject\">";
 						node_objects_linked += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-						node_objects_linked += "	<span class=\"pull-left mdl-card__date\">";
+						node_objects_linked += "		<div class=\"mdl-list__item--three-line small-padding  mdl-card--expand\">";
 						node_objects_linked += app.getField(app.icons.objects, null, o.attributes.name!==undefined?o.attributes.name:"", {type: "text", isEdit: false});
-						node_objects_linked += app.getField("my_location", null, o.attributes.ipv4!==undefined?o.attributes.ipv4:"", {type: "text", isEdit: false});
-						node_objects_linked += app.getField(app.icons.code, null, o.attributes.fqbn!==undefined?o.attributes.fqbn:"", {type: "text", isEdit: false});
-						node_objects_linked += "	</span>";
-						node_objects_linked += "	<span class=\"pull-right mdl-card__menuaction edit_object_source\">";
-						node_objects_linked += "		<button data-id=\""+o.id+"\" class=\"object_link_off_btn mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-						node_objects_linked += "			<i class=\"material-icons\">"+app.icons.link_off+"</i>";
-						node_objects_linked += "		</button>";
-						node_objects_linked += "	</span>";
-						node_objects_linked += "	<span class=\"pull-right mdl-card__menuaction link_off_object_source\">";
-						node_objects_linked += "		<button data-id=\""+o.id+"\" class=\"object_edit_btn mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-						node_objects_linked += "			<i class=\"material-icons\">"+app.icons.edit+"</i>";
-						node_objects_linked += "		</button>";
-						node_objects_linked += "	</span>";
+						node_objects_linked += app.getField("my_location", "IPv4", o.attributes.ipv4!==undefined?o.attributes.ipv4:"", {type: "text", isEdit: false});
+						node_objects_linked += app.getField(app.icons.code, "Fqbn string", o.attributes.fqbn!==undefined?o.attributes.fqbn:"", {type: "text", isEdit: false});
+						node_objects_linked += app.getField(o.attributes.is_connected===true?"flash_on":"flash_off", "Active", o.attributes.is_connected===true?"Yes":"No", {type: "text", isEdit: false});
+						node_objects_linked += "		</div>";
+						node_objects_linked += "		<div class=\"mdl-card__actions mdl-card--border\">";
+						node_objects_linked += "			<button data-id=\""+o.id+"\" class=\"object_link_off_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
+						node_objects_linked += "				<i class=\"material-icons\">"+app.icons.link_off+"</i>Unlink";
+						node_objects_linked += "			</button>";
+						node_objects_linked += "			<button data-id=\""+o.id+"\" class=\"object_deploy_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
+						node_objects_linked += "				<i class=\"arduino-icon deploy\"> </i>Deploy";
+						node_objects_linked += "			</button>";
+						node_objects_linked += "			<button data-id=\""+o.id+"\" class=\"object_edit_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
+						node_objects_linked += "				<i class=\"material-icons\">"+app.icons.edit+"</i>Edit";
+						node_objects_linked += "			</button>";
+						node_objects_linked += "		</div>";
 						node_objects_linked += "	</div>";
 						node_objects_linked += "</section>";
 					}
@@ -306,7 +309,7 @@ app.resources.sources = {
 					for (var i in app.buttons.editSourceObject) {
 						if ( app.buttons.editSourceObject[i].childElementCount > -1 ) {
 							app.buttons.editSourceObject[i].addEventListener("click", function(evt) {
-								app.resources.object.display(evt.target.parentNode.getAttribute("data-id"), false, true, false);
+								app.resources.objects.display(evt.target.parentNode.getAttribute("data-id"), false, true, false);
 								evt.preventDefault();
 							}, false);
 						}
@@ -315,6 +318,14 @@ app.resources.sources = {
 						if ( app.buttons.link_offSourceObject[i].childElementCount > -1 ) {
 							app.buttons.link_offSourceObject[i].addEventListener("click", function(evt) {
 								app.resources.sources.onUnlinkObject(source.id, evt.target.parentNode.getAttribute("data-id"));
+								evt.preventDefault();
+							}, false);
+						}
+					}
+					for (var i in app.buttons.deploySourceObject) {
+						if ( app.buttons.deploySourceObject[i].childElementCount > -1 ) {
+							app.buttons.deploySourceObject[i].addEventListener("click", function(evt) {
+								app.resources.sources.onDeploy(source.id, evt.target.parentNode.getAttribute("data-id"));
 								evt.preventDefault();
 							}, false);
 						}
@@ -401,7 +412,7 @@ app.resources.sources = {
 					// }, false);
 					app.buttons.editSource2.addEventListener("click", function(evt) { app.resources.sources.display(source.id, false, true, false); evt.preventDefault(); }, false);
 					app.buttons.buildSource.addEventListener("click", function(evt) { app.resources.sources.onBuild(source.id); evt.preventDefault(); }, false);
-					app.buttons.deploySource.addEventListener("click", function(evt) { app.resources.sources.onDeploy(source.id); evt.preventDefault(); }, false);
+					app.buttons.deploySource.addEventListener("click", function(evt) { app.resources.sources.onDeploy(source.id, null); evt.preventDefault(); }, false);
 				}
 				
 				app.setExpandAction();

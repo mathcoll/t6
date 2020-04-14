@@ -183,7 +183,7 @@ router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 	if (otaStatus==="true" && json.length>0) {
 		for (const o of json) {
 			let opts = {
-				range: [o.ipv4!==null?o.ipv4:null],
+				range: [o.ipv4!==null?String(o.ipv4):null],
 				ports: String(ota.defaultPort),
 				udp: false,
 				timeout: 3,
@@ -191,6 +191,11 @@ router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 			};
 			nmap.scan(opts, function(err, report) {
 				if (err) throw new Error(err);
+				for (var item in report) {
+					console.log(report[item]["host"][0]["address"][0]["addr"]);
+					console.log(report[item]["runstats"][0]["hosts"][0]["item"]["up"]);
+					o.is_connected = report[item]["runstats"][0]["hosts"][0]["item"]["up"]>0?true:false;
+				}
 			});
 		}
 		json = json.length>0?json:[];
