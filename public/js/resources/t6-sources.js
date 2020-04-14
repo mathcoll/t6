@@ -288,7 +288,7 @@ app.resources.sources = {
 						node_objects_linked += app.getField(app.icons.objects, null, o.attributes.name!==undefined?o.attributes.name:"", {type: "text", isEdit: false});
 						node_objects_linked += app.getField("my_location", "IPv4", o.attributes.ipv4!==undefined?o.attributes.ipv4:"", {type: "text", isEdit: false});
 						node_objects_linked += app.getField(app.icons.code, "Fqbn string", o.attributes.fqbn!==undefined?o.attributes.fqbn:"", {type: "text", isEdit: false});
-						node_objects_linked += app.getField(o.attributes.is_connected===true?"flash_on":"flash_off", "Active", o.attributes.is_connected===true?"Yes":"No", {type: "text", isEdit: false});
+						node_objects_linked += app.getField(o.attributes.is_connected===true?"flash_on":"flash_off", "Status", o.attributes.is_connected===true?"Active":"Inactive", {type: "text", isEdit: false});
 						node_objects_linked += "		</div>";
 						node_objects_linked += "		<div class=\"mdl-card__actions mdl-card--border\">";
 						node_objects_linked += "			<button data-id=\""+o.id+"\" class=\"object_link_off_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
