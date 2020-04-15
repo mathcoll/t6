@@ -22,8 +22,9 @@ var sources;
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/?(:source_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var source_id = req.params.source_id;
+	var version = req.params.version;
 	var name = req.query.name;
 	var size = typeof req.query.size!=="undefined"?req.query.size:20;
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
@@ -32,12 +33,24 @@ router.get("/?(:source_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 	sources	= dbSources.getCollection("sources");
 	var query;
 	if ( typeof source_id !== "undefined" ) {
-		query = {
-		"$and": [
-				{ "user_id" : req.user.id },
-				{ "id" : source_id },
-			]
-		};
+		if ( typeof version !== "undefined" ) {
+			if (Number.isInteger(parseInt(version))===true) { // so far it must be an integer as defined in the route. TODO: could be "latest"
+				query = {
+					"$and": [
+						{ "user_id" : req.user.id },
+						{ "root_source_id" : source_id }, // in case of version 0, root_source_id should be the same as id
+						{ "version" : parseInt(version) },
+					]
+				};
+			}
+		} else {
+			query = {
+				"$and": [
+					{ "user_id" : req.user.id },
+					{ "id" : source_id },
+					]
+			};
+		}
 	} else {
 		if ( typeof name !== "undefined" ) {
 			query = {
@@ -57,14 +70,28 @@ router.get("/?(:source_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 	}
 	var json = sources.chain().find(query).offset(offset).limit(size).data();
 	if ( json.length > 0 ) {
-		var total = sources.find(query).length;
-		json.size = size;
-		json.pageSelf = page;
-		json.pageFirst = 1;
-		json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
-		json.pageLast = Math.ceil(total/size);
-		json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
-		res.status(200).send(new SourceSerializer(json).serialize());
+		// TODO: If version==="latest", then json should be an array and we should filter only the correct version
+		/*if (version==="latest") {
+			json.filter(source => source.version === 4);
+			var total = sources.find(query).length;
+			json.size = size;
+			json.pageSelf = page;
+			json.pageFirst = 1;
+			json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
+			json.pageLast = Math.ceil(total/size);
+			json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
+			res.status(200).send(new SourceSerializer(json).serialize());
+		} else {
+		*/
+			var total = sources.find(query).length;
+			json.size = size;
+			json.pageSelf = page;
+			json.pageFirst = 1;
+			json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
+			json.pageLast = Math.ceil(total/size);
+			json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
+			res.status(200).send(new SourceSerializer(json).serialize());
+		/*}*/
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 627, "code": 404, "message": "Not Found"}).serialize());
 	}
@@ -138,8 +165,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 		var newSource = {
 			id:			source_id,
 			root_source_id: source_id,
-			version:	0,
-			latest_version:	0,
+			version:	parseInt(0),
+			latest_version:	parseInt(0),
 			user_id:	req.user.id,
 			name:		typeof req.body.name!=="undefined"?req.body.name:"",
 			content:	content,
@@ -206,13 +233,13 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 			user_id:			req.user.id,
 			name:				typeof req.body.name!=="undefined"?req.body.name:parent.name,
 			content:			content,
-			version:			root.latest_version+1,
+			version:			parseInt(root.latest_version+1),
 			password:			typeof req.body.password!=="undefined"?req.body.password:parent.password,
 		};
 		var result;
 		
 		sources.chain().find({ "id": root.id }).update(function(r) {
-			r.latest_version	= r.latest_version+1;
+			r.latest_version	= parseInt(r.latest_version+1);
 			r.latest_version_id = source_id
 			result = r;
 		});

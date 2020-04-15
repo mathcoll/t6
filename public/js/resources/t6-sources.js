@@ -66,7 +66,7 @@ app.resources.sources = {
 	},
 	onDelete: function(id) {
 	},
-	onBuild: function(id) {
+	onBuild: function(id, filter_object_id) {
 		// Get all objects linked to the source
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -83,20 +83,22 @@ app.resources.sources = {
 			// build all objects
 			for (var i=0; i < (response.data).length ; i++ ) {
 				let object_id = response.data[i].id;
-				var myHeaders = new Headers();
-				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
-				myHeaders.append("Content-Type", "application/json");
-				var myInit = { method: "POST", headers: myHeaders };
-				var url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/build";
-				fetch(url, myInit)
-				.then(
-					app.fetchStatusHandler
-				).then(function(fetchResponse){ 
-					return fetchResponse.json();
-				})
-				.then(function(response) {
-					// let's wait
-				});
+				if (filter_object_id===null || filter_object_id === object_id) {
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "POST", headers: myHeaders };
+					var url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/build";
+					fetch(url, myInit)
+					.then(
+						app.fetchStatusHandler
+					).then(function(fetchResponse){ 
+						return fetchResponse.json();
+					})
+					.then(function(response) {
+						// let's wait
+					});
+				}
 			}
 			toast("Source is building all "+(response.data).length+" Objects. This can take several minutes.", {timeout:10000, type: "info"});
 		});
@@ -126,7 +128,7 @@ app.resources.sources = {
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: "POST", headers: myHeaders };
-		var o = typeof object_id!=="undefined"?"/"+object_id:"";
+		var o = object_id!==null?"/"+object_id:"";
 		var url = app.baseUrl+"/"+app.api_version+"/ota/"+id+"/deploy"+o;
 		fetch(url, myInit)
 		.then(
@@ -288,11 +290,15 @@ app.resources.sources = {
 						node_objects_linked += app.getField(app.icons.objects, null, o.attributes.name!==undefined?o.attributes.name:"", {type: "text", isEdit: false});
 						node_objects_linked += app.getField("my_location", "IPv4", o.attributes.ipv4!==undefined?o.attributes.ipv4:"", {type: "text", isEdit: false});
 						node_objects_linked += app.getField(app.icons.code, "Fqbn string", o.attributes.fqbn!==undefined?o.attributes.fqbn:"", {type: "text", isEdit: false});
+						node_objects_linked += app.getField(app.icons.code, "version", o.attributes.source_version!==undefined?o.attributes.source_version:"", {type: "text", isEdit: false});
 						node_objects_linked += app.getField(o.attributes.is_connected===true?"flash_on":"flash_off", "Status", o.attributes.is_connected===true?"Active":"Inactive", {type: "text", isEdit: false});
 						node_objects_linked += "		</div>";
 						node_objects_linked += "		<div class=\"mdl-card__actions mdl-card--border\">";
 						node_objects_linked += "			<button data-id=\""+o.id+"\" class=\"object_link_off_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
 						node_objects_linked += "				<i class=\"material-icons\">"+app.icons.link_off+"</i>Unlink";
+						node_objects_linked += "			</button>";
+						node_objects_linked += "			<button data-id=\""+o.id+"\" class=\"object_build_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
+						node_objects_linked += "				<i class=\"arduino-icon build\"> </i>Build";
 						node_objects_linked += "			</button>";
 						node_objects_linked += "			<button data-id=\""+o.id+"\" class=\"object_deploy_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
 						node_objects_linked += "				<i class=\"arduino-icon deploy\"> </i>Deploy";
@@ -326,6 +332,14 @@ app.resources.sources = {
 						if ( app.buttons.deploySourceObject[i].childElementCount > -1 ) {
 							app.buttons.deploySourceObject[i].addEventListener("click", function(evt) {
 								app.resources.sources.onDeploy(source.id, evt.target.parentNode.getAttribute("data-id"));
+								evt.preventDefault();
+							}, false);
+						}
+					}
+					for (var i in app.buttons.buildSourceObject) {
+						if ( app.buttons.buildSourceObject[i].childElementCount > -1 ) {
+							app.buttons.buildSourceObject[i].addEventListener("click", function(evt) {
+								app.resources.sources.onBuild(source.id, evt.target.parentNode.getAttribute("data-id"));
 								evt.preventDefault();
 							}, false);
 						}
@@ -411,7 +425,7 @@ app.resources.sources = {
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
 					// }, false);
 					app.buttons.editSource2.addEventListener("click", function(evt) { app.resources.sources.display(source.id, false, true, false); evt.preventDefault(); }, false);
-					app.buttons.buildSource.addEventListener("click", function(evt) { app.resources.sources.onBuild(source.id); evt.preventDefault(); }, false);
+					app.buttons.buildSource.addEventListener("click", function(evt) { app.resources.sources.onBuild(source.id, null); evt.preventDefault(); }, false);
 					app.buttons.deploySource.addEventListener("click", function(evt) { app.resources.sources.onDeploy(source.id, null); evt.preventDefault(); }, false);
 				}
 				

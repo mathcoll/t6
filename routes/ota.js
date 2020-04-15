@@ -72,10 +72,10 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 	}
 	var json = objects.find(query);
 	if ( json.length > 0 ) {
-		let s = sources.find({ "id" : source_id });
+		let s = sources.find({ "id" : source_id }, { "version" : typeof json.source_version!=="undefined"?json.source_version:0 });
 		let binFileErrors = new Array();
 		json.map(function(o) {
-			let dir = `${ota.build_dir}/${o.source_id}/${o.id}`;
+			let dir = `${ota.build_dir}/${o.source_id}/${o.source_version}/${o.id}`;
 			t6console.info("Deploying from dir", dir);
 			let pai = o.fqbn.split(":");
 			let packager = pai[0];
@@ -97,7 +97,7 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 					// only on ipv4 because I don't know if ipv6 can work
 					// only on default port 8266
 					//let exec = require("child_process").exec;
-					let dir = `${ota.build_dir}/${o.source_id}/${o.id}`;
+					let dir = `${ota.build_dir}/${o.source_id}/${o.source_version}/${o.id}`;
 					let pai = o.fqbn.split(":");
 					let packager = pai[0];
 					let architecture = pai[1];

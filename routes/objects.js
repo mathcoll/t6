@@ -157,6 +157,9 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 			o.is_connected = false;
 		}
 		t6console.debug("is_connected=" + o.is_connected);
+		if (o.source_id!="" && !o.source_version) {
+			o.source_version = 0;
+		}
 		return o;
 	});
 	t6console.debug(query);
@@ -238,6 +241,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
 			let result;
 			objects.chain().find({ "id": object_id }).update(function(item) {
 				item.source_id = "";
+				item.source_version = "";
 				result = item;
 			});
 			if ( typeof result!=="undefined" ) {
@@ -275,16 +279,17 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 	objects	= db.getCollection("objects");
 
 	var query = {
-			"$and": [
-					{ "id": object_id },
-					{ "user_id": req.user.id },
-				]
-			}
+		"$and": [
+				{ "id": object_id },
+				{ "user_id": req.user.id },
+			]
+		}
 	var object = objects.findOne( query );
 	if ( object && object.source_id ) {
+		object.source_version = typeof object.source_version!=="undefined"?object.source_version:0;
 		sources	= dbSources.getCollection("sources");
-		let source = sources.findOne({ "id": object.source_id });
-		if ( source.content ) {
+		let source = sources.findOne({"$and": [{ "root_source_id": object.source_id }, {"version": parseInt(object.source_version)}]});
+		if ( source && source.content ) {
 			// This is a temporary solution...
 			let exec = require("child_process").exec;
 			let spawn = require("child_process").spawn;
@@ -292,11 +297,16 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 			let odir = `${ota.build_dir}/${object.source_id}`;
 			if (!fs.existsSync(odir)) fs.mkdirSync(odir);
 			
-			let dir = `${ota.build_dir}/${object.source_id}/${object.id}`;
+			let vdir = `${ota.build_dir}/${object.source_id}/${object.source_version}`;
+			if (!fs.existsSync(vdir)) fs.mkdirSync(vdir);
+			
+			let dir = `${ota.build_dir}/${object.source_id}/${object.source_version}/${object.id}`;
 			if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
 			fs.writeFile(`${dir}/${object.id}.ino`, source.content, function (err) {
 				if (err) throw err;
 				t6console.log("File is created successfully.", `${dir}/${object.id}.ino`);
+				t6console.log("Using version ", object.source_version);
 				
 				let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
 				t6console.log("Building ino sketch using fqbn=", fqbn);
@@ -376,6 +386,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			ipv6:			typeof req.body.ipv6!=="undefined"?req.body.ipv6:"",
 			user_id:		req.user.id,
 			source_id:		typeof req.body.source_id!=="undefined"?req.body.source_id:"",
+			source_version:	typeof req.body.source_version!=="undefined"?req.body.source_version:0,
 			fqbn:			typeof req.body.fqbn!=="undefined"?req.body.fqbn:"",
 			secret_key:		typeof req.body.secret_key!=="undefined"?req.body.secret_key:"",
 			secret_key_crypt:typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:"",
@@ -450,6 +461,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 				item.ipv4				= typeof req.body.ipv4!=="undefined"?req.body.ipv4:item.ipv4;
 				item.ipv6				= typeof req.body.ipv6!=="undefined"?req.body.ipv6:item.ipv6;
 				item.source_id			= typeof req.body.source_id!=="undefined"?req.body.source_id:item.source_id;
+				item.source_version		= typeof req.body.source_version!=="undefined"?req.body.source_version:0;
 				item.fqbn				= typeof req.body.fqbn!=="undefined"?req.body.fqbn:item.fqbn;
 				item.secret_key			= typeof req.body.secret_key!=="undefined"?req.body.secret_key:item.secret_key;
 				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;

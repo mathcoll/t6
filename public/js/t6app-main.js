@@ -726,6 +726,7 @@ var touchStartPoint, touchMovePoint;
 			link_offSourceObject: document.querySelectorAll('#source section button.object_link_off_btn'),
 			editSourceObject: document.querySelectorAll('#source section button.object_edit_btn'),
 			deploySourceObject: document.querySelectorAll('#source section button.object_deploy_btn'),
+			buildSourceObject: document.querySelectorAll('#source section button.object_build_btn'),
 		};
 	};
 	

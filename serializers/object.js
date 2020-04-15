@@ -5,7 +5,7 @@ function ObjectTypeSerializer(object) {
 	this.serialize = function () {
 		return new JSONAPISerializer("object", {
 			keyForAttribute: "underscore_case",
-			attributes: ["name", "user_id", "source_id", "fqbn", "type", "is_connected", "description", "secret_key", "secret_key_crypt", "position", "ipv4", "ipv6", "isPublic", "longitude", "latitude", "meta", "parameters"],
+			attributes: ["name", "user_id", "source_id", "source_version", "fqbn", "type", "is_connected", "description", "secret_key", "secret_key_crypt", "position", "ipv4", "ipv6", "isPublic", "longitude", "latitude", "meta", "parameters"],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/objects", baseUrl_https, version),
 				self : object.pageSelf!==undefined?sprintf("%s/v%s/objects/?page=%s&size=%s", baseUrl_https, version, object.pageSelf, object.size):undefined,
@@ -27,7 +27,7 @@ function ObjectTypeSerializer(object) {
 				},
 				source : function(object) {
 					if ( object.user_id!="" ) {
-						return sprintf("%s/v%s/sources/%s", baseUrl_https, version, object.source_id);
+						return sprintf("%s/v%s/sources/%s/%s", baseUrl_https, version, object.source_id, object.source_version);
 					} else {
 						return null;
 					}

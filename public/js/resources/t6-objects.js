@@ -20,6 +20,7 @@ app.resources.objects = {
 				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 				fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 				source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
+				source_version: myForm.querySelector("input[id='source_version']")!==null?myForm.querySelector("input[id='source_version']").value:"",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
@@ -63,6 +64,7 @@ app.resources.objects = {
 			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 			fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 			source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
+			source_version: myForm.querySelector("input[id='source_version']")!==null?myForm.querySelector("input[id='source_version']").value:"",
 		};
 
 		var myHeaders = new Headers();
@@ -202,6 +204,7 @@ app.resources.objects = {
 						});
 					}
 					node += app.getField(app.icons.sources, "Source (restricted to root source)", object.attributes.source_id, {type: "select", id: "source_id", isEdit: isEdit, options: sources });
+					node += app.getField(app.icons.sources, "Source version", object.attributes.source_version, {type: "text", id: "source_version", isEdit: isEdit, pattern: app.patterns.integerNotNegative, error:"Version should be an integer" });
 					if ( object.attributes.ipv4 || isEdit===true ) {
 						node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 					}
