@@ -83,6 +83,13 @@ router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secr
 			res.status(200).send(new SourceSerializer(json).serialize());
 		} else {
 		*/
+		json.map(function(s) {
+			s.subversions = new Array();
+			let q = {"$and": [{"root_source_id": s.root_source_id}, {"version": { "$ne" : 0 }}]};
+			(sources.chain().find(q).simplesort("version", false).data()).map(function(subsource) {
+				s.subversions.push({id: subsource.id, name: subsource.name, version: subsource.version});
+			});
+		});
 			var total = sources.find(query).length;
 			json.size = size;
 			json.pageSelf = page;

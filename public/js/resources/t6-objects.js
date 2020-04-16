@@ -20,7 +20,7 @@ app.resources.objects = {
 				isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 				fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 				source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
-				source_version: myForm.querySelector("input[id='source_version']")!==null?myForm.querySelector("input[id='source_version']").value:"",
+				source_version: myForm.querySelector("select[id='source_version']")!==null?myForm.querySelector("select[id='source_version']").value:"",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 	
@@ -64,7 +64,7 @@ app.resources.objects = {
 			isPublic: myForm.querySelector("label.mdl-switch").classList.contains("is-checked")===true?"true":"false",
 			fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 			source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
-			source_version: myForm.querySelector("input[id='source_version']")!==null?myForm.querySelector("input[id='source_version']").value:"",
+			source_version: myForm.querySelector("select[id='source_version']")!==null?myForm.querySelector("select[id='source_version']").value:"",
 		};
 
 		var myHeaders = new Headers();
@@ -203,8 +203,8 @@ app.resources.objects = {
 							return {value: source.name, name: source.id};
 						});
 					}
-					node += app.getField(app.icons.sources, "Source (restricted to root source)", object.attributes.source_id, {type: "select", id: "source_id", isEdit: isEdit, options: sources });
-					node += app.getField(app.icons.sources, "Source version", object.attributes.source_version, {type: "text", id: "source_version", isEdit: isEdit, pattern: app.patterns.integerNotNegative, error:"Version should be an integer" });
+					node += app.getField(app.icons.sources, "Arduino Source", object.attributes.source_id, {type: "select", id: "source_id", isEdit: isEdit, options: sources });
+					node += app.getField(app.icons.sources, "Source version", object.attributes.source_version, {type: "select", id: "source_version", isEdit: isEdit, options: null });
 					if ( object.attributes.ipv4 || isEdit===true ) {
 						node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 					}
@@ -297,6 +297,27 @@ app.resources.objects = {
 				componentHandler.upgradeDom();
 				
 				app.refreshButtonsSelectors();
+				var source_id_selector = document.getElementById("source_id");
+				if ( source_id_selector ) {
+					source_id_selector.addEventListener("change", function(e) {
+						let subsource = JSON.parse(localStorage.getItem("sources")).find(subsource => subsource.id == e.srcElement.value);
+						let sel = document.getElementById("source_version");
+						for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
+						if ((subsource.subversions).length <= 0) {
+							let opt = document.createElement("option");
+							opt.appendChild( document.createTextNode(`Version 0`) );
+							opt.value = 0;
+							sel.appendChild(opt);
+						} else {
+							(subsource.subversions).map(function(ss) {
+								let opt = document.createElement("option");
+								opt.appendChild( document.createTextNode(`Version ${ss.version} - ${ss.name}`) );
+								opt.value = ss.version;
+								sel.appendChild(opt);
+							});
+						}
+					});
+				}
 				if ( isEdit ) {
 					app.buttons.backObject.addEventListener("click", function(evt) { app.resources.objects.display(object.id, false, false, false); }, false);
 					app.buttons.saveObject.addEventListener("click", function(evt) { app.resources.objects.onEdit(evt); }, false);
@@ -516,7 +537,8 @@ app.resources.objects = {
 				return {value: source.name, name: source.id};
 			});
 		}
-		node += app.getField(app.icons.sources, "Source (restricted to root source)", object.attributes.source_id, {type: "select", id: "source_id", isEdit: true, options: sources });
+		node += app.getField(app.icons.sources, "Arduino Source", object.attributes.source_id, {type: "select", id: "source_id", isEdit: true, options: sources });
+		node += app.getField(app.icons.sources, "Source version", object.attributes.source_version, {type: "select", id: "source_version", isEdit: true, options: null });
 		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 		node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 		node += "	</div>";
@@ -565,6 +587,27 @@ app.resources.objects = {
 
 		(app.containers.object_add).querySelector(".page-content").innerHTML = node;
 		componentHandler.upgradeDom();
+		var source_id_selector = document.getElementById("source_id");
+		if ( source_id_selector ) {
+			source_id_selector.addEventListener("change", function(e) {
+				let subsource = JSON.parse(localStorage.getItem("sources")).find(subsource => subsource.id == e.srcElement.value);
+				let sel = document.getElementById("source_version");
+				for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
+				if ((subsource.subversions).length <= 0) {
+					let opt = document.createElement("option");
+					opt.appendChild( document.createTextNode(`Version 0`) );
+					opt.value = 0;
+					sel.appendChild(opt);
+				} else {
+					(subsource.subversions).map(function(ss) {
+						let opt = document.createElement("option");
+						opt.appendChild( document.createTextNode(`Version ${ss.version} - ${ss.name}`) );
+						opt.value = ss.version;
+						sel.appendChild(opt);
+					});
+				}
+			});
+		}
 
 		app.getLocation();
 		/* Localization Map */

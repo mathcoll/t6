@@ -1661,7 +1661,7 @@ var touchStartPoint, touchMovePoint;
 				if ( response.data ) {
 					for (var i=0; i < (response.data).length ; i++ ) {
 						var s = response.data[i];
-						app.sources.push( {id: s.id, name:s.attributes.name} );
+						app.sources.push( {id: s.id, name:s.attributes.name, version:s.attributes.version, subversions:s.attributes.subversions } );
 					}
 					localStorage.setItem('sources', JSON.stringify(app.sources));
 				}
