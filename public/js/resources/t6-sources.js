@@ -388,14 +388,14 @@ app.resources.sources = {
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button id='"+btnId[0]+"' class='build-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+source.id+"'>";
 					node += "			<i class='arduino-icon build'> </i>";
-					node += "			<label>Build</label>";
+					node += "			<label>Build All</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Build Arduino</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button id='"+btnId[0]+"' class='deploy-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+source.id+"'>";
 					node += "			<i class='arduino-icon deploy'> </i>";
-					node += "			<label>Deploy</label>";
+					node += "			<label>Deploy All</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[3]+"'>Deploy to Objects</label>";
 					node += "		</button>";
 					node += "	</div>";
