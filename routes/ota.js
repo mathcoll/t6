@@ -182,21 +182,21 @@ router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 	var json = objects.chain().find(query).offset(offset).limit(size).data();
 	if (otaStatus==="true" && json.length>0) {
 		for (const o of json) {
-			let opts = {
-				range: [o.ipv4!==null?String(o.ipv4):null],
-				ports: String(ota.defaultPort),
-				udp: false,
-				timeout: 3,
-				json: true,
-			};
-			nmap.scan(opts, function(err, report) {
-				if (err) throw new Error(err);
-				for (var item in report) {
-					console.log(report[item]["host"][0]["address"][0]["addr"]);
-					console.log(report[item]["runstats"][0]["hosts"][0]["item"]["up"]);
-					o.is_connected = report[item]["runstats"][0]["hosts"][0]["item"]["up"]>0?true:false;
-				}
-			});
+			if (String(o.ipv4)!=="") {
+				let opts = {
+						range: [o.ipv4],
+						ports: String(ota.defaultPort),
+						udp: false,
+						timeout: 3,
+						json: true,
+				};
+				nmap.scan(opts, function(err, report) {
+					if (err) throw new Error(err);
+					for (var item in report) {
+						o.is_connected = report[item]["runstats"][0]["hosts"][0]["item"]["up"]>0?true:false;
+					}
+				});
+			}
 		}
 		json = json.length>0?json:[];
 		res.status(200).send(new ObjectSerializer(json).serialize());
