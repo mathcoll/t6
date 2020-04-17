@@ -332,10 +332,10 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 
 			res.status(201).send({ "code": 201, message: "Building ino sketch", object: new ObjectSerializer(object).serialize() });
 		} else {
-			res.status(409).send(new ErrorSerializer({"id": 140, "code": 412, "message": "Source is empty"}).serialize());
+			res.status(412).send(new ErrorSerializer({"id": 140, "code": 412, "message": "Source is empty"}).serialize());
 		}
 	} else if ( !object.source_id ) {
-		res.status(409).send(new ErrorSerializer({"id": 141, "code": 412, "message": "Source is required"}).serialize());
+		res.status(412).send(new ErrorSerializer({"id": 141, "code": 412, "message": "Source is required"}).serialize());
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 142, "code": 404, "message": "Not Found"}).serialize());
 	}
