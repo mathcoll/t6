@@ -103,7 +103,8 @@ app.resources.sources = {
 					});
 				}
 			}
-			toast("Source is building all "+(response.data).length+" Object(s). This can take several minutes.", {timeout:10000, type: "info"});
+			var len = filter_object_id===null?(response.data).length:1;
+			toast("Source is building all "+len+" Object(s). This can take several minutes.", {timeout:10000, type: "info"});
 		});
 		
 	},
