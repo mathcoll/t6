@@ -294,20 +294,19 @@ var touchStartPoint, touchMovePoint;
 		} else if (response.status === 400) {
 			toast("Bad Request.", {timeout:3000, type: "error"});
 			return response;
-			//throw new Error('Bad Request.');
 		} else if (response.status === 401 || response.status === 403) {
 			app.sessionExpired();
 			return response;
-			//throw new Error(response.statusText);
 		} else if (response.status === 404) {
 			toast("There is an unknown resource that can't be loaded.", {timeout:3000, type: "error"});
 			return response;
-			//throw new Error(response.statusText);
 		} else if (response.status === 409) {
 			toast("Revision is conflictual.", {timeout:3000, type: "error"});
 			return response;
-			//throw new Error('Revision is conflictual.');
-		} else if (response.status === 429) {
+		} else if (response.status === 412) {
+			toast("Precondition Failed", {timeout:3000, type: "error"});
+			return response;
+		}  else if (response.status === 429) {
 			toast("Oups, over quota.", {timeout:3000, type: "error"});
 			return response;
 		} else {
