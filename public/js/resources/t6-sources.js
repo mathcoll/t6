@@ -34,6 +34,7 @@ app.resources.sources = {
 				toast("Source has not been saved.", {timeout:3000, type: "error"});
 			});
 			evt.preventDefault();
+			app.getSources();
 		}
 	},
 	onAdd: function(evt) {
@@ -63,8 +64,10 @@ app.resources.sources = {
 			toast("Source has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();
+		app.getSources();
 	},
 	onDelete: function(id) {
+		app.getSources();
 	},
 	onBuild: function(id, filter_object_id) {
 		// Get all objects linked to the source

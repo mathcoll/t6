@@ -1645,7 +1645,7 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.getSources = function() {
-		if ( app.sources.length == 0 && (app.isLogged || localStorage.getItem('bearer')) ) {
+		if ( (app.isLogged || localStorage.getItem('bearer')) ) {
 			var myHeaders = new Headers();
 			myHeaders.append("Content-Type", "application/json");
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
@@ -1654,11 +1654,12 @@ var touchStartPoint, touchMovePoint;
 			fetch(url, myInit)
 			.then(
 				app.fetchStatusHandler
-			).then(function(fetchResponse){ 
+			).then(function(fetchResponse){
 				return fetchResponse.json();
 			})
 			.then(function(response) {
 				if ( response.data ) {
+					app.sources = new Array();
 					for (var i=0; i < (response.data).length ; i++ ) {
 						var s = response.data[i];
 						app.sources.push( {id: s.id, name:s.attributes.name, version:s.attributes.version, subversions:s.attributes.subversions } );
@@ -3413,6 +3414,7 @@ var touchStartPoint, touchMovePoint;
 		localStorage.setItem('refreshTokenExp', null);
 		localStorage.setItem('flows', null);
 		localStorage.setItem('snippets', null);
+		localStorage.setItem('sources', null);
 		localStorage.setItem('currentUserId', null);
 		localStorage.setItem('currentUserName', null);
 		localStorage.setItem('currentUserEmail', null);
