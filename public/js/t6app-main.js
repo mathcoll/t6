@@ -149,7 +149,7 @@ var app = {
 	sources: [],
 	snippets: [],
 	defaultResources: {
-		object: {id:"", attributes: {name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: "", latitude: "", position: ""}},
+		object: {id:"", attributes: {name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: "", latitude: "", position: "", source_id: "-"}},
 		flow: {id:"", attributes: {name: "", mqtt_topic: "", require_signed: false, require_encrypted: false}},
 		dashboard: {id:"", attributes: {name: "", description: ""}},
 		snippet: {id:"", attributes: {name: "", icon: "", color: ""}},
@@ -725,8 +725,8 @@ var touchStartPoint, touchMovePoint;
 			editSourceChild: document.querySelectorAll('#source section button.child_edit_btn'),
 			link_offSourceObject: document.querySelectorAll('#source section button.object_link_off_btn'),
 			editSourceObject: document.querySelectorAll('#source section button.object_edit_btn'),
-			deploySourceObject: document.querySelectorAll('#source section button.object_deploy_btn'),
-			buildSourceObject: document.querySelectorAll('#source section button.object_build_btn'),
+			deploySourceObject: document.querySelectorAll('#source section button.object_deploy_btn, #object section button.object_deploy_btn'),
+			buildSourceObject: document.querySelectorAll('#source section button.object_build_btn, #object section button.object_build_btn'),
 		};
 	};
 	

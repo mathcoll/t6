@@ -100,7 +100,7 @@ app.resources.sources = {
 					});
 				}
 			}
-			toast("Source is building all "+(response.data).length+" Objects. This can take several minutes.", {timeout:10000, type: "info"});
+			toast("Source is building all "+(response.data).length+" Object(s). This can take several minutes.", {timeout:10000, type: "info"});
 		});
 		
 	},
@@ -137,7 +137,7 @@ app.resources.sources = {
 			return fetchResponse.json();
 		})
 		.then(function(response) {
-			toast("Source is deploying to all "+(response.deploying_to_objects.data).length+" available Objects. This can take several minutes.", {timeout:10000, type: "info"});
+			toast("Source is deploying to all "+(response.deploying_to_objects.data).length+" available Object(s). This can take several minutes.", {timeout:10000, type: "info"});
 		});
 		
 	},

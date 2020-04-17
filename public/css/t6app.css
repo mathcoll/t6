@@ -1677,7 +1677,7 @@ svg.footer:after {
 	position: relative;
 	display: inline-block;
 	box-sizing: border-box;
-	width: 300px;
+	width: 100%;
 	max-width: 100%;
 	margin: 0;
 	vertical-align: middle;
@@ -1689,7 +1689,6 @@ svg.footer:after {
 .mdl-selectfield__select {
 	visibility: visible;
 	font-size: 16px;
-	margin: 2px 0 3px 0;
 	padding: 0;
 	width: 100%
 }
@@ -1857,7 +1856,6 @@ input#signup\.lastName {
     z-index: 5;
     min-width: 124px;
     max-height: 200px;
-    height: 200px;
     overflow-x: hidden;
     overflow-y: auto
 }

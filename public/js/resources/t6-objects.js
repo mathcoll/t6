@@ -66,6 +66,7 @@ app.resources.objects = {
 			source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
 			source_version: myForm.querySelector("select[id='source_version']")!==null?myForm.querySelector("select[id='source_version']").value:"",
 		};
+		if (body.source_id === "-") { body.source_id = ""; }
 
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -88,6 +89,41 @@ app.resources.objects = {
 		evt.preventDefault();
 	},
 	onDelete: function(id) {
+		
+	},
+	onDeploy: function(source_id, object_id) {
+		// Get all objects linked to the source
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: "POST", headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/ota/"+source_id+"/deploy/"+object_id;
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			toast("Source is deploying to 1 available Object. This can take several minutes.", {timeout:10000, type: "info"});
+		});
+		
+	},
+	onBuild: function(id, object_id) {
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: "POST", headers: myHeaders };
+		var url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/build";
+		fetch(url, myInit)
+		.then(
+			app.fetchStatusHandler
+		).then(function(fetchResponse){ 
+			return fetchResponse.json();
+		})
+		.then(function(response) {
+			toast("Source is building 1 Object. This can take several minutes.", {timeout:10000, type: "info"});
+		});
 		
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
@@ -192,28 +228,47 @@ app.resources.objects = {
 				node += "	</div>";
 				node += "</section>";
 
-				if ( isEdit || (object.attributes.fqbn !== undefined ) ) {
+				if ( isEdit || (typeof object.attributes.fqbn !== "undefined" ) ) {
 					node += app.getSubtitle("Over The Air (OTA)");
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField("code", "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: isEdit});
-
+					let source_versions = new Array();
+					let sources = new Array({value: "-", name: "-"});
 					if ( localStorage.getItem("sources") != "null" ) {
-						var sources = JSON.parse(localStorage.getItem("sources")).map(function(source) {
-							return {value: source.name, name: source.id};
+						JSON.parse(localStorage.getItem("sources")).map(function(source) {
+							if(source.id==object.attributes.source_id) {
+								source.subversions.map(function(sv) {
+									source_versions.push({value: `Version ${sv.version} - ${sv.name}`, name: sv.id});
+								});
+							}
+							return sources.push({value: source.name, name: source.id});
 						});
 					}
-					node += app.getField(app.icons.sources, "Arduino Source", object.attributes.source_id, {type: "select", id: "source_id", isEdit: isEdit, options: sources });
-					node += app.getField(app.icons.sources, "Source version", object.attributes.source_version, {type: "select", id: "source_version", isEdit: isEdit, options: null });
+					source_versions.push({value: "Version 0", name: "0"});
+					node += app.getField(app.icons.sources, "Arduino Source", typeof object.attributes.source_id!=="undefined"?String(object.attributes.source_id):"-", {type: "select", id: "source_id", isEdit: isEdit, options: sources });
+					node += app.getField(app.icons.sources, "Source version", typeof object.attributes.source_version!=="undefined"?String(object.attributes.source_version):"0", {type: "select", id: "source_version", isEdit: isEdit, options: source_versions });
 					if ( object.attributes.ipv4 || isEdit===true ) {
 						node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 					}
 					if ( object.attributes.ipv6 || isEdit===true ) {
 						node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 					}
-					node += "	</div>";
-					node += "</section>";
 				}
+				if ( !isEdit && (typeof object.attributes.fqbn !== "undefined" && object.attributes.ipv4 ) ) {
+					node += "		<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "			<div class=\"mdl-list__item--three-line small-padding  mdl-card--expand pull-right\">";
+					node += "				<button data-id=\""+object.id+"\" class=\"object_build_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
+					node += "					<i class=\"arduino-icon build\"> </i>Build";
+					node += "				</button>";
+					node += "				<button data-id=\""+object.id+"\" class=\"object_deploy_btn mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect\">";
+					node += "					<i class=\"arduino-icon deploy\"> </i>Deploy";
+					node += "				</button>";
+					node += "			</div>";
+					node += "		</div>";
+				}
+				node += "	</div>";
+				node += "</section>";
 
 				if ( isEdit || (object.attributes.parameters !== undefined && object.attributes.parameters.length > -1 ) ) {
 					node += app.getSubtitle("Custom Parameters");
@@ -300,21 +355,30 @@ app.resources.objects = {
 				var source_id_selector = document.getElementById("source_id");
 				if ( source_id_selector ) {
 					source_id_selector.addEventListener("change", function(e) {
-						let subsource = JSON.parse(localStorage.getItem("sources")).find(subsource => subsource.id == e.srcElement.value);
-						let sel = document.getElementById("source_version");
-						for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
-						if ((subsource.subversions).length <= 0) {
+						if (e.srcElement.value!=="-") {
+							let subsource = JSON.parse(localStorage.getItem("sources")).find(subsource => subsource.id == e.srcElement.value);
+							let sel = document.getElementById("source_version");
+							for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
+							if ((subsource.subversions).length <= 0) {
+								let opt = document.createElement("option");
+								opt.appendChild( document.createTextNode("Version 0") );
+								opt.value = 0;
+								sel.appendChild(opt);
+							} else {
+								(subsource.subversions).map(function(ss) {
+									let opt = document.createElement("option");
+									opt.appendChild( document.createTextNode(`Version ${ss.version} - ${ss.name}`) );
+									opt.value = ss.version;
+									sel.appendChild(opt);
+								});
+							}
+						} else {
+							let sel = document.getElementById("source_version");
+							for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
 							let opt = document.createElement("option");
-							opt.appendChild( document.createTextNode(`Version 0`) );
+							opt.appendChild( document.createTextNode("Version 0") );
 							opt.value = 0;
 							sel.appendChild(opt);
-						} else {
-							(subsource.subversions).map(function(ss) {
-								let opt = document.createElement("option");
-								opt.appendChild( document.createTextNode(`Version ${ss.version} - ${ss.name}`) );
-								opt.value = ss.version;
-								sel.appendChild(opt);
-							});
 						}
 					});
 				}
@@ -330,6 +394,22 @@ app.resources.objects = {
 						});
 					}
 				} else {
+					for (var i in app.buttons.deploySourceObject) {
+						if ( app.buttons.deploySourceObject[i].childElementCount > -1 ) {
+							app.buttons.deploySourceObject[i].addEventListener("click", function(evt) {
+								app.resources.objects.onDeploy(object.attributes.source_id, evt.target.parentNode.getAttribute("data-id"));
+								evt.preventDefault();
+							}, false);
+						}
+					}
+					for (var i in app.buttons.buildSourceObject) {
+						if ( app.buttons.buildSourceObject[i].childElementCount > -1 ) {
+							app.buttons.buildSourceObject[i].addEventListener("click", function(evt) {
+								app.resources.objects.onBuild(object.attributes.source_id, evt.target.parentNode.getAttribute("data-id"));
+								evt.preventDefault();
+							}, false);
+						}
+					}
 					app.buttons.listObject.addEventListener("click", function(evt) { app.setSection("objects"); evt.preventDefault(); }, false);
 					// buttons.deleteObject2.addEventListener("click",
 					// function(evt) { console.log('SHOW MODAL AND CONFIRM!');
@@ -532,13 +612,22 @@ app.resources.objects = {
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.code, "Fqbn string", object.attributes.fqbn!==undefined?object.attributes.fqbn:"", {type: "text", style:"text-transform: none !important;", id: "fqbn", isEdit: true});
+		let source_versions = new Array();
+		let sources = new Array();
 		if ( localStorage.getItem("sources") != "null" ) {
-			var sources = JSON.parse(localStorage.getItem("sources")).map(function(source) {
-				return {value: source.name, name: source.id};
+			JSON.parse(localStorage.getItem("sources")).map(function(source) {
+				if(source.id==object.attributes.source_id) {
+					source.subversions.map(function(sv) {
+						source_versions.push({value: `Version ${sv.version} - ${sv.name}`, name: sv.id});
+					});
+				}
+				return sources.push({value: source.name, name: source.id});
 			});
+			sources.push({value: "-", name: "-"});
 		}
+		source_versions.push({value: "Version 0", name: "0"});
 		node += app.getField(app.icons.sources, "Arduino Source", object.attributes.source_id, {type: "select", id: "source_id", isEdit: true, options: sources });
-		node += app.getField(app.icons.sources, "Source version", object.attributes.source_version, {type: "select", id: "source_version", isEdit: true, options: null });
+		node += app.getField(app.icons.sources, "Source version", object.attributes.source_version, {type: "select", id: "source_version", isEdit: true, options: source_versions });
 		node += app.getField("my_location", "IPv4", object.attributes.ipv4, {type: "text", id: "IPv4", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv4, error:"IPv4 should be valid."});
 		node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: true, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 		node += "	</div>";
@@ -590,21 +679,30 @@ app.resources.objects = {
 		var source_id_selector = document.getElementById("source_id");
 		if ( source_id_selector ) {
 			source_id_selector.addEventListener("change", function(e) {
-				let subsource = JSON.parse(localStorage.getItem("sources")).find(subsource => subsource.id == e.srcElement.value);
-				let sel = document.getElementById("source_version");
-				for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
-				if ((subsource.subversions).length <= 0) {
+				if (e.srcElement.value!=="-") {
+					let subsource = JSON.parse(localStorage.getItem("sources")).find(subsource => subsource.id == e.srcElement.value);
+					let sel = document.getElementById("source_version");
+					for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
+					if ((subsource.subversions).length <= 0) {
+						let opt = document.createElement("option");
+						opt.appendChild( document.createTextNode("Version 0") );
+						opt.value = 0;
+						sel.appendChild(opt);
+					} else {
+						(subsource.subversions).map(function(ss) {
+							let opt = document.createElement("option");
+							opt.appendChild( document.createTextNode(`Version ${ss.version} - ${ss.name}`) );
+							opt.value = ss.version;
+							sel.appendChild(opt);
+						});
+					}
+				} else {
+					let sel = document.getElementById("source_version");
+					for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
 					let opt = document.createElement("option");
-					opt.appendChild( document.createTextNode(`Version 0`) );
+					opt.appendChild( document.createTextNode("Version 0") );
 					opt.value = 0;
 					sel.appendChild(opt);
-				} else {
-					(subsource.subversions).map(function(ss) {
-						let opt = document.createElement("option");
-						opt.appendChild( document.createTextNode(`Version ${ss.version} - ${ss.name}`) );
-						opt.value = ss.version;
-						sel.appendChild(opt);
-					});
 				}
 			});
 		}
