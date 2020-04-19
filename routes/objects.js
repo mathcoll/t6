@@ -157,7 +157,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 			o.is_connected = false;
 		}
 		t6console.debug("is_connected=" + o.is_connected);
-		if (o.source_id!="" && !o.source_version) {
+		if (typeof o.source_id!=="undefined" && !o.source_version) {
 			o.source_version = 0;
 		}
 		return o;
@@ -292,16 +292,15 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 		if ( source && source.content ) {
 			// This is a temporary solution...
 			let exec = require("child_process").exec;
-			let spawn = require("child_process").spawn;
 			
 			let odir = `${ota.build_dir}/${object.source_id}`;
 			if (!fs.existsSync(odir)) fs.mkdirSync(odir);
 			
 			let vdir = `${ota.build_dir}/${object.source_id}/${object.source_version}`;
-			if (!fs.existsSync(vdir)) fs.mkdirSync(vdir);
+			if (!fs.existsSync(vdir)) { fs.mkdirSync(vdir); }
 			
 			let dir = `${ota.build_dir}/${object.source_id}/${object.source_version}/${object.id}`;
-			if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+			if (!fs.existsSync(dir)) { fs.mkdirSync(dir); }
 
 			fs.writeFile(`${dir}/${object.id}.ino`, source.content, function (err) {
 				if (err) throw err;
