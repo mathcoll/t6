@@ -74,6 +74,7 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 	if ( json.length > 0 ) {
 		let s = sources.find({ "id" : source_id }, { "version" : typeof json.source_version!=="undefined"?json.source_version:0 });
 		let binFileErrors = new Array();
+		let start = new Date();
 		json.map(function(o) {
 			let dir = `${ota.build_dir}/${o.source_id}/${o.source_version}/${o.id}`;
 			t6console.info("Deploying from dir", dir);
@@ -84,6 +85,7 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 			let binFile = `${dir}/${o.id}.${packager}.${architecture}.${id}.bin`;
 			if (!fs.existsSync(dir) || !fs.existsSync(binFile)) {
 				binFileErrors.push(o.id);
+				t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "failure", new Date()-start);
 			}
 		});
 		if(binFileErrors.length > 0) {
@@ -119,11 +121,13 @@ router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", ex
 								var payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"Deploy is completed on "+o.ipv4+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 								t6notifications.sendPush(user.pushSubscription, payload);
 							}
+							t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "success", new Date()-start);
 						} else {
 							if (user && typeof user.pushSubscription !== "undefined" ) {
 								var payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"An error occured during deployment of "+o.ipv4+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 								t6notifications.sendPush(user.pushSubscription, payload);
 							}
+							t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "failure", new Date()-start);
 						}
 					});
 					//myShellScript.stderr.on("data", (data)=>{

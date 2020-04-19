@@ -310,6 +310,7 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 				let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
 				t6console.log("Building ino sketch using fqbn=", fqbn);
 				
+				let start = new Date();
 				const child = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
 				child.on("close", (code) => {
 					t6console.log(`child process exited with code ${code}`);
@@ -320,11 +321,13 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"Build is completed.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							t6notifications.sendPush(user.pushSubscription, payload);
 						}
+						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "success", new Date()-start);
 					} else {
 						if (user && typeof user.pushSubscription !== "undefined" ) {
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"An error occured during build (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							t6notifications.sendPush(user.pushSubscription, payload);
 						}
+						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "failure", new Date()-start);
 					}
 				});
 			});  

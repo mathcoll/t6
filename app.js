@@ -49,6 +49,7 @@ global.t6mailer			= require("./t6mailer");
 global.t6notifications	= require("./t6notifications");
 global.t6events			= require("./t6events");
 global.t6console		= require("./t6console");
+global.t6otahistory		= require("./t6otahistory");
 global.t6events.setMeasurement("events");
 global.t6events.setRP("autogen");
 global.algorithm		= "aes-256-cbc";
@@ -163,6 +164,16 @@ var initDbSources = function() {
 		t6console.info(dbSources.getCollection("sources").count(), "resources in Sources collection.");
 	}
 }
+var initDbOtaHistory = function() {
+	if ( dbOtaHistory === null ) {
+		t6console.warn("db OtaHistory is failing");
+	}
+	if ( dbOtaHistory.getCollection("otahistory") === null ) {
+		t6console.warn("- Collection OtaHistory is failing");
+	} else {
+		t6console.info(dbOtaHistory.getCollection("otahistory").count(), "resources in OtaHistory collection.");
+	}
+}
 
 t6console.info("Initializing Databases...");
 db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbMain});
@@ -171,6 +182,7 @@ dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".j
 dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
 dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
 dbSources = new loki(path.join(__dirname, "data", "sources-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbSources});
+dbOtaHistory = new loki(path.join(__dirname, "data", "otahistory-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
 
 var index			= require("./routes/index");
 var objects			= require("./routes/objects");
