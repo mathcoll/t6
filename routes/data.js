@@ -115,15 +115,15 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 
 		let where = "";
 		if ( data_id ) {
-			if ( data_id.toString().length === 10 ) { data_id *= 1000000000; }
-			else if ( data_id.toString().length === 13 ) { data_id *= 1000000; }
-			else if ( data_id.toString().length === 16 ) { data_id *= 1000; }
+			if ( data_id.toString().length === 10 ) { data_id *= 1e9; }
+			else if ( data_id.toString().length === 13 ) { data_id *= 1e6; }
+			else if ( data_id.toString().length === 16 ) { data_id *= 1e3; }
 			where += " AND time="+data_id;
 		} else {
 			if ( typeof req.query.start !== "undefined" ) {
-				if ( req.query.start.toString().length === 10 ) { start = req.query.start*1000000000; }
-				else if ( req.query.start.toString().length === 13 ) { start = req.query.start*1000000; }
-				else if ( req.query.start.toString().length === 16 ) { start = req.query.start*1000; }
+				if ( req.query.start.toString().length === 10 ) { start = req.query.start*1e9; }
+				else if ( req.query.start.toString().length === 13 ) { start = req.query.start*1e6; }
+				else if ( req.query.start.toString().length === 16 ) { start = req.query.start*1e3; }
 				if ( !isNaN(start) ) {
 					where = " AND time>="+start;
 				} else {
@@ -131,9 +131,9 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				}
 			}	
 			if ( typeof req.query.end !== "undefined" ) {
-				if ( req.query.end.toString().length === 10 ) { end = req.query.end*1000000000; }
-				else if ( req.query.end.toString().length === 13 ) { end = req.query.end*1000000; }
-				else if ( req.query.end.toString().length === 16 ) { end = req.query.end*1000; }
+				if ( req.query.end.toString().length === 10 ) { end = req.query.end*1e9; }
+				else if ( req.query.end.toString().length === 13 ) { end = req.query.end*1e6; }
+				else if ( req.query.end.toString().length === 16 ) { end = req.query.end*1e3; }
 				if ( !isNaN(end) ) {
 					where += " AND time<="+end;
 				} else {
