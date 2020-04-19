@@ -1390,9 +1390,13 @@ form.resetpassword > div.mdl-shadow--2dp img {
 #drawer a.mdl-navigation__link {
 	color: rgb(121,85,72);
 }
-#drawer a.mdl-navigation__link .material-icons {
+#drawer a.mdl-navigation__link .material-icons,
+#drawer a.mdl-navigation__link .arduino-icon {
 	vertical-align:middle;
 	padding: 0 10px 0 0;
+}
+#drawer a.mdl-navigation__link .arduino-icon {
+	margin: 0 14px 0 0 !important;
 }
 .mdl-layout__tab-bar a.mdl-navigation__link {
 	opacity: 1 !important;
