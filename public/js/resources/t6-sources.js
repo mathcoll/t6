@@ -246,7 +246,9 @@ app.resources.sources = {
 						node_child += "<section class=\"mdl-grid mdl-cell--12-col\">";
 						node_child += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 						node_child += "	<span class=\"pull-left mdl-card__date\">";
-						node_child += app.getField(app.icons.code, null, c.attributes.name!==undefined?c.attributes.name:"", {type: "text", isEdit: false});
+						node_child += app.getField(app.icons.code, "Name", c.attributes.name!==undefined?c.attributes.name:"", {type: "text", isEdit: false});
+						node_child += app.getField(app.icons.version, "Version", c.attributes.version!==undefined?c.attributes.version:"", {type: "text", isEdit: false});
+						node_child += app.getField(app.icons.date, "Created", moment(c.attributes.meta.created).format(app.date_format), {type: "text", isEdit: false});
 						node_child += "	</span>";
 						node_child += "	<span class=\"pull-right mdl-card__menuaction edit_children_source\">";
 						node_child += "		<button data-id=\""+c.id+"\" class=\"child_edit_btn mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";

@@ -85,6 +85,7 @@ var app = {
 		"edit": "edit",
 		"flows": "settings_input_component",
 		"icon": "label_outline",
+		"link_off": "link_off",
 		"login": "email",
 		"menu": "menu",
 		"mqtts": "volume_down",
@@ -100,7 +101,7 @@ var app = {
 		"type": "label",
 		"units": "hourglass_empty",
 		"update": "update",
-		"link_off": "link_off",
+		"version": "linear_scale",
 	},
 	types: [
 		{name: "cast", value:"Cast"},
