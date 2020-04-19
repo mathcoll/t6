@@ -288,7 +288,7 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 	if ( object && object.source_id ) {
 		object.source_version = typeof object.source_version!=="undefined"?object.source_version:0;
 		sources	= dbSources.getCollection("sources");
-		let source = sources.findOne({"$and": [{ "root_source_id": object.source_id }, {"version": parseInt(object.source_version)}]});
+		let source = sources.findOne({"$and": [{ "root_source_id": object.source_id }, {"version": parseInt(object.source_version, 10)}]});
 		if ( source && source.content ) {
 			// This is a temporary solution...
 			let exec = require("child_process").exec;

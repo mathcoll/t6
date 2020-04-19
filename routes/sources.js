@@ -34,12 +34,12 @@ router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secr
 	var query;
 	if ( typeof source_id !== "undefined" ) {
 		if ( typeof version !== "undefined" ) {
-			if (Number.isInteger(parseInt(version))===true) { // so far it must be an integer as defined in the route. TODO: could be "latest"
+			if (Number.isInteger(parseInt(version, 10))===true) { // so far it must be an integer as defined in the route. TODO: could be "latest"
 				query = {
 					"$and": [
 						{ "user_id" : req.user.id },
 						{ "root_source_id" : source_id }, // in case of version 0, root_source_id should be the same as id
-						{ "version" : parseInt(version) },
+						{ "version" : parseInt(version, 10) },
 					]
 				};
 			}
@@ -172,8 +172,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 		var newSource = {
 			id:			source_id,
 			root_source_id: source_id,
-			version:	parseInt(0),
-			latest_version:	parseInt(0),
+			version:	parseInt(0, 10),
+			latest_version:	parseInt(0, 10),
 			user_id:	req.user.id,
 			name:		typeof req.body.name!=="undefined"?req.body.name:"",
 			content:	content,
@@ -240,13 +240,13 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 			user_id:			req.user.id,
 			name:				typeof req.body.name!=="undefined"?req.body.name:parent.name,
 			content:			content,
-			version:			parseInt(root.latest_version+1),
+			version:			parseInt(root.latest_version+1, 10),
 			password:			typeof req.body.password!=="undefined"?req.body.password:parent.password,
 		};
 		var result;
 		
 		sources.chain().find({ "id": root.id }).update(function(r) {
-			r.latest_version	= parseInt(r.latest_version+1);
+			r.latest_version	= parseInt(r.latest_version+1, 10);
 			r.latest_version_id = source_id
 			result = r;
 		});
