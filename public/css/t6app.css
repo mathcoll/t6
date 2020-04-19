@@ -1139,10 +1139,13 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	background: #795548;
 	padding: 5px 10px;
 }
-form .mdl-card__title,
 div[data-action="view"] .mdl-card__title,
 div[data-action="nothing"] .mdl-card__title {
 	background: transparent !important;
+	padding: 16px;
+}
+form .mdl-card__title {
+	background: #fff !important;
 	padding: 16px;
 }
 /*

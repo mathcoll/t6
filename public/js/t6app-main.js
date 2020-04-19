@@ -1040,7 +1040,9 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 		app.currentSection = section;
-
+		if ( typeof firebase==="undefined" ) {
+			var firebase = {};
+		}
 		if ( typeof firebase !== "object" && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
 			firebase.analytics().setCurrentScreen(section, null);
 		}
@@ -1907,7 +1909,7 @@ var touchStartPoint, touchMovePoint;
 				}
 				var title = 'My Snippets';
 				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: false, action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
-				else defaultCard = {title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
+				else defaultCard = {title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
 				
 			} else if (type == 'rules') {
 				var container = (app.containers.rules).querySelector('.page-content');
@@ -3324,7 +3326,7 @@ var touchStartPoint, touchMovePoint;
 				compatibledevices += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if( response[i].title ) {
 					compatibledevices += "	<div class=\"mdl-card__title\">";
-					compatibledevices += "		<span class=\"mdl-typography--headline\"><i class=\"material-icons md-48\">devices_other</i>"+response[i].title+"</span>";
+					compatibledevices += "		<h3 class=\"mdl-card__title-text\"><i class=\"material-icons md-48\">devices_other</i>"+response[i].title+"</h3>";
 					compatibledevices += "	</div>";
 				}
 				compatibledevices += "		<div class=\"mdl-card__supporting-text no-padding\">";
@@ -3994,7 +3996,7 @@ var touchStartPoint, touchMovePoint;
 	}
 	app.setDrawer();
 	
-	if ( app.gtm && app.getCookie('cookieconsentNoGTM') !== "true" ) {
+	if ( app.gtm!=="" && app.getCookie('cookieconsentNoGTM') !== "true" ) {
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
