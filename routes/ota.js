@@ -33,6 +33,29 @@ router.get("/board-listall", expressJwt({secret: jwtsettings.secret}), function 
 });
 
 /**
+ * @api {get} /ota/lib-list Shows a list of all installed libraries
+ * @apiName Shows a list of all installed libraries
+ * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * 
+ * @apiUse 201
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/lib-list", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	// This is a temporary solution...
+	exec(`${ota.arduino_binary_cli} lib list`, function(error, stdout, stderr) {
+		if (!error && stdout) {
+			res.status(200).send({ "lib-list": stdout.split("\n") });
+		} else {
+			res.status(500).send(stderr + error);
+		}
+	});
+});
+
+/**
  * @api {post} /ota/:source_id/deploy/:object_id Deploy a Source to all linked Objects Over The Air
  * @apiName Deploy a Source to all linked Objects Over The Air
  * @apiGroup 6. Source and Over The Air (OTA)
