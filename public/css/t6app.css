@@ -954,7 +954,6 @@ div[data-action='view'] .mdl-list__item--three-line {
 }
 div:not([data-action='view']) .mdl-card__title h3.mdl-card__title-text,
 div:not([data-action='nothing']) .mdl-card__title h3.mdl-card__title-text {
-	background: #0000004d;
 	padding: 0 10px;
 	color: #fff !important;
 	white-space: nowrap;
@@ -1136,11 +1135,26 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 #index .mdl-card__menu {
 	color: #fff;
 }
-#index .mdl-card__title,
-#use-cases .mdl-card__title {
+.mdl-card__title {
 	background: #795548;
 	padding: 5px 10px;
 }
+form .mdl-card__title,
+div[data-action="view"] .mdl-card__title,
+div[data-action="nothing"] .mdl-card__title {
+	background: transparent !important;
+	padding: 16px;
+}
+/*
+div[data-action="view"] .mdl-card__title h3.mdl-card__title-text,
+div[data-action="nothing"] .mdl-card__title h3.mdl-card__title-text {
+	background: none !important;
+	color: #000 !important;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	display: block;
+}
+*/
 #index .mdl-card__title h3.mdl-card__title-text,
 #use-cases .mdl-card__title h3.mdl-card__title-text {
 	background: transparent;

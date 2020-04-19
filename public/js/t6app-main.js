@@ -182,7 +182,7 @@ var app = {
 	buttons: {}, // see function app.refreshButtonsSelectors()
 	containers: {}, // see function app.refreshContainers()
 };
-app.offlineCard = {image: app.baseUrlCdn+"/img/opl_img3.webp", title: "Offline", titlecolor: "#ffffff", description: "Offline mode, Please connect to internet in order to see your resources."};
+app.offlineCard = {title: "Offline", titlecolor: "#ffffff", description: "Offline mode, Please connect to internet in order to see your resources."};
 
 var Tawk_API;
 var touchStartPoint, touchMovePoint;
@@ -1854,8 +1854,8 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 				var title = 'My Objects';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: false, action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
+				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Object yet.', internalAction: false, action: {id: 'object_add', label: '<i class=\'material-icons\'>add</i>Add my first Object'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				else defaultCard = {title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
 			
 			} else if (type == 'flows') {
 				var container = (app.containers.flows).querySelector('.page-content');
@@ -1873,8 +1873,8 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 				var title = 'My Flows';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: false, action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any Flow yet.', internalAction: false, action: {id: 'flow_add', label: '<i class=\'material-icons\'>add</i>Add my first Flow'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				else defaultCard = {title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', className: "mdl-grid mdl-cell mdl-cell--12-col"};
 			} else if (type == 'dashboards') {
 				var container = (app.containers.dashboards).querySelector('.page-content');
 				var url = app.baseUrl+'/'+app.api_version+'/dashboards';
@@ -1889,9 +1889,9 @@ var touchStartPoint, touchMovePoint;
 				}
 				var title = 'My Dashboards';
 				if ( app.isLogged ) {
-					defaultCard = {image: app.baseUrlCdn+'/img/opl_img.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: false, action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+					defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any dashboard yet.', internalAction: false, action: {id: 'dashboard_add', label: '<i class=\'material-icons\'>add</i>Add my first Dashboard'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
 				} else {
-					defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', className: "mdl-grid mdl-cell mdl-cell--12-col"};
+					defaultCard = {title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', className: "mdl-grid mdl-cell mdl-cell--12-col"};
 				}
 			} else if (type == 'snippets') {
 				var container = (app.containers.snippets).querySelector('.page-content');
@@ -1906,8 +1906,8 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 				var title = 'My Snippets';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: false, action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
+				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any snippet yet.', internalAction: false, action: {id: 'snippet_add', label: '<i class=\'material-icons\'>add</i>Add my first Snippet'}};
+				else defaultCard = {title: 'Customize Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data'}; // ,
 				
 			} else if (type == 'rules') {
 				var container = (app.containers.rules).querySelector('.page-content');
@@ -1922,8 +1922,8 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 				var title = 'My Rules';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img2.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: false, action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
+				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any rule yet.', internalAction: false, action: {id: 'rule_add', label: '<i class=\'material-icons\'>add</i>Add my first Rule'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				else defaultCard = {title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
 
 			} else if (type == 'mqtts') {
 				var container = (app.containers.mqtts).querySelector('.page-content');
@@ -1938,8 +1938,8 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 				var title = 'My Mqtts';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
+				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any mqtt topic yet.', action: {id: 'mqtt_add', label: '<i class=\'material-icons\'>add</i>Add my first Mqtt'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				else defaultCard = {title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
 				
 			} else if (type == 'sources') {
 				var container = (app.containers.sources).querySelector('.page-content');
@@ -1954,8 +1954,8 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 				var title = 'My Sources';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any source yet.', action: {id: 'source_add', label: '<i class=\'material-icons\'>add</i>Add my first Source'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
+				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any source yet.', action: {id: 'source_add', label: '<i class=\'material-icons\'>add</i>Add my first Source'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				else defaultCard = {title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
 				
 			} else if (type == 'tokens') {
 				var container = (app.containers.tokens).querySelector('.page-content');
@@ -1970,8 +1970,8 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 				var title = 'My tokens';
-				if ( app.isLogged ) defaultCard = {image: app.baseUrlCdn+'/img/opl_img.webp', title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: '<i class=\'material-icons\'>add</i>Add my first Token'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
-				else defaultCard = {image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
+				if ( app.isLogged ) defaultCard = {title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any token yet.', action: {id: 'token_add', label: '<i class=\'material-icons\'>add</i>Add my first Token'}, className: "mdl-grid mdl-cell mdl-cell--12-col"};
+				else defaultCard = {title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', className: "mdl-grid mdl-cell mdl-cell--12-col"}; // ,
 				
 			} else if (type == 'status') {
 				var icon = app.icons.status;
