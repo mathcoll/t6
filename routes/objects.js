@@ -160,6 +160,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 		if (typeof o.source_id!=="undefined" && !o.source_version) {
 			o.source_version = 0;
 		}
+		o.otahist = t6otahistory.getLastEvent(req.user.id, o.id);
 		return o;
 	});
 	t6console.debug(query);
