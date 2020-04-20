@@ -34,9 +34,13 @@ t6otahistory.getLastEvent = function(user_id, object_id, source_id=null, event=n
 	}
 	let query = {"$and": params};
 	let hist = OtaHistory.chain().find(query).simplesort("meta.created", true).offset(0).limit(1).data();
-	delete hist[0]["meta"];
-	delete hist[0]["$loki"];
-	return hist[0];
+	if (typeof hist!=="undefined" && hist[0]) {
+		delete hist[0]["meta"];
+		delete hist[0]["$loki"];
+		return hist[0];
+	} else {
+		return {};
+	}
 };
 
 module.exports = t6otahistory;
