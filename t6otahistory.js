@@ -14,6 +14,7 @@ t6otahistory.addEvent = function(user_id, object_id, object_attributes, source_i
 		date: new Date(),
 		duration: duration,
 	});
+	dbOtaHistory.save();
 	t6console.log(user_id, object_id, object_attributes, source_id, version, event, status, duration);
 };
 
@@ -32,7 +33,7 @@ t6otahistory.getLastEvent = function(user_id, object_id, source_id=null, event=n
 		params.push({ "status": status });
 	}
 	let query = {"$and": params};
-	let hist = OtaHistory.chain().find(query).simplesort("date", true).offset(0).limit(1).data();
+	let hist = OtaHistory.chain().find(query).simplesort("meta.created", true).offset(0).limit(1).data();
 	delete hist[0]["meta"];
 	delete hist[0]["$loki"];
 	return hist[0];
