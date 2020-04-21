@@ -198,10 +198,10 @@ router.all("*", function (req, res, next) {
 		}
 		var i;
 		var query = sprintf("SELECT count(url) FROM requests WHERE (user_id='%s') AND (time>now() - 7d) LIMIT 1", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-		t6console.debug(query);
+		//t6console.debug(query);
 		dbInfluxDB.query(query).then(data => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
-			
+
 			if ( limit-i > 0 ) {
 				res.header("X-RateLimit-Remaining", limit-i);
 				//res.header("X-RateLimit-Reset", "");
@@ -675,6 +675,45 @@ router.get("/status", function(req, res, next) {
 		appName: process.env.NAME,
 		started_at: moment(process.env.STARTED*1000).format("DD/MM/Y H:mm:s"),
 	};
+	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
+		status.dbAll = {
+			"objects": db.getCollection("objects").count(),
+			"flows": db.getCollection("flows").count(),
+			"users": db.getCollection("users").count(),
+			"tokens": db.getCollection("tokens").count(),
+			"units": db.getCollection("units").count(),
+			"datatypes": db.getCollection("datatypes").count(),
+			"users": db.getCollection("users").count(),
+			"rules": dbRules.getCollection("rules").count(),
+			"snippets": dbSnippets.getCollection("snippets").count(),
+			"dashboards": dbDashboards.getCollection("dashboards").count(),
+			"tokens2": dbTokens.getCollection("tokens").count(),
+			"sources": dbSources.getCollection("sources").count(),
+			"otahistory": dbOtaHistory.getCollection("otahistory").count(),
+		}
+	}
+	if ( typeof req.user!=="undefined" && typeof req.user.id!=="undefined" ) {
+		let u = {"user_id": req.user.id};
+		status.db = {
+			"objects": db.getCollection("objects").find(u).length,
+			"flows": db.getCollection("flows").find(u).length,
+			"users": 1,
+			"tokens": db.getCollection("tokens").find(u).length,
+			"units": db.getCollection("units").count(),
+			"datatypes": db.getCollection("datatypes").count(),
+			"users": db.getCollection("users").find(u).length,
+			"rules": dbRules.getCollection("rules").find(u).length,
+			"snippets": dbSnippets.getCollection("snippets").find(u).length,
+			"dashboards": dbDashboards.getCollection("dashboards").find(u).length,
+			"tokens2": dbTokens.getCollection("tokens").find(u).length,
+			"sources": dbSources.getCollection("sources").find(u).length,
+			"otahistory": dbOtaHistory.getCollection("otahistory").find(u).length,
+		}
+		status.RateLimit = {
+			"X-RateLimit-Remaining": res.get("X-RateLimit-Remaining"),
+			"X-RateLimit-Limit": res.get("X-RateLimit-Limit"),
+		}
+	}
 	res.status(200).send(status);
 });
 
