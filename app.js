@@ -2,6 +2,7 @@
  * 
  * 
  */
+let start = new Date();
 var express				= require("express");
 var timeout				= require("connect-timeout");
 var morgan				= require("morgan");
@@ -96,7 +97,11 @@ var initDbMain = function() {
 	if ( db.getCollection("tokens") === null ) {
 		t6console.warn("- Collection Tokens is failing");
 	} else {
-		t6console.info(db.getCollection("tokens").count(), "resources in Tokens collection.");
+		/* Some optimization */
+		let tokens	= db.getCollection("tokens");
+		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
+		if ( expired ) { tokens.remove(expired); db.save(); }
+		t6console.info(db.getCollection("tokens").count(), "resources in Tokens collection (in db).");
 	}
 	if ( db.getCollection("units") === null ) {
 		t6console.warn("- Collection Units is failing");
@@ -151,7 +156,11 @@ var initDbTokens = function() {
 	if ( dbTokens.getCollection("tokens") === null ) {
 		t6console.warn("- Collection Tokens is failing");
 	} else {
-		t6console.info(dbTokens.getCollection("tokens").count(), "resources in Tokens collection.");
+		/* Some optimization */
+		let tokens	= dbTokens.getCollection("tokens");
+		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
+		if ( expired ) { tokens.remove(expired); db.save(); }
+		t6console.info(dbTokens.getCollection("tokens").count(), "resources in Tokens collection (in separate db).");
 	}
 }
 var initDbSources = function() {
@@ -306,8 +315,10 @@ if (app.get("env") === "development") {
 		t6console.error(err.status + err.name);
 	});
 }
+
 t6events.add("t6App", "start", "self");
 t6console.info(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
+t6console.info(sprintf("Start process duration: %ss.", (new Date()-start)/1000));
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {

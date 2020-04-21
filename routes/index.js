@@ -336,7 +336,7 @@ router.delete("/tokens/all", function (req, res) {
 /**
  * @api {post} /authenticate Authenticate - get JWT Token
  * @apiName Authenticate - get JWT Token
- * @apiDescription The authenticate endpoint provide you an access token whi is multiple time use but expired within 5 minutes.
+ * @apiDescription The authenticate endpoint provide you an access token which is multiple use but expiring within 5 minutes.
  * Once it has expired an access_token can be refreshed to extend duration or you can generate a new one from this authenticate endpoint.
  * @apiGroup User
  * @apiVersion 2.0.1
@@ -368,7 +368,7 @@ router.post("/authenticate", function (req, res) {
 		var password = req.body.password;
 
 		var queryU = { "$and": [ { "email": email } ] };
-		t6console.debug(queryU);
+		//t6console.debug(queryU);
 		var user = users.findOne(queryU);
 		if ( user && typeof user.password!=="undefined" ) {
 			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
