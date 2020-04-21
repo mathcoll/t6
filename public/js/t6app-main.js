@@ -1046,6 +1046,9 @@ var touchStartPoint, touchMovePoint;
 		if ( typeof firebase !== "object" && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
 			firebase.analytics().setCurrentScreen(section, null);
 		}
+		if ( typeof Tawk_API!=="undefined" && typeof Tawk_API.setAttributes==="function" ) {
+			Tawk_API.addEvent("setCurrentScreen", { "screen" : section}, function(error){});
+		}
 	};
 
 	app.setItemsClickAction = function(type) {
@@ -2216,13 +2219,11 @@ var touchStartPoint, touchMovePoint;
 						firebase.analytics().setUserProperties({'userId': user.id});
 						firebase.analytics().setUserProperties({'userRole': user.attributes.role});
 					}
-					if ( Tawk_API && typeof Tawk_API.setAttributes == 'function' ) {
+					if ( typeof Tawk_API!=="undefined" && typeof Tawk_API.setAttributes==="function" ) {
 						Tawk_API.setAttributes({
 							'name' : user.attributes.first_name+" "+user.attributes.last_name,
 							'email': user.attributes.email
-						}, function (error) {
-							console.log("DEBUG", error);
-						});
+						}, function(error){});
 					}
 				}
 				app.setDrawer();
