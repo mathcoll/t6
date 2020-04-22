@@ -254,7 +254,9 @@ app.resources.objects = {
 					if ( object.attributes.ipv6 || isEdit===true ) {
 						node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 					}
-					node += app.getField(app.icons.date, "OTA latest event", `${object.attributes.otahist.event}: ${object.attributes.otahist.status} (${object.attributes.otahist.date})`, {type: "text", id: "latest_event", isEdit: false});
+					if ( object.attributes.otahist ) {
+						node += app.getField(app.icons.date, "OTA latest event", `${object.attributes.otahist.event}: ${object.attributes.otahist.status} (${object.attributes.otahist.date})`, {type: "text", id: "latest_event", isEdit: false});
+					}
 				}
 				if ( !isEdit && (typeof object.attributes.fqbn !== "undefined" && object.attributes.ipv4 ) ) {
 					node += "		<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
