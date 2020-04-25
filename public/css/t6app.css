@@ -195,6 +195,9 @@ h6.feature-title {
 	flex: 0 0 83.333333%;
 	max-width: 83.333333%;
 }
+.col-2 i.material-icons {
+	color: #795548;
+}
 img.z-depth-0 {
 	margin: 0 auto;
 }
