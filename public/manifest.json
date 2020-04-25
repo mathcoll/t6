@@ -24,6 +24,10 @@
             	"src": "/img/m/icons/icon-180x180.png",
             	"sizes": "180x180",
             	"type": "image/png"
+            }, {
+            	"src": "/img/m/icons/android-chrome-512x512.png",
+            	"sizes": "512x512",
+            	"type": "image/png"
             }],
   "scope": "/",
   "start_url": "/#index",
