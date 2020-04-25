@@ -210,42 +210,6 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         //- Loading
         section#loading-spinner.hidden
           #spinner.mdl-progress.mdl-js-progress.mdl-progress__indeterminate.loader(style='width:auto;')
-  
-        //- Use cases
-        section#use-cases.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content IoT application and Use cases
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-            div.mdl-grid.mdl-cell.mdl-cell--stretch
-              div.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  h3.mdl-card__title-text Smart City
-                div.mdl-card__supporting-text.mdl-card--expand t6 ease IoT sensors & actuators deployment within the city. Data are stored on t6 and trigger actions to prevent traffic congestion, road lighting, car park management, safety and so on.
-
-            div.mdl-grid.mdl-cell.mdl-cell--stretch
-              div.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  h3.mdl-card__title-text Smart Home
-                div.mdl-card__supporting-text.mdl-card--expand Turn on/off light depending on the time of the day or any other conditions.
-
-            div.mdl-grid.mdl-cell.mdl-cell--stretch
-              div.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  h3.mdl-card__title-text Smart Energy
-                div.mdl-card__supporting-text.mdl-card--expand Control thermostats on the rooms; monitor power consumption and so on ...
-
-            div.mdl-grid.mdl-cell.mdl-cell--stretch
-              div.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  h3.mdl-card__title-text Smart Fleet
-                div.mdl-card__supporting-text.mdl-card--expand Deploy Over the Air (OTA). t6 is ready to deliver to any of your Objects using a simple Api. The code is spread to all compatible Objects.
-
-            div.mdl-grid.mdl-cell.mdl-cell--stretch
-              div.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  h3.mdl-card__title-text Smart Data
-                div.mdl-card__supporting-text.mdl-card--expand t6 embed customizabel dashboards and can trigger action based on multi-criteria events to alert you for any relevant information. 
 
         //- List Index
         section#index.mdl-grid.mdl-cell--12-col.mdl-tabs__panel.mdl-layout__tab-panel.is-active(role='heading', aria-level='1')
@@ -356,152 +320,41 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
             div
               img(src="/img/icon.png", style="background: #fff;", alt="Logo t6")
 
-        //- List Objects
-        section#objects.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='2')
+        //- Use cases
+        section#use-cases.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
           .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Objects
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
-
-        //- View Object
-        section#object.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+            h2.mdl-card__title-text.mdl-subheader-content IoT application and Use cases
           .page-content.mdl-grid.mdl-grid--no-spacing
 
-        //- Edit Object
-        section#object_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart City
+                div.mdl-card__supporting-text.mdl-card--expand t6 ease IoT sensors & actuators deployment within the city. Data are stored on t6 and trigger actions to prevent traffic congestion, road lighting, car park management, safety and so on.
 
-        //- Add Object
-        section#object_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Add Object
-          .page-content.mdl-grid.mdl-grid--no-spacing
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Home
+                div.mdl-card__supporting-text.mdl-card--expand Turn on/off light depending on the time of the day or any other conditions.
 
-        //- List Flows
-        section#flows.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='3')
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Flows
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Energy
+                div.mdl-card__supporting-text.mdl-card--expand Control thermostats on the rooms; monitor power consumption and so on ...
 
-        //- View Flow
-        section#flow.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Fleet
+                div.mdl-card__supporting-text.mdl-card--expand Deploy Over the Air (OTA). t6 is ready to deliver to any of your Objects using a simple Api. The code is spread to all compatible Objects.
 
-        //- Edit Flow
-        section#flow_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Add Flow
-        section#flow_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Add Flow
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- List Snippets
-        section#snippets.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='4')
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Snippets
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
-
-        //- View Snippet
-        section#snippet.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Edit Snippet
-        section#snippet_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Add Snippet
-        section#snippet_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Add Snippet
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- List Dashboards
-        section#dashboards.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='5')
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Dashboards
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
-
-        //- View Dashboard
-        section#dashboard.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Edit Dashboard
-        section#dashboard_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Add Dashboard
-        section#dashboard_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Add Dashboard
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- List Rules
-        section#rules.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='6')
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Rules
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
-
-        //- View Rules
-        section#rule.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Edit Rules
-        section#rule_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-  
-        //- Add Rules
-        section#rule_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Add Rules
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- List Mqtt
-        section#mqtts.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='7')
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Mqtts
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
-
-        //- View Mqtts
-        section#mqtt.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Edit Mqtt
-        section#mqtt_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Add Mqtt
-        section#mqtt_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Add Mqtt
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- List Sources
-        section#sources.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='7')
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Sources
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;')
-
-        //- View Sources
-        section#source.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Edit Source
-        section#source_edit.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- Add Source
-        section#source_add.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Add Source
-          .page-content.mdl-grid.mdl-grid--no-spacing
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Smart Data
+                div.mdl-card__supporting-text.mdl-card--expand t6 embed customizabel dashboards and can trigger action based on multi-criteria events to alert you for any relevant information. 
 
         //- View Sign In
         section#login.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -552,12 +405,6 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                     a.mdl-button.small(onclick="app.setSection('forgot-password');", href="#forgot-password")
                       | Reset password
               div.mdl-layout-spacer
-
-        //- View My Profile
-        section#profile.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content My Profile
-          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- Manage Notifications
         section#manage_notifications.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
@@ -653,36 +500,6 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                     a.mdl-button.small(onclick="app.setSection('login');", href="#login")
                       | Sign In
               div.mdl-layout-spacer
-
-        //- View Settings
-        section#settings.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Settings
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- View Status
-        section#status.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content t6 API
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- View Terms
-        section#terms.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Terms of Service and License Agreement
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- View compatible-devices
-        section#compatible-devices.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Compatible Devices
-          .page-content.mdl-grid.mdl-grid--no-spacing
-
-        //- View Open-Source-Licenses
-        section#openSourceLicenses.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Open-Source-Licenses
-          .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- Docs
         section#docs.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive

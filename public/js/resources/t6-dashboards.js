@@ -72,6 +72,7 @@ app.resources.dashboards = {
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "dashboard" }, window.location.hash.substr(1), "#dashboard?id="+id );
+		app.initNewSection("dashboard");
 		
 		window.scrollTo(0, 0);
 		app.containers.spinner.removeAttribute("hidden");
@@ -234,6 +235,8 @@ app.resources.dashboards = {
 	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
 	displayAdd: function(dashboard, isAdd, isEdit, isPublic) {
+		history.pushState( {section: "dashboard_add" }, window.location.hash.substr(1), "#dashboard_add" );
+		app.initNewSection("dashboard_add");
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+dashboard.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";

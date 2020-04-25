@@ -102,6 +102,7 @@ app.resources.flows = {
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "flow" }, window.location.hash.substr(1), "#flow?id="+id );
+		app.initNewSection("flow");
 		
 		window.scrollTo(0, 0);
 		app.containers.spinner.removeAttribute("hidden");
@@ -121,8 +122,9 @@ app.resources.flows = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var flow = response.data[i];
 				document.title = (app.sectionsPageTitles["flow"]).replace(/%s/g, flow.attributes.name);
-				
-				((app.containers.flow).querySelector(".page-content")).innerHTML = "";
+				if ((app.containers.flow)) {
+					((app.containers.flow).querySelector(".page-content")).innerHTML = "";;
+				}
 				var datapoints = "";
 				
 				var node = "";
@@ -399,6 +401,8 @@ app.resources.flows = {
 	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
 	displayAdd: function(flow, isAdd, isEdit, isPublic) {
+		history.pushState( {section: "flow_add" }, window.location.hash.substr(1), "#flow_add" );
+		app.initNewSection("flow_add");
 		if ( !localStorage.getItem("units") ) {
 			app.getUnits();
 		}

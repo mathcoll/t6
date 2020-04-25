@@ -802,9 +802,36 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 	};
+
+	app.initNewSection = function(section) {
+		if(!document.getElementById(section)) {
+			let newSection = document.createElement("section");
+			newSection.setAttribute("id", section);
+			newSection.classList.add("mdl-tabs__panel", "mdl-layout__tab-panel", "is-inactive");
+			if (app.sectionsPageTitles[section]) {
+				let h2 = document.createElement("h2");
+				h2.classList.add("mdl-card__title-text", "mdl-subheader-content");
+				var title = document.createTextNode((app.sectionsPageTitles[section]).replace(/%s/g, ""));
+				h2.appendChild(title);
+				let divH2 = document.createElement("div");
+				divH2.classList.add("mdl-grid", "mdl-cell--12-col");
+				divH2.appendChild(h2);
+				newSection.appendChild(divH2);
+			}
+			let divContent = document.createElement("div");
+			divContent.classList.add("page-content", "mdl-grid", "mdl-grid--no-spacing");
+			newSection.appendChild(divContent);
+
+			let main = document.getElementsByClassName("mdl-layout__content")[0];
+			main.appendChild(newSection);
+
+			app.refreshContainers();
+		}
+	};
 	
 	app.setSection = function(section, direction) {
 		section = section.split("?")[0];
+		app.initNewSection(section);
 		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log('[setSection]', section);
 		}
@@ -1829,6 +1856,7 @@ var touchStartPoint, touchMovePoint;
 				resolve();
 				return false;
 			}
+			app.initNewSection(type);
 
 			size = size!==undefined?size:app.itemsSize[type];
 			page = page!==undefined?page:app.itemsPage[type];
@@ -2045,6 +2073,7 @@ var touchStartPoint, touchMovePoint;
 		});
 			
 		app.containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.classList.add('hidden');
 		return promise;
 	};
 	
@@ -3322,7 +3351,8 @@ var touchStartPoint, touchMovePoint;
 				compatibledevices += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if( response[i].title ) {
 					compatibledevices += "	<div class=\"mdl-card__title\">";
-					compatibledevices += "		<h3 class=\"mdl-card__title-text\"><i class=\"material-icons md-48\">devices_other</i>"+response[i].title+"</h3>";
+					compatibledevices += "		<i class=\"material-icons\">devices_other</i>";
+					compatibledevices += "		<h3 class=\"mdl-card__title-text\">"+response[i].title+"</h3>";
 					compatibledevices += "	</div>";
 				}
 				compatibledevices += "		<div class=\"mdl-card__supporting-text no-padding\">";
@@ -3362,8 +3392,10 @@ var touchStartPoint, touchMovePoint;
 				openSourceLicenses += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				if( response[i].title ) {
 					openSourceLicenses += "	<div class=\"mdl-card__title\">";
-					openSourceLicenses += "		<span class=\"mdl-typography--headline\"><i class=\"material-icons md-48\">book</i>"+response[i].title+"</span>";
-					openSourceLicenses += response[i].license+"	</div>";
+					openSourceLicenses += "		<i class=\"material-icons\">book</i>";
+					openSourceLicenses += "		<h3 class=\"mdl-card__title-text\">"+response[i].title+"</h3>";
+					openSourceLicenses += "		<p>" + response[i].license + "</p>";
+					openSourceLicenses += "	</div>";
 				}
 				openSourceLicenses += "		<div class=\"mdl-card__supporting-text no-padding\">";
 				openSourceLicenses += response[i].description;
@@ -3421,7 +3453,6 @@ var touchStartPoint, touchMovePoint;
 		localStorage.setItem('notifications.unsubscription_token', null);
 		localStorage.setItem('notifications.email', null);
 		localStorage.setItem('role', null);
-		(app.containers.profile).querySelector('.page-content').innerHTML = "";
 		
 		app.auth = {};
 		app.RateLimit = {Limit: null, Remaining: null, Used: null};
@@ -3438,21 +3469,38 @@ var touchStartPoint, touchMovePoint;
 		app.refreshButtonsSelectors();
 		componentHandler.upgradeDom();
 
-		(app.containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'}); // ,
-		app.displayLoginForm( (app.containers.objects).querySelector('.page-content') );
-		(app.containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (app.containers.flows).querySelector('.page-content') );
-		(app.containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (app.containers.dashboards).querySelector('.page-content') );
-		(app.containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (app.containers.snippets).querySelector('.page-content') );
-		(app.containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (app.containers.rules).querySelector('.page-content') );
-		(app.containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (app.containers.mqtts).querySelector('.page-content') );
-		(app.containers.sources).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
-		app.displayLoginForm( (app.containers.sources).querySelector('.page-content') );
-		
+		if (app.containers.profile) {
+			(app.containers.profile).querySelector('.page-content').innerHTML = "";
+		}
+		if (app.containers.objects) {
+			(app.containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'}); // ,
+			app.displayLoginForm( (app.containers.objects).querySelector('.page-content') );
+		}
+		if (app.containers.flows) {
+			(app.containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			app.displayLoginForm( (app.containers.flows).querySelector('.page-content') );
+		}
+		if (app.containers.dashboards) {
+			(app.containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			app.displayLoginForm( (app.containers.dashboards).querySelector('.page-content') );
+		}
+		if (app.containers.snippets) {
+			(app.containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			app.displayLoginForm( (app.containers.snippets).querySelector('.page-content') );
+		}
+		if (app.containers.rules) {
+			(app.containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			app.displayLoginForm( (app.containers.rules).querySelector('.page-content') );
+		}
+		if (app.containers.mqtts) {
+			(app.containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			app.displayLoginForm( (app.containers.mqtts).querySelector('.page-content') );
+		}
+		if (app.containers.sources) {
+			(app.containers.sources).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			app.displayLoginForm( (app.containers.sources).querySelector('.page-content') );
+		}
+
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
 		for (var i=0; i<updated.length;i++) {
 			updated[i].classList.remove('is-upgraded');
@@ -3823,13 +3871,13 @@ var touchStartPoint, touchMovePoint;
 	var d = new Date();
 	d.setTime(d.getTime() + (app.cookieconsent * 24*60*60*1000));
 	document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
-		document.getElementById('cookieconsent').classList.add('hidden');
+		document.getElementById('cookieconsent').remove();
 		document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
 		document.cookie = "cookieconsentNoGTM=false;expires=" + d.toUTCString() + ";path=/";
 		evt.preventDefault();
 	}, false);
 	document.getElementById('cookieconsent.noGTM').addEventListener('click', function(evt) {
-		document.getElementById('cookieconsent').classList.add('hidden');
+		document.getElementById('cookieconsent').remove();
 		document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
 		document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
 		if ( typeof mixpanel!=="undefined" ) {
@@ -3929,6 +3977,8 @@ var touchStartPoint, touchMovePoint;
 	}
 	for (var item in app.containers.menuTabItems) {
 		if ( app.containers.menuTabItems[item].childElementCount > -1 ) {
+			app.initNewSection(app.containers.menuTabItems[item].getAttribute("for"));
+			//initNewSection
 			(app.containers.menuTabItems[item]).addEventListener('click', function(evt) {
 				app.setSection((evt.target.parentNode.getAttribute('hash')!==null?evt.target.parentNode.getAttribute('hash'):evt.target.parentNode.getAttribute('href')).substr(1));
 			}, false);
@@ -3965,14 +4015,16 @@ var touchStartPoint, touchMovePoint;
 	/* Lazy loading */
 	var paginatedContainer = Array(Array(app.containers.objects, 'objects'), Array(app.containers.flows, 'flows'), Array(app.containers.snippets, 'snippets'), Array(app.containers.dashboards, 'dashboards'), Array(app.containers.mqtts, 'mqtts'), Array(app.containers.sources, 'sources'), Array(app.containers.rules, 'rules'));
 	paginatedContainer.map(function(c) {
-		c[0].addEventListener('DOMMouseScroll', function(event) {
-			var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
-			var bottom = (document.querySelector('section#'+c[1])).getBoundingClientRect().bottom;
-			if ( bottom <= height && c[0].classList.contains('is-active') ) {
-				//console.log("Lazy loading -->", c[0].offsetHeight, height, bottom);
-				//console.log('Lazy loading page=', ++(app.itemsPage[c[1]]));
-			}
-		});
+		if (c[0]) {
+			c[0].addEventListener('DOMMouseScroll', function(event) {
+				var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
+				var bottom = (document.querySelector('section#'+c[1])).getBoundingClientRect().bottom;
+				if ( bottom <= height && c[0].classList.contains('is-active') ) {
+					//console.log("Lazy loading -->", c[0].offsetHeight, height, bottom);
+					//console.log('Lazy loading page=', ++(app.itemsPage[c[1]]));
+				}
+			});
+		}
 	}); // Lazy loading
 	app.imageLazyLoading();
 	

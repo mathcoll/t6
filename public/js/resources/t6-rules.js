@@ -84,6 +84,7 @@ app.resources.rules = {
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "rule" }, window.location.hash.substr(1), "#rule?id="+id );
+		app.initNewSection("rule");
 		
 		window.scrollTo(0, 0);
 		app.containers.spinner.removeAttribute("hidden");
@@ -310,6 +311,8 @@ app.resources.rules = {
 	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
 	displayAdd: function(rule, isAdd, isEdit, isPublic) {
+		history.pushState( {section: "rule_add" }, window.location.hash.substr(1), "#rule_add" );
+		app.initNewSection("ruled_add");
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";

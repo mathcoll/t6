@@ -496,7 +496,7 @@ section.fixedActionButtons {
 	bottom: 0;
 	margin-bottom: 0;
 	height: 50px;
-	background: rgb(121,85,72,.5);
+	background: #795548;
 }
 section.fixedActionButtons button.mdl-button {
 	color: #fff !important;
@@ -1170,6 +1170,9 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	background: #795548;
 	padding: 5px 10px;
 }
+section.mdl-grid.mdl-cell--12-col .mdl-card__title i.material-icons {
+	color: #fff;
+}
 div[data-action="view"] .mdl-card__title,
 div[data-action="nothing"] .mdl-card__title {
 	background: transparent !important;
@@ -1179,16 +1182,6 @@ form .mdl-card__title {
 	background: #fff !important;
 	padding: 16px;
 }
-/*
-div[data-action="view"] .mdl-card__title h3.mdl-card__title-text,
-div[data-action="nothing"] .mdl-card__title h3.mdl-card__title-text {
-	background: none !important;
-	color: #000 !important;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	display: block;
-}
-*/
 #index .mdl-card__title h3.mdl-card__title-text,
 #use-cases .mdl-card__title h3.mdl-card__title-text {
 	background: transparent;
@@ -1990,12 +1983,16 @@ input ~ .mdl-switch__label {
 	margin-left: 48px !important;
 }
 .mdl-textfield__error {
-    line-height: 16px;
+	line-height: 16px;
 }
 .mdl-progress {
 	display: inline-block !important;
 	width: 100% !important;
 	height: 10px !important;
+}
+#spinner.mdl-progress {
+	position: absolute;
+	top: 5px;
 }
 .mdl-textfield.is-invalid .mdl-textfield__icon {
 	color: #de3226 !important;

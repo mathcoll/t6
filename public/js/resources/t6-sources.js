@@ -152,6 +152,7 @@ app.resources.sources = {
 		} else {
 			history.pushState( {section: "source" }, window.location.hash.substr(1), "#source?id="+id );
 		}
+		app.initNewSection("source");
 		app.containers.spinner.removeAttribute("hidden");
 		app.containers.spinner.classList.remove("hidden");
 		var myHeaders = new Headers();
@@ -450,6 +451,7 @@ app.resources.sources = {
 	},
 	displayAdd: function(source, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "source_add" }, window.location.hash.substr(1), "#source_add" );
+		app.initNewSection("source_add");
 		var node = "";
 		source.id = source.id!==""?source.id:app.getUniqueId();
 		var content = source.attributes.content!==undefined?source.attributes.content:"";

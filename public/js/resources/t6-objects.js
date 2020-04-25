@@ -136,6 +136,7 @@ app.resources.objects = {
 		} else {
 			history.pushState( {section: "object" }, window.location.hash.substr(1), "#object?id="+id );
 		}
+		app.initNewSection("object");
 		app.containers.spinner.removeAttribute("hidden");
 		app.containers.spinner.classList.remove("hidden");
 		var myHeaders = new Headers();
@@ -155,6 +156,9 @@ app.resources.objects = {
 				var description = object.attributes.description!==undefined?object.attributes.description:"";
 
 				document.title = (app.sectionsPageTitles["object"]).replace(/%s/g, object.attributes.name);
+				if ((app.containers.object)) {
+					((app.containers.object).querySelector(".page-content")).innerHTML = "";;
+				}
 				var node = "";
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -463,6 +467,7 @@ app.resources.objects = {
 	displayPublic: function(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		history.pushState( {section: "object" }, window.location.hash.substr(1), "#object?id="+id );
+		app.initNewSection("object");
 		
 		app.containers.spinner.removeAttribute("hidden");
 		app.containers.spinner.classList.remove("hidden");
@@ -480,6 +485,11 @@ app.resources.objects = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var object = response.data[i];
+
+				document.title = (app.sectionsPageTitles["object"]).replace(/%s/g, object.attributes.name);
+				if ((app.containers.object)) {
+					((app.containers.object).querySelector(".page-content")).innerHTML = "";;
+				}
 				var node = "";
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -586,6 +596,7 @@ app.resources.objects = {
 	},
 	displayAdd: function(object, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "object_add" }, window.location.hash.substr(1), "#object_add" );
+		app.initNewSection("object_add");
 		var node = "";
 		object.id = object.id!==""?object.id:app.getUniqueId();
 		object.attributes.longitude = parseFloat(object.attributes.longitude!==""?object.attributes.longitude:0).toFixed(6);

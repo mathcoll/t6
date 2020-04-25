@@ -100,6 +100,7 @@ app.resources.snippets = {
 	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "snippet" }, window.location.hash.substr(1), "#snippet?id="+id );
+		app.initNewSection("snippet");
 
 		window.scrollTo(0, 0);
 		app.containers.spinner.removeAttribute("hidden");
@@ -176,7 +177,7 @@ app.resources.snippets = {
 					node +=	"</section>";
 					
 					node += app.getSubtitle("Graph Options");
-					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+snippet.id+"_parameters\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.description, "Graph Options", typeof snippet.attributes.options!=="undefined"?JSON.stringify(snippet.attributes.options):"", {type: "textarea", id: "Graph_Options", isEdit: true});
 					node += "	</div>";
@@ -279,26 +280,26 @@ app.resources.snippets = {
 					node += "	</div>"; // mdl-shadow--2dp
 					node +=	"</section>";
 					
-					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+snippet.id+"'>";
 					if( app.isLtr() ) {
 						node += "	<div class='mdl-layout-spacer'></div>";
 					}
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-					node += "		<button id='"+btnId[0]+"' class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "		<button id='"+btnId[0]+"' class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Snippets</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
-					node += "		<button id='"+btnId[1]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "		<button id='"+btnId[1]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Delete Snippet</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+snippet.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Snippet</label>";
@@ -343,8 +344,9 @@ app.resources.snippets = {
 	displayPublic: function(id, isAdd, isEdit, isPublic) {
 	},
 	displayAdd: function(snippet, isAdd, isEdit, isPublic) {
+		history.pushState( {section: "snippet_add" }, window.location.hash.substr(1), "#snippet_add" );
+		app.initNewSection("snippet_add");
 		var node = "";
-		
 		node = "<section class='mdl-grid mdl-cell--12-col' data-id='"+snippet.id+"'>";
 		node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 		node += app.getField(app.icons.name, "Name", snippet.attributes.name, {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
