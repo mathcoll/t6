@@ -262,7 +262,7 @@ app.resources.dashboards = {
 		node += "</section>";
 		
 		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
-		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+dashboard.id+"'>";
 		if( app.isLtr() ) {
 			node += "	<div class='mdl-layout-spacer'></div>";
 		}

@@ -257,26 +257,26 @@ app.resources.rules = {
 					node += "	</div>";
 					node += "</section>";
 					
-					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+rule.id+"'>";
 					if( app.isLtr() ) {
 						node += "	<div class='mdl-layout-spacer'></div>";
 					}
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
-					node += "		<button id='"+btnId[0]+"' class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "		<button id='"+btnId[0]+"' class='list-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+rule.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
 					node += "			<label>List</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Rules</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
-					node += "		<button id='"+btnId[1]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "		<button id='"+btnId[1]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+rule.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Delete Rule</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+flow.id+"'>";
+					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+rule.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Rule</label>";

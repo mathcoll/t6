@@ -209,7 +209,7 @@ var touchStartPoint, touchMovePoint;
 		var span = document.createElement("span");
 		var dismiss = document.createElement("a");
 		span.textContent = msg;
-		dismiss.textContent = "Dismiss";snippet
+		dismiss.textContent = "Dismiss";
 		dismiss.className = "mdl-button";
 		toastMsg.appendChild(icon);
 		toastMsg.appendChild(span);
@@ -2152,13 +2152,13 @@ var touchStartPoint, touchMovePoint;
 	app.fetchProfile = function() {
 		app.containers.spinner.removeAttribute('hidden');
 		app.containers.spinner.classList.remove('hidden');
+		app.initNewSection("profile");
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var container = (app.containers.profile).querySelector('.page-content');
 		var url = app.baseUrl+'/'+app.api_version+'/users/me/token';
-		var title = 'My Profile';
 
 		fetch(url, myInit)
 		.then(
@@ -3037,6 +3037,7 @@ var touchStartPoint, touchMovePoint;
 		})
 		.catch(function (error) {
 			if ( localStorage.getItem("settings.debug") == "true" ) {
+				console.log(error);
 				toast('We can\'t process your identification. Please resubmit your credentials on login page!', {timeout:3000, type: 'warning'});
 			}
 		});

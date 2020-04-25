@@ -244,7 +244,9 @@ app.resources.snippets = {
 							//Flows list, we put the index not the flow_id into the selector:
 							var n=0;
 							var theFlow = (JSON.parse(localStorage.getItem("flows"))).find(function(storedF) { storedF.index = n++; return storedF.id == s; });
-							app.addChipTo("flowsChips", {name: theFlow.name, id: theFlow.index, type: "flows"});
+							if (theFlow) {
+								app.addChipTo("flowsChips", {name: theFlow.name, id: theFlow.index, type: "flows"});
+							}
 						});
 					}
 						
@@ -334,7 +336,6 @@ app.resources.snippets = {
 			}
 		})
 		.catch(function (error) {
-			console.log(error);
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				toast("displaySnippet error occured..." + error, {timeout:3000, type: "error"});
 			}
@@ -371,14 +372,14 @@ app.resources.snippets = {
 		node += "</section>";
 		
 		node += app.getSubtitle("Graph Options");
-		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"_parameters\">";
+		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+snippet.id+"_parameters\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.description, "Graph Options", typeof snippet.attributes.options!=="undefined"?JSON.stringify(snippet.attributes.options):"", {type: "textarea", id: "Graph_Options", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
 		var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
-		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+flow.id+"'>";
+		node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+snippet.id+"'>";
 		if( app.isLtr() ) {
 			node += "	<div class='mdl-layout-spacer'></div>";
 		}
