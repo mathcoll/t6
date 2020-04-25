@@ -24,7 +24,6 @@ var app = {
 	date_format: "DD/MM/YYYY, HH:mm",
 	cardMaxChars: 256,
 	cookieconsent: 30,
-	dataCacheName: "t6-cache-2019-07-12",
 	refreshExpiresInSeconds: 280000,
 	itemsSize: {objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15, sources: 15,},
 	itemsPage: {objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1, sources: 1,},
@@ -3993,7 +3992,7 @@ var touchStartPoint, touchMovePoint;
 	}
 	app.setDrawer();
 	
-	if ( app.gtm!=="" && app.getCookie('cookieconsentNoGTM') !== "true" ) {
+	if ( window.location.hostname!=="127.0.0.1" && app.gtm!=="" && app.getCookie('cookieconsentNoGTM') !== "true" ) {
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
