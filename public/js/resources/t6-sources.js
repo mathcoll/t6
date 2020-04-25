@@ -177,7 +177,7 @@ app.resources.sources = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<i class=\"material-icons\">"+app.icons.sources+"</i>";
+				node += "				<i class=\"material-icons mdl-textfield__icon\">"+app.icons.sources+"</i>";
 				node += "				<h2 class=\"mdl-card__title-text\">"+source.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";

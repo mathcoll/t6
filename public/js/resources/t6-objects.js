@@ -164,7 +164,7 @@ app.resources.objects = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<i class=\"material-icons\">"+app.icons.objects+"</i>";
+				node += "				<i class=\"material-icons mdl-textfield__icon\">"+app.icons.objects+"</i>";
 				node += "				<h2 class=\"mdl-card__title-text\">"+object.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
@@ -175,7 +175,7 @@ app.resources.objects = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
-				node += app.getField(app.icons.objects, "Id", object.id, {type: "text", style:"text-transform: none !important;"});
+				node += app.getField(app.icons.code, "Id", object.id, {type: "text", style:"text-transform: none !important;"});
 				if ( object.attributes.description && isEdit!==true ) {
 					node += app.getField(app.icons.description, "Description", description, {type: "text"});
 				}

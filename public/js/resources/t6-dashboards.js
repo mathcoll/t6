@@ -98,6 +98,7 @@ app.resources.dashboards = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
+				node += "				<i class=\"material-icons mdl-textfield__icon\">"+app.icons.dashboards+"</i>";
 				node += "				<h2 class=\"mdl-card__title-text\">"+dashboard.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
@@ -107,6 +108,8 @@ app.resources.dashboards = {
 				node += "			</span>";
 				node += "		</div>";
 				node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+
+				node += app.getField(app.icons.code, "Id", dashboard.id, {type: "text", style:"text-transform: none !important;"});
 				if ( dashboard.attributes.description ) {
 					var description = app.nl2br(dashboard.attributes.description);
 					node += app.getField(app.icons.description, "Description", description, {type: "text", isEdit: false});

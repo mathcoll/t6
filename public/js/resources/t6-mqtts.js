@@ -22,7 +22,7 @@ app.resources.mqtts = {
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+mqtt.id+"\">";
 		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
 		element += "		<div class=\"mdl-card__title\">";
-		element += "			<i class=\"material-icons\">"+app.icons.objects+"</i>";
+		element += "			<i class=\"material-icons mdl-textfield__icon\">"+app.icons.objects+"</i>";
 		element += "			<h3 class=\"mdl-card__title-text\">"+name+"</h3>";
 		element += "		</div>";
 		element += app.getField(null, null, description, {type: "textarea", isEdit: false});

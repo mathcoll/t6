@@ -132,7 +132,7 @@ app.resources.flows = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += "		<div class=\"mdl-list__item\">";
 				node += "			<span class='mdl-list__item-primary-content'>";
-				node += "				<i class=\"material-icons\">"+app.icons.flows+"</i>";
+				node += "				<i class=\"material-icons mdl-textfield__icon\">"+app.icons.flows+"</i>";
 				node += "				<h2 class=\"mdl-card__title-text\">"+flow.attributes.name+"</h2>";
 				node += "			</span>";
 				node += "			<span class='mdl-list__item-secondary-action'>";
@@ -143,7 +143,7 @@ app.resources.flows = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+flow.id+"'>";
 
-				node += app.getField(app.icons.flows, "Id", flow.id, {type: "text", style:"text-transform: none !important;"});
+				node += app.getField(app.icons.code, "Id", flow.id, {type: "text", style:"text-transform: none !important;"});
 				if ( flow.attributes.description && isEdit!==true ) {
 					node += app.getField(app.icons.description, "Description", app.nl2br(flow.attributes.description), {type: "text"});
 				}

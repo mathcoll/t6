@@ -112,7 +112,7 @@ app.resources.rules = {
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += "		<div class=\"mdl-list__item\">";
 					node += "			<span class='mdl-list__item-primary-content'>";
-					node += "				<i class=\"material-icons\">"+app.icons.rules+"</i>";
+					node += "				<i class=\"material-icons mdl-textfield__icon\">"+app.icons.rules+"</i>";
 					node += "				<h2 class=\"mdl-card__title-text\">"+rule.attributes.name+"</h2>";
 					node += "			</span>";
 					node += "			<s&pan class='mdl-list__item-secondary-action'>";
@@ -123,7 +123,7 @@ app.resources.rules = {
 					node += "		</div>";
 					node += "		<div class='mdl-cell--12-col hidden' id='description-"+rule.id+"'>";
 
-					node += app.getField(app.icons.rules, "Id", rule.id, {type: "text", style:"text-transform: none !important;"});
+					node += app.getField(app.icons.code, "Id", rule.id, {type: "text", style:"text-transform: none !important;"});
 					if ( rule.attributes.meta.created ) {
 						node += app.getField(app.icons.date, "Created", moment(rule.attributes.meta.created).format(app.date_format), {type: "text"});
 					}

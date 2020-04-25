@@ -128,7 +128,7 @@ app.resources.snippets = {
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += "		<div class=\"mdl-list__item\">";
 					node += "			<span class='mdl-list__item-primary-content'>";
-					node += "				<i class=\"material-icons\">"+app.icons.snippets+"</i>";
+					node += "				<i class=\"material-icons mdl-textfield__icon\">"+app.icons.snippets+"</i>";
 					node += "				<h2 class=\"mdl-card__title-text\">"+snippet.attributes.name+"</h2>";
 					node += "			</span>";
 					node += "			<span class='mdl-list__item-secondary-action'>";
@@ -139,7 +139,7 @@ app.resources.snippets = {
 					node += "		</div>";
 					node += "		<div class='mdl-cell--12-col hidden' id='description-"+snippet.id+"'>";
 
-					node += app.getField(app.icons.snippets, "Id", snippet.id, {type: "text", style:"text-transform: none !important;"});
+					node += app.getField(app.icons.code, "Id", snippet.id, {type: "text", style:"text-transform: none !important;"});
 					if ( snippet.attributes.meta.created ) {
 						node += app.getField(app.icons.date, "Created", moment(snippet.attributes.meta.created).format(app.date_format), {type: "text"});
 					}
@@ -266,6 +266,8 @@ app.resources.snippets = {
 					node += "			</span>";
 					node += "		</div>";
 					node += "		<div class='mdl-cell mdl-cell--12-col hidden' id='description-"+id+"'>";
+
+					node += app.getField(app.icons.code, "Id", snippet.id, {type: "text", style:"text-transform: none !important;"});
 					if ( snippet.attributes.meta.created ) {
 						node += app.getField(app.icons.date, "Created", moment(snippet.attributes.meta.created).format(app.date_format), {type: "text"});
 					}
