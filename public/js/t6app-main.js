@@ -4025,22 +4025,8 @@ var touchStartPoint, touchMovePoint;
 	};
 	document.addEventListener("clearCache", function(event) {
 		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log("[clearCache]", "Clearing... ");
+			console.log("[clearCache]", "Please clear cache manually... :-)");
 		}
-		window.caches.keys().then(function(keyList) {
-			//app.dataCacheName = navigator.serviceWorker.controller.postMessage("getDataCacheName");
-			caches.open(app.dataCacheName).then(function(cache) { 
-				cache.keys().then(function(cachedRequests) { 
-					cachedRequests.forEach(function(request, index, array) {
-						if ( localStorage.getItem("settings.debug") == "true" ) {
-							console.log('[clearCache]', request, "-> DELETED");
-						}
-						window.caches.delete(request);
-					});
-				});
-			});
-			
-		});
 	}, false);
 
 	document.addEventListener("DOMContentLoaded", function(event) {
