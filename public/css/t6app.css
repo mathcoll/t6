@@ -169,6 +169,10 @@ code.nostyle br {
 }
 #hof h2 {
 	margin: 24px auto 48px auto;
+	color: #795548;
+}
+#hof p {
+	color: #795548;
 }
 #hof .mdl-cell--4-col:nth-child(2n-1) {
 	padding: 6em 0;
