@@ -263,11 +263,79 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                 p Do any actions you need, once facts match conditions (Email, Mqtt, webhook notification...) &mdash; rule based events.
                 a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="/docs") Explore t6 documentation
 
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content How does t6 works?
+            div.mdl-grid.mdl-cell--12-col
+              h2 How does t6 works?
+              .row.features-small.mdl-cell--12-col.mt-3.wow.fadeIn
+                .mdl-cell--4-col
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Free for personal and commercial use
+                      p
+                        | Open-source licence GNU General Public
+                      div(style='height:15px')
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Manage your Devices/Objects
+                      p
+                        | Keep an eye on all single Object you own
+                      div(style='height:15px')
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Fully responsive UI
+                      p
+                        | t6 will be displayed on desktop, laptop, tablet or mobile phone.
+                        | looks great on each screen.
+                      div(style='height:15px')
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Google Play mobile application
+                      p Mobile application is using the same UI as Desktop.
+                      div(style='height:15px')
+                .mdl-cell--4-col.flex-center
+                  img.z-depth-0.img-responsive(src=baseUrlCdn + '/img/m/t6-play-screenshots0-sm.png', alt='t6: Connect physical Objects to timeseries database')
+                .mdl-cell--4-col
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Store your virtual Objects and devices 
+                      p
+                        | t6 is ready to manage a collection of Objects including your custom attributes, Object location and Security parameters.
+                      div(style='height:15px')
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Symmetric signature and cryptography
+                      p Data coming from your Object can be signed + encrypted so that we can trust your data.
+                      div(style='height:15px')
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Over The Air (OTA) Arduino installation
+                      p
+                        | Control Source on your devices from OTA build and deploy process.
+                      div(style='height:15px')
+                  .row
+                    .col-2
+                      i.material-icons trip_origin
+                    .col-10
+                      h6.feature-title Trigger actions from Rules
+                      p
+                        | Custom decision rules allows to trigger various actio based on data events, su cha as email, mqtt message, or any custom webhook.
+                      div(style='height:15px')
+
           .page-content.mdl-grid.mdl-grid--no-spacing
             span.mdl-spinner.mdl-spinner--single-color.mdl-js-spinner.is-active.md-48(style='left:calc(50% - 44px);margin:30px 0px 50px 30px;') 
-
           footer
             ul
               li IoT platform
@@ -767,7 +835,6 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/mdl/mdl-selectfield.min.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/moment/moment.min-2.22.2.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/OpenLayers/ol-4.6.5.min.js')
-
         script(type='application/javascript', src='//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js')
         //- T6
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-main.js?build=' + t6BuildVersion)

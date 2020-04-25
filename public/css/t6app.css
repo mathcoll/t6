@@ -166,6 +166,37 @@ code.nostyle br {
 	width: 240px;
 	margin: 5px auto;
 }
+#hof h2 {
+	margin: 24px auto 48px auto;
+}
+#hof .mdl-cell--4-col:nth-child(2n-1) {
+	padding: 6em 0;
+}
+.row {
+	display: -ms-flexbox;
+	display: flex;
+	-ms-flex-wrap: wrap;
+	flex-wrap: wrap;
+}
+h6.feature-title {
+	color: #795548;
+	font-weight: bold;
+	margin: 0;	
+}
+.row.features-small .mdl-cell--4-col {
+	margin: 0 8px;
+}
+.col-2 {
+	flex: 0 0 10%;
+	max-width: 10%;
+}
+.col-10 {
+	flex: 0 0 83.333333%;
+	max-width: 83.333333%;
+}
+img.z-depth-0 {
+	margin: 0 auto;
+}
 /* end Home */
 footer {
 	background: linear-gradient(178deg, #ececec 10%, rgb(121, 85, 72) 10%);
