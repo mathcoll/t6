@@ -32,7 +32,7 @@ echo 2. PWA Javascript T6-VENDOR minify:
 uglifyjs \
 	../public/js/vendor/material/material.js \
 	../public/js/vendor/mdl/mdl-selectfield.min.js \
-	../public/js/vendor/moment/moment.min-2.22.2.js \
+	../public/js/vendor/moment/moment.min-2.24.0.js \
 	../public/js/vendor/OpenLayers/ol-4.6.5.min.js \
 	../public/js/vendor/Chart/Chart-min-2.9.3.js \
 	../public/js/vendor/Leaflet/leaflet-min-1.6.0.js \
