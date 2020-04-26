@@ -123,7 +123,7 @@ app.resources.flows = {
 				var flow = response.data[i];
 				document.title = (app.sectionsPageTitles["flow"]).replace(/%s/g, flow.attributes.name);
 				if ((app.containers.flow)) {
-					((app.containers.flow).querySelector(".page-content")).innerHTML = "";;
+					((app.containers.flow).querySelector(".page-content")).innerHTML = "";
 				}
 				var datapoints = "";
 				
