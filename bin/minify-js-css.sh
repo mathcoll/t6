@@ -34,6 +34,7 @@ uglifyjs \
 	../public/js/vendor/mdl/mdl-selectfield.min.js \
 	../public/js/vendor/moment/moment.min-2.22.2.js \
 	../public/js/vendor/OpenLayers/ol-4.6.5.min.js \
+	../public/js/vendor/Chart/Chart-min-2.9.3.js \
 	-o ../public/js/vendor.min.js \
 	-m -c warnings=false
 echo Completed

@@ -3474,31 +3474,31 @@ var touchStartPoint, touchMovePoint;
 			(app.containers.profile).querySelector('.page-content').innerHTML = "";
 		}
 		if (app.containers.objects) {
-			(app.containers.objects).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'}); // ,
+			(app.containers.objects).querySelector('.page-content').innerHTML = app.getCard({title: 'Connected Objects', titlecolor: '#ffffff', description: 'Connecting anything physical or virtual to t6 Api without any hassle. Embedded, Automatization, Domotic, Sensors, any Objects or Devices can be connected and communicate to t6 via RESTful API. Unic and dedicated application to rules them all and designed to simplify your journey.'});
 			app.displayLoginForm( (app.containers.objects).querySelector('.page-content') );
 		}
 		if (app.containers.flows) {
-			(app.containers.flows).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			(app.containers.flows).querySelector('.page-content').innerHTML = app.getCard({title: 'Time-series Datapoints', titlecolor: '#ffffff', description: 'Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 			app.displayLoginForm( (app.containers.flows).querySelector('.page-content') );
 		}
 		if (app.containers.dashboards) {
-			(app.containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			(app.containers.dashboards).querySelector('.page-content').innerHTML = app.getCard({title: 'Dashboards', titlecolor: '#ffffff', description: 't6 support multiple Snippets to create your own IoT Dashboards for data visualization. Snippets are ready to Use Html components integrated into the application. Dashboards allows to empower your data-management by Monitoring and Reporting activities.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 			app.displayLoginForm( (app.containers.dashboards).querySelector('.page-content') );
 		}
 		if (app.containers.snippets) {
-			(app.containers.snippets).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			(app.containers.snippets).querySelector('.page-content').innerHTML = app.getCard({title: 'Snippets', titlecolor: '#ffffff', description: 'Snippets are components to embed into your dashboards and displays your data', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 			app.displayLoginForm( (app.containers.snippets).querySelector('.page-content') );
 		}
 		if (app.containers.rules) {
-			(app.containers.rules).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			(app.containers.rules).querySelector('.page-content').innerHTML = app.getCard({title: 'Decision Rules to get smart', titlecolor: '#ffffff', description: 'Trigger action from Mqtt and decision-tree. Let\'s your Objects talk to the platform as events.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 			app.displayLoginForm( (app.containers.rules).querySelector('.page-content') );
 		}
 		if (app.containers.mqtts) {
-			(app.containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			(app.containers.mqtts).querySelector('.page-content').innerHTML = app.getCard({title: 'Sense events', titlecolor: '#ffffff', description: 'Whether it\'s your own sensors or external Flows from Internet, sensors collect values and communicate them to t6.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 			app.displayLoginForm( (app.containers.mqtts).querySelector('.page-content') );
 		}
 		if (app.containers.sources) {
-			(app.containers.sources).querySelector('.page-content').innerHTML = app.getCard({image: app.baseUrlCdn+'/img/opl_img3.webp', title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
+			(app.containers.sources).querySelector('.page-content').innerHTML = app.getCard({title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', action: {id: 'login', label: 'Sign-In'}, secondaryaction: {id: 'signup', label: 'Create an account'}});
 			app.displayLoginForm( (app.containers.sources).querySelector('.page-content') );
 		}
 
@@ -3863,7 +3863,7 @@ var touchStartPoint, touchMovePoint;
 		touchcancel:function(e){nm=false}
 	};
 	for(var a in touch){document.addEventListener(a,touch[a],false);}
-	var h=function(e){console.log(e.type,e)};
+	//var h=function(e){console.log(e.type,e)};
 	if (typeof screen.orientation!=="undefined") {
 		screen.orientation.addEventListener("change", app.showOrientation);
 	}
