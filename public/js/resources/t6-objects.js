@@ -243,7 +243,7 @@ app.resources.objects = {
 						JSON.parse(localStorage.getItem("sources")).map(function(source) {
 							if(source.id==object.attributes.source_id) {
 								source.subversions.map(function(sv) {
-									source_versions.push({value: `Version ${sv.version} - ${sv.name}`, name: sv.id});
+									source_versions.push({value: `Version ${sv.version} - ${sv.name}`, name: sv.version});
 								});
 							}
 							return sources.push({value: source.name, name: source.id});
