@@ -435,7 +435,18 @@ app.resources.objects = {
 						dragging: isEdit
 					}).addTo(map);
 					var popup = L.popup();
-					var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {draggable: isEdit}).addTo(map);
+					var CustomIcon = L.Icon.extend({
+						options: {
+							shadowUrl:		"/img/m/marker-shadow.png",
+							iconSize:		[25, 41],
+							shadowSize:		[41, 41],
+							iconAnchor:		[20, 20],
+							shadowAnchor:	[20, 20],
+							popupAnchor:	[-3, -76]
+						}
+					});
+					var mIcon = new CustomIcon({iconUrl: "/img/m/marker-icon.png"});
+					var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {icon: mIcon, draggable: isEdit}).addTo(map);
 					if (isEdit !== true) {
 						map.dragging.disable();
 					} else {
@@ -506,7 +517,7 @@ app.resources.objects = {
 				node += "		</div>";
 				node += "		<div class='mdl-cell--12-col hidden' id='description-"+object.id+"'>";
 
-				node += app.getField(app.icons.objects, "Id", object.id, {type: "input"});
+				node += app.getField(app.icons.code, "Id", object.id, {type: "input"});
 				if ( object.attributes.description || isEdit!==true ) {
 					var description = object.attributes.description!==undefined?object.attributes.description:"";
 					node += app.getField(app.icons.description, "Description", description, {type: "text"});
@@ -732,7 +743,18 @@ app.resources.objects = {
 			dragging: true
 		}).addTo(map);
 		var popup = L.popup();
-		var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {draggable: true}).addTo(map);
+		var CustomIcon = L.Icon.extend({
+			options: {
+				shadowUrl:		"/img/m/marker-shadow.png",
+				iconSize:		[25, 41],
+				shadowSize:		[41, 41],
+				iconAnchor:		[20, 20],
+				shadowAnchor:	[20, 20],
+				popupAnchor:	[-3, -76]
+			}
+		});
+		var mIcon = new CustomIcon({iconUrl: "/img/m/marker-icon.png"});
+		var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {icon: mIcon, draggable: true}).addTo(map);
 		marker.on('dragend', function(event) {
 			var position = marker.getLatLng();
 			marker.setLatLng(position, {

@@ -3671,6 +3671,7 @@ var touchStartPoint, touchMovePoint;
 				app.setSection(currentPage);
 			}
 		} else if ( currentPage ) {
+			console.log("TEST", currentPage);
 			if ( (currentPage === 'object' || currentPage === 'objects') ) {
 				app.setSection('objects');
 			} else if ( (currentPage === 'flow' || currentPage === 'flows') ) {
