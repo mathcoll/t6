@@ -683,14 +683,13 @@ router.get("/status", function(req, res, next) {
 			"tokens": db.getCollection("tokens").count(),
 			"units": db.getCollection("units").count(),
 			"datatypes": db.getCollection("datatypes").count(),
-			"users": db.getCollection("users").count(),
 			"rules": dbRules.getCollection("rules").count(),
 			"snippets": dbSnippets.getCollection("snippets").count(),
 			"dashboards": dbDashboards.getCollection("dashboards").count(),
 			"tokens2": dbTokens.getCollection("tokens").count(),
 			"sources": dbSources.getCollection("sources").count(),
 			"otahistory": dbOtaHistory.getCollection("otahistory").count(),
-		}
+		};
 	}
 	if ( typeof req.user!=="undefined" && typeof req.user.id!=="undefined" ) {
 		let u = {"user_id": req.user.id};
@@ -701,18 +700,17 @@ router.get("/status", function(req, res, next) {
 			"tokens": db.getCollection("tokens").find(u).length,
 			"units": db.getCollection("units").count(),
 			"datatypes": db.getCollection("datatypes").count(),
-			"users": db.getCollection("users").find(u).length,
 			"rules": dbRules.getCollection("rules").find(u).length,
 			"snippets": dbSnippets.getCollection("snippets").find(u).length,
 			"dashboards": dbDashboards.getCollection("dashboards").find(u).length,
 			"tokens2": dbTokens.getCollection("tokens").find(u).length,
 			"sources": dbSources.getCollection("sources").find(u).length,
 			"otahistory": dbOtaHistory.getCollection("otahistory").find(u).length,
-		}
+		};
 		status.RateLimit = {
 			"X-RateLimit-Remaining": res.get("X-RateLimit-Remaining"),
 			"X-RateLimit-Limit": res.get("X-RateLimit-Limit"),
-		}
+		};
 	}
 	res.status(200).send(status);
 });
