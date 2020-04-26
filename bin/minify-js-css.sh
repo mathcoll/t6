@@ -35,6 +35,7 @@ uglifyjs \
 	../public/js/vendor/moment/moment.min-2.22.2.js \
 	../public/js/vendor/OpenLayers/ol-4.6.5.min.js \
 	../public/js/vendor/Chart/Chart-min-2.9.3.js \
+	../public/js/vendor/Leaflet/leaflet-min-1.6.0.js \
 	-o ../public/js/vendor.min.js \
 	-m -c warnings=false
 echo Completed
@@ -46,6 +47,7 @@ uglifycss \
 	../public/css/vendor/material/material.brown-blue.min-1.3.0.css \
 	../public/css/t6app.css \
 	../public/css/vendor/OpenLayers/ol-4.6.5.css \
+	../public/css/vendor/Leaflet/leaflet-1.6.0.css \
 	> ../public/css/t6app.min.css
 echo Completed
 echo ""
