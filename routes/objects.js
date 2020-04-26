@@ -180,7 +180,53 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 /**
- * @api {get} /ota/:object_id/ota-status Get Object OTA status
+ * @api {get} /objects/:object_id/latest-version Get Object OTA latest version ready to be deployed
+ * @apiName Get Object OTA latest version ready to be deployed
+ * @apiGroup 1. Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * 
+ * @apiUse 201
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection("objects");
+	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
+	if ( object && object.ipv4 && object.fqbn ) {
+
+		sources	= dbSources.getCollection("sources");
+		// Get root latest version of the source
+		let source = sources.findOne({ "root_source_id": object.source_id });
+		let buildVersions = new Array();
+		if ( source && source.content && source.latest_version ) {
+			let version = source.latest_version;
+			while(version>-1) {
+				let pai = object.fqbn.split(":");
+				let packager = pai[0];
+				let architecture = pai[1];
+				let id = pai[2];
+				let binFile = `/${object.source_id}/${version}/${object.id}/${object.id}.${packager}.${architecture}.${id}.bin`;
+				if (!fs.existsSync(ota.build_dir+binFile)) {
+					buildVersions.push({"version": version, "status": "404 Not Found", "binFile": binFile, "build": sprintf("%s/v%s/objects/%s/build/%s", baseUrl_https, version, object.id, version) });
+				} else {
+					buildVersions.push({"version": version, "status": "200 Ready to deploy", "binFile": binFile });
+				}
+				version--;
+			}
+		}
+
+		res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "port": ota.defaultPort, "fqbn": object.fqbn, "source_id": object.source_id, "objectExpectedVersion": object.source_version, "sourceLatestVersion": source.latest_version, "buildVersions": buildVersions });
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
+ * @api {get} /objects/:object_id/ota-status Get Object OTA status
  * @apiName Get Object OTA status
  * @apiGroup 1. Object
  * @apiVersion 2.0.1
@@ -192,7 +238,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/(:object_id([0-9a-z\-]+))/ota-status", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection("objects");
 	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
@@ -277,7 +323,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
  * @apiUse 412
  * @apiUse 429
  */
-router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection("objects");
 
@@ -289,26 +335,27 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 		}
 	var object = objects.findOne( query );
 	if ( object && object.source_id ) {
+		var version = typeof req.params.version!=="undefined"?req.params.version:object.source_version;
 		object.source_version = typeof object.source_version!=="undefined"?object.source_version:0;
 		sources	= dbSources.getCollection("sources");
-		let source = sources.findOne({"$and": [{ "root_source_id": object.source_id }, {"version": parseInt(object.source_version, 10)}]});
+		let source = sources.findOne({"$and": [{ "root_source_id": object.source_id }, {"version": parseInt(version, 10)}]});
 		if ( source && source.content ) {
 			// This is a temporary solution...
 			let exec = require("child_process").exec;
-			
+
 			let odir = `${ota.build_dir}/${object.source_id}`;
 			if (!fs.existsSync(odir)) fs.mkdirSync(odir);
 			
-			let vdir = `${ota.build_dir}/${object.source_id}/${object.source_version}`;
+			let vdir = `${ota.build_dir}/${object.source_id}/${version}`;
 			if (!fs.existsSync(vdir)) { fs.mkdirSync(vdir); }
 			
-			let dir = `${ota.build_dir}/${object.source_id}/${object.source_version}/${object.id}`;
+			let dir = `${ota.build_dir}/${object.source_id}/${version}/${object.id}`;
 			if (!fs.existsSync(dir)) { fs.mkdirSync(dir); }
 
 			fs.writeFile(`${dir}/${object.id}.ino`, source.content, function (err) {
 				if (err) throw err;
 				t6console.log("File is created successfully.", `${dir}/${object.id}.ino`);
-				t6console.log("Using version ", object.source_version);
+				t6console.log("Using version ", version);
 				
 				let fqbn = object.fqbn!==""?object.fqbn:ota.fqbn;
 				t6console.log("Building ino sketch using fqbn=", fqbn);
@@ -321,13 +368,13 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 					let user = users.findOne({"id": req.user.id });
 					if (code === 0) {
 						if (user && typeof user.pushSubscription !== "undefined" ) {
-							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"Build is completed.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"Build is completed on v"+version+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							t6notifications.sendPush(user.pushSubscription, payload);
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "success", new Date()-start);
 					} else {
 						if (user && typeof user.pushSubscription !== "undefined" ) {
-							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"An error occured during build (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"An error occured during build v"+version+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							t6notifications.sendPush(user.pushSubscription, payload);
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "failure", new Date()-start);
@@ -337,7 +384,7 @@ router.post("/:object_id/build", expressJwt({secret: jwtsettings.secret}), funct
 
 			res.status(201).send({ "code": 201, message: "Building ino sketch", object: new ObjectSerializer(object).serialize() });
 		} else {
-			res.status(412).send(new ErrorSerializer({"id": 140, "code": 412, "message": "Source is empty"}).serialize());
+			res.status(412).send(new ErrorSerializer({"id": 140, "code": 412, "message": "Source is empty or unknown version"}).serialize());
 		}
 	} else if ( !object.source_id ) {
 		res.status(412).send(new ErrorSerializer({"id": 141, "code": 412, "message": "Source is required"}).serialize());
