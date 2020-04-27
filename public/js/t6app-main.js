@@ -555,7 +555,7 @@ var touchStartPoint, touchMovePoint;
 			if ( localStorage.getItem("settings.debug") == "true" ) {
 				console.log('[ServiceWorker] Registered with scope:', registration.scope);
 			}
-			if ( typeof firebase !== "object" && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
+			if ( (typeof firebase !== "object" || typeof firebase === "undefined") && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
 				//console.log("firebase", "Should Initialize Firebase");
 				firebase.initializeApp(firebaseConfig);
 			}
@@ -837,7 +837,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		window.scrollTo(0, 0);
 		if ( section === 'public-object' ) {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(window.location.search); // (window.location.hash.substr(1).split("?"))[1] // TODO, recursive?
 			var params = {};
 			if ( Array.from(urlParams).length > -1 ) {
 				for (let p of urlParams) {
@@ -851,7 +851,7 @@ var touchStartPoint, touchMovePoint;
 				}
 			}
 		} else if ( section === 'object' ) {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(window.location.search); // (window.location.hash.substr(1).split("?"))[1] // TODO, recursive?
 			var params = {};
 			if ( Array.from(urlParams).length > -1 ) {
 				for (let p of urlParams) {
@@ -865,9 +865,9 @@ var touchStartPoint, touchMovePoint;
 				}
 			}
 		} else if ( section === 'object_add' ) {
-			app.resources.objects.displayAdd(app.defaultResources.object, true, false, false);
+			app.resources.objects.displayAdd(app.defaultResources.object, true, false, false);// TODO, recursive?
 		} else if ( section === 'edit-object' ) {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(window.location.search); // (window.location.hash.substr(1).split("?"))[1] // TODO, recursive?
 			var params = {};
 			if ( Array.from(urlParams).length > -1 ) {
 				for (let p of urlParams) {
@@ -3517,21 +3517,21 @@ var touchStartPoint, touchMovePoint;
 	app.resetSections = function() {
 		/* reset views to default */
 		if (localStorage.getItem("settings.debug") == "true") { console.log('DEBUG', 'resetSections()'); }
-		(app.containers.objects).querySelector('.page-content').innerHTML = '';
-		(app.containers.object).querySelector('.page-content').innerHTML = '';
-		(app.containers.flows).querySelector('.page-content').innerHTML = '';
-		(app.containers.flow).querySelector('.page-content').innerHTML = '';
-		(app.containers.dashboards).querySelector('.page-content').innerHTML = '';
-		(app.containers.dashboard).querySelector('.page-content').innerHTML = '';
-		(app.containers.snippets).querySelector('.page-content').innerHTML = '';
-		(app.containers.snippet).querySelector('.page-content').innerHTML = '';
-		(app.containers.profile).querySelector('.page-content').innerHTML = '';
-		(app.containers.rules).querySelector('.page-content').innerHTML = '';
-		(app.containers.rule).querySelector('.page-content').innerHTML = '';
-		(app.containers.mqtts).querySelector('.page-content').innerHTML = '';
-		(app.containers.mqtt).querySelector('.page-content').innerHTML = '';
-		(app.containers.sources).querySelector('.page-content').innerHTML = '';
-		(app.containers.source).querySelector('.page-content').innerHTML = '';
+		if (app.containers.objects) { (app.containers.objects).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.object) { (app.containers.object).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.flows) { (app.containers.flows).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.flow) { (app.containers.flow).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.dashboards) { (app.containers.dashboards).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.dashboard) { (app.containers.dashboard).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.snippets) { (app.containers.snippets).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.snippet) { (app.containers.snippet).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.profile) { (app.containers.profile).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.rules) { (app.containers.rules).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.rule) { (app.containers.rule).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.mqtts) { (app.containers.mqtts).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.mqtt) { (app.containers.mqtt).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.sources) { (app.containers.sources).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.source) { (app.containers.source).querySelector('.page-content').innerHTML = ''; }
 	};
 
 	app.showOrientation = function() {
@@ -3668,10 +3668,10 @@ var touchStartPoint, touchMovePoint;
 				localStorage.setItem("bearer", null);
 				app.setSection(currentPage);
 			} else {
+				//let section = currentPage.split("?")[0];
 				app.setSection(currentPage);
 			}
 		} else if ( currentPage ) {
-			console.log("TEST", currentPage);
 			if ( (currentPage === 'object' || currentPage === 'objects') ) {
 				app.setSection('objects');
 			} else if ( (currentPage === 'flow' || currentPage === 'flows') ) {
