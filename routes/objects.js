@@ -361,6 +361,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 				t6console.log("Building ino sketch using fqbn=", fqbn);
 				
 				let start = new Date();
+				t6console.log("Exec=", `${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
 				const child = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
 				child.on("close", (code) => {
 					t6console.log(`child process exited with code ${code}`);
@@ -527,7 +528,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 			}
 			if ( typeof result!=="undefined" ) {
 				db.save();
-				
+
 				res.header("Location", "/v"+version+"/objects/"+object_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", object: new ObjectSerializer(result).serialize() });
 			} else {
