@@ -70,7 +70,7 @@ router.get("/lib-list", expressJwt({secret: jwtsettings.secret}), function (req,
  * @apiUse 429
  * @apiUse 500
  */
-router.post("/(:source_id([0-9a-z\-]+))?/deploy/?(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var source_id = req.params.source_id;
 	var object_id = req.params.object_id;
 	// find all objects linked to this source
