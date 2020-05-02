@@ -224,44 +224,70 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 			};
 	let root = sources.findOne( queryRoot );
 	
-	// This will create a new version instead of overwritting the current id
-	if (root && parent && parent_source_id) {
-		var source_id = uuid.v4();
-		let content;
-		if ( Array.isArray(req.body.content) ) {
-			content = req.body.content.join("\n");
-		} else {
-			content = req.body.content;
-		}
-		var newSource = {
-			id:					source_id,
-			parent_source_id:	parent_source_id,
-			root_source_id:		root.id,
-			user_id:			req.user.id,
-			name:				typeof req.body.name!=="undefined"?req.body.name:parent.name,
-			content:			content,
-			version:			parseInt(root.latest_version+1, 10),
-			password:			typeof req.body.password!=="undefined"?req.body.password:parent.password,
-		};
-		var result;
-		
-		sources.chain().find({ "id": root.id }).update(function(r) {
-			r.latest_version	= parseInt(r.latest_version+1, 10);
-			r.latest_version_id = source_id
-			result = r;
-		});
-		if (typeof result!=="undefined") {
-			dbSources.save();
-			sources.insert(newSource);
-			t6events.add("t6Api", "source add child", newSource.id);
+	if (!req.query.overwrite || req.query.overwrite === "false") {
+		// By default, this will create a new version instead of overwritting the current id
+		if (root && parent && parent_source_id) {
+			var source_id = uuid.v4();
+			let content;
+			if ( Array.isArray(req.body.content) ) {
+				content = req.body.content.join("\n");
+			} else {
+				content = req.body.content;
+			}
+			var newSource = {
+				id:					source_id,
+				parent_source_id:	parent_source_id,
+				root_source_id:		root.id,
+				user_id:			req.user.id,
+				name:				typeof req.body.name!=="undefined"?req.body.name:parent.name,
+				content:			content,
+				version:			parseInt(root.latest_version+1, 10),
+				password:			typeof req.body.password!=="undefined"?req.body.password:parent.password,
+			};
+			var result;
+			
+			sources.chain().find({ "id": root.id }).update(function(r) {
+				r.latest_version	= parseInt(r.latest_version+1, 10);
+				r.latest_version_id = source_id
+				result = r;
+			});
+			if (typeof result!=="undefined") {
+				dbSources.save();
+				sources.insert(newSource);
+				t6events.add("t6Api", "source add child", newSource.id);
 
-			res.header("Location", "/v"+version+"/sources/"+source_id);
-			res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(newSource).serialize() });
+				res.header("Location", "/v"+version+"/sources/"+source_id);
+				res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(newSource).serialize() });
+			} else {
+				res.status(404).send(new ErrorSerializer({"id": 641.5, "code": 404, "message": "Not Found"}).serialize());
+			}
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 641.5, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 640.5, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 640.5, "code": 404, "message": "Not Found"}).serialize());
+		// But we still can force overwrite
+		var result;
+		sources.chain().find({ "id": parent_source_id }).update(function(item) {
+			let content;
+			if ( Array.isArray(req.body.content) ) {
+				content = req.body.content.join("\n");
+			} else {
+				content = req.body.content;
+			}
+			item.name					= typeof req.body.name!=="undefined"?req.body.name:item.name;
+			item.content				= typeof req.body.content!=="undefined"?content:item.content;
+			item.password				= typeof req.body.password!=="undefined"?req.body.password:item.password;
+			item.version				= typeof req.body.version!=="undefined"?parseInt(req.body.version, 10):parseInt(item.version, 10);
+			result = item;
+		});
+		if ( typeof result!=="undefined" ) {
+			dbSources.save();
+
+			res.header("Location", "/v"+version+"/sources/"+source_id);
+			res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(result).serialize() });
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 144, "code": 404, "message": "Not Found"}).serialize());
+		}
 	}
 });
 
