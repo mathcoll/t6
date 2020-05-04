@@ -1,8 +1,10 @@
+
+
 * {
   margin: 0;
   padding: 0;
   font-size: 100%;
-  font-family: 'Avenir Next', "Helvetica Neue", "Helvetica";
+  font-family: Helvetica, Arial;
   line-height: 1.65;
 }
 
@@ -12,7 +14,8 @@ img {
   display: block;
 }
 
-body, .body-wrap {
+body,
+.body-wrap {
   width: 100% !important;
   height: 100%;
   background: #efefef;
@@ -69,7 +72,12 @@ a {
   white-space: nowrap;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   margin-bottom: 20px;
   line-height: 1.25;
 }
@@ -94,7 +102,9 @@ h5 {
   font-size: 16px;
 }
 
-p, ul, ol {
+p,
+ul,
+ol {
   font-size: 16px;
   font-weight: normal;
   margin-bottom: 20px;
@@ -147,3 +157,4 @@ p, ul, ol {
   text-decoration: none;
   font-weight: bold;
 }
+
