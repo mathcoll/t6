@@ -5,36 +5,71 @@
   "version": "1.0.2",
   "description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
   "icons": [{
-            	"src": "/img/m/icons/icon-128x128.png",
-            	"sizes": "128x128",
-            	"type": "image/png"
-            }, {
-            	"src": "/img/m/icons/mstile-144x144.png",
-            	"sizes": "144x144",
-            	"type": "image/png"
-            }, {
-            	"src": "/img/m/icons/mstile-150x150.png",
-            	"sizes": "152x152",
-            	"type": "image/png"
-            }, {
-            	"src": "/img/m/icons/icon-192x192.png",
-            	"sizes": "192x192",
-            	"type": "image/png"
-            }, {
-            	"src": "/img/m/icons/icon-180x180.png",
-            	"sizes": "180x180",
-            	"type": "image/png"
-            }, {
-            	"src": "/img/m/icons/android-chrome-512x512.png",
-            	"sizes": "512x512",
-            	"type": "image/png"
-            }],
+      "src": "/img/m/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }, {
+      "src": "/img/m/icons/mstile-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    }, {
+      "src": "/img/m/icons/mstile-150x150.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    }, {
+      "src": "/img/m/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }, {
+      "src": "/img/m/icons/icon-180x180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }, {
+      "src": "/img/m/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots" : [{
+      "src": "/img/screenshots/t6-screenshot.png",
+      "sizes": "414×736",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/screenshots/t6-screenshot2.png",
+      "sizes": "414×736",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/screenshots/t6-screenshot3.png",
+      "sizes": "414×736",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/screenshots/t6-screenshot4.png",
+      "sizes": "414×736",
+      "type": "image/png"
+    },
+    {
+      "src": "/img/screenshots/t6-screenshot5.png",
+      "sizes": "480×320",
+      "type": "image/png"
+    }
+  ],
   "scope": "/",
-  "start_url": "/#index",
+  "start_url": "https://api.internetcollaboratif.info/",
   "serviceworker": {
     "src": "/service-worker.js",
     "scope": "/"
   },
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=info.internetcollaboratif.api",
+      "id": "info.internetcollaboratif.api"
+    }
+  ],
+  "prefer_related_applications": true,
   "display": "standalone",
   "orientation": "natural",
   "direction": "portrait",
