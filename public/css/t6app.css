@@ -57,6 +57,7 @@ html, body {
 	color: #444;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+	user-select: none;
 }
 html > *:target {
 	display: block;
