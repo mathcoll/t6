@@ -2473,6 +2473,9 @@ var touchStartPoint, touchMovePoint;
 			"					<span class='mdl-textfield__error'>Password must be provided</span>" +
 			"				</div>" +
 			"			</div>" +
+			"			<div class='mdl-card__supporting-text'>" +
+			//app.getField(null, "Notifications", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'login.notifications', isEdit: true}) +
+			"			</div>" +
 			"			<div class='mdl-card__supporting-text mdl-grid'>" +
 			"				<span class='mdl-layout-spacer'></span>" +
 			"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
@@ -4046,7 +4049,7 @@ var touchStartPoint, touchMovePoint;
 	}
 	app.setDrawer();
 	
-	if ( window.location.hostname!=="127.0.0.1" && app.gtm!=="" && app.getCookie('cookieconsentNoGTM') !== "true" ) {
+	if ( app.gtm!=="" && app.getCookie('cookieconsentNoGTM') !== "true" ) {
 		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
