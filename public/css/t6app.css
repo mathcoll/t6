@@ -296,6 +296,9 @@ li.delete-button:hover {
 	line-height: 12px;
 	line-height: 28px;
 }
+span.mdl-list__item-sub-title {
+	user-select: text;
+}
 .mdl-list__item-sub-title .material-icons {
 	margin-right: 10px;
 }

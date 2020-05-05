@@ -170,6 +170,7 @@ app.resources.sources = {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var source = response.data[i];
 				var content = source.attributes.content!==undefined?source.attributes.content:"";
+				content = isEdit?content:app.nl2br(app.escapeHtml(content));
 
 				document.title = (app.sectionsPageTitles["source"]).replace(/%s/g, source.attributes.name);
 				var node = "";
@@ -214,7 +215,26 @@ app.resources.sources = {
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 				node += app.getField(null, "meta.revision", source.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
 				node += app.getField(app.icons.name, "Name", source.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
+				node += "		</div>";
+				node += "	</div>";
+				node += "</section>";
+				
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "		<div class=\"mdl-list__item\">";
+				node += "			<span class='mdl-list__item-primary-content'>";
+				node += "				<i class=\"material-icons mdl-textfield__icon\">"+app.icons.sources+"</i>";
+				node += "				<h2 class=\"mdl-card__title-text\">Arduino Source Code (version "+source.attributes.version+")</h2>";
+				node += "			</span>";
+				node += "			<span class='mdl-list__item-secondary-action'>";
+				node += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showsource_button' for='source_of_"+source.id+"'>";
+				node += "					<i class='material-icons'>expand_more</i>";
+				node += "				</button>";
+				node += "			</span>";
+				node += "		</div>";
+				node += "		<div class='mdl-cell--12-col hidden' id='source_of_"+source.id+"'>";
 				node += app.getField(app.icons.code, "Arduino Source Code", content, {type: "textarea", id: "Code", isEdit: isEdit});
+				node += "		</div>";
 				node += "	</div>";
 				node += "</section>";
 				
@@ -325,6 +345,11 @@ app.resources.sources = {
 								app.resources.objects.display(evt.target.parentNode.getAttribute("data-id"), false, true, false);
 								evt.preventDefault();
 							}, false);
+						}
+					}
+					for (var i in app.buttons.expandSourceButtons) {
+						if ( (app.buttons.expandSourceButtons[i]).childElementCount > -1 ) {
+							(app.buttons.expandSourceButtons[i]).addEventListener('click', app.expand, false);
 						}
 					}
 					for (var i in app.buttons.link_offSourceObject) {

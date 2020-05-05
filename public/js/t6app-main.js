@@ -653,6 +653,7 @@ var touchStartPoint, touchMovePoint;
 			user_setpassword: document.querySelectorAll('form.resetpassword button.setPassword'),
 			user_forgot: document.querySelectorAll('form.forgotpassword button.forgotPassword'),
 			expandButtons: document.querySelectorAll('.showdescription_button'),
+			expandSourceButtons: document.querySelectorAll('.showsource_button'),
 			object_create: document.querySelectorAll('.showdescription_button'),
 			
 			deleteObject: document.querySelectorAll('#objects .delete-button'),
@@ -791,7 +792,6 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.expand = function(evt) {
-		//console.log(evt.target);
 		var id = (evt.target.parentElement).getAttribute('for')!=null?(evt.target.parentElement).getAttribute('for'):(evt.target).getAttribute('for');
 		if ( id != null ) {
 			document.getElementById(id).classList.toggle('hidden');
@@ -2677,7 +2677,7 @@ var touchStartPoint, touchMovePoint;
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
 					field += "</div>";
 				} else {
-					if (value ) field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
+					if (value) field += "<span class='mdl-list__item-sub-title'>"+value+"</span>";
 				}
 			} else if ( options.type === 'radio' ) {
 				if ( options.isEdit === true ) {
