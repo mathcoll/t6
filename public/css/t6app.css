@@ -588,6 +588,16 @@ div.mdl-list__item-primary-content span.heading {
 	overflow: auto;
 	white-space: nowrap;
 }
+@media only screen and (min-width: 840px) {
+	.mdl-cell--6-col, .mdl-cell--6-col-desktop.mdl-cell--6-col-desktop {
+		width: calc(50% - 0px);
+	}
+}
+@media only screen and (max-width: 479px) {
+	.mdl-cell--6-col, .mdl-cell--6-col-phone.mdl-cell--6-col-phone {
+		width: calc(100% - 0px);
+	}
+}
 @media only screen and (min-device-width: 801px) {
 	.mdl-list__item .mdl-list__item-secondary-content {
 		overflow: auto;
@@ -993,7 +1003,6 @@ div[data-action='view'] .mdl-list__item--three-line {
 	cursor: pointer;
 }
 div[data-action='view'] .mdl-list__item--three-line {
-	flex: auto;
 	overflow: hidden;
 }
 div:not([data-action='view']) .mdl-card__title h3.mdl-card__title-text,

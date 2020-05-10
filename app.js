@@ -183,6 +183,16 @@ var initDbOtaHistory = function() {
 		t6console.info(dbOtaHistory.getCollection("otahistory").count(), "resources in OtaHistory collection.");
 	}
 }
+var initDbUis = function() {
+	if ( dbUis === null ) {
+		t6console.warn("db UIs is failing");
+	}
+	if ( dbUis.getCollection("uis") === null ) {
+		t6console.warn("- Collection UIs is failing");
+	} else {
+		t6console.info(dbUis.getCollection("uis").count(), "resources in UIs collection.");
+	}
+}
 
 t6console.info("Initializing Databases...");
 db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbMain});
@@ -192,6 +202,7 @@ dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()
 dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
 dbSources = new loki(path.join(__dirname, "data", "sources-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbSources});
 dbOtaHistory = new loki(path.join(__dirname, "data", "otahistory-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
+dbUis = new loki(path.join(__dirname, "data", "uis-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbUis});
 
 var index			= require("./routes/index");
 var objects			= require("./routes/objects");
@@ -209,6 +220,7 @@ var notifications	= require("./routes/notifications");
 var ifttt			= require("./routes/ifttt");
 var ota				= require("./routes/ota");
 var sources			= require("./routes/sources");
+var uis				= require("./routes/uis");
 app					= express();
 
 var CrossDomain = function(req, res, next) {
@@ -261,6 +273,7 @@ app.use("/v"+version+"/notifications", notifications);
 app.use("/v"+version+"/ifttt", ifttt);
 app.use("/v"+version+"/ota", ota);
 app.use("/v"+version+"/sources", sources);
+app.use("/v"+version+"/uis", uis);
 app.use("/", pwa);
 
 // catch 404 and forward to error handler

@@ -621,6 +621,11 @@ router.post("/refresh", function (req, res) {
 					{"expiration": { "$gte": moment().format("x") }},
 				]
 	};
+	var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+	if ( expired ) {
+		tokens.remove(expired);
+		dbTokens.save();
+	}
 	var myToken = tokens.findOne(queryT);
 	if ( !myToken ) {
 		return res.status(403).send(new ErrorSerializer({"id": 109, "code": 403, "message": "Forbidden or Token Expired"}));
@@ -649,11 +654,6 @@ router.post("/refresh", function (req, res) {
 			tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
 			return res.status(200).json( {status: "ok", token: token, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp} );
 		}
-	}
-	var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
-	if ( expired ) {
-		tokens.remove(expired);
-		dbTokens.save();
 	}
 });
 
@@ -689,6 +689,7 @@ router.get("/status", function(req, res, next) {
 			"tokens2": dbTokens.getCollection("tokens").count(),
 			"sources": dbSources.getCollection("sources").count(),
 			"otahistory": dbOtaHistory.getCollection("otahistory").count(),
+			"uis": dbUis.getCollection("uis").count(),
 		};
 	}
 	if ( typeof req.user!=="undefined" && typeof req.user.id!=="undefined" ) {
@@ -706,6 +707,7 @@ router.get("/status", function(req, res, next) {
 			"tokens2": dbTokens.getCollection("tokens").find(u).length,
 			"sources": dbSources.getCollection("sources").find(u).length,
 			"otahistory": dbOtaHistory.getCollection("otahistory").find(u).length,
+			"uis": dbUis.getCollection("uis").find(u).length,
 		};
 		status.RateLimit = {
 			"X-RateLimit-Remaining": res.get("X-RateLimit-Remaining"),

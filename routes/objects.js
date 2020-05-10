@@ -4,13 +4,82 @@ var router = express.Router();
 var nmap = require("libnmap");
 var ObjectSerializer = require("../serializers/object");
 var ErrorSerializer = require("../serializers/error");
+var UISerializer = require("../serializers/ui");
 var users;
 var objects;
+var uis;
 var sources;
 
 /**
+ * @api {get} /objects/:object_id/ui Get UI for an Object
+ * @apiName Get UI for an Object
+ * @apiGroup 1. Object
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} object_id Object Id
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection("objects");
+	uis	= dbUis.getCollection("uis");
+	var query = {
+		"$and": [
+				{ "user_id" : req.user.id },
+				{ "id" : object_id },
+			]
+		};
+	var object = objects.findOne(query);
+	var ui = uis.chain().find({ "id" : object.ui_id }).data();
+	if ( ui.length > -1 ) {
+		ui.id = object.ui_id;
+		ui.object_id = object.id;
+		res.status(200).send(new UISerializer(ui).serialize());
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 1271, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
+ * @api {get} /objects/:object_id/show Show an Object from UI
+ * @apiName Show an Object from UI
+ * @apiGroup General
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
+ */
+router.get("/(:object_id([0-9a-z\-]+))/show", function (req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection("objects");
+	uis	= dbUis.getCollection("uis");
+	var query = {
+		"$and": [
+//				{ "user_id" : req.user.id },
+				{ "id" : object_id },
+			]
+		};
+	var object = objects.findOne(query);
+	var ui = uis.chain().find({ "id" : object.ui_id }).data();
+	if ( ui.length > -1 ) {
+		ui.id = object.ui_id;
+		ui.object_id = object.id;
+		res.set("Content-Type", "text/html; charset=utf-8");
+		res.status(200).render("object-ui", {object: object, ui: JSON.stringify(ui[0].ui)});
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 1272, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
  * @api {get} /objects/:object_id/qrcode/:typenumber/:errorcorrectionlevel Get qrcode for an Object
- * @apiName Get Object(s)
+ * @apiName Get qrcode for an Object
  * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 
@@ -53,7 +122,6 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 		res.status(404).send(new ErrorSerializer({"id": 127, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
-
 
 /**
  * @api {get} /objects/:object_id Get Public Object 
@@ -412,6 +480,10 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
  * @apiParam {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * @apiParam {String} [secret_key] Object Secret Key in symmetric signature
  * @apiParam {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
+ * @apiParam {String} [fqbn] fqbn
+ * @apiParam {Integer} [source_version] Source version
+ * @apiParam {uuid-v4} [source_id] Source Id
+ * @apiParam {uuid-v4} [ui_id] UI Id
  * 
  * @apiUse 201
  * @apiUse 403
@@ -443,6 +515,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			fqbn:			typeof req.body.fqbn!=="undefined"?req.body.fqbn:"",
 			secret_key:		typeof req.body.secret_key!=="undefined"?req.body.secret_key:"",
 			secret_key_crypt:typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:"",
+			ui_id:			typeof req.body.ui_id!=="undefined"?req.body.ui_id:"",
 		};
 		if ( req.body.parameters && req.body.parameters.length > 0 ) {
 			newObject.parameters = [];
@@ -480,6 +553,10 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * @apiParam {String} [secret_key] Object Secret Key in symmetric signature
  * @apiParam {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
+ * @apiParam {String} [fqbn] fqbn
+ * @apiParam {Integer} [source_version] Source version
+ * @apiParam {uuid-v4} [source_id] Source Id
+ * @apiParam {uuid-v4} [ui_id] UI Id
  * 
  * @apiUse 200
  * @apiUse 400
@@ -518,6 +595,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 				item.fqbn				= typeof req.body.fqbn!=="undefined"?req.body.fqbn:item.fqbn;
 				item.secret_key			= typeof req.body.secret_key!=="undefined"?req.body.secret_key:item.secret_key;
 				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;
+				item.ui_id				= typeof req.body.ui_id!=="undefined"?req.body.ui_id:item.ui_id;
 				result = item;
 			});
 			if ( typeof req.body.parameters!=="undefined" && req.body.parameters.length > 0 ) {

@@ -69,6 +69,14 @@ uglifycss \
 echo Completed
 echo ""
 
+echo 6. PWA Javascript T6-SHOW minify:
+../node_modules/uglify-js-es6/bin/uglifyjs \
+	../public/js/t6show.js \
+	-o ../public/js/t6show-min.js \
+	-m -c warnings=false
+echo Completed
+echo ""
+
 
 t6BuildVersion=`md5sum ../public/js/t6app-min.js | awk '{print $1}'`
 t6BuildDate=`date -R`
