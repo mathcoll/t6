@@ -71,6 +71,8 @@ echo ""
 
 echo 6. PWA Javascript T6-SHOW minify:
 ../node_modules/uglify-js-es6/bin/uglifyjs \
+	../public/js/vendor/material/material.js \
+	../public/js/vendor/mdl/mdl-selectfield.min.js \
 	../public/js/t6show.js \
 	-o ../public/js/t6show-min.js \
 	-m -c warnings=false

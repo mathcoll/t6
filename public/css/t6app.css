@@ -66,6 +66,9 @@ html > *:target {
 html {
 	overflow: hidden;
 }
+html.standalone {
+	overflow: auto;
+}
 ::-moz-selection {
 	background: rgb(121,85,72,.6);
 	color: #fff;

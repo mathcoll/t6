@@ -126,7 +126,7 @@ router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), fun
 		} else {
 			var result;
 			uis.chain().find({ "id": ui_id }).update(function(item) {
-				item.ui	= typeof req.body.ui!=="undefined"?req.body.ui:item.ui;
+				item.ui	= typeof req.body!=="undefined"?req.body:item.ui;
 				result = item;
 			});
 			if ( typeof result!=="undefined" ) {

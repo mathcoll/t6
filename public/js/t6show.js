@@ -1,21 +1,25 @@
-class MaterialParser {
+class MaterialLightParser {
 	createButton(b) {
-		return '<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="' + b.value + '">' + b.label + '</button>';
+		return '<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="'+ b.value + '">' + b.label + '</button>';
 	}
 	createImage(i) {
-		return '<img src="' + i.src + '" alt="' + i.alt + '" />';
+		return '<img src="'+ i.src + '" alt="'+ i.alt + '" />';
 	}
 	createCard(c) {
-		return '<div class="mdl-grid mdl-cell--' + c.width + '-col"><div class="mdl-card mdl-shadow--2dp"><div class="mdl-card__title"><h3 class="mdl-card__title-text">' + c.title + '</h3></div><div class="mdl-list__item--three-line small-padding  mdl-card--expand"><span class="mdl-list__item-sub-title">' + this.parse(c.body) + '</span></div></div></div>';
+		let out = '';
+		out += '<div class="mdl-grid mdl-cell--' + c.width + '-col"><div class="mdl-card mdl-shadow--2dp"><div class="mdl-card__title"><h3 class="mdl-card__title-text">' + c.title + '</h3></div><div class="mdl-list__item--three-line small-padding	mdl-card--expand"><span class="mdl-list__item-sub-title">' + this.parse(c.body) + '</span></div>';
+		out += typeof c.actions!=="undefined"?'<div class="mdl-card__actions mdl-card--border">' + this.parse(c.actions) + '</div>':'';
+		out += '</div></div>';
+		return out;
 	}
 	createList(i, l) {
-		let out = i === 0 ? '<ul class="mdl-list">' + this.parse(l) : '';
+		let out = i===0?'<ul class="mdl-list">' + this.parse(l):'';
 		out += '<li class="mdl-list__item mdl-cell--' + l.width + '-col"><span class="mdl-list__item-primary-content">';
 		if (l.icon) {
-			out += '<i class="material-icons mdl-list__item-icon">' + l.icon + '</i>';
+			out += '<i class="material-icons mdl-list__item-icon">'+ l.icon +'</i>';
 		}
-		out += l.item + '</span></li>';
-		out += i === 0 ? '</ul>' : '';
+		out += l.item+'</span></li>';
+		out += i===0?'</ul>':'';
 		return out;
 	}
 	createText(t) {
@@ -30,7 +34,21 @@ class MaterialParser {
 	createColumn(c) {
 		return '<div class="mdl-cell--' + c.width + '-col">' + (c.text ? c.text : '') + this.parse(c) + '</div>';
 	}
-
+	createSlider(s) {
+		let out = '';
+		out += '<p style="width:100%">';
+		out += '<input class="mdl-slider mdl-js-slider" type="'+s.type+'" id="'+s.id+'" min="'+parseInt(s.min, 10)+'" max="'+parseInt(s.max, 10)+'" value="'+parseInt(s.value, 10)+'" step="'+parseInt(s.step, 10)+'">';
+		out += '</p>';
+		return out;
+	}
+	createSwitch(s) {
+		let out = '';
+		out += '<label for="'+s.id+'" class="mdl-switch mdl-js-switch mdl-js-ripple-effect">';
+		out += '<input type="checkbox" id="'+s.id+'" class="mdl-switch__input" '+(s.checked===true?'checked':'')+'>';
+		out += '<span class="mdl-switch__label">'+s.label+'</span>';
+		out += '</label>';
+		return out;
+	}
 	parse(s) {
 		let S = "";
 		if (s.rows) {
@@ -68,7 +86,12 @@ class MaterialParser {
 				S += this.createBadge(s.badges[i]);
 			}
 		}
-
+		if (s.slider) {
+			S += this.createSlider(s.slider);
+		}
+		if (s.switch) {
+			S += this.createSwitch(s.switch);
+		}
 		if (s.lists) {
 			for (let i in s.lists) {
 				S += this.createList(i, s.lists[i]);
@@ -77,7 +100,6 @@ class MaterialParser {
 		return S;
 	}
 }
-
-let materialize = (inputJson) => {
-	return new MaterialParser().parse(inputJson);
+let materializeLight = (inputJson) => {
+	return new MaterialLightParser().parse(inputJson);
 }
