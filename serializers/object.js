@@ -5,7 +5,7 @@ function ObjectTypeSerializer(object) {
 	this.serialize = function () {
 		return new JSONAPISerializer("object", {
 			keyForAttribute: "underscore_case",
-			attributes: ["name", "user_id", "ui_id", "source_id", "source_version", "fqbn", "otahist", "type", "is_connected", "description", "secret_key", "secret_key_crypt", "position", "ipv4", "ipv6", "isPublic", "longitude", "latitude", "parameters", "meta"],
+			attributes: ["name", "user_id", "ui_id", "source_id", "source_version", "fqbn", "otahist", "type", "is_connected", "description", "secret_key", "secret_key_crypt", "position", "ipv4", "ipv6", "isPublic", "longitude", "latitude", "parameters", "communication", "meta"],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/objects", baseUrl_https, version),
 				self : object.pageSelf!==undefined?sprintf("%s/v%s/objects/?page=%s&size=%s", baseUrl_https, version, object.pageSelf, object.size):undefined,

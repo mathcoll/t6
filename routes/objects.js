@@ -481,9 +481,12 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
  * @apiParam {String} [secret_key] Object Secret Key in symmetric signature
  * @apiParam {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
  * @apiParam {String} [fqbn] fqbn
- * @apiParam {Integer} [source_version] Source version
+ * @apiParam {Integer} [source_version=0] Source version
  * @apiParam {uuid-v4} [source_id] Source Id
  * @apiParam {uuid-v4} [ui_id] UI Id
+ * @apiParam {Object} [communication] Communication parameters
+ * @apiParam {String[]="onoff", "lowerupper", "openclose", "setvalgetval"} [communication.allowed_commands] Commands
+ * @apiParam {String="restAPI", "messageQueue"} [communication.interface] Interface
  * 
  * @apiUse 201
  * @apiUse 403
@@ -500,6 +503,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	} else {
 		var newObject = {
 			id:				uuid.v4(),
+			user_id:		req.user.id,
 			type:			typeof req.body.type!=="undefined"?req.body.type:"default",
 			name:			typeof req.body.name!=="undefined"?req.body.name:"unamed",
 			description:	typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):"",
@@ -509,13 +513,13 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 			isPublic:		typeof req.body.isPublic!=="undefined"?req.body.isPublic:"false",
 			ipv4:			typeof req.body.ipv4!=="undefined"?req.body.ipv4:"",
 			ipv6:			typeof req.body.ipv6!=="undefined"?req.body.ipv6:"",
-			user_id:		req.user.id,
 			source_id:		typeof req.body.source_id!=="undefined"?req.body.source_id:"",
 			source_version:	typeof req.body.source_version!=="undefined"?req.body.source_version:0,
 			fqbn:			typeof req.body.fqbn!=="undefined"?req.body.fqbn:"",
 			secret_key:		typeof req.body.secret_key!=="undefined"?req.body.secret_key:"",
 			secret_key_crypt:typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:"",
 			ui_id:			typeof req.body.ui_id!=="undefined"?req.body.ui_id:"",
+			communication:	typeof req.body.communication!=="undefined"?req.body.communication:undefined,
 		};
 		if ( req.body.parameters && req.body.parameters.length > 0 ) {
 			newObject.parameters = [];
@@ -525,7 +529,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 		}
 		t6events.add("t6Api", "object add", newObject.id);
 		objects.insert(newObject);
-		//t6console.log(objects);
+		//t6console.log(newObject);
 		
 		res.header("Location", "/v"+version+"/objects/"+newObject.id);
 		res.status(201).send({ "code": 201, message: "Created", object: new ObjectSerializer(newObject).serialize() });
@@ -557,6 +561,9 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiParam {Integer} [source_version] Source version
  * @apiParam {uuid-v4} [source_id] Source Id
  * @apiParam {uuid-v4} [ui_id] UI Id
+ * @apiParam {Object} [communication] Communication parameters
+ * @apiParam {String[]="onoff", "lowerupper", "openclose", "setvalgetval"} [communication.allowed_commands] Commands
+ * @apiParam {String="restAPI", "messageQueue"} [communication.interface] Interface
  * 
  * @apiUse 200
  * @apiUse 400
@@ -596,6 +603,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 				item.secret_key			= typeof req.body.secret_key!=="undefined"?req.body.secret_key:item.secret_key;
 				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;
 				item.ui_id				= typeof req.body.ui_id!=="undefined"?req.body.ui_id:item.ui_id;
+				item.communication		= typeof req.body.communication!=="undefined"?req.body.communication:item.communication;
 				result = item;
 			});
 			if ( typeof req.body.parameters!=="undefined" && req.body.parameters.length > 0 ) {
