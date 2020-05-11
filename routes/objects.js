@@ -13,7 +13,7 @@ var sources;
 /**
  * @api {get} /objects/:object_id/ui Get UI for an Object
  * @apiName Get UI for an Object
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -48,9 +48,9 @@ router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secr
 });
 
 /**
- * @api {get} /objects/:object_id/show Show an Object from UI
- * @apiName Show an Object from UI
- * @apiGroup General
+ * @api {get} /objects/:object_id/show Show an Object UI
+ * @apiName Show an Object UI
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -80,7 +80,7 @@ router.get("/(:object_id([0-9a-z\-]+))/show", function (req, res) {
 /**
  * @api {get} /objects/:object_id/qrcode/:typenumber/:errorcorrectionlevel Get qrcode for an Object
  * @apiName Get qrcode for an Object
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -126,7 +126,7 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 /**
  * @api {get} /objects/:object_id Get Public Object 
  * @apiName Get Public Object
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -168,9 +168,95 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 });
 
 /**
+ * @api {get} /objects/:object_id/latest-version Get Object OTA latest version ready to be deployed
+ * @apiName Get Object OTA latest version ready to be deployed
+ * @apiGroup 1. Object & User Interfaces
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * 
+ * @apiUse 201
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection("objects");
+	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
+	if ( object && object.ipv4 && object.fqbn ) {
+
+		sources	= dbSources.getCollection("sources");
+		// Get root latest version of the source
+		let source = sources.findOne({ "root_source_id": object.source_id });
+		let buildVersions = new Array();
+		if ( source && source.content && source.latest_version ) {
+			let version = source.latest_version;
+			while(version>-1) {
+				let pai = object.fqbn.split(":");
+				let packager = pai[0];
+				let architecture = pai[1];
+				let id = pai[2];
+				let binFile = `/${object.source_id}/${version}/${object.id}/${object.id}.${packager}.${architecture}.${id}.bin`;
+				if (!fs.existsSync(ota.build_dir+binFile)) {
+					buildVersions.push({"version": version, "status": "404 Not Found", "binFile": binFile, "build": sprintf("%s/v%s/objects/%s/build/%s", baseUrl_https, version, object.id, version) });
+				} else {
+					buildVersions.push({"version": version, "status": "200 Ready to deploy", "binFile": binFile });
+				}
+				version--;
+			}
+		}
+
+		res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "port": ota.defaultPort, "fqbn": object.fqbn, "source_id": object.source_id, "objectExpectedVersion": object.source_version, "sourceLatestVersion": source.latest_version, "buildVersions": buildVersions });
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
+ * @api {get} /objects/:object_id/ota-status Get Object OTA status
+ * @apiName Get Object OTA status
+ * @apiGroup 1. Object & User Interfaces
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * 
+ * @apiUse 201
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var object_id = req.params.object_id;
+	objects	= db.getCollection("objects");
+	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
+	if ( object && object.ipv4 && object.fqbn ) {
+		let opts = {
+			range: [object.ipv4!==null?object.ipv4:null],
+			ports: String(ota.defaultPort),
+			udp: false,
+			timeout: 3,
+			json: true,
+		};
+		nmap.scan(opts, function(err, report) {
+			if (!err && report) {
+				for (let item in report) {
+					res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "status": report[item].runstats[0].hosts[0].item.up, "summary": report[item].runstats[0].finished[0].item.summary });
+				}
+			} else {
+				res.status(500).send(stderr + error);
+				throw new Error(err);
+			}
+		});
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
  * @api {get} /objects/:object_id Get Object(s)
  * @apiName Get Object(s)
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -248,95 +334,9 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 /**
- * @api {get} /objects/:object_id/latest-version Get Object OTA latest version ready to be deployed
- * @apiName Get Object OTA latest version ready to be deployed
- * @apiGroup 1. Object
- * @apiVersion 2.0.1
- * 
- * @apiUse Auth
- * @apiParam {uuid-v4} [object_id] Object Id
- * 
- * @apiUse 201
- * @apiUse 429
- * @apiUse 500
- */
-router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
-	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
-	if ( object && object.ipv4 && object.fqbn ) {
-
-		sources	= dbSources.getCollection("sources");
-		// Get root latest version of the source
-		let source = sources.findOne({ "root_source_id": object.source_id });
-		let buildVersions = new Array();
-		if ( source && source.content && source.latest_version ) {
-			let version = source.latest_version;
-			while(version>-1) {
-				let pai = object.fqbn.split(":");
-				let packager = pai[0];
-				let architecture = pai[1];
-				let id = pai[2];
-				let binFile = `/${object.source_id}/${version}/${object.id}/${object.id}.${packager}.${architecture}.${id}.bin`;
-				if (!fs.existsSync(ota.build_dir+binFile)) {
-					buildVersions.push({"version": version, "status": "404 Not Found", "binFile": binFile, "build": sprintf("%s/v%s/objects/%s/build/%s", baseUrl_https, version, object.id, version) });
-				} else {
-					buildVersions.push({"version": version, "status": "200 Ready to deploy", "binFile": binFile });
-				}
-				version--;
-			}
-		}
-
-		res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "port": ota.defaultPort, "fqbn": object.fqbn, "source_id": object.source_id, "objectExpectedVersion": object.source_version, "sourceLatestVersion": source.latest_version, "buildVersions": buildVersions });
-	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
-	}
-});
-
-/**
- * @api {get} /objects/:object_id/ota-status Get Object OTA status
- * @apiName Get Object OTA status
- * @apiGroup 1. Object
- * @apiVersion 2.0.1
- * 
- * @apiUse Auth
- * @apiParam {uuid-v4} [object_id] Object Id
- * 
- * @apiUse 201
- * @apiUse 429
- * @apiUse 500
- */
-router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
-	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
-	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
-	if ( object && object.ipv4 && object.fqbn ) {
-		let opts = {
-			range: [object.ipv4!==null?object.ipv4:null],
-			ports: String(ota.defaultPort),
-			udp: false,
-			timeout: 3,
-			json: true,
-		};
-		nmap.scan(opts, function(err, report) {
-			if (!err && report) {
-				for (let item in report) {
-					res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "status": report[item].runstats[0].hosts[0].item.up, "summary": report[item].runstats[0].finished[0].item.summary });
-				}
-			} else {
-				res.status(500).send(stderr + error);
-				throw new Error(err);
-			}
-		});
-	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
-	}
-});
-
-/**
  * @api {post} /objects/:object_id/unlink/:source_id Unlink Object from the selected Source
  * @apiName Unlink Object from the selected Source
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -379,7 +379,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
 /**
  * @api {post} /objects/:object_id/build Build an Arduino source for the selected object
  * @apiName Build an Arduino source for the selected object
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -465,7 +465,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 /**
  * @api {post} /objects Create new Object
  * @apiName Create new Object
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -535,7 +535,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 /**
  * @api {put} /objects/:object_id Edit an Object
  * @apiName Edit an Object
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -621,7 +621,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 /**
  * @api {delete} /objects/:object_id Delete an Object
  * @apiName Delete an Object
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -654,7 +654,7 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 /**
  * @api {put} /objects/:object_id/:pName Edit Object Custom Parameter
  * @apiName Edit Object Custom Parameter
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -714,7 +714,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 /**
  * @api {get} /objects/:object_id/:pName Get Object Custom Parameter
  * @apiName Get Object Custom Parameter
- * @apiGroup 1. Object
+ * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
