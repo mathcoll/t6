@@ -152,6 +152,9 @@ app.resources.objects = {
 		});
 		
 	},
+	onViewUi: function(object_id) {
+		window.open(app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/show/");
+	},
 	display: function(id, isAdd, isEdit, isPublic) {
 		window.scrollTo(0, 0);
 		if (isPublic) {
@@ -344,7 +347,7 @@ app.resources.objects = {
 					node += "</section>";
 				}
 
-				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
+				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -355,11 +358,20 @@ app.resources.objects = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>View Object</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if (object.attributes.ui_id!=="") {
+						node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+						node += "		<button id='"+btnId[1]+"' class='viewui-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+						node += "			<i class='material-icons'>chevron_left</i>";
+						node += "			<label>View UI</label>";
+						node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>View Object UI</label>";
+						node += "		</button>";
+						node += "	</div>";
+					}
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-					node += "		<button id='"+btnId[1]+"' class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+					node += "		<button id='"+btnId[2]+"' class='save-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>save</i>";
 					node += "			<label>Save</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save changes to Object</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Save changes to Object</label>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -376,18 +388,27 @@ app.resources.objects = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Objects</label>";
 					node += "		</button>";
 					node += "	</div>";
+					if (typeof object.attributes.ui_id!=="undefined") {
+						node += "	<div class='mdl-cell--1-col-phone pull-left'>";
+						node += "		<button id='"+btnId[1]+"' class='viewui-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+						node += "			<i class='material-icons'>web</i>";
+						node += "			<label>View UI</label>";
+						node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>View Object UI</label>";
+						node += "		</button>";
+						node += "	</div>";
+					}
 					node += "	<div class='mdl-cell--1-col-phone delete-button'>";
-					node += "		<button id='"+btnId[1]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+					node += "		<button id='"+btnId[2]+"' class='delete-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>delete</i>";
 					node += "			<label>Delete</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Delete Object...</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Delete Object...</label>";
 					node += "		</button>";
 					node += "	</div>";
 					node += "	<div class='mdl-cell--1-col-phone pull-right'>";
-					node += "		<button id='"+btnId[2]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
+					node += "		<button id='"+btnId[3]+"' class='edit-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>edit</i>";
 					node += "			<label>Edit</label>";
-					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Edit Object</label>";
+					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[3]+"'>Edit Object</label>";
 					node += "		</button>";
 					node += "	</div>";
 					if( !app.isLtr() ) {
@@ -429,6 +450,12 @@ app.resources.objects = {
 							sel.appendChild(opt);
 						}
 					});
+				}
+				if (typeof object.attributes.ui_id!=="undefined" && app.buttons.viewuiObject) {
+					app.buttons.viewuiObject.addEventListener("click", function(evt) {
+						app.resources.objects.onViewUi(evt.target.parentNode.getAttribute("data-id"));
+						evt.preventDefault();
+					}, false);
 				}
 				if ( isEdit ) {
 					app.buttons.backObject.addEventListener("click", function(evt) { app.resources.objects.display(object.id, false, false, false); }, false);

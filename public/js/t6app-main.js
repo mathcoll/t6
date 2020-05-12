@@ -664,6 +664,7 @@ var touchStartPoint, touchMovePoint;
 			backObject: document.querySelector('#object section.fixedActionButtons button.back-button'),
 			editObject2: document.querySelector('#object section.fixedActionButtons button.edit-button'),
 			listObject: document.querySelector('#object section.fixedActionButtons button.list-button'),
+			viewuiObject: document.querySelector('#object section.fixedActionButtons button.viewui-button'),
 			addObject: document.querySelector('#object_add section.fixedActionButtons button.add-button'),
 			addObjectBack: document.querySelector('#object_add section.fixedActionButtons button.back-button'),
 			
