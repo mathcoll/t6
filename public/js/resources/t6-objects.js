@@ -21,8 +21,21 @@ app.resources.objects = {
 				fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 				source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
 				source_version: myForm.querySelector("select[id='source_version']")!==null?myForm.querySelector("select[id='source_version']").value:"",
+				communication: { "allowed_commands" : [], "interface" : myForm.querySelector("select[id='interface']")!==null?myForm.querySelector("select[id='interface']").value:"", },
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
+			if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_onoff']").classList.contains("is-checked")===true) {
+				body.communication.allowed_commands.push("onoff");
+			}
+			if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_lowerupper']").classList.contains("is-checked")===true) {
+				body.communication.allowed_commands.push("lowerupper");
+			}
+			if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_openclose']").classList.contains("is-checked")===true) {
+				body.communication.allowed_commands.push("openclose");
+			}
+			if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_setvalgetval']").classList.contains("is-checked")===true) {
+				body.communication.allowed_commands.push("setvalgetval");
+			}
 	
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -65,8 +78,21 @@ app.resources.objects = {
 			fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 			source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
 			source_version: myForm.querySelector("select[id='source_version']")!==null?myForm.querySelector("select[id='source_version']").value:"",
+			communication: { "allowed_commands" : [], "interface" : myForm.querySelector("select[id='interface']")!==null?myForm.querySelector("select[id='interface']").value:"", },
 		};
 		if (body.source_id === "-") { body.source_id = ""; }
+		if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_onoff']").classList.contains("is-checked")===true) {
+			body.communication.allowed_commands.push("onoff");
+		}
+		if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_lowerupper']").classList.contains("is-checked")===true) {
+			body.communication.allowed_commands.push("lowerupper");
+		}
+		if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_openclose']").classList.contains("is-checked")===true) {
+			body.communication.allowed_commands.push("openclose");
+		}
+		if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_setvalgetval']").classList.contains("is-checked")===true) {
+			body.communication.allowed_commands.push("setvalgetval");
+		}
 
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -198,7 +224,6 @@ app.resources.objects = {
 				if ( isEdit===true ) {
 					node += app.getField(null, "meta.revision", object.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
 					node += app.getField(app.icons.name, "Name", object.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
-					node += app.getField(app.icons.description, "Description", description, {type: "textarea", id: "Description", isEdit: isEdit});
 				}
 				if ( object.attributes.type ) {
 					var d = app.types.find( function(type) { return type.name == object.attributes.type; });
@@ -208,6 +233,9 @@ app.resources.objects = {
 					} else {
 						node += app.getField(app.icons.type, "Type", d.value, {type: "select", id: "Type", isEdit: isEdit, options: app.types });
 					}
+				}
+				if ( isEdit===true ) {
+					node += app.getField(app.icons.description, "Description", description, {type: "textarea", id: "Description", isEdit: isEdit});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -231,6 +259,19 @@ app.resources.objects = {
 				}
 				node += "	</div>";
 				node += "</section>";
+
+				if ( isEdit || (typeof object.attributes.communication!=="undefined" && object.attributes.communication.length > -1 ) ) {
+					node += app.getSubtitle("Communication");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField("add_to_home_screen", "Interface", "", {type: "select", id: "interface", options: [{name: "restAPI", value:"restAPI"}, {name: "messageQueue", value:"messageQueue"}], isEdit: isEdit});
+					node += app.getField("developer_mode", "Allow command on/off", "", {type: "checkbox", id: "communication.command_onoff", isEdit: isEdit});
+					node += app.getField("developer_mode", "Allow command lower/upper", "", {type: "checkbox", id: "communication.command_lowerupper", isEdit: isEdit});
+					node += app.getField("developer_mode", "Allow command open/close", "", {type: "checkbox", id: "communication.command_openclose", isEdit: isEdit});
+					node += app.getField("developer_mode", "Allow command setVal/getVal", "", {type: "checkbox", id: "communication.command_setvalgetval", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
+				}
 
 				if ( isEdit || (typeof object.attributes.fqbn !== "undefined" ) ) {
 					node += app.getSubtitle("Over The Air (OTA)");
@@ -277,7 +318,7 @@ app.resources.objects = {
 				node += "	</div>";
 				node += "</section>";
 
-				if ( isEdit || (object.attributes.parameters !== undefined && object.attributes.parameters.length > -1 ) ) {
+				if ( isEdit || (typeof object.attributes.parameters!=="undefined" && object.attributes.parameters.length > -1 ) ) {
 					node += app.getSubtitle("Custom Parameters");
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -357,7 +398,7 @@ app.resources.objects = {
 
 				(app.containers.object).querySelector(".page-content").innerHTML = node;
 				componentHandler.upgradeDom();
-				
+
 				app.refreshButtonsSelectors();
 				var source_id_selector = document.getElementById("source_id");
 				if ( source_id_selector ) {
@@ -423,7 +464,7 @@ app.resources.objects = {
 					// }, false);
 					app.buttons.editObject2.addEventListener("click", function(evt) { app.resources.objects.display(object.id, false, true, false); evt.preventDefault(); }, false);
 				}
-				
+
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					/* Localization Map */
 					var map = L.map("osm").setView([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], 13);
@@ -630,6 +671,17 @@ app.resources.objects = {
 		node += app.getField("", "", "When flow require signed payload, you should provide your secret to verify signature.", {type: "text", isEdit: false});
 		node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key_crypt, error:""});
 		node += app.getField("visibility", "Object is only visible to you", object.attributes.is_public!==undefined?object.attributes.is_public:false, {type: "switch", id: "Visibility", isEdit: true});
+		node += "	</div>";
+		node += "</section>";
+
+		node += app.getSubtitle("Communication");
+		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField("add_to_home_screen", "Interface", "", {type: "select", id: "interface", options: [{name: "restAPI", value:"restAPI"}, {name: "messageQueue", value:"messageQueue"}], isEdit: true});
+		node += app.getField("developer_mode", "Allow command on/off", "", {type: "checkbox", id: "communication.command_onoff", isEdit: true});
+		node += app.getField("developer_mode", "Allow command lower/upper", "", {type: "checkbox", id: "communication.command_lowerupper", isEdit: true});
+		node += app.getField("developer_mode", "Allow command open/close", "", {type: "checkbox", id: "communication.command_openclose", isEdit: true});
+		node += app.getField("developer_mode", "Allow command setVal/getVal", "", {type: "checkbox", id: "communication.command_setvalgetval", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		

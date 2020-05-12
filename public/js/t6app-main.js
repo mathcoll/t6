@@ -2694,12 +2694,15 @@ var touchStartPoint, touchMovePoint;
 					field += "</div>";
 				}
 			} else if ( options.type === 'checkbox' ) {
+				var isChecked = value===true||value==="true"?" checked":"";
+				var className = value===true||value==="true"?"is-checked":"";
 				if ( options.isEdit === true ) {
-					field += "<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label mdl-list__item-sub-title'>";
-					if (icon) field += "	<i class='material-icons mdl-textfield__icon'> /!\ checkbox "+icon+"</i>";
-					if (label) field += "	<label class='mdl-list__item-sub-title'> /!\ checkbox "+label+"</label>";
+					field += "<label class='mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mdl-textfield--floating-label "+className+"' for='checkbox-"+id+"' data-id='checkbox-"+id+"'>";
+					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='"+id+"'>"+icon+"</i>";
+					field += "	<input type='checkbox' id='checkbox-"+id+"' class='mdl-checkbox__input' name='"+label+"' value='"+value+"' placeholder='"+label+"' "+isChecked+">";
+					if (label) field += "	<div class='mdl-checkbox__label'>"+label+"</div>";
+					field += "</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>"+options.error+"</span>";
-					field += "</div>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";

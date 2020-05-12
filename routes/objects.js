@@ -85,8 +85,8 @@ router.get("/(:object_id([0-9a-z\-]+))/show", function (req, res) {
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} object_id Object Id
- * @apiParam {integer} [typenumber] 1 to 10
- * @apiParam {String{1}} [errorcorrectionlevel] "L","M","Q","H"
+ * @apiParam {integer} [typenumber] Typenumber 1 to 10
+ * @apiParam {String{1}="L","M","Q","H"} [errorcorrectionlevel] Error correction level
  * 
  * @apiUse 200
  * @apiUse 401
@@ -130,7 +130,8 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} [object_id] Object Id
+ * @apiParam {uuid-v4} object_id Object Id
+ * @apiParam {String} [name] Optional Object name
  * 
  * @apiUse 200
  * @apiUse 401
@@ -254,13 +255,13 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtset
 });
 
 /**
- * @api {get} /objects/:object_id Get Object(s)
+ * @api {get} /objects/ Get Object(s)
  * @apiName Get Object(s)
  * @apiGroup 1. Object & User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} [object_id] Object Id
+ * @apiParam {uuid-v4} object_id Object Id
  * @apiParam {String} [name] Object Name you want to search for; this is using an case-insensitive regexp
  * 
  * @apiUse 200
