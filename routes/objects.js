@@ -66,14 +66,14 @@ router.get("/(:object_id([0-9a-z\-]+))/show", function (req, res) {
 			]
 		};
 	var object = objects.findOne(query);
-	var ui = uis.chain().find({ "id" : object.ui_id }).data();
-	if ( ui.length > -1 ) {
+	var ui = (uis.chain().find({ "id" : object.ui_id }).data())[0];
+	if (ui && typeof ui.ui!=="undefined") {
 		ui.id = object.ui_id;
 		ui.object_id = object.id;
 		res.set("Content-Type", "text/html; charset=utf-8");
-		res.status(200).render("object-ui", {object: object, ui: JSON.stringify(ui[0].ui)});
+		res.status(200).render("object-ui", {object: object, ui: JSON.stringify(ui.ui)});
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 1272, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).render("404", { "id": 1271, "code": 404, "error": "Not Found", err: {"stack": "", "status": "404"}});
 	}
 });
 
