@@ -86,13 +86,21 @@ router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret})
  */
 router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	uis	= dbUis.getCollection("uis");
-	let newUi = {"ui": req.body};
-	newUi.id = uuid.v4();
-	newUi.user_id = req.user.id;
-	t6events.add("t6Api", "ui add", newUi.id);
-	uis.insert(newUi);
-	res.header("Location", "/v"+version+"/uis/"+newUi.id);
-	res.status(201).send({ "code": 201, message: "Created", ui: new UISerializer(newUi).serialize() });
+
+	/* Check for quota limitation */
+	var queryQ = { "user_id" : req.user.id };
+	var i = (uis.find(queryQ)).length;
+	if( i >= (quota[req.user.role]).uis ) {
+		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
+	} else {
+		let newUi = {"ui": req.body};
+		newUi.id = uuid.v4();
+		newUi.user_id = req.user.id;
+		t6events.add("t6Api", "ui add", newUi.id);
+		uis.insert(newUi);
+		res.header("Location", "/v"+version+"/uis/"+newUi.id);
+		res.status(201).send({ "code": 201, message: "Created", ui: new UISerializer(newUi).serialize() });
+	}
 });
 
 /**
