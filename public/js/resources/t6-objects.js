@@ -266,7 +266,7 @@ app.resources.objects = {
 				node += "</section>";
 
 				object.attributes.communication = typeof object.attributes.communication!=="undefined"?object.attributes.communication:{};
-				object.attributes.communication.allowed_commands = typeof object.attributes.communication.allowed_commands!=="undefined"?object.attributes.communication.allowed_commands:{};
+				object.attributes.communication.allowed_commands = typeof object.attributes.communication.allowed_commands!=="undefined"?object.attributes.communication.allowed_commands:new Array();
 				object.attributes.communication.allowed_commands.onoff = object.attributes.communication.allowed_commands.indexOf("onoff")!=-1?"true":"false";
 				object.attributes.communication.allowed_commands.lowerupper = object.attributes.communication.allowed_commands.indexOf("lowerupper")!=-1?"true":"false";
 				object.attributes.communication.allowed_commands.openclose = object.attributes.communication.allowed_commands.indexOf("openclose")!=-1?"true":"false";
@@ -368,7 +368,7 @@ app.resources.objects = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>View Object</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if (object.attributes.ui_id!=="") {
+					if (object.attributes.ui_id!=="" && object.attributes.ui_id!=="undefined") {
 						node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 						node += "		<button id='"+btnId[1]+"' class='viewui-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 						node += "			<i class='material-icons'>chevron_left</i>";
@@ -398,7 +398,7 @@ app.resources.objects = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[0]+"'>List all Objects</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if (typeof object.attributes.ui_id!=="undefined") {
+					if (object.attributes.ui_id!=="" && object.attributes.ui_id!=="undefined") {
 						node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 						node += "		<button id='"+btnId[1]+"' class='viewui-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 						node += "			<i class='material-icons'>web</i>";
