@@ -149,7 +149,7 @@ var app = {
 	sources: [],
 	snippets: [],
 	defaultResources: {
-		object: {id:"", attributes: {name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: "", latitude: "", position: "", source_id: "-"}},
+		object: {id:"", attributes: {name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: "", latitude: "", position: "", source_id: "-", ui_id: ""}},
 		flow: {id:"", attributes: {name: "", mqtt_topic: "", require_signed: false, require_encrypted: false}},
 		dashboard: {id:"", attributes: {name: "", description: ""}},
 		snippet: {id:"", attributes: {name: "", icon: "", color: ""}},
@@ -2707,7 +2707,7 @@ var touchStartPoint, touchMovePoint;
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>"+icon+"</i>";
-					if (label) field += "	<label class='mdl-checkbox__label'>"+label+"</label>";
+					if (label) field += "	<label class='mdl-switch__label'>"+label+"</label>";
 					if (value) field += "	<span class='mdl-list__item-sub-title'>"+value+"</span>";
 					field += "</div>";
 				}

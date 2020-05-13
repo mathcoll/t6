@@ -22,6 +22,7 @@ app.resources.objects = {
 				source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
 				source_version: myForm.querySelector("select[id='source_version']")!==null?myForm.querySelector("select[id='source_version']").value:"",
 				communication: { "allowed_commands" : [], "interface" : myForm.querySelector("select[id='interface']")!==null?myForm.querySelector("select[id='interface']").value:"", },
+				ui_id: myForm.querySelector("input[id='ui_id']")!==null?myForm.querySelector("input[id='ui_id']").value:"",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 			if (myForm.querySelector("label.mdl-checkbox[data-id='checkbox-communication.command_onoff']").classList.contains("is-checked")===true) {
@@ -78,6 +79,7 @@ app.resources.objects = {
 			fqbn: myForm.querySelector("input[id='fqbn']")!==null?myForm.querySelector("input[id='fqbn']").value:"",
 			source_id: myForm.querySelector("select[id='source_id']")!==null?myForm.querySelector("select[id='source_id']").value:"",
 			source_version: myForm.querySelector("select[id='source_version']")!==null?myForm.querySelector("select[id='source_version']").value:"",
+			ui_id: myForm.querySelector("input[id='ui_id']")!==null?myForm.querySelector("input[id='ui_id']").value:"",
 			communication: { "allowed_commands" : [], "interface" : myForm.querySelector("select[id='interface']")!==null?myForm.querySelector("select[id='interface']").value:"", },
 		};
 		if (body.source_id === "-") { body.source_id = ""; }
@@ -263,20 +265,26 @@ app.resources.objects = {
 				node += "	</div>";
 				node += "</section>";
 
-				if ( isEdit || (typeof object.attributes.communication!=="undefined" && object.attributes.communication.length > -1 ) ) {
-					node += app.getSubtitle("Communication");
-					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
-					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-					node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
-					node += app.getField("add_to_home_screen", "Interface", "", {type: "select", id: "interface", options: [{name: "restAPI", value:"restAPI"}, {name: "messageQueue", value:"messageQueue"}], isEdit: isEdit});
-					node += app.getField("developer_mode", "Allow command on/off", "", {type: "checkbox", id: "communication.command_onoff", isEdit: isEdit});
-					node += app.getField("developer_mode", "Allow command lower/upper", "", {type: "checkbox", id: "communication.command_lowerupper", isEdit: isEdit});
-					node += app.getField("developer_mode", "Allow command open/close", "", {type: "checkbox", id: "communication.command_openclose", isEdit: isEdit});
-					node += app.getField("developer_mode", "Allow command setVal/getVal", "", {type: "checkbox", id: "communication.command_setvalgetval", isEdit: isEdit});
-					node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
-					node += "	</div>";
-					node += "</section>";
-				}
+				object.attributes.communication = typeof object.attributes.communication!=="undefined"?object.attributes.communication:{};
+				object.attributes.communication.allowed_commands = typeof object.attributes.communication.allowed_commands!=="undefined"?object.attributes.communication.allowed_commands:{};
+				object.attributes.communication.allowed_commands.onoff = object.attributes.communication.allowed_commands.indexOf("onoff")!=-1?"true":"false";
+				object.attributes.communication.allowed_commands.lowerupper = object.attributes.communication.allowed_commands.indexOf("lowerupper")!=-1?"true":"false";
+				object.attributes.communication.allowed_commands.openclose = object.attributes.communication.allowed_commands.indexOf("openclose")!=-1?"true":"false";
+				object.attributes.communication.allowed_commands.setvalgetval = object.attributes.communication.allowed_commands.indexOf("setvalgetval")!=-1?"true":"false";
+				object.attributes.ui_id = typeof object.attributes.ui_id!=="undefined"?object.attributes.ui_id:"";
+				node += app.getSubtitle("Communication");
+				node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+				node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
+				node += app.getField("add_to_home_screen", "Interface", object.attributes.communication.interface, {type: "select", id: "interface", options: [{name: "restAPI", value:"restAPI"}, {name: "messageQueue", value:"messageQueue"}], isEdit: isEdit});
+				node += app.getField("developer_mode", "Allow command on/off", object.attributes.communication.allowed_commands.onoff, {type: "checkbox", id: "communication.command_onoff", isEdit: isEdit});
+				node += app.getField("developer_mode", "Allow command lower/upper", object.attributes.communication.allowed_commands.lowerupper, {type: "checkbox", id: "communication.command_lowerupper", isEdit: isEdit});
+				node += app.getField("developer_mode", "Allow command open/close", object.attributes.communication.allowed_commands.openclose, {type: "checkbox", id: "communication.command_openclose", isEdit: isEdit});
+				node += app.getField("developer_mode", "Allow command setVal/getVal", object.attributes.communication.allowed_commands.setvalgetval, {type: "checkbox", id: "communication.command_setvalgetval", isEdit: isEdit});
+				node += app.getField("web", "UI resource ID", object.attributes.ui_id, {type: "text", id:"ui_id", isEdit: isEdit, pattern: app.patterns.uuidv4, error:"Resource should be a valid uuid-v4"});
+				node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
+				node += "	</div>";
+				node += "</section>";
 
 				if ( isEdit || (typeof object.attributes.fqbn !== "undefined" ) ) {
 					node += app.getSubtitle("Over The Air (OTA)");
@@ -712,7 +720,8 @@ app.resources.objects = {
 		node += app.getField("developer_mode", "Allow command lower/upper", "", {type: "checkbox", id: "communication.command_lowerupper", isEdit: true});
 		node += app.getField("developer_mode", "Allow command open/close", "", {type: "checkbox", id: "communication.command_openclose", isEdit: true});
 		node += app.getField("developer_mode", "Allow command setVal/getVal", "", {type: "checkbox", id: "communication.command_setvalgetval", isEdit: true});
-		node += "		<div class=\"card-header heading-left\">&nbsp;</div>";
+		node += "<div class=\"card-header heading-left\">&nbsp;</div>";
+		node += app.getField("web", "UI resource ID", object.attributes.ui_id, {type: "text", id:"ui_id", isEdit: true, pattern: app.patterns.uuidv4, error:"Resource should be a valid uuid-v4"});
 		node += "	</div>";
 		node += "</section>";
 		
