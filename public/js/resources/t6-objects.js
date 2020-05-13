@@ -267,11 +267,13 @@ app.resources.objects = {
 					node += app.getSubtitle("Communication");
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 					node += app.getField("add_to_home_screen", "Interface", "", {type: "select", id: "interface", options: [{name: "restAPI", value:"restAPI"}, {name: "messageQueue", value:"messageQueue"}], isEdit: isEdit});
 					node += app.getField("developer_mode", "Allow command on/off", "", {type: "checkbox", id: "communication.command_onoff", isEdit: isEdit});
 					node += app.getField("developer_mode", "Allow command lower/upper", "", {type: "checkbox", id: "communication.command_lowerupper", isEdit: isEdit});
 					node += app.getField("developer_mode", "Allow command open/close", "", {type: "checkbox", id: "communication.command_openclose", isEdit: isEdit});
 					node += app.getField("developer_mode", "Allow command setVal/getVal", "", {type: "checkbox", id: "communication.command_setvalgetval", isEdit: isEdit});
+					node += "	<div class=\"card-header heading-left\">&nbsp;</div>";
 					node += "	</div>";
 					node += "</section>";
 				}
@@ -704,11 +706,13 @@ app.resources.objects = {
 		node += app.getSubtitle("Communication");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += "		<div class=\"card-header heading-left\">&nbsp;</div>";
 		node += app.getField("add_to_home_screen", "Interface", "", {type: "select", id: "interface", options: [{name: "restAPI", value:"restAPI"}, {name: "messageQueue", value:"messageQueue"}], isEdit: true});
 		node += app.getField("developer_mode", "Allow command on/off", "", {type: "checkbox", id: "communication.command_onoff", isEdit: true});
 		node += app.getField("developer_mode", "Allow command lower/upper", "", {type: "checkbox", id: "communication.command_lowerupper", isEdit: true});
 		node += app.getField("developer_mode", "Allow command open/close", "", {type: "checkbox", id: "communication.command_openclose", isEdit: true});
 		node += app.getField("developer_mode", "Allow command setVal/getVal", "", {type: "checkbox", id: "communication.command_setvalgetval", isEdit: true});
+		node += "		<div class=\"card-header heading-left\">&nbsp;</div>";
 		node += "	</div>";
 		node += "</section>";
 		
