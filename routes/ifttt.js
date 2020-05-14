@@ -251,7 +251,7 @@ router.get("/v1/status", function (req, res) {
 router.get("/v1/user/destroy-session", function (req, res) {
 	req.session.destroy(function(err) {
 		res.redirect(req.header("Referer") || "/");
-	})
+	});
 });
 
 router.get("/v1/user/info", function (req, res) {

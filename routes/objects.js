@@ -576,11 +576,11 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
 	objects	= db.getCollection("objects");
 	//t6console.log(objects);
 	var query = {
-			"$and": [
-					{ "id": object_id },
-					{ "user_id": req.user.id },
-				]
-			}
+		"$and": [
+				{ "id": object_id },
+				{ "user_id": req.user.id },
+			]
+		};
 	var object = objects.findOne( query );
 	if ( object ) {
 		if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - object.meta.revision) !== 0 ) {

@@ -15,7 +15,7 @@ var snippet = {
 			this.options.width.value = "12";
 		}
 		document.getElementById(params.id).parentNode.classList.add("mdl-cell--" + this.options.width.value + "-col");
-		setInterval(function() {app.refreshFromNow("snippet-clock-"+params.id, moment(), null)}, 1000);
+		setInterval(function() {app.refreshFromNow("snippet-clock-"+params.id, moment(), null);}, 1000);
 	},
 	getHtml: function(params) {
 		if (!params) {

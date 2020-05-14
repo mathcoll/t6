@@ -122,11 +122,11 @@ router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), fun
 	var ui_id = req.params.ui_id;
 	uis	= dbUis.getCollection("uis");
 	var query = {
-			"$and": [
-					{ "id": ui_id },
-					{ "user_id": req.user.id },
-				]
-			}
+		"$and": [
+				{ "id": ui_id },
+				{ "user_id": req.user.id },
+			]
+		};
 	var ui = uis.findOne( query );
 	if ( ui ) {
 		if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - object.meta.revision) !== 0 ) {

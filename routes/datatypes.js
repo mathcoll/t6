@@ -78,7 +78,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}
 		datatypes	= db.getCollection("datatypes");
 		var result;
 		datatypes.findAndUpdate(
-			function(i){return i.id==datatype_id},
+			function(i){return i.id==datatype_id;},
 			function(item){
 				item.name	= typeof req.body.name!=="undefined"?req.body.name:item.name;
 				result 		= item;

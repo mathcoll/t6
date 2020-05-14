@@ -383,7 +383,7 @@ app.resources.flows = {
 					// buttons.deleteFlow2.addEventListener("click",
 					// function(evt) { console.log("SHOW MODAL AND CONFIRM!");
 					// }, false);
-					app.buttons.editFlow2.addEventListener("click", function(evt) { app.resources.flows.display(flow.id, false, true, false) }, false);
+					app.buttons.editFlow2.addEventListener("click", function(evt) { app.resources.flows.display(flow.id, false, true, false); }, false);
 				}
 				
 				componentHandler.upgradeDom();

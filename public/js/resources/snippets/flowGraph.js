@@ -112,7 +112,7 @@ var snippet = {
 				let id = response.data[0].attributes.id;
 				let time = response.data[0].attributes.time;
 				document.getElementById("unit-"+params.id).innerHTML = unit;
-				setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true)}, 2000);
+				setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true);}, 2000);
 			} else {
 				c.getContext("2d").textAlign = "center";
 				c.getContext("2d").fillText("Data error occured; please check Snippet settings :-(", c.width/2, c.height/2);
@@ -126,9 +126,9 @@ var snippet = {
 	},
 	getHtml: function(params) {
 		if (!params) {
-			params = {}
+			params = {};
 		}
-		params.unit
+		params.unit;
 		var html = `
 		<div id="${params.id}" class="flowgraph tile card-flowgraph material-animate margin-top-4 material-animated mdl-shadow--2dp">
 			<div class="contextual">

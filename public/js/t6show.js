@@ -107,4 +107,4 @@ class MaterialLightParser {
 }
 let materializeLight = (inputJson) => {
 	return new MaterialLightParser().parse(inputJson);
-}
+};

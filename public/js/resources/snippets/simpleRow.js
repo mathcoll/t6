@@ -18,7 +18,7 @@ var snippet = {
 	},
 	getHtml: function(params) {
 		if (!params) {
-			params = {}
+			params = {};
 		}
 		params.time = moment().format(app.date_format);
 		var html = `

@@ -5,7 +5,7 @@ var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
 var Sentiment = require("sentiment");
 var geodist = require("geodist");
-var statistics = require('simple-statistics')
+var statistics = require('simple-statistics');
 var rules;
 var users;
 
@@ -278,7 +278,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					subject:	event.params.subject?stringformat(event.params.subject, payload):"",
 					text:		event.params.text?stringformat(event.params.text, payload):"Html email client is required",
 					html:		event.params.html?stringformat(event.params.html, payload):null
-				}
+				};
 				t6mailer.sendMail(envelope);
 			} else if ( event.type === "sms" ) {
 				// TODO
@@ -307,7 +307,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						
 						t6console.log("success", options.url, statusCode, body);
 					}
-				)
+				);
 			} else if ( event.type === "Ifttt" || event.type === "ifttt" ) {
 				let body = {
 					"data": [
@@ -349,7 +349,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				);
 			} else if ( event.type === "serial" ) {
 				// Arduino is using CmdMessenger
-				serialport = new serialport(event.params.serialPort?event.params.serialPort:"/dev/ttyUSB0", { baudRate:event.params.baudRate?event.params.baudRate:9600 })
+				serialport = new serialport(event.params.serialPort?event.params.serialPort:"/dev/ttyUSB0", { baudRate:event.params.baudRate?event.params.baudRate:9600 });
 				// Some examples:
 				// "kSetValue,{value};"
 				// "kSetDtEpoch,{dtepoch};"

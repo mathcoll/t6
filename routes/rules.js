@@ -145,11 +145,11 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
 	if ( rule_id ) {
 		rules	= dbRules.getCollection("rules");
 		var query = {
-				"$and": [
-						{ "id": rule_id },
-						{ "user_id": req.user.id },
-					]
-				}
+			"$and": [
+					{ "id": rule_id },
+					{ "user_id": req.user.id },
+				]
+			};
 		var rule = rules.findOne( query );
 		if ( rule ) {
 			t6console.debug(req.body.meta.revision + rule.meta.revision);
