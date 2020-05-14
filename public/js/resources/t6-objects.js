@@ -875,8 +875,7 @@ app.resources.objects = {
 		var type = "objects";
 		var name = object.attributes.name!==undefined?object.attributes.name:"";
 		var description = object.attributes.description!==undefined?object.attributes.description.substring(0, app.cardMaxChars):"";
-		var attributeType = object.attributes.type!==undefined?object.attributes.type:"";
-		
+
 		var element = "";
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+object.id+"\">";
 		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
@@ -910,43 +909,44 @@ app.resources.objects = {
 			element += "	<span class='Crypt' id='"+object.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
 			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Crypt'>Encryption Secret Key</div>";
 		}
-		if ( object.attributes.ui_id != "" ) {
+		if ( object.attributes.ui_id!=="" && typeof object.attributes.ui_id!=="undefined" ) {
 			element += "	<span class='Crypt' id='"+object.id+"-UI'><i class='material-icons md-32'>web</i></span>";
 			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-UI'>User Interface</div>";
 		}
-		element += "</div>";
-		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
-		element += "			<span class=\"pull-left mdl-card__date\">";
-		element += "				<button data-id=\""+object.id+"\" class=\"swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		element += "					<i class=\"material-icons\">update</i>";
-		element += "				</button>";
-		element += "				<span data-date=\"created\" class=\"visible\">Created on "+moment(object.attributes.meta.created).format(app.date_format) + "</span>";
+		element += `
+				</div>
+				<div class="mdl-card__actions mdl-card--border">
+					<span class="pull-left mdl-card__date">
+						<button data-id=""+object.id+"" class="swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect">
+							<i class="material-icons">update</i>
+						</button>
+						<span data-date="created" class="visible">Created on ${moment(object.attributes.meta.created).format(app.date_format)}"</span>`;
 		if ( object.attributes.meta.updated ) {
-			element += "				<span data-date=\"updated\" class=\"hidden\">Updated on "+moment(object.attributes.meta.updated).format(app.date_format) + "</span>";
+			element += `<span data-date="updated" class="hidden">Updated on ${moment(object.attributes.meta.updated).format(app.date_format)}</span>`;
 		} else {
-			element += "				<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
+			element += `<span data-date="updated" class="hidden">Never been updated yet.</span>`;
 		}
-		element += "			</span>";
-		element += "			<span class=\"pull-right mdl-card__menuaction\">";
-		element += "				<button id=\"menu_"+object.id+"\" class=\"mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect\">";
-		element += "					<i class=\"material-icons\">"+app.icons.menu+"</i>";
-		element += "				</button>";
-		element += "			</span>";
-		element += "			<ul class=\"mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect\" for=\"menu_"+object.id+"\">";
-		element += "				<li class=\"mdl-menu__item delete-button\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons delete-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.delete+"</i>Delete</a>";
-		element += "				</li>";
-		element += "				<li class=\"mdl-menu__item\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons edit-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\" data-name=\""+name+"\">"+app.icons.edit+"</i>Edit</a>";
-		element += "				</li>";
-		element += "				<li class=\"mdl-menu__item\">";
-		element += "					<a class='mdl-navigation__link'><i class=\"material-icons copy-button mdl-js-button mdl-js-ripple-effect\" data-id=\""+object.id+"\">"+app.icons.copy+"</i><textarea class=\"copytextarea\">"+object.id+"</textarea>Copy ID to clipboard</a>";
-		element += "				</li>";
-		element += "			</ul>";
-		element += "		</div>";
-		element += "	</div>";
-		element += "</div>";
-
+		element += `
+					</span>
+					<span class="pull-right mdl-card__menuaction">
+						<button id="menu_${object.id}" class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect">
+							<i class="material-icons">${app.icons.menu}</i>
+						</button>
+					</span>
+					<ul class="mdl-menu mdl-menu--top-right mdl-js-menu mdl-js-ripple-effect" for="menu_${object.id}">
+						<li class="mdl-menu__item delete-button">
+							<a class='mdl-navigation__link'><i class="material-icons delete-button mdl-js-button mdl-js-ripple-effect" data-id="${object.id}" data-name="${name}">${app.icons.delete}</i>Delete</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class='mdl-navigation__link'><i class="material-icons edit-button mdl-js-button mdl-js-ripple-effect" data-id="${object.id}" data-name="${name}">${app.icons.edit}</i>Edit</a>
+						</li>
+						<li class="mdl-menu__item">
+							<a class='mdl-navigation__link'><i class="material-icons copy-button mdl-js-button mdl-js-ripple-effect" data-id="${object.id}">${app.icons.copy}</i><textarea class="copytextarea">${object.id}</textarea>Copy ID to clipboard</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>`;
 		return element;
 	}
 };
