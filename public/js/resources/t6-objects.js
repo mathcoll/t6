@@ -910,6 +910,10 @@ app.resources.objects = {
 			element += "	<span class='Crypt' id='"+object.id+"-Crypt'><i class='material-icons md-32'>vpn_key</i></span>";
 			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-Crypt'>Encryption Secret Key</div>";
 		}
+		if ( object.attributes.ui_id != "" ) {
+			element += "	<span class='Crypt' id='"+object.id+"-UI'><i class='material-icons md-32'>web</i></span>";
+			element += "	<div class='mdl-tooltip mdl-tooltip--top' for='"+object.id+"-UI'>User Interface</div>";
+		}
 		element += "</div>";
 		element += "		<div class=\"mdl-card__actions mdl-card--border\">";
 		element += "			<span class=\"pull-left mdl-card__date\">";
