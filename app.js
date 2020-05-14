@@ -192,7 +192,7 @@ var initDbUis = function() {
 	} else {
 		t6console.info(dbUis.getCollection("uis").count(), "resources in UIs collection.");
 	}
-}
+};
 
 t6console.info("Initializing Databases...");
 db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbMain});
@@ -356,6 +356,6 @@ mqttClient.on("message", function (topic, message) {
 		}
 	}
 	t6console.info(sprintf("Connected Objects: %s", t6ConnectedObjects));
-})
+});
 
 module.exports = app;
