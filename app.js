@@ -194,6 +194,26 @@ var initDbUis = function() {
 	}
 };
 
+t6console.info("Setting correct permission on Databases...");
+let dbs = [
+	path.join(__dirname, "data", "db-"+os.hostname()+".json"),
+	path.join(__dirname, "data", "rules-"+os.hostname()+".json"),
+	path.join(__dirname, "data", "snippets-"+os.hostname()+".json"),
+	path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"),
+	path.join(__dirname, "data", "tokens-"+os.hostname()+".json"),
+	path.join(__dirname, "data", "sources-"+os.hostname()+".json"),
+	path.join(__dirname, "data", "otahistory-"+os.hostname()+".json"),
+	path.join(__dirname, "data", "uis-"+os.hostname()+".json"),
+];
+dbs.forEach(file => {
+	fs.access(file, fs.constants.W_OK, err => {
+		if (err) {
+			fs.chmodSync(file, 0644);
+		}
+		t6console.log(`${file} ${err ? "is not writable" : "is writable"}`);
+	});
+});
+
 t6console.info("Initializing Databases...");
 db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbMain});
 dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbRules});
