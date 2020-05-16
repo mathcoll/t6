@@ -256,11 +256,11 @@ app.resources.objects = {
 					node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", style:"text-transform: none !important;", id: "secret_key_crypt", isEdit: isEdit, pattern: app.patterns.secret_key_crypt, error:"This must be a 64 hexadecimal chars length A-F & 0-9"});
 				}
 				if ( object.attributes.is_public == "true" && isEdit===false ) {
-					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
+					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is private", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
 					node += app.getQrcodeImg(app.icons.date, "", object.id, {type: "text", isEdit: isEdit});
 					app.getQrcode(app.icons.date, "", object.id, {type: "text", isEdit: isEdit});
 				} else {
-					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is only visible to you", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
+					node += app.getField("visibility", object.attributes.is_public=="true"?"Object is having a public url":"Object is private", object.attributes.is_public, {type: "switch", id: "Visibility", isEdit: isEdit});
 				}
 				node += "	</div>";
 				node += "</section>";
@@ -312,7 +312,7 @@ app.resources.objects = {
 					if ( object.attributes.ipv6 || isEdit===true ) {
 						node += app.getField("my_location", "IPv6", object.attributes.ipv6, {type: "text", id: "IPv6", isEdit: isEdit, inputmode: "numeric", pattern: app.patterns.ipv6, error:"IPv6 should be valid."});
 					}
-					if ( object.attributes.otahist ) {
+					if ( object.attributes.otahist && !isEdit ) {
 						node += app.getField(app.icons.date, "OTA latest event", `${object.attributes.otahist.event}: ${object.attributes.otahist.status} (${object.attributes.otahist.date})`, {type: "text", id: "latest_event", isEdit: false});
 					}
 				}
@@ -371,7 +371,7 @@ app.resources.objects = {
 					if (object.attributes.ui_id!=="" && object.attributes.ui_id!=="undefined") {
 						node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 						node += "		<button id='"+btnId[1]+"' class='viewui-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
-						node += "			<i class='material-icons'>chevron_left</i>";
+						node += "			<i class='material-icons'>web</i>";
 						node += "			<label>View UI</label>";
 						node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>View Object UI</label>";
 						node += "		</button>";
@@ -475,7 +475,7 @@ app.resources.objects = {
 					if ( element ) {
 						element.addEventListener("change", function(e) {
 							var label = e.target.parentElement.querySelector("div.mdl-switch__label");
-							label.innerText = element.classList.contains("is-checked")!==false?"Object is having a public url":"Object is only visible to you";
+							label.innerText = element.classList.contains("is-checked")!==false?"Object is having a public url":"Object is private";
 						});
 					}
 				} else {
@@ -707,7 +707,7 @@ app.resources.objects = {
 		node += app.getField("verified_user", "Secret Key in symmetric signature", object.attributes.secret_key!==undefined?object.attributes.secret_key:"", {type: "text", id: "secret_key", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key, error:""});
 		node += app.getField("", "", "When flow require signed payload, you should provide your secret to verify signature.", {type: "text", isEdit: false});
 		node += app.getField("vpn_key", "Secret Key in symmetric cryptography", object.attributes.secret_key_crypt!==undefined?object.attributes.secret_key_crypt:"", {type: "text", id: "secret_key_crypt", style:"text-transform: none !important;", isEdit: true, pattern: app.patterns.secret_key_crypt, error:""});
-		node += app.getField("visibility", "Object is only visible to you", object.attributes.is_public!==undefined?object.attributes.is_public:false, {type: "switch", id: "Visibility", isEdit: true});
+		node += app.getField("visibility", "Object is private", object.attributes.is_public!==undefined?object.attributes.is_public:false, {type: "switch", id: "Visibility", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 
@@ -866,7 +866,7 @@ app.resources.objects = {
 		if ( element ) {
 			element.addEventListener("change", function(e) {
 				var label = e.target.parentElement.querySelector("div.mdl-switch__label");
-				label.innerText = element.classList.contains("is-checked")!==false?"Object is having a public url":"Object is only visible to you";
+				label.innerText = element.classList.contains("is-checked")!==false?"Object is having a public url":"Object is private";
 			});
 		}
 		app.setExpandAction();
