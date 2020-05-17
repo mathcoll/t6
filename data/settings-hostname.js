@@ -55,17 +55,25 @@ transporter = nodemailer.createTransport({
 db_type	= {
 	influxdb: true, // Does not make any sense to disable this feature... but...
 };
-influxSettings		= { host : "localhost", port : 8086, protocol : "http", username : "datawarehouse", password : "datawarehouse", database : "datawarehouse" }
+influxSettings		= {
+	host : "localhost",
+	port : 8086,
+	protocol : "http",
+	username : "datawarehouse",
+	password : "datawarehouse",
+	database : "t6",
+	retentionPolicies:{"requests": "quota7d"}
+};
 
 /* Quota settings */
 quota = {
-	"admin": {price: "99.99", currency:"€", objects: 999, flows: 999, rules: 999, tokens: 999, snippets: 999, dashboards: 999, calls: 9999999},
-	"user": {price: "2.99", currency:"€", objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 9, calls: 99},
-	"free": {price: "0.00", currency:"€", objects: 1, flows: 1, rules: 1, tokens: 1, snippets: 2, dashboards: 1, calls: 49}
+	"admin": {price: "99.99", currency:"€", objects: 999, flows: 999, rules: 999, tokens: 999, snippets: 999, dashboards: 999, uis: 999, calls: 9999999},
+	"user": {price: "2.99", currency:"€", objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 9, uis: 9, uis: 9, uis: 9, calls: 99},
+	"free": {price: "0.00", currency:"€", objects: 1, flows: 1, rules: 1, tokens: 1, snippets: 2, dashboards: 1, uis: 2, calls: 49}
 };
 
 /* Localization settings */
-localization = {latitude: 39.800327, longitude: 6.343530}; // The physicl location of the webserver, this helps to calculate daytime on decisionRules
+localization = {latitude: 39.800327, longitude: 6.343530}; // The physical location of the webserver, this helps to calculate daytime on decisionRules
 
 /* pushSubscription */
 //https://console.firebase.google.com/u/0/project/t6-app/settings/cloudmessaging/

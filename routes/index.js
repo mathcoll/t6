@@ -197,8 +197,9 @@ router.all("*", function (req, res, next) {
 			res.header("X-RateLimit-Limit", limit);
 		}
 		var i;
-		var query = sprintf("SELECT count(url) FROM requests WHERE (user_id='%s') AND (time>now() - 7d) LIMIT 1", typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-		//t6console.debug(query);
+		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
+		var query = `SELECT count(url) FROM "${influxSettings.retentionPolicies.requests}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 7d) LIMIT 1`;
+
 		dbInfluxDB.query(query).then(data => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 
@@ -222,7 +223,7 @@ router.all("*", function (req, res, next) {
 					measurement: "requests",
 					tags: tags,
 					fields: fields,
-				}], { precision: "s", })
+				}], { precision: "s", retentionPolicy: influxSettings.retentionPolicies.requests })
 				.then(err => {
 					if (err) {
 						t6console.error(
@@ -253,7 +254,7 @@ router.all("*", function (req, res, next) {
 			measurement: "requests",
 			tags: tags,
 			fields: fields,
-		}], { precision: "s", }).then(err => {
+		}], { precision: "s", retentionPolicy: influxSettings.retentionPolicies.requests }).then(err => {
 			if (err) {
 				t6console.error(
 					sprintf(
