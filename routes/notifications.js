@@ -216,6 +216,10 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret}), fun
  * @apiUse 404
  */
 router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
 	if ( req.user.role === "admin" ) {
 		var year = req.query.year;
 		var template = req.query.template;
@@ -224,7 +228,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 		var query = { "$and": [
 					{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
 				]};
-		var json = users.find( query );
+		var json = users.chain().find( query ).offset(offset).limit(size).data();
 		if ( json.length > 0 && year && template ) {
 			/* Send a newsletter to each subscribers */
 			json.forEach(function(user) {
@@ -245,25 +249,27 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret}), functio
 						text: "Html email client is required",
 						html: html
 					};
-					t6console.debug(mailOptions);
-					t6mailer.sendMail(mailOptions).then(function(info){
-						users.findAndUpdate(
-								function(i){return i.id==user.id;},
-								function(item){
-									item.newsletter = parseInt(moment().format("x"), 10);
-								}
-						);
-						db.save();
-					}).catch(function(err){
-						var err = new Error("Internal Error");
-						err.status = 500;
-						res.status(err.status || 500).render(err.status, {
-							title : "Internal Error"+app.get("env"),
-							user: req.session.user,
-							currentUrl: req.path,
-							err: err
+					if(!req.query.dryrun || req.query.dryrun === "false") {
+						//t6console.debug(mailOptions);
+						t6mailer.sendMail(mailOptions).then(function(info){
+							users.findAndUpdate(
+									function(i){return i.id==user.id;},
+									function(item){
+										item.newsletter = parseInt(moment().format("x"), 10);
+									}
+							);
+							db.save();
+						}).catch(function(err){
+							var err = new Error("Internal Error");
+							err.status = 500;
+							res.status(err.status || 500).render(err.status, {
+								title : "Internal Error"+app.get("env"),
+								user: req.session.user,
+								currentUrl: req.path,
+								err: err
+							});
 						});
-					});
+					}
 				});
 			});
 			res.status(202).send(new UserSerializer(json).serialize());
