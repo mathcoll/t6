@@ -5,10 +5,9 @@ this.actionElement_.addEventListener("click",this.actionHandler_),this.setAction
 \t\t\t<div class="mdl-card mdl-shadow--2dp">
 \t\t\t\t<div class="mdl-card__title">
 \t\t\t\t\t<h3 class="mdl-card__title-text">${e.title}</h3>
-\t\t\t\t</div>
-\t\t\t\t<div class="mdl-list__item--three-line small-padding mdl-card--expand">
-\t\t\t\t\t<span class="mdl-list__item-sub-title">${this.parse(e.body)}</span>
-\t\t\t\t</div>`;return t+=void 0!==e.actions?`<div class="mdl-card__actions mdl-card--border">${this.parse(e.actions)}</div>`:"",t+="</div></div>"}createList(e,t){let s=0===e?`<ul class="mdl-list">${this.parse(t)}`:"";return s+=`<li class="mdl-list__item mdl-cell--${t.width}-col"><span class="mdl-list__item-primary-content">`,t.icon&&(s+=`<i class="material-icons mdl-list__item-icon">${t.icon}</i>`),s+=t.item+"</span></li>",s+=0===e?"</ul>":""}createText(e){return`<div class="mdl-textfield mdl-js-textfield">${e.body}</div>`}createBadge(e){return`<span class="mdl-badge" data-badge="${e.data}">${e.body}</span>`}createRow(e){return`<div class="mdl-grid mdl-cell--12-col">${this.parse(e)}</div>`}createColumn(e){return`<div class="mdl-cell--${e.width}-col">`+(e.text?e.text:"")+this.parse(e)+"</div>"}createSlider(e){return`
+\t\t\t\t</div>`;return e.body&&(t+=`<div class="mdl-list__item--three-line small-padding mdl-card--expand">
+\t\t\t\t\t\t<span class="mdl-list__item-sub-title">${this.parse(e.body)}</span>
+\t\t\t\t\t</div>`),t+=void 0!==e.actions?`<div class="mdl-card__actions mdl-card--border">${this.parse(e.actions)}</div>`:"",t+="</div></div>"}createList(e,t){let s=0===e?`<ul class="mdl-list">${this.parse(t)}`:"";return s+=`<li class="mdl-list__item mdl-cell--${t.width}-col"><span class="mdl-list__item-primary-content">`,t.icon&&(s+=`<i class="material-icons mdl-list__item-icon">${t.icon}</i>`),s+=t.item+"</span></li>",s+=0===e?"</ul>":""}createText(e){return`<div class="mdl-textfield mdl-js-textfield">${e.body}</div>`}createBadge(e){return`<span class="mdl-badge" data-badge="${e.data}">${e.body}</span>`}createRow(e){return`<div class="mdl-grid mdl-cell--12-col">${this.parse(e)}</div>`}createColumn(e){return`<div class="mdl-cell--${e.width}-col">`+(e.text?e.text:"")+this.parse(e)+"</div>"}createSlider(e){return`
 \t\t<p style="width:100%">
 \t\t\t<input class="mdl-slider mdl-js-slider" type="${e.type}" id="${e.id}" min="${parseInt(e.min,10)}" max="${parseInt(e.max,10)}" value="${parseInt(e.value,10)}" step="${parseInt(e.step,10)}">
 \t\t</p>`}createSwitch(e){return`

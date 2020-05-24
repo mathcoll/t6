@@ -11,10 +11,12 @@ class MaterialLightParser {
 			<div class="mdl-card mdl-shadow--2dp">
 				<div class="mdl-card__title">
 					<h3 class="mdl-card__title-text">${c.title}</h3>
-				</div>
-				<div class="mdl-list__item--three-line small-padding mdl-card--expand">
-					<span class="mdl-list__item-sub-title">${this.parse(c.body)}</span>
 				</div>`;
+		if(c.body) {
+			out += `<div class="mdl-list__item--three-line small-padding mdl-card--expand">
+						<span class="mdl-list__item-sub-title">${this.parse(c.body)}</span>
+					</div>`;
+		} 
 		out += typeof c.actions!=="undefined"?`<div class="mdl-card__actions mdl-card--border">${this.parse(c.actions)}</div>`:"";
 		out += "</div></div>";
 		return out;
