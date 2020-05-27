@@ -1,6 +1,8 @@
+'use strict';
+
 class MaterialLightParser {
 	createButton(b) {
-		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="${b.value}">${b.label}</button>`;
+		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="${b.value}" data-action="${b.action}">${b.label}</button>`;
 	}
 	createImage(i) {
 		return `<img src="${i.src}" alt="${i.alt}" />`;
@@ -56,6 +58,12 @@ class MaterialLightParser {
 			<span class="mdl-switch__label">${s.label}</span>
 		</label>`;
 	}
+	createSnack() {
+		return `<div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+			<div class="mdl-snackbar__text"></div>
+			<button class="mdl-snackbar__action" type="button"></button>
+		</div>`;
+	}
 	parse(s) {
 		let S = "";
 		if (s.rows) {
@@ -106,7 +114,40 @@ class MaterialLightParser {
 		}
 		return S;
 	}
+	showSnackbar(snack) {
+		
+	}
 }
+let ml = new MaterialLightParser();
+let req = new XMLHttpRequest();
+
+req.onreadystatechange = function() {
+	if (this.readyState == 4 && this.status == 200) {
+		let json = JSON.parse(req.responseText);
+		if(json.status == "ok") {
+			var snack = {
+				message: json.snack,
+				timeout: 2000,
+				actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
+				actionText: "Dismiss"
+			}
+			document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(snack);
+		}
+	}
+};
+let actionate = () => {
+	let buttons = document.querySelectorAll("button");
+	for (var i in buttons) {
+		if ( (buttons[i]).childElementCount > -1 ) {
+			(buttons[i]).classList.remove('is-active');
+			(buttons[i]).addEventListener("click", function(evt) {
+				req.open("GET", "/"+(evt.currentTarget.dataset.action), true);
+				req.send();
+				evt.preventDefault();
+			}, {passive: false});
+		}
+	}
+};
 let materializeLight = (inputJson) => {
-	return new MaterialLightParser().parse(inputJson);
+	return ml.parse(inputJson) + ml.createSnack();
 };
