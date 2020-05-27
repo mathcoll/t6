@@ -29,7 +29,13 @@ class MaterialLightParser {
 		if (l.icon) {
 			out += `<i class="material-icons mdl-list__item-icon">${l.icon}</i>`;
 		}
-		out += l.item+"</span></li>";
+		if (typeof (l.item)==="object") {
+			out += this.parse(l.item);
+			out += "</span></li>";
+		} else {
+			out += l.item;
+			out += "</span></li>";
+		}
 		out += i===0?"</ul>":"";
 		return out;
 	}
@@ -115,23 +121,23 @@ class MaterialLightParser {
 		return S;
 	}
 	showSnackbar(snack) {
-		
+		document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(snack);
 	}
 }
 let ml = new MaterialLightParser();
 let req = new XMLHttpRequest();
 
 req.onreadystatechange = function() {
-	if (this.readyState == 4 && this.status == 200) {
+	if (this.readyState == 4 && (this.status == 200 || this.status == 201)) {
 		let json = JSON.parse(req.responseText);
-		if(json.status == "ok") {
+		if(json.status === "ok" || json.status === "UNDERSTOOD") {
 			var snack = {
 				message: json.snack,
 				timeout: 2000,
 				actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
 				actionText: "Dismiss"
 			}
-			document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(snack);
+			ml.showSnackbar(snack);
 		}
 	}
 };
@@ -139,10 +145,38 @@ let actionate = () => {
 	let buttons = document.querySelectorAll("button");
 	for (var i in buttons) {
 		if ( (buttons[i]).childElementCount > -1 ) {
-			(buttons[i]).classList.remove('is-active');
 			(buttons[i]).addEventListener("click", function(evt) {
-				req.open("GET", "/"+(evt.currentTarget.dataset.action), true);
+				let value = evt.currentTarget.dataset.action;
+				req.open("GET", "/"+value, true);
 				req.send();
+				evt.preventDefault();
+			}, {passive: false});
+		}
+	}
+	let switches = document.querySelectorAll("label.mdl-switch");
+	for (var i in switches) {
+		if ( (switches[i]).childElementCount > -1 ) {
+			(switches[i]).addEventListener("change", function(evt) {
+				let value = evt.currentTarget.classList.contains("is-checked")===true?"true":"false";
+				req.open("GET", "/"+value, true);
+				req.send();
+				evt.preventDefault();
+			}, {passive: false});
+		}
+	}
+	let sliders = document.querySelectorAll("input.mdl-slider");
+	for (var i in sliders) {
+		if ( (sliders[i]).childElementCount > -1 ) {
+			(sliders[i]).addEventListener("change", function(evt) {
+				let snack = {
+					message: "Value: "+evt.currentTarget.getAttribute("value"),
+					timeout: 1000,
+					actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
+					actionText: "Dismiss"
+				}
+				ml.showSnackbar(snack);
+				//req.open("GET", "/"+(evt.currentTarget.dataset.action), true);
+				//req.send();
 				evt.preventDefault();
 			}, {passive: false});
 		}
