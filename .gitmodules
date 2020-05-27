@@ -1,0 +1,3 @@
+[submodule "sensors/libraries/t6iot"]
+	path = sensors/libraries/t6iot
+	url = https://github.com/mathcoll/t6iot.git
