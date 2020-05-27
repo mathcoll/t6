@@ -1,3 +1,0 @@
-[submodule "t6iot"]
-	path = sensors/libraries/arduino-t6iot/
-	url = https://github.com/mathcoll/t6iot.git
