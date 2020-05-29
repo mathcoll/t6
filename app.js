@@ -249,12 +249,12 @@ var CrossDomain = function(req, res, next) {
 		res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.status(200).send("");
-	}
-	else {
+	} else {
 		res.setHeader("X-Powered-By", appName+"@"+version);
 		//res.header("Access-Control-Allow-Origin", "*");
 		res.header("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
+		res.header("Feature-Policy", "accelerometer: 'none'; unsized-media: 'none'; ambient-light-sensor: 'self'; camera: 'none'; encrypted-media: 'none'; fullscreen: 'self'; geolocation: 'self'; gyroscope: 'none'; magnetometer: 'none'; picture-in-picture: 'self'; microphone: 'none'; sync-xhr: 'self'; usb: 'none'; vr: 'none'");
 		if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
 			res.setHeader("Cache-Control", "public, max-age=3600");
 		}
