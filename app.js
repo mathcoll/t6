@@ -256,6 +256,7 @@ var CrossDomain = function(req, res, next) {
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.header("Feature-Policy", "accelerometer: 'none'; unsized-media: 'none'; ambient-light-sensor: 'self'; camera: 'none'; encrypted-media: 'none'; fullscreen: 'self'; geolocation: 'self'; gyroscope: 'none'; magnetometer: 'none'; picture-in-picture: 'self'; microphone: 'none'; sync-xhr: 'self'; usb: 'none'; vr: 'none'");
 		res.header("Referrer-Policy", "strict-origin-when-cross-origin");
+		res.header("Strict-Transport-Security", "max-age=5184000; includeSubDomains");
 		res.header("X-Frame-Options", "SAMEORIGIN");
 		res.header("X-Content-Type-Options", "nosniff");
 		if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
