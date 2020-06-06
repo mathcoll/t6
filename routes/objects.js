@@ -55,13 +55,13 @@ router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secr
  * 
  * @apiUse 200
  */
-router.get("/(:object_id([0-9a-z\-]+))/show", function (req, res) {
+router.get("/(:object_id([0-9a-z\-]+))/show", expressJwt({secret: jwtsettings.secret}), function (req, res) {
 	var object_id = req.params.object_id;
 	objects	= db.getCollection("objects");
 	uis	= dbUis.getCollection("uis");
 	var query = {
 		"$and": [
-//				{ "user_id" : req.user.id },
+				{ "user_id" : req.user.id },
 				{ "id" : object_id },
 			]
 		};
