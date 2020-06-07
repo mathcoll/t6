@@ -241,6 +241,7 @@ var ifttt			= require("./routes/ifttt");
 var ota				= require("./routes/ota");
 var sources			= require("./routes/sources");
 var uis				= require("./routes/uis");
+var news			= require("./routes/news");
 app					= express();
 
 var CrossDomain = function(req, res, next) {
@@ -298,6 +299,7 @@ app.use("/v"+version+"/ifttt", ifttt);
 app.use("/v"+version+"/ota", ota);
 app.use("/v"+version+"/sources", sources);
 app.use("/v"+version+"/uis", uis);
+app.use("/news", news);
 app.use("/", pwa);
 
 // catch 404 and forward to error handler

@@ -1,0 +1,277 @@
+doctype html
+html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6BuildVersion=t6BuildVersion)
+  head
+    if process.env.NODE_ENV === 'development'
+      title DEV t6 IoT
+    else
+      title t6 IoT
+    meta(charset='utf-8')
+    meta(name='fragment', content='#')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0')
+    meta(name='Description' content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='apple-mobile-web-app-title', content='t6 IoT App')
+    meta(name='apple-mobile-web-app-capable', content='yes')
+    meta(name='apple-mobile-web-app-status-bar-style', content='black')
+    meta(name='msapplication-TileImage', content=baseUrlCdn + '/img/m/icons/mstile-150x150.png')
+    meta(name='msapplication-TileColor', content='#795548')
+    meta(name='theme-color', content='#ffffff')
+    link(rel='apple-touch-startup-image', href=baseUrlCdn + '/img/m/splash/launch-640x1136.png', media='(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)')
+    link(rel='apple-touch-icon', sizes="180x180", href=baseUrlCdn + '/img/m/icons/icon-180x180.png')
+    link(rel='icon', type="image/png", sizes='32x32', href=baseUrlCdn + '/img/m/icons/icon-32x32.png')
+    link(rel='icon', type="image/png", sizes='16x16', href=baseUrlCdn + '/img/m/icons/icon-16x16.png')
+    link(rel='mask-icon', color="#795548", href=baseUrlCdn + '/img/m/icons/safari-pinned-tab.svg')
+    if process.env.NODE_ENV === 'development'
+      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel="stylesheet", href="/css/vendor/Leaflet/leaflet-1.6.0.css")
+    else
+      link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+    link(rel='manifest', href='/manifest.json')
+    //- Search Engine
+    meta(name='description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='image', content=baseUrlCdn + '/img/repository-open-graph.jpg')
+    meta(property='og:url', content=baseUrl_https)
+    //- Schema.org for Google
+    meta(itemprop='name', content='t6 IoT')
+    meta(itemprop='description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(itemprop='image', content=baseUrlCdn + '/img/repository-open-graph.jpg')
+    //- Mobile App for iOS & Android
+    //- Twitter
+    meta(name='twitter:card', content='summary_large_image')
+    meta(name='twitter:site', content='@mathcoll')
+    meta(name='twitter:creator', content='@mathcoll')
+    meta(name='twitter:title', content='t6 IoT')
+    meta(name='twitter:text:title', content='t6 IoT')
+    meta(name='twitter:image', content=baseUrlCdn + '/img/repository-open-graph.jpg')
+    meta(name='twitter:image:alt', content='t6 IoT, connect physical Objects to timeseries.')
+    meta(name='twitter:description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    //- Twitter - Mobile App (iOS & Android)
+    //- Open Graph general (Facebook, Pinterest & Google+)
+    meta(name='og:title', content='t6 IoT')
+    meta(name='og:description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='og:type', content='website')
+    meta(property='og:image:type', content='image/jpeg')
+    if trackings.googleSigninClientId
+      meta(name="google-signin-client_id", content=""+trackings.googleSigninClientId)
+  body
+    if trackings.gtm
+      noscript
+        iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
+
+    if trackings.firebaseConfig.firebaseJsVersion
+      script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-app.js")
+      script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-analytics.js")
+      script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-messaging.js")
+      script.
+        var firebaseConfig = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')===false?!{JSON.stringify(trackings.firebaseConfig.web)}:!{JSON.stringify(trackings.firebaseConfig.android)};
+    
+    .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
+      header.mdl-layout__header.mdl-layout__header--waterfall.mdl-layout__header--waterfall-hide-top
+        .mdl-layout__header-row
+          h1.page_title t6 IoT App
+          .mdl-layout-spacer
+
+          nav.mdl-navigation
+            button#notification.mdl-button.mdl-js-button.mdl-button--icon.mdl-js-ripple-effect
+              i.material-icons priority_high
+                
+          //-nav.mdl-navigation
+            .mdl-textfield.mdl-js-textfield.mdl-textfield--expandable.mdl-textfield--floating-label.mdl-textfield--align-right
+              label.mdl-button.mdl-js-button.mdl-button--icon(for='search-exp')
+                i.material-icons search
+              .mdl-textfield__expandable-holder
+                form
+                  input#search-exp.mdl-textfield__input(type='text', name='q', placeholder='Search')
+
+            .mdl-textfield.mdl-js-textfield.mdl-textfield--expandable.mdl-textfield--floating-label.mdl-textfield--align-right
+              label.mdl-button.mdl-js-button.mdl-button--icon(for='filter-exp')
+                i.material-icons tune
+              .mdl-textfield__expandable-holder
+                form
+                  input#filter-exp.mdl-textfield__input(type='text', name='name', placeholder='Filter by name')
+
+          nav.mdl-navigation.mdl-layout--large-screen-only
+            a.mdl-navigation__link.statusButton(href='#status')
+              i.material-icons favorite
+              |  API Status
+            a.mdl-navigation__link.docsButton(href='#docs')
+              i.material-icons code
+              |  API first
+            a.mdl-navigation__link.termsButton(href='#terms')
+              i.material-icons business_center
+              |  Privacy & Terms
+            a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
+              i.material-icons link
+              |  GitHub
+
+          nav.mdl-navigation
+            button#menu.mdl-button.mdl-js-button.mdl-button--icon.mdl-js-ripple-effect
+              i.material-icons more_vert
+
+        .mdl-layout-spacer
+
+        // Tabs
+        .mdl-layout__tab-bar.mdl-js-ripple-effect.mdl-js-tabs
+          a.mdl-navigation__link.mdl-layout__tab(href='#objects', for='objects')
+            i.material-icons devices_other
+            |  Objects
+          a.mdl-navigation__link.mdl-layout__tab(href='#flows', for='flows')
+            i.material-icons settings_input_component
+            |  Flows
+          a.mdl-navigation__link.mdl-layout__tab(href='#dashboards', for='dashboards')
+            i.material-icons dashboard
+            |  Dashboards
+          a.mdl-navigation__link.mdl-layout__tab(href='#snippets', for='snippets')
+            i.material-icons widgets
+            |  Snippets
+          a.mdl-navigation__link.mdl-layout__tab(href='#rules', for='rules')
+            i.material-icons call_split
+            |  Decision Rules
+          a.mdl-navigation__link.mdl-layout__tab(href='#sources', for='sources')
+            i.arduino-icon.build  
+            |  Sources
+
+      #drawer.mdl-layout__drawer
+        div.side-nav__header#currentUserBackground
+          img#currentUserHeader(src="", alt="Current user avatar")
+          div#currentUserName.mdl-layout-title 
+          div#currentUserEmail.mdl-layout-subheader
+        nav.mdl-navigation.menu__list
+          a.mdl-navigation__link(href='#index')
+            i.material-icons home
+            |  Index
+          a.mdl-navigation__link(href='#objects')
+            i.material-icons devices_other
+            |  Objects
+          a.mdl-navigation__link(href='#flows')
+            i.material-icons settings_input_component
+            |  Flows
+          a.mdl-navigation__link(href='#dashboards')
+            i.material-icons dashboard
+            |  Dashboards
+          a.mdl-navigation__link(href='#snippets')
+            i.material-icons widgets
+            |  Snippets
+          a.mdl-navigation__link(href='#rules')
+            i.material-icons call_split
+            |  Decision Rules
+          a.mdl-navigation__link(href='#sources')
+            i.arduino-icon.build  
+            |  Sources
+          span.mdl-menu__item--full-bleed-divider 
+          a.mdl-navigation__link(href='#settings')
+            i.material-icons settings
+            |  Settings
+          a.mdl-navigation__link(href='#openSourceLicenses')
+            i.material-icons book
+            |  Open-source Licenses
+
+      .setting_menu
+        ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton
+            a.mdl-navigation__link(href='#status')
+              i.material-icons favorite
+              |  API Status
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.docsButton
+            a.mdl-navigation__link(href='#docs')
+              i.material-icons code
+              |  API first
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.termsButton
+            a.mdl-navigation__link(href='#terms')
+              i.material-icons business_center
+              |  Privacy & Terms
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only
+            a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
+              i.material-icons launch
+              |  GitHub
+          li.mdl-js-ripple-effect.mdl-menu__item.settingsButton
+            a.mdl-navigation__link(href='#settings')
+              i.material-icons settings
+              |  Settings
+          li.mdl-js-ripple-effect.mdl-menu__item#profile_button
+            a.mdl-navigation__link(href='#profile')
+              i.material-icons account_box
+              |  Profile
+          li.mdl-js-ripple-effect.mdl-menu__item#signin_button
+            a.mdl-navigation__link(href='#login')
+              i.material-icons lock
+              |  Sign-In
+          li.mdl-js-ripple-effect.mdl-menu__item.hidden#logout_button
+            a.mdl-navigation__link(href='#login')
+              i.material-icons work_off
+              |  Logout
+
+      main.mdl-layout__content
+        //- Loading
+        section#loading-spinner.hidden
+          #spinner.mdl-progress.mdl-js-progress.mdl-progress__indeterminate.loader(style='width:auto;')
+
+        //- News
+        section#news.mdl-tabs__panel.mdl-layout__tab-panel.is-active
+          .mdl-grid.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content t6 Newsletters
+            each articlenews in articles
+              article.mdl-grid.mdl-cell--12-col
+                div.mdl-card.mdl-shadow--2dp
+                  div.mdl-card__title
+                    i.material-icons event_note
+                    h3.mdl-card__title-text #{articlenews.date}
+                  div.mdl-list__item--three-line.small-padding.mdl-card--expand
+                    div.mdl-list__item-sub-title #{articlenews.title}
+                    a.btn(href="/news/"+ articlenews.f, target="article") Read article
+
+      .menu__overlay
+      .toast__container
+
+      svg.footer(xmlns="http://www.w3.org/2000/svg", viewBox="0 0 1440 320")
+        path(fill='#795548', fill-opacity='1', d='M0,256L6.2,224C12.3,192,25,128,37,106.7C49.2,85,62,107,74,106.7C86.2,107,98,85,111,101.3C123.1,117,135,171,148,181.3C160,192,172,160,185,149.3C196.9,139,209,149,222,154.7C233.8,160,246,160,258,186.7C270.8,213,283,267,295,288C307.7,309,320,299,332,261.3C344.6,224,357,160,369,117.3C381.5,75,394,53,406,58.7C418.5,64,431,96,443,112C455.4,128,468,128,480,128C492.3,128,505,128,517,112C529.2,96,542,64,554,74.7C566.2,85,578,139,591,138.7C603.1,139,615,85,628,90.7C640,96,652,160,665,202.7C676.9,245,689,267,702,234.7C713.8,203,726,117,738,74.7C750.8,32,763,32,775,69.3C787.7,107,800,181,812,208C824.6,235,837,213,849,202.7C861.5,192,874,192,886,197.3C898.5,203,911,213,923,224C935.4,235,948,245,960,213.3C972.3,181,985,107,997,101.3C1009.2,96,1022,160,1034,160C1046.2,160,1058,96,1071,101.3C1083.1,107,1095,181,1108,197.3C1120,213,1132,171,1145,133.3C1156.9,96,1169,64,1182,80C1193.8,96,1206,160,1218,170.7C1230.8,181,1243,139,1255,112C1267.7,85,1280,75,1292,106.7C1304.6,139,1317,213,1329,245.3C1341.5,277,1354,267,1366,266.7C1378.5,267,1391,277,1403,288C1415.4,299,1428,309,1434,314.7L1440,320L1440,320L1433.8,320C1427.7,320,1415,320,1403,320C1390.8,320,1378,320,1366,320C1353.8,320,1342,320,1329,320C1316.9,320,1305,320,1292,320C1280,320,1268,320,1255,320C1243.1,320,1231,320,1218,320C1206.2,320,1194,320,1182,320C1169.2,320,1157,320,1145,320C1132.3,320,1120,320,1108,320C1095.4,320,1083,320,1071,320C1058.5,320,1046,320,1034,320C1021.5,320,1009,320,997,320C984.6,320,972,320,960,320C947.7,320,935,320,923,320C910.8,320,898,320,886,320C873.8,320,862,320,849,320C836.9,320,825,320,812,320C800,320,788,320,775,320C763.1,320,751,320,738,320C726.2,320,714,320,702,320C689.2,320,677,320,665,320C652.3,320,640,320,628,320C615.4,320,603,320,591,320C578.5,320,566,320,554,320C541.5,320,529,320,517,320C504.6,320,492,320,480,320C467.7,320,455,320,443,320C430.8,320,418,320,406,320C393.8,320,382,320,369,320C356.9,320,345,320,332,320C320,320,308,320,295,320C283.1,320,271,320,258,320C246.2,320,234,320,222,320C209.2,320,197,320,185,320C172.3,320,160,320,148,320C135.4,320,123,320,111,320C98.5,320,86,320,74,320C61.5,320,49,320,37,320C24.6,320,12,320,6,320L0,320Z')
+
+      #cookieconsent.mdl-card__actions.mdl-card--border.hidden
+        #cookieconsent_wrapper
+          h4#cookieconsent_header This website uses cookies
+          span This website uses cookies to improve user experience. By using our website you consent to all cookies in accordance with our Cookie Policy. 
+          span#cookieconsent_readmore
+            a(href='/#terms', id='cookieconsent.read').mdl-button Read more
+            | .
+          br
+          #cookieconsent_buttons
+            #cookieconsent_noGTM.mdl-button
+              a(href='#', id='cookieconsent.noGTM') Deny Marketing cookies 
+            #cookieconsent_accept.mdl-button
+              a(href='#', id='cookieconsent.agree') Got it!
+
+      if process.env.NODE_ENV === 'development'
+        //- VENDOR
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/material/material.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/mdl/mdl-selectfield.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/moment/moment.min-2.24.0.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/OpenLayers/ol-4.6.5.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/Chart/Chart-min-2.9.3.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/Leaflet/leaflet-min-1.6.0.js')
+        //- T6
+        script(type='application/javascript', src=baseUrlCdn + '/js/t6app-main.js?build=' + t6BuildVersion)
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-objects.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-flows.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-snippets.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-dashboards.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-mqtts.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-rules.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-sources.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/valueDisplay.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/graphDisplay.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/flowGraph.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/simpleClock.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/simpleRow.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/cardChart.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/sparkline.js')
+      else
+        script(type='application/javascript', src=baseUrlCdn + '/js/vendor.min.js?build=' + t6BuildVersion)
+        script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js?build=' + t6BuildVersion)
+      if trackings.ggads
+        script(src='//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', async='')
+        script.
+          (adsbygoogle = window.adsbygoogle || []).push({
+            google_ad_client: "#{trackings.ggads}",
+            enable_page_level_ads: true
+          });
