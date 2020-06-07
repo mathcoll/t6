@@ -405,6 +405,16 @@ router.post("/authenticate", function (req, res) {
 				if ( user.location && user.location.ip ) {
 					payload.iss = req.ip+" - "+user.location.ip;
 				}
+				if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+					payload.location = undefined;
+					payload.unsubscription_token = undefined;
+					payload.passwordLastUpdated = undefined;
+					payload.iftttCode = undefined;
+					payload.pushSubscription = undefined;
+					payload.reminderMail = undefined;
+					payload.changePassword = undefined;
+					payload.newsletter = undefined;
+				}
 				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 
 				var refreshPayload = crypto.randomBytes(40).toString("hex");
