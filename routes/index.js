@@ -496,6 +496,16 @@ router.post("/authenticate", function (req, res) {
 				payload.iss = req.ip+" - "+user.location.ip;
 			}
 			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
+			if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+				payload.location = undefined;
+				payload.unsubscription_token = undefined;
+				payload.passwordLastUpdated = undefined;
+				payload.iftttCode = undefined;
+				payload.pushSubscription = undefined;
+				payload.reminderMail = undefined;
+				payload.changePassword = undefined;
+				payload.newsletter = undefined;
+			}
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
@@ -561,6 +571,16 @@ router.post("/authenticate", function (req, res) {
 			payload.sub = "/users/"+user.id;
 
 			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
+			if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+				payload.location = undefined;
+				payload.unsubscription_token = undefined;
+				payload.passwordLastUpdated = undefined;
+				payload.iftttCode = undefined;
+				payload.pushSubscription = undefined;
+				payload.reminderMail = undefined;
+				payload.changePassword = undefined;
+				payload.newsletter = undefined;
+			}
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
@@ -656,6 +676,17 @@ router.post("/refresh", function (req, res) {
 			payload.scope = "Application";
 			payload.sub = "/users/"+user.id;
 			payload.iss = req.ip+" - "+user.location.ip;
+			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
+			if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+				payload.location = undefined;
+				payload.unsubscription_token = undefined;
+				payload.passwordLastUpdated = undefined;
+				payload.iftttCode = undefined;
+				payload.pushSubscription = undefined;
+				payload.reminderMail = undefined;
+				payload.changePassword = undefined;
+				payload.newsletter = undefined;
+			}
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 			// Add the refresh token to the list
