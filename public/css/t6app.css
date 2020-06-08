@@ -1194,7 +1194,8 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 	background: #795548;
 	padding: 5px 10px;
 }
-section.mdl-grid.mdl-cell--12-col .mdl-card__title i.material-icons {
+section.mdl-grid.mdl-cell--12-col .mdl-card__title i.material-icons,
+article.mdl-grid.mdl-cell--12-col .mdl-card__title i.material-icons {
 	color: #fff;
 }
 div[data-action="view"] .mdl-card__title,
