@@ -405,7 +405,7 @@ router.post("/authenticate", function (req, res) {
 				if ( user.location && user.location.ip ) {
 					payload.iss = req.ip+" - "+user.location.ip;
 				}
-				if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+				if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
 					payload.location = undefined;
 					payload.unsubscription_token = undefined;
 					payload.passwordLastUpdated = undefined;
@@ -496,7 +496,7 @@ router.post("/authenticate", function (req, res) {
 				payload.iss = req.ip+" - "+user.location.ip;
 			}
 			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
-			if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+			if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
 				payload.location = undefined;
 				payload.unsubscription_token = undefined;
 				payload.passwordLastUpdated = undefined;
@@ -571,7 +571,7 @@ router.post("/authenticate", function (req, res) {
 			payload.sub = "/users/"+user.id;
 
 			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
-			if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+			if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
 				payload.location = undefined;
 				payload.unsubscription_token = undefined;
 				payload.passwordLastUpdated = undefined;
