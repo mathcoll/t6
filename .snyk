@@ -123,7 +123,7 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2020-05-04T14:10:09.837Z'
+        expires: '2020-07-19T18:34:16.104Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
@@ -148,3 +148,18 @@ patch:
         patched: '2018-08-19T09:16:36.671Z'
     - express-jwt > jsonwebtoken > joi > hoek:
         patched: '2018-08-19T09:16:36.671Z'
+  SNYK-JS-LODASH-567746:
+    - geoip-lite > async > lodash:
+        patched: '2020-06-19T18:33:48.851Z'
+    - libnmap > async > lodash:
+        patched: '2020-06-19T18:33:48.851Z'
+    - libnmap > ip-address > lodash:
+        patched: '2020-06-19T18:33:48.851Z'
+    - pug > pug-code-gen > constantinople > babel-types > lodash:
+        patched: '2020-06-19T18:33:48.851Z'
+    - pug > pug-filters > constantinople > babel-types > lodash:
+        patched: '2020-06-19T18:33:48.851Z'
+    - pug > pug-code-gen > pug-attrs > constantinople > babel-types > lodash:
+        patched: '2020-06-19T18:33:48.851Z'
+    - jsonapi-serializer > lodash:
+        patched: '2020-06-19T18:33:48.851Z'

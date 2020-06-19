@@ -1,4 +1,4 @@
-#!/home/mathieu/.nvm/versions/node/v11.6.0/bin/node'
+#!/usr/bin/node
 
 "use strict";
 
