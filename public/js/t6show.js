@@ -73,38 +73,38 @@ class MaterialLightParser {
 	parse(s) {
 		let S = "";
 		if (s.rows) {
-			for (let i in s.rows) {
-				S += this.createRow(s.rows[i]);
+			for (const row of s.rows) {
+				S += this.createRow(row);
 			}
 		}
 		if (s.columns) {
-			for (let i in s.columns) {
-				S += this.createColumn(s.columns[i]);
+			for (const column of s.columns) {
+				S += this.createColumn(column);
 			}
 		}
 		if (s.buttons) {
-			for (let i in s.buttons) {
-				S += this.createButton(s.buttons[i]);
+			for (const button of s.buttons) {
+				S += this.createButton(button);
 			}
 		}
 		if (s.images) {
-			for (let i in s.images) {
-				S += this.createImage(s.images[i]);
+			for (const image of s.images) {
+				S += this.createImage(image);
 			}
 		}
 		if (s.texts) {
-			for (let i in s.texts) {
-				S += this.createText(s.texts[i]);
+			for (const text of s.texts) {
+				S += this.createText(text);
 			}
 		}
 		if (s.cards) {
-			for (let i in s.cards) {
-				S += this.createCard(s.cards[i]);
+			for (const card of s.cards) {
+				S += this.createCard(card);
 			}
 		}
 		if (s.badges) {
-			for (let i in s.badges) {
-				S += this.createBadge(s.badges[i]);
+			for (const badge of s.badges) {
+				S += this.createBadge(badge);
 			}
 		}
 		if (s.slider) {
