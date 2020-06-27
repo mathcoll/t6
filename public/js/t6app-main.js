@@ -352,13 +352,13 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 	};
-	
+
 	app.onLoginButtonClick = function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		myForm.querySelector("form.signin button.login_button i.material-icons").textContent = "cached";
 		myForm.querySelector("form.signin button.login_button i.material-icons").classList.add("animatedIcon");
 		componentHandler.upgradeDom();
-		
+
 		var username = myForm.querySelector("form.signin input[name='username']").value;
 		var password = myForm.querySelector("form.signin input[name='password']").value;
 		app.auth = {"username":username, "password":password};

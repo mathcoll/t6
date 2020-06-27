@@ -182,7 +182,6 @@ app.resources.dashboards = {
 				(app.containers.dashboard).querySelector(".page-content").innerHTML = node;
 				app.setExpandAction();
 				componentHandler.upgradeDom();
-				
 				app.refreshButtonsSelectors();
 				if ( isEdit ) {
 					app.buttons.backDashboard.addEventListener("click", function(evt) { app.resources.dashboards.display(dashboard.id, false, false, false); }, false);
@@ -316,8 +315,7 @@ app.resources.dashboards = {
 		var type = "dashboards";
 		var name = dashboard.attributes.name!==undefined?dashboard.attributes.name:"";
 		var description = dashboard.attributes.description!==undefined?dashboard.attributes.description.substring(0, app.cardMaxChars):"";
-		var attributeType = dashboard.attributes.type!==undefined?dashboard.attributes.type:"";
-		
+
 		var element = "";
 		element += "<div class=\"mdl-grid mdl-cell\" data-action=\"view\" data-type=\""+type+"\" data-id=\""+dashboard.id+"\">";
 		element += "	<div class=\"mdl-card mdl-shadow--2dp\">";
