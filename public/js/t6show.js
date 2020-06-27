@@ -1,5 +1,7 @@
 'use strict';
 
+let applicationServerKey = "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1Gt2zrKknJQX91a8RR87w8KGP_1gDSy8x6U7s";
+
 class MaterialLightParser {
 	createButton(b) {
 		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="${b.value}" data-action="${b.action}">${b.label}</button>`;
@@ -168,15 +170,9 @@ let actionate = () => {
 	for (var i in sliders) {
 		if ( (sliders[i]).childElementCount > -1 ) {
 			(sliders[i]).addEventListener("change", function(evt) {
-				let snack = {
-					message: "Value: "+evt.currentTarget.getAttribute("value"),
-					timeout: 1000,
-					actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
-					actionText: "Dismiss"
-				}
-				ml.showSnackbar(snack);
-				//req.open("GET", "/"+(evt.currentTarget.dataset.action), true);
-				//req.send();
+				let value = evt.currentTarget.MaterialSlider.element_.value;
+				req.open("GET", "/setLight?value="+value, true);
+				req.send();
 				evt.preventDefault();
 			}, {passive: false});
 		}
@@ -185,3 +181,87 @@ let actionate = () => {
 let materializeLight = (inputJson) => {
 	return ml.parse(inputJson) + ml.createSnack();
 };
+let registerServiceWorker = function() {
+	return navigator.serviceWorker.register("/service-worker.js", { scope: "/" })
+	.then(function(registration) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
+			console.log('[ServiceWorker] Registered with scope:', registration.scope);
+		}
+		if ( (typeof firebase !== "object" || typeof firebase === "undefined") && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
+			//console.log("firebase", "Should Initialize Firebase");
+			firebase.initializeApp(firebaseConfig);
+		}
+
+		firebase.messaging().useServiceWorker(registration);
+		if ( localStorage.getItem("settings.debug") == "true" ) {
+			//console.log("firebase.messaging-sw", "Should load Firebase Messaging SW");
+			console.log("[pushSubscription]", firebase.messaging().getToken());
+		}
+
+		firebase.analytics();
+		return registration;
+	})
+	.catch(function(err) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
+			console.log('[ServiceWorker] error occured...'+ err);
+		}
+	});
+};
+let urlBase64ToUint8Array = function(base64String) {
+	const padding = '='.repeat((4 - base64String.length % 4) % 4);
+	const base64 = (base64String + padding)  .replace(/\-/g, '+') .replace(/_/g, '/');
+	const rawData = window.atob(base64);
+	const outputArray = new Uint8Array(rawData.length);
+	for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); };
+	return outputArray;
+};
+let subscribeUserToPush = function() {
+	return registerServiceWorker()
+	.then(function(registration) {
+		const subscribeOptions = {
+			userVisibleOnly: true,
+			applicationServerKey: urlBase64ToUint8Array(applicationServerKey)
+		};
+		if ( registration ) {
+			return registration.pushManager.subscribe(subscribeOptions);
+		} else {
+			return false;
+		}
+	})
+	.then(function(pushSubscription) {
+		var j = JSON.parse(JSON.stringify(pushSubscription));
+		if ( j && j.keys ) {
+			localStorage.setItem('settings.pushSubscription.endpoint', j.endpoint);
+			localStorage.setItem('settings.pushSubscription.keys.p256dh', j.keys.p256dh);
+			localStorage.setItem('settings.pushSubscription.keys.auth', j.keys.auth);
+		}
+		if ( localStorage.getItem("settings.debug") == "true" ) {
+			console.log('[pushSubscription]', j);
+		}
+		return pushSubscription;
+	})
+	.catch(function (error) {
+		if ( localStorage.getItem("settings.debug") == "true" ) {
+			console.log('[pushSubscription]', 'subscribeUserToPush'+error);
+		}
+	});
+};
+let askPermission = function() {
+	return new Promise(function(resolve, reject) {
+		const permissionResult = Notification.requestPermission(function(result) {
+			resolve(result);
+		});
+
+		if (permissionResult) {
+			permissionResult.then(resolve, reject);
+		}
+	})
+	.then(function(permissionResult) {
+		if (permissionResult !== "granted") {
+			throw new Error("We weren't granted permission.");
+		}
+	});
+};
+
+askPermission();
+subscribeUserToPush();
