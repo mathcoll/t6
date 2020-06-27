@@ -203,16 +203,16 @@ let registerServiceWorker = function() {
 	})
 	.catch(function(err) {
 		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log('[ServiceWorker] error occured...'+ err);
+			console.log("[ServiceWorker] error occured..."+ err);
 		}
 	});
 };
 let urlBase64ToUint8Array = function(base64String) {
-	const padding = '='.repeat((4 - base64String.length % 4) % 4);
-	const base64 = (base64String + padding)  .replace(/\-/g, '+') .replace(/_/g, '/');
+	const padding = "=".repeat((4 - base64String.length % 4) % 4);
+	const base64 = (base64String + padding)  .replace(/\-/g, "+") .replace(/_/g, "/");
 	const rawData = window.atob(base64);
 	const outputArray = new Uint8Array(rawData.length);
-	for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); };
+	for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i) };
 	return outputArray;
 };
 let subscribeUserToPush = function() {
@@ -231,18 +231,18 @@ let subscribeUserToPush = function() {
 	.then(function(pushSubscription) {
 		var j = JSON.parse(JSON.stringify(pushSubscription));
 		if ( j && j.keys ) {
-			localStorage.setItem('settings.pushSubscription.endpoint', j.endpoint);
-			localStorage.setItem('settings.pushSubscription.keys.p256dh', j.keys.p256dh);
-			localStorage.setItem('settings.pushSubscription.keys.auth', j.keys.auth);
+			localStorage.setItem("settings.pushSubscription.endpoint", j.endpoint);
+			localStorage.setItem("settings.pushSubscription.keys.p256dh", j.keys.p256dh);
+			localStorage.setItem("settings.pushSubscription.keys.auth", j.keys.auth);
 		}
 		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log('[pushSubscription]', j);
+			console.log("[pushSubscription]", j);
 		}
 		return pushSubscription;
 	})
 	.catch(function (error) {
 		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log('[pushSubscription]', 'subscribeUserToPush'+error);
+			console.log("[pushSubscription]", "subscribeUserToPush"+error);
 		}
 	});
 };
