@@ -33,7 +33,7 @@
     "debug": "^2.6.9",
     "express": "^4.17.1",
     "express-http-proxy": "^0.6.0",
-    "express-jwt": "^5.3.1",
+    "express-jwt": "^6.0.0",
     "express-session": "^1.16.1",
     "firebase-admin": "^8.9.2",
     "geodist": "^0.2.1",
