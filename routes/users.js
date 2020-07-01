@@ -50,7 +50,7 @@ router.get("/newcomers", function (req, res) {
  * @apiUse 200
  * @apiUse 401
  */
-router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		var size = typeof req.query.size!=="undefined"?req.query.size:20;
 		var page = typeof req.query.page!=="undefined"?req.query.page:1;
@@ -84,7 +84,7 @@ router.get("/list", expressJwt({secret: jwtsettings.secret}), function (req, res
  * @apiUse 412
  * @apiUse 429
  */
-router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( typeof req.user !== "undefined" ) {
 		tokens	= dbTokens.getCollection("tokens");
 		var accessTokens = tokens.chain().find({ "$and": [ {"user_id": req.user.id}, { "expiration" : { "$gt": moment().format("x") } } ]}).simplesort("expiration", true).data();
@@ -112,7 +112,7 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (
  * @apiUse 403
  * @apiUse 500
  */
-router.get("/me/sessions", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/me/sessions", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.id ) {
 		tokens	= dbTokens.getCollection("tokens");
 		var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
@@ -140,7 +140,7 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret}), function (r
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( typeof req.user !== "undefined" ) {
 		var options = {
 			url: "https://en.gravatar.com/" + req.user.mail_hash + ".json",
@@ -182,7 +182,7 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret}), function (req,
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.id === user_id || req.user.role === "admin" ) {
 		users	= db.getCollection("users");
@@ -208,7 +208,7 @@ router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.id === user_id ) {
 		users	= db.getCollection("users");
@@ -317,7 +317,7 @@ router.post("/", function (req, res) {
  * @apiUse 412
  * @apiUse 429
  */
-router.post("/accessTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( typeof req.user !== "undefined" ) {
 		if ( !req.user.id ) {
 			res.status(412).send(new ErrorSerializer({"id": 203,"code": 412, "message": "Precondition Failed"}).serialize());
@@ -454,7 +454,7 @@ router.post("/instruction", function (req, res) {
  * @apiUse 403
  * @apiUse 404
  */
-router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		users	= db.getCollection("users");
 		users.chain().find().update(function(user) {
@@ -479,7 +479,7 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret}), fu
  * @apiUse 403
  * @apiUse 404
  */
-router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.role === "admin" ) {
 		users	= db.getCollection("users");
@@ -508,7 +508,7 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
  * @apiUse 403
  * @apiUse 404
  */
-router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var token = req.params.token;
 	if ( req.user.role === "admin" ) {
 		var payload = typeof req.body!=="undefined"?req.body:"{}";
@@ -536,7 +536,7 @@ router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings
  * @apiUse 412
  * @apiUse 429
  */
-router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( !( (req.body.email || req.body.lastName || req.body.firstName ) || ( req.body.password ) ) ) {
 		res.status(412).send(new ErrorSerializer({"id": 8,"code": 412, "message": "Precondition Failed"}).serialize());
@@ -576,7 +576,7 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
  * @apiUse 412
  * @apiUse 429
  */
-router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var key = req.params.key;
 	if ( key ) {
 		accessTokens = dbTokens.getCollection("tokens");
@@ -612,7 +612,7 @@ router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsetting
  * @apiUse 404
  * @apiUse 429
  */
-router.delete("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.id === user_id ) { //Well ... not sure
 		users = db.getCollection("users");

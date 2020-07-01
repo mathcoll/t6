@@ -98,7 +98,7 @@ function getFieldsFromDatatype(datatype, asValue) {
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
 	var modifier = req.query.modifier;
@@ -252,7 +252,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiUse 429
  * @apiUse 500
  */
-router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res, next) {
+router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
 	let payload = req.body;
 	let error;
 	let isEncrypted = false;

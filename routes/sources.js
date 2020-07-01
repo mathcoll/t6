@@ -22,7 +22,7 @@ var sources;
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
 	var version = req.params.version;
 	var name = req.query.name;
@@ -120,7 +120,7 @@ router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secr
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/:source_id([0-9a-z\-]+)/child", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/:source_id([0-9a-z\-]+)/child", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
 	var name = req.query.name;
 	var size = typeof req.query.size!=="undefined"?req.query.size:20;
@@ -159,7 +159,7 @@ router.get("/:source_id([0-9a-z\-]+)/child", expressJwt({secret: jwtsettings.sec
  * @apiUse 400
  * @apiUse 429
  */
-router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	sources	= dbSources.getCollection("sources");
 	if ( typeof req.user.id !== "undefined" ) {
 		var source_id = uuid.v4();
@@ -206,7 +206,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var parent_source_id = req.params.source_id;
 	sources	= dbSources.getCollection("sources");
 	var query = {
@@ -300,7 +300,7 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}),
  * @apiUse Auth
  * @apiParam {uuid-v4} [source_id] Source Id
  */
-router.delete("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
 	if ( !source_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 636, "code": 405, "message": "Method Not Allowed"}).serialize());

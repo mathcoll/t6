@@ -22,7 +22,7 @@ var uis;
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var ui_id = req.params.ui_id;
 	var name = req.query.name;
 	var size = typeof req.query.size!=="undefined"?req.query.size:20;
@@ -84,7 +84,7 @@ router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret})
  * @apiUse 403
  * @apiUse 429
  */
-router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	uis	= dbUis.getCollection("uis");
 
 	/* Check for quota limitation */
@@ -118,7 +118,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 401
  * @apiUse 404
  */
-router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var ui_id = req.params.ui_id;
 	uis	= dbUis.getCollection("uis");
 	var query = {
@@ -164,7 +164,7 @@ router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), fun
  * @apiUse 403
  * @apiUse 404
  */
-router.delete("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var ui_id = req.params.ui_id;
 	uis	= dbUis.getCollection("uis");
 	var query = {

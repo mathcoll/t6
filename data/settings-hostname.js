@@ -22,7 +22,8 @@ staticOptions		= { etag: true, maxAge: 10*24*3600*1000 }; // 10 Days
 jwtsettings = {
 	expiresInSeconds: 5*60, // JWT session duration in seconds, it should be short: 5 minutes
 	refreshExpiresInSeconds: 60*60*24, // JWT session duration in seconds for refreshToken, it can be longer: 24 hours
-	secret: "ThisIsAVeryGoodSecretForMyAPI" // Keyboard-cat
+	secret: "ThisIsAVeryGoodSecretForMyAPI", // Keyboard-cat,
+	algorithms: ["HS256", "RS256"]
 };
 
 /* Http settings */

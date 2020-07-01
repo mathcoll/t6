@@ -53,7 +53,7 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res) {
  * @apiUse 201
  * @apiUse 401
  */
-router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		units	= db.getCollection("units");
 		var new_unit = {
@@ -91,7 +91,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 200
  * @apiUse 401
  */
-router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		var unit_id = req.params.unit_id;
 		units	= db.getCollection("units");
@@ -130,7 +130,7 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
  * @apiUse 401
  * @apiUse 404
  */
-router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		var unit_id = req.params.unit_id;
 		units	= db.getCollection("units");

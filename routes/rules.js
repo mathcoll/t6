@@ -22,7 +22,7 @@ var rules;
  * @apiUse 429
  * @apiUse 500
  */
-router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;
 	var name = req.query.name;
 	var size = typeof req.query.size!=="undefined"?req.query.size:20;
@@ -91,7 +91,7 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret}
  * @apiUse 400
  * @apiUse 429
  */
-router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	rules	= dbRules.getCollection("rules");
 	/* Check for quota limitation */
 	var queryR = { "user_id" : req.user.id };
@@ -140,7 +140,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret}), function (req, res) {
  * @apiUse 429
  * @apiUse 500
  */
-router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;
 	if ( rule_id ) {
 		rules	= dbRules.getCollection("rules");
@@ -191,7 +191,7 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), f
  * @apiUse Auth
  * @apiParam {uuid-v4} [rule_id] Rule Id
  */
-router.delete("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret}), function (req, res) {
+router.delete("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;
 	rules	= dbRules.getCollection("rules");
 	var query = {
