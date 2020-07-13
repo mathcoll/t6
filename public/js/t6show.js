@@ -4,7 +4,7 @@ let applicationServerKey = "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1G
 
 class MaterialLightParser {
 	createButton(b) {
-		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="${b.value}" data-action="${b.action}">${b.label}</button>`;
+		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>`;
 	}
 	createImage(i) {
 		return `<img src="${i.src}" alt="${i.alt}" />`;
@@ -42,7 +42,7 @@ class MaterialLightParser {
 		return out;
 	}
 	createText(t) {
-		return `<div class="mdl-textfield mdl-js-textfield">${t.body}</div>`;
+		return `<div class="mdl-textfield mdl-js-textfield ${t.class}" id="${t.id}">${t.body}</div>`;
 	}
 	createBadge(b) {
 		return `<span class="mdl-badge" data-badge="${b.data}">${b.body}</span>`;
@@ -125,6 +125,9 @@ class MaterialLightParser {
 	showSnackbar(snack) {
 		document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(snack);
 	}
+	showSensorValue(id, value) {
+		document.querySelector("#"+id).textContent = value;
+	}
 }
 let ml = new MaterialLightParser();
 let req = new XMLHttpRequest();
@@ -133,13 +136,17 @@ req.onreadystatechange = function() {
 	if (this.readyState == 4 && (this.status == 200 || this.status == 201)) {
 		let json = JSON.parse(req.responseText);
 		if(json.status === "ok" || json.status === "UNDERSTOOD") {
-			var snack = {
-				message: json.snack,
-				timeout: 2000,
-				actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
-				actionText: "Dismiss"
+			if(json.sensorValue) {
+				ml.showSensorValue("sensorValue", json.sensorValue); // TODO: hardcoded
+			} else {
+				var snack = {
+					message: json.snack,
+					timeout: 2000,
+					actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
+					actionText: "Dismiss"
+				}
+				ml.showSnackbar(snack);
 			}
-			ml.showSnackbar(snack);
 		}
 	}
 };
@@ -148,8 +155,9 @@ let actionate = () => {
 	for (var i in buttons) {
 		if ( (buttons[i]).childElementCount > -1 ) {
 			(buttons[i]).addEventListener("click", function(evt) {
-				let value = evt.currentTarget.dataset.action;
-				req.open("GET", "/"+value, true);
+				let action = evt.currentTarget.dataset.action;
+				let trigger = evt.currentTarget.dataset.trigger;
+				req.open("GET", "/"+action, true);
 				req.send();
 				evt.preventDefault();
 			}, {passive: false});
@@ -181,30 +189,32 @@ let actionate = () => {
 let materializeLight = (inputJson) => {
 	return ml.parse(inputJson) + ml.createSnack();
 };
+
+
+
+
+
+
+
+
+
 let registerServiceWorker = function() {
-	return navigator.serviceWorker.register("/service-worker.js", { scope: "/" })
+	return navigator.serviceWorker.register("/sw.js", { scope: "/" })
 	.then(function(registration) {
 		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log('[ServiceWorker] Registered with scope:', registration.scope);
 		}
 		if ( (typeof firebase !== "object" || typeof firebase === "undefined") && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
-			//console.log("firebase", "Should Initialize Firebase");
 			firebase.initializeApp(firebaseConfig);
 		}
-
 		firebase.messaging().useServiceWorker(registration);
-		if ( localStorage.getItem("settings.debug") == "true" ) {
-			//console.log("firebase.messaging-sw", "Should load Firebase Messaging SW");
-			console.log("[pushSubscription]", firebase.messaging().getToken());
-		}
+		console.log("[pushSubscription]", firebase.messaging().getToken());
 
 		firebase.analytics();
 		return registration;
 	})
 	.catch(function(err) {
-		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log("[ServiceWorker] error occured..."+ err);
-		}
+		console.log("[ServiceWorker] error occured..."+ err);
 	});
 };
 let urlBase64ToUint8Array = function(base64String) {
@@ -212,7 +222,7 @@ let urlBase64ToUint8Array = function(base64String) {
 	const base64 = (base64String + padding)  .replace(/\-/g, "+") .replace(/_/g, "/");
 	const rawData = window.atob(base64);
 	const outputArray = new Uint8Array(rawData.length);
-	for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i) };
+	for (var i=0; i<rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
 	return outputArray;
 };
 let subscribeUserToPush = function() {
@@ -235,15 +245,11 @@ let subscribeUserToPush = function() {
 			localStorage.setItem("settings.pushSubscription.keys.p256dh", j.keys.p256dh);
 			localStorage.setItem("settings.pushSubscription.keys.auth", j.keys.auth);
 		}
-		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log("[pushSubscription]", j);
-		}
+		console.log("[pushSubscription]", j);
 		return pushSubscription;
 	})
 	.catch(function (error) {
-		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log("[pushSubscription]", "subscribeUserToPush"+error);
-		}
+		console.log("[pushSubscription]", "subscribeUserToPush"+error);
 	});
 };
 let askPermission = function() {
@@ -251,7 +257,6 @@ let askPermission = function() {
 		const permissionResult = Notification.requestPermission(function(result) {
 			resolve(result);
 		});
-
 		if (permissionResult) {
 			permissionResult.then(resolve, reject);
 		}

@@ -44,6 +44,11 @@
 .animatedIcon {
 	animation: rotate 2s cubic-bezier(0,.9,.9,0) infinite;
 }
+.sensorValue {
+	font-size: 4em;
+	padding: 1em;
+	text-align: center;
+}
 * {
 	box-sizing: border-box;
 }

@@ -75,20 +75,20 @@ ul.nav li.separator {
 }
 .form-signin input[type="email"], 
 .form-signin input[type="key"] {
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    margin-bottom: -1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: -1px;
 }
 .form-signin input#firstname {
-    border-radius: 0;
-    margin-bottom: -1px;
+  border-radius: 0;
+  margin-bottom: -1px;
 }
 .form-signin input[type="password"],
 .form-signin input[type="secret"],
 .form-signin input#lastname {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  margin-bottom: 10px;
 }
 .jqstooltip {
   width: auto !important;
@@ -109,7 +109,6 @@ ul.nav li.separator {
 dl dt, dl dd {
     line-height: 26px;
 }
-
 div#myCarousel.carousel.slide a.carousel-control span.fa {margin-top: 175px;}
 
 /* Spinner */
@@ -500,9 +499,7 @@ a:focus {
     height: 100px;
     border-radius: 3px 5px 3px 0;
 }
-.cnrflash-inner
-{
-    /*Set position, make larger then container and rotate 45 degrees*/
+.cnrflash-inner{
     position: absolute;
     bottom: 0;
     right: 0;
@@ -521,9 +518,9 @@ a:focus {
     background-color: #aa0101;
     box-shadow: 0 3px 3px 0 rgba(1,1,1,.5), 0 1px 0 0 rgba(1,1,1,.5), inset 0 -1px 8px 0 rgba(255,255,255,.3), inset 0 -1px 0 0 rgba(255,255,255,.2);
 }
-.cnrflash-inner:before, .cnrflash-inner:after
-{
-    /*Use the border triangle trick to make  				it look like the ribbon wraps round it's 				container*/
+.cnrflash-inner:before, 
+.cnrflash-inner:after {
+    /*Use the border triangle trick to make it look like the ribbon wraps round it's container*/
     content: " ";
     display: block;
     position: absolute;
@@ -532,20 +529,17 @@ a:focus {
     height: 0;
     border: 8px solid #800000;
 }
-.cnrflash-inner:before
-{
+.cnrflash-inner:before {
     left: 1px;
     border-bottom-color: transparent;
     border-right-color: transparent;
 }
-.cnrflash-inner:after
-{
+.cnrflash-inner:after {
     right: 0;
     border-bottom-color: transparent;
     border-left-color: transparent;
 }
-.cnrflash-label
-{
+.cnrflash-label {
     /*Make the label look nice*/
     position: absolute;
     bottom: 0;
@@ -702,7 +696,8 @@ a:focus {
     box-shadow: 0 1px 0 #fff inset
 }
 
-.membership-pricing-table table,.membership-pricing-table table td {
+.membership-pricing-table table,
+.membership-pricing-table table td {
     /*border: 1px solid #ebebeb*/
 }
 
