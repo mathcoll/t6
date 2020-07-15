@@ -137,7 +137,11 @@ req.onreadystatechange = function() {
 		let json = JSON.parse(req.responseText);
 		if(json.status === "ok" || json.status === "UNDERSTOOD") {
 			if(json.sensorValue) {
+				document.querySelector("#sensorValue").classList.add("is-not-visible");
+				document.querySelector("#sensorValue").classList.remove("is-visible");
 				ml.showSensorValue("sensorValue", json.sensorValue); // TODO: hardcoded
+				document.querySelector("#sensorValue").classList.remove("is-not-visible");
+				document.querySelector("#sensorValue").classList.add("is-visible");
 			} else {
 				var snack = {
 					message: json.snack,

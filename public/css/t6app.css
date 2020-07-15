@@ -49,6 +49,14 @@
 	padding: 1em;
 	text-align: center;
 }
+.is-not-visible {
+	opacity: 0;
+	transition: opacity 0.5s linear;
+}
+.is-visible {
+	opacity: 1;
+	transition: opacity 0.5s linear;
+}
 * {
 	box-sizing: border-box;
 }
