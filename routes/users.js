@@ -233,7 +233,7 @@ router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secre
  * @apiUse 429
  */
 router.post("/", function (req, res) {
-	if ( !req.body.email ) {
+	if ( !(req.body.email && escape(req.body.email).match(new RegExp(/^([a-zA-Z0-9_\-\.+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.+)|(([a-zA-Z0-9\-]+\.+)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)))) {
 		res.status(412).send(new ErrorSerializer({"id": 9,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
 		users	= db.getCollection("users");
@@ -404,7 +404,7 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
  * @apiUse 500
  */
 router.post("/instruction", function (req, res) {
-	if ( !req.body.email ) {
+	if ( !(req.body.email && escape(req.body.email).match(new RegExp(/^([a-zA-Z0-9_\-\.+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.+)|(([a-zA-Z0-9\-]+\.+)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)))) {
 		res.status(412).send(new ErrorSerializer({"id": 8.3,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
 		var query = { "email": req.body.email };
