@@ -215,7 +215,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				res.status(404).send(new ErrorSerializer({"id": 898, "code": 404, "message": "Not Found"}).serialize());
 			};
 		}).catch(err => {
-			res.status(500).send({query: query, err: err, "id": 899, "code": 500, "message": "Internal Error"});
+			res.status(500).send({err: err, "id": 899, "code": 500, "message": "Internal Error"});
 		});
 	}
 });
