@@ -202,7 +202,6 @@ router.all("*", function (req, res, next) {
 
 		dbInfluxDB.query(query).then(data => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
-
 			if ( limit-i > 0 ) {
 				res.header("X-RateLimit-Remaining", limit-i);
 				//res.header("X-RateLimit-Reset", "");
@@ -245,7 +244,11 @@ router.all("*", function (req, res, next) {
 				});
 			}
 		}).catch(err => {
-			return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
+			if(typeof i!=="undefined") {
+				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
+			} else {
+				next();
+			}
 		});
 	} else {
 		var tags = {user_id: "anonymous", session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
