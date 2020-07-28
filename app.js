@@ -113,11 +113,6 @@ var initDbMain = function() {
 	} else {
 		t6console.info(db.getCollection("datatypes").count(), "resources in Datatypes collection.");
 	}
-	if ( db.getCollection("users") === null ) {
-		t6console.warn("- Collection Users is failing");
-	} else {
-		t6console.info(db.getCollection("users").count(), "resources in Users collection.");
-	}
 }
 var initDbRules = function() {
 	if ( dbRules === null ) {
