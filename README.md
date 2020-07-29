@@ -16,3 +16,6 @@ Sample nodeMCU and Arduino scripts are available in the _[sensors](https://githu
 Detailed Api documentation is available here: [api-General](https://api.internetcollaboratif.info/docs/).
 
 To install t6, follow the guide on [Wiki page](https://github.com/mathcoll/t6/wiki)
+
+## t6 Lighthouse report
+<img src="https://i.imgur.com/YVXCico.png" />
