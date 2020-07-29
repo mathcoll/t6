@@ -352,7 +352,6 @@ if (app.get("env") === "development") {
 
 t6events.add("t6App", "start", "self");
 t6console.info(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
-t6console.info(sprintf("Start process duration: %ss.", (new Date()-start)/1000));
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
@@ -379,4 +378,5 @@ mqttClient.on("message", function (topic, message) {
 	t6console.info(sprintf("Connected Objects: %s", t6ConnectedObjects));
 });
 
+t6console.info(sprintf("Start process duration: %ss.", (new Date()-start)/1000));
 module.exports = app;
