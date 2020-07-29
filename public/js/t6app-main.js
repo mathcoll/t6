@@ -9,6 +9,7 @@
  *  [pushSubscription]
  *  [ServiceWorker]
  *  [setSection]
+ *  [Network]
  */
 "use strict";
 var app = {
@@ -354,37 +355,57 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.onLoginButtonClick = function(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.signin button.login_button i.material-icons").textContent = "cached";
-		myForm.querySelector("form.signin button.login_button i.material-icons").classList.add("animatedIcon");
-		componentHandler.upgradeDom();
-
-		var username = myForm.querySelector("form.signin input[name='username']").value;
-		var password = myForm.querySelector("form.signin input[name='password']").value;
-		app.auth = {"username":username, "password":password};
-		app.authenticate();
+		if (navigator.onLine) {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			myForm.querySelector("form.signin button.login_button i.material-icons").textContent = "cached";
+			myForm.querySelector("form.signin button.login_button i.material-icons").classList.add("animatedIcon");
+			componentHandler.upgradeDom();
+	
+			var username = myForm.querySelector("form.signin input[name='username']").value;
+			var password = myForm.querySelector("form.signin input[name='password']").value;
+			app.auth = {"username":username, "password":password};
+			app.authenticate();
+		} else {
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
+		}
 		evt.preventDefault();
 	};
 	
 	app.onStatusButtonClick = function(evt) {
-		app.getStatus();
-		app.setSection('status');
+		if (navigator.onLine) {
+			app.getStatus();
+			app.setSection('status');
+		} else {
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
+		}
 		if (evt) evt.preventDefault();
 	};
 	
 	app.onSettingsButtonClick = function(evt) {
-		app.setSection('settings');
+		if (navigator.onLine) {
+			app.setSection('settings');
+		} else {
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
+		}
 		if (evt) evt.preventDefault();
 	};
 	
 	app.onDocsButtonClick = function(evt) {
-		app.setSection('docs');
+		if (navigator.onLine) {
+			app.setSection('docs');
+		} else {
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
+		}
 		if (evt) evt.preventDefault();
 	};
 	
 	app.onTermsButtonClick = function(evt) {
-		app.getTerms();
-		app.setSection('terms');
+		if (navigator.onLine) {
+			app.getTerms();
+			app.setSection('terms');
+		} else {
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
+		}
 		if (evt) evt.preventDefault();
 	};
 	
@@ -413,121 +434,133 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.onSignupButtonClick = function(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.signup button.createUser i.material-icons").textContent = "cached";
-		myForm.querySelector("form.signup button.createUser i.material-icons").classList.add("animatedIcon");
-		componentHandler.upgradeDom();
-		
-		var email = myForm.querySelector("form.signup input[name='email']").value;
-		var terms = myForm.querySelector("form.signup input[name='terms']").checked;
-		if ( email && email.match(app.patterns.username) ) {
-			if ( terms ) {
-				var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
-				var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
-				var postData = {"email":email, "firstName":firstName, "lastName":lastName};
-				if( app.getSetting('settings.pushSubscription.endpoint') && app.getSetting('settings.pushSubscription.keys.auth') && app.getSetting('settings.pushSubscription.keys.p256dh') ) {
-					postData.pushSubscription = {
-						endpoint: app.getSetting('settings.pushSubscription.endpoint'),
-						keys: {
-							auth: app.getSetting('settings.pushSubscription.keys.auth'),
-							p256dh: app.getSetting('settings.pushSubscription.keys.p256dh')
-						}
-					};
-				}
-				var myHeaders = new Headers();
-				myHeaders.append("Content-Type", "application/json");
-				var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
-				var url = app.baseUrl+"/"+app.api_version+"/users";
-				
-				fetch(url, myInit)
-				.then(
-					app.fetchStatusHandlerOnUser
-				).then(function(fetchResponse){
-					return fetchResponse.json();
-				})
-				.then(function(response) {
-					app.setSetting('notifications.email', response.user.data.attributes.email);
-					app.setSetting('notifications.unsubscription_token', response.user.data.attributes.unsubscription_token);
-					toast('Welcome, you should have received an email to set your password.', {timeout:3000, type: 'done'});
-					if ( typeof firebase !== "undefined" ) {
-						firebase.analytics().logEvent('sign_up');
+		if (navigator.onLine) {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			myForm.querySelector("form.signup button.createUser i.material-icons").textContent = "cached";
+			myForm.querySelector("form.signup button.createUser i.material-icons").classList.add("animatedIcon");
+			componentHandler.upgradeDom();
+			
+			var email = myForm.querySelector("form.signup input[name='email']").value;
+			var terms = myForm.querySelector("form.signup input[name='terms']").checked;
+			if ( email && email.match(app.patterns.username) ) {
+				if ( terms ) {
+					var firstName = myForm.querySelector("form.signup input[name='firstName']").value;
+					var lastName = myForm.querySelector("form.signup input[name='lastName']").value;
+					var postData = {"email":email, "firstName":firstName, "lastName":lastName};
+					if( app.getSetting('settings.pushSubscription.endpoint') && app.getSetting('settings.pushSubscription.keys.auth') && app.getSetting('settings.pushSubscription.keys.p256dh') ) {
+						postData.pushSubscription = {
+							endpoint: app.getSetting('settings.pushSubscription.endpoint'),
+							keys: {
+								auth: app.getSetting('settings.pushSubscription.keys.auth'),
+								p256dh: app.getSetting('settings.pushSubscription.keys.p256dh')
+							}
+						};
 					}
-					app.setSection('manage_notifications');
-				})
-				.catch(function (error) {
-					toast('We can\'t process your signup. Please resubmit the form later! '+error, {timeout:3000, type: 'warning'});
-				});
+					var myHeaders = new Headers();
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(postData) };
+					var url = app.baseUrl+"/"+app.api_version+"/users";
+					
+					fetch(url, myInit)
+					.then(
+						app.fetchStatusHandlerOnUser
+					).then(function(fetchResponse){
+						return fetchResponse.json();
+					})
+					.then(function(response) {
+						app.setSetting('notifications.email', response.user.data.attributes.email);
+						app.setSetting('notifications.unsubscription_token', response.user.data.attributes.unsubscription_token);
+						toast('Welcome, you should have received an email to set your password.', {timeout:3000, type: 'done'});
+						if ( typeof firebase !== "undefined" ) {
+							firebase.analytics().logEvent('sign_up');
+						}
+						app.setSection('manage_notifications');
+					})
+					.catch(function (error) {
+						toast('We can\'t process your signup. Please resubmit the form later! '+error, {timeout:3000, type: 'warning'});
+					});
+				} else {
+					toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', {timeout:3000, type: 'warning'});
+				}
 			} else {
-				toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', {timeout:3000, type: 'warning'});
+				toast('We can\'t process your signup. Please check your inputs.', {timeout:3000, type: 'warning'});
 			}
 		} else {
-			toast('We can\'t process your signup. Please check your inputs.', {timeout:3000, type: 'warning'});
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
 	};
 	
 	app.onPasswordResetButtonClick = function(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.resetpassword button.setPassword i.material-icons").textContent = "cached";
-		myForm.querySelector("form.resetpassword button.setPassword i.material-icons").classList.add("animatedIcon");
-		componentHandler.upgradeDom();
-		
-		var password = myForm.querySelector("form.resetpassword input[name='password']").value;
-		var password2 = myForm.querySelector("form.resetpassword input[name='password2']").value;
-		var token = getParameterByName('token');
-		if ( token !== undefined && password == password2 ) {
-			var myHeaders = new Headers();
-			myHeaders.append("Content-Type", "application/json");
-			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify({"password":password}) };
-			var url = app.baseUrl+"/"+app.api_version+"/users/token/"+token;
+		if (navigator.onLine) {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			myForm.querySelector("form.resetpassword button.setPassword i.material-icons").textContent = "cached";
+			myForm.querySelector("form.resetpassword button.setPassword i.material-icons").classList.add("animatedIcon");
+			componentHandler.upgradeDom();
 			
-			fetch(url, myInit)
-			.then(
-				app.fetchStatusHandler
-			).then(function(fetchResponse){
-				return fetchResponse.json();
-			})
-			.then(function(response) {
-				app.setSection('login');
-				toast('Your password has been reset; please login again.', {timeout:3000, type: 'done'});
-			})
-			.catch(function (error) {
-				toast('We can\'t process your password reset. Please resubmit the form later!', {timeout:3000, type: 'warning'});
-			});
+			var password = myForm.querySelector("form.resetpassword input[name='password']").value;
+			var password2 = myForm.querySelector("form.resetpassword input[name='password2']").value;
+			var token = getParameterByName('token');
+			if ( token !== undefined && password == password2 ) {
+				var myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+				var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify({"password":password}) };
+				var url = app.baseUrl+"/"+app.api_version+"/users/token/"+token;
+				
+				fetch(url, myInit)
+				.then(
+					app.fetchStatusHandler
+				).then(function(fetchResponse){
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					app.setSection('login');
+					toast('Your password has been reset; please login again.', {timeout:3000, type: 'done'});
+				})
+				.catch(function (error) {
+					toast('We can\'t process your password reset. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+				});
+			} else {
+				toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
+			}
 		} else {
-			toast('We can\'t process your password reset.', {timeout:3000, type: 'warning'});
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
 	};
 	
 	app.onForgotPasswordButtonClick = function(evt) {
-		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-		myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").textContent = "cached";
-		myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").classList.add("animatedIcon");
-		componentHandler.upgradeDom();
-		
-		var email = myForm.querySelector("form.forgotpassword input[name='email']").value;
-		if ( email && email.match(app.patterns.username) ) {
-			var myHeaders = new Headers();
-			myHeaders.append("Content-Type", "application/json");
-			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify({"email":email}) };
-			var url = app.baseUrl+"/"+app.api_version+"/users/instruction/";
+		if (navigator.onLine) {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").textContent = "cached";
+			myForm.querySelector("form.forgotpassword button.forgotPassword i.material-icons").classList.add("animatedIcon");
+			componentHandler.upgradeDom();
 			
-			fetch(url, myInit)
-			.then(
-				app.fetchStatusHandler
-			).then(function(fetchResponse){
-				return fetchResponse.json();
-			})
-			.then(function(response) {
-				app.setSection('login');
-				toast('Instructions has been sent to your email.', {timeout:3000, type: 'done'});
-			})
-			.catch(function (error) {
-				toast('We can\'t process your request. Please resubmit the form later!', {timeout:3000, type: 'warning'});
-			});
+			var email = myForm.querySelector("form.forgotpassword input[name='email']").value;
+			if ( email && email.match(app.patterns.username) ) {
+				var myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+				var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify({"email":email}) };
+				var url = app.baseUrl+"/"+app.api_version+"/users/instruction/";
+				
+				fetch(url, myInit)
+				.then(
+					app.fetchStatusHandler
+				).then(function(fetchResponse){
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					app.setSection('login');
+					toast('Instructions has been sent to your email.', {timeout:3000, type: 'done'});
+				})
+				.catch(function (error) {
+					toast('We can\'t process your request. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+				});
+			} else {
+				toast('We can\'t send the instructions. Please check your inputs.', {timeout:3000, type: 'warning'});
+			}
 		} else {
-			toast('We can\'t send the instructions. Please check your inputs.', {timeout:3000, type: 'warning'});
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
 		}
 		evt.preventDefault();
 	};
@@ -609,29 +642,33 @@ var touchStartPoint, touchMovePoint;
 	};
 	
 	app.onSaveProfileButtonClick = function(evt) {
-		var firstName = document.getElementById("firstName").value;
-		var lastName = document.getElementById("lastName").value;
-
-		var myHeaders = new Headers();
-		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
-		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify({"firstName":firstName, "lastName":lastName}) };
-		var url = app.baseUrl+"/"+app.api_version+"/users/"+localStorage.getItem('currentUserId');
-		
-		fetch(url, myInit)
-		.then(
-			app.fetchStatusHandler
-		).then(function(fetchResponse){
-			return fetchResponse.json();
-		})
-		.then(function(response) {
-			localStorage.setItem('currentUserName', firstName+" "+lastName);
-			app.setDrawer();
-			toast('Your details have been updated.', {timeout:3000, type: 'done'});
-		})
-		.catch(function (error) {
-			toast('We can\'t process your modifications. Please resubmit the form later!', {timeout:3000, type: 'warning'});
-		});
+		if (navigator.onLine) {
+			var firstName = document.getElementById("firstName").value;
+			var lastName = document.getElementById("lastName").value;
+	
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify({"firstName":firstName, "lastName":lastName}) };
+			var url = app.baseUrl+"/"+app.api_version+"/users/"+localStorage.getItem('currentUserId');
+			
+			fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse){
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				localStorage.setItem('currentUserName', firstName+" "+lastName);
+				app.setDrawer();
+				toast('Your details have been updated.', {timeout:3000, type: 'done'});
+			})
+			.catch(function (error) {
+				toast('We can\'t process your modifications. Please resubmit the form later!', {timeout:3000, type: 'warning'});
+			});
+		} else {
+			toast("No Network detected, please check your connexion.", {timeout:3000, type: 'warning'});
+		}
 	};
 	
 	app.refreshButtonsSelectors = function() {
@@ -3938,11 +3975,13 @@ var touchStartPoint, touchMovePoint;
 			msg = "You are now online...";
 			type = "done";
 			app.setHiddenElement("notification");
+			navigator.serviceWorker.controller.postMessage("setOnline");
 		}
 		else {
 			msg = "You are now offline...";
 			type = "warning";
 			app.setVisibleElement("notification");
+			navigator.serviceWorker.controller.postMessage("setOffline");
 		}
 		toast(msg, {timeout:3000, type: type});
 	};

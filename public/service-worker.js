@@ -1,4 +1,4 @@
-var dataCacheName= 't6-cache-bb035214f19304f6f15d5b3c49ed5ccc';
+var dataCacheName= 't6-cache-ce42738680c2f6c868bbbb5994d3ce96';
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to", "cloudflare", "leaflet"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -35,6 +35,7 @@ var filesToCache = [
 	"https://unpkg.com/leaflet@1.6.0/dist/leaflet.js",
 	"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
 ];
+let isOnline = true;
 function refresh(response) {
 	return self.clients.matchAll().then(function(clients) {
 		clients.forEach(function(client) {
@@ -112,13 +113,32 @@ function matchInArray(string, expressions) {
 	return false;
 };
 self.addEventListener("fetch", function(e) {
-	if ( matchInArray(e.request.url, cacheBlacklist) ) {
-		console.log("[ServiceWorker]", "Serving the asset from server (Blacklisted).", e.request.url);
-		e.respondWith(fromServer(e.request));
-	} else if ( matchInArray(e.request.url, cacheWhitelist) ) {
+	if (isOnline) {
+		if ( matchInArray(e.request.url, cacheBlacklist) ) {
+			console.log("[ServiceWorker]", "Serving the asset from server (Blacklisted).", e.request.url);
+			e.respondWith(fromServer(e.request));
+		} else if ( matchInArray(e.request.url, cacheWhitelist) ) {
+			e.respondWith(
+				caches.match(e.request).then(function(response) {
+					console.log("[ServiceWorker]", "Serving the asset from cache (Whitelisted & found).", e.request.url);
+					caches.add(e.request.url).then(function() {
+						console.log("[ServiceWorker]", "Added "+e.request.url+" to cached.");
+					});
+					return response || fetch(e.request);
+				})
+				.catch(function() {
+					console.log("[ServiceWorker]", "Serving the asset from server (Whitelisted but not found).", e.request.url);
+					return fromServer(e.request);
+				})
+			);
+		} else {
+			console.log("[ServiceWorker]", "Serving the asset from server directly.", e.request.url);
+			return fromServer(e.request);
+		}
+	} else {
 		e.respondWith(
 			caches.match(e.request).then(function(response) {
-				console.log("[ServiceWorker]", "Serving the asset from cache (Whitelisted & found).", e.request.url);
+				console.log("[ServiceWorker]", "Serving the asset from cache because you are offline (Whitelisted & found).", e.request.url);
 				caches.add(e.request.url).then(function() {
 					console.log("[ServiceWorker]", "Added "+e.request.url+" to cached.");
 				});
@@ -129,9 +149,6 @@ self.addEventListener("fetch", function(e) {
 				return fromServer(e.request);
 			})
 		);
-	} else {
-		console.log("[ServiceWorker]", "Serving the asset from server directly.", e.request.url);
-		return fromServer(e.request);
 	}
 });
 self.addEventListener("push", function(event) {
@@ -164,10 +181,18 @@ self.addEventListener("push", function(event) {
 	}
 });
 self.addEventListener("message", function(event){
-	console.log("[onMessage]");
+	console.log("[onMessage]", event.data);
 	if ( event.data === "getDataCacheName" ) {
 		console.log("returning", dataCacheName);
 		return dataCacheName;
+	}
+	if ( event.data === "setOffline" ) {
+		isOnline = false;
+		console.log("[Network] isOnline is now ", isOnline);
+	}
+	if ( event.data === "setOnline" ) {
+		isOnline = true;
+		console.log("[Network] isOnline is now ", isOnline);
 	}
 });
 self.addEventListener("error", function(e) {
