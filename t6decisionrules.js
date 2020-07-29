@@ -376,6 +376,14 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 		engine.run(payload);
 	}).catch(err => {
+		var envelope = {
+			from:		from,
+			to:			bcc,
+			subject:	"dbInfluxDB ERR",
+			text:		"Html email client is required",
+			html:		err
+		};
+		t6mailer.sendMail(envelope);
 		t6console.error("dbInfluxDB ERR", err);
 	});
 }; // t6decisionrules.checkRulesFromUser
