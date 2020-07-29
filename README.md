@@ -18,5 +18,6 @@ Detailed Api documentation is available here: [api-General](https://api.internet
 To install t6, follow the guide on [Wiki page](https://github.com/mathcoll/t6/wiki)
 
 ## t6 Lighthouse report generated on 27/07/2020
-<img src="https://i.imgur.com/YVXCico.png" />
-<script src="https://gist.github.com/mathcoll/015e276a92827cdf8a4277706dcff432.js"></script>
+<a href="https://gist.github.com/mathcoll/015e276a92827cdf8a4277706dcff432.js">
+	<img src="https://i.imgur.com/YVXCico.png" />
+</a>
