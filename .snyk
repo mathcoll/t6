@@ -123,7 +123,7 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2020-07-19T18:34:16.104Z'
+        expires: '2020-09-14T09:38:28.584Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -131,7 +131,7 @@ ignore:
   SNYK-JS-LOCUTUS-575119:
     - cidr-js > locutus:
         reason: None given
-        expires: '2020-08-01T19:53:40.035Z'
+        expires: '2020-09-14T09:38:28.584Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
