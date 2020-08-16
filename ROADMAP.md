@@ -1,4 +1,10 @@
 ## t6 api&PWA Roadmap
+### Milestone 7: Over The Air Deployment
+  - [x] [Update Arduino source code Over The Air - using Wifi](https://api.internetcollaboratif.info/news/2020-04-11-newsletter-ota)
+  
+### Milestone 6: Add Decision Rules Algorithm
+  - [x] [Algorithm linear regression for basic prediction/anomaly detection](https://api.internetcollaboratif.info/news/2020-03-10-newsletter-linearegression)
+  
 ### Milestone 5: Add Security to POST datapoints payloads
   - [x] Signature on datapoint POST
   - [x] Crypt AES 256 cbc on datapoint POST
@@ -18,7 +24,7 @@
 
 ### Milestone 1: API completion
   - [x] 3 resources are fully manageable via Apis
-  - [ ] 3 resources are remaining todo (rules, snippets and dashboards)
+  - [x] 3 resources are remaining todo (rules, snippets and dashboards)
 
 ### Milestone 0: API basics and simple UI to manage most of resources
   - [x] POST, GET, PUT, DELETE on all resources
