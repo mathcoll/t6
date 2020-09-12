@@ -2930,7 +2930,7 @@ var touchStartPoint, touchMovePoint;
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var url = app.baseUrl+"/"+app.api_version+"/objects/"+id+"/qrcode/8/H";
+		var url = app.baseUrl+"/"+app.api_version+"/objects/"+id+"/qrcode/8/M";
 		
 		fetch(url, myInit)
 		.then(

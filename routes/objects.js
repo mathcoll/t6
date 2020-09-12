@@ -116,7 +116,6 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 	}
 	
 	var json = objects.find(query);
-	//t6console.debug(query);
 	if ( json.length > 0 ) {
 		var qr = qrCode.qrcode(typenumber, errorcorrectionlevel);
 		qr.addData(baseUrl+"/m?id=/"+object_id+"#public-object");
