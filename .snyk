@@ -123,7 +123,7 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2020-09-14T09:38:28.584Z'
+        expires: '2020-10-12T14:40:07.198Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -131,7 +131,15 @@ ignore:
   SNYK-JS-LOCUTUS-575119:
     - cidr-js > locutus:
         reason: None given
-        expires: '2020-09-14T09:38:28.584Z'
+        expires: '2020-10-12T14:40:07.198Z'
+  SNYK-JS-LOCUTUS-598675:
+    - cidr-js > locutus:
+        reason: None given
+        expires: '2020-10-12T13:59:26.840Z'
+  SNYK-JS-NODEFORGE-598677:
+    - firebase-admin > node-forge:
+        reason: None given
+        expires: '2020-10-12T14:40:07.198Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
