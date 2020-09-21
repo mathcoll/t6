@@ -38,26 +38,29 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 		return false;
 	}
 }
-function getFieldsFromDatatype(datatype, asValue) {
+function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
 	let fields;
+	if( includeTime ) {
+		fields += "time, ";
+	}
 	if ( datatype === "boolean" ) {
-		fields = "time, valueBoolean";
+		fields = "valueBoolean";
 	} else if ( datatype === "date" ) {
-		fields = "time, valueDate";
+		fields = "valueDate";
 	} else if ( datatype === "integer" ) {
-		fields = "time, valueInteger";
+		fields = "valueInteger";
 	} else if ( datatype === "json" ) {
-		fields = "time, valueJson";
+		fields = "valueJson";
 	} else if ( datatype === "string" ) {
-		fields = "time, valueString";
+		fields = "valueString";
 	} else if ( datatype === "time" ) {
-		fields = "time, valueTime";
+		fields = "valueTime";
 	} else if ( datatype === "float" ) {
-		fields = "time, valueFloat";
+		fields = "valueFloat";
 	} else if ( datatype === "geo" ) {
-		fields = "time, valueString";
+		fields = "valueString";
 	} else {
-		fields = "time, value";
+		fields = "value";
 	}
 	if( asValue ) {
 		fields += " as value";
@@ -102,7 +105,9 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
 	var modifier = req.query.modifier;
-	//var output = req.accepts("json"); svg
+	var select = req.query.select;
+	var group = req.query.group;
+	//var output = req.accepts("json");
 	var query;
 	var start;
 	var end;
@@ -114,33 +119,34 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		units	= db.getCollection("units");
 
 		let where = "";
-		if ( data_id ) {
+		if ( data_id && data_id !== "exploration" ) {
 			if ( data_id.toString().length === 10 ) { data_id *= 1e9; }
 			else if ( data_id.toString().length === 13 ) { data_id *= 1e6; }
 			else if ( data_id.toString().length === 16 ) { data_id *= 1e3; }
 			where += " AND time="+data_id;
-		} else {
-			if ( typeof req.query.start !== "undefined" ) {
-				if ( req.query.start.toString().length === 10 ) { start = req.query.start*1e9; }
-				else if ( req.query.start.toString().length === 13 ) { start = req.query.start*1e6; }
-				else if ( req.query.start.toString().length === 16 ) { start = req.query.start*1e3; }
-				if ( !isNaN(start) ) {
-					where = " AND time>="+start;
-				} else {
-					where = " AND time>="+moment(start).format("x"); 
-				}
-			}	
-			if ( typeof req.query.end !== "undefined" ) {
-				if ( req.query.end.toString().length === 10 ) { end = req.query.end*1e9; }
-				else if ( req.query.end.toString().length === 13 ) { end = req.query.end*1e6; }
-				else if ( req.query.end.toString().length === 16 ) { end = req.query.end*1e3; }
-				if ( !isNaN(end) ) {
-					where += " AND time<="+end;
-				} else {
-					where += " AND time<="+moment(end).format("x"); 
-				}
+		}
+
+		if ( typeof req.query.start !== "undefined" ) {
+			if ( req.query.start.toString().length === 10 ) { start = req.query.start*1e9; }
+			else if ( req.query.start.toString().length === 13 ) { start = req.query.start*1e6; }
+			else if ( req.query.start.toString().length === 16 ) { start = req.query.start*1e3; }
+			if ( !isNaN(start) ) {
+				where = " AND time>="+start;
+			} else {
+				where = " AND time>="+moment(start).format("x"); 
+			}
+		}	
+		if ( typeof req.query.end !== "undefined" ) {
+			if ( req.query.end.toString().length === 10 ) { end = req.query.end*1e9; }
+			else if ( req.query.end.toString().length === 13 ) { end = req.query.end*1e6; }
+			else if ( req.query.end.toString().length === 16 ) { end = req.query.end*1e3; }
+			if ( !isNaN(end) ) {
+				where += " AND time<="+end;
+			} else {
+				where += " AND time<="+moment(end).format("x"); 
 			}
 		}
+
 		var sorting = req.query.order==="asc"?"ASC":(req.query.sort==="asc"?"ASC":"DESC");
 
 		var page = parseInt(req.query.page, 10);
@@ -165,7 +171,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 		let fields;
-		//SELECT COUNT(value), MEDIAN(value), PERCENTILE(value, 50), MEAN(value), SPREAD(value), MIN(value), MAX(value) FROM data WHERE flow_id="5" AND time > now() - 104w GROUP BY flow_id, time(4w) fill(null)
+
 		if ( typeof modifier!=="undefined" ) {
 			fields = getFieldsFromDatatype(datatype, false);
 			switch(modifier) {
@@ -179,14 +185,38 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				//case "mean": fields += ", MEAN(valueFloat)";break;
 			}
 		} else {
-			fields = getFieldsFromDatatype(datatype, true);
+			if ( data_id && data_id === "exploration" ) {
+				let dt = getFieldsFromDatatype(datatype, false, false);
+				if ( typeof select!=="undefined" ) { // TODO: needs refacto and allows multiple coma separated values
+					fields = "";
+					switch(select) {
+						case "min": fields += sprintf("MIN(%s) as min", dt);break;
+						case "max": fields += sprintf("MAX(%s) as max", dt);break;
+						case "first": fields += sprintf("FIRST(%s) as first", dt);break;
+						case "last": fields += sprintf("LAST(%s) as last", dt);break;
+						case "sum": fields = sprintf("SUM(%s) as sum", dt);break;
+						case "count": fields = sprintf("COUNT(%s) as count", dt);break;
+						case "median": fields += sprintf("MEDIAN(%s) as median", dt);break;
+						case "mean": fields += sprintf("MEAN(%s) as mean", dt);break;
+					}
+				} else {
+					fields = sprintf("FIRST(%s) as first, LAST(%s) as last, COUNT(%s) as count, MEAN(%s) as mean, STDDEV(%s) as stddev, MIN(%s) as min, MAX(%s) as max, PERCENTILE(%s, 25) as p25, PERCENTILE(%s, 50) as p50, PERCENTILE(%s, 75) as p75", dt, dt, dt, dt, dt, dt, dt, dt, dt, dt);
+				}
+			} else {
+				fields = getFieldsFromDatatype(datatype, true);
+			}
 		}
-		
-		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page-1)*limit);
-		
+
+		let group_by = "";
+		if(typeof group!=="undefined") {
+			group_by = sprintf("GROUP BY time(%s)", group);
+		}
+
+		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.log(sprintf("Query: %s", query));
+
 		dbInfluxDB.query(query).then(data => {
-			if ( data.length > 0 ) {
+			if ( data.length > 0 && data_id !== "exploration" ) {
 				data.map(function(d) {
 					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);
 					d.timestamp = Date.parse(d.time);
@@ -211,6 +241,9 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				data.groups = undefined;
 
 				res.status(200).send(new DataSerializer(data).serialize());
+			} else if (data_id === "exploration") {
+				data[0].time = undefined;
+				res.status(200).send(data);
 			} else {
 				res.status(404).send(new ErrorSerializer({"id": 898, "code": 404, "message": "Not Found"}).serialize());
 			};
