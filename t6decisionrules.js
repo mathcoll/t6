@@ -5,7 +5,7 @@ var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
 var Sentiment = require("sentiment");
 var geodist = require("geodist");
-var statistics = require('simple-statistics');
+var statistics = require("simple-statistics");
 var rules;
 var users;
 
