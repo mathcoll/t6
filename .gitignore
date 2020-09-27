@@ -24,7 +24,6 @@ test/screenshots/*
 t6android/*
 t6android/**
 /t6android/
-/t6BuildVersion.json
 pids
 *.pid
 *.seed
