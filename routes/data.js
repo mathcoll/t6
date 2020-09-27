@@ -80,10 +80,17 @@ function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
  * @apiParam {uuid-v4} [flow_id] Datapoint ID
  * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
  * @apiParam {Number} [page] Page offset
- * @apiParam {Integer} [start] Timestamp
- * @apiParam {Integer} [end] Timestamp
+ * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {String="min","max","first","last","sum","count"} [modifier] Modifier function to modify the results
+ * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
+ * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
+ * @apiParam {String} [dateFormat] See momentJs documentation to foarmat date displays
+ * @apiParam {String="bar","line","pie","voronoi"} graphType Type of graph
+ * @apiParam {String} [xAxis] Label value in X axis
+ * @apiParam {String} [yAxis] Label value in Y axis
+ * @apiParam {Integer} [width] output width of SVG chart
+ * @apiParam {Integer} [height] output height of SVG chart
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -107,7 +114,12 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	var modifier = req.query.modifier;
 	var select = req.query.select;
 	var group = req.query.group;
-	//var output = req.accepts("json");
+	var dateFormat = req.query.dateFormat;
+	var graphType = req.query.graphType;
+	var xAxis = req.query.xAxis;
+	var yAxis = req.query.yAxis;
+	var width = req.query.width;
+	var height = req.query.height;
 	var query;
 	var start;
 	var end;
@@ -123,32 +135,30 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			if ( data_id.toString().length === 10 ) { data_id *= 1e9; }
 			else if ( data_id.toString().length === 13 ) { data_id *= 1e6; }
 			else if ( data_id.toString().length === 16 ) { data_id *= 1e3; }
-			where += " AND time="+data_id;
+			where += sprintf(" AND time=%s", data_id);
 		}
 
 		if ( typeof req.query.start !== "undefined" ) {
-			if ( req.query.start.toString().length === 10 ) { start = req.query.start*1e9; }
-			else if ( req.query.start.toString().length === 13 ) { start = req.query.start*1e6; }
-			else if ( req.query.start.toString().length === 16 ) { start = req.query.start*1e3; }
-			if ( !isNaN(start) ) {
-				where = " AND time>="+start;
+			if(!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
+				if ( req.query.start.toString().length === 10 ) { start = req.query.start*1e9; }
+				else if ( req.query.start.toString().length === 13 ) { start = req.query.start*1e6; }
+				else if ( req.query.start.toString().length === 16 ) { start = req.query.start*1e3; }
+				where += sprintf(" AND time>=%s", parseInt(start, 10));
 			} else {
-				where = " AND time>="+moment(start).format("x"); 
+				where += sprintf(" AND time>='%s'", req.query.start.toString());
 			}
 		}	
 		if ( typeof req.query.end !== "undefined" ) {
-			if ( req.query.end.toString().length === 10 ) { end = req.query.end*1e9; }
-			else if ( req.query.end.toString().length === 13 ) { end = req.query.end*1e6; }
-			else if ( req.query.end.toString().length === 16 ) { end = req.query.end*1e3; }
-			if ( !isNaN(end) ) {
-				where += " AND time<="+end;
+			if(!isNaN(req.query.end) && parseInt(req.query.end, 10)) {
+				if ( req.query.end.toString().length === 10 ) { end = req.query.end*1e9; }
+				else if ( req.query.end.toString().length === 13 ) { end = req.query.end*1e6; }
+				else if ( req.query.end.toString().length === 16 ) { end = req.query.end*1e3; }
+				where += sprintf(" AND time<=%s", parseInt(end, 10));
 			} else {
-				where += " AND time<="+moment(end).format("x"); 
+				where += sprintf(" AND time<='%s'", req.query.end.toString());
 			}
 		}
-
 		var sorting = req.query.order==="asc"?"ASC":(req.query.sort==="asc"?"ASC":"DESC");
-
 		var page = parseInt(req.query.page, 10);
 		if (isNaN(page) || page < 1) {
 			page = 1;
@@ -186,6 +196,10 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			}
 		} else {
 			if ( data_id && data_id === "exploration" ) {
+				var d3nBar = require("d3node-barchart");
+				var d3nLine = require("d3node-linechart");
+				var d3nVoronoi = require("d3node-voronoi");
+				var d3nPie = require("d3node-piechart");
 				let dt = getFieldsFromDatatype(datatype, false, false);
 				if ( typeof select!=="undefined" ) { // TODO: needs refacto and allows multiple coma separated values
 					fields = "";
@@ -242,8 +256,63 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 
 				res.status(200).send(new DataSerializer(data).serialize());
 			} else if (data_id === "exploration") {
-				data[0].time = undefined;
-				res.status(200).send(data);
+				var graphData = [];
+				let svg;
+				if(graphType === "bar") {
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push({key: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
+						}
+					});
+					svg = d3nBar({
+						data: graphData,
+						selector: "",
+						container: "",
+						labels: { xAxis: xAxis, yAxis: yAxis },
+						width: width,
+						height: height,
+					});
+				} else if(graphType === "line") {
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push({key: moment(row.time._nanoISO), value: row[select]}); // TODO : security	
+						}
+					});
+					svg = d3nLine({
+						data: graphData,
+						selector: "",
+						container: "",
+						labels: { xAxis: xAxis, yAxis: yAxis },
+						width: width,
+						height: height,
+					});
+				} else if(graphType === "voronoi") {
+					let n=0;
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push(row[select]); // TODO : security	
+							n++;
+						}
+					});
+					svg = d3nVoronoi(graphData);
+				} else if(graphType === "pie") {
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push({label: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
+						}
+					});
+					svg = d3nPie({
+						data: graphData,
+						selector: "",
+						container: "",
+						labels: { xAxis: xAxis, yAxis: yAxis },
+						width: width,
+						height: height,
+					});
+				}
+				
+				res.setHeader("content-type", "image/svg+xml");
+				res.status(200).send(svg.svgString());
 			} else {
 				res.status(404).send(new ErrorSerializer({"id": 898, "code": 404, "message": "Not Found"}).serialize());
 			};

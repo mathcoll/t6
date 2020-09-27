@@ -237,87 +237,8 @@ app.resources.flows = {
 					node +=	"				<span class='mdl-list__item-sub-title' id='flow-graph-time-"+flow.id+"'></span>";
 					node +=	"			</span>";
 					node +=	"		</span>";
-					node += "		<span class='mdl-list__item' id='flow-graph-"+flow.id+"' style='width:100%; height:200px;'>";
-					node += "			<span class='mdl-list__item-sub-title mdl-chip mdl-chip__text'></span>";
+					node += "		<span class='mdl-list__item' id='flow-graph-"+flow.id+"' style='width:100%; height:280px;'>";
 					node += "		</span>";
-					var options = {
-						series: { lines : { show: true, fill: "false", lineWidth: 3, steps: false } },
-						colors: [flow.attributes.color!==""?flow.attributes.color:"#000000"],
-						points : { show : true },
-						legend: { show: true, position: "sw" },
-						grid: {
-							borderWidth: { top: 0, right: 0, bottom: 0, left: 0 },
-							borderColor: { top: "", right: "", bottom: "", left: "" },
-							// markings: weekendAreas,
-							clickable: true,
-							hoverable: true,
-							autoHighlight: true,
-							mouseActiveRadius: 5
-						},
-						xaxis: { mode: "time", autoscale: true, timeformat: "%d/%m/%Y<br/>%Hh%M" },
-						yaxis: [ { autoscale: true, position: "left" }, { autoscale: true, position: "right" } ],
-					};
-
-					var my_flow_data_url = app.baseUrl+"/"+app.api_version+"/data/"+flow.id+"?limit=100&sort=desc";
-					fetch(my_flow_data_url, myInit)
-					.then(
-						app.fetchStatusHandler
-					).then(function(fetchResponse){ 
-						return fetchResponse.json();
-					})
-					.then(function(data) {
-						datapoints += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-						datapoints += "		<div class='mdl-list__item small-padding'>";
-						datapoints += "			<span class='mdl-list__item-primary-content'>";
-						datapoints += "				<i class='material-icons'>"+app.icons.datapoints+"</i>";
-						datapoints += "				Data Points";
-						datapoints += "			</span>";
-						datapoints += "			<span class='mdl-list__item-secondary-action'>";
-						datapoints += "				<button role='button' class='mdl-button mdl-js-button mdl-button--icon right showdescription_button' for='datapoints-"+flow.id+"'>";
-						datapoints += "					<i class='material-icons'>expand_more</i>";
-						datapoints += "				</button>";
-						datapoints += "			</span>";
-						datapoints += "		</div>";
-						datapoints += "		<div class='mdl-cell mdl-cell--12-col hidden' id='datapoints-"+flow.id+"'>";
-						var dataset = [];
-						if (data && data.data && data.data.type!=="errors") {
-							dataset = [data.data.map(function(i) {
-								var value;
-								if( datatype == "geo" ) {
-									var geoPosition = {longitude: "", latitude: ""};
-									[geoPosition.longitude, geoPosition.latitude] = (i.attributes.value).split(";");
-									value = geoPosition.longitude + ", " + geoPosition.latitude;
-								} else {
-									value = (unit.format).replace(/%s/g, i.attributes.value);
-								}
-								datapoints += app.getField(app.icons.datapoints, moment(i.attributes.timestamp).format(app.date_format), value, {type: "text", isEdit: false});
-								return [i.attributes.timestamp, i.attributes.value];
-							})];
-						}
-						componentHandler.upgradeDom();
-						//$.plot($("#flow-graph-"+flow.id), dataset, options);
-						datapoints += "		</div>";
-						datapoints += "	</div>";
-						
-						var dtps = document.createElement("div");
-						dtps.className = "mdl-grid mdl-cell--12-col";
-						dtps.dataset.id = "last-datapoints_"+flow.id;
-						dtps.innerHTML = datapoints;
-						((app.containers.flow).querySelector(".page-content")).appendChild(dtps);
-						
-						componentHandler.upgradeDom();
-						app.setExpandAction();
-						
-					})
-					.catch(function (error) {
-						if (error == "Error: Not Found") {
-							toast("No data found, graph remain empty.", {timeout:3000, type: "warning"});
-						} else {
-							if ( localStorage.getItem("settings.debug") == "true" ) {
-								toast("displayFlow error out..." + error, {timeout:3000, type: "error"});
-							}
-						}
-					});
 					node +=	"	</div>";
 					node +=	"</section>";
 
@@ -385,10 +306,20 @@ app.resources.flows = {
 					// }, false);
 					app.buttons.editFlow2.addEventListener("click", function(evt) { app.resources.flows.display(flow.id, false, true, false); }, false);
 				}
-				
 				componentHandler.upgradeDom();
 				app.setExpandAction();
 				app.setSection("flow");
+				
+				let width = document.getElementById("flow-graph-"+flow.id).offsetWidth;
+				let height = 250;
+				let svgUrl = `${app.baseUrl}/${app.api_version}/data/${flow.id}/exploration?select=mean&group=30d&dateFormat=MMM&start=${moment().format("YYYY")}-02-01 00:00:00&limit=1000&sort=asc&page=0&graphType=bar&width=${width}&height=${height}&xAxis=Months&yAxis=MEAN value (${unit})`;
+
+				fetch(svgUrl, myInit)
+				.then(
+					app.fetchStatusHandler
+				)
+				.then(response => response.text())
+				.then(svg => document.getElementById("flow-graph-"+flow.id).insertAdjacentHTML("afterbegin", svg));
 			}
 		})
 		.catch(function (error) {

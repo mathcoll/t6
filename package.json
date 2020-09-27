@@ -31,6 +31,11 @@
     "compression": "^1.7.4",
     "connect-timeout": "^1.9.0",
     "cookie-parser": "^1.4.5",
+    "d3-node": "^2.2.2",
+    "d3node-barchart": "^0.1.1",
+    "d3node-linechart": "^0.1.2",
+    "d3node-piechart": "0.0.10",
+    "d3node-voronoi": "0.0.6",
     "debug": "^2.6.9",
     "device": "^0.3.8",
     "express": "^4.17.1",
@@ -74,6 +79,6 @@
     "web-push": "^3.4.4"
   },
   "readmeFilename": "README.md",
-  "devDependencies": {},
+  "devDependencies": {"uglify-js-es6": "^2.8.9"},
   "snyk": true
 }
