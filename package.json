@@ -79,6 +79,8 @@
     "web-push": "^3.4.4"
   },
   "readmeFilename": "README.md",
-  "devDependencies": {"uglify-js-es6": "^2.8.9"},
+  "devDependencies": {
+    "uglify-js-es6": "^2.8.9"
+  },
   "snyk": true
 }
