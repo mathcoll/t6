@@ -41,17 +41,35 @@ from				= "t6 <contact@domain.tld>"; // The Sender email address
 bcc					= "t6 <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
 mailhost			= "my_smtp.domain.tld"; // Your Smtp server
 mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smtp credentials
-transporter = nodemailer.createTransport({
-	host : mailhost,
-	port: 587,
-	ignoreTLS : true,
-	auth : mailauth,
-	dkim : {
-		domainName : "",
-		keySelector : "",
-		privateKey : fs.readFileSync("/path/to/data/certificates/dkim/privatekey.txt", "utf8")
+mailDKIMCertificate = "/path/to/data/certificates/dkim/privatekey.txt"; // The DKIM cetificate private file
+fs.access(mailDKIMCertificate, fs.constants.W_OK, err => {
+	if (err) {
+		transporter = nodemailer.createTransport({
+			host : mailhost,
+			port: 587,
+			ignoreTLS : true,
+			auth : mailauth,
+			dkim : {
+				domainName : "",
+				keySelector : ""
+			}
+		});
+	} else {
+		transporter = nodemailer.createTransport({
+			host : mailhost,
+			port: 587,
+			ignoreTLS : true,
+			auth : mailauth,
+			dkim : {
+				domainName : "",
+				keySelector : "",
+				privateKey : fs.readFileSync(mailDKIMCertificate, "utf8")
+			}
+		});
 	}
+	t6console.log(`${mailDKIMCertificate} ${err ? "is not not found. Transporter is not using DKIM" : "Transporter is using DKIM certificate."}`);
 });
+
 /* Database settings - Storage */
 db_type	= {
 	influxdb: true, // Does not make any sense to disable this feature... but...
