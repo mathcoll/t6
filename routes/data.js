@@ -209,85 +209,93 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 		t6console.log(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(data => {
-			var graphData = [];
-			let svg;
-			if(graphType === "bar") {
-				data.map(function(row) {
-					if (typeof row.time!=="undefined") {
-						graphData.push({key: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
+			if ( data.length > 0 ) {
+				var graphData = [];
+				let svg;
+				if(graphType === "bar") {
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push({key: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
+						}
+					});
+					svg = d3nBar({
+						data: graphData,
+						selector: "",
+						container: "",
+						labels: { xAxis: xAxis, yAxis: yAxis },
+						width: width,
+						height: height,
+					});
+				} else if(graphType === "line") {
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push({key: moment(row.time._nanoISO), value: row[select]}); // TODO : security	
+						}
+					});
+					svg = d3nLine({
+						data: graphData,
+						selector: "",
+						container: "",
+						labels: { xAxis: xAxis, yAxis: yAxis },
+						width: width,
+						height: height,
+					});
+				} else if(graphType === "voronoi") {
+					let n=0;
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push(row[select]); // TODO : security	
+							n++;
+						}
+					});
+					svg = d3nVoronoi(graphData);
+				} else if(graphType === "pie") {
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push({label: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
+						}
+					});
+					svg = d3nPie({
+						data: graphData,
+						selector: "",
+						container: "",
+						labels: { xAxis: xAxis, yAxis: yAxis },
+						width: width,
+						height: height,
+					});
+				} else if(graphType === "kernelDensityEstimation") {
+					data.map(function(row) {
+						if (typeof row.time!=="undefined") {
+							graphData.push(row[select]); // TODO : security	
+						}
+					});
+					let dataDensity = new Array();
+		console.log(1, dataDensity);
+					let densityFunc = statistics.kernelDensityEstimation(graphData);
+		console.log(2, densityFunc);
+					let step = Math.round(statistics.max(graphData) - statistics.min(graphData), 0)/ticks;
+		console.log(3, step);
+					for(let n=statistics.min(graphData); n<statistics.max(graphData); n+=step) {
+						dataDensity.push({key: Math.round(n*100/100), value: densityFunc(n)});
 					}
-				});
-				svg = d3nBar({
-					data: graphData,
-					selector: "",
-					container: "",
-					labels: { xAxis: xAxis, yAxis: yAxis },
-					width: width,
-					height: height,
-				});
-			} else if(graphType === "line") {
-				data.map(function(row) {
-					if (typeof row.time!=="undefined") {
-						graphData.push({key: moment(row.time._nanoISO), value: row[select]}); // TODO : security	
-					}
-				});
-				svg = d3nLine({
-					data: graphData,
-					selector: "",
-					container: "",
-					labels: { xAxis: xAxis, yAxis: yAxis },
-					width: width,
-					height: height,
-				});
-			} else if(graphType === "voronoi") {
-				let n=0;
-				data.map(function(row) {
-					if (typeof row.time!=="undefined") {
-						graphData.push(row[select]); // TODO : security	
-						n++;
-					}
-				});
-				svg = d3nVoronoi(graphData);
-			} else if(graphType === "pie") {
-				data.map(function(row) {
-					if (typeof row.time!=="undefined") {
-						graphData.push({label: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
-					}
-				});
-				svg = d3nPie({
-					data: graphData,
-					selector: "",
-					container: "",
-					labels: { xAxis: xAxis, yAxis: yAxis },
-					width: width,
-					height: height,
-				});
-			} else if(graphType === "kernelDensityEstimation") {
-				data.map(function(row) {
-					if (typeof row.time!=="undefined") {
-						graphData.push(row[select]); // TODO : security	
-					}
-				});
-				let dataDensity = new Array();
-				let densityFunc = statistics.kernelDensityEstimation(graphData);
-				let step = Math.round(statistics.max(graphData) - statistics.min(graphData), 0)/ticks;
-				for(let n=statistics.min(graphData); n<statistics.max(graphData); n+=step) {
-					dataDensity.push({key: Math.round(n*100/100), value: densityFunc(n)});
+		console.log(4, dataDensity);
+					svg = d3nBar({
+						data: dataDensity,
+						selector: "",
+						container: "",
+						labels: { xAxis: xAxis, yAxis: yAxis },
+						width: width,
+						height: height,
+					});
 				}
-				svg = d3nBar({
-					data: dataDensity,
-					selector: "",
-					container: "",
-					labels: { xAxis: xAxis, yAxis: yAxis },
-					width: width,
-					height: height,
-				});
+				
+				res.setHeader("content-type", "image/svg+xml");
+				res.status(200).send(svg.svgString());
+			} else {
+				res.status(404).send({err: "No data found", "id": 898.5, "code": 404, "message": "Not found"});
 			}
-			
-			res.setHeader("content-type", "image/svg+xml");
-			res.status(200).send(svg.svgString());
 		}).catch(err => {
-			res.status(500).send({err: err, "id": 899, "code": 500, "message": "Internal Error"});
+			res.status(500).send({err: err, "id": 898, "code": 500, "message": "Internal Error"});
 		});
 	}
 });
@@ -449,7 +457,9 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				data.groups = undefined;
 
 				res.status(200).send(new DataSerializer(data).serialize());
-			};
+			} else {
+				res.status(404).send({err: "No data found", "id": 899.5, "code": 404, "message": "Not found"});
+			}
 		}).catch(err => {
 			res.status(500).send({err: err, "id": 899, "code": 500, "message": "Internal Error"});
 		});
