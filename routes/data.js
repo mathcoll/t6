@@ -178,10 +178,6 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 		let fields;
 
 		fields = getFieldsFromDatatype(datatype, false);
-		var d3nBar = require("d3node-barchart");
-		var d3nLine = require("d3node-linechart");
-		var d3nVoronoi = require("d3node-voronoi");
-		var d3nPie = require("d3node-piechart");
 		var statistics = require("simple-statistics");
 		let dt = getFieldsFromDatatype(datatype, false, false);
 		if ( typeof select!=="undefined" ) { // TODO: needs refacto and allows multiple coma separated values
@@ -213,6 +209,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 				var graphData = [];
 				let svg;
 				if(graphType === "bar") {
+					var d3nBar = require("d3node-barchart");
 					data.map(function(row) {
 						if (typeof row.time!=="undefined") {
 							graphData.push({key: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
@@ -227,6 +224,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 						height: height,
 					});
 				} else if(graphType === "line") {
+					var d3nLine = require("d3node-linechart");
 					data.map(function(row) {
 						if (typeof row.time!=="undefined") {
 							graphData.push({key: moment(row.time._nanoISO), value: row[select]}); // TODO : security	
@@ -241,6 +239,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 						height: height,
 					});
 				} else if(graphType === "voronoi") {
+					var d3nVoronoi = require("d3node-voronoi");
 					let n=0;
 					data.map(function(row) {
 						if (typeof row.time!=="undefined") {
@@ -250,6 +249,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 					});
 					svg = d3nVoronoi(graphData);
 				} else if(graphType === "pie") {
+					var d3nPie = require("d3node-piechart");
 					data.map(function(row) {
 						if (typeof row.time!=="undefined") {
 							graphData.push({label: moment(row.time._nanoISO).format(typeof dateFormat!=="undefined"?dateFormat:"YYYY MM DD"), value: row[select]}); // TODO : security	
@@ -270,15 +270,11 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 						}
 					});
 					let dataDensity = new Array();
-		console.log(1, dataDensity);
 					let densityFunc = statistics.kernelDensityEstimation(graphData);
-		console.log(2, densityFunc);
 					let step = Math.round(statistics.max(graphData) - statistics.min(graphData), 0)/ticks;
-		console.log(3, step);
 					for(let n=statistics.min(graphData); n<statistics.max(graphData); n+=step) {
 						dataDensity.push({key: Math.round(n*100/100), value: densityFunc(n)});
 					}
-		console.log(4, dataDensity);
 					svg = d3nBar({
 						data: dataDensity,
 						selector: "",
@@ -420,7 +416,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				//case "mean": fields += ", MEAN(valueFloat)";break;
 			}
 		} else {
-			fields = getFieldsFromDatatype(datatype, false);
+			fields = getFieldsFromDatatype(datatype, true, true);
 		}
 
 		let group_by = "";
