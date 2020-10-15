@@ -70,6 +70,7 @@ var app = {
 		"users-list": "t6 Users Accounts",
 		"compatible-devices": "t6 Compatible Devices",
 		"openSourceLicenses": "Open-Source licenses",
+		"exploration": "Data Exploration",
 	},
 	icons: {
 		"color": "format_color_fill",
@@ -777,6 +778,7 @@ var touchStartPoint, touchMovePoint;
 			status: document.querySelector('section#status'),
 			terms: document.querySelector('section#terms'),
 			docs: document.querySelector('section#docs'),
+			exploration: document.querySelector('section#exploration'),
 			usersList: document.querySelector('section#users-list'),
 			compatibleDevices: document.querySelector('section#compatible-devices'),
 			openSourceLicenses: document.querySelector('section#openSourceLicenses'),
@@ -1057,7 +1059,10 @@ var touchStartPoint, touchMovePoint;
 			if ( typeof firebase !== "undefined" ) {
 				firebase.analytics().logEvent('manage_notifications');
 			}
-		} else {
+		} else if ( section === 'exploration' ) {
+			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
+			window.location.hash = '#'+section;
+		}  else {
 			document.title = app.sectionsPageTitles[section]!==undefined?app.sectionsPageTitles[section]:app.defaultPageTitle;
 			window.location.hash = '#'+section;
 			app.fetchItemsPaginated(section, undefined, app.itemsPage[section], app.itemsSize[section]);
@@ -1790,6 +1795,10 @@ var touchStartPoint, touchMovePoint;
 	
 	app.addChipTo = function(container, chip) {
 		document.getElementById(container).append(app.displayChip(chip));
+	};
+	
+	app.removeChipFrom = function(container) {
+		while (document.getElementById(container).firstChild) { document.getElementById(container).removeChild(document.getElementById(container).firstChild); }
 	};
 	
 	app.displayChipSnippet = function(chipSnippet) {
@@ -2590,40 +2599,81 @@ var touchStartPoint, touchMovePoint;
 	app.showAddFAB = function(type) {
 		var container;
 		var showFAB = false;
-		if( type == 'objects' ) {
+		if( type === 'objects' ) {
 			var id = 'createObject';
 			container = (app.containers.objects).querySelector('.page-content');
 			showFAB = true;
 		}
-		if( type == 'flows' ) {
+		if( type === 'flows' ) {
 			var id = 'createFlow';
 			container = (app.containers.flows).querySelector('.page-content');
 			showFAB = true;
 		}
-		if( type == 'dashboards' ) {
+		if( type === 'dashboards' ) {
 			var id = 'createDashboard';
 			container = (app.containers.dashboards).querySelector('.page-content');
 			showFAB = true;
 		}
-		if( type == 'snippets' ) {
+		if( type === 'snippets' ) {
 			var id = 'createSnippet';
 			container = (app.containers.snippets).querySelector('.page-content');
 			showFAB = true;
 		}
-		if( type == 'rules' ) {
+		if( type === 'rules' ) {
 			var id = 'createRule';
 			container = (app.containers.rules).querySelector('.page-content');
 			showFAB = true;
 		}
-		if( type == 'mqtts' ) {
+		if( type === 'mqtts' ) {
 			var id = 'createMqtt';
 			container = (app.containers.mqtts).querySelector('.page-content');
 			showFAB = true;
 		}
-		if( type == 'sources' ) {
+		if( type === 'sources' ) {
 			var id = 'createSource';
 			container = (app.containers.sources).querySelector('.page-content');
 			showFAB = true;
+		}
+		if( type === 'exploration' ) {
+			var id = 'exploreFlowsFAB';
+			container = (app.containers.exploration).querySelector('.page-content');
+			var fabClass = app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom';
+			var fab = "<div class='mdl-button--fab_flinger-container "+fabClass+"'>";
+			fab += "	<button id='"+id+"' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
+			fab += "		<i class='material-icons'>flare</i>";
+			fab += "		<div class='mdl-tooltip mdl-tooltip--top' for='"+id+"'>Explore</label>";
+			fab += "	</button>";
+			fab += "</div>";
+			container.innerHTML += fab;
+			componentHandler.upgradeDom();
+			if ( document.getElementById("exploreFlowsFAB") ) {
+				document.getElementById("exploreFlowsFAB").addEventListener("click", function(evt) {
+					toast("Exploring... Please wait.", {timeout:3000, type: "info"});
+					var myForm = evt.target.parentNode.parentNode.parentNode;
+					var my_flow_id = Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; });
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = app.baseUrl+"/"+app.api_version+"/exploration/summary?flow_id="+my_flow_id;
+					fetch(url, myInit)
+					.then(
+						app.fetchStatusHandler
+					).then(function(fetchResponse){ 
+						return fetchResponse.json();
+					})
+					.then(function(response) {
+						document.getElementById("exploreResults").innerHTML = "";
+						for (const [key, value] of Object.entries(response)) {
+							document.getElementById("exploreResults").innerHTML += app.getField("bubble_chart", key, value, {type: "text"});
+						};
+					})
+					.catch(function (error) {
+						toast("Exploring error.", {timeout:3000, type: "error"});
+					});
+					evt.preventDefault();
+				}, false);
+			}
 		}
 		if ( showFAB  && container ) {
 			var fabClass = app.getSetting('settings.fab_position')!==null?app.getSetting('settings.fab_position'):'fab__bottom';
@@ -3466,6 +3516,52 @@ var touchStartPoint, touchMovePoint;
 		});
 		app.containers.spinner.setAttribute('hidden', true);
 	};
+
+	app.getExploration = function() {
+		let explorationNode = "";
+		explorationNode += app.getSubtitle('Data Flows to explore');
+		explorationNode += "<section class='mdl-grid mdl-cell--12-col' data-id=''>";
+		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+		explorationNode += "		<div>&nbsp;</div>";
+
+		if ( localStorage.getItem("flows") != "null" ) {
+			var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+				return {value: flow.name, name: flow.id};
+			});
+			explorationNode += app.getField(app.icons.flows, "Flows to explore", "", {type: "select", id: "flowsChipsSelect", isEdit: true, options: flows });
+		} else {
+			app.getFlows();
+			explorationNode += app.getField(app.icons.flows, "Flows to explore", "", {type: "select", id: "flowsChipsSelect", isEdit: true, options: {} });
+		}
+		explorationNode += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
+		explorationNode += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
+		explorationNode += "		</div>";
+		explorationNode += "		<div>&nbsp;</div>";
+		explorationNode += "	</div>";
+		explorationNode += "</section>";
+		
+		//explorationNode += app.getSubtitle('Filters');
+		
+		explorationNode += app.getSubtitle('Exploration');
+		explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
+		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+		explorationNode += "		<div>&nbsp;</div>";
+		explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='exploreResults'></div>";
+		explorationNode += "		<div>&nbsp;</div>";
+		explorationNode += "	</div>";
+		explorationNode += "</section>";
+		(app.containers.exploration).querySelector('.page-content').innerHTML = explorationNode;
+		app.showAddFAB("exploration");
+		componentHandler.upgradeDom();
+		document.getElementById("flowsChipsSelect").parentNode.querySelector("div.mdl-selectfield__list-option-box ul").addEventListener("click", function(evt) {
+			var id = evt.target.getAttribute("data-value");
+			var name = evt.target.innerText;
+			app.removeChipFrom("flowsChips");
+			app.addChipTo("flowsChips", {name: name, id: id, type: "flows"});
+			evt.preventDefault();
+		}, false);
+		app.containers.spinner.setAttribute('hidden', true);
+	};
 	
 	app.toggleElement = function(id) {
 		document.querySelector('#'+id).classList.toggle('hidden');
@@ -3707,6 +3803,9 @@ var touchStartPoint, touchMovePoint;
 				app.onStatusButtonClick();
 			} else if ( currentPage === 'settings' ) {
 				app.onSettingsButtonClick();
+			} else if ( currentPage === 'exploration' ) {
+				app.getExploration();
+				app.setSection('exploration');
 			} else if ( currentPage === 'login' ) {
 				app.isLogged = false;
 				localStorage.setItem("bearer", null);

@@ -237,6 +237,7 @@ var ota				= require("./routes/ota");
 var sources			= require("./routes/sources");
 var uis				= require("./routes/uis");
 var news			= require("./routes/news");
+var exploration		= require("./routes/exploration");
 app					= express();
 
 var CrossDomain = function(req, res, next) {
@@ -294,6 +295,7 @@ app.use("/v"+version+"/ifttt", ifttt);
 app.use("/v"+version+"/ota", ota);
 app.use("/v"+version+"/sources", sources);
 app.use("/v"+version+"/uis", uis);
+app.use("/v"+version+"/exploration", exploration);
 app.use("/news", news);
 app.use("/", pwa);
 

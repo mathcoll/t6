@@ -4,12 +4,12 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     if process.env.NODE_ENV === 'development'
       title DEV t6 IoT
     else
-      title t6 IoT api and mobile Application: connect physical world to your api and collect data
+      title t6 IoT api and mobile Application: connect physical world to your api and collect data.
     meta(charset='utf-8')
     meta(name='fragment', content='#')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0')
-    meta(name='Description' content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='Description' content='t6 IoT api and mobile Application: connect physical world to your api and collect data.')
     meta(name='apple-mobile-web-app-title', content='t6 IoT App')
     meta(name='apple-mobile-web-app-capable', content='yes')
     meta(name='apple-mobile-web-app-status-bar-style', content='black')
@@ -33,7 +33,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     meta(property='og:url', content=baseUrl_https)
     //- Schema.org for Google
     meta(itemprop='name', content='t6 IoT')
-    meta(itemprop='description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(itemprop='description', content='t6 IoT api and mobile Application: connect physical world to your api and collect data.')
     meta(itemprop='image', content=baseUrlCdn + '/img/repository-open-graph.jpg')
     //- Mobile App for iOS & Android
     //- Twitter
@@ -44,11 +44,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     meta(name='twitter:text:title', content='t6 IoT')
     meta(name='twitter:image', content=baseUrlCdn + '/img/repository-open-graph.jpg')
     meta(name='twitter:image:alt', content='t6 IoT, connect physical Objects to timeseries.')
-    meta(name='twitter:description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='twitter:description', content='t6 IoT api and mobile Application: connect physical world to your api and collect data.')
     //- Twitter - Mobile App (iOS & Android)
     //- Open Graph general (Facebook, Pinterest & Google+)
     meta(name='og:title', content='t6 IoT')
-    meta(name='og:description', content='t6 is an oriented-Data platform to connect physical Objects with timeseries DB.')
+    meta(name='og:description', content='t6 IoT api and mobile Application: connect physical world to your api and collect data.')
     meta(name='og:type', content='website')
     meta(property='og:image:type', content='image/jpeg')
     if trackings.googleSigninClientId
@@ -121,6 +121,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link.mdl-layout__tab(href='#dashboards', for='dashboards')
             i.material-icons dashboard
             |  Dashboards
+          a.mdl-navigation__link.mdl-layout__tab(href='#exploration', for='exploration')
+            i.material-icons flare
+            |  Data Exploration
           a.mdl-navigation__link.mdl-layout__tab(href='#snippets', for='snippets')
             i.material-icons widgets
             |  Snippets
@@ -149,6 +152,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link(href='#dashboards')
             i.material-icons dashboard
             |  Dashboards
+          a.mdl-navigation__link(href='#exploration')
+            i.material-icons flare
+            |  Data Exploration
           a.mdl-navigation__link(href='#snippets')
             i.material-icons widgets
             |  Snippets
