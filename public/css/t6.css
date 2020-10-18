@@ -5,6 +5,7 @@ h1, h2, h3, h4, h5, h6 {
 .label-primary {
     background-color: #795548 !important;
 }
+
 a, a:hover, a:focus {
     color: #795548 !important;
 }
@@ -15,6 +16,7 @@ a, a:hover, a:focus {
     white-space:pre;
     max-width: none;
 }
+
 .starter-template {
   padding: 60px 5px 0px 15px;
   margin-top:40px;
@@ -53,6 +55,7 @@ a.white {
 	border: 1px solid #e7e7e7;
 	border-top: 0 none;
 }
+
 .navbar-toggle.navbar-left {
 	float: left;
 	margin-left: 10px;
