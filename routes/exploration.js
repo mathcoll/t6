@@ -112,7 +112,7 @@ router.get("/summary/?", expressJwt({secret: jwtsettings.secret, algorithms: jwt
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 		let dt = getFieldsFromDatatype(datatype, false, false);
-		let where;
+		let where = "";
 		if ( typeof req.query.start !== "undefined" ) {
 			if(!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
 				if ( req.query.start.toString().length === 10 ) { start = req.query.start*1e9; }
@@ -122,7 +122,7 @@ router.get("/summary/?", expressJwt({secret: jwtsettings.secret, algorithms: jwt
 			} else {
 				where += sprintf(" AND time>='%s'", req.query.start.toString());
 			}
-		}	
+		}
 		if ( typeof req.query.end !== "undefined" ) {
 			if(!isNaN(req.query.end) && parseInt(req.query.end, 10)) {
 				if ( req.query.end.toString().length === 10 ) { end = req.query.end*1e9; }
@@ -133,7 +133,7 @@ router.get("/summary/?", expressJwt({secret: jwtsettings.secret, algorithms: jwt
 				where += sprintf(" AND time<='%s'", req.query.end.toString());
 			}
 		}
-		if(!where) {
+		if(where==="") {
 			where = "AND time > now()-52w";// TODO : performance issue ; make the max to 1Y
 		}
 		let query = `SELECT FIRST(${dt}) as First, LAST(${dt}) as Last, COUNT(${dt}) as Count, MEAN(${dt}) as Mean, stddev(${dt}) as StdDev, MIN(${dt}) as Minimum, MAX(${dt}) as Maximum, MEDIAN(${dt}) as Median, PERCENTILE(${dt},25) as "Percentile 25", PERCENTILE(${dt},50) as "Percentile 50", PERCENTILE(${dt},75) as "Percentile 75" FROM data WHERE flow_id='${flow_id}' ${where}`;

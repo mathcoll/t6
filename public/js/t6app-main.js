@@ -178,6 +178,7 @@ var app = {
 		meta_revision: "^[0-9]{1,}$",
 		ttl: "^[1-9]+$",
 		uuidv4: "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
+		date: "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]) ([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$",
 	},
 	resources: {},
 	buttons: {}, // see function app.refreshButtonsSelectors()
@@ -2655,7 +2656,9 @@ var touchStartPoint, touchMovePoint;
 					myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 					myHeaders.append("Content-Type", "application/json");
 					var myInit = { method: "GET", headers: myHeaders };
-					var url = app.baseUrl+"/"+app.api_version+"/exploration/summary?flow_id="+my_flow_id;
+					var start = typeof myForm.querySelector("#start").value!=="undefined"?"&start="+myForm.querySelector("#start").value:"";
+					var end = typeof myForm.querySelector("#end").value!=="undefined"?"&end="+myForm.querySelector("#end").value:"";
+					var url = app.baseUrl+"/"+app.api_version+`/exploration/summary?flow_id=${my_flow_id}${start}${end}`;
 					fetch(url, myInit)
 					.then(
 						app.fetchStatusHandler
@@ -3540,7 +3543,15 @@ var touchStartPoint, touchMovePoint;
 		explorationNode += "	</div>";
 		explorationNode += "</section>";
 		
-		//explorationNode += app.getSubtitle('Filters');
+		explorationNode += app.getSubtitle('Filters');
+		explorationNode += "<section class='mdl-grid mdl-cell--12-col' data-id=''>";
+		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+		explorationNode += "		<div>&nbsp;</div>";
+		explorationNode += app.getField(app.icons.date, "From date", moment().subtract(7, "days").format("YYYY-MM-DD HH:mm:ss"), {type: "text", id: "start", pattern: app.patterns.date, isEdit: true});
+		explorationNode += app.getField(app.icons.date, "To date", moment().format("YYYY-MM-DD HH:mm:ss"), {type: "text", id: "end", pattern: app.patterns.date, isEdit: true});
+		explorationNode += "		<div>&nbsp;</div>";
+		explorationNode += "	</div>";
+		explorationNode += "</section>";
 		
 		explorationNode += app.getSubtitle('Exploration');
 		explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
