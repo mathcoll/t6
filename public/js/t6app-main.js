@@ -2670,6 +2670,18 @@ var touchStartPoint, touchMovePoint;
 						for (const [key, value] of Object.entries(response)) {
 							document.getElementById("exploreResults").innerHTML += app.getField("bubble_chart", key, value, {type: "text"});
 						};
+						var start = typeof myForm.querySelector("#start").value!=="undefined"?"&start="+myForm.querySelector("#start").value:"";
+						var end = typeof myForm.querySelector("#end").value!=="undefined"?"&end="+myForm.querySelector("#end").value:"";
+						var url = app.baseUrl+"/"+app.api_version+`/exploration/${my_flow_id}/exploration?graphType=boxplot&width=200&height=600&xAxis=Boxplot&${start}${end}`;
+						fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						)
+						.then(response => response.text())
+						.then(svg => document.getElementById("explorationBoxPlot").insertAdjacentHTML("afterbegin", svg))
+						.catch(function (error) {
+							toast("Exploring error.", {timeout:3000, type: "error"});
+						});
 					})
 					.catch(function (error) {
 						toast("Exploring error.", {timeout:3000, type: "error"});
@@ -3544,7 +3556,7 @@ var touchStartPoint, touchMovePoint;
 		explorationNode += "</section>";
 		
 		explorationNode += app.getSubtitle('Filters');
-		explorationNode += "<section class='mdl-grid mdl-cell--12-col' data-id=''>";
+		explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
 		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 		explorationNode += "		<div>&nbsp;</div>";
 		explorationNode += app.getField(app.icons.date, "From date", moment().subtract(7, "days").format("YYYY-MM-DD HH:mm:ss"), {type: "text", id: "start", pattern: app.patterns.date, isEdit: true});
@@ -3554,13 +3566,22 @@ var touchStartPoint, touchMovePoint;
 		explorationNode += "</section>";
 		
 		explorationNode += app.getSubtitle('Exploration');
-		explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
+		explorationNode += "<section class='mdl-grid mdl-cell--9-col'>";
 		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 		explorationNode += "		<div>&nbsp;</div>";
 		explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='exploreResults'></div>";
 		explorationNode += "		<div>&nbsp;</div>";
 		explorationNode += "	</div>";
 		explorationNode += "</section>";
+		
+		explorationNode += "<section class='mdl-grid mdl-cell--3-col'>";
+		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+		explorationNode += "		<div>&nbsp;</div>";
+		explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='explorationBoxPlot'></div>";
+		explorationNode += "		<div>&nbsp;</div>";
+		explorationNode += "	</div>";
+		explorationNode += "</section>";
+		
 		(app.containers.exploration).querySelector('.page-content').innerHTML = explorationNode;
 		app.showAddFAB("exploration");
 		componentHandler.upgradeDom();
