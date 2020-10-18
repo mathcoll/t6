@@ -195,7 +195,7 @@ router.get("/summary/?", expressJwt({secret: jwtsettings.secret, algorithms: jwt
  */
 router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var flow_id = req.params.flow_id;
-	var select = req.query.select;
+	var select = typeof req.query.select?req.query.select:undefined;
 	var group = req.query.group;
 	var dateFormat = req.query.dateFormat;
 	var graphType = req.query.graphType;
@@ -325,15 +325,18 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({secret: jwtsettin
 					});
 				} else if(graphType === "boxplot") {
 					var d3nBoxplot = require("d3node-boxplot");
-					let n=0;
+					let boxplotData = {};
 					data.map(function(row) {
-						if (typeof row.time!=="undefined" && row[select]!=null) {
-							graphData.push(row[select]); // TODO : security
-							n++;	
+						if (typeof row.time!=="undefined") {
+							boxplotData.q1 = row.p25;
+							boxplotData.median = row.mean;
+							boxplotData.q3 = row.p75;
+							boxplotData.min = row.min;
+							boxplotData.max = row.max;
 						}
 					});
 					svg = d3nBoxplot({
-						data: graphData,
+						data: boxplotData,
 						selector: "",
 						container: "",
 						labels: { xAxis: xAxis, yAxis: yAxis },
