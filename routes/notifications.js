@@ -223,7 +223,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret, algorithm
 	if ( req.user.role === "admin" ) {
 		var year = req.query.year;
 		var template = req.query.template;
-		var subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰  t6 updates";
+		var subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰 t6 updates";
 		users	= db.getCollection("users");
 		var query = { "$and": [
 					{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
@@ -232,8 +232,8 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret, algorithm
 		if ( json.length > 0 && year && template ) {
 			/* Send a newsletter to each subscribers */
 			json.forEach(function(user) {
-				t6console.info("Rendering email bod yfor" + user.firstName+" "+user.lastName+" <"+user.email+">");
-				res.render("emails/newsletters/"+year+"/"+template, {user: user}, function(err, html) {
+				t6console.info("Rendering email body for " + user.firstName+" "+user.lastName+" <"+user.email+">");
+				res.render("emails/newsletters/"+template, {user: user}, function(err, html) {
 					var to = user.firstName+" "+user.lastName+" <"+user.email+">";
 					var mailOptions = {
 						from: from,
