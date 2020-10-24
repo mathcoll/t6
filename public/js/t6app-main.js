@@ -3533,65 +3533,67 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.getExploration = function() {
-		let explorationNode = "";
-		explorationNode += app.getSubtitle('Data Flows to explore');
-		explorationNode += "<section class='mdl-grid mdl-cell--12-col' data-id=''>";
-		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		explorationNode += "		<div>&nbsp;</div>";
-
-		if ( localStorage.getItem("flows") != "null" ) {
-			var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
-				return {value: flow.name, name: flow.id};
-			});
-			explorationNode += app.getField(app.icons.flows, "Flows to explore", "", {type: "select", id: "flowsChipsSelect", isEdit: true, options: flows });
-		} else {
-			app.getFlows();
-			explorationNode += app.getField(app.icons.flows, "Flows to explore", "", {type: "select", id: "flowsChipsSelect", isEdit: true, options: {} });
+		if ( app.isLogged ) {
+			let explorationNode = "";
+			explorationNode += app.getSubtitle('Data Flows to explore');
+			explorationNode += "<section class='mdl-grid mdl-cell--12-col' data-id=''>";
+			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+			explorationNode += "		<div>&nbsp;</div>";
+	
+			if ( localStorage.getItem("flows") != "null" ) {
+				var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+					return {value: flow.name, name: flow.id};
+				});
+				explorationNode += app.getField(app.icons.flows, "Flows to explore", "", {type: "select", id: "flowsChipsSelect", isEdit: true, options: flows });
+			} else {
+				app.getFlows();
+				explorationNode += app.getField(app.icons.flows, "Flows to explore", "", {type: "select", id: "flowsChipsSelect", isEdit: true, options: {} });
+			}
+			explorationNode += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
+			explorationNode += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
+			explorationNode += "		</div>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "	</div>";
+			explorationNode += "</section>";
+			
+			explorationNode += app.getSubtitle('Filters');
+			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
+			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += app.getField(app.icons.date, "From date", moment().subtract(7, "days").format("YYYY-MM-DD HH:mm:ss"), {type: "text", id: "start", pattern: app.patterns.date, isEdit: true});
+			explorationNode += app.getField(app.icons.date, "To date", moment().format("YYYY-MM-DD HH:mm:ss"), {type: "text", id: "end", pattern: app.patterns.date, isEdit: true});
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "	</div>";
+			explorationNode += "</section>";
+			
+			explorationNode += app.getSubtitle('Exploration');
+			explorationNode += "<section class='mdl-grid mdl-cell--9-col'>";
+			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='exploreResults'></div>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "	</div>";
+			explorationNode += "</section>";
+			
+			explorationNode += "<section class='mdl-grid mdl-cell--3-col'>";
+			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='explorationBoxPlot'></div>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "	</div>";
+			explorationNode += "</section>";
+			
+			(app.containers.exploration).querySelector('.page-content').innerHTML = explorationNode;
+			app.showAddFAB("exploration");
+			componentHandler.upgradeDom();
+			document.getElementById("flowsChipsSelect").parentNode.querySelector("div.mdl-selectfield__list-option-box ul").addEventListener("click", function(evt) {
+				var id = evt.target.getAttribute("data-value");
+				var name = evt.target.innerText;
+				app.removeChipFrom("flowsChips");
+				app.addChipTo("flowsChips", {name: name, id: id, type: "flows"});
+				evt.preventDefault();
+			}, false);
 		}
-		explorationNode += "		<div class='mdl-list__item--three-line small-padding  mdl-card--expand mdl-chips chips-initial input-field' id='flowsChips'>";
-		explorationNode += "			<span class='mdl-chips__arrow-down__container mdl-selectfield__arrow-down__container'><span class='mdl-chips__arrow-down'></span></span>";
-		explorationNode += "		</div>";
-		explorationNode += "		<div>&nbsp;</div>";
-		explorationNode += "	</div>";
-		explorationNode += "</section>";
-		
-		explorationNode += app.getSubtitle('Filters');
-		explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
-		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		explorationNode += "		<div>&nbsp;</div>";
-		explorationNode += app.getField(app.icons.date, "From date", moment().subtract(7, "days").format("YYYY-MM-DD HH:mm:ss"), {type: "text", id: "start", pattern: app.patterns.date, isEdit: true});
-		explorationNode += app.getField(app.icons.date, "To date", moment().format("YYYY-MM-DD HH:mm:ss"), {type: "text", id: "end", pattern: app.patterns.date, isEdit: true});
-		explorationNode += "		<div>&nbsp;</div>";
-		explorationNode += "	</div>";
-		explorationNode += "</section>";
-		
-		explorationNode += app.getSubtitle('Exploration');
-		explorationNode += "<section class='mdl-grid mdl-cell--9-col'>";
-		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		explorationNode += "		<div>&nbsp;</div>";
-		explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='exploreResults'></div>";
-		explorationNode += "		<div>&nbsp;</div>";
-		explorationNode += "	</div>";
-		explorationNode += "</section>";
-		
-		explorationNode += "<section class='mdl-grid mdl-cell--3-col'>";
-		explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-		explorationNode += "		<div>&nbsp;</div>";
-		explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='explorationBoxPlot'></div>";
-		explorationNode += "		<div>&nbsp;</div>";
-		explorationNode += "	</div>";
-		explorationNode += "</section>";
-		
-		(app.containers.exploration).querySelector('.page-content').innerHTML = explorationNode;
-		app.showAddFAB("exploration");
-		componentHandler.upgradeDom();
-		document.getElementById("flowsChipsSelect").parentNode.querySelector("div.mdl-selectfield__list-option-box ul").addEventListener("click", function(evt) {
-			var id = evt.target.getAttribute("data-value");
-			var name = evt.target.innerText;
-			app.removeChipFrom("flowsChips");
-			app.addChipTo("flowsChips", {name: name, id: id, type: "flows"});
-			evt.preventDefault();
-		}, false);
 		app.containers.spinner.setAttribute('hidden', true);
 	};
 	
