@@ -2162,7 +2162,7 @@ var touchStartPoint, touchMovePoint;
 				}
 				if ( user.attributes.location ) {
 					if ( user.attributes.location.geo ) {
-						usersList += app.getField('dns', 'Location', user.attributes.location.geo.city+" ("+user.attributes.location.geo.country+")", {type: 'text', isEdit: false });
+						usersList += app.getField('my_location', 'Location', user.attributes.location.geo.city+" ("+user.attributes.location.geo.country+")", {type: 'text', isEdit: false });
 					}
 					if ( user.attributes.location.ip ) {
 						usersList += app.getField('dns', 'IP address', user.attributes.location.ip, {type: 'text', isEdit: false });
