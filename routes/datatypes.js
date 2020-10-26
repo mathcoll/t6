@@ -68,7 +68,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiPermission Admin
  * 
  * @apiParam {uuid-v4} datatype_id DataType Id
- * @apiParam {String} [name]
+ * @apiParam {String} name Name of datatype
+ * @apiParam {String="categorical","continuous","object"} type Type of the datatype 
  * 
  * @apiUse 401
  */
@@ -81,6 +82,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 			function(i){return i.id==datatype_id;},
 			function(item){
 				item.name	= typeof req.body.name!=="undefined"?req.body.name:item.name;
+				item.type	= (typeof req.body.type!=="undefined" && (req.body.type==="continuous"||req.body.type==="object"||req.body.type==="categorical"))?req.body.type:item.type;
 				result 		= item;
 			}
 		);
