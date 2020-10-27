@@ -6,7 +6,7 @@ function DataTypeSerializer(datatype) {
 	this.serialize = function () {
 		return new JSONAPISerializer("datatype", {
 			keyForAttribute: "underscore_case",
-			attributes: ["name", "type"],
+			attributes: ["name", "type", "classification"],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/datatypes", baseUrl_https, version)
 			},

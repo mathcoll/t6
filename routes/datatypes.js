@@ -40,15 +40,29 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
  * @apiPermission Admin
  * 
  * @apiParam {String} [name=unamed] DataType Name
+ * @apiParam {String="categorical","numerical","object"} type Type of the datatype
+ * @apiParam {String="discrete","continuous","ordinal","nominal"} classification Classification of the datatype
  * 
  * @apiUse 401
  */
 router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		datatypes	= db.getCollection("datatypes");
+		var classification = undefined;
+		if(typeof req.body.type!=="undefined") {
+			if(req.body.type==="numerical") {
+				classification = (req.body.classification==="discrete" || req.body.classification==="continuous")?req.body.classification:undefined;
+			} else if(req.body.type==="categorical") {
+				classification = (req.body.classification==="ordinal" || req.body.classification==="nominal")?req.body.classification:undefined;
+			}
+		} else {
+			classification = (req.body.classification==="discrete" || req.body.classification==="continuous" || req.body.classification==="ordinal" || req.body.classification==="nominal")?req.body.classification:undefined;
+		}
 		var newDatatype = {
 			id:		uuid.v4(),
 			name:	typeof req.body.name!=="undefined"?req.body.name:"unamed",
+			type:	(typeof req.body.type!=="undefined" && (req.body.type==="numerical"||req.body.type==="object"||req.body.type==="categorical"))?req.body.type:undefined,
+			classification:	classification,
 		};
 		datatypes.insert(newDatatype);
 		
@@ -69,7 +83,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * 
  * @apiParam {uuid-v4} datatype_id DataType Id
  * @apiParam {String} name Name of datatype
- * @apiParam {String="categorical","continuous","object"} type Type of the datatype 
+ * @apiParam {String="categorical","numerical","object"} type Type of the datatype
+ * @apiParam {String="discrete","continuous","ordinal","nominal"} classification Classification of the datatype
  * 
  * @apiUse 401
  */
@@ -77,12 +92,23 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 	if ( req.user.role === "admin" ) {
 		var datatype_id = req.params.datatype_id;
 		datatypes	= db.getCollection("datatypes");
+		var classification = undefined;
+		if(typeof req.body.type!=="undefined") {
+			if(req.body.type==="numerical") {
+				classification = (req.body.classification==="discrete" || req.body.classification==="continuous")?req.body.classification:undefined;
+			} else if(req.body.type==="categorical") {
+				classification = (req.body.classification==="ordinal" || req.body.classification==="nominal")?req.body.classification:undefined;
+			}
+		} else {
+			classification = (req.body.classification==="discrete" || req.body.classification==="continuous" || req.body.classification==="ordinal" || req.body.classification==="nominal")?req.body.classification:undefined;
+		}
 		var result;
 		datatypes.findAndUpdate(
 			function(i){return i.id==datatype_id;},
 			function(item){
 				item.name	= typeof req.body.name!=="undefined"?req.body.name:item.name;
-				item.type	= (typeof req.body.type!=="undefined" && (req.body.type==="continuous"||req.body.type==="object"||req.body.type==="categorical"))?req.body.type:item.type;
+				item.type	= (typeof req.body.type!=="undefined" && (req.body.type==="numerical"||req.body.type==="object"||req.body.type==="categorical"))?req.body.type:item.type;
+				item.classification	= (typeof classification!=="undefined")?classification:item.classification;
 				result 		= item;
 			}
 		);
