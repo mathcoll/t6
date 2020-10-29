@@ -2668,7 +2668,9 @@ var touchStartPoint, touchMovePoint;
 						.then(function(response) {
 							document.getElementById("exploreResults").innerHTML = "";
 							for (const [key, value] of Object.entries(response)) {
-								document.getElementById("exploreResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
+								if (typeof value!=="object") {
+									document.getElementById("exploreResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
+								}
 							};
 							var start = typeof myForm.querySelector("#start").value !== "undefined" ? "&start=" + myForm.querySelector("#start").value : "";
 							var end = typeof myForm.querySelector("#end").value !== "undefined" ? "&end=" + myForm.querySelector("#end").value : "";
@@ -2678,7 +2680,17 @@ var touchStartPoint, touchMovePoint;
 									app.fetchStatusHandler
 								)
 								.then(response => response.text())
-								.then(svg => document.getElementById("explorationBoxPlot").insertAdjacentHTML("afterbegin", svg))
+								.then(svg => document.getElementById("explorationBoxPlot").insertAdjacentHTML("beforebegin", svg))
+								.catch(function(error) {
+									toast("Exploring error.", { timeout: 3000, type: "error" });
+								});
+							var url = app.baseUrl + "/" + app.api_version + `/exploration/frequencyDistribution?flow_id=${my_flow_id}&group=1h&width=800&height=300&ticks=20${start}${end}`;
+							fetch(url, myInit)
+								.then(
+									app.fetchStatusHandler
+								)
+								.then(response => response.text())
+								.then(svg => document.getElementById("explorationFrequencyDistribution").insertAdjacentHTML("beforebegin", svg))
 								.catch(function(error) {
 									toast("Exploring error.", { timeout: 3000, type: "error" });
 								});
@@ -3583,6 +3595,14 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
 			explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='explorationBoxPlot'></div>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "	</div>";
+			explorationNode += "</section>";
+
+			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
+			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
+			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='explorationFrequencyDistribution'></div>";
 			explorationNode += "		<div>&nbsp;</div>";
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
