@@ -458,7 +458,6 @@ div .mdl-textfield__icon ~ select,
 div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__icon ~ label {
 	width: 100% !important;
 }
-
 [draggable] {
 	-moz-user-select: none;
 	-khtml-user-select: none;
@@ -474,7 +473,6 @@ div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__ico
 .mdl-chip.over {
 	border-top: 2px solid blue;
 }
-
 div[data-type="objects"].removed,
 div[data-type="flows"].removed,
 div[data-type="dashboards"].removed,
@@ -488,7 +486,6 @@ section[data-type="linkedObject"].removed {
 	transition: visibility 2s, opacity 2s !important;
 	-webkit-transition: visibility 2s linear, opacity 2s linear !important;
 }
-.is-ontime {}
 .is-outdated {
 	background-color: gray !important;
 	background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,.5) 15px, rgba(255,255,255,.5) 35px) !important;
@@ -721,9 +718,6 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 .is-active {
 	display: block !important;
 }
-section.is-active {
-	padding-bottom: 80px;
-}
 .mdl-list__item .mdl-list__item-secondary-content {
 	margin-left: 0 !important;
 }
@@ -747,21 +741,6 @@ section.is-active {
 	position: relative;
 	margin: 5px 0;
 	border-radius: 8px;
-}
-section#profile .mdl-card--small .mdl-card__title {
-	left: 90px;
-	top: 20px;
-	-moz-user-select: none;
-	font-size: 24px;
-	font-weight: 400;
-	margin: 0;
-	overflow: hidden;
-	padding: 0 16px;
-	position: absolute;
-	right: 0;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	border-radius: 8px 8px 0 0;
 }
 .mdl-card__actions.mdl-card--border {
 	border-width: thick;
@@ -789,6 +768,24 @@ section#profile .mdl-card--small .mdl-card__title {
 }
 .mdl-menu__item:hover {
     background-color: rgb(121,85,72,.6);
+}
+section.is-active {
+	padding-bottom: 80px;
+}
+section#profile .mdl-card--small .mdl-card__title {
+	left: 90px;
+	top: 20px;
+	-moz-user-select: none;
+	font-size: 24px;
+	font-weight: 400;
+	margin: 0;
+	overflow: hidden;
+	padding: 0 16px;
+	position: absolute;
+	right: 0;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	border-radius: 8px 8px 0 0;
 }
 section#profile .mdl-card--small .mdl-card__image {
 	border-radius: 1px 0 0 1px;
@@ -852,6 +849,16 @@ section#profile .card.card-user .card-heading.heading-left .subhead {
 section#profile .subhead {
 	font-size: 20px;
 }
+section#dashboard_grids div.mdl-grid.mdl-tabs__panel.is-active {
+	display: flex !important;
+}
+section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
+	min-height: 20em;
+	padding-top: 0;
+}
+#terms .mdl-grid {
+	word-break: normal;
+}
 .mdl-card__supporting-text {
 	width: 100% !important;
 	line-height: 1.7em;
@@ -910,22 +917,6 @@ section#profile .subhead {
 .mdl-cell {
 	margin: 0 !important;
 	border-radius: 8px;
-}
-#terms .mdl-grid {
-	word-break: normal;
-}
-section#dashboard_grids div.mdl-grid.mdl-tabs__panel.is-active {
-	display: flex !important;
-}
-section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
-	min-height: 20em;
-	padding-top: 0;
-}
-.btn.success {
-  
-}
-.btn.success:hover, .btn.success:focus {
-  
 }
 .btn.warning {
   background-color: #e67e22;

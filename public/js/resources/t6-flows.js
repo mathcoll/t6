@@ -312,7 +312,7 @@ app.resources.flows = {
 				
 				let width = document.getElementById("flow-graph-"+flow.id).offsetWidth;
 				let height = 250;
-				let svgUrl = `${app.baseUrl}/${app.api_version}/data/${flow.id}/exploration?select=mean&group=30d&dateFormat=MMM&start=${moment().format("YYYY")}-02-01 00:00:00&limit=1000&sort=asc&page=0&graphType=bar&width=${width}&height=${height}&xAxis=Months&yAxis=MEAN value (${unit})`;
+				let svgUrl = `${app.baseUrl}/${app.api_version}/exploration?flow_id=${flow.id}&&select=mean&group=30d&dateFormat=MMM&start=${moment().format("YYYY")}-02-01 00:00:00&limit=1000&sort=asc&page=0&graphType=bar&width=${width}&height=${height}&xAxis=Months&yAxis=MEAN value (${unit})`;
 
 				fetch(svgUrl, myInit)
 				.then(

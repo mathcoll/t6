@@ -54,6 +54,8 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     if trackings.googleSigninClientId
       meta(name="google-signin-client_id", content=""+trackings.googleSigninClientId)
   body
+    script
+      | if (localStorage.getItem("settings.debug") == "true") { var startTime = new Date(); }
     if trackings.gtm
       noscript
         iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
