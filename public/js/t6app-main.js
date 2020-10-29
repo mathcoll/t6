@@ -1292,7 +1292,7 @@ var touchStartPoint, touchMovePoint;
 				toast(text + ' has been copied to clipboard.', { timeout: 3000, type: "done" });
 				return true;
 			} else {
-				toast('Could not copy text: ' + text, { timeout: 5000, type: 'warning' });
+				toast('Could not copy text: ' + text, { timeout: 3000, type: "warning" });
 				return false;
 			}
 		} else {
@@ -1303,7 +1303,7 @@ var touchStartPoint, touchMovePoint;
 				if (localStorage.getItem("settings.debug") == "true") {
 					console.log('DEBUG clipboard', 'Could not copy text: ', err);
 				}
-				toast('Could not copy text: ' + text, { timeout: 5000, type: 'warning' });
+				toast('Could not copy text: ' + text, { timeout: 3000, type: "warning" });
 				return false;
 			});
 		}
@@ -3450,7 +3450,7 @@ var touchStartPoint, touchMovePoint;
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: "GET", headers: myHeaders };
-		var url = `${app.baseUrl}/${app.api_versio}/compatible-devices`;
+		var url = `${app.baseUrl}/${app.api_version}/compatible-devices`;
 
 		fetch(url, myInit)
 			.then(
@@ -3787,7 +3787,6 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.imageLazyLoading = function() {
-		/* Lazy loading on images */
 		if (!('IntersectionObserver' in window)) {
 			var LL = document.querySelectorAll('img.lazyloading');
 			for (var image in LL) {
@@ -3814,14 +3813,7 @@ var touchStartPoint, touchMovePoint;
 				}
 			}
 		}
-	}; // Lazy loading on images
-
-	/*
-	 * *********************************** Run the App ***********************************
-	 */
-	if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix()) {
-		app.isLogged = true;
-	}
+	};
 
 	app.managePage = function() {
 		var currentPage = localStorage.getItem("currentPage");
@@ -3876,15 +3868,14 @@ var touchStartPoint, touchMovePoint;
 		} else {
 			app.setSection('index');
 		}
-	}
+	};
 
-	app.fetchIndex('index');
-	app.refreshButtonsSelectors();
-	app.setLoginAction();
-	app.setSignupAction();
-	app.refreshButtonsSelectors();
-	app.setPasswordResetAction();
-	app.setForgotAction();
+	/*
+	 * *********************************** Run the App ***********************************
+	 */
+	if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix()) {
+		app.isLogged = true;
+	}
 
 	if (!app.isLogged || app.auth.username === undefined) {
 		if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix()) {
@@ -4103,6 +4094,12 @@ var touchStartPoint, touchMovePoint;
 		}
 		toast(msg, { timeout: 3000, type: type });
 	};
+	app.clearCache = function() {
+		toast("Please clear cache manually... :-)", { timeout: 3000, type: "warning" });
+		if (localStorage.getItem("settings.debug") == "true") {
+			console.log("[clearCache]", "Please clear cache manually... :-)");
+		}
+	};
 	logout_button.addEventListener('click', function(evt) {
 		app.auth = {};
 		app.resetDrawer();
@@ -4192,7 +4189,6 @@ var touchStartPoint, touchMovePoint;
 			});
 		}
 	}); // Lazy loading
-	app.imageLazyLoading();
 
 	var pMatches = document.querySelectorAll('.passmatch');
 	for (var p in pMatches) {
@@ -4257,13 +4253,18 @@ var touchStartPoint, touchMovePoint;
 				console.log("DEBUG", "interactive: ", interactiveTime - startTime, "ms");
 			}
 		} else if (event.target.readyState === "complete") {
+			app.fetchIndex('index');
+			app.refreshButtonsSelectors();
+			app.setLoginAction();
+			app.setSignupAction();
+			app.refreshButtonsSelectors();
+			app.setPasswordResetAction();
+			app.setForgotAction();
+			app.imageLazyLoading();
+			
 			window.addEventListener("online", app.updateNetworkStatus, false);
 			window.addEventListener("offline", app.updateNetworkStatus, false);
-			window.addEventListener("clearCache", function(event) {
-				if (localStorage.getItem("settings.debug") == "true") {
-					console.log("[clearCache]", "Please clear cache manually... :-)");
-				}
-			}, false);
+			window.addEventListener("clearCache", app.clearCache, false);
 			window.addEventListener("hashchange", function() {
 				if (window.history && window.history.pushState) {
 					localStorage.setItem("currentPage", window.location.hash.substr(1));
@@ -4281,6 +4282,7 @@ var touchStartPoint, touchMovePoint;
 					console.log('[History]', 'resource id', id2);
 				}
 			}, false);
+
 			if (localStorage.getItem("settings.debug") == "true") {
 				var completeTime = new Date();
 				console.log("DEBUG", "complete: ", completeTime - startTime, "ms");
