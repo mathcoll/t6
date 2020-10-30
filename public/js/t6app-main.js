@@ -2168,9 +2168,11 @@ var touchStartPoint, touchMovePoint;
 							usersList += app.getField('dns', 'IP address', user.attributes.location.ip, { type: 'text', isEdit: false });
 						}
 					}
+					console.log(user.attributes);
 					usersList += app.getField('contact_mail', 'Password last update', moment((user.attributes.password_last_updated) / 1).format(app.date_format), { type: 'text', isEdit: false });
 					usersList += app.getField('contact_mail', 'Reminder Email', moment((user.attributes.reminder_mail) / 1).format(app.date_format), { type: 'text', isEdit: false });
 					usersList += app.getField('change_history', 'Password reset request', moment((user.attributes.change_password_mail) / 1).format(app.date_format), { type: 'text', isEdit: false });
+					usersList += app.getField('new_releases', 'Newsletter', ((user.attributes.unsubscription)&&(typeof user.attributes.unsubscription.newsletter!=="undefined"))?"Unsubscribed "+moment((user.attributes.unsubscription.newsletter) / 1).format(app.date_format):"Subscribed", { type: 'text', isEdit: false });
 
 					usersList += "		<div class=\"mdl-card__actions mdl-card--border\">";
 					usersList += "			<span class=\"pull-left mdl-card__date\">";
@@ -3162,7 +3164,6 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					console.log(error);
 					toast('We can\'t process your identification. Please resubmit your credentials on login page!', { timeout: app.toastDuration, type: "warning" });
 				}
 			});
@@ -3372,6 +3373,7 @@ var touchStartPoint, touchMovePoint;
 					status += app.getField('verified_user', 'Build Version', response.t6BuildVersion, { type: 'text', style: 'text-transform: none !important;', isEdit: false });
 					status += app.getField('alarm', 'Build Date', moment(response.t6BuildDate, "DD/MM/YYYY HH:mm:ss").format(app.date_format), { type: 'text', style: 'text-transform: none !important;', isEdit: false });
 					status += app.getField('alarm', 'Server Last Update', moment(response.started_at, "DD/MM/YYYY HH:mm:ss").format(app.date_format), { type: 'text', isEdit: false });
+					status += app.getField('trip_origin', 'appId', firebaseConfig.appId, { type: 'text', isEdit: false });
 					status += "			</div>";
 					status += "		</div>";
 					status += "	</div>";
