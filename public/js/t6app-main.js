@@ -2680,7 +2680,7 @@ var touchStartPoint, touchMovePoint;
 									app.fetchStatusHandler
 								)
 								.then(response => response.text())
-								.then(svg => document.getElementById("explorationBoxPlot").insertAdjacentHTML("beforebegin", svg))
+								.then(function(svg) {document.getElementById("explorationBoxPlot").innerHTML = svg})
 								.catch(function(error) {
 									toast("Exploring error.", { timeout: 3000, type: "error" });
 								});
@@ -2690,7 +2690,7 @@ var touchStartPoint, touchMovePoint;
 									app.fetchStatusHandler
 								)
 								.then(response => response.text())
-								.then(svg => document.getElementById("explorationFrequencyDistribution").insertAdjacentHTML("beforebegin", svg))
+								.then(function(svg) {document.getElementById("explorationFrequencyDistribution").innerHTML = svg})
 								.catch(function(error) {
 									toast("Exploring error.", { timeout: 3000, type: "error" });
 								});
