@@ -26,6 +26,7 @@ var app = {
 	cardMaxChars: 256,
 	cookieconsent: 30,
 	refreshExpiresInSeconds: 280000,
+	toastDuration: 3000,
 	itemsSize: { objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15, sources: 15  },
 	itemsPage: { objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1, sources: 1, },
 	currentSection: "index",
@@ -199,7 +200,7 @@ var touchStartPoint, touchMovePoint;
 	// To show notification
 	function toast(msg, options) {
 		if (!msg) return;
-		options = options || { timeout: 3000, type: "info" };
+		options = options || { timeout: app.toastDuration, type: "info" };
 		// type = error, done, warning, help, info
 		options.timeout = typeof options.timeout !== undefined ? options.timeout : 3000;
 		options.type = typeof options.type !== undefined ? options.type : "info";
@@ -295,22 +296,22 @@ var touchStartPoint, touchMovePoint;
 		} else if (response.status === 204) {
 			return response;
 		} else if (response.status === 400) {
-			toast("Bad Request.", { timeout: 3000, type: "error" });
+			toast("Bad Request.", { timeout: app.toastDuration, type: "error" });
 			return response;
 		} else if (response.status === 401 || response.status === 403) {
 			app.sessionExpired();
 			return response;
 		} else if (response.status === 404) {
-			toast("There is an unknown resource that can't be loaded.", { timeout: 3000, type: "error" });
+			toast("There is an unknown resource that can't be loaded.", { timeout: app.toastDuration, type: "error" });
 			return response;
 		} else if (response.status === 409) {
-			toast("Revision is conflictual.", { timeout: 3000, type: "error" });
+			toast("Revision is conflictual.", { timeout: app.toastDuration, type: "error" });
 			return response;
 		} else if (response.status === 412) {
-			toast("Precondition Failed", { timeout: 3000, type: "error" });
+			toast("Precondition Failed", { timeout: app.toastDuration, type: "error" });
 			return response;
 		} else if (response.status === 429) {
-			toast("Oups, over quota.", { timeout: 3000, type: "error" });
+			toast("Oups, over quota.", { timeout: app.toastDuration, type: "error" });
 			return response;
 		} else {
 			throw new Error(response.statusText);
@@ -368,7 +369,7 @@ var touchStartPoint, touchMovePoint;
 			app.auth = { "username": username, "password": password };
 			app.authenticate();
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		evt.preventDefault();
 	};
@@ -378,7 +379,7 @@ var touchStartPoint, touchMovePoint;
 			app.getStatus();
 			app.setSection('status');
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		if (evt) evt.preventDefault();
 	};
@@ -387,7 +388,7 @@ var touchStartPoint, touchMovePoint;
 		if (navigator.onLine) {
 			app.setSection('settings');
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		if (evt) evt.preventDefault();
 	};
@@ -396,7 +397,7 @@ var touchStartPoint, touchMovePoint;
 		if (navigator.onLine) {
 			app.setSection('docs');
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		if (evt) evt.preventDefault();
 	};
@@ -406,7 +407,7 @@ var touchStartPoint, touchMovePoint;
 			app.getTerms();
 			app.setSection('terms');
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		if (evt) evt.preventDefault();
 	};
@@ -472,23 +473,23 @@ var touchStartPoint, touchMovePoint;
 						.then(function(response) {
 							app.setSetting('notifications.email', response.user.data.attributes.email);
 							app.setSetting('notifications.unsubscription_token', response.user.data.attributes.unsubscription_token);
-							toast('Welcome, you should have received an email to set your password.', { timeout: 3000, type: "done" });
+							toast('Welcome, you should have received an email to set your password.', { timeout: app.toastDuration, type: "done" });
 							if (typeof firebase !== "undefined") {
 								firebase.analytics().logEvent('sign_up');
 							}
 							app.setSection('manage_notifications');
 						})
 						.catch(function(error) {
-							toast('We can\'t process your signup. Please resubmit the form later! ' + error, { timeout: 3000, type: "warning" });
+							toast('We can\'t process your signup. Please resubmit the form later! ' + error, { timeout: app.toastDuration, type: "warning" });
 						});
 				} else {
-					toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', { timeout: 3000, type: "warning" });
+					toast('Please read Terms & Conditions, you will be able to manage your privacy in the step right after.', { timeout: app.toastDuration, type: "warning" });
 				}
 			} else {
-				toast('We can\'t process your signup. Please check your inputs.', { timeout: 3000, type: "warning" });
+				toast('We can\'t process your signup. Please check your inputs.', { timeout: app.toastDuration, type: "warning" });
 			}
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		evt.preventDefault();
 	};
@@ -517,16 +518,16 @@ var touchStartPoint, touchMovePoint;
 					})
 					.then(function(response) {
 						app.setSection('login');
-						toast('Your password has been reset; please login again.', { timeout: 3000, type: "done" });
+						toast('Your password has been reset; please login again.', { timeout: app.toastDuration, type: "done" });
 					})
 					.catch(function(error) {
-						toast('We can\'t process your password reset. Please resubmit the form later!', { timeout: 3000, type: "warning" });
+						toast('We can\'t process your password reset. Please resubmit the form later!', { timeout: app.toastDuration, type: "warning" });
 					});
 			} else {
-				toast('We can\'t process your password reset.', { timeout: 3000, type: "warning" });
+				toast('We can\'t process your password reset.', { timeout: app.toastDuration, type: "warning" });
 			}
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		evt.preventDefault();
 	};
@@ -553,16 +554,16 @@ var touchStartPoint, touchMovePoint;
 					})
 					.then(function(response) {
 						app.setSection('login');
-						toast('Instructions has been sent to your email.', { timeout: 3000, type: "done" });
+						toast('Instructions has been sent to your email.', { timeout: app.toastDuration, type: "done" });
 					})
 					.catch(function(error) {
-						toast('We can\'t process your request. Please resubmit the form later!', { timeout: 3000, type: "warning" });
+						toast('We can\'t process your request. Please resubmit the form later!', { timeout: app.toastDuration, type: "warning" });
 					});
 			} else {
-				toast('We can\'t send the instructions. Please check your inputs.', { timeout: 3000, type: "warning" });
+				toast('We can\'t send the instructions. Please check your inputs.', { timeout: app.toastDuration, type: "warning" });
 			}
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 		evt.preventDefault();
 	};
@@ -663,13 +664,13 @@ var touchStartPoint, touchMovePoint;
 			.then(function(response) {
 				localStorage.setItem('currentUserName', firstName+" "+lastName);
 				app.setDrawer();
-				toast('Your details have been updated.', { timeout: 3000, type: "done" });
+				toast('Your details have been updated.', { timeout: app.toastDuration, type: "done" });
 			})
 			.catch(function (error) {
-				toast("We can't process your modifications. Please resubmit the form later!", { timeout: 3000, type: "warning" });
+				toast("We can't process your modifications. Please resubmit the form later!", { timeout: app.toastDuration, type: "warning" });
 			});
 		} else {
-			toast("No Network detected, please check your connexion.", { timeout: 3000, type: "warning" });
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
 	};
 
@@ -1289,21 +1290,21 @@ var touchStartPoint, touchMovePoint;
 			copyTextarea.focus();
 			copyTextarea.select();
 			if (document.execCommand('copy')) {
-				toast(text + ' has been copied to clipboard.', { timeout: 3000, type: "done" });
+				toast(text + ' has been copied to clipboard.', { timeout: app.toastDuration, type: "done" });
 				return true;
 			} else {
-				toast('Could not copy text: ' + text, { timeout: 3000, type: "warning" });
+				toast('Could not copy text: ' + text, { timeout: app.toastDuration, type: "warning" });
 				return false;
 			}
 		} else {
 			navigator.clipboard.writeText(text).then(function() {
-				toast(text + ' has been copied to clipboard.', { timeout: 3000, type: "done" });
+				toast(text + ' has been copied to clipboard.', { timeout: app.toastDuration, type: "done" });
 				return true;
 			}, function(err) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					console.log('DEBUG clipboard', 'Could not copy text: ', err);
 				}
-				toast('Could not copy text: ' + text, { timeout: 3000, type: "warning" });
+				toast('Could not copy text: ' + text, { timeout: app.toastDuration, type: "warning" });
 				return false;
 			});
 		}
@@ -1351,10 +1352,10 @@ var touchStartPoint, touchMovePoint;
 							})
 							.then(function(response) {
 								document.querySelector('[data-id="' + myId  + '"]').classList.add('removed');
-								toast("Object has been deleted.", { timeout: 3000, type: "done" });
+								toast("Object has been deleted.", { timeout: app.toastDuration, type: "done" });
 							})
 							.catch(function(error) {
-								toast("Object has not been deleted.", { timeout: 3000, type: "error" });
+								toast("Object has not been deleted.", { timeout: app.toastDuration, type: "error" });
 							});
 						evt.preventDefault();
 					});
@@ -1398,10 +1399,10 @@ var touchStartPoint, touchMovePoint;
 							.then(function(response) {
 								document.querySelector('[data-id="' + myId + '"]').classList.add('removed');
 								app.resources.flows.onDelete(myId);
-								toast('Flow has been deleted.', { timeout: 3000, type: "done" });
+								toast('Flow has been deleted.', { timeout: app.toastDuration, type: "done" });
 							})
 							.catch(function(error) {
-								toast('Flow has not been deleted.', { timeout: 3000, type: "error" });
+								toast('Flow has not been deleted.', { timeout: app.toastDuration, type: "error" });
 							});
 						evt.preventDefault();
 					});
@@ -1444,10 +1445,10 @@ var touchStartPoint, touchMovePoint;
 							})
 							.then(function(response) {
 								document.querySelector('[data-id="' + myId + '"]').classList.add('removed');
-								toast('Dashboard has been deleted.', { timeout: 3000, type: "done" });
+								toast('Dashboard has been deleted.', { timeout: app.toastDuration, type: "done" });
 							})
 							.catch(function(error) {
-								toast('Dashboard has not been deleted.', { timeout: 3000, type: "error" });
+								toast('Dashboard has not been deleted.', { timeout: app.toastDuration, type: "error" });
 							});
 						evt.preventDefault();
 					});
@@ -1490,10 +1491,10 @@ var touchStartPoint, touchMovePoint;
 							.then(function(response) {
 								document.querySelector('[data-id="' + myId + '"]').classList.add('removed');
 								app.resources.snippets.onDelete(myId);
-								toast('Snippet has been deleted.', { timeout: 3000, type: "done" });
+								toast('Snippet has been deleted.', { timeout: app.toastDuration, type: "done" });
 							})
 							.catch(function(error) {
-								toast('Snippet has not been deleted.', { timeout: 3000, type: "error" });
+								toast('Snippet has not been deleted.', { timeout: app.toastDuration, type: "error" });
 							});
 						evt.preventDefault();
 					});
@@ -1535,10 +1536,10 @@ var touchStartPoint, touchMovePoint;
 							})
 							.then(function(response) {
 								document.querySelector('[data-id="' + myId + '"]').classList.add('removed');
-								toast('Rule has been deleted.', { timeout: 3000, type: "done" });
+								toast('Rule has been deleted.', { timeout: app.toastDuration, type: "done" });
 							})
 							.catch(function(error) {
-								toast('Rule has not been deleted.', { timeout: 3000, type: "error" });
+								toast('Rule has not been deleted.', { timeout: app.toastDuration, type: "error" });
 							});
 						evt.preventDefault();
 					});
@@ -1582,10 +1583,10 @@ var touchStartPoint, touchMovePoint;
 							})
 							.then(function(response) {
 								document.querySelector('[data-id="' + myId + '"]').classList.add('removed');
-								toast('Source has been deleted.', { timeout: 3000, type: "done" });
+								toast('Source has been deleted.', { timeout: app.toastDuration, type: "done" });
 							})
 							.catch(function(error) {
-								toast('Source has not been deleted.', { timeout: 3000, type: "error" });
+								toast('Source has not been deleted.', { timeout: app.toastDuration, type: "error" });
 							});
 						evt.preventDefault();
 					});
@@ -2062,7 +2063,7 @@ var touchStartPoint, touchMovePoint;
 			} else {
 				if (localStorage.getItem("settings.debug") == "true") {
 					console.log('DEBUG Error no Type defined: ' + type);
-					toast('Error no Type defined.', { timeout: 3000, type: "error" });
+					toast('Error no Type defined.', { timeout: app.toastDuration, type: "error" });
 				}
 				type = undefined;
 			}
@@ -2106,11 +2107,13 @@ var touchStartPoint, touchMovePoint;
 									localStorage.setItem('flows', JSON.stringify(app.flows));
 								}
 							}
+							app.containers.spinner.setAttribute('hidden', true);
+							app.containers.spinner.classList.add('hidden');
 							resolve();
 						})
 						.catch(function(error) {
 							if (localStorage.getItem("settings.debug") == "true") {
-								toast('fetchItemsPaginated ' + type + ' error occured...' + error, { timeout: 3000, type: "error" });
+								toast('fetchItemsPaginated ' + type + ' error occured...' + error, { timeout: app.toastDuration, type: "error" });
 							}
 						});
 				} else {
@@ -2119,9 +2122,6 @@ var touchStartPoint, touchMovePoint;
 				}
 			}
 		});
-
-		app.containers.spinner.setAttribute('hidden', true);
-		app.containers.spinner.classList.add('hidden');
 		return promise;
 	};
 
@@ -2191,7 +2191,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('getUsersList error out...' + error, { timeout: 3000, type: "error" });
+					toast('getUsersList error out...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -2319,7 +2319,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('fetchProfile error out...' + error, { timeout: 3000, type: "error" });
+					toast('fetchProfile error out...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -2344,7 +2344,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('fetchUnsubscriptions error' + error, { timeout: 3000, type: "error" });
+					toast('fetchUnsubscriptions error' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 	};
@@ -2390,16 +2390,16 @@ var touchStartPoint, touchMovePoint;
 						.then(
 							app.fetchStatusHandler
 						).then(function(response) {
-							toast('Subscription ' + name + ' (' + type + ') updated.', { timeout: 3000, type: "done" });
+							toast('Subscription ' + name + ' (' + type + ') updated.', { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
 							if (localStorage.getItem("settings.debug") == "true") {
-								toast('Error occured on saving Notifications...' + error, { timeout: 3000, type: "error" });
+								toast('Error occured on saving Notifications...' + error, { timeout: app.toastDuration, type: "error" });
 							}
 						});
 				} else {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Error occured on saving Notifications...', { timeout: 3000, type: "error" });
+						toast('Error occured on saving Notifications...', { timeout: app.toastDuration, type: "error" });
 					}
 				}
 			});
@@ -2427,16 +2427,16 @@ var touchStartPoint, touchMovePoint;
 								app.setSetting('notifications.unsubscribed.changePassword', {'reminder': app.getSetting('notifications.unsubscribed.reminder'), 'changePassword': null});
 							}
 							*/
-							toast('Subscription ' + name + ' (' + type + ') updated.', { timeout: 3000, type: "done" });
+							toast('Subscription ' + name + ' (' + type + ') updated.', { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
 							if (localStorage.getItem("settings.debug") == "true") {
-								toast('Error occured on saving Notifications...' + error, { timeout: 3000, type: "error" });
+								toast('Error occured on saving Notifications...' + error, { timeout: app.toastDuration, type: "error" });
 							}
 						});
 				} else {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Error occured on saving Notifications...', { timeout: 3000, type: "error" });
+						toast('Error occured on saving Notifications...', { timeout: app.toastDuration, type: "error" });
 					}
 				}
 			});
@@ -2457,16 +2457,16 @@ var touchStartPoint, touchMovePoint;
 						.then(
 							app.fetchStatusHandler
 						).then(function(response) {
-							toast('Subscription ' + name + ' (' + type + ') updated.', { timeout: 3000, type: "done" });
+							toast('Subscription ' + name + ' (' + type + ') updated.', { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
 							if (localStorage.getItem("settings.debug") == "true") {
-								toast('Error occured on saving Notifications...' + error, { timeout: 3000, type: "error" });
+								toast('Error occured on saving Notifications...' + error, { timeout: app.toastDuration, type: "error" });
 							}
 						});
 				} else {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Error occured on saving Notifications...', { timeout: 3000, type: "error" });
+						toast('Error occured on saving Notifications...', { timeout: app.toastDuration, type: "error" });
 					}
 				}
 			});
@@ -2584,7 +2584,7 @@ var touchStartPoint, touchMovePoint;
 					container.innerHTML = app.getCard({ image: app.baseUrlCdn + '/img/opl_img2.webp', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)' });
 					app.displayLoginForm(container);
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('fetchIndex error out...' + error, { timeout: 3000, type: "error" });
+						toast('fetchIndex error out...' + error, { timeout: app.toastDuration, type: "error" });
 					}
 				});
 		} else {
@@ -2649,7 +2649,7 @@ var touchStartPoint, touchMovePoint;
 			componentHandler.upgradeDom();
 			if (document.getElementById("exploreFlowsFAB")) {
 				document.getElementById("exploreFlowsFAB").addEventListener("click", function(evt) {
-					toast("Exploring... Please wait.", { timeout: 3000, type: "info" });
+					toast("Exploring... Please wait.", { timeout: app.toastDuration, type: "info" });
 					var myForm = evt.target.parentNode.parentNode.parentNode;
 					var my_flow_id = Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; });
 					var myHeaders = new Headers();
@@ -2682,7 +2682,7 @@ var touchStartPoint, touchMovePoint;
 								.then(response => response.text())
 								.then(function(svg) {document.getElementById("explorationBoxPlot").innerHTML = svg})
 								.catch(function(error) {
-									toast("Exploring error.", { timeout: 3000, type: "error" });
+									toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
 								});
 							var url = app.baseUrl + "/" + app.api_version + `/exploration/frequencyDistribution?flow_id=${my_flow_id}&group=1h&width=800&height=300&ticks=20${start}${end}`;
 							fetch(url, myInit)
@@ -2692,11 +2692,11 @@ var touchStartPoint, touchMovePoint;
 								.then(response => response.text())
 								.then(function(svg) {document.getElementById("explorationFrequencyDistribution").innerHTML = svg})
 								.catch(function(error) {
-									toast("Exploring error.", { timeout: 3000, type: "error" });
+									toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
 								});
 						})
 						.catch(function(error) {
-							toast("Exploring error.", { timeout: 3000, type: "error" });
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
 						});
 					evt.preventDefault();
 				}, false);
@@ -2978,7 +2978,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast("getSnippet error out..." + error, { timeout: 3000, type: "error" });
+					toast("getSnippet error out..." + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3027,7 +3027,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('fetch Qrcode error out...' + error, { timeout: 3000, type: "error" });
+					toast('fetch Qrcode error out...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3090,7 +3090,7 @@ var touchStartPoint, touchMovePoint;
 					app.setHiddenElement("signin_button");
 					app.setVisibleElement("logout_button");
 
-					toast('Hey. Welcome Back! :-)', { timeout: 3000, type: "done" });
+					toast('Hey. Welcome Back! :-)', { timeout: app.toastDuration, type: "done" });
 					if (typeof firebase !== "undefined") {
 						firebase.analytics().setUserProperties({ 'isLoggedIn': 1 });
 						firebase.analytics().logEvent('login');
@@ -3103,14 +3103,14 @@ var touchStartPoint, touchMovePoint;
 					app.getSources();
 				} else {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Auth internal error', { timeout: 3000, type: "error" });
+						toast('Auth internal error', { timeout: app.toastDuration, type: "error" });
 					}
 					app.resetDrawer();
 				}
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('We can\'t process your identification. Please resubmit your credentials!', { timeout: 3000, type: "warning" });
+					toast('We can\'t process your identification. Please resubmit your credentials!', { timeout: app.toastDuration, type: "warning" });
 					document.querySelectorAll(".mdl-spinner").forEach(function(e) { e.parentNode.removeChild(e); });
 				}
 			});
@@ -3155,7 +3155,7 @@ var touchStartPoint, touchMovePoint;
 					app.setVisibleElement("logout_button");
 				} else {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Auth internal error', { timeout: 3000, type: "error" });
+						toast('Auth internal error', { timeout: app.toastDuration, type: "error" });
 					}
 					app.resetDrawer();
 				}
@@ -3163,7 +3163,7 @@ var touchStartPoint, touchMovePoint;
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					console.log(error);
-					toast('We can\'t process your identification. Please resubmit your credentials on login page!', { timeout: 3000, type: "warning" });
+					toast('We can\'t process your identification. Please resubmit your credentials on login page!', { timeout: app.toastDuration, type: "warning" });
 				}
 			});
 		app.auth = {};
@@ -3234,7 +3234,7 @@ var touchStartPoint, touchMovePoint;
 							(fabs[f]).classList.remove('fab__bottom');
 						}
 					}
-					toast('Floating Button are aligned Top.', { timeout: 3000, type: "done" });
+					toast('Floating Button are aligned Top.', { timeout: app.toastDuration, type: "done" });
 				} else {
 					for (var f in fabs) {
 						if ((fabs[f]).childElementCount > -1) {
@@ -3242,7 +3242,7 @@ var touchStartPoint, touchMovePoint;
 							(fabs[f]).classList.add('fab__bottom');
 						}
 					}
-					toast('Floating Button are aligned Bottom.', { timeout: 3000, type: "done" });
+					toast('Floating Button are aligned Bottom.', { timeout: app.toastDuration, type: "done" });
 				}
 			});
 		}
@@ -3252,10 +3252,10 @@ var touchStartPoint, touchMovePoint;
 				var fabs = document.querySelectorAll('.mdl-button--fab_flinger-container');
 				if (e.target.value == 'true') {
 					app.setSetting('settings.isLtr', true);
-					toast('Action buttons are aligned to the right.', { timeout: 3000, type: "done" });
+					toast('Action buttons are aligned to the right.', { timeout: app.toastDuration, type: "done" });
 				} else {
 					app.setSetting('settings.isLtr', false);
-					toast('Action buttons are aligned to the left.', { timeout: 3000, type: "done" });
+					toast('Action buttons are aligned to the left.', { timeout: app.toastDuration, type: "done" });
 				}
 			});
 		}
@@ -3268,12 +3268,12 @@ var touchStartPoint, touchMovePoint;
 					app.subscribeUserToPush();
 					label.innerText = "Notifications are enabled";
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Awsome, Notifications are enabled.', { timeout: 3000, type: "done" });
+						toast('Awsome, Notifications are enabled.', { timeout: app.toastDuration, type: "done" });
 					}
 				} else {
 					label.innerText = "Notifications are disabled";
 					app.setSetting('settings.notifications', false);
-					toast('Notifications are disabled.', { timeout: 3000, type: "done" });
+					toast('Notifications are disabled.', { timeout: app.toastDuration, type: "done" });
 				}
 			});
 		}
@@ -3285,12 +3285,12 @@ var touchStartPoint, touchMovePoint;
 					label.innerText = "Geolocalization is enabled";
 					app.getLocation();
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Awsome, Geolocalization is enabled.', { timeout: 3000, type: "done" });
+						toast('Awsome, Geolocalization is enabled.', { timeout: app.toastDuration, type: "done" });
 					}
 				} else {
 					app.setSetting('settings.geolocalization', false);
 					label.innerText = "Geolocalization is disabled";
-					toast('Geolocalization is disabled.', { timeout: 3000, type: "done" });
+					toast('Geolocalization is disabled.', { timeout: app.toastDuration, type: "done" });
 				}
 			});
 		}
@@ -3303,13 +3303,13 @@ var touchStartPoint, touchMovePoint;
 					document.dispatchEvent(new Event("clearCache"));
 					app.debug = true;
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Awsome, Debug mode is activated and cache is now cleared.', { timeout: 3000, type: "done" });
+						toast('Awsome, Debug mode is activated and cache is now cleared.', { timeout: app.toastDuration, type: "done" });
 					}
 				} else {
 					app.setSetting('settings.debug', false);
 					label.innerText = "Debug is disabled";
 					app.debug = false;
-					toast('Debug mode is disabled.', { timeout: 3000, type: "done" });
+					toast('Debug mode is disabled.', { timeout: app.toastDuration, type: "done" });
 				}
 			});
 		}
@@ -3317,7 +3317,7 @@ var touchStartPoint, touchMovePoint;
 			document.getElementById('settings.date_format').addEventListener('keyup', function(e) {
 				app.setSetting('settings.date_format', document.getElementById('settings.date_format').value);
 				app.date_format = document.getElementById('settings.date_format').value;
-				toast('Date Format has been updated on ' + moment().format(app.date_format), { timeout: 3000, type: "done" });
+				toast('Date Format has been updated on ' + moment().format(app.date_format), { timeout: app.toastDuration, type: "done" });
 			});
 		}
 		if (document.getElementById('settings.cardMaxChars')) {
@@ -3325,9 +3325,9 @@ var touchStartPoint, touchMovePoint;
 				if ((document.getElementById('settings.cardMaxChars').value).match(app.patterns.cardMaxChars)) {
 					app.setSetting('settings.cardMaxChars', document.getElementById('settings.cardMaxChars').value);
 					app.cardMaxChars = document.getElementById('settings.cardMaxChars').value;
-					toast('Card Limit is set to ' + app.cardMaxChars + '.', { timeout: 3000, type: "done" });
+					toast('Card Limit is set to ' + app.cardMaxChars + '.', { timeout: app.toastDuration, type: "done" });
 				} else {
-					toast('Card Limit remain ' + app.cardMaxChars + '.', { timeout: 3000, type: "done" });
+					toast('Card Limit remain ' + app.cardMaxChars + '.', { timeout: app.toastDuration, type: "done" });
 				}
 			});
 		}
@@ -3412,7 +3412,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('Can\'t display Status...' + error, { timeout: 3000, type: "error" });
+					toast('Can\'t display Status...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3452,7 +3452,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('Can\'t display Terms...' + error, { timeout: 3000, type: "error" });
+					toast('Can\'t display Terms...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3493,7 +3493,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('Can\'t display compatible devices...' + error, { timeout: 3000, type: "error" });
+					toast('Can\'t display compatible devices...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3542,7 +3542,7 @@ var touchStartPoint, touchMovePoint;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('Can\'t display Open-Source Licenses...' + error, { timeout: 3000, type: "error" });
+					toast('Can\'t display Open-Source Licenses...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 		app.containers.spinner.setAttribute('hidden', true);
@@ -3634,7 +3634,7 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.showNotification = function() {
-		toast('You are offline.', { timeout: 3000, type: "warning" });
+		toast('You are offline.', { timeout: app.toastDuration, type: "warning" });
 	};
 
 	app.sessionExpired = function() {
@@ -3657,7 +3657,7 @@ var touchStartPoint, touchMovePoint;
 		app.RateLimit = { Limit: null, Remaining: null, Used: null };
 		app.itemsSize = { objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15, sources: 15 };
 		app.itemsPage = { objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1, sources: 1 };
-		if (!app.isLogged) toast('Your session has expired. You must sign-in again.', { timeout: 3000, type: "error" });
+		if (!app.isLogged) toast('Your session has expired. You must sign-in again.', { timeout: app.toastDuration, type: "error" });
 		app.isLogged = false;
 		app.resetDrawer();
 
@@ -3734,7 +3734,7 @@ var touchStartPoint, touchMovePoint;
 
 	app.showOrientation = function() {
 		if (localStorage.getItem("settings.debug") == "true") {
-			toast(screen.orientation.type + " - " + screen.orientation.angle + "°.", { timeout: 3000, type: 'info' });
+			toast(screen.orientation.type + " - " + screen.orientation.angle + "°.", { timeout: app.toastDuration, type: "info" });
 		}
 	};
 
@@ -3742,7 +3742,7 @@ var touchStartPoint, touchMovePoint;
 		app.defaultResources.object.attributes.longitude = position.coords.longitude;
 		app.defaultResources.object.attributes.latitude = position.coords.latitude;
 		if (localStorage.getItem("settings.debug") == "true") {
-			toast("Geolocation (Accuracy=" + position.coords.accuracy + ") is set to: L" + position.coords.longitude + " - l" + position.coords.latitude, { timeout: 3000, type: 'info' });
+			toast("Geolocation (Accuracy=" + position.coords.accuracy + ") is set to: L" + position.coords.longitude + " - l" + position.coords.latitude, { timeout: app.toastDuration, type: "info" });
 		}
 	};
 
@@ -3750,31 +3750,31 @@ var touchStartPoint, touchMovePoint;
 		switch (error.code) {
 			case error.TIMEOUT:
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast("Browser geolocation error !\n\nTimeout.", { timeout: 3000, type: "error" });
+					toast("Browser geolocation error !\n\nTimeout.", { timeout: app.toastDuration, type: "error" });
 				}
 				break;
 			case error.POSITION_UNAVAILABLE:
 				// dirty hack for safari
 				if (error.message.indexOf("Origin does not have permission to use Geolocation service") == 0) {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast("Origin does not have permission to use Geolocation service - no fallback.", { timeout: 3000, type: "error" });
+						toast("Origin does not have permission to use Geolocation service - no fallback.", { timeout: app.toastDuration, type: "error" });
 					}
 				} else {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast("Browser geolocation error !\n\nPosition unavailable.", { timeout: 3000, type: "error" });
+						toast("Browser geolocation error !\n\nPosition unavailable.", { timeout: app.toastDuration, type: "error" });
 					}
 				}
 				break;
 			case error.PERMISSION_DENIED:
 				if (error.message.indexOf("Only secure origins are allowed") == 0) {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast("Only secure origins are allowed - no fallback.", { timeout: 3000, type: "error" });
+						toast("Only secure origins are allowed - no fallback.", { timeout: app.toastDuration, type: "error" });
 					}
 				}
 				break;
 			case error.UNKNOWN_ERROR:
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast("Can't find your position - no fallback.", { timeout: 3000, type: "error" });
+					toast("Can't find your position - no fallback.", { timeout: app.toastDuration, type: "error" });
 				}
 				break;
 		}
@@ -3786,7 +3786,7 @@ var touchStartPoint, touchMovePoint;
 			navigator.geolocation.getCurrentPosition(app.setPosition, app.setPositionError, options);
 		} else {
 			if (localStorage.getItem("settings.debug") == "true") {
-				toast("Geolocation is not supported by this browser.", { timeout: 3000, type: "warning" });
+				toast("Geolocation is not supported by this browser.", { timeout: app.toastDuration, type: "warning" });
 			}
 		}
 	};
@@ -3804,6 +3804,55 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 		return "";
+	};
+
+	app.showMenu = function() {
+		app.containers.menuElement.style.transform = "translateX(0) !important";
+		app.containers.menuElement.classList.add('menu--show');
+		app.containers.menuOverlayElement.classList.add('menu__overlay--show');
+		app.containers.drawerObfuscatorElement.remove();
+	};
+
+	app.hideMenu = function() {
+		app.containers.menuElement.style.transform = "translateX(-120%) !important";
+		app.containers.menuElement.classList.remove('menu--show');
+		app.containers.menuOverlayElement.classList.add('menu__overlay--hide');
+		app.containers.menuOverlayElement.classList.remove('menu__overlay--show');
+		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
+		app.containers.menuElement.classList.remove('is-visible');
+	};
+
+	app.onTransitionEnd = function() {
+		if (touchStartPoint < 10) {
+			app.containers.menuElement.style.transform = "translateX(0)";
+			app.containers.menuOverlayElement.classList.add('menu__overlay--show');
+			app.containers.menuElement.removeEventListener('transitionend', app.onTransitionEnd, false);
+		}
+	};
+
+	app.updateNetworkStatus = function() {
+		let msg = "";
+		let type = "";
+		if (navigator.onLine) {
+			msg = "You are now online...";
+			type = "done";
+			app.setHiddenElement("notification");
+			navigator.serviceWorker.controller.postMessage("setOnline");
+		}
+		else {
+			msg = "You are now offline...";
+			type = "warning";
+			app.setVisibleElement("notification");
+			navigator.serviceWorker.controller.postMessage("setOffline");
+		}
+		toast(msg, { timeout: app.toastDuration, type: type });
+	};
+
+	app.clearCache = function() {
+		toast("Please clear cache manually... :-)", { timeout: app.toastDuration, type: "warning" });
+		if (localStorage.getItem("settings.debug") == "true") {
+			console.log("[clearCache]", "Please clear cache manually... :-)");
+		}
 	};
 
 	app.imageLazyLoading = function() {
@@ -3883,11 +3932,202 @@ var touchStartPoint, touchMovePoint;
 				app.setSection(currentPage);
 			}
 			if (localStorage.getItem("settings.debug") == "true") {
-				toast("Back to last page view if available in browser storage", { timeout: 3000, type: 'info' });
+				toast("Back to last page view if available in browser storage", { timeout: app.toastDuration, type: "info" });
 			}
 		} else {
 			app.setSection('index');
 		}
+	};
+	
+	app.setInteractiveLinks = function() {
+		app.refreshContainers();
+		app.refreshButtonsSelectors();
+		logout_button.addEventListener('click', function(evt) {
+			app.auth = {};
+			app.resetDrawer();
+			app.sessionExpired();
+			toast('You have been disconnected :-(', { timeout: app.toastDuration, type: "done" });
+			app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash') !== null ? evt.currentTarget.querySelector('a').getAttribute('hash') : evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
+		}, false);
+		signin_button.addEventListener('click', function(evt) {
+			app.auth = {};
+			app.setSection('login');
+		}, false);
+		app.buttons.notification.addEventListener('click', function(evt) {
+			app.showNotification();
+		}, false);
+		profile_button.addEventListener('click', function(evt) {
+			if (app.isLogged) {
+				app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash') !== null ? evt.currentTarget.querySelector('a').getAttribute('hash') : evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
+			} else {
+				app.setSection('login');
+			}
+		}, false);
+		if (document.querySelector('.sticky')) {
+			if (!window.getComputedStyle(document.querySelector('.sticky')).position.match('sticky')) {
+				if (localStorage.getItem("settings.debug") == "true") {
+					toast("Your browser does not support 'position: sticky'!!.", { timeout: app.toastDuration, type: "info" });
+				}
+			}
+		}
+		if (app.containers.menuIconElement) {
+			app.containers.menuIconElement.addEventListener('click', app.showMenu, false);
+			app.containers.menuIconElement.querySelector('i.material-icons').setAttribute('id', 'imgIconMenu');
+			app.containers.menuOverlayElement.addEventListener('click', app.hideMenu, false);
+			app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
+			for (var item in app.containers.menuItems) {
+				if (app.containers.menuItems[item].childElementCount > -1) {
+					(app.containers.menuItems[item]).addEventListener('click', function(evt) {
+						app.setSection((evt.currentTarget.getAttribute('href')).substr(1));
+						app.hideMenu();
+					}, false);
+				}
+			};
+		}
+		var pMatches = document.querySelectorAll('.passmatch');
+		for (var p in pMatches) {
+			if ((pMatches[p]).childElementCount > -1) {
+				(pMatches[p]).addEventListener('input', function(event) {
+					if (document.querySelector('#p2').value != '' && document.querySelector('#p1').value != document.querySelector('#p2').value) {
+						document.querySelector('#p2').parentNode.classList.add('is-invalid');
+						document.querySelector('#p2').parentNode.classList.add('is-dirty');
+					} else {
+						document.querySelector('#p2').parentNode.classList.remove('is-invalid');
+						document.querySelector('#p2').parentNode.classList.remove('is-dirty');
+					}
+				});
+			}
+		}
+		for (var item in app.containers.menuTabItems) {
+			if (app.containers.menuTabItems[item].childElementCount > -1) {
+				app.initNewSection(app.containers.menuTabItems[item].getAttribute("for"));
+				//initNewSection
+				(app.containers.menuTabItems[item]).addEventListener('click', function(evt) {
+					app.setSection((evt.target.parentNode.getAttribute('hash') !== null ? evt.target.parentNode.getAttribute('hash') : evt.target.parentNode.getAttribute('href')).substr(1));
+				}, false);
+			}
+		};
+		for (var i in app.buttons.status) {
+			if (app.buttons.status[i].childElementCount > -1) {
+				app.buttons.status[i].removeEventListener('click', app.onStatusButtonClick, false);
+				app.buttons.status[i].addEventListener('click', app.onStatusButtonClick, false);
+			}
+		};
+		for (var i in app.buttons.settings) {
+			if (app.buttons.settings[i].childElementCount > -1) {
+				app.buttons.settings[i].removeEventListener('click', app.onSettingsButtonClick, false);
+				app.buttons.settings[i].addEventListener('click', app.onSettingsButtonClick, false);
+			}
+		};
+		for (var i in app.buttons.docs) {
+			if (app.buttons.docs[i].childElementCount > -1) {
+				app.buttons.docs[i].removeEventListener('click', app.onDocsButtonClick, false);
+				app.buttons.docs[i].addEventListener('click', app.onDocsButtonClick, false);
+			}
+		}
+		for (var i in app.buttons.terms) {
+			if (app.buttons.terms[i].childElementCount > -1) {
+				app.buttons.terms[i].removeEventListener('click', app.onTermsButtonClick, false);
+				app.buttons.terms[i].addEventListener('click', app.onTermsButtonClick, false);
+			}
+		};
+		// Search
+		if (document.getElementById('search-exp')) {
+			document.getElementById('search-exp').addEventListener('keypress', function(e) {
+				if (e.keyCode === 13) {
+					e.preventDefault();
+					var input = this.value;
+					if (localStorage.getItem("settings.debug") == "true") {
+						alert("Searching for " + input);
+					}
+				}
+			});
+		};
+		// Filter
+		if (document.getElementById('filter-exp')) {
+			document.getElementById('filter-exp').addEventListener('keypress', function(e) {
+				if (e.keyCode === 13) {
+					e.preventDefault();
+					var input = this.value;
+					var type = 'objects';
+					var size;
+					if (document.querySelector('section#objects').classList.contains('is-active')) {
+						type = 'objects';
+						size = app.itemsSize.objects;
+					} else if (document.querySelector('section#flows').classList.contains('is-active')) {
+						type = 'flows';
+						size = app.itemsSize.flows;
+					}
+					app.fetchItemsPaginated(type, this.value, 1, size);
+				}
+			});
+		};
+		// Lazy loading
+		var paginatedContainer = Array(Array(app.containers.objects, 'objects'), Array(app.containers.flows, 'flows'), Array(app.containers.snippets, 'snippets'), Array(app.containers.dashboards, 'dashboards'), Array(app.containers.mqtts, 'mqtts'), Array(app.containers.sources, 'sources'), Array(app.containers.rules, 'rules'));
+		paginatedContainer.map(function(c) {
+			if (c[0]) {
+				c[0].addEventListener('DOMMouseScroll', function(event) {
+					var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
+					var bottom = (document.querySelector('section#' + c[1])).getBoundingClientRect().bottom;
+					if (bottom <= height && c[0].classList.contains('is-active')) {
+						//console.log("Lazy loading -->", c[0].offsetHeight, height, bottom);
+						//console.log('Lazy loading page=', ++(app.itemsPage[c[1]]));
+					}
+				});
+			}
+		});
+		// Cookie Consent
+		var d = new Date();
+		d.setTime(d.getTime() + (app.cookieconsent * 24 * 60 * 60 * 1000));
+		document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
+			document.getElementById('cookieconsent').remove();
+			document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+			document.cookie = "cookieconsentNoGTM=false;expires=" + d.toUTCString() + ";path=/";
+			evt.preventDefault();
+		}, false);
+		document.getElementById('cookieconsent.noGTM').addEventListener('click', function(evt) {
+			document.getElementById('cookieconsent').remove();
+			document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+			document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
+			if (typeof mixpanel !== "undefined") {
+				mixpanel.opt_out_tracking();
+			}
+			evt.preventDefault();
+		}, false);
+		document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
+			app.getTerms();
+			app.setSection('terms');
+			evt.preventDefault();
+		}, false);
+		if (app.getCookie('cookieconsent') !== "true") {
+			document.getElementById('cookieconsent').classList.add('is-visible');
+			document.getElementById('cookieconsent').classList.remove('hidden');
+		} else {
+			document.getElementById('cookieconsent').classList.add('hidden');
+			document.getElementById('cookieconsent').classList.remove('is-visible');
+		}
+	};
+	
+	app.setServiceWorker = function() {
+		if (!('serviceWorker' in navigator)) {
+			if (localStorage.getItem("settings.debug") == "true") {
+				console.log('[ServiceWorker]', 'Service Worker isn\'t supported on this browser.');
+			}
+			return;
+		} else {
+			if (!('PushManager' in window)) {
+				if (localStorage.getItem("settings.debug") == "true") {
+					console.log('[pushSubscription]', 'Push isn\'t supported on this browser.');
+				}
+				return;
+			} else {
+				if (localStorage.getItem("settings.debug") == "true") {
+					console.log('[pushSubscription]', 'askPermission && subscribeUserToPush');
+				}
+				app.askPermission();
+				app.subscribeUserToPush();
+			}
+		};
 	};
 
 	/*
@@ -3921,8 +4161,7 @@ var touchStartPoint, touchMovePoint;
 	for (var i in app.buttons.notifications) {
 		if (app.buttons.notifications[i].childElementCount > -1) {
 			app.buttons.notifications[i].addEventListener('click', function(e) {
-				var email = "";
-				var token = "";
+				let email, token;
 				if (getParameterByName("email", null)) {
 					email = decodeURI(getParameterByName("email", null));
 				} else {
@@ -3933,13 +4172,13 @@ var touchStartPoint, touchMovePoint;
 				} else {
 					token = app.getSetting("notifications.unsubscription_token");
 				}
-				if (email && token) {
+				if (email!==null && token!==null) {
 					var myHeaders = new Headers();
 					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
 					myHeaders.append("Content-Type", "application/json");
 					var myInit = { method: "GET", headers: myHeaders };
 					var type = e.target.parentNode.classList.contains("is-checked") ? "unsubscribe" : "subscribe";
-					var url = app.baseUrl + "/mail/" + email + "/" + type + "/" + e.target.getAttribute("name") + "/" + token + "/";
+					var url = `${app.baseUrl}/mail/${email}/${type}/${e.target.getAttribute("name")}/${token}/`;
 					fetch(url, myInit)
 						.then(
 							app.fetchStatusHandler
@@ -3948,83 +4187,19 @@ var touchStartPoint, touchMovePoint;
 						})
 						.then(function(response) {
 							console.log(response);
-							toast('Settings updated.', { timeout: 3000, type: "done" });
+							toast('Settings updated.', { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
 							if (localStorage.getItem("settings.debug") == "true") {
-								toast('Error occured on saving Notifications...' + error, { timeout: 3000, type: "error" });
+								toast('Error occured on saving Notifications...' + error, { timeout: app.toastDuration, type: "error" });
 							}
 						});
 				} else {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Error occured on saving Notifications...' + error, { timeout: 3000, type: "error" });
+						toast("Error occured on saving Notifications. Missing parameter.", { timeout: app.toastDuration, type: "error" });
 					}
 				}
 			}, false);
-		}
-	}
-
-	app.refreshButtonsSelectors();
-	if (document.querySelector('.sticky')) {
-		if (!window.getComputedStyle(document.querySelector('.sticky')).position.match('sticky')) {
-			if (localStorage.getItem("settings.debug") == "true") {
-				toast("Your browser does not support 'position: sticky'!!.", { timeout: 3000, type: 'info' });
-			}
-		}
-	}
-	if (document.getElementById('search-exp')) {
-		document.getElementById('search-exp').addEventListener('keypress', function(e) {
-			if (e.keyCode === 13) {
-				e.preventDefault();
-				var input = this.value;
-				if (localStorage.getItem("settings.debug") == "true") {
-					alert("Searching for " + input);
-				}
-			}
-		});
-	}
-
-	if (document.getElementById('filter-exp')) {
-		document.getElementById('filter-exp').addEventListener('keypress', function(e) {
-			if (e.keyCode === 13) {
-				e.preventDefault();
-				var input = this.value;
-				var type = 'objects';
-				var size;
-				if (document.querySelector('section#objects').classList.contains('is-active')) {
-					type = 'objects';
-					size = app.itemsSize.objects;
-				} else if (document.querySelector('section#flows').classList.contains('is-active')) {
-					type = 'flows';
-					size = app.itemsSize.flows;
-				}
-				app.fetchItemsPaginated(type, this.value, 1, size);
-			}
-		});
-	}
-
-	for (var i in app.buttons.status) {
-		if (app.buttons.status[i].childElementCount > -1) {
-			app.buttons.status[i].removeEventListener('click', app.onStatusButtonClick, false);
-			app.buttons.status[i].addEventListener('click', app.onStatusButtonClick, false);
-		}
-	}
-	for (var i in app.buttons.settings) {
-		if (app.buttons.settings[i].childElementCount > -1) {
-			app.buttons.settings[i].removeEventListener('click', app.onSettingsButtonClick, false);
-			app.buttons.settings[i].addEventListener('click', app.onSettingsButtonClick, false);
-		}
-	}
-	for (var i in app.buttons.docs) {
-		if (app.buttons.docs[i].childElementCount > -1) {
-			app.buttons.docs[i].removeEventListener('click', app.onDocsButtonClick, false);
-			app.buttons.docs[i].addEventListener('click', app.onDocsButtonClick, false);
-		}
-	}
-	for (var i in app.buttons.terms) {
-		if (app.buttons.terms[i].childElementCount > -1) {
-			app.buttons.terms[i].removeEventListener('click', app.onTermsButtonClick, false);
-			app.buttons.terms[i].addEventListener('click', app.onTermsButtonClick, false);
 		}
 	}
 
@@ -4037,136 +4212,6 @@ var touchStartPoint, touchMovePoint;
 			touchcancel: function(e) { nm = false }
 		};
 	for (var a in touch) { document.addEventListener(a, touch[a], false); }
-	//var h=function(e){console.log(e.type,e)};
-	if (typeof screen.orientation !== "undefined") {
-		screen.orientation.addEventListener("change", app.showOrientation);
-	}
-
-	// Cookie Consent
-	var d = new Date();
-	d.setTime(d.getTime() + (app.cookieconsent * 24 * 60 * 60 * 1000));
-	document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
-		document.getElementById('cookieconsent').remove();
-		document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
-		document.cookie = "cookieconsentNoGTM=false;expires=" + d.toUTCString() + ";path=/";
-		evt.preventDefault();
-	}, false);
-	document.getElementById('cookieconsent.noGTM').addEventListener('click', function(evt) {
-		document.getElementById('cookieconsent').remove();
-		document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
-		document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
-		if (typeof mixpanel !== "undefined") {
-			mixpanel.opt_out_tracking();
-		}
-		evt.preventDefault();
-	}, false);
-	document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
-		app.getTerms();
-		app.setSection('terms');
-		evt.preventDefault();
-	}, false);
-	if (app.getCookie('cookieconsent') !== "true") {
-		document.getElementById('cookieconsent').classList.add('is-visible');
-		document.getElementById('cookieconsent').classList.remove('hidden');
-	} else {
-		document.getElementById('cookieconsent').classList.add('hidden');
-		document.getElementById('cookieconsent').classList.remove('is-visible');
-	}
-
-	/*
-	 * *********************************** Menu ***********************************
-	 */
-	app.showMenu = function() {
-		app.containers.menuElement.style.transform = "translateX(0) !important";
-		app.containers.menuElement.classList.add('menu--show');
-		app.containers.menuOverlayElement.classList.add('menu__overlay--show');
-		app.containers.drawerObfuscatorElement.remove();
-	};
-	app.hideMenu = function() {
-		app.containers.menuElement.style.transform = "translateX(-120%) !important";
-		app.containers.menuElement.classList.remove('menu--show');
-		app.containers.menuOverlayElement.classList.add('menu__overlay--hide');
-		app.containers.menuOverlayElement.classList.remove('menu__overlay--show');
-		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
-		app.containers.menuElement.classList.remove('is-visible');
-	};
-	app.onTransitionEnd = function() {
-		if (touchStartPoint < 10) {
-			app.containers.menuElement.style.transform = "translateX(0)";
-			app.containers.menuOverlayElement.classList.add('menu__overlay--show');
-			app.containers.menuElement.removeEventListener('transitionend', app.onTransitionEnd, false);
-		}
-	};
-	app.updateNetworkStatus = function() {
-		let msg = "";
-		let type = "";
-		if (navigator.onLine) {
-			msg = "You are now online...";
-			type = "done";
-			app.setHiddenElement("notification");
-			navigator.serviceWorker.controller.postMessage("setOnline");
-		}
-		else {
-			msg = "You are now offline...";
-			type = "warning";
-			app.setVisibleElement("notification");
-			navigator.serviceWorker.controller.postMessage("setOffline");
-		}
-		toast(msg, { timeout: 3000, type: type });
-	};
-	app.clearCache = function() {
-		toast("Please clear cache manually... :-)", { timeout: 3000, type: "warning" });
-		if (localStorage.getItem("settings.debug") == "true") {
-			console.log("[clearCache]", "Please clear cache manually... :-)");
-		}
-	};
-	logout_button.addEventListener('click', function(evt) {
-		app.auth = {};
-		app.resetDrawer();
-		app.sessionExpired();
-		toast('You have been disconnected :-(', { timeout: 3000, type: "done" });
-		app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash') !== null ? evt.currentTarget.querySelector('a').getAttribute('hash') : evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
-	}, false);
-	signin_button.addEventListener('click', function(evt) {
-		app.auth = {};
-		app.setSection('login');
-	}, false);
-	app.buttons.notification.addEventListener('click', function(evt) {
-		app.showNotification();
-	}, false);
-	profile_button.addEventListener('click', function(evt) {
-		if (app.isLogged) {
-			app.setSection((evt.currentTarget.querySelector('a').getAttribute('hash') !== null ? evt.currentTarget.querySelector('a').getAttribute('hash') : evt.currentTarget.querySelector('a').getAttribute('href')).substr(1));
-		} else {
-			app.setSection('login');
-		}
-	}, false);
-	app.setHiddenElement("notification");
-
-	app.refreshContainers();
-	if (app.containers.menuIconElement) {
-		app.containers.menuIconElement.addEventListener('click', app.showMenu, false);
-		app.containers.menuIconElement.querySelector('i.material-icons').setAttribute('id', 'imgIconMenu');
-		app.containers.menuOverlayElement.addEventListener('click', app.hideMenu, false);
-		app.containers.menuElement.addEventListener('transitionend', app.onTransitionEnd, false);
-		for (var item in app.containers.menuItems) {
-			if (app.containers.menuItems[item].childElementCount > -1) {
-				(app.containers.menuItems[item]).addEventListener('click', function(evt) {
-					app.setSection((evt.currentTarget.getAttribute('href')).substr(1));
-					app.hideMenu();
-				}, false);
-			}
-		};
-	}
-	for (var item in app.containers.menuTabItems) {
-		if (app.containers.menuTabItems[item].childElementCount > -1) {
-			app.initNewSection(app.containers.menuTabItems[item].getAttribute("for"));
-			//initNewSection
-			(app.containers.menuTabItems[item]).addEventListener('click', function(evt) {
-				app.setSection((evt.target.parentNode.getAttribute('hash') !== null ? evt.target.parentNode.getAttribute('hash') : evt.target.parentNode.getAttribute('href')).substr(1));
-			}, false);
-		}
-	};
 	document.body.addEventListener('touchstart', function(event) {
 		touchStartPoint = event.changedTouches[0].pageX;
 		touchMovePoint = touchStartPoint;
@@ -4195,71 +4240,6 @@ var touchStartPoint, touchMovePoint;
 		}
 	}, false);
 
-	/* Lazy loading */
-	var paginatedContainer = Array(Array(app.containers.objects, 'objects'), Array(app.containers.flows, 'flows'), Array(app.containers.snippets, 'snippets'), Array(app.containers.dashboards, 'dashboards'), Array(app.containers.mqtts, 'mqtts'), Array(app.containers.sources, 'sources'), Array(app.containers.rules, 'rules'));
-	paginatedContainer.map(function(c) {
-		if (c[0]) {
-			c[0].addEventListener('DOMMouseScroll', function(event) {
-				var height = (document.body.scrollHeight || window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0);
-				var bottom = (document.querySelector('section#' + c[1])).getBoundingClientRect().bottom;
-				if (bottom <= height && c[0].classList.contains('is-active')) {
-					//console.log("Lazy loading -->", c[0].offsetHeight, height, bottom);
-					//console.log('Lazy loading page=', ++(app.itemsPage[c[1]]));
-				}
-			});
-		}
-	}); // Lazy loading
-
-	var pMatches = document.querySelectorAll('.passmatch');
-	for (var p in pMatches) {
-		if ((pMatches[p]).childElementCount > -1) {
-			(pMatches[p]).addEventListener('input', function(event) {
-				if (document.querySelector('#p2').value != '' && document.querySelector('#p1').value != document.querySelector('#p2').value) {
-					document.querySelector('#p2').parentNode.classList.add('is-invalid');
-					document.querySelector('#p2').parentNode.classList.add('is-dirty');
-				} else {
-					document.querySelector('#p2').parentNode.classList.remove('is-invalid');
-					document.querySelector('#p2').parentNode.classList.remove('is-dirty');
-				}
-			});
-		}
-	}
-	app.setDrawer();
-
-	if (app.gtm !== "" && app.getCookie('cookieconsentNoGTM') !== "true") {
-		(function(w, d, s, l, i) {
-			w[l] = w[l] || []; w[l].push({
-				'gtm.start':
-					new Date().getTime(), event: 'gtm.js'
-			}); var f = d.getElementsByTagName(s)[0],
-				j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
-					'//www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-		})(window, document, 'script', 'dataLayer', app.gtm);
-		if (localStorage.getItem("settings.debug") == "true") {
-			console.log('[gtm]', 'gtm.start');
-		}
-	}
-
-	if (!('serviceWorker' in navigator)) {
-		if (localStorage.getItem("settings.debug") == "true") {
-			console.log('[ServiceWorker]', 'Service Worker isn\'t supported on this browser.');
-		}
-		return;
-	} else {
-		if (!('PushManager' in window)) {
-			if (localStorage.getItem("settings.debug") == "true") {
-				console.log('[pushSubscription]', 'Push isn\'t supported on this browser.');
-			}
-			return;
-		} else {
-			if (localStorage.getItem("settings.debug") == "true") {
-				console.log('[pushSubscription]', 'askPermission && subscribeUserToPush');
-			}
-			app.askPermission();
-			app.subscribeUserToPush();
-		}
-	};
-
 	app.managePage();
 	document.addEventListener("readystatechange", event => {
 		if (event.target.readyState === "loading") {
@@ -4275,13 +4255,20 @@ var touchStartPoint, touchMovePoint;
 		} else if (event.target.readyState === "complete") {
 			app.fetchIndex('index');
 			app.refreshButtonsSelectors();
+			app.setInteractiveLinks();
 			app.setLoginAction();
 			app.setSignupAction();
 			app.refreshButtonsSelectors();
 			app.setPasswordResetAction();
 			app.setForgotAction();
 			app.imageLazyLoading();
+			app.setDrawer();
+			app.setHiddenElement("notification");
+			app.setServiceWorker();
 			
+			if (typeof screen.orientation !== "undefined") {
+				screen.orientation.addEventListener("change", app.showOrientation);
+			}
 			window.addEventListener("online", app.updateNetworkStatus, false);
 			window.addEventListener("offline", app.updateNetworkStatus, false);
 			window.addEventListener("clearCache", app.clearCache, false);
@@ -4302,6 +4289,19 @@ var touchStartPoint, touchMovePoint;
 					console.log('[History]', 'resource id', id2);
 				}
 			}, false);
+			if (app.gtm !== "" && app.getCookie('cookieconsentNoGTM') !== "true") {
+				(function(w, d, s, l, i) {
+					w[l] = w[l] || []; w[l].push({
+						'gtm.start':
+							new Date().getTime(), event: 'gtm.js'
+					}); var f = d.getElementsByTagName(s)[0],
+						j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+							'//www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+				})(window, document, 'script', 'dataLayer', app.gtm);
+				if (localStorage.getItem("settings.debug") == "true") {
+					console.log('[gtm]', 'gtm.start');
+				}
+			}
 
 			if (localStorage.getItem("settings.debug") == "true") {
 				var completeTime = new Date();
