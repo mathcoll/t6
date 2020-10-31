@@ -3,11 +3,11 @@
 echo Starting Minification ...
 echo "========================"
 echo "Using uglifyjs version:"
-../node_modules/uglify-js-es6/bin/uglifyjs -V
+../node_modules/uglify-js/bin/uglifyjs -V
 echo ""
 
 echo 1. PWA Javascript T6 minify:
-../node_modules/uglify-js-es6/bin/uglifyjs \
+../node_modules/uglify-js/bin/uglifyjs \
 	../public/js/t6app-main.js \
 	../public/js/resources/t6-objects.js \
 	../public/js/resources/t6-flows.js \
@@ -23,21 +23,27 @@ echo 1. PWA Javascript T6 minify:
 	../public/js/resources/snippets/simpleRow.js \
 	../public/js/resources/snippets/cardChart.js \
 	../public/js/resources/snippets/sparkline.js \
+	--compress \
+	--mangle \
+	--stats \
 	-o ../public/js/t6app-min.js \
-	-m -c warnings=false
+	--source-map "filename=t6app-min.js.map,url=t6app-min.js.map,includeSources=true"
 echo Completed
 echo ""
 
 echo 2. PWA Javascript T6-VENDOR minify:
-uglifyjs \
+../node_modules/uglify-js/bin/uglifyjs \
 	../public/js/vendor/material/material.js \
 	../public/js/vendor/mdl/mdl-selectfield.min.js \
 	../public/js/vendor/moment/moment.min-2.24.0.js \
 	../public/js/vendor/OpenLayers/ol-4.6.5.min.js \
 	../public/js/vendor/Chart/Chart-min-2.9.3.js \
 	../public/js/vendor/Leaflet/leaflet-min-1.6.0.js \
+	--compress \
+	--mangle \
+	--stats \
 	-o ../public/js/vendor.min.js \
-	-m -c warnings=false
+	--source-map "filename=vendor.min.js.map,url=vendor.min.js.map,includeSources=true"
 echo Completed
 echo ""
 
@@ -53,11 +59,13 @@ echo Completed
 echo ""
 
 echo 4. Documentation Javascript minify:
-../node_modules/uglify-js-es6/bin/uglifyjs \
+../node_modules/uglify-js/bin/uglifyjs \
 	../public/js/vendor/jquery/jquery-3.3.1.min.js \
 	../public/js/t6.js \
-	-o ../public/js/t6.min.js \
-	-m -c warnings=false
+	--compress \
+	--mangle \
+	--stats \
+	-o ../public/js/t6.min.js
 echo Completed
 echo ""
 
@@ -70,12 +78,15 @@ echo Completed
 echo ""
 
 echo 6. PWA Javascript T6-SHOW minify:
-../node_modules/uglify-js-es6/bin/uglifyjs \
+../node_modules/uglify-js/bin/uglifyjs \
 	../public/js/vendor/material/material.js \
 	../public/js/vendor/mdl/mdl-selectfield.min.js \
 	../public/js/t6show.js \
+	--compress \
+	--mangle \
+	--stats \
 	-o ../public/js/t6show-min.js \
-	-m -c warnings=false
+	--source-map "filename=t6show-min.js.map,url=t6show-min.js.map,includeSources=true"
 echo Completed
 echo ""
 
