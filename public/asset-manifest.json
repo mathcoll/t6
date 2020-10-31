@@ -1,0 +1,9 @@
+{
+  "files": {
+    "service-worker.js": "/service-worker.js",
+    "manifest.json": "/manifest.json",
+    "asset-manifest.json": "/asset-manifest.json",
+    "t6app-min.js": "/js/t6app-min.js",
+    "vendor.min.js": "/js/vendor.min.js"
+  }
+}
