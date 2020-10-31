@@ -568,6 +568,36 @@ var touchStartPoint, touchMovePoint;
 		evt.preventDefault();
 	};
 
+	app.onSaveProfileButtonClick = function(evt) {
+		if (navigator.onLine) {
+			var firstName = document.getElementById("firstName").value;
+			var lastName = document.getElementById("lastName").value;
+
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify({ "firstName": firstName, "lastName": lastName }) };
+			var url = `${app.baseUrl}/${app.api_version}/users/${localStorage.getItem('currentUserId')}`;
+
+			fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse){
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				localStorage.setItem('currentUserName', firstName+" "+lastName);
+				app.setDrawer();
+				toast('Your details have been updated.', { timeout: app.toastDuration, type: "done" });
+			})
+			.catch(function (error) {
+				toast("We can't process your modifications. Please resubmit the form later!", { timeout: app.toastDuration, type: "warning" });
+			});
+		} else {
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
+		}
+	};
+
 	app.askPermission = function() {
 		return new Promise(function(resolve, reject) {
 			const permissionResult = Notification.requestPermission(function(result) {
@@ -578,11 +608,11 @@ var touchStartPoint, touchMovePoint;
 				permissionResult.then(resolve, reject);
 			}
 		})
-			.then(function(permissionResult) {
-				if (permissionResult !== 'granted') {
-					throw new Error('We weren\'t granted permission.');
-				}
-			});
+		.then(function(permissionResult) {
+			if (permissionResult !== 'granted') {
+				throw new Error('We weren\'t granted permission.');
+			}
+		});
 	};
 
 	app.registerServiceWorker = function() {
@@ -642,36 +672,6 @@ var touchStartPoint, touchMovePoint;
 					console.log('[pushSubscription]', 'subscribeUserToPush', error);
 				}
 			});
-	};
-
-	app.onSaveProfileButtonClick = function(evt) {
-		if (navigator.onLine) {
-			var firstName = document.getElementById("firstName").value;
-			var lastName = document.getElementById("lastName").value;
-
-			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
-			myHeaders.append("Content-Type", "application/json");
-			var myInit = { method: 'PUT', headers: myHeaders, body: JSON.stringify({ "firstName": firstName, "lastName": lastName }) };
-			var url = `${app.baseUrl}/${app.api_version}/users/${localStorage.getItem('currentUserId')}`;
-
-			fetch(url, myInit)
-			.then(
-				app.fetchStatusHandler
-			).then(function(fetchResponse){
-				return fetchResponse.json();
-			})
-			.then(function(response) {
-				localStorage.setItem('currentUserName', firstName+" "+lastName);
-				app.setDrawer();
-				toast('Your details have been updated.', { timeout: app.toastDuration, type: "done" });
-			})
-			.catch(function (error) {
-				toast("We can't process your modifications. Please resubmit the form later!", { timeout: app.toastDuration, type: "warning" });
-			});
-		} else {
-			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
-		}
 	};
 
 	app.refreshButtonsSelectors = function() {
@@ -821,7 +821,6 @@ var touchStartPoint, touchMovePoint;
 			menuTabItems: document.querySelectorAll('.mdl-layout__tab-bar a.mdl-navigation__link.mdl-layout__tab'),
 		}
 	};
-	app.refreshContainers();
 
 	app.setExpandAction = function() {
 		componentHandler.upgradeDom();
@@ -2168,7 +2167,6 @@ var touchStartPoint, touchMovePoint;
 							usersList += app.getField('dns', 'IP address', user.attributes.location.ip, { type: 'text', isEdit: false });
 						}
 					}
-					console.log(user.attributes);
 					usersList += app.getField('contact_mail', 'Password last update', moment((user.attributes.password_last_updated) / 1).format(app.date_format), { type: 'text', isEdit: false });
 					usersList += app.getField('contact_mail', 'Reminder Email', moment((user.attributes.reminder_mail) / 1).format(app.date_format), { type: 'text', isEdit: false });
 					usersList += app.getField('change_history', 'Password reset request', moment((user.attributes.change_password_mail) / 1).format(app.date_format), { type: 'text', isEdit: false });
@@ -2669,6 +2667,7 @@ var touchStartPoint, touchMovePoint;
 						})
 						.then(function(response) {
 							document.getElementById("exploreResults").innerHTML = "";
+							document.getElementById("exploreResults").innerHTML += app.getField("timeline", "Data Type", `${response.data_type.name} ${response.data_type.type} (${response.data_type.classification})`, { type: "text" });
 							for (const [key, value] of Object.entries(response)) {
 								if (typeof value!=="object") {
 									document.getElementById("exploreResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
@@ -3905,8 +3904,8 @@ var touchStartPoint, touchMovePoint;
 			} else if (currentPage === 'settings') {
 				app.onSettingsButtonClick();
 			} else if (currentPage === 'exploration') {
-				app.getExploration();
 				app.setSection('exploration');
+				app.getExploration();
 			} else if (currentPage === 'login') {
 				app.isLogged = false;
 				localStorage.setItem("bearer", null);
@@ -4242,7 +4241,6 @@ var touchStartPoint, touchMovePoint;
 		}
 	}, false);
 
-	app.managePage();
 	document.addEventListener("readystatechange", event => {
 		if (event.target.readyState === "loading") {
 			if (localStorage.getItem("settings.debug") == "true") {
@@ -4255,19 +4253,20 @@ var touchStartPoint, touchMovePoint;
 				console.log("DEBUG", "interactive: ", interactiveTime - startTime, "ms");
 			}
 		} else if (event.target.readyState === "complete") {
+			app.refreshContainers();
+			app.managePage();
 			app.fetchIndex('index');
-			app.refreshButtonsSelectors();
 			app.setInteractiveLinks();
 			app.setLoginAction();
 			app.setSignupAction();
-			app.refreshButtonsSelectors();
-			app.setPasswordResetAction();
 			app.setForgotAction();
+			app.setPasswordResetAction();
+			app.refreshButtonsSelectors();
 			app.imageLazyLoading();
 			app.setDrawer();
 			app.setHiddenElement("notification");
 			app.setServiceWorker();
-			
+
 			if (typeof screen.orientation !== "undefined") {
 				screen.orientation.addEventListener("change", app.showOrientation);
 			}

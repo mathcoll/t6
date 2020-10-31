@@ -2,15 +2,15 @@
 // These scripts are made available when the app is served or deployed on Firebase Hosting
 // If you do not serve/host your project using Firebase Hosting see https://firebase.google.com/docs/web/setup
 
-importScripts("//www.gstatic.com/firebasejs/7.23.0/firebase-app.js");
-importScripts("//www.gstatic.com/firebasejs/7.23.0/firebase-analytics.js");
-importScripts("//www.gstatic.com/firebasejs/7.23.0/firebase-messaging.js");
+importScripts("//www.gstatic.com/firebasejs/8.0.0/firebase-app.js");
+importScripts("//www.gstatic.com/firebasejs/8.0.0/firebase-analytics.js");
+importScripts("//www.gstatic.com/firebasejs/8.0.0/firebase-messaging.js");
 var trackings = {
 	gtm: "GTM-PH7923",
 	googleSigninClientId: "91119083860-6eb566ij9t4n83dm21rcqgts0g5ood2o.apps.googleusercontent.com",
 	ggads: "ca-pub-1540450623748539",
 	firebaseConfig: {
-		firebaseJsVersion: "7.23.0", // https://firebase.google.com/docs/web/setup
+		firebaseJsVersion: "8.0.0", // https://firebase.google.com/docs/web/setup
 		web: {
 			apiKey: "AIzaSyDI7z7R033CBz_4rWH8JA2TGmql2mw5v7A",
 			authDomain: "t6-app.firebaseapp.com",
