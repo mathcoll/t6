@@ -7,27 +7,33 @@
   "icons": [{
       "src": "/img/m/icons/icon-128x128.png",
       "sizes": "128x128",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }, {
       "src": "/img/m/icons/mstile-144x144.png",
       "sizes": "144x144",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }, {
       "src": "/img/m/icons/mstile-150x150.png",
       "sizes": "152x152",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }, {
       "src": "/img/m/icons/icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }, {
       "src": "/img/m/icons/icon-180x180.png",
       "sizes": "180x180",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }, {
       "src": "/img/m/icons/android-chrome-512x512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "screenshots" : [{
@@ -57,7 +63,7 @@
     }
   ],
   "scope": "/",
-  "start_url": "https://api.internetcollaboratif.info/",
+  "start_url": "https://api.internetcollaboratif.info/#index",
   "serviceworker": {
     "src": "/service-worker.js",
     "scope": "/"
