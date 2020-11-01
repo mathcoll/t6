@@ -180,7 +180,9 @@ app.resources.flows = {
 					//node += app.getField(app.icons.description, "Description", description, {type: "text", id: "Description", isEdit: isEdit});
 					node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic!==undefined?flow.attributes.mqtt_topic:"", {type: "text", style:"text-transform: none !important;", id: "MQTTTopic", isEdit: isEdit});
 					node += app.getField(app.icons.units, "Unit", flow.attributes.unit, {type: "select", id: "Unit", isEdit: true, options: allUnits });
-					node += app.getField(app.icons.datatypes, "DataType", flow.attributes.data_type, {type: "select", id: "DataType", isEdit: true, options: allDatatypes });
+					node += app.getField(app.icons.datatypes, "DataType", flow.attributes.data_type, {type: "select", id: "DataTypeName", isEdit: true, options: allDatatypes });
+					node += app.getField(app.icons.datatypes, "Type", app.findDataType(flow.attributes.data_type).type, {type: "text", id: "DataTypeType", isEdit: false, options: allDatatypes });
+					node += app.getField(app.icons.datatypes, "Classification", app.findDataType(flow.attributes.data_type).classification, {type: "text", id: "DataTypeClassification", isEdit: false, options: allDatatypes });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "edit_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
@@ -221,8 +223,9 @@ app.resources.flows = {
 						app.getUnits();
 					}
 					if ( flow.attributes.data_type ) {
-						var datatype = JSON.parse(localStorage.getItem("datatypes")).find( function(d) { return d.name == flow.attributes.data_type; }).value;
-						node += app.getField(app.icons.datatypes, "DataType", datatype, {type: "select", id: "DataType", isEdit: isEdit, options: app.datatypes });
+						node += app.getField(app.icons.datatypes, "DataType", app.findDataType(flow.attributes.data_type).value, {type: "select", id: "DataTypeName", isEdit: isEdit, options: app.datatypes });
+						node += app.getField(app.icons.datatypes, "Type", app.findDataType(flow.attributes.data_type).type, {type: "text", id: "DataTypeType", isEdit: false, options: allDatatypes });
+						node += app.getField(app.icons.datatypes, "Classification", app.findDataType(flow.attributes.data_type).classification, {type: "text", id: "DataTypeClassification", isEdit: false, options: allDatatypes });
 					}
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "show_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "show_require_encrypted", isEdit: isEdit});
@@ -233,7 +236,7 @@ app.resources.flows = {
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
 					node += "			<span class='mdl-list__item-primary-content'>";
-					node +=	"				<span>"+flow.attributes.name+" ("+unit.value+"/"+datatype+")</span>";
+					node +=	"				<span>"+flow.attributes.name+" ("+unit.value+"/"+app.findDataType(flow.attributes.data_type)+")</span>";
 					node +=	"				<span class='mdl-list__item-sub-title' id='flow-graph-time-"+flow.id+"'></span>";
 					node +=	"			</span>";
 					node +=	"		</span>";
@@ -312,7 +315,7 @@ app.resources.flows = {
 				
 				let width = document.getElementById("flow-graph-"+flow.id).offsetWidth;
 				let height = 250;
-				let svgUrl = `${app.baseUrl}/${app.api_version}/exploration?flow_id=${flow.id}&&select=mean&group=30d&dateFormat=MMM&start=${moment().format("YYYY")}-02-01 00:00:00&limit=1000&sort=asc&page=0&graphType=bar&width=${width}&height=${height}&xAxis=Months&yAxis=MEAN value (${unit})`;
+				let svgUrl = `${app.baseUrl}/${app.api_version}/exploration/${flow.id}/exploration?select=mean&group=30d&dateFormat=MMM&start=${moment().format("YYYY")}-02-01 00:00:00&limit=1000&sort=asc&page=0&graphType=bar&width=${width}&height=${height}&xAxis=Months&yAxis=MEAN value (${unit})`;
 
 				fetch(svgUrl, myInit)
 				.then(
@@ -428,7 +431,7 @@ app.resources.flows = {
 		}
 		if ( flow.attributes.data_type ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
-			element += "		<i class='material-icons md-28'>"+app.icons.datatypes+"</i>"+JSON.parse(localStorage.getItem("datatypes")).find( function(d) { return d.name == flow.attributes.data_type; }).value;
+			element += `		<i class='material-icons md-28'>${app.icons.datatypes}</i>${app.findDataType(flow.attributes.data_type).value} (${app.findDataType(flow.attributes.data_type).type}, ${app.findDataType(flow.attributes.data_type).classification})`;
 			element += "	</div>";
 		}
 		if ( flow.attributes.require_signed === true ) {

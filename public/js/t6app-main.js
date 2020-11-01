@@ -843,6 +843,10 @@ var touchStartPoint, touchMovePoint;
 			}
 		}
 	};
+	
+	app.findDataType = function(id) {
+		return JSON.parse(localStorage.getItem("datatypes")).find( function(d) { return d.name === id; });
+	};
 
 	app.initNewSection = function(section) {
 		if (!document.getElementById(section)) {
@@ -1706,7 +1710,7 @@ var touchStartPoint, touchMovePoint;
 					if (response.data) {
 						for (var i = 0; i < (response.data).length; i++) {
 							var d = response.data[i];
-							app.datatypes.push({ name: d.id, value: d.attributes.name, type: d.attributes.type });
+							app.datatypes.push({ name: d.id, value: d.attributes.name, classification: d.attributes.classification, type: d.attributes.type });
 						}
 						(app.datatypes) = (app.datatypes).sort(function(a, b) {
 							if (a.value.toLowerCase() < b.value.toLowerCase()) { return -1; }
@@ -2856,7 +2860,7 @@ var touchStartPoint, touchMovePoint;
 							let selected = value == options.options[n].name ? 'selected' : '';
 							let displayName = options.options[n].value;
 							if (typeof options.options[n].type !== "undefined") {
-								displayName += ` (${options.options[n].type})`;
+								displayName += ` (${options.options[n].type}, ${options.options[n].classification})`;
 							}
 							field += "	<option " + selected + " value='" + options.options[n].name + "' data-stype='" + options.options[n].sType + "'>" + displayName + "</option>";
 						}
@@ -3943,6 +3947,10 @@ var touchStartPoint, touchMovePoint;
 	app.setInteractiveLinks = function() {
 		app.refreshContainers();
 		app.refreshButtonsSelectors();
+		app.setLoginAction();
+		app.setSignupAction();
+		app.setForgotAction();
+		app.setPasswordResetAction();
 		logout_button.addEventListener('click', function(evt) {
 			app.auth = {};
 			app.resetDrawer();
@@ -4257,10 +4265,6 @@ var touchStartPoint, touchMovePoint;
 			app.managePage();
 			app.fetchIndex('index');
 			app.setInteractiveLinks();
-			app.setLoginAction();
-			app.setSignupAction();
-			app.setForgotAction();
-			app.setPasswordResetAction();
 			app.refreshButtonsSelectors();
 			app.imageLazyLoading();
 			app.setDrawer();
