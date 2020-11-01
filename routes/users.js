@@ -21,19 +21,33 @@ var accessTokens;
  * @apiUse 403
  */
 router.get("/newcomers", function (req, res) {
+	var size = typeof req.query.size!=="undefined"?req.query.size:20; // TODO WTF: should be "limit" !!
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
 	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
-		var query = sprintf("SELECT who FROM events WHERE what='user add' ORDER BY time desc LIMIT 20");
+		var query = `SELECT who FROM events WHERE what='user add' ORDER BY time desc LIMIT ${size} OFFSET ${offset}`; // TODO WTF ?? using influx for that ??
+		t6console.log(query);
 		dbInfluxDB.query(query).then(data => {
 			users	= db.getCollection("users");
 			data.map(function(u) {
-				if( u.who !== "" ) {
-					let us = users.findOne({"id": { "$eq": u.who }});
-					u.email = us!==null?us.email:"";
+				let us;
+				// TODO WTF ?? so why not getting directly from db ??
+				if( u.who !== "" && (typeof req.query.filter!=="undefined" || req.query.filter==="pushSubscription") ) {
+					us = users.findOne({"$and": [{"id": { "$eq": u.who }}, {"pushSubscription": { "$ne": undefined }}, {"pushSubscription": { "$ne": "" }}, {"pushSubscription": { "$ne": null }}]});
+				} else if( u.who !== "" ) {
+					us = users.findOne({"id": { "$eq": u.who }});
 				}
+				u.firstName = us!==null?us.firstName:"";
+				u.lastName = us!==null?us.lastName:"";
+				u.email = us!==null?us.email:"";
+				u.id = us!==null?us.who:"";
+				u.pushSubscription = us!==null?us.pushSubscription:"";
+				u.who = us!==null?undefined:u.who;
 			});
 			res.status(200).send(data);
-		}).catch(err => {
-			res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
+		//}).catch(err => {
+		//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 		});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 819.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
