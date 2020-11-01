@@ -1019,6 +1019,7 @@ div[data-action='view'] .mdl-list__item--three-line {
 }
 div[data-action='view'] .mdl-list__item--three-line {
 	overflow: hidden;
+	flex: auto;
 }
 div:not([data-action='view']) .mdl-card__title h3.mdl-card__title-text,
 div:not([data-action='nothing']) .mdl-card__title h3.mdl-card__title-text {
