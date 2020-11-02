@@ -65,7 +65,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
       script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-analytics.js")
       script(src="//www.gstatic.com/firebasejs/"+trackings.firebaseConfig.firebaseJsVersion+"/firebase-messaging.js")
       script.
-        var firebaseConfig = (window.matchMedia('(display-mode: standalone)').matches) || (window.navigator.standalone) || document.referrer.includes('android-app://')===false?!{JSON.stringify(trackings.firebaseConfig.web)}:!{JSON.stringify(trackings.firebaseConfig.android)};
+        let s = undefined;
+        if((new RegExp("[?&]s(=([^&#]*)|&|#|$)").exec(window.location.href))!==null) { s = decodeURIComponent( (new RegExp("[?&]s(=([^&#]*)|&|#|$)").exec(window.location.href))[2] ); }
+        let isTWA = ( s==="twa" || window.matchMedia('(display-mode: standalone)').matches || (window.navigator.standalone) || document.referrer.includes('android-app://')) ;
+        var firebaseConfig = isTWA===false?!{JSON.stringify(trackings.firebaseConfig.web)}:!{JSON.stringify(trackings.firebaseConfig.android)};
     
     .mdl-layout.mdl-js-layout.mdl-layout--fixed-header
       header.mdl-layout__header.mdl-layout__header--waterfall.mdl-layout__header--waterfall-hide-top

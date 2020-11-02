@@ -63,7 +63,7 @@
     }
   ],
   "scope": "/",
-  "start_url": "https://api.internetcollaboratif.info/#index",
+  "start_url": "https://api.internetcollaboratif.info/?s=twa#index",
   "serviceworker": {
     "src": "/service-worker.js",
     "scope": "/"
