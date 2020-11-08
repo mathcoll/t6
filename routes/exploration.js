@@ -382,6 +382,209 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 });
 
 /**
+ * @api {get} /exploration/loess Display LOESS : LOcally Estimated Scatterplot Smoothing
+ * @apiName Display LOESS : LOcally Estimated Scatterplot Smoothing
+ * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiVersion 2.0.1
+ *
+ * @apiUse Auth
+ * 
+ * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
+ * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
+ * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
+ * @apiParam {String} [xAxis] Label value in X axis
+ * @apiParam {String} [yAxis] Label value in Y axis
+ * @apiParam {Integer} [width] output width of SVG chart
+ * @apiParam {Integer} [height] output height of SVG chart
+ * @apiSuccess {Svg} Svg image file
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
+	var flow_id = req.query.flow_id;
+	var group = req.query.group;
+	var xAxis = typeof req.query.xAxis ? req.query.xAxis : "";
+	var yAxis = typeof req.query.yAxis ? req.query.yAxis : "";
+	var width = parseInt(req.query.width, 10);
+	var height = parseInt(req.query.height, 10);
+	var query;
+	var start;
+	var end;
+
+	if (!flow_id) {
+		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+	} else {
+		flows = db.getCollection("flows");
+		units = db.getCollection("units");
+
+		let where = "";
+
+		if (typeof req.query.start !== "undefined") {
+			if (!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
+				if (req.query.start.toString().length === 10) { start = req.query.start * 1e9; }
+				else if (req.query.start.toString().length === 13) { start = req.query.start * 1e6; }
+				else if (req.query.start.toString().length === 16) { start = req.query.start * 1e3; }
+				where += sprintf(" AND time>=%s", parseInt(start, 10));
+			} else {
+				where += sprintf(" AND time>='%s'", req.query.start.toString());
+			}
+		}
+		if (typeof req.query.end !== "undefined") {
+			if (!isNaN(req.query.end) && parseInt(req.query.end, 10)) {
+				if (req.query.end.toString().length === 10) { end = req.query.end * 1e9; }
+				else if (req.query.end.toString().length === 13) { end = req.query.end * 1e6; }
+				else if (req.query.end.toString().length === 16) { end = req.query.end * 1e3; }
+				where += sprintf(" AND time<=%s", parseInt(end, 10));
+			} else {
+				where += sprintf(" AND time<='%s'", req.query.end.toString());
+			}
+		}
+
+		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
+		var join = flow.eqJoin(units.chain(), "unit", "id");
+
+		var flowsDT = db.getCollection("flows");
+		datatypes = db.getCollection("datatypes");
+		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
+		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
+		let dt = getFieldsFromDatatype(datatypeName, false, false);
+
+		let group_by = "";
+		if (typeof group !== "undefined") {
+			group_by = sprintf("GROUP BY time(%s)", group);
+		}
+
+		query = `SELECT MEAN(${dt}) as mean FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
+		t6console.log(sprintf("Query: %s", query));
+
+		dbInfluxDB.query(query).then(meanData => {
+			if (meanData.length > 0) {
+				let graphScatterData = [];
+				let graphLoessData = { x: [], y: [] };
+				let graphLoess = [];
+				let svg;
+				meanData.map(function(row) {
+					if (typeof row.time !== "undefined" && row.mean !== null) {
+						graphScatterData.push({ key: parseInt(moment(row.time).format("x"), 10), value: row.mean });
+						graphLoessData.x.push(parseInt(moment(row.time).format("x"), 10));
+						graphLoessData.y.push(row.mean);
+					}
+				});
+
+				var D3Node = require('d3-node');
+				var Loess = require("loess");
+				const d3n = new D3Node({
+					selector: "",
+					svgStyles: "",
+					styles: "",
+					container: "",
+				});
+				const d3 = d3n.d3;
+				let _margin = { top: 20, right: 10, bottom: 60, left: 50 };
+				let _lineWidth = 1.5;
+				let _tickSize = 5;
+				let _tickPadding = 5;
+				let _lineColor = 'steelblue';
+				let _lineColors = ['steelblue'];
+				let _isCurve = true;
+
+				svg = d3n.createSVG(width, height)
+					.append('g')
+					.attr('transform', `translate(${_margin.left}, ${_margin.top})`);
+				width = width - _margin.left - _margin.right;
+				height = height - _margin.top - _margin.bottom;
+
+				let g = svg.append('g');
+				let { allKeys } = graphScatterData;
+				let xScale = d3.scaleLinear()
+					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphScatterData, d => d.key))
+					.rangeRound([0, width]);
+				let yScale = d3.scaleLinear()
+					.domain(allKeys ? [d3.min(graphScatterData, d => d3.min(d, v => v.value)), d3.max(graphScatterData, d => d3.max(d, v => v.value))] : d3.extent(graphScatterData, d => d.value))
+					.rangeRound([height, 0]);
+				let xAxis = d3.axisBottom(xScale)
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
+				let yAxis = d3.axisLeft(yScale)
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
+
+				g.append('g')
+					.attr('transform', `translate(0, ${height})`)
+					.call(xAxis);
+
+				g.append('g').call(yAxis);
+
+				g.append('g')
+					.selectAll("dot")
+					.data(allKeys ? data : graphScatterData)
+					.enter().append("circle")
+					.attr("cx", function(d) { return xScale(d.key); })
+					.attr("cy", function(d) { return yScale(d.value); })
+					.attr("r", _lineWidth)
+					.attr("class", "dot")
+					.attr("fill", (d, i) => _lineColors.length ? _lineColors[i] : _lineColor);
+
+				/* LOESS */
+				let options = { span: 0.5, band: 0.8, degree: 1 };
+				let model = new Loess.default(graphLoessData, options);
+				let newData = model.grid([graphLoessData.x.length]);
+				let fit = model.predict(newData);
+
+				let n = 0;
+				(fit.halfwidth).map(function(row) {
+					graphLoess.push({ key: n, value: row });
+					n++;
+				});
+				//{ allKeys } = graphLoess;
+				xScale = d3.scaleLinear()
+					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphLoess, d => d.key))
+					.rangeRound([0, width]);
+				yScale = d3.scaleLinear()
+					.domain(allKeys ? [d3.min(graphLoess, d => d3.min(d, v => v.value)), d3.max(graphLoess, d => d3.max(d, v => v.value))] : d3.extent(graphLoess, d => d.value))
+					.rangeRound([height, 0]);
+				xAxis = d3.axisBottom(xScale)
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
+				yAxis = d3.axisLeft(yScale)
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
+
+				let lineChart = d3.line()
+					.x(d => xScale(d.key))
+					.y(d => yScale(d.value));
+
+				if (_isCurve) lineChart.curve(d3.curveBasis);
+				g.append('g')
+					.attr('fill', 'none')
+					.attr('stroke-width', _lineWidth)
+					.selectAll('path')
+					.data(allKeys ? data : [graphLoess])
+					.enter().append("path")
+					.attr('stroke', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor)
+					.attr('d', lineChart);
+
+				// END LOESS
+				res.setHeader("content-type", "image/svg+xml");
+				res.status(200).send(d3n.svgString());
+			} else {
+				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+			}
+		//}).catch(err => {
+		//	res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
+		});
+	}
+});
+
+/**
  * @api {get} /exploration/frequencyDistribution Display frequency distribution
  * @apiName Display frequency distribution
  * @apiGroup 10 Exploratory Data Analysis (EDA)
@@ -472,12 +675,12 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				var graphData = [];
 				let svg;
 
-				var D3Node = require('d3-node');
 				data.map(function(row) {
 					if (typeof row.time !== "undefined") {
 						graphData.push({ key: moment(row.time._nanoISO), value: row.mean }); // TODO : security	
 					}
 				});
+				var D3Node = require('d3-node');
 				const d3n = new D3Node({
 					selector: "",
 					svgStyles: "",
@@ -524,54 +727,54 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					.attr('transform', `translate(0, ${height})`)
 					.call(xAxis)
 					.selectAll("text")
-						.attr("transform", `translate(-10, 0)rotate(-45)`)
-						.style("text-anchor", "end");
+					.attr("transform", `translate(-10, 0)rotate(-45)`)
+					.style("text-anchor", "end");
 
 				g.append('g').call(yAxis);
-				
+
 				let m = 10; // margin 2
 				let barHeight = (height / 4) - 2 * m;
 				let w, p;
 				let totalValues = graphData.length;
-				let min = d3.min(graphData.map(function (d) {return (d.value)}));
-				let q1 = d3.quantile(graphData.map(function (d) {return (d.value)}), .25);
-				let q2 = d3.quantile(graphData.map(function (d) {return (d.value)}), .5);
-				let q3 = d3.quantile(graphData.map(function (d) {return (d.value)}), .75);
-				let max = d3.max(graphData.map(function (d) {return (d.value)}));
-				
-				w = (graphData.filter(function (d) {return (d.value>q3 && d.value<max)}).length)*sidePlotWidth/totalValues;
-				p = ((graphData.filter(function (d, i) {return (d.value>q3 && d.value<max)}).length)/totalValues).toFixed(1);
-				g.append("rect").attr('x', width - 290).attr('y', 1*(barHeight+m)+m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+				let min = d3.min(graphData.map(function(d) { return (d.value) }));
+				let q1 = d3.quantile(graphData.map(function(d) { return (d.value) }), .25);
+				let q2 = d3.quantile(graphData.map(function(d) { return (d.value) }), .5);
+				let q3 = d3.quantile(graphData.map(function(d) { return (d.value) }), .75);
+				let max = d3.max(graphData.map(function(d) { return (d.value) }));
+
+				w = (graphData.filter(function(d) { return (d.value > q3 && d.value < max) }).length) * sidePlotWidth / totalValues;
+				p = ((graphData.filter(function(d, i) { return (d.value > q3 && d.value < max) }).length) / totalValues).toFixed(1);
+				g.append("rect").attr('x', width - 290).attr('y', 1 * (barHeight + m) + m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append('text')
 					.attr('x', width - 290 + m)
-					.attr('y', 1*(barHeight+m))
+					.attr('y', 1 * (barHeight + m))
 					.attr("font-size", "11px")
 					.text(`${q3.toFixed(4)} < value < ${max.toFixed(4)} : ${p}%`);
-				
-				w = (graphData.filter(function (d) {return (d.value>q2 && d.value<q3)}).length)*sidePlotWidth/totalValues;
-				p = ((graphData.filter(function (d, i) {return (d.value>q2 && d.value<q3)}).length)/totalValues).toFixed(1);
-				g.append("rect").attr('x', width - 290).attr('y', 2*(barHeight+m)+m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+
+				w = (graphData.filter(function(d) { return (d.value > q2 && d.value < q3) }).length) * sidePlotWidth / totalValues;
+				p = ((graphData.filter(function(d, i) { return (d.value > q2 && d.value < q3) }).length) / totalValues).toFixed(1);
+				g.append("rect").attr('x', width - 290).attr('y', 2 * (barHeight + m) + m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append('text')
 					.attr('x', width - 290 + m)
-					.attr('y', 2*(barHeight+m))
+					.attr('y', 2 * (barHeight + m))
 					.attr("font-size", "11px")
 					.text(`${q2.toFixed(4)} < value < ${q3.toFixed(4)} : ${p}%`);
-				
-				w = (graphData.filter(function (d) {return (d.value>q1 && d.value<q2)}).length)*sidePlotWidth/totalValues;
-				p = ((graphData.filter(function (d, i) {return (d.value>q1 && d.value<q2)}).length)/totalValues).toFixed(1);
-				g.append("rect").attr('x', width - 290).attr('y', 3*(barHeight+m)+m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+
+				w = (graphData.filter(function(d) { return (d.value > q1 && d.value < q2) }).length) * sidePlotWidth / totalValues;
+				p = ((graphData.filter(function(d, i) { return (d.value > q1 && d.value < q2) }).length) / totalValues).toFixed(1);
+				g.append("rect").attr('x', width - 290).attr('y', 3 * (barHeight + m) + m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append('text')
 					.attr('x', width - 290 + m)
-					.attr('y', 3*(barHeight+m))
+					.attr('y', 3 * (barHeight + m))
 					.attr("font-size", "11px")
 					.text(`${q1.toFixed(4)} < value < ${q2.toFixed(4)} : ${p}%`);
-				
-				w = (graphData.filter(function (d, i) {return (d.value>min && d.value<q1)}).length)*sidePlotWidth/totalValues;
-				p = ((graphData.filter(function (d, i) {return (d.value>min && d.value<q1)}).length)/totalValues).toFixed(1);
-				g.append("rect").attr('x', width - 290).attr('y', 4*(barHeight+m)+m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+
+				w = (graphData.filter(function(d, i) { return (d.value > min && d.value < q1) }).length) * sidePlotWidth / totalValues;
+				p = ((graphData.filter(function(d, i) { return (d.value > min && d.value < q1) }).length) / totalValues).toFixed(1);
+				g.append("rect").attr('x', width - 290).attr('y', 4 * (barHeight + m) + m).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append('text')
 					.attr('x', width - 290 + m)
-					.attr('y', 4*(barHeight+m))
+					.attr('y', 4 * (barHeight + m))
 					.attr("font-size", "11px")
 					.text(`${min.toFixed(4)} < value < ${q1.toFixed(4)} : ${p}%`);
 
@@ -589,8 +792,8 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 			} else {
 				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
 			}
-		//}).catch(err => {
-			//res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
+		}).catch(err => {
+			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
 		});
 	}
 });
