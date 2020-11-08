@@ -504,7 +504,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 
 				let g = svg.append('g');
 				let { allKeys } = graphScatterData;
-				let xScale = d3.scaleLinear()
+				let xScale = d3.scaleTime()
 					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphScatterData, d => d.key))
 					.rangeRound([0, width]);
 				let yScale = d3.scaleLinear()
@@ -545,7 +545,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					n++;
 				});
 				//{ allKeys } = graphLoess;
-				xScale = d3.scaleLinear()
+				xScale = d3.scaleTime()
 					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphLoess, d => d.key))
 					.rangeRound([0, width]);
 				yScale = d3.scaleLinear()
