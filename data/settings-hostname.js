@@ -67,7 +67,7 @@ fs.access(mailDKIMCertificate, fs.constants.W_OK, err => {
 			}
 		});
 	}
-	t6console.log(`${mailDKIMCertificate} ${err ? "is not not found. Transporter is not using DKIM" : "Transporter is using DKIM certificate."}`);
+	t6console.info(`${mailDKIMCertificate} ${err ? "is not not found. Transporter is not using DKIM" : "Transporter is using DKIM certificate."}`);
 });
 
 /* Database settings - Storage */
@@ -112,7 +112,7 @@ trackings = {
 	googleSigninClientId: "",
 	ggads: "ca-pub-xxxx",
 	firebaseConfig: {
-		firebaseJsVersion: "7.8.0", // https://firebase.google.com/docs/web/setup
+		firebaseJsVersion: "8.0.1", // https://firebase.google.com/docs/web/setup
 		web: {
 			apiKey: "xxxx",
 			authDomain: "xxxx.firebaseapp.com",
@@ -132,6 +132,11 @@ trackings = {
 			messagingSenderId: "xxxx",
 			appId: "1:xxxx:android:xxxx",
 			measurementId: "G-xxxx"
+		},
+		server: {
+			api_secret: "",
+			measurementId: "G-xxxx",
+			appId: "xxxx:web:xxxx"
 		}
 	}
 };

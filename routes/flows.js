@@ -132,7 +132,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 				};
-				t6events.add("t6Api", "flow add", newFlow.id);
+				t6events.add("t6Api", "flow add", newFlow.id, req.user.id);
 				flows.insert(newFlow);
 				
 				res.header("Location", "/v"+version+"/flows/"+newFlow.id);

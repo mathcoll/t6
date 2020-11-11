@@ -15,7 +15,7 @@ t6events.setRP = function(rp) {
 	retention = rp;
 };
 
-t6events.add = function(where, what, who) {
+t6events.add = function(where, what, who, client_id=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
 		var tags = {what: what, where: where};
@@ -28,6 +28,34 @@ t6events.add = function(where, what, who) {
 			return true;
 		}).catch(err => {
 			console.error("Error writting event to influxDb:", err);
+		});
+	}
+	if(client_id!==null) {
+		let debug = false;
+		let d = debug===true?"debug/":"";
+		var options = {
+			method: "POST",
+			url: `https://www.google-analytics.com/${d}mp/collect?v=2&firebase_app_id={trackings.firebaseConfig.server.appId}&measurement_id=${trackings.firebaseConfig.server.measurementId}&api_secret=${trackings.firebaseConfig.server.api_secret}`,
+			body: JSON.stringify({
+				"user_id": typeof who!=="undefined"?who:null,
+				"client_id":typeof client_id!=="undefined"?client_id:'',
+				//"app_instance_id": "",
+				"nonPersonalizedAds": true,
+				"events": [{
+					name: what.replace(/[^a-zA-Z]/g,"_"),
+					params: {},
+				}]
+			})
+		};
+		request(options, function(error, response, body) {
+			if ( !error && response.statusCode !== 404 ) {
+				t6console.info("GA4 sent event on measurement_id:", trackings.firebaseConfig.server.measurementId);
+				t6console.info("GA4 event:", what.replace(/[^a-zA-Z]/g,"_"));
+				t6console.info("GA4 statusCode:", response.statusCode);
+				t6console.info("GA4 body:", body);
+			} else {
+				t6console.error("Error !!!", error, response.statusCode);
+			}
 		});
 	}
 };

@@ -352,7 +352,7 @@ if (app.get("env") === "development") {
 	});
 }
 
-t6events.add("t6App", "start", "self");
+t6events.add("t6App", "start", "self", t6BuildVersion);
 t6console.info(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });

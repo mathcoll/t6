@@ -278,7 +278,7 @@ router.post("/", function (req, res) {
 				unsubscription_token: passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 				pushSubscription	: pushSubscription,
 			};
-			t6events.add("t6Api", "user add", new_user.id);
+			t6events.add("t6Api", "user add", new_user.id, new_user.id);
 			users.insert(new_user);
 
 			var tokens	= dbTokens.getCollection("tokens");
@@ -305,7 +305,7 @@ router.post("/", function (req, res) {
 					html: html
 				};
 				t6mailer.sendMail(mailOptions).then(function(info){
-					t6events.add("t6App", "user welcome mail", new_user.id);
+					t6events.add("t6App", "user welcome mail", new_user.id, new_user.id);
 					res.header("Location", "/v"+version+"/users/"+new_user.id);
 					res.status(201).send({ "code": 201, message: "Created", user: new UserSerializer(new_user).serialize(), token: new_token });
 				}).catch(function(error) {
@@ -393,7 +393,7 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
 			users.update(user);
 			db.save();
 			t6console.debug("Saved user", user, req.body.password);
-			t6events.add("t6App", "user reset password", user.id);
+			t6events.add("t6App", "user reset password", user.id, user.id);
 			res.header("Location", "/v"+version+"/users/"+user.id);
 			res.status(200).send({ "code": 200, message: "Successfully updated", user: new UserSerializer(user).serialize() }); 
 			
@@ -444,7 +444,7 @@ router.post("/instruction", function (req, res) {
 					if( err ){
 						res.status(500).send({ "code": 500, message: "Error updating user" }); 
 					} else {
-						t6events.add("t6App", "user forgot password mail", user.id);
+						t6events.add("t6App", "user forgot password mail", user.id, user.id);
 						res.header("Location", "/v"+version+"/users/"+user.id);
 						res.status(200).send({ "code": 200, message: "Successfully updated" }); 
 					}

@@ -245,7 +245,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			}
 
-			t6events.add("t6App", JSON.stringify({rule_id: event.params.rule_id, event_type: event.type}), user_id);
+			t6events.add("t6App", `Matching_EventType_${event.type}`, user_id, user_id);
 			t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 			if( event.type === "mqttPublish" ) {
 				let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};

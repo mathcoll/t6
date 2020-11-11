@@ -100,7 +100,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				description:typeof req.body.description!=="undefined"?req.body.description:"",
 				snippets:	typeof req.body.snippets!=="undefined"?req.body.snippets:new Array(),
 			};
-			t6events.add("t6Api", "dashboard add", new_dashboard.id);
+			t6events.add("t6Api", "dashboard add", new_dashboard.id, req.user.id);
 			dashboards.insert(new_dashboard);
 			//t6console.log(dashboards);
 			
