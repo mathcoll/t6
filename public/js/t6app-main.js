@@ -2192,13 +2192,14 @@ var touchStartPoint, touchMovePoint;
 
 				componentHandler.upgradeDom();
 				app.setItemsClickAction('usersList');
+				app.containers.spinner.setAttribute('hidden', true);
+				app.containers.spinner.classList.add('hidden');
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					toast('getUsersList error out...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.fetchProfile = function() {
@@ -2323,13 +2324,14 @@ var touchStartPoint, touchMovePoint;
 						app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
 					}
 				}
+				app.containers.spinner.setAttribute('hidden', true);
+				app.containers.spinner.classList.add('hidden');
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					toast('fetchProfile error out...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.fetchUnsubscriptions = function() {
@@ -2586,6 +2588,8 @@ var touchStartPoint, touchMovePoint;
 					localStorage.setItem('index', JSON.stringify(response));
 					container.innerHTML = node;
 					app.imageLazyLoading();
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
 				})
 				.catch(function(error) {
 					container.innerHTML = app.getCard({ image: app.baseUrlCdn + '/img/opl_img2.webp', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)' });
@@ -2601,7 +2605,6 @@ var touchStartPoint, touchMovePoint;
 			}
 			container.innerHTML = node;
 		}
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.showAddFAB = function(type) {
@@ -2983,13 +2986,14 @@ var touchStartPoint, touchMovePoint;
 						}
 					}
 				}
+				app.containers.spinner.setAttribute('hidden', true);
+				app.containers.spinner.classList.add('hidden');
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					toast("getSnippet error out..." + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.refreshFromNow = function(id, time, fromNow) {
@@ -3015,6 +3019,8 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.getQrcode = function(icon, label, id) {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
@@ -3341,6 +3347,8 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.getStatus = function() {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
@@ -3417,16 +3425,19 @@ var touchStartPoint, touchMovePoint;
 					}
 					app.setExpandAction();
 				}
+				app.containers.spinner.setAttribute('hidden', true);
+				app.containers.spinner.classList.add('hidden');
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					toast('Can\'t display Status...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.getTerms = function() {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
@@ -3455,18 +3466,20 @@ var touchStartPoint, touchMovePoint;
 					terms += "	</div>";
 					terms += "</section>";
 				}
-
 				(app.containers.terms).querySelector('.page-content').innerHTML = terms;
+				app.containers.spinner.setAttribute('hidden', true);
+				app.containers.spinner.classList.add('hidden');
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					toast('Can\'t display Terms...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.getCompatibleDevices = function() {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: "GET", headers: myHeaders };
@@ -3498,16 +3511,19 @@ var touchStartPoint, touchMovePoint;
 				}
 				(app.containers.compatibleDevices).querySelector('.page-content').innerHTML = compatibledevices;
 				app.imageLazyLoading();
+				app.containers.spinner.setAttribute('hidden', true);
+				app.containers.spinner.classList.add('hidden');
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					toast('Can\'t display compatible devices...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.getOpenSourceLicenses = function() {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		var myHeaders = new Headers();
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
@@ -3547,16 +3563,19 @@ var touchStartPoint, touchMovePoint;
 				}
 				(app.containers.openSourceLicenses).querySelector('.page-content').innerHTML = openSourceLicenses;
 				app.imageLazyLoading();
+				app.containers.spinner.setAttribute('hidden', true);
+				app.containers.spinner.classList.add('hidden');
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
 					toast('Can\'t display Open-Source Licenses...' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
-		app.containers.spinner.setAttribute('hidden', true);
 	};
 
 	app.getExploration = function() {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
 		if (app.isLogged) {
 			let explorationNode = "";
 			explorationNode += app.getSubtitle('Data Flows to explore');
