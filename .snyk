@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.12.0
+version: v1.14.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:minimatch:20160620':
@@ -123,7 +123,10 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2020-10-12T14:40:07.198Z'
+        expires: '2020-12-11T09:37:47.660Z'
+    - device > useragent:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -131,7 +134,7 @@ ignore:
   SNYK-JS-LOCUTUS-575119:
     - cidr-js > locutus:
         reason: None given
-        expires: '2020-10-12T14:40:07.198Z'
+        expires: '2020-12-11T09:37:47.660Z'
   SNYK-JS-LOCUTUS-598675:
     - cidr-js > locutus:
         reason: None given
@@ -140,6 +143,45 @@ ignore:
     - firebase-admin > node-forge:
         reason: None given
         expires: '2020-10-12T14:40:07.198Z'
+  SNYK-JS-FIREBASEUTIL-1038324:
+    - firebase-admin > @firebase/database > @firebase/util:
+        reason: None given
+        expires: '2020-12-11T09:37:47.659Z'
+    - firebase-admin > @firebase/database > @firebase/component > @firebase/util:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
+  SNYK-JS-LOCUTUS-1009836:
+    - cidr-js > locutus:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
+  SNYK-JS-MATHJS-1016401:
+    - loess > mathjs:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
+  SNYK-JS-SVG2PNG-567041:
+    - d3node-barchart > d3node-output > svg2png:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
+  SNYK-JS-YARGSPARSER-560381:
+    - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
+  'npm:content-type-parser:20170905':
+    - d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
+    - d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2020-12-11T09:37:47.660Z'
+    - d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2020-12-11T09:37:47.661Z'
+    - d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2020-12-11T09:37:47.661Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2020-12-11T09:37:47.661Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
