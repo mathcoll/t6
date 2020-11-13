@@ -30,20 +30,20 @@ t6events.add = function(where, what, who, client_id=null) {
 			console.error("Error writting event to influxDb:", err);
 		});
 	}
+	let d = process.env.NODE_ENV==="production"?"":"debug/";
 	if(client_id!==null) {
-		let debug = false;
-		let d = debug===true?"debug/":"";
+		let user_id = typeof who!=="undefined"?who:null;
+		client_id = typeof client_id!=="undefined"?client_id:'';
 		var options = {
 			method: "POST",
 			url: `https://www.google-analytics.com/${d}mp/collect?v=2&firebase_app_id={trackings.firebaseConfig.server.appId}&measurement_id=${trackings.firebaseConfig.server.measurementId}&api_secret=${trackings.firebaseConfig.server.api_secret}`,
 			body: JSON.stringify({
-				"user_id": typeof who!=="undefined"?who:null,
-				"client_id":typeof client_id!=="undefined"?client_id:'',
-				//"app_instance_id": "",
+				"user_id": user_id,
+				"client_id": client_id,
 				"nonPersonalizedAds": true,
 				"events": [{
 					name: what.replace(/[^a-zA-Z]/g,"_"),
-					params: {},
+					params: {"environnment": where},
 				}]
 			})
 		};
@@ -51,8 +51,11 @@ t6events.add = function(where, what, who, client_id=null) {
 			if ( !error && response.statusCode !== 404 ) {
 				t6console.info("GA4 sent event on measurement_id:", trackings.firebaseConfig.server.measurementId);
 				t6console.info("GA4 event:", what.replace(/[^a-zA-Z]/g,"_"));
+				t6console.info("GA4 user_id:", user_id);
+				t6console.info("GA4 client_id:", client_id);
+				t6console.info("GA4 environnment:", where);
 				t6console.info("GA4 statusCode:", response.statusCode);
-				t6console.info("GA4 body:", body);
+				if (d==="debug/") { t6console.info("GA4 body:", body); }
 			} else {
 				t6console.error("Error !!!", error, response.statusCode);
 			}
