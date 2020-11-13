@@ -334,6 +334,7 @@ if (app.get("env") === "development") {
 			res.end();
 		}
 		t6console.error(err.status + err.name);
+		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 } else {
 	app.use(function(err, req, res, next) {
@@ -349,6 +350,7 @@ if (app.get("env") === "development") {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message }).end();
 		}
 		t6console.error(err.status + err.name);
+		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 }
 
