@@ -2659,6 +2659,8 @@ var touchStartPoint, touchMovePoint;
 			componentHandler.upgradeDom();
 			if (document.getElementById("exploreFlowsFAB")) {
 				document.getElementById("exploreFlowsFAB").addEventListener("click", function(evt) {
+					app.containers.spinner.removeAttribute('hidden');
+					app.containers.spinner.classList.remove('hidden');
 					toast("Exploring... Please wait.", { timeout: app.toastDuration, type: "info" });
 					var myForm = evt.target.parentNode.parentNode.parentNode;
 					var my_flow_id = Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; });
@@ -2705,6 +2707,8 @@ var touchStartPoint, touchMovePoint;
 								.catch(function(error) {
 									toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
 								});
+							app.containers.spinner.setAttribute('hidden', true);
+							app.containers.spinner.classList.add('hidden');
 						})
 						.catch(function(error) {
 							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
