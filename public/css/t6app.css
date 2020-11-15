@@ -940,6 +940,8 @@ h1.mdl-subheader-content {
 	color: #fff !important;
 	margin: 0 0 50px 0 !important;
 	padding: 0 10px;
+	background: #795548;
+	width: 320px;
 }
 .sticky {
 	position: -webkit-sticky;
