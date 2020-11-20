@@ -36,7 +36,7 @@ t6events.add = function(where, what, who, client_id=null) {
 		client_id = typeof client_id!=="undefined"?client_id:'';
 		var options = {
 			method: "POST",
-			url: `https://www.google-analytics.com/${d}mp/collect?v=2&firebase_app_id={trackings.firebaseConfig.server.appId}&measurement_id=${trackings.firebaseConfig.server.measurementId}&api_secret=${trackings.firebaseConfig.server.api_secret}`,
+			url: `https://www.google-analytics.com/${d}mp/collect?v=2&firebase_app_id=${trackings.firebaseConfig.server.appId}&measurement_id=${trackings.firebaseConfig.server.measurementId}&api_secret=${trackings.firebaseConfig.server.api_secret}`,
 			body: JSON.stringify({
 				"user_id": user_id,
 				"client_id": client_id,
