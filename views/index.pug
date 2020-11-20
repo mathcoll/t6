@@ -28,6 +28,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     else
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
     link(rel='manifest', href='/manifest.json')
+    link(rel='preload' href=baseUrlCdn + '/fonts/Material-Icons.woff2' as="font" type="font/woff2" crossorigin)
     //- Search Engine
     meta(name='image', content=baseUrlCdn + '/img/repository-open-graph.jpg')
     meta(property='og:url', content=baseUrl_https)
