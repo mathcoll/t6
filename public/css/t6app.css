@@ -491,7 +491,7 @@ section[data-type="linkedObject"].removed {
 	background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,.5) 15px, rgba(255,255,255,.5) 35px) !important;
 	color: #7d2020 !important;
 }
-.is-disabled {
+section:not("#exploration") .is-disabled {
 	background-color: gray;
 	background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255,255,255,.5) 15px, rgba(255,255,255,.5) 35px);
 }

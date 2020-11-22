@@ -1605,13 +1605,13 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.getSubtitle = function(subtitle) {
-		var node = "<section class='mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky' role='heading'>";
-		node += "	<div class='md-subheader-inner'>";
-		node += "		<div class='mdl-subheader-content'>";
-		node += "			<span class='ng-scope'>" + subtitle + "</span>";
-		node += "		</div>";
-		node += "	</div>";
-		node += "</section>";
+		var node = `<section class="mdl-grid mdl-cell--12-col md-primary md-subheader _md md-altTheme-theme sticky" role="heading">
+			<div class="md-subheader-inner">
+				<div class="mdl-subheader-content">
+					<span class="ng-scope">${subtitle}</span>
+				</div>
+			</div>
+		</section>`;
 		return node;
 	};
 
@@ -2658,63 +2658,7 @@ var touchStartPoint, touchMovePoint;
 			container.innerHTML += fab;
 			componentHandler.upgradeDom();
 			if (document.getElementById("exploreFlowsFAB")) {
-				document.getElementById("exploreFlowsFAB").addEventListener("click", function(evt) {
-					app.containers.spinner.removeAttribute('hidden');
-					app.containers.spinner.classList.remove('hidden');
-					toast("Exploring... Please wait.", { timeout: app.toastDuration, type: "info" });
-					var myForm = evt.target.parentNode.parentNode.parentNode;
-					var my_flow_id = Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; });
-					var myHeaders = new Headers();
-					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
-					myHeaders.append("Content-Type", "application/json");
-					var myInit = { method: "GET", headers: myHeaders };
-					var start = typeof myForm.querySelector("#start").value !== "undefined" ? "&start=" + myForm.querySelector("#start").value : "";
-					var end = typeof myForm.querySelector("#end").value !== "undefined" ? "&end=" + myForm.querySelector("#end").value : "";
-					var url = app.baseUrl + "/" + app.api_version + `/exploration/summary?flow_id=${my_flow_id}${start}${end}`;
-					fetch(url, myInit)
-						.then(
-							app.fetchStatusHandler
-						).then(function(fetchResponse) {
-							return fetchResponse.json();
-						})
-						.then(function(response) {
-							document.getElementById("exploreResults").innerHTML = "";
-							document.getElementById("exploreResults").innerHTML += app.getField("timeline", "Data Type", `${response.data_type.name} ${response.data_type.type} (${response.data_type.classification})`, { type: "text" });
-							for (const [key, value] of Object.entries(response)) {
-								if (typeof value !== "object") {
-									document.getElementById("exploreResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
-								}
-							};
-							var start = typeof myForm.querySelector("#start").value !== "undefined" ? "&start=" + myForm.querySelector("#start").value : "";
-							var end = typeof myForm.querySelector("#end").value !== "undefined" ? "&end=" + myForm.querySelector("#end").value : "";
-							var url = app.baseUrl + "/" + app.api_version + `/exploration/${my_flow_id}/exploration?graphType=boxplot&width=200&height=600&xAxis=Boxplot&${start}${end}`;
-							fetch(url, myInit)
-								.then(
-									app.fetchStatusHandler
-								)
-								.then(response => response.text())
-								.then(function(svg) { document.getElementById("explorationBoxPlot").innerHTML = svg })
-								.catch(function(error) {
-									toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
-								});
-							var url = app.baseUrl + "/" + app.api_version + `/exploration/frequencyDistribution?flow_id=${my_flow_id}&group=1h&width=800&height=300&ticks=20${start}${end}`;
-							fetch(url, myInit)
-								.then(
-									app.fetchStatusHandler
-								)
-								.then(response => response.text())
-								.then(function(svg) { document.getElementById("explorationFrequencyDistribution").innerHTML = svg })
-								.catch(function(error) {
-									toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
-								});
-							app.containers.spinner.setAttribute('hidden', true);
-							app.containers.spinner.classList.add('hidden');
-						})
-						.catch(function(error) {
-							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
-						});
-					evt.preventDefault();
-				}, false);
+				document.getElementById("exploreFlowsFAB").addEventListener("click", function(evt) { app.eda(evt); evt.preventDefault(); }, false);
 			}
 		}
 		if (showFAB && container) {
@@ -2751,6 +2695,161 @@ var touchStartPoint, touchMovePoint;
 			if (app.buttons.createRule) app.buttons.createRule.addEventListener('click', function() { app.setSection('rule_add'); }, false);
 			if (app.buttons.createMqtt) app.buttons.createMqtt.addEventListener('click', function() { app.setSection('mqtt_add') }, false);
 			if (app.buttons.createSource) app.buttons.createSource.addEventListener('click', function() { app.setSection('source_add') }, false);
+		}
+	};
+
+	app.eda = function(evt) {
+		let myForm = (app.containers.exploration);
+		let my_flow_id = Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; });
+		let start = "&start=" + myForm.querySelector("#start").value;
+		let end = "&end=" + myForm.querySelector("#end").value;
+		let sel_summary = myForm.querySelector("#switch-ExplorationSummary").parentNode.classList.contains("is-checked");
+		let sel_head = myForm.querySelector("#switch-ExplorationHead").parentNode.classList.contains("is-checked");
+		let sel_tail = myForm.querySelector("#switch-ExplorationTail").parentNode.classList.contains("is-checked");
+		
+		if (!(sel_summary || sel_head || sel_tail)) {
+			toast("Please select at least one output.", { timeout: app.toastDuration, type: "error" });
+			return;
+		}
+		
+		if (my_flow_id.length>0) {
+			if (start && end) {
+				app.containers.spinner.removeAttribute('hidden');
+				app.containers.spinner.classList.remove('hidden');
+				toast("Exploring... Please wait.", { timeout: app.toastDuration, type: "info" });
+
+				if (sel_summary) {
+					if (!myForm.querySelector(".page-content #exploreSummaryResults")) {
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Exploration Summary"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
+												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
+													<div>&nbsp;</div>
+													<div class="mdl-list__item--three-line small-padding" id="exploreSummaryResults"></div>
+													<div>&nbsp;</div>
+												</div>
+											</section>`);
+						
+					} else {
+						myForm.querySelector("#exploreSummaryResults").innerHTML = "";
+					}
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = `${app.baseUrl}/${app.api_version}/exploration/summary?flow_id=${my_flow_id}${start}${end}`;
+					fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						).then(function(fetchResponse) {
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							myForm.querySelector("#exploreSummaryResults").innerHTML += app.getField("timeline", "Data Type", `${response.data_type.name} ${response.data_type.type} (${response.data_type.classification})`, { type: "text" });
+							for (const [key, value] of Object.entries(response)) {
+								if (typeof value !== "object") {
+									myForm.querySelector("#exploreSummaryResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
+								}
+							};
+							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
+						})
+						.catch(function(error) {
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
+						});
+					
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
+					evt.preventDefault();
+				}
+
+				if (sel_head) {
+					if (!myForm.querySelector(".page-content #exploreHeadResults")) {
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Exploration Head"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
+												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
+													<div>&nbsp;</div>
+													<div class="mdl-list__item--three-line small-padding" id="exploreHeadResults"></div>
+													<div>&nbsp;</div>
+												</div>
+											</section>`);
+						
+					} else {
+						myForm.querySelector("#exploreHeadResults").innerHTML = "";
+					}
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = `${app.baseUrl}/${app.api_version}/exploration/head?flow_id=${my_flow_id}${start}${end}&n=1`;
+					fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						).then(function(fetchResponse) {
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							for (const [key, value] of Object.entries(response[0])) {
+								if (typeof value !== "object") {
+									myForm.querySelector("#exploreHeadResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
+								}
+							};
+							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
+						})
+						.catch(function(error) {
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
+						});
+					
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
+					evt.preventDefault();
+				}
+
+				if (sel_tail) {
+					if (!myForm.querySelector(".page-content #exploreTailResults")) {
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Exploration Tail"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
+												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
+													<div>&nbsp;</div>
+													<div class="mdl-list__item--three-line small-padding" id="exploreTailResults"></div>
+													<div>&nbsp;</div>
+												</div>
+											</section>`);
+						
+					} else {
+						myForm.querySelector("#exploreTailResults").innerHTML = "";
+					}
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = `${app.baseUrl}/${app.api_version}/exploration/tail?flow_id=${my_flow_id}${start}${end}&n=1`;
+					fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						).then(function(fetchResponse) {
+							return fetchResponse.json();
+						})
+						.then(function(response) {
+							for (const [key, value] of Object.entries(response[0])) {
+								if (typeof value !== "object") {
+									myForm.querySelector("#exploreTailResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
+								}
+							};
+							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
+						})
+						.catch(function(error) {
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
+						});
+					
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
+					evt.preventDefault();
+				}
+				
+			} else {
+				toast("Missing information in filters.", { timeout: app.toastDuration, type: "error" });
+			}
+		} else {
+			toast("Missing Flow, please select at least one flow.", { timeout: app.toastDuration, type: "error" });
 		}
 	};
 
@@ -2843,10 +2942,11 @@ var touchStartPoint, touchMovePoint;
 			} else if (options.type === 'switch') {
 				var isChecked = value === true || value === "true" ? " checked" : "";
 				var className = value === true || value === "true" ? "is-checked" : "";
-				if (options.isEdit === true) {
+				if (options.isEdit === true || options.isEdit === "disabled") {
+					let disabledOpt = options.isEdit === "disabled" ? "disabled='true'" : "";
 					field += "<label class='mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-textfield--floating-label " + className + "' for='switch-" + id + "' data-id='switch-" + id + "'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon' for='" + id + "'>" + icon + "</i>";
-					field += "	<input type='checkbox' id='switch-" + id + "' class='mdl-switch__input' name='" + label + "' value='" + value + "' placeholder='" + label + "' " + isChecked + ">";
+					field += "	<input type='checkbox' id='switch-" + id + "' " + disabledOpt + " class='mdl-switch__input' name='" + label + "' value='" + value + "' placeholder='" + label + "' " + isChecked + ">";
 					if (label) field += "	<div class='mdl-switch__label'>" + label + "</div>";
 					field += "</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>" + options.error + "</span>";
@@ -3582,11 +3682,13 @@ var touchStartPoint, touchMovePoint;
 		app.containers.spinner.classList.remove('hidden');
 		if (app.isLogged) {
 			let explorationNode = "";
-			explorationNode += app.getSubtitle('Data Flows to explore');
-			explorationNode += "<section class='mdl-grid mdl-cell--12-col' data-id=''>";
+			explorationNode += app.getSubtitle('Filters');
+			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
-
+			explorationNode += app.getField(app.icons.date, "From date", moment().subtract(7, "days").format("YYYY-MM-DD HH:mm:ss"), { type: "text", id: "start", pattern: app.patterns.date, isEdit: true });
+			explorationNode += app.getField(app.icons.date, "To date", moment().format("YYYY-MM-DD HH:mm:ss"), { type: "text", id: "end", pattern: app.patterns.date, isEdit: true });
+			explorationNode += "		<div>&nbsp;</div>";
 			if (localStorage.getItem("flows") != "null") {
 				var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
 					return { value: flow.name, name: flow.id };
@@ -3601,40 +3703,36 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += "		</div>";
 			explorationNode += "		<div>&nbsp;</div>";
 			explorationNode += "	</div>";
-			explorationNode += "</section>";
-
-			explorationNode += app.getSubtitle('Filters');
+			explorationNode += "</section>";			
+			
+			explorationNode += app.getSubtitle('Non graphical output');
 			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += app.getField(app.icons.date, "From date", moment().subtract(7, "days").format("YYYY-MM-DD HH:mm:ss"), { type: "text", id: "start", pattern: app.patterns.date, isEdit: true });
-			explorationNode += app.getField(app.icons.date, "To date", moment().format("YYYY-MM-DD HH:mm:ss"), { type: "text", id: "end", pattern: app.patterns.date, isEdit: true });
-			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += app.getField("local_play", "Summary", true, { type: "switch", id: "ExplorationSummary", isEdit: true, options: {} });
+			explorationNode += app.getField("first_page", "Head", false, { type: "switch", id: "ExplorationHead", isEdit: true, options: {} });
+			explorationNode += app.getField("last_page", "Tail", false, { type: "switch", id: "ExplorationTail", isEdit: true, options: {} });
+			explorationNode += app.getField("dehaze", "List Distinct Facts", false, { type: "switch", id: "ExplorationListFacts", isEdit: "disabled", options: {} });
+			explorationNode += app.getField("dehaze", "List Distinct Categories", false, { type: "switch", id: "ExplorationListCategories", isEdit: "disabled", options: {} });
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
-
-			explorationNode += app.getSubtitle('Exploration');
-			explorationNode += "<section class='mdl-grid mdl-cell--9-col'>";
-			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='exploreResults'></div>";
-			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += "	</div>";
-			explorationNode += "</section>";
-
-			explorationNode += "<section class='mdl-grid mdl-cell--3-col'>";
-			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
-			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='explorationBoxPlot'></div>";
-			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += "	</div>";
-			explorationNode += "</section>";
-
+			
+			explorationNode += app.getSubtitle('Graphical output');
 			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += "		<div class='mdl-list__item--three-line small-padding' id='explorationFrequencyDistribution'></div>";
+			explorationNode += app.getField("bar_chart", "Frequency shape", false, { type: "switch", id: "ExplorationFrequency", isEdit: "disabled", options: {} });
+			explorationNode += "	</div>";
+			explorationNode += "</section>";
+			
+			
+			explorationNode += app.getSubtitle('TimeSeries decomposition');
+			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
+			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
+			explorationNode += app.getField("trending_up", "Trend", false, { type: "switch", id: "ExplorationTrend", isEdit: "disabled", options: {} });
+			explorationNode += app.getField("timeline", "Seasonality", false, { type: "switch", id: "ExplorationSeasonality", isEdit: "disabled", options: {} });
+			explorationNode += app.getField("swap_calls", "Noise/Remainder", false, { type: "switch", id: "ExplorationRemainder", isEdit: "disabled", options: {} });
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
 
