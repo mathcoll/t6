@@ -182,6 +182,79 @@ ignore:
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2020-12-11T09:37:47.661Z'
+  SNYK-JS-Y18N-1021887:
+    - d3node-barchart > d3node-output > svg2png > yargs > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.525Z'
+    - npm > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.526Z'
+    - npm > libnpx > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.526Z'
+    - npm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.526Z'
+    - npm > libnpx > yargs > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.526Z'
+    - npm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > pacote > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > libcipm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > libnpm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmpublish > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
+    - npm > libnpm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
+    - npm > libnpm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
+    - npm > libnpm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
