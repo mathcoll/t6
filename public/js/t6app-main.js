@@ -2706,8 +2706,10 @@ var touchStartPoint, touchMovePoint;
 		let sel_summary = myForm.querySelector("#switch-ExplorationSummary").parentNode.classList.contains("is-checked");
 		let sel_head = myForm.querySelector("#switch-ExplorationHead").parentNode.classList.contains("is-checked");
 		let sel_tail = myForm.querySelector("#switch-ExplorationTail").parentNode.classList.contains("is-checked");
+		let sel_boxplot = myForm.querySelector("#switch-ExplorationBoxplot").parentNode.classList.contains("is-checked");
+		let sel_frequency = myForm.querySelector("#switch-ExplorationFrequency").parentNode.classList.contains("is-checked");
 		
-		if (!(sel_summary || sel_head || sel_tail)) {
+		if (!(sel_summary || sel_head || sel_tail || sel_boxplot || sel_frequency)) {
 			toast("Please select at least one output.", { timeout: app.toastDuration, type: "error" });
 			return;
 		}
@@ -2834,6 +2836,80 @@ var touchStartPoint, touchMovePoint;
 									myForm.querySelector("#exploreTailResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
 								}
 							};
+							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
+						})
+						.catch(function(error) {
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
+						});
+					
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
+					evt.preventDefault();
+				}
+
+				if (sel_boxplot) {
+					if (!myForm.querySelector(".page-content #exploreBoxplotResults")) {
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Exploration Boxplot"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
+												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
+													<div>&nbsp;</div>
+													<div class="mdl-list__item--three-line small-padding" id="exploreBoxplotResults"></div>
+													<div>&nbsp;</div>
+												</div>
+											</section>`);
+						
+					} else {
+						myForm.querySelector("#exploreBoxplotResults").innerHTML = "";
+					}
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = `${app.baseUrl}/${app.api_version}/exploration/${my_flow_id}/exploration?graphType=boxplot&width=200&height=300&xAxis=Boxplot${start}${end}`;
+					fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						)
+						.then(response => response.text())
+						.then(function(svg) {
+							document.getElementById("exploreBoxplotResults").innerHTML = svg;
+							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
+						})
+						.catch(function(error) {
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
+						});
+					
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
+					evt.preventDefault();
+				}
+
+				if (sel_frequency) {
+					if (!myForm.querySelector(".page-content #exploreFrequencyResults")) {
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Exploration Frequency Distribution"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
+												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
+													<div>&nbsp;</div>
+													<div class="mdl-list__item--three-line small-padding" id="exploreFrequencyResults"></div>
+													<div>&nbsp;</div>
+												</div>
+											</section>`);
+						
+					} else {
+						myForm.querySelector("#exploreFrequencyResults").innerHTML = "";
+					}
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = `${app.baseUrl}/${app.api_version}/exploration/${my_flow_id}/exploration?graphType=kernelDensityEstimation&select=mean&group=30d&width=800&height=250&xAxis=Distribution${start}${end}`;
+					fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						)
+						.then(response => response.text())
+						.then(function(svg) {
+							document.getElementById("exploreFrequencyResults").innerHTML = svg;
 							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
@@ -3721,7 +3797,8 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += app.getField("bar_chart", "Frequency shape", false, { type: "switch", id: "ExplorationFrequency", isEdit: "disabled", options: {} });
+			explorationNode += app.getField("bar_chart", "Frequency shape distribution", false, { type: "switch", id: "ExplorationFrequency", isEdit: true, options: {} });
+			explorationNode += app.getField("align_vertical_center", "Boxplot", false, { type: "switch", id: "ExplorationBoxplot", isEdit: true, options: {} });
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
 			
