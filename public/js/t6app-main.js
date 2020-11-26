@@ -3798,7 +3798,7 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
 			explorationNode += app.getField("bar_chart", "Frequency shape distribution", false, { type: "switch", id: "ExplorationFrequency", isEdit: true, options: {} });
-			explorationNode += app.getField("align_vertical_center", "Boxplot", false, { type: "switch", id: "ExplorationBoxplot", isEdit: true, options: {} });
+			explorationNode += app.getField("double_arrow", "Boxplot", false, { type: "switch", id: "ExplorationBoxplot", isEdit: true, options: {} });
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
 			
