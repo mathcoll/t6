@@ -239,7 +239,6 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 		t6console.log(sprintf("Query: %s", query));
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
-				t6console.log(data[0]);
 				data.map(function(d) {
 					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x") * 1000);
 					d.timestamp = Date.parse(d.time);

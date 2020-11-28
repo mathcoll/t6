@@ -446,6 +446,7 @@ router.post("/authenticate", function (req, res) {
 				}
 
 				var refresh_token = user.id + "." + refreshPayload;
+				t6events.add("t6App", "POST_authenticate", user.id, user.id);
 				return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 			} else {
 				checkForTooManyFailure(req, res, email);
@@ -537,6 +538,7 @@ router.post("/authenticate", function (req, res) {
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
+			t6events.add("t6App", "POST_authenticate", user.id, user.id);
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(403).send(new ErrorSerializer({"id": 102.3, "code": 403, "message": "Forbidden"}).serialize());
@@ -619,6 +621,7 @@ router.post("/authenticate", function (req, res) {
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
+			t6events.add("t6App", "POST_authenticate", user.id, user.id);
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
 			return res.status(403).send(new ErrorSerializer({"id": 102.4, "code": 403, "message": "Invalid Refresh Token"}).serialize());
@@ -697,6 +700,7 @@ router.post("/refresh", function (req, res) {
 			var refreshPayload = user.id + "." + crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 			tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
+			t6events.add("t6App", "POST_refresh", user.id, user.id);
 			return res.status(200).json( {status: "ok", token: token, refreshToken: refreshPayload, refreshTokenExp: refreshTokenExp} );
 		}
 	}
