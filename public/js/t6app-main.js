@@ -2698,6 +2698,10 @@ var touchStartPoint, touchMovePoint;
 		}
 	};
 
+	app.getWidth = function(margin=0) {
+		return typeof document.querySelector(".is-active .page-content section")!=="undefined"?(document.querySelector(".is-active .page-content section").offsetWidth)-margin:0;
+	}
+
 	app.eda = function(evt) {
 		let myForm = (app.containers.exploration);
 		let my_flow_id = Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; });
@@ -2865,7 +2869,7 @@ var touchStartPoint, touchMovePoint;
 					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
 					myHeaders.append("Content-Type", "application/json");
 					var myInit = { method: "GET", headers: myHeaders };
-					var url = `${app.baseUrl}/${app.api_version}/exploration/${my_flow_id}/exploration?graphType=boxplot&width=200&height=300&xAxis=Boxplot${start}${end}`;
+					var url = `${app.baseUrl}/${app.api_version}/exploration/boxplot?flow_id=${my_flow_id}&width=${app.getWidth(64)}&height=200&xAxis=Boxplot${start}${end}`;
 					fetch(url, myInit)
 						.then(
 							app.fetchStatusHandler
@@ -2902,7 +2906,7 @@ var touchStartPoint, touchMovePoint;
 					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
 					myHeaders.append("Content-Type", "application/json");
 					var myInit = { method: "GET", headers: myHeaders };
-					var url = `${app.baseUrl}/${app.api_version}/exploration/${my_flow_id}/exploration?graphType=kernelDensityEstimation&select=mean&group=30d&width=800&height=250&xAxis=Distribution${start}${end}`;
+					var url = `${app.baseUrl}/${app.api_version}/exploration/${my_flow_id}/exploration?graphType=kernelDensityEstimation&select=mean&group=30d&width=${app.getWidth(64)}&height=250&xAxis=Distribution${start}${end}`;
 					fetch(url, myInit)
 						.then(
 							app.fetchStatusHandler

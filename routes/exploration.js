@@ -1046,7 +1046,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 						
 					}
 				});
-				let _margin = { top: 20, right: 10, bottom: 60, left: 50 };
+				let _margin = { top: 20, right: 10, bottom: 10, left: 10 };
 				let _lineWidth = 1.5;
 				let _tickSize = 5;
 				let _tickPadding = 5;
@@ -1074,7 +1074,6 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				
 				const g = svg.append('g');
 
-				let { allKeys } = data;
 				let data_sorted;
 				if (!data.q1 && !data.q3 && !data.median) {
 					data_sorted = data.sort(d3.ascending);
@@ -1130,6 +1129,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				    .attr("y1", bxCenter-bxHeight/2 )
 				    .attr("y2", bxCenter+bxHeight/2 )
 				    .attr("stroke", "black")
+				    .style("stroke-width", _lineWidth)
 				    .attr("class", "min-line median-line max-line");
 
 				res.setHeader("content-type", "image/svg+xml");
