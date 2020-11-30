@@ -2712,8 +2712,10 @@ var touchStartPoint, touchMovePoint;
 		let sel_tail = myForm.querySelector("#switch-ExplorationTail").parentNode.classList.contains("is-checked");
 		let sel_boxplot = myForm.querySelector("#switch-ExplorationBoxplot").parentNode.classList.contains("is-checked");
 		let sel_frequency = myForm.querySelector("#switch-ExplorationFrequency").parentNode.classList.contains("is-checked");
+		let sel_line = myForm.querySelector("#switch-ExplorationLine").parentNode.classList.contains("is-checked");
 		
-		if (!(sel_summary || sel_head || sel_tail || sel_boxplot || sel_frequency)) {
+		
+		if (!(sel_summary || sel_head || sel_tail || sel_boxplot || sel_frequency || sel_line )) {
 			toast("Please select at least one output.", { timeout: app.toastDuration, type: "error" });
 			return;
 		}
@@ -2877,6 +2879,43 @@ var touchStartPoint, touchMovePoint;
 						.then(response => response.text())
 						.then(function(svg) {
 							document.getElementById("exploreBoxplotResults").innerHTML = svg;
+							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
+						})
+						.catch(function(error) {
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
+						});
+					
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
+					evt.preventDefault();
+				}
+
+				if (sel_line) {
+					if (!myForm.querySelector(".page-content #exploreLineResults")) {
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Plot Line"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
+												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
+													<div>&nbsp;</div>
+													<div class="mdl-list__item--three-line small-padding" id="exploreLineResults"></div>
+													<div>&nbsp;</div>
+												</div>
+											</section>`);
+						
+					} else {
+						myForm.querySelector("#explorePlotResults").innerHTML = "";
+					}
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = `${app.baseUrl}/${app.api_version}/exploration/line?flow_id=${my_flow_id}&width=${app.getWidth(64)}&height=200&xAxis=Plot Line&limit=10000${start}${end}`;
+					fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						)
+						.then(response => response.text())
+						.then(function(svg) {
+							document.getElementById("exploreLineResults").innerHTML = svg;
 							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
@@ -3803,6 +3842,7 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += "		<div>&nbsp;</div>";
 			explorationNode += app.getField("bar_chart", "Frequency shape distribution", false, { type: "switch", id: "ExplorationFrequency", isEdit: true, options: {} });
 			explorationNode += app.getField("double_arrow", "Boxplot", false, { type: "switch", id: "ExplorationBoxplot", isEdit: true, options: {} });
+			explorationNode += app.getField("show_chart", "Plot Line", false, { type: "switch", id: "ExplorationLine", isEdit: true, options: {} });
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
 			

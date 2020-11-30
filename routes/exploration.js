@@ -935,6 +935,169 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
  */
 
 /**
+ * @api {get} /exploration/line Get Exploration Plot line
+ * @apiName Get Exploration Plot line
+ * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiVersion 2.0.1
+ *
+ * @apiUse Auth
+ * 
+ */
+router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
+	var flow_id = req.query.flow_id;
+	var group = req.query.group;
+	var width = parseInt(req.query.width, 10);
+	var height = parseInt(req.query.height, 10);
+	var query;
+	var start;
+	var end;
+	let _margin = { top: 20, right: 20, bottom: 40, left: 60 };
+	let _lineWidth = 1.5;
+	let _tickSize = 5;
+	let _tickPadding = 5;
+	let _lineColor = "steelblue";
+	let _lineColors = ["steelblue"];
+	let _color = "#795548";
+	let _hoverColor = "brown";
+	let _isCurve = true;
+	let _labels = { xAxis: typeof req.query.xAxis!=="undefined" ? req.query.xAxis : "", yAxis: typeof req.query.yAxis!=="undefined" ? req.query.yAxis : "" };
+	let _svgStyles = ``;
+	if (!flow_id) {
+		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+	} else {
+		flows = db.getCollection("flows");
+		units = db.getCollection("units");
+
+		let where = "";
+
+		if (typeof req.query.start !== "undefined") {
+			if (!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
+				if (req.query.start.toString().length === 10) { start = req.query.start * 1e9; }
+				else if (req.query.start.toString().length === 13) { start = req.query.start * 1e6; }
+				else if (req.query.start.toString().length === 16) { start = req.query.start * 1e3; }
+				where += sprintf(" AND time>=%s", parseInt(start, 10));
+			} else {
+				where += sprintf(" AND time>='%s'", req.query.start.toString());
+			}
+		}
+		if (typeof req.query.end !== "undefined") {
+			if (!isNaN(req.query.end) && parseInt(req.query.end, 10)) {
+				if (req.query.end.toString().length === 10) { end = req.query.end * 1e9; }
+				else if (req.query.end.toString().length === 13) { end = req.query.end * 1e6; }
+				else if (req.query.end.toString().length === 16) { end = req.query.end * 1e3; }
+				where += sprintf(" AND time<=%s", parseInt(end, 10));
+			} else {
+				where += sprintf(" AND time<='%s'", req.query.end.toString());
+			}
+		}
+
+		var sorting = req.query.order === "asc" ? "ASC" : (req.query.sort === "asc" ? "ASC" : "DESC");
+		var page = parseInt(req.query.page, 10);
+		if (isNaN(page) || page < 1) {
+			page = 1;
+		}
+		var limit = parseInt(req.query.limit, 10);
+		if (isNaN(limit)) {
+			limit = 10;
+		} else if (limit > 100000) {
+			limit = 100000;
+		} else if (limit < 1) {
+			limit = 1;
+		}
+
+		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
+		var join = flow.eqJoin(units.chain(), "unit", "id");
+
+		var flowsDT = db.getCollection("flows");
+		datatypes = db.getCollection("datatypes");
+		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
+		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
+		let dt = getFieldsFromDatatype(datatype, false, false);
+
+		let group_by = "";
+		if (typeof group !== "undefined") {
+			group_by = sprintf("GROUP BY time(%s)", group);
+		}
+
+		query = sprintf("SELECT %s as value FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", dt, flow_id, where, sorting, limit, (page - 1) * limit);
+		t6console.log(sprintf("Query: %s", query));
+
+		dbInfluxDB.query(query).then(queryData => {
+			if (queryData.length > 0) {
+				let data = [];
+				const d3n = new D3Node({
+					selector: "",
+					styles: _svgStyles,
+					container: "",
+				});
+				const d3 = d3n.d3;
+				queryData.map(function(row) {
+					if (typeof row.time !== "undefined") {
+						data.push(
+							{
+								date: parseInt(moment(row.time._nanoISO).format("x"), 10),
+								value: row.value
+							}
+						);	
+					}
+				});
+
+				let svg = d3n.createSVG(width, height)
+					.append('g')
+					.attr('transform', `translate(${_margin.left}, ${_margin.top})`);
+				width = width - _margin.left - _margin.right;
+				height = height - _margin.top - _margin.bottom;
+
+				let xScale = d3.scaleTime()
+				    .domain(d3.extent(data, function(d) { return d.date; }))
+				    .range([0, width]);
+				let line_xAxis = d3.axisBottom(xScale)
+				      .tickSize(_tickSize)
+				      .tickPadding(_tickPadding);
+				svg.append('g').attr('transform', `translate(0, ${height})`).call(line_xAxis);
+
+				let yScale = d3.scaleLinear()
+				    .domain(d3.extent(data, d => d.value))
+				    .range([height, 0]);
+				let line_yAxis = d3.axisLeft(yScale)
+				      .tickSize(_tickSize)
+				      .tickPadding(_tickPadding);
+				svg.append("g").call(line_yAxis);
+				
+				let lineChart = d3.line()
+				//    .x(d => xScale(d.date))
+				//    .y(d => yScale(d.value));
+				    .defined(d => !isNaN(d.value))
+				    .x(function(d) { return xScale(d.date) })
+				    .y(function(d) { return yScale(d.value) });
+				
+				if (_isCurve) lineChart.curve(d3.curveBasis);
+				
+				// text label for the x Axis
+				svg.append('text')
+				    .attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+				    .style('text-anchor', 'middle')
+				    .text(_labels.xAxis);
+				
+				svg.append('path')
+				  .datum(data)
+				  .attr('fill', 'none')
+				  .attr('stroke', _lineColor)
+				  .attr('stroke-width', _lineWidth)
+				  .attr("class", "line")
+				  .attr("d", lineChart);
+
+				res.setHeader("content-type", "image/svg+xml");
+				res.status(200).send(d3n.svgString());
+			} else {
+				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+			}
+		});
+	}
+});
+
+/**
  * @api {get} /exploration/boxplot Get Exploration boxplot
  * @apiName Get Exploration boxplot
  * @apiGroup 10 Exploratory Data Analysis (EDA)
@@ -944,17 +1107,27 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
  * 
  */
 router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
-	var d3nBoxplot = require("d3node-boxplot");
 	var flow_id = req.query.flow_id;
 	var select = typeof req.query.select ? req.query.select : undefined;
 	var group = req.query.group;
-	var xAxis = typeof req.query.xAxis ? req.query.xAxis : "";
-	var yAxis = typeof req.query.yAxis ? req.query.yAxis : "";
 	var width = parseInt(req.query.width, 10);
 	var height = parseInt(req.query.height, 10);
 	var query;
 	var start;
 	var end;
+	let _margin = { top: 20, right: 10, bottom: 10, left: 10 };
+	let _lineWidth = 1.5;
+	let _tickSize = 5;
+	let _tickPadding = 5;
+	let _lineColor = "steelblue";
+	let _lineColors = ["steelblue"];
+	let _color = "#795548";
+	let _hoverColor = "brown";
+	let _labels = { xAxis: typeof req.query.xAxis!=="undefined" ? req.query.xAxis : "", yAxis: typeof req.query.yAxis!=="undefined" ? req.query.yAxis : "" };
+	let _svgStyles = `
+		.box { fill: ${_color}; }
+		.box:hover { fill: ${_hoverColor}; }
+	`;
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
@@ -1024,12 +1197,6 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 			fields = sprintf("FIRST(%s) as first, LAST(%s) as last, COUNT(%s) as count, MEAN(%s) as mean, STDDEV(%s) as stddev, MIN(%s) as min, MAX(%s) as max, PERCENTILE(%s, 25) as q1, PERCENTILE(%s, 50) as q2, PERCENTILE(%s, 75) as q3", dt, dt, dt, dt, dt, dt, dt, dt, dt, dt, dt);
 		}
 
-		let group_by = "";
-		if (typeof group !== "undefined") {
-			group_by = sprintf("GROUP BY time(%s)", group);
-		}
-
-		//query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, group_by, sorting, limit, (page - 1) * limit);
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page - 1) * limit);
 		t6console.log(sprintf("Query: %s", query));
 
@@ -1043,22 +1210,8 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 						data.q3 = row.q3;
 						data.min = row.min;
 						data.max = row.max;
-						
 					}
 				});
-				let _margin = { top: 20, right: 10, bottom: 10, left: 10 };
-				let _lineWidth = 1.5;
-				let _tickSize = 5;
-				let _tickPadding = 5;
-				let _lineColor = "steelblue";
-				let _lineColors = ["steelblue"];
-				let _color = "#795548";
-				let _hoverColor = "brown";
-				let _labels = { xAxis: xAxis, yAxis: yAxis };
-				let _svgStyles = `
-					.box { fill: ${_color}; }
-					.box:hover { fill: ${_hoverColor}; }
-				`;
 				const d3n = new D3Node({
 					selector: "",
 					styles: _svgStyles,
@@ -1072,8 +1225,6 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				width = width - _margin.left - _margin.right;
 				height = height - _margin.top - _margin.bottom;
 				
-				const g = svg.append('g');
-
 				let data_sorted;
 				if (!data.q1 && !data.q3 && !data.median) {
 					data_sorted = data.sort(d3.ascending);
@@ -1093,10 +1244,10 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				
 				// Show the X scale
 				let x = d3.scaleLinear().domain([data.min - interQuantileRange, data.max + interQuantileRange]).range([0, width]);
-				g.call(d3.axisTop(x));
+				svg.call(d3.axisTop(x));
 				
 				// Show the main horizontal line
-				g.append("line")
+				svg.append("line")
 				  .attr("x1", x(data.min) )
 				  .attr("x2", x(data.max) )
 				  .attr("y1", bxCenter)
@@ -1111,7 +1262,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				    .text(_labels.xAxis);
 			
 				// Show the box
-				g.append("rect")
+				svg.append("rect")
 				  .attr("x", x(data.q1))
 				  .attr("y", bxCenter - bxHeight/2 )
 				  .attr("height", bxHeight )
@@ -1120,7 +1271,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				  .attr("class", "box");
 			
 				// show median, min and max vertical lines
-				g.selectAll("boxplot")
+				svg.selectAll("boxplot")
 				  .data([data.min, data.median, data.max])
 				  .enter()
 				  .append("line")
@@ -1314,26 +1465,6 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 					});
 				} else if (graphType === "bell") {
 
-				} else if (graphType === "boxplot") {
-					var d3nBoxplot = require("d3node-boxplot");
-					let boxplotData = {};
-					data.map(function(row) {
-						if (typeof row.time !== "undefined") {
-							boxplotData.q1 = row.q1;
-							boxplotData.median = row.mean;
-							boxplotData.q3 = row.q3;
-							boxplotData.min = row.min;
-							boxplotData.max = row.max;
-						}
-					});
-					svg = d3nBoxplot({
-						data: boxplotData,
-						selector: "",
-						container: "",
-						labels: { xAxis: xAxis, yAxis: yAxis },
-						width: width,
-						height: height,
-					});
 				} else if (graphType === "line") {
 					var d3nLine = require("d3node-linechart");
 					data.map(function(row) {
