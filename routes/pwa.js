@@ -5,6 +5,7 @@ var ErrorSerializer = require("../serializers/error");
 var users;
 
 router.get("/", function(req, res) {
+	res.setHeader("Cache-Control", "public, max-age=86400");
 	res.render("index", {
 		currentUrl: req.path,
 		user: req.session.user
