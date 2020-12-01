@@ -795,7 +795,7 @@ router.get("/terms", function(req, res, next) {
 });
 
 /**
- * @api {get} /compatible-devices  for PWA
+ * @api {get} /compatible-devices Get compatible devices for PWA
  * @apiName Get compatible devices for PWA
  * @apiGroup General
  * @apiVersion 2.0.1
@@ -808,7 +808,7 @@ router.get("/compatible-devices", function(req, res, next) {
 });
 
 /**
- * @api {get} /open-source-licenses  for PWA
+ * @api {get} /open-source-licenses Get open-source-licenses for PWA
  * @apiName Get open-source-licenses for PWA
  * @apiGroup General
  * @apiVersion 2.0.1

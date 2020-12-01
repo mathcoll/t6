@@ -155,7 +155,6 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  */
 router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
-
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405.2, "message": "Method Not Allowed" }).serialize());
 	} else {
@@ -257,8 +256,8 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 });
 
 /**
- * @api {get} /exploration/kernelDensityEstimation Display kernelDensityEstimation distribution
- * @apiName Display kernelDensityEstimation distribution
+ * @api {get} /exploration/kernelDensityEstimation Explore Distribution (kernelDensityEstimation)
+ * @apiName Explore Distribution (kernelDensityEstimation)
  * @apiGroup 10 Exploratory Data Analysis (EDA)
  * @apiVersion 2.0.1
  *
@@ -382,8 +381,8 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 });
 
 /**
- * @api {get} /exploration/loess Display LOESS : LOcally Estimated Scatterplot Smoothing
- * @apiName Display LOESS : LOcally Estimated Scatterplot Smoothing
+ * @api {get} /exploration/loess Explore LOESS (LOcally Estimated Scatterplot Smoothing)
+ * @apiName Explore LOESS (LOcally Estimated Scatterplot Smoothing)
  * @apiGroup 10 Exploratory Data Analysis (EDA)
  * @apiVersion 2.0.1
  *
@@ -585,8 +584,8 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 });
 
 /**
- * @api {get} /exploration/frequencyDistribution Display frequency distribution
- * @apiName Display frequency distribution
+ * @api {get} /exploration/frequencyDistribution Explore Frequency Distribution
+ * @apiName Explore Frequency Distribution
  * @apiGroup 10 Exploratory Data Analysis (EDA)
  * @apiVersion 2.0.1
  *
@@ -917,26 +916,32 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 });
 
 /**
- * @api {get} /exploration/xxxxxx Trend 
+ * @api {get} /exploration/trend Explore Trend
+ * @apiName Explore Trend
+ * @apiGroup 10 Exploratory Data Analysis (EDA)
  * 
  * 
  */
 
 /**
- * @api {get} /exploration/xxxxxx Seasonality 
+ * @api {get} /exploration/seasonality Explore Seasonality
+ * @apiName Explore Seasonality
+ * @apiGroup 10 Exploratory Data Analysis (EDA)
  * 
  * 
  */
 
 /**
- * @api {get} /exploration/xxxxxx Outliers 
+ * @api {get} /exploration/outliers Explore Outliers
+ * @apiName Explore Outliers
+ * @apiGroup 10 Exploratory Data Analysis (EDA)
  * 
  * 
  */
 
 /**
- * @api {get} /exploration/line Get Exploration Plot line
- * @apiName Get Exploration Plot line
+ * @api {get} /exploration/line Get Explore Plot line
+ * @apiName Get Explore Plot line
  * @apiGroup 10 Exploratory Data Analysis (EDA)
  * @apiVersion 2.0.1
  *
@@ -1098,8 +1103,8 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 });
 
 /**
- * @api {get} /exploration/boxplot Get Exploration boxplot
- * @apiName Get Exploration boxplot
+ * @api {get} /exploration/boxplot Explore Boxplot
+ * @apiName Explore Boxplot
  * @apiGroup 10 Exploratory Data Analysis (EDA)
  * @apiVersion 2.0.1
  *
@@ -1298,6 +1303,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiName Explore Flows
  * @apiGroup 10 Exploratory Data Analysis (EDA)
  * @apiVersion 2.0.1
+ * @apiDeprecated /!\ Please use other Apis 
  *
  * @apiUse Auth
  * 
