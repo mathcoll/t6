@@ -922,6 +922,9 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
  * 
  * 
  */
+router.get("/trend/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
+	
+});
 
 /**
  * @api {get} /exploration/seasonality Explore Seasonality
@@ -930,6 +933,9 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
  * 
  * 
  */
+router.get("/seasonality/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
+	
+});
 
 /**
  * @api {get} /exploration/outliers Explore Outliers
@@ -938,6 +944,9 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
  * 
  * 
  */
+router.get("/outliers/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
+	
+});
 
 /**
  * @api {get} /exploration/line Get Explore Plot line
