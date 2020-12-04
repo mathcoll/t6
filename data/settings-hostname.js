@@ -94,6 +94,15 @@ quota = {
 /* Localization settings */
 localization = {latitude: 39.800327, longitude: 6.343530}; // The physical location of the webserver, this helps to calculate daytime on decisionRules
 
+/* Firebase Admin for Notification */
+// https://console.firebase.google.com/u/0/project/t6-app/settings/serviceaccounts/adminsdk
+firebase = {
+	admin: {
+		serviceAccountFile : "./data/certificates/t6-app-firebase-adminsdk.json"
+	}
+}
+
+/* pushSubscription */
 /* pushSubscription */
 //https://console.firebase.google.com/u/0/project/t6-app/settings/cloudmessaging/
 pushSubscriptionOptions = {

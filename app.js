@@ -3,6 +3,7 @@
  * 
  */
 let start = new Date();
+
 var express				= require("express");
 var timeout				= require("connect-timeout");
 var morgan				= require("morgan");
@@ -39,6 +40,10 @@ global.stringformat		= require("string-format");
 global.util				= require("util");
 global.useragent		= require("useragent");
 global.webpush			= require("web-push");
+global.firebaseAdmin	= require("firebase-admin");
+
+/* Environment settings */
+require(`./data/settings-${os.hostname()}.js`);
 
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
@@ -55,9 +60,6 @@ global.t6events.setMeasurement("events");
 global.t6events.setRP("autogen");
 global.algorithm		= "aes-256-cbc";
 global.t6ConnectedObjects = [];
-
-/* Environment settings */
-require(sprintf("./data/settings-%s.js", os.hostname()));
 if( db_type.influxdb === true ) {
 	var influx		= require("influx");
 	var dbString	= influxSettings.protocol+"://"+influxSettings.host+":"+influxSettings.port+"/"+influxSettings.database;
