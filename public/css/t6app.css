@@ -320,6 +320,12 @@ span.mdl-list__item-sub-title {
 .mdl-list__item-sub-title .material-icons {
 	margin-right: 10px;
 }
+.mdl-list__item-sub-title .material-icons.mdl-tooltip--left {
+    margin-right: -20px;
+}
+.mdl-tooltip.mdl-tooltip--left.is-active {
+    margin-left: 15px !important;
+}
 .mdl-list__item--three-line,
 .mdl-list__item--three-line .mdl-list__item-secondary-content,
 .mdl-list__item--three-line .mdl-list__item-primary-content {

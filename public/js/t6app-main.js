@@ -184,6 +184,23 @@ var app = {
 	resources: {},
 	buttons: {}, // see function app.refreshButtonsSelectors()
 	containers: {}, // see function app.refreshContainers()
+	summaryResults: {
+		"first": "Returns the field value with the oldest timestamp.",
+		"last": "Returns the field value with the most recent timestamp.",
+		"count": "Returns the number of non-null field values.",
+		"mean": "Returns the arithmetic mean (average) of field values.",
+		"std_dev": "Returns the standard deviation of field values.",
+		"minimum": "Returns the lowest field value.",
+		"maximum": "Returns the greatest field value.",
+		"spread": "Returns the difference between the minimum and maximum field values.",
+		"mode": "Returns the most frequent value in a list of field values.",
+		"median": "Returns the middle value from a sorted list of field values.",
+		"quantile1": "Returns the 1st percentile field value.",
+		"quantile2": "Returns the 2nd percentile field value.",
+		"quantile3": "Returns the 3rd percentile field value.",
+		"start_date": "Date from.",
+		"end_date": "Date to.",
+	},
 };
 app.offlineCard = { title: "Offline", titlecolor: "#ffffff", description: "Offline mode, Please connect to internet in order to see your resources." };
 
@@ -2728,7 +2745,7 @@ var touchStartPoint, touchMovePoint;
 
 				if (sel_summary) {
 					if (!myForm.querySelector(".page-content #exploreSummaryResults")) {
-						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Exploration Summary"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Exploration Summary Statistics"));
 						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
 												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
 													<div>&nbsp;</div>
@@ -2755,9 +2772,10 @@ var touchStartPoint, touchMovePoint;
 							myForm.querySelector("#exploreSummaryResults").innerHTML += app.getField("timeline", "Data Type", `${response.data_type.name} ${response.data_type.type} (${response.data_type.classification})`, { type: "text" });
 							for (const [key, value] of Object.entries(response)) {
 								if (typeof value !== "object") {
-									myForm.querySelector("#exploreSummaryResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text" });
+									myForm.querySelector("#exploreSummaryResults").innerHTML += app.getField("bubble_chart", key, value, { type: "text", tooltip: typeof app.summaryResults[key]!=="undefined"?app.summaryResults[key]:undefined });
 								}
 							};
+							componentHandler.upgradeDom();
 							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
@@ -2994,12 +3012,16 @@ var touchStartPoint, touchMovePoint;
 					field += "	<input type='text' " + style + " " + inputmode + " " + enterkeyhint + " value='" + app.escapeHtml(value) + "' " + pattern + " class='mdl-textfield__input' name='" + label + "' id='" + id + "' />";
 					if (label) field += "	<label class='mdl-textfield__label' for='" + id + "'>" + label + "</label>";
 					if (options.error) field += "	<span class='mdl-textfield__error'>" + options.error + "</span>";
+					let tooltipId = app.getUniqueId();
+					if (options.tooltip) field += `<i class="material-icons dialog-buttons" id="tooltip-${tooltipId}">help</i> <div class="mdl-tooltip mdl-tooltip--left" for="tooltip-${tooltipId}">${options.tooltip}</div>`;
 					field += "</div>";
 				} else {
 					field += "<div class='mdl-list__item-sub-title'>";
 					if (icon) field += "	<i class='material-icons mdl-textfield__icon'>" + icon + "</i>";
 					if (label) field += "	<label class='mdl-textfield__label'>" + label + "</label>";
 					if (value) field += "	<span class='mdl-list__item-sub-title' " + style + ">" + app.escapeHtml(value) + "</span>";
+					let tooltipId = app.getUniqueId();
+					if (options.tooltip) field += `<i class="material-icons dialog-buttons mdl-tooltip--left" id="tooltip-${tooltipId}">help</i> <div class="mdl-tooltip mdl-tooltip--left" for="tooltip-${tooltipId}">${options.tooltip}</div>`;
 					field += "</div>";
 				}
 			} else if (options.type === 'container') {
@@ -3828,7 +3850,7 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 			explorationNode += "		<div>&nbsp;</div>";
-			explorationNode += app.getField("local_play", "Summary", true, { type: "switch", id: "ExplorationSummary", isEdit: true, options: {} });
+			explorationNode += app.getField("local_play", "Summary Statistics", true, { type: "switch", id: "ExplorationSummary", isEdit: true, options: {} });
 			explorationNode += app.getField("first_page", "Head", false, { type: "switch", id: "ExplorationHead", isEdit: true, options: {} });
 			explorationNode += app.getField("last_page", "Tail", false, { type: "switch", id: "ExplorationTail", isEdit: true, options: {} });
 			explorationNode += app.getField("dehaze", "List Distinct Facts", false, { type: "switch", id: "ExplorationListFacts", isEdit: "disabled", options: {} });
