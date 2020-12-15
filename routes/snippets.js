@@ -159,7 +159,7 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 					item.color		= typeof req.body.color!=="undefined"?req.body.color:item.color;
 					item.flows		= typeof req.body.flows!=="undefined"?req.body.flows:item.flows;
 					item.options	= typeof req.body.options!=="undefined"?req.body.options:item.options;
-					item.meta.revision = ++(req.body.meta.revision);
+					item.meta.revision = typeof item.meta.revision==="number"?(item.meta.revision):1;
 					result = item;
 				});
 				if ( typeof result !== "undefined" ) {

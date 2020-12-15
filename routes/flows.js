@@ -198,7 +198,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.mqtt_topic			= typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:item.mqtt_topic;
 						item.require_signed		= typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):str2bool(item.require_signed);
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
-						item.meta.revision		= ++(req.body.meta.revision);
+						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						result = item;
 					});
 					if ( typeof result !== "undefined" ) {

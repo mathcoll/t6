@@ -152,7 +152,7 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.description= typeof req.body.description!=="undefined"?req.body.description:item.description;
 					item.snippets	= typeof req.body.snippets!=="undefined"?req.body.snippets:item.snippets;
-					item.meta.revision = ++(req.body.meta.revision);
+					item.meta.revision = typeof item.meta.revision==="number"?(item.meta.revision):1;
 					result = item;
 				});
 				if ( typeof result !== "undefined" ) {

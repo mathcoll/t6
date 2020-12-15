@@ -608,6 +608,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 				item.secret_key_crypt	= typeof req.body.secret_key_crypt!=="undefined"?req.body.secret_key_crypt:item.secret_key_crypt;
 				item.ui_id				= typeof req.body.ui_id!=="undefined"?req.body.ui_id:item.ui_id;
 				item.communication		= typeof req.body.communication!=="undefined"?req.body.communication:item.communication;
+				item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 				result = item;
 			});
 			if ( typeof req.body.parameters!=="undefined" && req.body.parameters.length > 0 ) {

@@ -99,11 +99,12 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 		units.findAndUpdate(
 			function(i){return i.id==unit_id;},
 			function(item){
-				item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
-				item.format		= typeof req.body.format!=="undefined"?req.body.format:item.format;
-				item.type		= typeof req.body.type!=="undefined"?req.body.type:item.type;
-				item.system		= typeof req.body.system!=="undefined"?req.body.system:"";
-				item.description= typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):"";
+				item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
+				item.format			= typeof req.body.format!=="undefined"?req.body.format:item.format;
+				item.type			= typeof req.body.type!=="undefined"?req.body.type:item.type;
+				item.system			= typeof req.body.system!=="undefined"?req.body.system:"";
+				item.description	= typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):"";
+				item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 				result = item;
 			}
 		);

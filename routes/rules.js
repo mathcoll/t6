@@ -162,7 +162,7 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.rule		= typeof req.body.rule!=="undefined"?req.body.rule:item.rule;
 					item.active		= typeof req.body.active!=="undefined"?req.body.active:item.active;
-					item.meta.revision = ++(req.body.meta.revision);
+					item.meta.revision = typeof item.meta.revision==="number"?(item.meta.revision):1;
 					result = item;
 				});
 				if ( typeof result !== "undefined" ) {
