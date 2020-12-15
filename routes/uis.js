@@ -117,6 +117,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 400
  * @apiUse 401
  * @apiUse 404
+ * @apiUse 409
  */
 router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var ui_id = req.params.ui_id;
@@ -129,8 +130,8 @@ router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algor
 		};
 	var ui = uis.findOne( query );
 	if ( ui ) {
-		if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - object.meta.revision) !== 0 ) {
-			res.status(400).send(new ErrorSerializer({"id": 143, "code": 400, "message": "Bad Request"}).serialize());
+		if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - ui.meta.revision) !== 0 ) {
+			res.status(409).send(new ErrorSerializer({"id": 143, "code": 409, "message": "Bad Request"}).serialize());
 		} else {
 			var result;
 			uis.chain().find({ "id": ui_id }).update(function(item) {

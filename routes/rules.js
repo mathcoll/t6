@@ -137,6 +137,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 403
  * @apiUse 404
  * @apiUse 405
+ * @apiUse 409
  * @apiUse 429
  * @apiUse 500
  */
@@ -155,7 +156,7 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 			t6console.debug(req.body.meta.revision + rule.meta.revision);
 			t6console.debug((req.body.meta.revision - rule.meta.revision));
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) !== 0 ) {
-				res.status(400).send(new ErrorSerializer({"id": 539.2, "code": 400, "message": "Bad Request"}).serialize());
+				res.status(409).send(new ErrorSerializer({"id": 539.2, "code": 409, "message": "Bad Request"}).serialize());
 			} else {
 				var result;
 				rules.chain().find({ "id": rule_id }).update(function(item) {

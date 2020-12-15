@@ -573,6 +573,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 400
  * @apiUse 401
  * @apiUse 404
+ * @apiUse 409
  */
 router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
@@ -587,7 +588,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 	var object = objects.findOne( query );
 	if ( object ) {
 		if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - object.meta.revision) !== 0 ) {
-			res.status(400).send(new ErrorSerializer({"id": 143, "code": 400, "message": "Bad Request"}).serialize());
+			res.status(409).send(new ErrorSerializer({"id": 143, "code": 409, "message": "Bad Request"}).serialize());
 		} else {
 			var result;
 			req.body.isPublic = typeof req.body.isPublic!=="undefined"?req.body.isPublic:typeof req.body.is_public!=="undefined"?req.body.is_public:undefined;

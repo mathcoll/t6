@@ -166,6 +166,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 403
  * @apiUse 404
  * @apiUse 405
+ * @apiUse 409
  * @apiUse 429
  * @apiUse 500
  */
@@ -186,7 +187,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 			var flow = flows.findOne( query );
 			if ( flow ) {
 				if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - flow.meta.revision) !== 0 ) {
-					res.status(400).send(new ErrorSerializer({"id": 239.2, "code": 400, "message": "Bad Request"}).serialize());
+					res.status(409).send(new ErrorSerializer({"id": 239.2, "code": 409, "message": "Bad Request"}).serialize());
 				} else {
 					var result;
 					flows.chain().find({ "id": flow_id }).update(function(item) {
