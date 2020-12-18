@@ -123,6 +123,18 @@ function sendNotification(pushSubscription, payload) {
  */
 
 /**
+ * @apiDefine 409
+ * @apiError 409 conflict.
+ * @apiErrorExample 409 Response
+ *     HTTP/1.1 409 conflict
+ *     {
+ *       "message": "conflict",
+ *       "id": "",
+ *       "code": 409
+ *     }
+ */
+
+/**
  * @apiDefine 412
  * @apiError 412 Precondition Failed.
  * @apiErrorExample 412 Response

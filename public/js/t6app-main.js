@@ -2730,9 +2730,11 @@ var touchStartPoint, touchMovePoint;
 		let sel_boxplot = myForm.querySelector("#switch-ExplorationBoxplot").parentNode.classList.contains("is-checked");
 		let sel_frequency = myForm.querySelector("#switch-ExplorationFrequency").parentNode.classList.contains("is-checked");
 		let sel_line = myForm.querySelector("#switch-ExplorationLine").parentNode.classList.contains("is-checked");
+		let sel_loess = myForm.querySelector("#switch-ExplorationLoess").parentNode.classList.contains("is-checked");
+		let sel_trend = myForm.querySelector("#switch-ExplorationTrend").parentNode.classList.contains("is-checked");
 		
 		
-		if (!(sel_summary || sel_head || sel_tail || sel_boxplot || sel_frequency || sel_line )) {
+		if (!(sel_summary || sel_head || sel_tail || sel_boxplot || sel_frequency || sel_line || sel_loess || sel_trend )) {
 			toast("Please select at least one output.", { timeout: app.toastDuration, type: "error" });
 			return;
 		}
@@ -2980,6 +2982,47 @@ var touchStartPoint, touchMovePoint;
 					app.containers.spinner.setAttribute('hidden', true);
 					app.containers.spinner.classList.add('hidden');
 					evt.preventDefault();
+				}
+
+				if (sel_loess) {
+					if (!myForm.querySelector(".page-content #ExplorationLoess")) {
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", app.getSubtitle("Loess Regression"));
+						myForm.querySelector('.page-content').insertAdjacentHTML("beforeend", `<section class="mdl-grid mdl-cell--12-col">
+												<div class="mdl-cell--12-col mdl-card mdl-shadow--2dp">
+													<div>&nbsp;</div>
+													<div class="mdl-list__item--three-line small-padding" id="ExplorationLoess"></div>
+													<div>&nbsp;</div>
+												</div>
+											</section>`);
+						
+					} else {
+						myForm.querySelector("#ExplorationLoess").innerHTML = "";
+					}
+					var myHeaders = new Headers();
+					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+					myHeaders.append("Content-Type", "application/json");
+					var myInit = { method: "GET", headers: myHeaders };
+					var url = `${app.baseUrl}/${app.api_version}/exploration/loess?flow_id=${my_flow_id}&limit=1000&width=${app.getWidth(64)}&height=200&xAxis=&degree=linear&span=0.15&band=0.7${start}${end}`;
+					fetch(url, myInit)
+						.then(
+							app.fetchStatusHandler
+						)
+						.then(response => response.text())
+						.then(function(svg) {
+							document.getElementById("ExplorationLoess").innerHTML = svg;
+							toast("Data exploration updated", { timeout: app.toastDuration, type: "done" });
+						})
+						.catch(function(error) {
+							toast("Exploring error.", { timeout: app.toastDuration, type: "error" });
+						});
+					
+					app.containers.spinner.setAttribute('hidden', true);
+					app.containers.spinner.classList.add('hidden');
+					evt.preventDefault();
+				}
+
+				if (sel_trend) {
+					
 				}
 				
 			} else {
@@ -3865,6 +3908,7 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += app.getField("bar_chart", "Frequency shape distribution", false, { type: "switch", id: "ExplorationFrequency", isEdit: true, options: {} });
 			explorationNode += app.getField("double_arrow", "Boxplot", false, { type: "switch", id: "ExplorationBoxplot", isEdit: true, options: {} });
 			explorationNode += app.getField("show_chart", "Plot Line", false, { type: "switch", id: "ExplorationLine", isEdit: true, options: {} });
+			explorationNode += app.getField("trending_up", "Loess", false, { type: "switch", id: "ExplorationLoess", isEdit: true, options: {} });
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
 			

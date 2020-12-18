@@ -2,6 +2,7 @@
 var express = require("express");
 var router = express.Router();
 var statistics = require("simple-statistics");
+var Loess = require("loess");
 var ErrorSerializer = require("../serializers/error");
 var D3Node = require("d3-node");
 var flows;
@@ -396,6 +397,9 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
  * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
  * @apiParam {String} [xAxis] Label value in X axis
  * @apiParam {String} [yAxis] Label value in Y axis
+ * @apiParam {String} [span="0.75"] 0 to inf, default 0.75
+ * @apiParam {String=0,1} [band=0] 0 to 1, default 0
+ * @apiParam {String="constant","linear","quadratic"} [degree="quadratic"] Lower degree fitting function computes faster.
  * @apiParam {Integer} [width] output width of SVG chart
  * @apiParam {Integer} [height] output height of SVG chart
  * @apiSuccess {Svg} Svg image file
@@ -409,13 +413,20 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
 	var group = req.query.group;
-	var xAxis = typeof req.query.xAxis ? req.query.xAxis : "";
-	var yAxis = typeof req.query.yAxis ? req.query.yAxis : "";
+	var xAxisLabel = typeof req.query.xAxis!=="undefined" ? req.query.xAxis : "";
+	var yAxisLabel = typeof req.query.yAxis!=="undefined" ? req.query.yAxis : "";
+	var degree = typeof req.query.degree!=="undefined" ? req.query.degree : "";
+	var span = typeof req.query.span!=="undefined" ? parseFloat(req.query.span) : "";
+	var band = typeof req.query.band!=="undefined" ? parseFloat(req.query.band) : "";
 	var width = parseInt(req.query.width, 10);
 	var height = parseInt(req.query.height, 10);
 	var query;
 	var start;
 	var end;
+	var limit = parseInt(req.query.limit, 10) < 100001 ? parseInt(req.query.limit, 10) : 10;
+	if(degree !== "constant" && degree !== "linear" && degree !== "quadratic") {
+		degree = "quadratic";
+	}
 
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
@@ -461,25 +472,25 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 			group_by = sprintf("GROUP BY time(%s)", group);
 		}
 
-		query = `SELECT MEAN(${dt}) as mean FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
+		query = `SELECT ${dt} as value FROM data WHERE flow_id='${flow_id}' ${where} ${group_by} LIMIT ${limit} OFFSET 1`;
 		t6console.log(sprintf("Query: %s", query));
 
-		dbInfluxDB.query(query).then(meanData => {
-			if (meanData.length > 0) {
+		dbInfluxDB.query(query).then(queryData => {
+			if (queryData.length > 0) {
 				let graphScatterData = [];
 				let graphLoessData = { x: [], y: [] };
 				let graphLoess = [];
 				let svg;
-				meanData.map(function(row) {
-					if (typeof row.time !== "undefined" && row.mean !== null) {
-						graphScatterData.push({ key: parseInt(moment(row.time).format("x"), 10), value: row.mean });
+				let n = 0;
+				queryData.map(function(row) {
+					if (typeof row.time !== "undefined" && row.value !== null) {
+						graphScatterData.push({ key: parseInt(moment(row.time).format("x"), 10), value: row.value });
 						graphLoessData.x.push(parseInt(moment(row.time).format("x"), 10));
-						graphLoessData.y.push(row.mean);
+						graphLoessData.y.push(row.value);
 					}
 				});
 
 				var D3Node = require('d3-node');
-				var Loess = require("loess");
 				const d3n = new D3Node({
 					selector: "",
 					svgStyles: "",
@@ -487,8 +498,8 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					container: "",
 				});
 				const d3 = d3n.d3;
-				let _margin = { top: 10, right: 30, bottom: 30, left: 40 };
-				let _lineWidth = 1.5;
+				let _margin = { top: 10, right: 60, bottom: 30, left: 60 };
+				let _lineWidth = 2;
 				let _tickSize = 5;
 				let _tickPadding = 5;
 				let _lineColor = 'steelblue';
@@ -503,65 +514,71 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 
 				let g = svg.append('g');
 				let { allKeys } = graphScatterData;
-				let xScale = d3.scaleTime()
-					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphScatterData, d => d.key))
-					.rangeRound([0, width]);
-				let yScale = d3.scaleLinear()
-					.domain(allKeys ? [d3.min(graphScatterData, d => d3.min(d, v => v.value)), d3.max(graphScatterData, d => d3.max(d, v => v.value))] : d3.extent(graphScatterData, d => d.value))
-					.rangeRound([height, 0]);
-				let xAxis = d3.axisBottom(xScale)
-					.tickSize(_tickSize)
-					.tickPadding(_tickPadding);
-				let yAxis = d3.axisLeft(yScale)
-					.tickSize(_tickSize)
-					.tickPadding(_tickPadding);
-
-				g.append('g')
-					.attr('transform', `translate(0, ${height})`)
-					.call(xAxis);
-
-				g.append('g').call(yAxis);
-
-				g.append('g')
-					.selectAll("dot")
-					.data(allKeys ? data : graphScatterData)
-					.enter().append("circle")
-					.attr("cx", function(d) { return xScale(d.key); })
-					.attr("cy", function(d) { return yScale(d.value); })
-					.attr("r", _lineWidth)
-					.attr("class", "dot")
-					.attr("fill", (d, i) => _lineColors.length ? _lineColors[i] : _lineColor);
 
 				/* LOESS */
-				let options = { span: 0.5, band: 0.8, degree: 1 };
+				let options /*optional*/ = {
+					span: span, // 0 to inf, default 0.75
+					band: band, // 0 to 1, default 0
+					degree: degree, // degree: [0, 1, 2] || ['constant', 'linear', 'quadratic'] // default 2
+					normalize: true, // default true if degree > 1, false otherwise
+					robust: false, // default false
+					iterations: 1 //default 4 if robust = true, 1 otherwise
+				}
 				let model = new Loess.default(graphLoessData, options);
-				let newData = model.grid([graphLoessData.x.length]);
-				let fit = model.predict(newData);
+				//let newData = model.grid([graphLoessData.x.length]);
+				let fit = model.predict(); //newData
 
-				let n = 0;
-				(fit.halfwidth).map(function(row) {
-					graphLoess.push({ key: n, value: row });
-					n++;
-				});
-				//{ allKeys } = graphLoess;
-				xScale = d3.scaleTime()
+				var m = 0;
+				fit.fitted.map((y, idx) => {
+					graphLoess.push({ key: idx, value: y, halfwidth: fit.halfwidth[idx] });
+				})
+				let xScaleScatter = d3.scaleTime()
+					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphScatterData, d => d.key))
+					.rangeRound([0, width]);
+				let yScaleScatter = d3.scaleLinear()
+					.domain(allKeys ? [d3.min(graphScatterData, d => d3.min(d, v => v.value)), d3.max(graphScatterData, d => d3.max(d, v => v.value))] : d3.extent(graphScatterData, d => d.value))
+					.rangeRound([height, 0]);
+				let xAxis = d3.axisBottom(xScaleScatter)
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
+				let yAxis = d3.axisLeft(yScaleScatter)
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
+					
+				let xScale = d3.scaleTime()
 					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphLoess, d => d.key))
 					.rangeRound([0, width]);
-				yScale = d3.scaleLinear()
-					.domain(allKeys ? [d3.min(graphLoess, d => d3.min(d, v => v.value)), d3.max(graphLoess, d => d3.max(d, v => v.value))] : d3.extent(graphLoess, d => d.value))
+				var yScaleR = d3.scaleLinear()
+					//.domain(allKeys ? [d3.min(graphLoess, d => d3.min(d, v => v.value)), d3.max(graphLoess, d => d3.max(d, v => v.value))] : d3.extent(graphLoess, d => d.value))
+					.domain(allKeys ? [d3.min(graphScatterData, d => d3.min(d, v => v.value)), d3.max(graphScatterData, d => d3.max(d, v => v.value))] : d3.extent(graphScatterData, d => d.value))
 					.rangeRound([height, 0]);
+				/*
 				xAxis = d3.axisBottom(xScale)
 					.tickSize(_tickSize)
 					.tickPadding(_tickPadding);
-				yAxis = d3.axisLeft(yScale)
+				*/
+				var yAxisR = d3.axisRight(yScaleR)
 					.tickSize(_tickSize)
 					.tickPadding(_tickPadding);
 
 				let lineChart = d3.line()
 					.x(d => xScale(d.key))
-					.y(d => yScale(d.value));
+					.y(d => yScaleR(d.value));
+					
+				const area = d3.area()
+					.x(d => xScale(d.key))
+					.y0(d => yScaleR(d.value - d.halfwidth))
+					.y1(d => yScaleR(d.value + d.halfwidth));
 
 				if (_isCurve) lineChart.curve(d3.curveBasis);
+
+					
+				g.append('g')
+					.append("path")
+					.attr("fill", "#795548")
+					.style("opacity", .3)
+					.attr("d", area(graphLoess));
+					
 				g.append('g')
 					.attr('fill', 'none')
 					.attr('stroke-width', _lineWidth)
@@ -571,14 +588,38 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					.attr('stroke', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor)
 					.attr('d', lineChart);
 
+				g.append('g')
+					.selectAll("dot")
+					.data(allKeys ? data : graphScatterData)
+					.enter().append("circle")
+					.attr("cx", function(d) { return xScaleScatter(d.key); })
+					.attr("cy", function(d) { return yScaleScatter(d.value); })
+					.attr("r", _tickSize)
+					.attr("class", "dot")
+					.attr('stroke', 'black')
+					.attr("fill", 'none');
+
+				g.append('g')
+					.attr('transform', `translate(0, ${height})`)
+					.text(typeof xAxisLabel!=="undefined"?xAxisLabel:"")
+					.call(xAxis);
+
+				g.append('g')
+					.text(typeof xAxisLabel!=="undefined"?yAxisLabel:"")
+					.call(yAxis);
+					
+				g.append('g')
+					.attr('transform', `translate(${width}, 0)`)
+					.call(yAxisR);
+
 				// END LOESS
 				res.setHeader("content-type", "image/svg+xml");
 				res.status(200).send(d3n.svgString());
 			} else {
 				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
 			}
-		//}).catch(err => {
-		//	res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
+		}).catch(err => {
+			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
 		});
 	}
 });
@@ -892,15 +933,15 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 			group_by = sprintf("GROUP BY time(%s)", group);
 		}
 
-		query = `SELECT MEAN(${dt}) as mean FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
+		query = `SELECT MEAN(${dt}) as value FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
 		t6console.log(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
 				var graphData = [];
 				data.map(function(row) {
-					if (typeof row.time !== "undefined" && row.mean !==null) {
-						graphData.push(row.mean);
+					if (typeof row.time !== "undefined" && row.value !==null) {
+						graphData.push([moment(row.time).format("DD-MM-YYYY HH:mm:ss"), parseInt(moment(row.time).format("x"), 10), row.value]);
 					}
 				});
 
