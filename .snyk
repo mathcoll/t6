@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.14.1
+version: v1.12.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:minimatch:20160620':
@@ -123,10 +123,10 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2021-01-18T10:09:29.289Z'
+        expires: '2021-03-01T15:36:25.042Z'
     - device > useragent:
         reason: None given
-        expires: '2021-01-18T10:09:29.289Z'
+        expires: '2021-03-01T15:36:25.042Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -153,108 +153,244 @@ ignore:
   SNYK-JS-LOCUTUS-1009836:
     - cidr-js > locutus:
         reason: None given
-        expires: '2021-01-18T10:09:29.288Z'
+        expires: '2021-03-01T15:36:25.042Z'
   SNYK-JS-MATHJS-1016401:
     - loess > mathjs:
         reason: None given
-        expires: '2021-01-18T10:09:29.288Z'
+        expires: '2021-03-01T15:36:25.042Z'
   SNYK-JS-SVG2PNG-567041:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
-        expires: '2021-01-18T10:09:29.289Z'
+        expires: '2021-03-01T15:36:25.042Z'
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
-        expires: '2021-01-18T10:09:29.289Z'
+        expires: '2021-03-01T15:36:25.044Z'
   'npm:content-type-parser:20170905':
     - d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2021-01-18T10:09:29.290Z'
+        expires: '2021-03-01T15:36:25.044Z'
     - d3node-barchart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2021-01-18T10:09:29.290Z'
+        expires: '2021-03-01T15:36:25.044Z'
     - d3node-linechart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2021-01-18T10:09:29.290Z'
+        expires: '2021-03-01T15:36:25.044Z'
     - d3node-piechart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2021-01-18T10:09:29.290Z'
+        expires: '2021-03-01T15:36:25.044Z'
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2021-01-18T10:09:29.290Z'
+        expires: '2021-03-01T15:36:25.044Z'
   SNYK-JS-Y18N-1021887:
     - d3node-barchart > d3node-output > svg2png > yargs > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.525Z'
+      npm > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
     - npm > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.526Z'
+      npm > libnpx > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
     - npm > libnpx > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.526Z'
+      npm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > pacote > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.526Z'
+      npm > libnpx > yargs > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpx > yargs > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.526Z'
+      npm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.527Z'
+      npm > pacote > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > pacote > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.527Z'
+      npm > libcipm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libcipm > pacote > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.527Z'
+      npm > libnpm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpm > pacote > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.527Z'
+      npm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.527Z'
+      npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.528Z'
+      npm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.528Z'
+      npm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.528Z'
+      npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.528Z'
+      npm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.529Z'
+      npm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.529Z'
+      npm > libnpm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.529Z'
+      npm > libcipm > pacote > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.529Z'
+      npm > libnpm > pacote > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.529Z'
+      npm > libcipm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.529Z'
+      npm > libnpm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmpublish > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.530Z'
+      npm > libnpm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.530Z'
+      npm > libnpm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.530Z'
+      npm > libnpm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.530Z'
+      npm > libnpm > libnpmpublish > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - npm > libnpm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - npm > libnpm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - npm > libnpm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+  SNYK-JS-AJV-584908:
+    - npm > request > har-validator > ajv:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+    - npm > node-gyp > request > har-validator > ajv:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+    - npm > npm-lifecycle > node-gyp > request > har-validator > ajv:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+    - npm > libcipm > npm-lifecycle > node-gyp > request > har-validator > ajv:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+    - npm > libnpm > npm-lifecycle > node-gyp > request > har-validator > ajv:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+  SNYK-JS-GLOBPARENT-1016905:
+    - mqtt > help-me > glob-stream > glob-parent:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+  SNYK-JS-INI-1048974:
+    - npm > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+    - npm > config-chain > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.041Z'
+    - npm > libcipm > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+    - npm > libnpm > libnpmconfig > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+    - npm > update-notifier > is-installed-globally > global-dirs > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+    - npm > libnpx > update-notifier > is-installed-globally > global-dirs > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+    - npm > update-notifier > latest-version > package-json > registry-auth-token > rc > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+    - npm > update-notifier > latest-version > package-json > registry-url > rc > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+    - npm > libnpx > update-notifier > latest-version > package-json > registry-auth-token > rc > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+    - npm > libnpx > update-notifier > latest-version > package-json > registry-url > rc > ini:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
+  SNYK-JS-NPMUSERVALIDATE-1019352:
+    - npm > npm-user-validate:
+        reason: None given
+        expires: '2021-03-01T15:36:25.042Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
