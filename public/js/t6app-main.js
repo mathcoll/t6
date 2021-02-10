@@ -72,6 +72,7 @@ var app = {
 		"compatible-devices": "t6 Compatible Devices",
 		"openSourceLicenses": "Open-Source licenses",
 		"exploration": "Data Exploration",
+		"objects-maps": "Objects Maps",
 	},
 	icons: {
 		"color": "format_color_fill",
@@ -152,7 +153,7 @@ var app = {
 	sources: [],
 	snippets: [],
 	defaultResources: {
-		object: { id: "", attributes: { name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: "", latitude: "", position: "", source_id: "-", ui_id: "" } },
+		object: { id: "", attributes: { name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: 0, latitude: 0, position: "", source_id: "-", ui_id: "" } },
 		flow: { id: "", attributes: { name: "", mqtt_topic: "", require_signed: false, require_encrypted: false } },
 		dashboard: { id: "", attributes: { name: "", description: "" } },
 		snippet: { id: "", attributes: { name: "", icon: "", color: "" } },
@@ -801,6 +802,7 @@ var touchStartPoint, touchMovePoint;
 			usersList: document.querySelector('section#users-list'),
 			compatibleDevices: document.querySelector('section#compatible-devices'),
 			openSourceLicenses: document.querySelector('section#openSourceLicenses'),
+			objectsMaps: document.querySelector('section#objects-maps'),
 
 			objects: document.querySelector('section#objects'),
 			object: document.querySelector('section#object'),
@@ -875,6 +877,16 @@ var touchStartPoint, touchMovePoint;
 				h2.classList.add("mdl-card__title-text", "mdl-subheader-content");
 				var title = document.createTextNode((app.sectionsPageTitles[section]).replace(/%s/g, ""));
 				h2.appendChild(title);
+				if (section === "objects") {
+					let button = document.createElement("a");
+					let span = document.createElement("span");
+					span.classList.add("mdl-card__menuaction", "pull-right");
+					button.href = "#objects-maps";
+					button.classList.add("mdl-navigation__link");
+					button.appendChild(document.createTextNode("Locate Objects"));
+					span.appendChild(button);
+					h2.appendChild(span);
+				}
 				let divH2 = document.createElement("div");
 				divH2.classList.add("mdl-grid", "mdl-cell--12-col");
 				divH2.appendChild(h2);
@@ -1075,6 +1087,10 @@ var touchStartPoint, touchMovePoint;
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			window.location.hash = '#' + section;
 			app.getOpenSourceLicenses();
+		} else if (section === 'objects-maps') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.getObjectsMaps();
+			window.location.hash = '#' + section;
 		} else if (section === 'manage_notifications') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			window.location.hash = '#' + section;
@@ -2145,6 +2161,80 @@ var touchStartPoint, touchMovePoint;
 		return promise;
 	};
 
+	app.getObjectsMaps = function() {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
+		app.getLocation();
+		
+		var container = (app.containers.objectsMaps).querySelector('.page-content');
+		let objectsMaps = "";
+		
+		objectsMaps += app.getSubtitle("Locate Objects");
+		objectsMaps += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
+		objectsMaps += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		objectsMaps += "	<div class=\"card-header heading-left\">&nbsp;</div>";
+		objectsMaps += app.getMap("my_location", "osmLocateObjects", parseFloat(app.defaultResources.object.attributes.longitude), parseFloat(app.defaultResources.object.attributes.latitude), false, false, false);
+		objectsMaps += "	</div>";
+		objectsMaps += "</section>";
+		container.innerHTML = objectsMaps;
+		
+		var myHeaders = new Headers();
+		myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
+		myHeaders.append("Content-Type", "application/json");
+		var myInit = { method: 'GET', headers: myHeaders };
+		var url = `${app.baseUrl}/${app.api_version}/objects/`;
+		fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse) {
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				if (response.data) {
+					let objectsLocation = [];
+					for (var i = 0; i < (response.data).length; i++) {
+						var object = response.data[i];
+						if (object.attributes.latitude && object.attributes.longitude) {
+							objectsLocation.push({ name: object.attributes.name, latitude: object.attributes.latitude, longitude: object.attributes.longitude });
+						}
+					}
+		
+					let map = L.map("osmLocateObjects").setView([parseFloat(app.defaultResources.object.attributes.latitude), parseFloat(app.defaultResources.object.attributes.longitude)], 13);
+					L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+						attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
+						minZoom: 1,
+						maxZoom: 20,
+						trackResize: true,
+						dragging: true
+					}).addTo(map);
+					let popup = L.popup();
+					let CustomIcon = L.Icon.extend({
+						options: {
+							shadowUrl:		"/img/m/marker-shadow.png",
+							iconSize:		[25, 41],
+							shadowSize:		[41, 41],
+							iconAnchor:		[20, 20],
+							shadowAnchor:	[20, 20],
+							popupAnchor:	[0, -20]
+						}
+					});
+					let bounds = new L.LatLngBounds();
+					let mIcon = new CustomIcon({iconUrl: "/img/m/marker-icon.png"});
+					objectsLocation.map(function(obj) {
+						let marker = L.marker([parseFloat(obj.latitude), parseFloat(obj.longitude)], {icon: mIcon, draggable: false}).bindPopup(obj.name).addTo(map);
+						bounds.extend(marker.getLatLng());
+					});
+					map.fitBounds(bounds);
+					setTimeout(function() {map.invalidateSize(true);}, 1000);
+				}
+			});
+
+		componentHandler.upgradeDom();
+		app.containers.spinner.setAttribute('hidden', true);
+		app.containers.spinner.classList.add('hidden');
+		
+	};
+
 	app.getUsersList = function() {
 		app.containers.spinner.removeAttribute('hidden');
 		app.containers.spinner.classList.remove('hidden');
@@ -2154,7 +2244,6 @@ var touchStartPoint, touchMovePoint;
 		var myInit = { method: 'GET', headers: myHeaders };
 		var container = (app.containers.usersList).querySelector('.page-content');
 		var url = `${app.baseUrl}/${app.api_version}/users/list`;
-		var title = 'Users List';
 
 		fetch(url, myInit)
 			.then(
@@ -2313,9 +2402,9 @@ var touchStartPoint, touchMovePoint;
 							"userRole": user.attributes.role,
 							"userId": user.id
 						});
-						gtag("config", firebaseConfig.measurementId, {
-							'user_id': user.id
-						});
+						if(typeof gtag === "function") {
+							gtag("config", firebaseConfig.measurementId, { 'user_id': user.id });
+						}
 						if (typeof firebase !== "undefined" && !firebase.apps.length) {
 							firebase.analytics().setUserProperties({ 'userId': user.id });
 							firebase.analytics().setUserProperties({ 'userRole': user.attributes.role });
@@ -2582,8 +2671,8 @@ var touchStartPoint, touchMovePoint;
 	app.fetchIndex = function() {
 		var node = "";
 		var container = (app.containers.index).querySelector('.page-content');
-		app.containers.spinner.removeAttribute('hidden');
-		app.containers.spinner.classList.remove('hidden');
+		//app.containers.spinner.removeAttribute('hidden');
+		//app.containers.spinner.classList.remove('hidden');
 		if (!localStorage.getItem('index')) {
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
@@ -2922,7 +3011,7 @@ var touchStartPoint, touchMovePoint;
 											</section>`);
 						
 					} else {
-						myForm.querySelector("#explorePlotResults").innerHTML = "";
+						myForm.querySelector("#exploreLineResults").innerHTML = "";
 					}
 					var myHeaders = new Headers();
 					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
@@ -3447,6 +3536,7 @@ var touchStartPoint, touchMovePoint;
 
 					app.isLogged = true;
 					if (typeof firebase !== "undefined") {
+						firebase.initializeApp(firebaseConfig);
 						firebase.analytics().setUserProperties({ 'isLoggedIn': 1 });
 						firebase.analytics().logEvent('refreshAuthenticate');
 					}
@@ -4046,6 +4136,7 @@ var touchStartPoint, touchMovePoint;
 		if (app.containers.mqtt) { (app.containers.mqtt).querySelector('.page-content').innerHTML = ''; }
 		if (app.containers.sources) { (app.containers.sources).querySelector('.page-content').innerHTML = ''; }
 		if (app.containers.source) { (app.containers.source).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.objectsMaps) { (app.containers.objectsMaps).querySelector('.page-content').innerHTML = ''; }
 	};
 
 	app.showOrientation = function() {
@@ -4126,7 +4217,9 @@ var touchStartPoint, touchMovePoint;
 		app.containers.menuElement.style.transform = "translateX(0) !important";
 		app.containers.menuElement.classList.add('menu--show');
 		app.containers.menuOverlayElement.classList.add('menu__overlay--show');
-		app.containers.drawerObfuscatorElement.remove();
+		if (typeof app.containers.drawerObfuscatorElement !== "undefined") {
+			app.containers.drawerObfuscatorElement.remove();
+		}
 	};
 
 	app.hideMenu = function() {
@@ -4212,6 +4305,9 @@ var touchStartPoint, touchMovePoint;
 			} else if (currentPage === 'openSourceLicenses') {
 				app.getOpenSourceLicenses();
 				app.setSection('openSourceLicenses');
+			} else if (currentPage === 'objects-maps') {
+				//app.getObjectsMaps();
+				app.setSection('objects-maps');
 			} else if (currentPage === 'docs') {
 				app.onDocsButtonClick();
 			} else if (currentPage === 'status') {
@@ -4561,15 +4657,16 @@ var touchStartPoint, touchMovePoint;
 	}, false);
 
 	document.addEventListener("readystatechange", event => {
+		var changedTime = new Date();
 		if (event.target.readyState === "loading") {
 			if (localStorage.getItem("settings.debug") == "true") {
 				var loadingTime = new Date();
-				console.log("DEBUG", "loading: ", loadingTime - startTime, "ms");
+				console.log("DEBUG", "loading time: ", loadingTime - startTime, "ms", " (begin", loadingTime, "ms. lasted ", loadingTime - changedTime, "ms)");
 			}
 		} else if (event.target.readyState === "interactive") {
 			if (localStorage.getItem("settings.debug") == "true") {
 				var interactiveTime = new Date();
-				console.log("DEBUG", "interactive: ", interactiveTime - startTime, "ms");
+				console.log("DEBUG", "interactive time: ", interactiveTime - startTime, "ms", " (begin", interactiveTime, "ms. lasted ", interactiveTime - changedTime, "ms)");
 			}
 		} else if (event.target.readyState === "complete") {
 			app.refreshContainers();
@@ -4621,7 +4718,7 @@ var touchStartPoint, touchMovePoint;
 
 			if (localStorage.getItem("settings.debug") == "true") {
 				var completeTime = new Date();
-				console.log("DEBUG", "complete: ", completeTime - startTime, "ms");
+				console.log("DEBUG", "complete time: ", completeTime - startTime, "ms", " (begin", completeTime, "ms. lasted ", completeTime - changedTime, "ms)");
 			}
 		}
 	});
