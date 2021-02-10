@@ -15,7 +15,7 @@ t6events.setRP = function(rp) {
 	retention = rp;
 };
 
-t6events.add = function(where, what, who, client_id=null) {
+t6events.add = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
 		var tags = {what: what, where: where};
@@ -34,6 +34,11 @@ t6events.add = function(where, what, who, client_id=null) {
 	if(client_id!==null) {
 		let user_id = typeof who!=="undefined"?who:null;
 		client_id = typeof client_id!=="undefined"?client_id:'';
+		
+		params = params!==null?params:{};
+		params.environnment = where;
+		params.user_id = user_id;
+		
 		var options = {
 			method: "POST",
 			url: `https://www.google-analytics.com/${d}mp/collect?v=2&firebase_app_id=${trackings.firebaseConfig.server.appId}&measurement_id=${trackings.firebaseConfig.server.measurementId}&api_secret=${trackings.firebaseConfig.server.api_secret}`,
@@ -43,7 +48,7 @@ t6events.add = function(where, what, who, client_id=null) {
 				"nonPersonalizedAds": true,
 				"events": [{
 					name: what.replace(/[^a-zA-Z]/g,"_"),
-					params: {"environnment": where},
+					params: params,
 				}]
 			})
 		};
@@ -54,6 +59,7 @@ t6events.add = function(where, what, who, client_id=null) {
 				t6console.info("GA4 user_id:", user_id);
 				t6console.info("GA4 client_id:", client_id);
 				t6console.info("GA4 environnment:", where);
+				t6console.info("GA4 params:", params);
 				t6console.info("GA4 statusCode:", response.statusCode);
 				if (d==="debug/") { t6console.info("GA4 body:", body); }
 			} else {
