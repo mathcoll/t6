@@ -502,8 +502,8 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 				let _lineWidth = 2;
 				let _tickSize = 5;
 				let _tickPadding = 5;
-				let _lineColor = 'steelblue';
-				let _lineColors = ['steelblue'];
+				let _lineColor = '#765548';
+				let _lineColors = ['#795548'];
 				let _isCurve = true;
 
 				svg = d3n.createSVG(width, height)
@@ -575,7 +575,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					
 				g.append('g')
 					.append("path")
-					.attr("fill", "#795548")
+					.attr("fill", "steelblue")
 					.style("opacity", .3)
 					.attr("d", area(graphLoess));
 					
@@ -1010,8 +1010,8 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 	let _lineWidth = 1.5;
 	let _tickSize = 5;
 	let _tickPadding = 5;
-	let _lineColor = "steelblue";
-	let _lineColors = ["steelblue"];
+	let _lineColor = "#795548";
+	let _lineColors = ["#795548"];
 	let _color = "#795548";
 	let _hoverColor = "brown";
 	let _isCurve = true;
@@ -1579,6 +1579,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 						data: dataDensity,
 						selector: "",
 						container: "",
+						barColor: "#765548",
 						labels: { xAxis: xAxis, yAxis: yAxis },
 						width: width,
 						height: height,
