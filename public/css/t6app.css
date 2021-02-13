@@ -1587,8 +1587,17 @@ ul:not(.browser-default) li {
 }
 .mdl-button--fab_flinger-container {
 	position: fixed;
-	right: 15px;
 	z-index: 100;
+	width: 56px;
+}
+.mdl-button--fab_flinger-container.pull-right {
+	right: 15px;
+}
+.mdl-button--fab_flinger-container.pull-left {
+	left: 15px;
+}
+.mdl-button--fab {
+	margin: 5px 0;
 }
 .mdl-button--fab_flinger-container.fab__top {
 	top: 100px;

@@ -877,16 +877,6 @@ var touchStartPoint, touchMovePoint;
 				h2.classList.add("mdl-card__title-text", "mdl-subheader-content");
 				var title = document.createTextNode((app.sectionsPageTitles[section]).replace(/%s/g, ""));
 				h2.appendChild(title);
-				if (section === "objects") {
-					let button = document.createElement("a");
-					let span = document.createElement("span");
-					span.classList.add("mdl-card__menuaction", "pull-right");
-					button.href = "#objects-maps";
-					button.classList.add("mdl-navigation__link");
-					button.appendChild(document.createTextNode("Locate Objects"));
-					span.appendChild(button);
-					h2.appendChild(span);
-				}
 				let divH2 = document.createElement("div");
 				divH2.classList.add("mdl-grid", "mdl-cell--12-col");
 				divH2.appendChild(h2);
@@ -927,6 +917,7 @@ var touchStartPoint, touchMovePoint;
 		} else if (section === 'object') {
 			var urlParams = new URLSearchParams(window.location.search); // (window.location.hash.substr(1).split("?"))[1] // TODO, recursive?
 			var params = {};
+			console.log("DEBUG", (window.location.hash.substr(1).split("?"))[1]);
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
 					var n = p[0];
@@ -2168,7 +2159,6 @@ var touchStartPoint, touchMovePoint;
 		
 		var container = (app.containers.objectsMaps).querySelector('.page-content');
 		let objectsMaps = "";
-		
 		objectsMaps += app.getSubtitle("Locate Objects");
 		objectsMaps += "<section class=\"mdl-grid mdl-cell--12-col\" style=\"padding-bottom: 50px !important;\">";
 		objectsMaps += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -2183,6 +2173,7 @@ var touchStartPoint, touchMovePoint;
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
 		var url = `${app.baseUrl}/${app.api_version}/objects/`;
+		var map;
 		fetch(url, myInit)
 			.then(
 				app.fetchStatusHandler
@@ -2195,11 +2186,15 @@ var touchStartPoint, touchMovePoint;
 					for (var i = 0; i < (response.data).length; i++) {
 						var object = response.data[i];
 						if (object.attributes.latitude && object.attributes.longitude) {
-							objectsLocation.push({ name: object.attributes.name, latitude: object.attributes.latitude, longitude: object.attributes.longitude });
+							objectsLocation.push({ id: object.id, name: object.attributes.name, latitude: object.attributes.latitude, longitude: object.attributes.longitude });
 						}
 					}
 		
-					let map = L.map("osmLocateObjects").setView([parseFloat(app.defaultResources.object.attributes.latitude), parseFloat(app.defaultResources.object.attributes.longitude)], 13);
+					var container = L.DomUtil.get("osmLocateObjects");
+					if(typeof container !== "undefined") {
+						container._leaflet_id = null;
+					}
+					map = L.map("osmLocateObjects").setView([parseFloat(app.defaultResources.object.attributes.latitude), parseFloat(app.defaultResources.object.attributes.longitude)], 13);
 					L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
 						attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
 						minZoom: 1,
@@ -2221,7 +2216,7 @@ var touchStartPoint, touchMovePoint;
 					let bounds = new L.LatLngBounds();
 					let mIcon = new CustomIcon({iconUrl: "/img/m/marker-icon.png"});
 					objectsLocation.map(function(obj) {
-						let marker = L.marker([parseFloat(obj.latitude), parseFloat(obj.longitude)], {icon: mIcon, draggable: false}).bindPopup(obj.name).addTo(map);
+						let marker = L.marker([parseFloat(obj.latitude), parseFloat(obj.longitude)], {icon: mIcon, draggable: false}).bindPopup(`${obj.name}<br /><a href="/#object?id=${obj.id}">Details</a>`).addTo(map);
 						bounds.extend(marker.getLatLng());
 					});
 					map.fitBounds(bounds);
@@ -2714,66 +2709,52 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.showAddFAB = function(type) {
-		var container;
-		var showFAB = false;
+		let container;
+		let fabs = new Array();
 		if (type === 'objects') {
-			var id = 'createObject';
+			fabs.push({id: "createObject", icon: "add", tooltip: "Add a new object"});
+			fabs.push({id: "locateObject", icon: "place", tooltip: "Locate Objects"});
 			container = (app.containers.objects).querySelector('.page-content');
-			showFAB = true;
 		}
 		if (type === 'flows') {
-			var id = 'createFlow';
+			fabs.push({id: "createFlow", icon: "add", tooltip: "Add a new flow"});
 			container = (app.containers.flows).querySelector('.page-content');
-			showFAB = true;
 		}
 		if (type === 'dashboards') {
-			var id = 'createDashboard';
+			fabs.push({id: "createDashboard", icon: "add", tooltip: "Add a new dashboard"});
 			container = (app.containers.dashboards).querySelector('.page-content');
-			showFAB = true;
 		}
 		if (type === 'snippets') {
-			var id = 'createSnippet';
+			fabs.push({id: "createSnippet", icon: "add", tooltip: "Add a new snippet"});
 			container = (app.containers.snippets).querySelector('.page-content');
-			showFAB = true;
 		}
 		if (type === 'rules') {
-			var id = 'createRule';
+			fabs.push({id: "createRule", icon: "add", tooltip: "Add a new rule"});
 			container = (app.containers.rules).querySelector('.page-content');
-			showFAB = true;
 		}
 		if (type === 'mqtts') {
-			var id = 'createMqtt';
+			fabs.push({id: "createMqtt", icon: "add", tooltip: "Add a new mqtt"});
 			container = (app.containers.mqtts).querySelector('.page-content');
-			showFAB = true;
 		}
 		if (type === 'sources') {
-			var id = 'createSource';
+			fabs.push({id: "createSource", icon: "add", tooltip: "Add a new source"});
 			container = (app.containers.sources).querySelector('.page-content');
-			showFAB = true;
 		}
 		if (type === 'exploration') {
-			var id = 'exploreFlowsFAB';
+			fabs.push({id: "exploreFlows", icon: "flare", tooltip: "Explore"});
 			container = (app.containers.exploration).querySelector('.page-content');
-			var fabClass = app.getSetting('settings.fab_position') !== null ? app.getSetting('settings.fab_position') : 'fab__bottom';
-			var fab = "<div class='mdl-button--fab_flinger-container " + fabClass + "'>";
-			fab += "	<button id='" + id + "' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
-			fab += "		<i class='material-icons'>flare</i>";
-			fab += "		<div class='mdl-tooltip mdl-tooltip--top' for='" + id + "'>Explore</label>";
-			fab += "	</button>";
-			fab += "</div>";
-			container.innerHTML += fab;
-			componentHandler.upgradeDom();
-			if (document.getElementById("exploreFlowsFAB")) {
-				document.getElementById("exploreFlowsFAB").addEventListener("click", function(evt) { app.eda(evt); evt.preventDefault(); }, false);
-			}
 		}
-		if (showFAB && container) {
-			var fabClass = app.getSetting('settings.fab_position') !== null ? app.getSetting('settings.fab_position') : 'fab__bottom';
-			var fab = "<div class='mdl-button--fab_flinger-container " + fabClass + "'>";
-			fab += "	<button id='" + id + "' class='mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp'>";
-			fab += "		<i class='material-icons'>add</i>";
-			fab += "		<div class='mdl-tooltip mdl-tooltip--top' for='" + id + "'>Add a new " + type.slice(0, -1) + "</label>";
-			fab += "	</button>";
+		if (container && fabs.length > -1) {
+			let fabClass = app.getSetting('settings.fab_position') !== null ? app.getSetting('settings.fab_position') : "fab__bottom";
+			fabClass += app.getSetting('settings.isLtr') === "true" ? " pull-right" : " pull-left";
+			let tooltipClass = app.getSetting('settings.isLtr') === "true" ? "mdl-tooltip--left" : "mdl-tooltip--right";
+			let fab = `<div class="mdl-button--fab_flinger-container ${fabClass}">`;
+			fabs.map(function(button) {
+				fab += `	<button id="${button.id}" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored mdl-shadow--8dp">
+								<i class='material-icons'>${button.icon}</i>
+								<div class="mdl-tooltip ${tooltipClass}" for="${button.id}">${button.tooltip}</label>
+							</button>`;
+			});
 			fab += "</div>";
 
 			// Add spacer
@@ -2794,13 +2775,33 @@ var touchStartPoint, touchMovePoint;
 			componentHandler.upgradeDom();
 
 			app.refreshButtonsSelectors();
-			if (app.buttons.createObject) app.buttons.createObject.addEventListener('click', function() { app.setSection('object_add'); }, false);
-			if (app.buttons.createFlow) app.buttons.createFlow.addEventListener('click', function() { app.setSection('flow_add'); }, false);
-			if (app.buttons.createSnippet) app.buttons.createSnippet.addEventListener('click', function() { app.setSection('snippet_add'); }, false);
-			if (app.buttons.createDashboard) app.buttons.createDashboard.addEventListener('click', function() { app.setSection('dashboard_add'); }, false);
-			if (app.buttons.createRule) app.buttons.createRule.addEventListener('click', function() { app.setSection('rule_add'); }, false);
-			if (app.buttons.createMqtt) app.buttons.createMqtt.addEventListener('click', function() { app.setSection('mqtt_add') }, false);
-			if (app.buttons.createSource) app.buttons.createSource.addEventListener('click', function() { app.setSection('source_add') }, false);
+			if (document.getElementById("exploreFlows")) {
+				document.getElementById("exploreFlows").addEventListener("click", function(evt) { app.eda(evt); evt.preventDefault(); }, false);
+			}
+			if (document.getElementById("locateObject")) {
+				document.getElementById("locateObject").addEventListener("click", function(evt) { app.setSection("objects-maps"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createObject) {
+				app.buttons.createObject.addEventListener("click", function(evt) { app.setSection("object_add"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createFlow) {
+				app.buttons.createFlow.addEventListener("click", function(evt) { app.setSection("flow_add"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createSnippet) {
+				app.buttons.createSnippet.addEventListener("click", function(evt) { app.setSection("snippet_add"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createDashboard) {
+				app.buttons.createDashboard.addEventListener("click", function(evt) { app.setSection("dashboard_add"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createRule) {
+				app.buttons.createRule.addEventListener("click", function(evt) { app.setSection("rule_add"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createMqtt) {
+				app.buttons.createMqtt.addEventListener("click", function(evt) { app.setSection("mqtt_add"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createSource) {
+				app.buttons.createSource.addEventListener("click", function(evt) { app.setSection("source_add"); evt.preventDefault(); }, false);
+			}
 		}
 	};
 
