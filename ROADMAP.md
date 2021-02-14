@@ -18,33 +18,33 @@
   - [x] [simple Plot](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
   - [x] [Loess](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
   
-### Milestone 7: Over The Air Deployment
+### Milestone 7 - April 2020: Over The Air Deployment
   - [x] [Update Arduino source code Over The Air - using Wifi](https://api.internetcollaboratif.info/news/2020-04-11-newsletter-ota)
-  
-### Milestone 6: Add Decision Rules Algorithm
+
+### Milestone 6 - March 2020: Add Decision Rules Algorithm
   - [x] [Algorithm linear regression for basic prediction/anomaly detection](https://api.internetcollaboratif.info/news/2020-03-10-newsletter-linearegression)
+
+### Milestone 5 - June 2019: Process with a better TSdb database integration - anything but SQLite
+  - [x] influxDb branch is live and running.
+  - [x] SQLite ~~still can be activated as backup or alternative~~ [is deprecated and not maintained](https://github.com/mathcoll/t6/commit/4a6db17f26fdd1cc24413a6b67d49918149aa7fb)
   
-### Milestone 5: Add Security to POST datapoints payloads
+### Milestone 4 - May 2019: Add Security to POST datapoints payloads
   - [x] Signature on datapoint POST
   - [x] Crypt AES 256 cbc on datapoint POST
   - [x] Flows allows to force signature and/or encryption when datapoints are POSTed
 
-### Milestone 4: Implement additional snippets
+### Milestone 3: Implement additional snippets
   - [ ] ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
   - [x] Graphs snippets
 
-### Milestone 3: Process with a better TSdb database integration - anything but SQLite
-  - [x] influxDb branch is live and running.
-  - [x] SQLite still can be activated as backup or alternative - but is deprecated and *not maintained*
-
-### Milestone 2: Dashboard integration
+### Milestone 2 - April 2016: Dashboard integration
   - [x] Dashboards are fully integrated into the UI
   - [x] Some snippets are available to see graphs, display a simple value (like temperature), or display current date
 
-### Milestone 1: API completion
+### Milestone 1 - 2016: API completion
   - [x] 3 resources are fully manageable via Apis
   - [x] 3 resources are remaining todo (rules, snippets and dashboards)
 
-### Milestone 0: API basics and simple UI to manage most of resources
+### Milestone 0 - 2016: API basics and simple UI to manage most of resources
   - [x] POST, GET, PUT, DELETE on all resources
   - [x] The Api is handling and storing datapoints on each flows

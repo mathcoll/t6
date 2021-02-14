@@ -6,7 +6,9 @@
 
 /* THANKS */
     Mathieu L.
+    Any motivated contributor
 
 /* TECHNOLOGY */
     HTML5, CSS3
-    Node-js, SQLite, Express, Pug, coffee... ...
+    SPA, PWA, TWA
+    Node-js, Express, Pug, a lot of coffee... ...
