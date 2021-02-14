@@ -2718,6 +2718,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		if (type === 'flows') {
 			fabs.push({id: "createFlow", icon: "add", tooltip: "Add a new flow"});
+			fabs.push({id: "DataExploration", icon: "flare", tooltip: "Data Exploration"});
 			container = (app.containers.flows).querySelector('.page-content');
 		}
 		if (type === 'dashboards') {
@@ -2780,6 +2781,9 @@ var touchStartPoint, touchMovePoint;
 			}
 			if (document.getElementById("locateObject")) {
 				document.getElementById("locateObject").addEventListener("click", function(evt) { app.setSection("objects-maps"); evt.preventDefault(); }, false);
+			}
+			if (document.getElementById("DataExploration")) {
+				document.getElementById("DataExploration").addEventListener("click", function(evt) { app.setSection("exploration"); evt.preventDefault(); }, false);
 			}
 			if (app.buttons.createObject) {
 				app.buttons.createObject.addEventListener("click", function(evt) { app.setSection("object_add"); evt.preventDefault(); }, false);
@@ -4625,7 +4629,7 @@ var touchStartPoint, touchMovePoint;
 		touch = {
 			touchstart: function(e) { sp = { x: e.touches[0].pageX, y: e.touches[0].pageY } },
 			touchmove: function(e) { nm = false; ep = { x: e.touches[0].pageX, y: e.touches[0].pageY } },
-			touchend: function(e) { if (nm) { ce(e, 'fc') } else { var x = ep.x - sp.x, xr = Math.abs(x), y = ep.y - sp.y, yr = Math.abs(y); if (Math.max(x, r) > 20) { e(e, (xr > yr ? (x < 0 ? 'swl' : 'swr') : (y < 0 ? 'swu' : 'swd'))) } }; nm = true },
+			touchend: function(e){if(nm){ce(e,'fc')}else{var x=ep.x-sp.x,xr=Math.abs(x),y=ep.y-sp.y,yr=Math.abs(y);if(Math.max(xr,yr)>20){ce(e,(xr>yr?(x<0?'swl':'swr'):(y<0?'swu':'swd')))}};nm=true},
 			touchcancel: function(e) { nm = false }
 		};
 	for (var a in touch) { document.addEventListener(a, touch[a], false); }
