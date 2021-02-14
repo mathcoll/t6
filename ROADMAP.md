@@ -1,11 +1,22 @@
 ## t6 api&PWA Roadmap
-### Milestone 9: Objects localization / maps
-  - [x] Add a dedicated page (#objects-maps) to locate objects on a map
+### Milestone 10: Objects localization / maps
   - [ ] Add filters to #objects-maps to customize displays
-  - [ ] Add operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map
+  - [ ] Add an operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map
+  - [x] Add a dedicated page (#objects-maps) to locate objects on a map
 
-### Milestone 8: Full svg charting - no more chart.js library as dependency
+### Milestone 9: Full svg charting - no more chart.js library as dependency
   - [ ] Rebuild all Snippets using its own svg api from t6
+  
+### Milestone 8: Exploratory data analysis (EDA)
+  - [ ] Distinct facts
+  - [ ] Distinct categories
+  - [x] Filter on 1 source to get graphical and non graphical EDA results
+  - [x] [Head and Tail](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
+  - [x] [Summary statistics](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
+  - [x] [Frequency shape distribution](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
+  - [x] [Boxplot](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
+  - [x] [simple Plot](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
+  - [x] [Loess](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
   
 ### Milestone 7: Over The Air Deployment
   - [x] [Update Arduino source code Over The Air - using Wifi](https://api.internetcollaboratif.info/news/2020-04-11-newsletter-ota)
@@ -19,9 +30,8 @@
   - [x] Flows allows to force signature and/or encryption when datapoints are POSTed
 
 ### Milestone 4: Implement additional snippets
+  - [ ] ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
   - [x] Graphs snippets
-  - [ ] ~~Maps snippets, that could help for a geolocalization/geotracing~~
-  Feature become depredated as the #objects-maps allows to locate all objects on the map
 
 ### Milestone 3: Process with a better TSdb database integration - anything but SQLite
   - [x] influxDb branch is live and running.
