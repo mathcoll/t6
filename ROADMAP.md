@@ -1,4 +1,11 @@
 ## t6 api&PWA Roadmap
+### Milestone 9: Objects localization / maps
+  - [ ] Add filters to #bjects-maps to customize displays
+  - [ ] Add operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map
+
+### Milestone 8: Full svg charting - no more chart.js library as dependency
+  - [ ] Rebuild all Snippets using its ownsvg api from t6
+  
 ### Milestone 7: Over The Air Deployment
   - [x] [Update Arduino source code Over The Air - using Wifi](https://api.internetcollaboratif.info/news/2020-04-11-newsletter-ota)
   
@@ -12,7 +19,7 @@
 
 ### Milestone 4: Implement additional snippets
   - [x] Graphs snippets
-  - [ ] Maps snippets, that could help for a geolocalization/geotracing
+  - [ ] ~~Maps snippets, that could help for a geolocalization/geotracing~~ Feature become depredated as the #objects-maps allows to locate all objects on the map
 
 ### Milestone 3: Process with a better TSdb database integration - anything but SQLite
   - [x] influxDb branch is live and running.
