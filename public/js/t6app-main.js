@@ -236,8 +236,8 @@ var touchStartPoint, touchMovePoint;
 		toastMsg.appendChild(icon);
 		toastMsg.appendChild(span);
 		toastMsg.appendChild(dismiss);
-		toastContainer.appendChild(toastMsg);
-		dismiss.addEventListener("click", function() {
+		let tc = toastContainer!==null?toastContainer.appendChild(toastMsg):null;
+		dismiss.addEventListener("click", function(event) {
 			event.target.parentNode.classList.add("toast__msg--hide");
 			event.target.parentNode.remove(1);
 		});
@@ -894,10 +894,10 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.setSection = function(section, direction) {
-		section = section.split("?")[0];
+		section = section.split("?")[0].replace(/\/$/, "");
 		app.initNewSection(section);
 		if (localStorage.getItem("settings.debug") == "true") {
-			console.log('[setSection]', section);
+			console.log('[setSection] --->', section);
 		}
 		window.scrollTo(0, 0);
 		if (section === 'public-object') {
@@ -1131,7 +1131,8 @@ var touchStartPoint, touchMovePoint;
 				section !== 'compatible-devices' &&
 				section !== 'openSourceLicenses' &&
 				section !== 'manage_notifications' &&
-				section !== 'use-cases'
+				section !== 'use-cases' &&
+				section !== 'news'
 			)
 			) {
 				app.displayLoginForm(document.querySelector('#' + section).querySelector('.page-content'));
@@ -2665,7 +2666,7 @@ var touchStartPoint, touchMovePoint;
 
 	app.fetchIndex = function() {
 		var node = "";
-		var container = (app.containers.index).querySelector('.page-content');
+		var container = app.containers.index!==null?(app.containers.index).querySelector('.page-content'):null;
 		//app.containers.spinner.removeAttribute('hidden');
 		//app.containers.spinner.classList.remove('hidden');
 		if (!localStorage.getItem('index')) {
@@ -2704,7 +2705,9 @@ var touchStartPoint, touchMovePoint;
 			for (var i = 0; i < index.length; i++) {
 				node += app.getCard(index[i]);
 			}
-			container.innerHTML = node;
+			if(container!==null) {
+				container.innerHTML = node;
+			}
 		}
 	};
 
@@ -4391,7 +4394,7 @@ var touchStartPoint, touchMovePoint;
 				}
 			}
 		}
-		if (app.containers.menuIconElement) {
+		if (app.containers.menuIconElement && app.containers.menuOverlayElement) {
 			app.containers.menuIconElement.addEventListener('click', app.showMenu, false);
 			app.containers.menuIconElement.querySelector('i.material-icons').setAttribute('id', 'imgIconMenu');
 			app.containers.menuOverlayElement.addEventListener('click', app.hideMenu, false);
@@ -4500,32 +4503,34 @@ var touchStartPoint, touchMovePoint;
 		// Cookie Consent
 		var d = new Date();
 		d.setTime(d.getTime() + (app.cookieconsent * 24 * 60 * 60 * 1000));
-		document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
-			document.getElementById('cookieconsent').remove();
-			document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
-			document.cookie = "cookieconsentNoGTM=false;expires=" + d.toUTCString() + ";path=/";
-			evt.preventDefault();
-		}, false);
-		document.getElementById('cookieconsent.noGTM').addEventListener('click', function(evt) {
-			document.getElementById('cookieconsent').remove();
-			document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
-			document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
-			if (typeof mixpanel !== "undefined") {
-				mixpanel.opt_out_tracking();
+		if(document.getElementById('cookieconsent.agree')) {
+			document.getElementById('cookieconsent.agree').addEventListener('click', function(evt) {
+				document.getElementById('cookieconsent').remove();
+				document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+				document.cookie = "cookieconsentNoGTM=false;expires=" + d.toUTCString() + ";path=/";
+				evt.preventDefault();
+			}, false);
+			document.getElementById('cookieconsent.noGTM').addEventListener('click', function(evt) {
+				document.getElementById('cookieconsent').remove();
+				document.cookie = "cookieconsent=true;expires=" + d.toUTCString() + ";path=/";
+				document.cookie = "cookieconsentNoGTM=true;expires=" + d.toUTCString() + ";path=/";
+				if (typeof mixpanel !== "undefined") {
+					mixpanel.opt_out_tracking();
+				}
+				evt.preventDefault();
+			}, false);
+			document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
+				app.getTerms();
+				app.setSection('terms');
+				evt.preventDefault();
+			}, false);
+			if (app.getCookie('cookieconsent') !== "true") {
+				document.getElementById('cookieconsent').classList.add('is-visible');
+				document.getElementById('cookieconsent').classList.remove('hidden');
+			} else {
+				document.getElementById('cookieconsent').classList.add('hidden');
+				document.getElementById('cookieconsent').classList.remove('is-visible');
 			}
-			evt.preventDefault();
-		}, false);
-		document.getElementById('cookieconsent.read').addEventListener('click', function(evt) {
-			app.getTerms();
-			app.setSection('terms');
-			evt.preventDefault();
-		}, false);
-		if (app.getCookie('cookieconsent') !== "true") {
-			document.getElementById('cookieconsent').classList.add('is-visible');
-			document.getElementById('cookieconsent').classList.remove('hidden');
-		} else {
-			document.getElementById('cookieconsent').classList.add('hidden');
-			document.getElementById('cookieconsent').classList.remove('is-visible');
 		}
 	};
 
