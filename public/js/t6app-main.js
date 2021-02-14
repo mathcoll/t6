@@ -2712,13 +2712,13 @@ var touchStartPoint, touchMovePoint;
 		let container;
 		let fabs = new Array();
 		if (type === 'objects') {
-			fabs.push({id: "createObject", icon: "add", tooltip: "Add a new object"});
 			fabs.push({id: "locateObject", icon: "place", tooltip: "Locate Objects"});
+			fabs.push({id: "createObject", icon: "add", tooltip: "Add a new object"});
 			container = (app.containers.objects).querySelector('.page-content');
 		}
 		if (type === 'flows') {
-			fabs.push({id: "createFlow", icon: "add", tooltip: "Add a new flow"});
 			fabs.push({id: "DataExploration", icon: "flare", tooltip: "Data Exploration"});
+			fabs.push({id: "createFlow", icon: "add", tooltip: "Add a new flow"});
 			container = (app.containers.flows).querySelector('.page-content');
 		}
 		if (type === 'dashboards') {
