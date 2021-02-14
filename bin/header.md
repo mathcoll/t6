@@ -69,5 +69,5 @@
 
 <h2>t6 Architechture</h2>
 <p>
-	<img src="https://raw.githubusercontent.com/mathcoll/t6/master/docs/t6-General-structure.png" class="img-responsive center-block" alt="General-structure"/>
+	<img src="https://raw.githubusercontent.com/mathcoll/t6/master/public/img/m/t6.png" class="img-responsive center-block" alt="General-structure"/>
 </p>
