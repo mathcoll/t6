@@ -165,7 +165,9 @@ app.resources.objects = {
 		if (id instanceof Object && isAdd) {
 			displayAdd(id, isAdd, isEdit, isPublic);
 		} else {
-			history.pushState( {section: "object" }, window.location.hash.substr(1), "#object?id="+id );
+			//if (history.state && history.state.section !== "object" && history.state.id !== id) {
+				history.pushState( {section: "object" }, window.location.hash.substr(1), "#object?id="+id );
+			//}
 		}
 		app.initNewSection("object");
 		app.containers.spinner.removeAttribute("hidden");

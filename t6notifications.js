@@ -22,7 +22,17 @@ if (firebase.admin.serviceAccountFile) {
 				pushSubscriptionOptions.vapidDetails.publicKey,
 				pushSubscriptionOptions.vapidDetails.privateKey
 			);
-			webpush.sendNotification(subscriber, payload, pushSubscriptionOptions);
+			webpush.sendNotification(subscriber, payload, pushSubscriptionOptions)
+				.then(res => t6console.info("t6notifications.sendPush Response:", res))
+				.catch(e => {
+					t6events.add("t6App", "sendPush", subscriber.user_id, subscriber.user_id, {"endpoint": subscriber.endpoint, "error": {"statusCode": e.statusCode, "body": e.body}});
+					t6console.error(e);
+					if(e.statusCode === 404 || e.statusCode === 410) {
+						// TODO
+						// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+					}
+				});
+			
 		} else {
 			t6console.warn("t6notifications.sendPush failed with no endpoint. Didn't sent.");
 		}

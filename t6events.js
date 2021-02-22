@@ -35,7 +35,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 		let user_id = typeof who!=="undefined"?who:null;
 		client_id = typeof client_id!=="undefined"?client_id:'';
 		
-		params = params!==null?params:{};
+		params = typeof params!=="object"?params:{};
 		params.environnment = where;
 		params.user_id = user_id;
 		

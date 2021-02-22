@@ -12,6 +12,11 @@
  *  [Network]
  */
 "use strict";
+
+if (localStorage.getItem("settings.debug") == "true") {
+	var beginTime = new Date();
+	console.log("DEBUG", "begin time: ", beginTime - startTime, "ms", " (begin",  moment(beginTime).format("hh:mm:ss,SSS"), "ms.)");
+}
 var app = {
 	api_version: "v2.0.1",
 	debug: false,
@@ -363,9 +368,6 @@ var touchStartPoint, touchMovePoint;
 		return localStorage.getItem(name);
 	};
 
-	/*
-	 * *********************************** Application functions ***********************************
-	 */
 	app.setLoginAction = function() {
 		for (var i in app.buttons.loginButtons) {
 			if (app.buttons.loginButtons[i].childElementCount > -1) {
@@ -534,7 +536,7 @@ var touchStartPoint, touchMovePoint;
 					).then(function(fetchResponse) {
 						return fetchResponse.json();
 					})
-					.then(function(response) {
+					.then(function() {
 						app.setSection('login');
 						toast('Your password has been reset; please login again.', { timeout: app.toastDuration, type: "done" });
 					})
@@ -570,7 +572,7 @@ var touchStartPoint, touchMovePoint;
 					).then(function(fetchResponse) {
 						return fetchResponse.json();
 					})
-					.then(function(response) {
+					.then(function() {
 						app.setSection('login');
 						toast('Instructions has been sent to your email.', { timeout: app.toastDuration, type: "done" });
 					})
@@ -603,7 +605,7 @@ var touchStartPoint, touchMovePoint;
 				).then(function(fetchResponse) {
 					return fetchResponse.json();
 				})
-				.then(function(response) {
+				.then(function() {
 					localStorage.setItem('currentUserName', firstName + " " + lastName);
 					app.setDrawer();
 					toast('Your details have been updated.', { timeout: app.toastDuration, type: "done" });
@@ -642,20 +644,18 @@ var touchStartPoint, touchMovePoint;
 				if ((typeof firebase !== "object" || typeof firebase === "undefined") && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number") {
 					//console.log("firebase", "Should Initialize Firebase");
 					firebase.initializeApp(firebaseConfig);
+					firebase.messaging().useServiceWorker(registration);
+					firebase.analytics();
+					if (localStorage.getItem("settings.debug") == "true") {
+						//console.log("firebase.messaging-sw", "Should load Firebase Messaging SW");
+						console.log("[ServiceWorker]", "getToken()", firebase.messaging().getToken());
+					}
 				}
-
-				firebase.messaging().useServiceWorker(registration);
-				if (localStorage.getItem("settings.debug") == "true") {
-					//console.log("firebase.messaging-sw", "Should load Firebase Messaging SW");
-					console.log("[pushSubscription]", firebase.messaging().getToken());
-				}
-
-				firebase.analytics();
 				return registration;
 			})
 			.catch(function(err) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					console.log('[ServiceWorker] error occured...' + err);
+					console.log("[ServiceWorker]", "error occured...", err);
 				}
 			});
 	};
@@ -670,6 +670,9 @@ var touchStartPoint, touchMovePoint;
 				if (registration) {
 					return registration.pushManager.subscribe(subscribeOptions);
 				} else {
+					if (localStorage.getItem("settings.debug") == "true") {
+						console.log("[pushSubscription]", "subscribeUserToPush registration", registration);
+					}
 					return false;
 				}
 			})
@@ -681,13 +684,13 @@ var touchStartPoint, touchMovePoint;
 					app.setSetting('settings.pushSubscription.keys.auth', j.keys.auth);
 				}
 				if (localStorage.getItem("settings.debug") == "true") {
-					console.log('[pushSubscription]', j);
+					console.log("[pushSubscription]", "subscribeUserToPush pushSubscription", pushSubscription);
 				}
 				return pushSubscription;
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					console.log('[pushSubscription]', 'subscribeUserToPush', error);
+					console.log("[pushSubscription]", 'subscribeUserToPush error', error);
 				}
 			});
 	};
@@ -895,13 +898,16 @@ var touchStartPoint, touchMovePoint;
 
 	app.setSection = function(section, direction) {
 		section = section.split("?")[0].replace(/\/$/, "");
+		window.location.hash = '#' + section;
+		let url = (window.location.hash.substr(1).split("?"))[1];  // TODO, recursive?
+		//let url = window.location.search;  // 
+		window.scrollTo(0, 0);
 		app.initNewSection(section);
 		if (localStorage.getItem("settings.debug") == "true") {
-			console.log('[setSection] --->', section);
+			console.log('[setSection]', section);
 		}
-		window.scrollTo(0, 0);
 		if (section === 'public-object') {
-			var urlParams = new URLSearchParams(window.location.search); // (window.location.hash.substr(1).split("?"))[1] // TODO, recursive?
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -915,9 +921,9 @@ var touchStartPoint, touchMovePoint;
 				}
 			}
 		} else if (section === 'object') {
-			var urlParams = new URLSearchParams(window.location.search); // (window.location.hash.substr(1).split("?"))[1] // TODO, recursive?
+			var urlParams = new URLSearchParams(url);
 			var params = {};
-			console.log("DEBUG", (window.location.hash.substr(1).split("?"))[1]);
+			console.log('DEBUG', "urlParams",urlParams);
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
 					var n = p[0];
@@ -926,13 +932,12 @@ var touchStartPoint, touchMovePoint;
 				if (params['id'] == "") {
 					app.setSection('objects'); // TODO, recursive?
 				} else if (params['id']) {
+					console.log('DEBUG', params['id']);
 					app.resources.objects.display(params['id'], false, false, false);
 				}
 			}
-		} else if (section === 'object_add') {
-			app.resources.objects.displayAdd(app.defaultResources.object, true, false, false);// TODO, recursive?
 		} else if (section === 'edit-object') {
-			var urlParams = new URLSearchParams(window.location.search); // (window.location.hash.substr(1).split("?"))[1] // TODO, recursive?
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -946,7 +951,7 @@ var touchStartPoint, touchMovePoint;
 				}
 			}
 		} else if (section === 'flow') {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -959,12 +964,8 @@ var touchStartPoint, touchMovePoint;
 					app.resources.flows.display(params['id'], false, false, false);
 				}
 			}
-		} else if (section === 'flow_add') {
-			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
-			app.resources.flows.displayAdd(app.defaultResources.flow, true, false, false);
 		} else if (section === 'snippet') {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -977,12 +978,8 @@ var touchStartPoint, touchMovePoint;
 					app.resources.dashboards.display(params['id'], false, false, false);
 				}
 			}
-		} else if (section === 'snippet_add') {
-			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
-			app.resources.snippets.displayAdd(app.defaultResources.snippet, true, false, false);
 		} else if (section === 'dashboard') {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -995,12 +992,8 @@ var touchStartPoint, touchMovePoint;
 					app.resources.dashboards.display(params['id'], false, false, false);
 				}
 			}
-		} else if (section === 'dashboard_add') {
-			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
-			app.resources.dashboards.displayAdd(app.defaultResources.dashboard, true, false, false);
 		} else if (section === 'rule') {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -1013,12 +1006,8 @@ var touchStartPoint, touchMovePoint;
 					app.resources.rules.display(params['id'], false, false, false);
 				}
 			}
-		} else if (section === 'rule_add') {
-			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
-			app.resources.rules.displayAdd(app.defaultResources.rule, true, false, false);
 		} else if (section === 'mqtt') {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -1031,12 +1020,8 @@ var touchStartPoint, touchMovePoint;
 					app.resources.mqtts.display(params['id'], false, false, false);
 				}
 			}
-		} else if (section === 'mqtt_add') {
-			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
-			app.resources.mqtts.displayAdd(app.defaultResources.mqtt, true, false, false);
 		} else if (section === 'source') {
-			var urlParams = new URLSearchParams(window.location.search); // .toString();
+			var urlParams = new URLSearchParams(url);
 			var params = {};
 			if (Array.from(urlParams).length > -1) {
 				for (let p of urlParams) {
@@ -1049,51 +1034,58 @@ var touchStartPoint, touchMovePoint;
 					app.resources.sources.display(params['id'], false, false, false);
 				}
 			}
+		} else if (section === 'object_add') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.resources.objects.displayAdd(app.defaultResources.object, true, false, false);
+		} else if (section === 'flow_add') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.resources.flows.displayAdd(app.defaultResources.flow, true, false, false);
+		} else if (section === 'snippet_add') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.resources.snippets.displayAdd(app.defaultResources.snippet, true, false, false);
+		} else if (section === 'dashboard_add') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.resources.dashboards.displayAdd(app.defaultResources.dashboard, true, false, false);
+		} else if (section === 'rule_add') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.resources.rules.displayAdd(app.defaultResources.rule, true, false, false);
+		} else if (section === 'mqtt_add') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.resources.mqtts.displayAdd(app.defaultResources.mqtt, true, false, false);
 		} else if (section === 'source_add') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			app.resources.sources.displayAdd(app.defaultResources.source, true, false, false);
 		} else if (section === 'profile') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			(app.containers.profile).querySelector('.page-content').innerHTML = "";
 			app.fetchProfile();
 		} else if (section === 'settings') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			app.getSettings();
 		} else if (section === 'login') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			app.displayLoginForm(document.querySelector('#login').querySelector('.page-content'));
 		} else if (section === 'users-list') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			app.getUsersList();
 		} else if (section === 'compatible-devices') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			app.getCompatibleDevices();
 		} else if (section === 'openSourceLicenses') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			app.getOpenSourceLicenses();
 		} else if (section === 'objects-maps') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			app.getObjectsMaps();
-			window.location.hash = '#' + section;
 		} else if (section === 'manage_notifications') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			if (typeof firebase !== "undefined") {
 				firebase.analytics().logEvent('manage_notifications');
 			}
 		} else if (section === 'exploration') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 		} else {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
-			window.location.hash = '#' + section;
 			app.fetchItemsPaginated(section, undefined, app.itemsPage[section], app.itemsSize[section]);
 		}
 		app.refreshButtonsSelectors();
@@ -1157,106 +1149,58 @@ var touchStartPoint, touchMovePoint;
 		var items = document.querySelectorAll("[data-action='view']");
 		for (var i in items) {
 			if (type == 'objects' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type) {
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.resources.objects.display(item.dataset.id, false, false, false);
-					evt.preventDefault();
-				}, { passive: false, });
-
-				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(function(div) {
-					(div).addEventListener('click', function(evt) {
-						var item = evt.currentTarget.parentNode.parentNode;
+				(items[i]).querySelectorAll("div.mdl-card__title, div.mdl-list__item--three-line").forEach(div => {
+					div.addEventListener("click", (event) => {
+						let item = event.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.objects.display(item.dataset.id, false, false, false);
-						evt.preventDefault();
-					}, { passive: false, });
+						event.preventDefault();
+					});
 				});
 			} else if (type == 'flows' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type) {
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.resources.flows.display(item.dataset.id, false, false, false);
-					evt.preventDefault();
-				}, { passive: false, });
-
-				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(function(div) {
-					(div).addEventListener('click', function(evt) {
-						var item = evt.currentTarget.parentNode.parentNode;
+				(items[i]).querySelectorAll("div.mdl-card__title, div.mdl-list__item--three-line").forEach(div => {
+					div.addEventListener("click", (event) => {
+						let item = event.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.flows.display(item.dataset.id, false, false, false);
-						evt.preventDefault();
-					}, { passive: false, });
+						event.preventDefault();
+					});
 				});
 			} else if (type == 'dashboards' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type) {
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.resources.dashboards.display(item.dataset.id, false, false, false);
-					evt.preventDefault();
-				}, { passive: false, });
-
-				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(function(div) {
-					(div).addEventListener('click', function(evt) {
-						var item = evt.currentTarget.parentNode.parentNode;
+				(items[i]).querySelectorAll("div.mdl-card__title, div.mdl-list__item--three-line").forEach(div => {
+					div.addEventListener("click", (event) => {
+						let item = event.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.dashboards.display(item.dataset.id, false, false, false);
-						evt.preventDefault();
-					}, { passive: false, });
+						event.preventDefault();
+					});
 				});
 			} else if (type == 'snippets' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type) {
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.resources.snippets.display(item.dataset.id, false, false, false);
-					evt.preventDefault();
-				}, { passive: false, });
-
-				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(function(div) {
-					(div).addEventListener('click', function(evt) {
-						var item = evt.currentTarget.parentNode.parentNode;
+				(items[i]).querySelectorAll("div.mdl-card__title, div.mdl-list__item--three-line").forEach(div => {
+					div.addEventListener("click", (event) => {
+						let item = event.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.snippets.display(item.dataset.id, false, false, false);
-						evt.preventDefault();
-					}, { passive: false, });
+						event.preventDefault();
+					});
 				});
 			} else if (type == 'rules' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type) {
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.resources.rules.display(item.dataset.id, false, false, false);
-					evt.preventDefault();
-				}, { passive: false, });
-
-				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(function(div) {
-					(div).addEventListener('click', function(evt) {
-						var item = evt.currentTarget.parentNode.parentNode;
+				(items[i]).querySelectorAll("div.mdl-card__title, div.mdl-list__item--three-line").forEach(div => {
+					div.addEventListener("click", (event) => {
+						let item = event.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.rules.display(item.dataset.id, false, false, false);
-						evt.preventDefault();
-					}, { passive: false, });
+						event.preventDefault();
+					});
 				});
 			} else if (type == 'sources' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type) {
-				((items[i]).querySelector("div.mdl-card__title")).addEventListener('click', function(evt) {
-					var item = evt.currentTarget.parentNode.parentNode;
-					item.classList.add('is-hover');
-					app.resources.sources.display(item.dataset.id, false, false, false);
-					evt.preventDefault();
-				}, { passive: false, });
-
-				var divs = (items[i]).querySelectorAll("div.mdl-list__item--three-line");
-				Array.from(divs).forEach(function(div) {
-					(div).addEventListener('click', function(evt) {
-						var item = evt.currentTarget.parentNode.parentNode;
+				(items[i]).querySelectorAll("div.mdl-card__title, div.mdl-list__item--three-line").forEach(div => {
+					div.addEventListener("click", (event) => {
+						let item = event.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.sources.display(item.dataset.id, false, false, false);
-						evt.preventDefault();
-					}, { passive: false, });
+						event.preventDefault();
+					});
 				});
 			}
 		};
@@ -2217,7 +2161,7 @@ var touchStartPoint, touchMovePoint;
 					let bounds = new L.LatLngBounds();
 					let mIcon = new CustomIcon({iconUrl: "/img/m/marker-icon.png"});
 					objectsLocation.map(function(obj) {
-						let marker = L.marker([parseFloat(obj.latitude), parseFloat(obj.longitude)], {icon: mIcon, draggable: false}).bindPopup(`${obj.name}<br /><a href="/#object?id=${obj.id}">Details</a>`).addTo(map);
+						let marker = L.marker([parseFloat(obj.latitude), parseFloat(obj.longitude)], {icon: mIcon, draggable: false}).bindPopup(`${obj.name}<br /><a href="javascript:app.resources.objects.display('${obj.id}', false, false, false);">Details</a>`).addTo(map);
 						bounds.extend(marker.getLatLng());
 					});
 					map.fitBounds(bounds);
@@ -2531,13 +2475,6 @@ var touchStartPoint, touchMovePoint;
 						.then(
 							app.fetchStatusHandler
 						).then(function(response) {
-							/*
-							if (type == 'unsubscribe') {
-								app.setSetting('notifications.unsubscribed', {'reminder': app.getSetting('notifications.unsubscribed.reminder'), 'changePassword': 1234});
-							} else {
-								app.setSetting('notifications.unsubscribed.changePassword', {'reminder': app.getSetting('notifications.unsubscribed.reminder'), 'changePassword': null});
-							}
-							*/
 							toast('Subscription ' + name + ' (' + type + ') updated.', { timeout: app.toastDuration, type: "done" });
 						})
 						.catch(function(error) {
@@ -4334,19 +4271,19 @@ var touchStartPoint, touchMovePoint;
 				app.setSection(currentPage);
 			}
 		} else if (currentPage) {
-			if ((currentPage === 'object' || currentPage === 'objects')) {
+			if (currentPage === 'objects') {
 				app.setSection('objects');
-			} else if ((currentPage === 'flow' || currentPage === 'flows')) {
+			} else if (currentPage === 'flows') {
 				app.setSection('flows');
-			} else if ((currentPage === 'dashboard' || currentPage === 'dashboards')) {
+			} else if (currentPage === 'dashboards') {
 				app.setSection('dashboards');
-			} else if ((currentPage === 'snippet' || currentPage === 'snippets')) {
+			} else if (currentPage === 'snippets') {
 				app.setSection('snippets');
-			} else if ((currentPage === 'rule' || currentPage === 'rules')) {
+			} else if (currentPage === 'rules') {
 				app.setSection('rules');
-			} else if ((currentPage === 'mqtt' || currentPage === 'mqtts')) {
+			} else if (currentPage === 'mqtts') {
 				app.setSection('mqtts');
-			} else if ((currentPage === 'source' || currentPage === 'sources')) {
+			} else if (currentPage === 'sources') {
 				app.setSection('sources');
 			} else {
 				app.setSection(currentPage);
@@ -4543,12 +4480,12 @@ var touchStartPoint, touchMovePoint;
 		} else {
 			if (!('PushManager' in window)) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					console.log('[pushSubscription]', 'Push isn\'t supported on this browser.');
+					console.log("[pushSubscription]", 'Push isn\'t supported on this browser.');
 				}
 				return;
 			} else {
 				if (localStorage.getItem("settings.debug") == "true") {
-					console.log('[pushSubscription]', 'askPermission && subscribeUserToPush');
+					console.log("[pushSubscription]", 'askPermission && subscribeUserToPush');
 				}
 				app.askPermission();
 				app.subscribeUserToPush();
@@ -4559,126 +4496,42 @@ var touchStartPoint, touchMovePoint;
 	/*
 	 * *********************************** Run the App ***********************************
 	 */
-	if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix()) {
-		app.isLogged = true;
-	}
-
-	if (!app.isLogged || app.auth.username === undefined) {
-		if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix()) {
-			app.refreshAuthenticate();
-
-			app.setHiddenElement("signin_button");
-			app.setVisibleElement("logout_button");
-			app.getUnits();
-			app.getDatatypes();
-			app.getSnippets();
-			app.getFlows();
-			app.getSources();
-			setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
-			if (localStorage.getItem('role') == 'admin') {
-				app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
-			}
-		} else {
-			app.sessionExpired();
-		}
-	}
-
-	// Notifications
-	for (var i in app.buttons.notifications) {
-		if (app.buttons.notifications[i].childElementCount > -1) {
-			app.buttons.notifications[i].addEventListener('click', function(e) {
-				let email, token;
-				if (getParameterByName("email", null)) {
-					email = decodeURI(getParameterByName("email", null));
-				} else {
-					email = app.getSetting("notifications.email");
-				}
-				if (getParameterByName("token", null)) {
-					token = decodeURI(getParameterByName("token", null));
-				} else {
-					token = app.getSetting("notifications.unsubscription_token");
-				}
-				if (email !== null && token !== null) {
-					var myHeaders = new Headers();
-					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
-					myHeaders.append("Content-Type", "application/json");
-					var myInit = { method: "GET", headers: myHeaders };
-					var type = e.target.parentNode.classList.contains("is-checked") ? "unsubscribe" : "subscribe";
-					var url = `${app.baseUrl}/mail/${email}/${type}/${e.target.getAttribute("name")}/${token}/`;
-					fetch(url, myInit)
-						.then(
-							app.fetchStatusHandler
-						).then(function(fetchResponse) {
-							return fetchResponse.json();
-						})
-						.then(function(response) {
-							console.log(response);
-							toast('Settings updated.', { timeout: app.toastDuration, type: "done" });
-						})
-						.catch(function(error) {
-							if (localStorage.getItem("settings.debug") == "true") {
-								toast('Error occured on saving Notifications...' + error, { timeout: app.toastDuration, type: "error" });
-							}
-						});
-				} else {
-					if (localStorage.getItem("settings.debug") == "true") {
-						toast("Error occured on saving Notifications. Missing parameter.", { timeout: app.toastDuration, type: "error" });
-					}
-				}
-			}, false);
-		}
-	}
-
-	var ce = function(e, n) { var a = document.createEvent("CustomEvent"); a.initCustomEvent(n, true, true, e.target); e.target.dispatchEvent(a); a = null; return false },
-		nm = true, sp = { x: 0, y: 0 }, ep = { x: 0, y: 0 },
-		touch = {
-			touchstart: function(e) { sp = { x: e.touches[0].pageX, y: e.touches[0].pageY } },
-			touchmove: function(e) { nm = false; ep = { x: e.touches[0].pageX, y: e.touches[0].pageY } },
-			touchend: function(e){if(nm){ce(e,'fc')}else{var x=ep.x-sp.x,xr=Math.abs(x),y=ep.y-sp.y,yr=Math.abs(y);if(Math.max(xr,yr)>20){ce(e,(xr>yr?(x<0?'swl':'swr'):(y<0?'swu':'swd')))}};nm=true},
-			touchcancel: function(e) { nm = false }
-		};
-	for (var a in touch) { document.addEventListener(a, touch[a], false); }
-	document.body.addEventListener('touchstart', function(event) {
-		touchStartPoint = event.changedTouches[0].pageX;
-		touchMovePoint = touchStartPoint;
-
-		var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab, div.play-fab');
-		for (var f in fabs) {
-			if (fabs[f].classList) {
-				fabs[f].classList.remove('is-here');
-				fabs[f].classList.add('is-not-here');
-			}
-		}
-	}, false);
-	document.body.addEventListener('touchmove', function(event) {
-		touchMovePoint = event.touches[0].pageX;
-		if (touchStartPoint < 10 && touchMovePoint > 100) {
-			app.containers.menuElement.classList.add('is-visible');
-		}
-	}, false);
-	document.body.addEventListener('touchend', function(event) {
-		var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab, div.play-fab');
-		for (var f in fabs) {
-			if (fabs[f].classList) {
-				fabs[f].classList.remove('is-not-here');
-				fabs[f].classList.add('is-here');
-			}
-		}
-	}, false);
-
 	document.addEventListener("readystatechange", event => {
 		var changedTime = new Date();
 		if (event.target.readyState === "loading") {
 			if (localStorage.getItem("settings.debug") == "true") {
 				var loadingTime = new Date();
-				console.log("DEBUG", "loading time: ", loadingTime - startTime, "ms", " (begin", loadingTime, "ms. lasted ", loadingTime - changedTime, "ms)");
+				console.log("DEBUG", "loading time: ", loadingTime - startTime, "ms", " (begin", moment(loadingTime).format("hh:mm:ss,SSS"), "ms. lasted ", loadingTime - changedTime, "ms)");
 			}
 		} else if (event.target.readyState === "interactive") {
 			if (localStorage.getItem("settings.debug") == "true") {
 				var interactiveTime = new Date();
-				console.log("DEBUG", "interactive time: ", interactiveTime - startTime, "ms", " (begin", interactiveTime, "ms. lasted ", interactiveTime - changedTime, "ms)");
+				console.log("DEBUG", "interactive time: ", interactiveTime - startTime, "ms", " (begin",  moment(interactiveTime).format("hh:mm:ss,SSS"), "ms. lasted ", interactiveTime - changedTime, "ms)");
 			}
 		} else if (event.target.readyState === "complete") {
+			if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix()) {
+				app.isLogged = true;
+			}
+			if (!app.isLogged || app.auth.username === undefined) {
+				if (localStorage.getItem('refresh_token') !== null && localStorage.getItem('refreshTokenExp') !== null && localStorage.getItem('refreshTokenExp') > moment().unix()) {
+					app.refreshAuthenticate();
+		
+					app.setHiddenElement("signin_button");
+					app.setVisibleElement("logout_button");
+					app.getUnits();
+					app.getDatatypes();
+					app.getSnippets();
+					app.getFlows();
+					app.getSources();
+					setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
+					if (localStorage.getItem('role') == 'admin') {
+						app.addMenuItem('Users Accounts', 'supervisor_account', '#users-list', null);
+					}
+				} else {
+					app.sessionExpired();
+				}
+			}
+
 			app.refreshContainers();
 			app.managePage();
 			app.fetchIndex('index');
@@ -4696,6 +4549,9 @@ var touchStartPoint, touchMovePoint;
 			window.addEventListener("offline", app.updateNetworkStatus, false);
 			window.addEventListener("clearCache", app.clearCache, false);
 			window.addEventListener("hashchange", function() {
+				if (localStorage.getItem("settings.debug") == "true") {
+					console.log("DEBUG", "hashchange", window.location.hash);
+				}
 				if (window.history && window.history.pushState) {
 					localStorage.setItem("currentPage", window.location.hash.substr(1));
 					var id = getParameterByName('id', null);
@@ -4725,10 +4581,93 @@ var touchStartPoint, touchMovePoint;
 					console.log('[gtm]', 'gtm.start');
 				}
 			}
+			
+			// Notifications
+			for (var i in app.buttons.notifications) {
+				if (app.buttons.notifications[i].childElementCount > -1) {
+					app.buttons.notifications[i].addEventListener('click', function(e) {
+						let email, token;
+						if (getParameterByName("email", null)) {
+							email = decodeURI(getParameterByName("email", null));
+						} else {
+							email = app.getSetting("notifications.email");
+						}
+						if (getParameterByName("token", null)) {
+							token = decodeURI(getParameterByName("token", null));
+						} else {
+							token = app.getSetting("notifications.unsubscription_token");
+						}
+						if (email !== null && token !== null) {
+							var myHeaders = new Headers();
+							myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
+							myHeaders.append("Content-Type", "application/json");
+							var myInit = { method: "GET", headers: myHeaders };
+							var type = e.target.parentNode.classList.contains("is-checked") ? "unsubscribe" : "subscribe";
+							var url = `${app.baseUrl}/mail/${email}/${type}/${e.target.getAttribute("name")}/${token}/`;
+							fetch(url, myInit)
+								.then(
+									app.fetchStatusHandler
+								).then(function(fetchResponse) {
+									return fetchResponse.json();
+								})
+								.then(function(response) {
+									console.log(response);
+									toast('Settings updated.', { timeout: app.toastDuration, type: "done" });
+								})
+								.catch(function(error) {
+									if (localStorage.getItem("settings.debug") == "true") {
+										toast('Error occured on saving Notifications...' + error, { timeout: app.toastDuration, type: "error" });
+									}
+								});
+						} else {
+							if (localStorage.getItem("settings.debug") == "true") {
+								toast("Error occured on saving Notifications. Missing parameter.", { timeout: app.toastDuration, type: "error" });
+							}
+						}
+					}, false);
+				}
+			}
+		
+			var ce = function(e, n) { var a = document.createEvent("CustomEvent"); a.initCustomEvent(n, true, true, e.target); e.target.dispatchEvent(a); a = null; return false },
+				nm = true, sp = { x: 0, y: 0 }, ep = { x: 0, y: 0 },
+				touch = {
+					touchstart: function(e) { sp = { x: e.touches[0].pageX, y: e.touches[0].pageY } },
+					touchmove: function(e) { nm = false; ep = { x: e.touches[0].pageX, y: e.touches[0].pageY } },
+					touchend: function(e){if(nm){ce(e,'fc')}else{var x=ep.x-sp.x,xr=Math.abs(x),y=ep.y-sp.y,yr=Math.abs(y);if(Math.max(xr,yr)>20){ce(e,(xr>yr?(x<0?'swl':'swr'):(y<0?'swu':'swd')))}};nm=true},
+					touchcancel: function(e) { nm = false }
+				};
+			for (var a in touch) { document.addEventListener(a, touch[a], false); }
+			document.body.addEventListener('touchstart', function(event) {
+				touchStartPoint = event.changedTouches[0].pageX;
+				touchMovePoint = touchStartPoint;
+		
+				var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab, div.play-fab');
+				for (var f in fabs) {
+					if (fabs[f].classList) {
+						fabs[f].classList.remove('is-here');
+						fabs[f].classList.add('is-not-here');
+					}
+				}
+			}, false);
+			document.body.addEventListener('touchmove', function(event) {
+				touchMovePoint = event.touches[0].pageX;
+				if (touchStartPoint < 10 && touchMovePoint > 100) {
+					app.containers.menuElement.classList.add('is-visible');
+				}
+			}, false);
+			document.body.addEventListener('touchend', function(event) {
+				var fabs = document.querySelectorAll('section.is-active div.page-content.mdl-grid .mdl-button--fab, div.play-fab');
+				for (var f in fabs) {
+					if (fabs[f].classList) {
+						fabs[f].classList.remove('is-not-here');
+						fabs[f].classList.add('is-here');
+					}
+				}
+			}, false);
 
 			if (localStorage.getItem("settings.debug") == "true") {
 				var completeTime = new Date();
-				console.log("DEBUG", "complete time: ", completeTime - startTime, "ms", " (begin", completeTime, "ms. lasted ", completeTime - changedTime, "ms)");
+				console.log("DEBUG", "complete time: ", completeTime - startTime, "ms", " (begin",  moment(completeTime).format("hh:mm:ss,SSS"), "ms. lasted ", completeTime - changedTime, "ms)");
 			}
 		}
 	});

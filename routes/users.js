@@ -494,12 +494,15 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algo
  * @apiUse 404
  */
 router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var user_id = req.params.user_id;
+	let user_id = req.params.user_id;
 	if ( req.user.role === "admin" ) {
 		users	= db.getCollection("users");
-		var user = users.findOne({"id": { "$eq": user_id }});
-		if (user && typeof user.pushSubscription !== "undefined" ) {
-			var payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+		let user = users.findOne({ "$and": [ { "id": { "$eq": user_id } }, { "pushSubscription": { "$ne": null } }, ] });
+		if (user!==null && typeof user.pushSubscription!=="undefined" ) {
+			user = typeof user!=="undefined"?user:{pushSubscription:{}};
+			user.pushSubscription = user.pushSubscription!==null?user.pushSubscription:{};
+			user.pushSubscription.user_id = user_id;
+			let payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 			t6notifications.sendPush(user.pushSubscription, payload);
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());

@@ -310,7 +310,6 @@ li.delete-button:hover {
 	color: #0009;
 }
 .mdl-list__item-sub-title {
-	text-transform: capitalize;
 	line-height: 12px;
 	line-height: 28px;
 }
