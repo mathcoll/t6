@@ -245,7 +245,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			}
 
-			t6events.add("t6App", `Matching_EventType_${event.type}`, user_id, user_id);
+			t6events.add("t6App", `Matching_EventType_${event.type}`, user_id, user_id, {"type": event.type, "user_id": user_id, "rule_id": event.params.rule_id});
 			t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 			if( event.type === "mqttPublish" ) {
 				let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};
@@ -275,6 +275,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					from:		event.params.from?event.params.from:from,
 					bcc:		event.params.bcc?event.params.bcc:bcc,
 					to:			event.params.to?event.params.to:bcc,
+					user_id:	payload.user_id?payload.user_id:to,
 					subject:	event.params.subject?stringformat(event.params.subject, payload):"",
 					text:		event.params.text?stringformat(event.params.text, payload):"Html email client is required",
 					html:		event.params.html?stringformat(event.params.html, payload):null

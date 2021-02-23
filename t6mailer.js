@@ -13,8 +13,10 @@ t6mailer.getBcc = function() {
 t6mailer.sendMail = (envelope) => new Promise((resolve, reject) => {
 	if ( process.env.NODE_ENV === "production" ) {
 		transporter.sendMail(envelope).then(function(info) {
+			t6events.add("t6App", "sendMail", envelope.user_id, envelope.user_id, {"user_id": envelope.user_id, "status": "info", "info": info});
 			resolve({"status": "info", "info": info});
 		}).catch(function(err) {
+			t6events.add("t6App", "sendMail", envelope.user_id, envelope.user_id, {"user_id": envelope.user_id, "status": "error", "info": err});
 			reject({"status": "error", "info": err});
 		});
 	} else {
