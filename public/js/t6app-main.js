@@ -78,6 +78,7 @@ var app = {
 		"openSourceLicenses": "Open-Source licenses",
 		"exploration": "Data Exploration",
 		"objects-maps": "Objects Maps",
+		"manage_notifications": "Customize notifications",
 	},
 	icons: {
 		"color": "format_color_fill",
@@ -2500,7 +2501,6 @@ var touchStartPoint, touchMovePoint;
 					myHeaders.append("Content-Type", "application/json");
 					var myInit = { method: 'GET', headers: myHeaders };
 					var url = app.baseUrl + '/mail/' + app.getSetting('notifications.email') + '/' + type + '/' + name + '/' + app.getSetting('notifications.unsubscription_token') + '/';
-
 					fetch(url, myInit)
 						.then(
 							app.fetchStatusHandler
@@ -2612,7 +2612,6 @@ var touchStartPoint, touchMovePoint;
 			myHeaders.append("Content-Type", "application/json");
 			var myInit = { method: 'GET', headers: myHeaders };
 			var url = `${app.baseUrl}/${app.api_version}/index`;
-			var title = '';
 
 			fetch(url, myInit)
 				.then(
@@ -3463,46 +3462,51 @@ var touchStartPoint, touchMovePoint;
 				p256dh: app.getSetting('settings.pushSubscription.keys.p256dh')
 			}
 		};
-		var refreshPOST = { "grant_type": "refresh_token", "refresh_token": localStorage.getItem('refresh_token'), pushSubscription: app.auth.pushSubscription };
-		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(refreshPOST) };
-		var url = `${app.baseUrl}/${app.api_version}/authenticate`;
-
-		fetch(url, myInit)
-			.then(
-				app.fetchStatusHandler
-			).then(function(fetchResponse) {
-				return fetchResponse.json();
-			})
-			.then(function(response) {
-				if (response.token && response.refresh_token && response.refreshTokenExp) {
-					localStorage.setItem('bearer', response.token);
-					localStorage.setItem('refresh_token', response.refresh_token);
-					localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
-
-					app.isLogged = true;
-					if (typeof firebase !== "undefined") {
-						firebase.initializeApp(firebaseConfig);
-						firebase.analytics().setUserProperties({ 'isLoggedIn': 1 });
-						firebase.analytics().logEvent('refreshAuthenticate');
+		if (localStorage.getItem('refresh_token') !== "null") {
+			var refreshPOST = { "grant_type": "refresh_token", "refresh_token": localStorage.getItem('refresh_token'), pushSubscription: app.auth.pushSubscription };
+			var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(refreshPOST) };
+			var url = `${app.baseUrl}/${app.api_version}/authenticate`;
+	
+			fetch(url, myInit)
+				.then(
+					app.fetchStatusHandler
+				).then(function(fetchResponse) {
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					if (response.token && response.refresh_token && response.refreshTokenExp) {
+						localStorage.setItem('bearer', response.token);
+						localStorage.setItem('refresh_token', response.refresh_token);
+						localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
+	
+						app.isLogged = true;
+						if (typeof firebase !== "undefined") {
+							firebase.initializeApp(firebaseConfig);
+							firebase.analytics().setUserProperties({ 'isLoggedIn': 1 });
+							firebase.analytics().logEvent('refreshAuthenticate');
+						}
+						app.fetchProfile();
+	
+						app.setHiddenElement("signin_button");
+						app.setVisibleElement("logout_button");
+					} else {
+						if (localStorage.getItem("settings.debug") == "true") {
+							toast('Auth internal error', { timeout: app.toastDuration, type: "error" });
+						}
+						app.resetDrawer();
 					}
-					app.fetchProfile();
-					//app.resetSections();
-
-					app.setHiddenElement("signin_button");
-					app.setVisibleElement("logout_button");
-				} else {
+				})
+				.catch(function(error) {
 					if (localStorage.getItem("settings.debug") == "true") {
-						toast('Auth internal error', { timeout: app.toastDuration, type: "error" });
+						toast('We can\'t process your identification. Please resubmit your credentials on login page!', { timeout: app.toastDuration, type: "warning" });
 					}
-					app.resetDrawer();
-				}
-			})
-			.catch(function(error) {
-				if (localStorage.getItem("settings.debug") == "true") {
-					toast('We can\'t process your identification. Please resubmit your credentials on login page!', { timeout: app.toastDuration, type: "warning" });
-				}
-			});
-		app.auth = {};
+				});
+			app.auth = {};
+		} else {
+			if (localStorage.getItem("settings.debug") == "true") {
+				toast('Please resubmit your credentials on login page!', { timeout: app.toastDuration, type: "error" });
+			}
+		}
 	};
 
 	app.addMenuItem = function(title, icon, link, position) {
@@ -4545,6 +4549,7 @@ var touchStartPoint, touchMovePoint;
 			if (typeof screen.orientation !== "undefined") {
 				screen.orientation.addEventListener("change", app.showOrientation);
 			}
+			
 			window.addEventListener("online", app.updateNetworkStatus, false);
 			window.addEventListener("offline", app.updateNetworkStatus, false);
 			window.addEventListener("clearCache", app.clearCache, false);
@@ -4664,6 +4669,31 @@ var touchStartPoint, touchMovePoint;
 					}
 				}
 			}, false);
+			/*
+			console.log("DEBUG", "devicelight event");
+			let body = document.body;
+			if ("ondevicelight" in window) {
+				window.addEventListener("devicelight", function(event) {
+					if (event.value < 50) {
+						body.classList.add("darklight");
+						body.classList.remove("brightlight");
+					} else {
+						body.classList.add("brightlight");
+						body.classList.remove("darklight");
+					}
+				});
+				if (localStorage.getItem("settings.debug") == "true") {
+					toast("devicelight event is activated", { timeout: app.toastDuration, type: "info" });
+				}
+			} else {
+				console.log("DEBUG", "devicelight event is not supported");
+				if (localStorage.getItem("settings.debug") == "true") {
+					toast("devicelight event is not supported", { timeout: app.toastDuration, type: "info" });
+				}
+				body.classList.add("brightlight");
+				body.classList.remove("darklight");
+			}
+			*/
 
 			if (localStorage.getItem("settings.debug") == "true") {
 				var completeTime = new Date();

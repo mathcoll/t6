@@ -45,9 +45,6 @@ app.resources.dashboards = {
 			description: myForm.querySelector("textarea[name='Description']").value,
 			snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem("snippets")))[snippet.getAttribute("data-id")]).id; }),
 		};
-		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log("DEBUG onAddDashboard", JSON.stringify(body));
-		}
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
@@ -63,7 +60,7 @@ app.resources.dashboards = {
 			app.setSection("dashboards");
 			toast("Dashboard has been added.", {timeout:3000, type: "done"});
 		})
-		.catch(function (error) {
+		.catch(function(error) {
 			toast("Dashboard has not been added.", {timeout:3000, type: "error"});
 		});
 		evt.preventDefault();
