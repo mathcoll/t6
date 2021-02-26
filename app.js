@@ -4,47 +4,16 @@
  */
 let start = new Date();
 
-var express				= require("express");
-var timeout				= require("connect-timeout");
-var morgan				= require("morgan");
-var cookieParser		= require("cookie-parser");
-var bodyParser			= require("body-parser");
-var bearer				= require("bearer");
-var pug					= require("pug");
-var compression			= require("compression");
-
-global.bcrypt			= require("bcrypt");
-global.crypto			= require("crypto");
-global.expressJwt		= require("express-jwt");
-global.session			= require("express-session");
-global.fs				= require("fs");
-global.geoip			= require("geoip-lite");
-global.jwt				= require("jsonwebtoken");
-global.loki				= require("lokijs");
-global.passgen			= require("passgen");
-global.path				= require("path");
-global.md5				= require("md5");
-global.moment			= require("moment");
-global.mqtt				= require("mqtt");
-global.uuid				= require("node-uuid");
-global.nodemailer		= require("nodemailer");
+moduleLoadTime = new Date();
 global.os				= require("os");
-global.qrCode			= require("qrcode-npm");
-global.request			= require("request");
-global.serialport		= require("serialport");
-global.favicon			= require("serve-favicon");
+global.fs				= require("fs");
+global.path				= require("path");
+global.session			= require("express-session");
 global.FileStore		= require("session-file-store")(session);
-global.sprintf			= require("sprintf-js").sprintf;
-global.strength			= require("strength");
-global.stringformat		= require("string-format");
-global.util				= require("util");
-global.useragent		= require("useragent");
-global.webpush			= require("web-push");
 global.firebaseAdmin	= require("firebase-admin");
 
 /* Environment settings */
 require(`./data/settings-${os.hostname()}.js`);
-
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
 global.t6BuildVersion	= require("./t6BuildVersion.json").t6BuildVersion;
@@ -56,16 +25,38 @@ global.t6notifications	= require("./t6notifications");
 global.t6events			= require("./t6events");
 global.t6console		= require("./t6console");
 global.t6otahistory		= require("./t6otahistory");
-global.t6events.setMeasurement("events");
-global.t6events.setRP("autogen");
-global.algorithm		= "aes-256-cbc";
-global.t6ConnectedObjects = [];
-if( db_type.influxdb === true ) {
-	var influx		= require("influx");
-	var dbString	= influxSettings.protocol+"://"+influxSettings.host+":"+influxSettings.port+"/"+influxSettings.database;
-	dbInfluxDB		= new influx.InfluxDB(dbString);
-	t6console.info("Activating influxdb: "+dbString);
-}
+
+var express				= require("express");
+var timeout				= require("connect-timeout");
+var morgan				= require("morgan");
+var cookieParser		= require("cookie-parser");
+var bodyParser			= require("body-parser");
+var bearer				= require("bearer");
+var pug					= require("pug");
+var compression			= require("compression");
+global.bcrypt			= require("bcrypt");
+global.crypto			= require("crypto");
+global.expressJwt		= require("express-jwt");
+global.geoip			= require("geoip-lite");
+global.jwt				= require("jsonwebtoken");
+global.loki				= require("lokijs");
+global.passgen			= require("passgen");
+global.md5				= require("md5");
+global.moment			= require("moment");
+global.mqtt				= require("mqtt");
+global.uuid				= require("node-uuid");
+global.nodemailer		= require("nodemailer");
+global.qrCode			= require("qrcode-npm");
+global.request			= require("request");
+global.serialport		= require("serialport");
+global.favicon			= require("serve-favicon");
+global.sprintf			= require("sprintf-js").sprintf;
+global.strength			= require("strength");
+global.stringformat		= require("string-format");
+global.util				= require("util");
+global.useragent		= require("useragent");
+global.webpush			= require("web-push");
+moduleLoadEndTime = new Date();
 
 /* Logging */
 var error = fs.createWriteStream(logErrorFile, { flags: "a" });
@@ -78,6 +69,18 @@ t6console.info(sprintf("Setting Access Logs to %s", logAccessFile));
 t6console.info(sprintf("Setting Error Logs to %s", logErrorFile));
 t6console.info("Log level:", logLevel);
 t6console.info("Environment:", process.env.NODE_ENV);
+t6console.info(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
+
+global.t6events.setMeasurement("events");
+global.t6events.setRP("autogen");
+global.algorithm		= "aes-256-cbc";
+global.t6ConnectedObjects = [];
+if( db_type.influxdb === true ) {
+	var influx		= require("influx");
+	var dbString	= influxSettings.protocol+"://"+influxSettings.host+":"+influxSettings.port+"/"+influxSettings.database;
+	dbInfluxDB		= new influx.InfluxDB(dbString);
+	t6console.info(`Activating influxdb: ${dbString}`);
+}
 
 /* Main Database settings */
 var initDbMain = function() {
@@ -207,7 +210,7 @@ dbs.forEach(file => {
 		if (err) {
 			fs.chmodSync(file, 0644);
 		}
-		t6console.log(`${file} ${err ? "is not writable" : "is writable"}`);
+		t6console.info(`${file} ${err ? "is not writable" : "is writable"}`);
 	});
 });
 

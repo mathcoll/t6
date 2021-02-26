@@ -20,7 +20,7 @@
     "test": "snyk test && ./bin/test.sh",
     "check-security": "nsp check",
     "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "prepublish": "npm -v"
   },
   "dependencies": {
     "acorn": "^7.4.1",
@@ -89,9 +89,9 @@
   },
   "readmeFilename": "README.md",
   "devDependencies": {
+    "apidoc": "^0.25.0",
     "uglify-js": "github:mishoo/UglifyJS2#harmony",
-    "uglify-js-es6": "^2.8.9",
-    "apidoc": "^0.25.0"
+    "uglify-js-es6": "^2.8.9"
   },
   "snyk": true
 }
