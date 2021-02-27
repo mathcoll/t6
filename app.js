@@ -224,6 +224,7 @@ dbSources = new loki(path.join(__dirname, "data", "sources-"+os.hostname()+".jso
 dbOtaHistory = new loki(path.join(__dirname, "data", "otahistory-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
 dbUis = new loki(path.join(__dirname, "data", "uis-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbUis});
 
+t6console.info("Loading routes...");
 var index			= require("./routes/index");
 var objects			= require("./routes/objects");
 var dashboards		= require("./routes/dashboards");
@@ -244,6 +245,8 @@ var uis				= require("./routes/uis");
 var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
 app					= express();
+t6console.info("Routes loaded.");
+t6console.info("App is instanciated.");
 
 var CrossDomain = function(req, res, next) {
 	if (req.method == "OPTIONS") {
