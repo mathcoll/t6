@@ -5,6 +5,7 @@
 let start = new Date();
 
 moduleLoadTime = new Date();
+require("cache-require-paths");
 global.os				= require("os");
 global.fs				= require("fs");
 global.path				= require("path");
