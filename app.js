@@ -391,6 +391,6 @@ mqttClient.on("message", function (topic, message) {
 	}
 	t6console.info(sprintf("Connected Objects: %s", t6ConnectedObjects));
 });
-
-t6console.info(sprintf("Start process duration: %ss.", (new Date()-start)/1000));
+global.startProcessTime = new Date()-start;
+t6console.info(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
 module.exports = app;

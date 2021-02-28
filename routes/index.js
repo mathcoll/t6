@@ -735,6 +735,8 @@ router.get("/status", function(req, res, next) {
 		mqttInfo: mqttInfo,
 		appName: process.env.NAME,
 		started_at: moment(process.env.STARTED*1000).format("DD/MM/Y H:mm:s"),
+		moduleLoadTime: moduleLoadEndTime-moduleLoadTime,
+		startProcessTime: startProcessTime,
 	};
 	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
 		status.dbAll = {

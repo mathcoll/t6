@@ -3713,7 +3713,7 @@ var touchStartPoint, touchMovePoint;
 					status += app.getField('verified_user', 'Api Version', response.version, { type: 'text', style: 'text-transform: none !important;', isEdit: false });
 					status += app.getField('verified_user', 'Build Version', response.t6BuildVersion, { type: 'text', style: 'text-transform: none !important;', isEdit: false });
 					status += app.getField('alarm', 'Build Date', moment(response.t6BuildDate, "DD/MM/YYYY HH:mm:ss").format(app.date_format), { type: 'text', style: 'text-transform: none !important;', isEdit: false });
-					status += app.getField('alarm', 'Server Last Update', moment(response.started_at, "DD/MM/YYYY HH:mm:ss").format(app.date_format), { type: 'text', isEdit: false });
+					status += app.getField('alarm', 'Server Last Update', `${moment(response.started_at, "DD/MM/YYYY HH:mm:ss").format(app.date_format)} ; Loaded in ${response.startProcessTime}ms (incl. ${response.moduleLoadTime}ms to load modules)`, { type: 'text', isEdit: false });
 					status += app.getField('trip_origin', 'appId', firebaseConfig.appId, { type: 'text', isEdit: false });
 					status += "			</div>";
 					status += "		</div>";
