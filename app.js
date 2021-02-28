@@ -131,7 +131,7 @@ var initDbRules = function() {
 }
 var initDbSnippets = function() {
 	if ( dbSnippets === null ) {
-		console.warn("db Snippets is failing");
+		t6console.warn("db Snippets is failing");
 	}
 	if ( dbSnippets.getCollection("snippets") === null ) {
 		t6console.warn("- Collection Snippets is failing");
@@ -207,10 +207,11 @@ let dbs = [
 ];
 dbs.forEach(file => {
 	fs.access(file, fs.constants.W_OK, err => {
+		t6console.info(`${file} ${err ? "is not writable" : "is writable"}`);
 		if (err) {
 			fs.chmodSync(file, 0644);
+			t6console.info(`- ${file} should be 0644 now.`);
 		}
-		t6console.info(`${file} ${err ? "is not writable" : "is writable"}`);
 	});
 });
 
