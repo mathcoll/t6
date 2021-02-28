@@ -57,6 +57,16 @@ global.stringformat		= require("string-format");
 global.util				= require("util");
 global.useragent		= require("useragent");
 global.webpush			= require("web-push");
+global.t6events.setMeasurement("events");
+global.t6events.setRP("autogen");
+global.algorithm		= "aes-256-cbc";
+global.t6ConnectedObjects = [];
+if( db_type.influxdb === true ) {
+	var influx		= require("influx");
+	var dbString	= `${influxSettings.protocol}://${influxSettings.host}:${influxSettings.port}/${influxSettings.database}`;
+	dbInfluxDB		= new influx.InfluxDB(dbString);
+	t6console.info(`Activating influxdb: ${dbString}`);
+}
 moduleLoadEndTime = new Date();
 
 /* Logging */
@@ -65,43 +75,32 @@ process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on("uncaughtException", function(err) {
 	t6console.error((err && err.stack) ? err.stack : err);
 });
-t6console.info(sprintf("Starting %s v%s, using node v%s", appName, VERSION, process.versions.node));
-t6console.info(sprintf("Setting Access Logs to %s", logAccessFile));
-t6console.info(sprintf("Setting Error Logs to %s", logErrorFile));
-t6console.info("Log level:", logLevel);
-t6console.info("Environment:", process.env.NODE_ENV);
+t6console.info(`Starting ${appName} v${VERSION}, using node v${process.versions.node}`);
+t6console.info(`Setting Access Logs to ${logAccessFile}`);
+t6console.info(`Setting Error Logs to ${logErrorFile}`);
+t6console.info(`Log level: ${logLevel}`);
+t6console.info(`Environment: ${process.env.NODE_ENV}`);
 t6console.info(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
-
-global.t6events.setMeasurement("events");
-global.t6events.setRP("autogen");
-global.algorithm		= "aes-256-cbc";
-global.t6ConnectedObjects = [];
-if( db_type.influxdb === true ) {
-	var influx		= require("influx");
-	var dbString	= influxSettings.protocol+"://"+influxSettings.host+":"+influxSettings.port+"/"+influxSettings.database;
-	dbInfluxDB		= new influx.InfluxDB(dbString);
-	t6console.info(`Activating influxdb: ${dbString}`);
-}
 
 /* Main Database settings */
 var initDbMain = function() {
 	if ( db.getCollection("objects") === null ) {
-		t6console.warn("- Collection Objects is failing");
+		t6console.error("- Collection Objects is failing");
 	} else {
 		t6console.info(db.getCollection("objects").count(), "resources in Objects collection.");
 	}
 	if ( db.getCollection("flows") === null ) {
-		t6console.warn("- Collection Flows is failing");
+		t6console.error("- Collection Flows is failing");
 	} else {
 		t6console.info(db.getCollection("flows").count(), "resources in Flows collection.");
 	}
 	if ( db.getCollection("users") === null ) {
-		t6console.warn("- Collection Users is failing");
+		t6console.error("- Collection Users is failing");
 	} else {
 		t6console.info(db.getCollection("users").count(), "resources in Users collection.");
 	}
 	if ( db.getCollection("tokens") === null ) {
-		t6console.warn("- Collection Tokens is failing");
+		t6console.error("- Collection Tokens is failing");
 	} else {
 		/* Some optimization */
 		let tokens	= db.getCollection("tokens");
@@ -110,52 +109,52 @@ var initDbMain = function() {
 		t6console.info(db.getCollection("tokens").count(), "resources in Tokens collection (in db).");
 	}
 	if ( db.getCollection("units") === null ) {
-		t6console.warn("- Collection Units is failing");
+		t6console.error("- Collection Units is failing");
 	} else {
 		t6console.info(db.getCollection("units").count(), "resources in Units collection.");
 	}
 	if ( db.getCollection("datatypes") === null ) {
-		t6console.warn("- Collection Datatypes is failing");
+		t6console.error("- Collection Datatypes is failing");
 	} else {
 		t6console.info(db.getCollection("datatypes").count(), "resources in Datatypes collection.");
 	}
 }
 var initDbRules = function() {
 	if ( dbRules === null ) {
-		t6console.warn("db Rules is failing");
+		t6console.error("db Rules is failing");
 	}
 	if ( dbRules.getCollection("rules") === null ) {
-		t6console.warn("- Collection Rules is failing");
+		t6console.error("- Collection Rules is failing");
 	} else {
 		t6console.info(dbRules.getCollection("rules").count(), "resources in Rules collection.");
 	}
 }
 var initDbSnippets = function() {
 	if ( dbSnippets === null ) {
-		t6console.warn("db Snippets is failing");
+		t6console.error("db Snippets is failing");
 	}
 	if ( dbSnippets.getCollection("snippets") === null ) {
-		t6console.warn("- Collection Snippets is failing");
+		t6console.error("- Collection Snippets is failing");
 	} else {
 		t6console.info(dbSnippets.getCollection("snippets").count(), "resources in Snippets collection.");
 	}
 }
 var initDbDashboards = function() {
 	if ( dbDashboards === null ) {
-		t6console.warn("db Dashboards is failing");
+		t6console.error("db Dashboards is failing");
 	}
 	if ( dbDashboards.getCollection("dashboards") === null ) {
-		t6console.warn("- Collection Dashboards is failing");
+		t6console.error("- Collection Dashboards is failing");
 	} else {
 		t6console.info(dbDashboards.getCollection("dashboards").count(), "resources in Dashboards collection.");
 	}
 }
 var initDbTokens = function() {
 	if ( dbTokens === null ) {
-		t6console.warn("db Tokens is failing");
+		t6console.error("db Tokens is failing");
 	}
 	if ( dbTokens.getCollection("tokens") === null ) {
-		t6console.warn("- Collection Tokens is failing");
+		t6console.error("- Collection Tokens is failing");
 	} else {
 		/* Some optimization */
 		let tokens	= dbTokens.getCollection("tokens");
@@ -166,30 +165,30 @@ var initDbTokens = function() {
 }
 var initDbSources = function() {
 	if ( dbSources === null ) {
-		t6console.warn("db Sources is failing");
+		t6console.error("db Sources is failing");
 	}
 	if ( dbSources.getCollection("sources") === null ) {
-		t6console.warn("- Collection Sources is failing");
+		t6console.error("- Collection Sources is failing");
 	} else {
 		t6console.info(dbSources.getCollection("sources").count(), "resources in Sources collection.");
 	}
 }
 var initDbOtaHistory = function() {
 	if ( dbOtaHistory === null ) {
-		t6console.warn("db OtaHistory is failing");
+		t6console.error("db OtaHistory is failing");
 	}
 	if ( dbOtaHistory.getCollection("otahistory") === null ) {
-		t6console.warn("- Collection OtaHistory is failing");
+		t6console.error("- Collection OtaHistory is failing");
 	} else {
 		t6console.info(dbOtaHistory.getCollection("otahistory").count(), "resources in OtaHistory collection.");
 	}
 }
 var initDbUis = function() {
 	if ( dbUis === null ) {
-		t6console.warn("db UIs is failing");
+		t6console.error("db UIs is failing");
 	}
 	if ( dbUis.getCollection("uis") === null ) {
-		t6console.warn("- Collection UIs is failing");
+		t6console.error("- Collection UIs is failing");
 	} else {
 		t6console.info(dbUis.getCollection("uis").count(), "resources in UIs collection.");
 	}
@@ -197,36 +196,38 @@ var initDbUis = function() {
 
 t6console.info("Setting correct permission on Databases...");
 let dbs = [
-	path.join(__dirname, "data", "db-"+os.hostname()+".json"),
-	path.join(__dirname, "data", "rules-"+os.hostname()+".json"),
-	path.join(__dirname, "data", "snippets-"+os.hostname()+".json"),
-	path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"),
-	path.join(__dirname, "data", "tokens-"+os.hostname()+".json"),
-	path.join(__dirname, "data", "sources-"+os.hostname()+".json"),
-	path.join(__dirname, "data", "otahistory-"+os.hostname()+".json"),
-	path.join(__dirname, "data", "uis-"+os.hostname()+".json"),
+	path.join(__dirname, "data", `db-${os.hostname()}.json`),
+	path.join(__dirname, "data", `rules-${os.hostname()}.json`),
+	path.join(__dirname, "data", `snippets-${os.hostname()}.json`),
+	path.join(__dirname, "data", `dashboards-${os.hostname()}.json`),
+	path.join(__dirname, "data", `tokens-${os.hostname()}.json`),
+	path.join(__dirname, "data", `sources-${os.hostname()}.json`),
+	path.join(__dirname, "data", `otahistory-${os.hostname()}.json`),
+	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
 ];
 dbs.forEach(file => {
 	fs.access(file, fs.constants.W_OK, err => {
 		t6console.info(`${file} ${err ? "is not writable" : "is writable"}`);
 		if (err) {
 			fs.chmodSync(file, 0644);
-			t6console.info(`- ${file} should be 0644 now.`);
+			t6console.warn(`- ${file} should be 0644 now.`);
 		}
 	});
 });
 
 t6console.info("Initializing Databases...");
-db = new loki(path.join(__dirname, "data", "db-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbMain});
-dbRules = new loki(path.join(__dirname, "data", "rules-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbRules});
-dbSnippets = new loki(path.join(__dirname, "data", "snippets-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
-dbDashboards = new loki(path.join(__dirname, "data", "dashboards-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
-dbTokens = new loki(path.join(__dirname, "data", "tokens-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
-dbSources = new loki(path.join(__dirname, "data", "sources-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbSources});
-dbOtaHistory = new loki(path.join(__dirname, "data", "otahistory-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
-dbUis = new loki(path.join(__dirname, "data", "uis-"+os.hostname()+".json"), {autoload: true, autosave: true, autoloadCallback: initDbUis});
+dbLoadTime = new Date();
+db = new loki(path.join(__dirname, "data", `db-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbMain});
+dbRules = new loki(path.join(__dirname, "data", `rules-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
+dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
+dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
+dbTokens = new loki(path.join(__dirname, "data", `tokens-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
+dbSources = new loki(path.join(__dirname, "data", `sources-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSources});
+dbOtaHistory = new loki(path.join(__dirname, "data", `otahistory-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
+dbUis = new loki(path.join(__dirname, "data", `uis-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUis});
 
 t6console.info("Loading routes...");
+routesLoadTime = new Date();
 var index			= require("./routes/index");
 var objects			= require("./routes/objects");
 var dashboards		= require("./routes/dashboards");
@@ -247,8 +248,8 @@ var uis				= require("./routes/uis");
 var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
 app					= express();
-t6console.info("Routes loaded.");
-t6console.info("App is instanciated.");
+routesLoadEndTime = new Date();
+t6console.info(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
 
 var CrossDomain = function(req, res, next) {
 	if (req.method == "OPTIONS") {
@@ -308,6 +309,7 @@ app.use("/v"+version+"/uis", uis);
 app.use("/v"+version+"/exploration", exploration);
 app.use("/news", news);
 app.use("/", pwa);
+t6console.info("App is instanciated.");
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
