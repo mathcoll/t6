@@ -288,8 +288,8 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 	var d3nBar = require("d3node-barchart"); // TODO : it should be an histogram !
 	var flow_id = req.query.flow_id;
 	var group = req.query.group;
-	var xAxis = typeof req.query.xAxis ? req.query.xAxis : "";
-	var yAxis = typeof req.query.yAxis ? req.query.yAxis : "";
+	var xAxis = typeof req.query.xAxis !== "undefined" ? req.query.xAxis : "";
+	var yAxis = typeof req.query.yAxis !== "undefined" ? req.query.yAxis : "";
 	var width = parseInt(req.query.width, 10);
 	var height = parseInt(req.query.height, 10);
 	var ticks = typeof req.query.ticks !== "undefined" ? req.query.ticks : 10;
@@ -1163,7 +1163,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
  */
 router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
-	var select = typeof req.query.select ? req.query.select : undefined;
+	var select = typeof req.query.select !== "undefined" ? req.query.select : undefined;
 	var group = req.query.group;
 	var width = parseInt(req.query.width, 10);
 	var height = parseInt(req.query.height, 10);
@@ -1519,8 +1519,6 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 						width: width,
 						height: height,
 					});
-				} else if (graphType === "bell") {
-
 				} else if (graphType === "line") {
 					var d3nLine = require("d3node-linechart");
 					data.map(function(row) {
