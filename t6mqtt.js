@@ -2,7 +2,7 @@
 var t6mqtt = module.exports = {};
 
 t6mqtt.publish = function(user_id, topic, payload, retain) {
-	while( topic.charAt(0)==="/" ) { topic = topic.substr(1) }
+	while( topic.charAt(0)==="/" ) { topic = topic.substr(1); }
 	if ( user_id!==null ) {
 		topic = topic!==null?mqttRoot+user_id+"/"+topic:mqttRoot+user_id+"default";
 	} else {

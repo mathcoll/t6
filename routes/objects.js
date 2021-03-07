@@ -401,10 +401,10 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 
 	var query = {
 		"$and": [
-				{ "id": object_id },
-				{ "user_id": req.user.id },
-			]
-		}
+			{ "id": object_id },
+			{ "user_id": req.user.id },
+		]
+	};
 	var object = objects.findOne( query );
 	if ( object && object.source_id ) {
 		var version = typeof req.params.version!=="undefined"?req.params.version:object.source_version;

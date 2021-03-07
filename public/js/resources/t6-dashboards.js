@@ -169,7 +169,7 @@ app.resources.dashboards = {
 					if( !app.isLtr() ) {
 						node += "	<div class='mdl-layout-spacer'></div>";
 					}
-					node += "</section>"
+					node += "</section>";
 				} else {
 					/* View mode */
 					for ( var j=0; j < dashboard.attributes.snippets.length; j++ ) {

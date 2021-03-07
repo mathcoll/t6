@@ -100,7 +100,7 @@ firebase = {
 	admin: {
 		serviceAccountFile : "./data/certificates/t6-app-firebase-adminsdk.json"
 	}
-}
+};
 
 /* pushSubscription */
 /* pushSubscription */

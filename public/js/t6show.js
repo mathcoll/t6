@@ -148,7 +148,7 @@ req.onreadystatechange = function() {
 					timeout: 2000,
 					actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
 					actionText: "Dismiss"
-				}
+				};
 				ml.showSnackbar(snack);
 			}
 		}

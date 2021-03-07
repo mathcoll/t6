@@ -248,7 +248,7 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 			
 			sources.chain().find({ "id": root.id }).update(function(r) {
 				r.latest_version	= parseInt(r.latest_version+1, 10);
-				r.latest_version_id = source_id
+				r.latest_version_id = source_id;
 				result = r;
 			});
 			if (typeof result!=="undefined") {

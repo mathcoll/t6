@@ -34,11 +34,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	rules = dbRules.getCollection("rules");
 	
 	var query = {
-	"$and": [
+		"$and": [
 			{ "user_id": { "$eq": p.user_id } },
 			{ "active": true },
 		]
-	}
+	};
 	var r = rules.chain().find(query).data();
 	let engine = new Engine();
 	if ( r.length > 0 ) {
@@ -303,7 +303,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 								t6console.debug("Request sent - Server responded with:", statusCode);
 						
 						if ( error ) {
-							return console.error("HTTP failed: ", error, options.url, statusCode, body)
+							return console.error("HTTP failed: ", error, options.url, statusCode, body);
 						}
 						
 						t6console.log("success", options.url, statusCode, body);

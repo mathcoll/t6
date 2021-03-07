@@ -42,7 +42,7 @@ function getFieldsFromDatatype(datatype, asValue, includeTime = true) {
 function gaussian_pdf(x, mean, sigma) {
 	var gaussianConstant = 1 / Math.sqrt(2 * Math.PI), x = (x - mean) / sigma;
 	return gaussianConstant * Math.exp(-.5 * x * x) / sigma;
-};
+}
 
 /**
  * @api {get} /exploration/summary Explore summary
@@ -200,7 +200,7 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 					"z_score": typeof req.query.x !== "undefined" ? (statistics.zScore(req.query.x, statistics.mean(arrayOfValues), statistics.standardDeviation(arrayOfValues))) : undefined,
 					"t_test": ((typeof req.query.x) !== "undefined" && (typeof req.query.expectedValue) !== "undefined") ? (statistics.tTest(arrayOfValues, req.query.expectedValue).toFixed(2)) : undefined,
 					"endpoint_status": "Be cautious, this endpoint is beta !",
-				}
+				};
 				res.status(200).send(normalityData);
 			} else {
 				res.status(404).send({ err: "No data found", "id": 8985.5, "code": 404, "message": "Not found" });
