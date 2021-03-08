@@ -1,4 +1,5 @@
-var dataCacheName= 't6-cache-eb65f80c1d3d76959ae1cd1eca3c33eb';
+var dataCacheName= 't6-cache-a556bb8a019f45fec40a5cade0ed3143';
+
 var cacheName= dataCacheName;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to", "cloudflare", "leaflet"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
@@ -7,24 +8,26 @@ var filesToCache = [
 	"/img/opl_img3.webp",
 	"/img/opl_img2.webp",
 	"/img/opl_img.webp",
+	"/img/icon.png",
 	"/img/m/placeholder.png",
 	"/img/m/welcome_card.jpg",
 	"/img/m/side-nav-bg.webp",
-	"/img/icon.png",
+	"/img/m/t6-play-screenshots0-sm.webp",
 	"/img/m/icons/icon-128x128.png",
 	"/img/m/icons/icon-16x16.png",
 	"/img/m/icons/icon-180x180.png",
 	"/img/arduinobuild-icon.png",
-	"https://cdn.internetcollaboratif.info/css/t6app.min.css",
 	"https://cdn.internetcollaboratif.info/js/t6app-min.js",
 	"https://cdn.internetcollaboratif.info/js/vendor.min.js",
+	"https://cdn.internetcollaboratif.info/css/t6app.min.css",
+	"https://cdn.internetcollaboratif.info/img/icon.png",
 	"https://cdn.internetcollaboratif.info/img/opl_img3.webp",
 	"https://cdn.internetcollaboratif.info/img/opl_img2.webp",
 	"https://cdn.internetcollaboratif.info/img/opl_img.webp",
 	"https://cdn.internetcollaboratif.info/img/m/placeholder.png",
 	"https://cdn.internetcollaboratif.info/img/m/welcome_card.jpg",
 	"https://cdn.internetcollaboratif.info/img/m/side-nav-bg.webp",
-	"https://cdn.internetcollaboratif.info/img/icon.png",
+	"https://cdn.internetcollaboratif.info/img/m/t6-play-screenshots0-sm.webp",
 	"https://cdn.internetcollaboratif.info/img/m/icons/icon-128x128.png",
 	"https://cdn.internetcollaboratif.info/img/m/icons/icon-16x16.png",
 	"https://cdn.internetcollaboratif.info/img/m/icons/icon-180x180.png",
@@ -152,6 +155,7 @@ self.addEventListener("fetch", function(e) {
 	}
 });
 self.addEventListener("push", function(event) {
+	console.log("[pushSubscription]", "push event", event);
 	if( event.data && event.data.text() ) {
 		var notif = JSON.parse(event.data.text());
 		const title = notif.title!==null?notif.title:"t6 notification";
@@ -169,19 +173,19 @@ self.addEventListener("push", function(event) {
 			requireInteraction: true,
 			renotify: tag!==null?false:true
 		};
-		console.log("[pushSubscription] notif.type", notif.type);
+		console.log("[pushSubscription]", "notif.type", notif.type);
 		if ( notif.type == "message" ) {
 			event.waitUntil(self.registration.showNotification(title, options));
 			if ( typeof firebase !== "undefined" ) {
-				firebase.analytics().setUserProperties({'notification_receive': 1});
+				firebase.analytics().setUserProperties({"notification_receive": 1});
 			}
 		} else {
-			console.log("[pushSubscription] notif", notif);
+			console.log("[pushSubscription]", "notif", notif);
 		}
 	}
 });
 self.addEventListener("message", function(event){
-	console.log("[onMessage]", event.data);
+	console.log("[onMessage]", "onMessage=", event.data);
 	if ( event.data === "getDataCacheName" ) {
 		console.log("returning", dataCacheName);
 		return dataCacheName;
@@ -199,27 +203,52 @@ self.addEventListener("error", function(e) {
 	console.log("[onError]", e.filename, e.lineno, e.colno, e.message);
 });
 self.addEventListener("notificationclick", function(event) {
-	console.log("[onNotificationClick]", "event.notification.actions", event.notification.actions);
-	//{"type": "message", "title":"You like t6 IoT? ⭐⭐⭐⭐⭐ ", "body": "Give a review for t6 IoT on Google Play Store!", "actions": [{"action": "goGooglePlay", "title": "Review t6", "icon": "/img/m/icons/icon-128x128.png"}]}
-	if ( event.notification.actions[0].action === "goObjects" ) {
-		clients.openWindow("/#objects");
-		synchronizeReader();
-	} else if( event.notification.actions[0].action === "goSignUp" ) {
-		clients.openWindow("/#signup");
-		synchronizeReader();
-	} else if( event.notification.actions[0].action === "goGooglePlay" ) {
-		clients.openWindow("https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=notificationClick&utm_campaign=notification");
-		synchronizeReader();
-	} else if( event.notification.actions[0].action === "goExternal" && event.notification.actions[0].url ) {
-		clients.openWindow(event.notification.actions[0].url);
-		synchronizeReader();
-	} else {
-		clients.openWindow("/");
+	if (typeof event.notification !== "undefined") {
+		console.log("[pushSubscription]", "onNotificationClick = event.notification.actions", event.notification.actions);
+		if ( event.notification.actions[0].action === "goObjects" ) {
+			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#objects");
+			synchronizeReader();
+		} else if( event.notification.actions[0].action === "goNews" ) {
+			clients.openWindow("/news/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#news");
+			synchronizeReader();
+		} else if( event.notification.actions[0].action === "goResetPassword" ) {
+			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#forgot-password");
+			synchronizeReader();
+		} else if( event.notification.actions[0].action === "goSignIn" ) {
+			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#login");
+			synchronizeReader();
+		} else if( event.notification.actions[0].action === "goSignUp" ) {
+			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#signup");
+			synchronizeReader();
+		} else if( event.notification.actions[0].action === "goGooglePlay" ) {
+			clients.openWindow("https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=notificationClick&utm_campaign=notification");
+			synchronizeReader();
+		} else if( event.notification.actions[0].action === "goExternal" && event.notification.actions[0].url ) {
+			clients.openWindow(`${event.notification.actions[0].url}?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick`);
+			synchronizeReader();
+		} else {
+			clients.openWindow("/");
+		}
+		event.notification.close();
+		if ( typeof firebase !== "undefined" ) {
+			firebase.analytics().setUserProperties({'notification_click': 1});
+		}
+		event.notification.close();
 	}
-	if ( typeof firebase !== "undefined" ) {
-		firebase.analytics().setUserProperties({'notification_click': 1});
-	}
-	event.notification.close();
+});
+self.addEventListener('pushsubscriptionchange', function(event) {
+	console.log("[pushSubscription]", "Subscription expired", event);
+	event.waitUntil(
+		self.registration.pushManager.subscribe({ userVisibleOnly: true })
+			.then(function(subscription) {
+				console.log("[pushSubscription]", "pushsubscriptionchange: Subscribed after expiration", subscription.endpoint);
+				return fetch("register", {
+					method: "post",
+					headers: { "Content-type": "application/json" },
+					body: JSON.stringify({ endpoint: subscription.endpoint })
+				});
+			})
+	);
 });
 
 if ( typeof firebase !== "undefined" ) {
@@ -227,7 +256,7 @@ if ( typeof firebase !== "undefined" ) {
 	// subsequent calls to getToken will return from cache.
 	firebase.messaging().getToken().then((currentToken) => {
 		if (currentToken) {
-			console.log("[pushSubscription] currentToken", currentToken);
+			console.log("[pushSubscription]", "currentToken", currentToken);
 			sendTokenToServer(currentToken);
 			updateUIForPushEnabled(currentToken);
 		} else {

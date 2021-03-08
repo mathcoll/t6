@@ -490,7 +490,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					}
 				});
 
-				var D3Node = require('d3-node');
+				var D3Node = require("d3-node");
 				const d3n = new D3Node({
 					selector: "",
 					svgStyles: "",
@@ -502,24 +502,24 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 				let _lineWidth = 2;
 				let _tickSize = 5;
 				let _tickPadding = 5;
-				let _lineColor = '#765548';
-				let _lineColors = ['#795548'];
+				let _lineColor = "#765548";
+				let _lineColors = ["#795548"];
 				let _isCurve = true;
 
 				svg = d3n.createSVG(width, height)
-					.append('g')
-					.attr('transform', `translate(${_margin.left}, ${_margin.top})`);
+					.append("g")
+					.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
 				width = width - _margin.left - _margin.right;
 				height = height - _margin.top - _margin.bottom;
 
-				let g = svg.append('g');
+				let g = svg.append("g");
 				let { allKeys } = graphScatterData;
 
 				/* LOESS */
 				let options /*optional*/ = {
 					span: span, // 0 to inf, default 0.75
 					band: band, // 0 to 1, default 0
-					degree: degree, // degree: [0, 1, 2] || ['constant', 'linear', 'quadratic'] // default 2
+					degree: degree, // degree: [0, 1, 2] || ["constant", "linear", "quadratic"] // default 2
 					normalize: true, // default true if degree > 1, false otherwise
 					robust: false, // default false
 					iterations: 1 //default 4 if robust = true, 1 otherwise
@@ -572,23 +572,22 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 
 				if (_isCurve) lineChart.curve(d3.curveBasis);
 
-					
-				g.append('g')
+				g.append("g")
 					.append("path")
 					.attr("fill", "steelblue")
 					.style("opacity", .3)
 					.attr("d", area(graphLoess));
 					
-				g.append('g')
-					.attr('fill', 'none')
-					.attr('stroke-width', _lineWidth)
-					.selectAll('path')
+				g.append("g")
+					.attr("fill", "none")
+					.attr("stroke-width", _lineWidth)
+					.selectAll("path")
 					.data(allKeys ? data : [graphLoess])
 					.enter().append("path")
-					.attr('stroke', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor)
-					.attr('d', lineChart);
+					.attr("stroke", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor)
+					.attr("d", lineChart);
 
-				g.append('g')
+				g.append("g")
 					.selectAll("dot")
 					.data(allKeys ? data : graphScatterData)
 					.enter().append("circle")
@@ -596,20 +595,20 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					.attr("cy", function(d) { return yScaleScatter(d.value); })
 					.attr("r", _tickSize)
 					.attr("class", "dot")
-					.attr('stroke', 'black')
-					.attr("fill", 'none');
+					.attr("stroke", "black")
+					.attr("fill", "none");
 
-				g.append('g')
-					.attr('transform', `translate(0, ${height})`)
+				g.append("g")
+					.attr("transform", `translate(0, ${height})`)
 					.text(typeof xAxisLabel!=="undefined"?xAxisLabel:"")
 					.call(xAxis);
 
-				g.append('g')
+				g.append("g")
 					.text(typeof xAxisLabel!=="undefined"?yAxisLabel:"")
 					.call(yAxis);
 					
-				g.append('g')
-					.attr('transform', `translate(${width}, 0)`)
+				g.append("g")
+					.attr("transform", `translate(${width}, 0)`)
 					.call(yAxisR);
 
 				// END LOESS
@@ -727,17 +726,17 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				let _isCurve = true;
 				let _tickSize = 5;
 				let _tickPadding = 5;
-				let _lineColor = 'steelblue';
-				let _lineColors = ['steelblue'];
+				let _lineColor = "steelblue";
+				let _lineColors = ["steelblue"];
 				let sidePlotWidth = 300;
 
 				svg = d3n.createSVG(width, height)
-					.append('g')
-					.attr('transform', `translate(${_margin.left}, ${_margin.top})`);
+					.append("g")
+					.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
 				width = width - _margin.left - _margin.right;
 				height = height - _margin.top - _margin.bottom;
 
-				const g = svg.append('g');
+				const g = svg.append("g");
 
 				const { allKeys } = graphData;
 				const xScale = d3.scaleTime()
@@ -758,14 +757,14 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 
 				if (_isCurve) lineChart.curve(d3.curveBasis);
 
-				g.append('g')
-					.attr('transform', `translate(0, ${height})`)
+				g.append("g")
+					.attr("transform", `translate(0, ${height})`)
 					.call(xAxis)
 					.selectAll("text")
 					.attr("transform", `translate(-10, 0)rotate(-45)`)
 					.style("text-anchor", "end");
 
-				g.append('g').call(yAxis);
+				g.append("g").call(yAxis);
 
 				let m = 10; // margin 10
 				let barHeight = (height / 4) - 2 * m;
@@ -776,7 +775,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				let q2 = d3.quantile(graphData.map(function(d) { return (d.value) }), .5);
 				let q3 = d3.quantile(graphData.map(function(d) { return (d.value) }), .75);
 				let max = d3.max(graphData.map(function(d) { return (d.value) }));
-				g.append("rect").attr('x', width - 290).attr('y', m).attr('width', sidePlotWidth).attr('height', height).attr('fill', 'none').style("fill", "none").style("stroke", "black").style("stroke-width", 2);
+				g.append("rect").attr("x", width - 290).attr("y", m).attr("width", sidePlotWidth).attr("height", height).attr("fill", "none").style("fill", "none").style("stroke", "black").style("stroke-width", 2);
 
 
 
@@ -788,10 +787,10 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				let yRect = 2*m;
 				w = (graphData.filter(function(d) { return (d.value > q3 && d.value < max) }).length) * (sidePlotWidth-2*m) / totalValues;
 				p = 100*((graphData.filter(function(d) { return (d.value > q3 && d.value < max) }).length) / totalValues).toFixed(1);
-				g.append("rect").attr('x', xRect).attr('y', yRect).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
-				g.append('text')
-					.attr('x', xText)
-					.attr('y', yText)
+				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+				g.append("text")
+					.attr("x", xText)
+					.attr("y", yText)
 					.attr("font-size", "11px")
 					.text(`${q3.toFixed(4)} < value < ${max.toFixed(4)} : ${p}%`);
 
@@ -802,10 +801,10 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				yRect += barHeight+2*m;
 				w = (graphData.filter(function(d) { return (d.value > q3 && d.value < q2) }).length) * (sidePlotWidth-2*m) / totalValues;
 				p = 100*((graphData.filter(function(d) { return (d.value > q3 && d.value < q2) }).length) / totalValues).toFixed(1);
-				g.append("rect").attr('x', xRect).attr('y', yRect).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
-				g.append('text')
-					.attr('x', xText)
-					.attr('y', yText)
+				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+				g.append("text")
+					.attr("x", xText)
+					.attr("y", yText)
 					.attr("font-size", "11px")
 					.text(`${q3.toFixed(4)} < value < ${q2.toFixed(4)} : ${p}%`);
 
@@ -817,10 +816,10 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				yRect += barHeight+2*m;
 				w = (graphData.filter(function(d) { return (d.value > q2 && d.value < q1) }).length) * (sidePlotWidth-2*m) / totalValues;
 				p = 100*((graphData.filter(function(d) { return (d.value > q2 && d.value < q1) }).length) / totalValues).toFixed(1);
-				g.append("rect").attr('x', xRect).attr('y', yRect).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
-				g.append('text')
-					.attr('x', xText)
-					.attr('y', yText)
+				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+				g.append("text")
+					.attr("x", xText)
+					.attr("y", yText)
 					.attr("font-size", "11px")
 					.text(`${q2.toFixed(4)} < value < ${q1.toFixed(4)} : ${p}%`);
 
@@ -832,23 +831,23 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				yRect += barHeight+2*m;
 				w = (graphData.filter(function(d) { return (d.value > min && d.value < q1) }).length) * (sidePlotWidth-2*m) / totalValues;
 				p = 100*((graphData.filter(function(d) { return (d.value > min && d.value < q1) }).length) / totalValues).toFixed(1);
-				g.append("rect").attr('x', xRect).attr('y', yRect).attr('width', w).attr('height', barHeight).attr('fill', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
-				g.append('text')
-					.attr('x', xText)
-					.attr('y', yText)
+				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
+				g.append("text")
+					.attr("x", xText)
+					.attr("y", yText)
 					.attr("font-size", "11px")
 					.text(`${min.toFixed(4)} < value < ${q1.toFixed(4)} : ${p}%`);
 
 
 
-				g.append('g')
-					.attr('fill', 'none')
-					.attr('stroke-width', _lineWidth)
-					.selectAll('path')
+				g.append("g")
+					.attr("fill", "none")
+					.attr("stroke-width", _lineWidth)
+					.selectAll("path")
 					.data(allKeys ? data : [graphData])
 					.enter().append("path")
-					.attr('stroke', (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor)
-					.attr('d', lineChart);
+					.attr("stroke", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor)
+					.attr("d", lineChart);
 
 				res.setHeader("content-type", "image/svg+xml");
 				res.status(200).send(d3n.svgString());

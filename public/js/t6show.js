@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 let applicationServerKey = "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1Gt2zrKknJQX91a8RR87w8KGP_1gDSy8x6U7s";
 
@@ -206,7 +206,7 @@ let registerServiceWorker = function() {
 	return navigator.serviceWorker.register("/sw.js", { scope: "/" })
 	.then(function(registration) {
 		if ( localStorage.getItem("settings.debug") == "true" ) {
-			console.log('[ServiceWorker] Registered with scope:', registration.scope);
+			console.log("[ServiceWorker] Registered with scope:", registration.scope);
 		}
 		if ( (typeof firebase !== "object" || typeof firebase === "undefined") && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {
 			firebase.initializeApp(firebaseConfig);

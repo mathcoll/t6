@@ -507,22 +507,22 @@ app.resources.objects = {
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					/* Localization Map */
 					var map = L.map("osm").setView([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], 13);
-					L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-						attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
-						minZoom: 1,
-						maxZoom: 20,
-						trackResize: true,
-						dragging: isEdit
+					L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
+						"attribution": "© <a href=\"/osm.org/copyright\">OpenStreetMap</a>",
+						"minZoom": 1,
+						"maxZoom": 20,
+						"trackResize": true,
+						"dragging": isEdit
 					}).addTo(map);
 					var popup = L.popup();
 					var CustomIcon = L.Icon.extend({
 						options: {
-							shadowUrl:		"/img/m/marker-shadow.png",
-							iconSize:		[25, 41],
-							shadowSize:		[41, 41],
-							iconAnchor:		[20, 20],
-							shadowAnchor:	[20, 20],
-							popupAnchor:	[-3, -76]
+							"shadowUrl":		"/img/m/marker-shadow.png",
+							"iconSize":		[25, 41],
+							"shadowSize":		[41, 41],
+							"iconAnchor":		[20, 20],
+							"shadowAnchor":	[20, 20],
+							"popupAnchor":	[-3, -76]
 						}
 					});
 					var mIcon = new CustomIcon({iconUrl: "/img/m/marker-icon.png"});
@@ -530,16 +530,16 @@ app.resources.objects = {
 					if (isEdit !== true) {
 						map.dragging.disable();
 					} else {
-						marker.on('dragend', function(event) {
+						marker.on("dragend", function(event) {
 							var position = marker.getLatLng();
 							marker.setLatLng(position, {
 								draggable: true
 							}).bindPopup(position).update();
-							document.getElementById('Latitude').value = parseFloat(position.lat, 10).toFixed(6);
-							document.getElementById('Longitude').value = parseFloat(position.lng, 10).toFixed(6);
+							document.getElementById("Latitude").value = parseFloat(position.lat, 10).toFixed(6);
+							document.getElementById("Longitude").value = parseFloat(position.lng, 10).toFixed(6);
 						});
 					}
-					//map.on('click', onMapClick);
+					//map.on("click", onMapClick);
 					setTimeout(function() {map.invalidateSize(true);}, 1000);
 					/* End Localization Map */
 				}
@@ -755,7 +755,7 @@ app.resources.objects = {
 		node += app.getSubtitle("Custom Parameters");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField("note", ['Name', 'Value'], ["", ""], {type: "2inputs", pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ["Name should not contains any space nor special char.", "Value is free."], id: ["Name[]", "Value[]"], isEdit: true});
+		node += app.getField("note", ["Name", "Value"], ["", ""], {type: "2inputs", pattern: [app.patterns.customAttributeName, app.patterns.customAttributeValue], error: ["Name should not contains any space nor special char.", "Value is free."], id: ["Name[]", "Value[]"], isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 

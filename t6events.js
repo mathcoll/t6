@@ -33,7 +33,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 	let d = process.env.NODE_ENV==="production"?"":"debug/";
 	if(client_id!==null) {
 		let user_id = typeof who!=="undefined"?who:null;
-		client_id = typeof client_id!=="undefined"?client_id:'';
+		client_id = typeof client_id!=="undefined"?client_id:"";
 		
 		params = typeof params!=="object"?params:{};
 		params.environnment = where;
