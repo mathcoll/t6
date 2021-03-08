@@ -368,28 +368,28 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			if ( prerequisite <= 0 ) {
 				// Cast value according to Flow settings
 				var fields = [];
-				if ( datatype == "boolean" ) {
+				if ( datatype === "boolean" ) {
 					value = str2bool(value);
 					fields[0] = {time:""+time, valueBoolean: value,};
-				} else if ( datatype == "date" ) {
+				} else if ( datatype === "date" ) {
 					value = value;
 					fields[0] = {time:""+time, valueDate: value,};
-				} else if ( datatype == "integer" ) {
+				} else if ( datatype === "integer" ) {
 					value = parseInt(value, 10);
 					fields[0] = {time:""+time, valueInteger: value+"i",};
-				} else if ( datatype == "json" ) {
+				} else if ( datatype === "json" ) {
 					value = {value:value,};
 					fields[0] = {time:""+time, valueJson: value,};
-				} else if ( datatype == "string" ) {
+				} else if ( datatype === "string" ) {
 					value = ""+value;
 					fields[0] = {time:""+time, valueString: value,};
-				} else if ( datatype == "time" ) {
+				} else if ( datatype === "time" ) {
 					value = value;
 					fields[0] = {time:""+time, valueTime: value,};
-				} else if ( datatype == "float" ) {
+				} else if ( datatype === "float" ) {
 					value = parseFloat(value);
 					fields[0] = {time:""+time, valueFloat: value,};
-				} else if ( datatype == "geo" ) {
+				} else if ( datatype === "geo" ) {
 					value = ""+value;
 					fields[0] = {time:""+time, valueString: value,};
 				} else {
