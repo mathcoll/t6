@@ -15,6 +15,7 @@ app.resources.snippets = {
 				options: myForm.querySelector("textarea[name='Graph Options']").value&&JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value)!=="undefined"?JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value):undefined,
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
+			body.options.width = typeof body.options.width!=="undefined"?body.options.width:{"value": "12"};
 
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
@@ -59,6 +60,7 @@ app.resources.snippets = {
 			options: myForm.querySelector("textarea[name='Graph Options']").value&&JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value)!=="undefined"?JSON.parse(myForm.querySelector("textarea[name='Graph Options']").value):undefined,
 			flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; }),
 		};
+		body.options.width = typeof body.options.width!=="undefined"?body.options.width:{"value": "12"};
 		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log("DEBUG onAddSnippet", JSON.stringify(body));
 		}
@@ -119,9 +121,12 @@ app.resources.snippets = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var snippet = response.data[i];
+				console.log(snippet);
 				document.title = (app.sectionsPageTitles["snippet"]).replace(/%s/g, snippet.attributes.name);
 				var node;
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
+				snippet.attributes.options = typeof snippet.attributes.options!=="undefined"?snippet.attributes.options:{};
+				snippet.attributes.options.width = typeof snippet.attributes.options.width!=="undefined"?snippet.attributes.options.width:{"value": "12"};
 				if ( isEdit ) {
 
 					node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+snippet.id+"\">";
