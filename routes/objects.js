@@ -36,13 +36,17 @@ router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secr
 			]
 		};
 	var object = objects.findOne(query);
-	var ui = uis.chain().find({ "id" : object.ui_id }).data();
-	if ( ui.length > -1 ) {
-		ui.id = object.ui_id;
-		ui.object_id = object.id;
-		res.status(200).send(new UISerializer(ui).serialize());
+	if(object!==null) {
+		var ui = uis.chain().find({ "id" : object.ui_id }).data();
+		if ( ui.length > -1 ) {
+			ui.id = object.ui_id;
+			ui.object_id = object.id;
+			res.status(200).send(new UISerializer(ui).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 1271, "code": 404, "message": "Not Found"}).serialize());
+		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 1271, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 1272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
