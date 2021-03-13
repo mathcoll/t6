@@ -132,7 +132,7 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 				t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "failure", new Date()-start);
 			}
 		});
-		if(binFileErrors.length>0) {
+		if(binFileErrors.length>0) {
 			t6console.info("binFileErrors", binFileErrors);
 			res.status(409).send(new ErrorSerializer({"id": 600, "code": 409, "message": "Build is required first", "missing_builds": binFileErrors}).serialize());
 		} else {
