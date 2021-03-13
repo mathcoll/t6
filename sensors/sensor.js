@@ -6,9 +6,9 @@ var exec		= require("child_process").exec;
 var sprintf		= require("sprintf-js").sprintf;
 var path		= require("path");
 var os			= require("os");
-var config		= require(sprintf("../data/sensors-%s", os.hostname()));
+var config		= require(`../data/sensors-${os.hostname()}`);
 var argv		= require("minimist")(process.argv.slice(2));
-console.log("Reading config from file: \""+sprintf("sensors-%s", os.hostname())+".js\".");
+console.log(`Reading config from file: "../data/sensors-${os.hostname()}.js.`);
 var auth = config.auth;
 config = config.sensors[argv.run]!==undefined?config.sensors[argv.run]:null;
 
