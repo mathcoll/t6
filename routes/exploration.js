@@ -1,10 +1,7 @@
 "use strict";
 var express = require("express");
 var router = express.Router();
-var statistics = require("simple-statistics");
-var Loess = require("loess");
 var ErrorSerializer = require("../serializers/error");
-var D3Node = require("d3-node");
 var flows;
 var objects;
 var datatypes;

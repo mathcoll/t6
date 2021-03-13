@@ -1,10 +1,8 @@
 "use strict";
 var express = require("express");
-var nmap = require("libnmap");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 var ObjectSerializer = require("../serializers/object");
-var exec = require("child_process").exec;
 var users;
 var objects;
 var sources;
