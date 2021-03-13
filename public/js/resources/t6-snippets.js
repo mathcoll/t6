@@ -121,7 +121,6 @@ app.resources.snippets = {
 		.then(function(response) {
 			for (var i=0; i < (response.data).length ; i++ ) {
 				var snippet = response.data[i];
-				console.log(snippet);
 				document.title = (app.sectionsPageTitles["snippet"]).replace(/%s/g, snippet.attributes.name);
 				var node;
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
