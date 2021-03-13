@@ -12,8 +12,8 @@ if [ ! -f "${RECIPIENTS}" ]; then
 fi
 
 while read line; do
-    NAME=`echo ${line} | cut -d"," -f1`
-    EMAIL=`echo ${line} | cut -d"," -f2`
+    NAME=$(echo ${line} | cut -d"," -f1)
+    EMAIL=$(echo ${line} | cut -d"," -f2)
 
     echo "Sending mail to ${NAME} (${EMAIL})"
     ./${TEMPLATE} "${NAME}" ${EMAIL} | mutt -x -e "set content_type=text/html" -F "$MUTTRC" -b "$FROM" -s "${SUBJECT}" ${EMAIL}
