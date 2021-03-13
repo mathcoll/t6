@@ -1387,15 +1387,15 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  */
 router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.params.flow_id;
-	var select = typeof req.query.select ? req.query.select : undefined;
 	var group = req.query.group;
 	var dateFormat = req.query.dateFormat;
 	var graphType = req.query.graphType;
-	var xAxis = typeof req.query.xAxis ? req.query.xAxis : "";
-	var yAxis = typeof req.query.yAxis ? req.query.yAxis : "";
+	var select = typeof req.query.select!=="undefined" ? req.query.select : undefined;
+	var xAxis = typeof req.query.xAxis!=="undefined" ? req.query.xAxis : "";
+	var yAxis = typeof req.query.yAxis!=="undefined" ? req.query.yAxis : "";
+	var ticks = typeof req.query.ticks!=="undefined" ? req.query.ticks : 10;
 	var width = parseInt(req.query.width, 10);
 	var height = parseInt(req.query.height, 10);
-	var ticks = typeof req.query.ticks !== "undefined" ? req.query.ticks : 10;
 	var query;
 	var start;
 	var end;
