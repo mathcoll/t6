@@ -160,23 +160,21 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 						t6console.log(`child process exited with code ${code}`);
 						users = db.getCollection("users");
 						let user = users.findOne({"id": req.user.id });
+						let payload;
 						if (code === 0) {
 							if (user && typeof user.pushSubscription !== "undefined" ) {
-								var payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"Deploy is completed on "+o.ipv4+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+								payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"Deploy is completed on "+o.ipv4+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 								t6notifications.sendPush(user.pushSubscription, payload);
 							}
 							t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "success", new Date()-start);
 						} else {
 							if (user && typeof user.pushSubscription !== "undefined" ) {
-								var payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"An error occured during deployment of "+o.ipv4+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+								payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"An error occured during deployment of "+o.ipv4+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 								t6notifications.sendPush(user.pushSubscription, payload);
 							}
 							t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "failure", new Date()-start);
 						}
 					});
-					//myShellScript.stderr.on("data", (data)=>{
-					//	t6console.error(data);
-					//});
 				});
 			} else {
 				res.status(201).send({ "code": 201, message: "Deploying (Dry Run)", deploying_to_objects: new ObjectSerializer(json).serialize() });
