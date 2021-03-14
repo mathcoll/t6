@@ -50,8 +50,16 @@ snippet.getOptions = function(s) { return s.options; };
 snippet.setOptions = function(opt) {
 	var merged = {};
 	var s = this;
-	for (var attrname in s.options) { merged[attrname] = s.options[attrname]; }
-	for (var attrname in opt) { merged[attrname] = opt[attrname]; }
+	for (var attrname in s.options) {
+		if ({}.hasOwnProperty(attrname)) {
+			merged[attrname] = s.options[attrname];
+		}
+	}
+	for (var attrname in opt) {
+		if ({}.hasOwnProperty(attrname)) {
+			merged[attrname] = opt[attrname];
+		}
+	}
 	this.options = merged;
 	return merged;
 };
