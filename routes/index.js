@@ -436,7 +436,7 @@ router.post("/authenticate", function (req, res) {
 				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
 				var agent = useragent.parse(req.headers["user-agent"]);
-				var t = {
+				let t = {
 						user_id: user.id,
 						refresh_token: refreshPayload,
 						expiration: refreshTokenExp,
@@ -528,7 +528,7 @@ router.post("/authenticate", function (req, res) {
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
 			var agent = useragent.parse(req.headers["user-agent"]);
-			var t = {
+			let t = {
 					user_id: user.id,
 					refresh_token: refreshPayload,
 					expiration: refreshTokenExp,
@@ -603,7 +603,7 @@ router.post("/authenticate", function (req, res) {
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
 			var agent = useragent.parse(req.headers["user-agent"]);
-			var t = {
+			let t = {
 					user_id: user.id,
 					refresh_token: refreshPayload,
 					expiration: refreshTokenExp,
