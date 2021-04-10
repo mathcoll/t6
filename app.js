@@ -211,12 +211,11 @@ let dbs = [
 	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
 ];
 dbs.forEach(file => {
-	fs.access(file, fs.constants.W_OK, err => {
-		t6console.info(`${file} ${err ? "is not writable" : "is writable"}`);
-		if (err) {
-			fs.chmodSync(file, 0644);
-			t6console.warn(`- ${file} should be 0644 now.`);
-		}
+	fs.access(file, (fs.constants || fs).W_OK, err => {
+		t6console.warn(`${file} ${err ? "is not writable" : "is writable"}`);
+	});
+	fs.chmod(file, 0o644 , err => {
+		t6console.warn(`- ${file} ${err ? "can't be chmoded" : "is 0644 now."}`);
 	});
 });
 
