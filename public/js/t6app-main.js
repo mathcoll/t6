@@ -413,6 +413,15 @@ var touchStartPoint, touchMovePoint;
 		if (evt) evt.preventDefault();
 	};
 
+	app.onFeaturesButtonClick = function(evt) {
+		if (navigator.onLine) {
+			app.setSection('features');
+		} else {
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
+		}
+		if (evt) evt.preventDefault();
+	};
+
 	app.onSettingsButtonClick = function(evt) {
 		if (navigator.onLine) {
 			app.setSection('settings');
@@ -713,6 +722,7 @@ var touchStartPoint, touchMovePoint;
 
 			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
 			status: document.querySelectorAll('.statusButton'),
+			features: document.querySelectorAll('.featuresButton'),
 			settings: document.querySelectorAll('.settingsButton'),
 			docs: document.querySelectorAll('.docsButton'),
 			terms: document.querySelectorAll('.termsButton'),
@@ -4384,6 +4394,12 @@ var touchStartPoint, touchMovePoint;
 			if (app.buttons.status[i].childElementCount > -1) {
 				app.buttons.status[i].removeEventListener('click', app.onStatusButtonClick, false);
 				app.buttons.status[i].addEventListener('click', app.onStatusButtonClick, false);
+			}
+		};
+		for (var i in app.buttons.features) {
+			if (app.buttons.features[i].childElementCount > -1) {
+				app.buttons.features[i].removeEventListener('click', app.onFeaturesButtonClick, false);
+				app.buttons.features[i].addEventListener('click', app.onFeaturesButtonClick, false);
 			}
 		};
 		for (var i in app.buttons.settings) {

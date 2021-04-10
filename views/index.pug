@@ -97,6 +97,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   input#filter-exp.mdl-textfield__input(type='text', name='name', placeholder='Filter by name')
 
           nav.mdl-navigation.mdl-layout--large-screen-only
+            a.mdl-navigation__link.featuresButton(href='#features')
+              i.material-icons fact_check
+              |  t6 Features
             a.mdl-navigation__link.statusButton(href='#status')
               i.material-icons favorite
               |  API Status
@@ -187,6 +190,10 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
 
       .setting_menu
         ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.featuresButton
+            a.mdl-navigation__link(href='#features')
+              i.material-icons fact_check
+              |  t6 Features
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton
             a.mdl-navigation__link(href='#status')
               i.material-icons favorite
@@ -337,8 +344,92 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
             div
               img(src="/img/icon.png", style="background: #fff;", alt="Logo t6")
 
+        //- Features
+        section#features.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='2')
+          .mdl-grid.mdl-cell--12-col
+            h2.mdl-card__title-text.mdl-subheader-content t6 Features
+          .page-content.mdl-grid.mdl-grid--no-spacing
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Digital Asset Management
+                div.mdl-card__supporting-text.mdl-card--expand  
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Data Flows
+                div.mdl-card__supporting-text.mdl-card--expand 
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Datapoints
+                div.mdl-card__supporting-text.mdl-card--expand Measure and store Datapoint values to a timeseries.
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Objects localization
+                div.mdl-card__supporting-text.mdl-card--expand Find your Objects on a map and trigger actions based on geofencing.
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Over The Air code synchronization
+                div.mdl-card__supporting-text.mdl-card--expand Update your arduino sensors from Wifi on LAN using Over The Air (OTA) protocol.
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Https transport protocol
+                div.mdl-card__supporting-text.mdl-card--expand  
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Payload signature
+                div.mdl-card__supporting-text.mdl-card--expand Force (option) any payload to be signed from the Objects to prevent data tampering.
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text AES256 cbc encryption
+                div.mdl-card__supporting-text.mdl-card--expand  
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Exploratory Data Analysis
+                div.mdl-card__supporting-text.mdl-card--expand  
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Dashboards and Snippets
+                div.mdl-card__supporting-text.mdl-card--expand  
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Rule engine
+                div.mdl-card__supporting-text.mdl-card--expand   
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text JWT tokens
+                div.mdl-card__supporting-text.mdl-card--expand  
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Arduino library
+                div.mdl-card__supporting-text.mdl-card--expand  
+
         //- Use cases
-        section#use-cases.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#use-cases.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='3')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content IoT application and Use cases
           .page-content.mdl-grid.mdl-grid--no-spacing
@@ -374,13 +465,13 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                 div.mdl-card__supporting-text.mdl-card--expand t6 embed customizabel dashboards and can trigger action based on multi-criteria events to alert you for any relevant information. 
 
         //- View Sign In
-        section#login.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#login.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='4')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Sign In to t6
           .page-content.mdl-grid.mdl-grid--no-spacing
 
         //- View Sign Up
-        section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#signup.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='5')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Sign Up to t6
           .page-content.mdl-grid.mdl-grid--no-spacing
@@ -424,7 +515,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
               div.mdl-layout-spacer
 
         //- Manage Notifications
-        section#manage_notifications.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#manage_notifications.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='6')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Manage Notifications
           .page-content.mdl-grid.mdl-grid--no-spacing
@@ -455,7 +546,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                     | (I will do it later)
               div.mdl-layout-spacer
 
-        section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#forgot-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='7')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Forgot Password
           .page-content.mdl-grid.mdl-grid--no-spacing
@@ -484,7 +575,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                       | Sign In
               div.mdl-layout-spacer
 
-        section#reset-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#reset-password.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='8')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Set Password
           .page-content.mdl-grid.mdl-grid--no-spacing
@@ -519,7 +610,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
               div.mdl-layout-spacer
 
         //- Docs
-        section#docs.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#docs.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='9')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Api first documentation: Live, eat, and breathe the API-first lifestyle of t6.
 
@@ -626,7 +717,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                       i.material-icons chevron_right
 
         //- View users-list
-        section#users-list.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive
+        section#users-list.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='10')
           .mdl-grid.mdl-cell--12-col
             h2.mdl-card__title-text.mdl-subheader-content Users
           .page-content.mdl-grid.mdl-grid--no-spacing
