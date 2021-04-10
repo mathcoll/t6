@@ -300,6 +300,7 @@ router.post("/", function (req, res) {
 					from: from,
 					bcc: typeof bcc!=="undefined"?bcc:null,
 					to: new_user.firstName+" "+new_user.lastName+" <"+new_user.email+">",
+					user_id: new_user.id,
 					subject: "Welcome to t6",
 					text: "Html email client is required",
 					html: html
