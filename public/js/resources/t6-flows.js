@@ -179,7 +179,7 @@ app.resources.flows = {
 					//var description = flow.attributes.description!==undefined?app.nl2br(flow.attributes.description):"";
 					//node += app.getField(app.icons.description, "Description", description, {type: "text", id: "Description", isEdit: isEdit});
 					node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic!==undefined?flow.attributes.mqtt_topic:"", {type: "text", style:"text-transform: none !important;", id: "MQTTTopic", isEdit: isEdit});
-					node += app.getField(app.icons.units, "Unit", flow.attributes.unit, {type: "select", id: "Unit", isEdit: true, options: allUnits });
+					node += app.getField(app.icons.units, "Unit", flow.attributes.unit!==""?flow.attributes.unit:undefined, {type: "select", id: "Unit", isEdit: true, options: allUnits });
 					node += app.getField(app.icons.datatypes, "DataType", flow.attributes.data_type, {type: "select", id: "DataTypeName", isEdit: true, options: allDatatypes });
 					node += app.getField(app.icons.datatypes, "Type", app.findDataType(flow.attributes.data_type).type, {type: "text", id: "DataTypeType", isEdit: false, options: allDatatypes });
 					node += app.getField(app.icons.datatypes, "Classification", app.findDataType(flow.attributes.data_type).classification, {type: "text", id: "DataTypeClassification", isEdit: false, options: allDatatypes });
@@ -216,10 +216,13 @@ app.resources.flows = {
 					if ( flow.attributes.mqtt_topic ) {
 						node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic, {type: "text", style:"text-transform: none !important;", id: "MQTTTopic", isEdit: isEdit});
 					}
-					if ( flow.attributes.unit && localStorage.getItem("units") !== "null" && JSON.parse(localStorage.getItem("units")) ) {
+
+					if ( flow.attributes.unit!="" && typeof flow.attributes.unit!=="undefined" && localStorage.getItem("units") !== "null" && JSON.parse(localStorage.getItem("units")) ) {
+						console.log(flow.attributes.unit);
 						var unit = JSON.parse(localStorage.getItem("units")).find( function(u) { return u.name == flow.attributes.unit; });
 						node += app.getField(app.icons.units, "Unit", unit.value, {type: "select", id: "Unit", isEdit: isEdit, options: app.units });
 					} else {
+						unit="";
 						app.getUnits();
 					}
 					if ( flow.attributes.data_type ) {
