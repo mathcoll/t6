@@ -344,6 +344,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			flows		= db.getCollection("flows");
 			datatypes	= db.getCollection("datatypes");
 			var f = flows.chain().find({id: ""+flow_id,}).limit(1);
+			let my_flow = f.data()[0];
 			var join = f.eqJoin(datatypes.chain(), "data_type", "id");
 			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].left && (f.data())[0].left.mqtt_topic ) {
 				mqtt_topic = (f.data())[0].left.mqtt_topic;
@@ -417,6 +418,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							tags.flow_id = flow_id;
 						}
 						tags.user_id = req.user.id;
+						if(typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null) {
+							tags.track_id = my_flow.track_id;
+						}
 						if (text!== "") {
 							fields[0].text = text;
 						}
