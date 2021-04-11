@@ -886,6 +886,7 @@ var touchStartPoint, touchMovePoint;
 	};
 
 	app.findDataType = function(id) {
+		if(typeof id==="undefined" || id === null || id==="") {return "";}
 		return JSON.parse(localStorage.getItem("datatypes")).find(function(d) { return d.name === id; });
 	};
 

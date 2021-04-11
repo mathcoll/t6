@@ -163,6 +163,7 @@ app.resources.flows = {
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
 					if ( !localStorage.getItem("units") ) {
+						unit="";
 						app.getUnits();
 					}
 					var allUnits = JSON.parse(localStorage.getItem("units"));
@@ -218,7 +219,6 @@ app.resources.flows = {
 					}
 
 					if ( flow.attributes.unit!="" && typeof flow.attributes.unit!=="undefined" && localStorage.getItem("units") !== "null" && JSON.parse(localStorage.getItem("units")) ) {
-						console.log(flow.attributes.unit);
 						var unit = JSON.parse(localStorage.getItem("units")).find( function(u) { return u.name == flow.attributes.unit; });
 						node += app.getField(app.icons.units, "Unit", unit.value, {type: "select", id: "Unit", isEdit: isEdit, options: app.units });
 					} else {
@@ -316,16 +316,18 @@ app.resources.flows = {
 				app.setExpandAction();
 				app.setSection("flow");
 				
-				let width = document.getElementById("flow-graph-"+flow.id).offsetWidth;
-				let height = 250;
-				let svgUrl = `${app.baseUrl}/${app.api_version}/exploration/${flow.id}/exploration?select=mean&group=30d&dateFormat=MMM&start=${moment().format("YYYY")}-02-01 00:00:00&limit=1000&sort=asc&page=0&graphType=bar&width=${width}&height=${height}&xAxis=Months&yAxis=MEAN value (${unit})`;
-
-				fetch(svgUrl, myInit)
-				.then(
-					app.fetchStatusHandler
-				)
-				.then(response => response.text())
-				.then(svg => document.getElementById("flow-graph-"+flow.id).insertAdjacentHTML("afterbegin", svg));
+				if ( !isEdit ) {
+					let width = document.getElementById("flow-graph-"+flow.id)!==null?document.getElementById("flow-graph-"+flow.id).offsetWidth:100;
+					let height = 250;
+					let svgUrl = `${app.baseUrl}/${app.api_version}/exploration/${flow.id}/exploration?select=mean&group=30d&dateFormat=MMM&start=${moment().format("YYYY")}-02-01 00:00:00&limit=1000&sort=asc&page=0&graphType=bar&width=${width}&height=${height}&xAxis=Months&yAxis=MEAN value (${unit})`;
+	
+					fetch(svgUrl, myInit)
+					.then(
+						app.fetchStatusHandler
+					)
+					.then(response => response.text())
+					.then(svg => document.getElementById("flow-graph-"+flow.id).insertAdjacentHTML("afterbegin", svg));
+				}
 			}
 		})
 		.catch(function (error) {
