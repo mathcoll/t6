@@ -96,9 +96,10 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
  * @apiParam {String} [unit] Flow Unit
  * @apiParam {String} [theme] Flow theme, deprecated
  * @apiParam {String} [mqtt_topic]] Mqtt topic
+ * @apiParam {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
  * @apiParam {Boolean} [require_signed=false] require_signed
  * @apiParam {Boolean} [require_encrypted=false] require_encrypted
- * @apiParam {Object[]} permission
+ * @apiParam {Integer} permission Permission is not used anymore (deprecated)
  * @apiParam {String[]} [objects] List of Object Ids
  * 
  * @apiUse 201
@@ -114,7 +115,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 		res.status(429).send(new ErrorSerializer({"id": 229, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
 		if ( typeof req.user.id !== "undefined" ) {
-			var permission = typeof req.body.permission!=="undefined"?req.body.permission:"600"; //TODO: default to Owner: Read+Write
+			var permission = typeof req.body.permission!=="undefined"?req.body.permission:600; //TODO: default to Owner: Read+Write
 			if ( permission < 600 ) {
 				res.status(400).send(new ErrorSerializer({"id": 238, "code": 400, "message": "Bad Request", details: "Permission must be greater than 600!"}).serialize());
 			} else {
@@ -122,15 +123,16 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				var newFlow = {
 					id:					flow_id,
 					user_id:			req.user.id,
-					name: 				typeof req.body.name!=="undefined"?req.body.name:"unamed",
+					name:				typeof req.body.name!=="undefined"?req.body.name:"unamed",
 					data_type:			typeof req.body.data_type!=="undefined"?req.body.data_type:"",
-					unit:  				typeof req.body.unit!=="undefined"?req.body.unit:"",
-					theme:  			typeof req.body.theme!=="undefined"?req.body.theme:"",
+					unit:				typeof req.body.unit!=="undefined"?req.body.unit:"",
+					theme:				typeof req.body.theme!=="undefined"?req.body.theme:"",
 					mqtt_topic:			typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:"",
 					permission:			permission,
 					require_signed:		typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):false,
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
+					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 				};
 				t6events.add("t6Api", "flow add", newFlow.id, req.user.id);
 				flows.insert(newFlow);
@@ -154,6 +156,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiParam {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
  * @apiParam {String} [unit] Flow Unit
  * @apiParam {String} [mqtt_topic]] Mqtt topic
+ * @apiParam {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
  * @apiParam {Boolean} [require_signed=false] require_signed
  * @apiParam {Boolean} [require_encrypted=false] require_encrypted
  * @apiParam {Object[]} [permission]
@@ -200,6 +203,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.require_signed		= typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):str2bool(item.require_signed);
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
 						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
+						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						result = item;
 					});
 					if ( typeof result !== "undefined" ) {
