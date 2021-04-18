@@ -410,6 +410,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				t6console.debug("timestamp = "+ timestamp);
 				*/
 				if ( save === true ) {
+					t6sensorfusion.fuse(my_flow, payload);
 					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
 						var tags = {};
