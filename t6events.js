@@ -1,7 +1,7 @@
 "use strict";
 var t6events = module.exports = {};
 var measurement = "events";
-var retention = typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen";
+var retention = "autogen";
 
 t6events.setMeasurement = function(m) {
 	measurement = m;
@@ -20,7 +20,8 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 	if ( db_type.influxdb ) {
 		var tags = {rp: retention, what: what, where: where};
 		var fields = {who: who};
-		dbInfluxDB.writePoints([{
+		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+		dbWrite.writePoints([{
 			measurement: measurement,
 			tags: tags,
 			fields: fields,

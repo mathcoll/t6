@@ -429,7 +429,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							fields[0].text = text;
 						}
 
-						dbInfluxDB.writePoints([{
+						let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+						dbWrite.writePoints([{
 							measurement: "data",
 							tags: tags,
 							fields: fields[0],

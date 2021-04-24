@@ -230,7 +230,8 @@ router.all("*", function (req, res, next) {
 				req.session.cookie.secure = true;
 				req.session.user_id = req.user.id;
 
-				dbInfluxDB.writePoints([{
+				let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+				dbWrite.writePoints([{
 					measurement: "requests",
 					tags: tags,
 					fields: fields,
@@ -265,7 +266,8 @@ router.all("*", function (req, res, next) {
 	} else {
 		var tags = {rp: rp, user_id: "anonymous", session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 		var fields = {url: o.url};
-		dbInfluxDB.writePoints([{
+		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+		dbWrite.writePoints([{
 			measurement: "requests",
 			tags: tags,
 			fields: fields,
