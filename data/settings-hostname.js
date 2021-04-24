@@ -73,15 +73,24 @@ fs.access(mailDKIMCertificate, fs.constants.W_OK, err => {
 /* Database settings - Storage */
 db_type	= {
 	influxdb: true, // Does not make any sense to disable this feature... but...
+	telegraf: true,
+	sqlite3: false, // Do not activate it is deprecated
 };
 influxSettings		= {
-	host : "localhost",
-	port : 8086, // 8086 for direct influxdb 1.x version / 8186 when using a telegraf instance
-	protocol : "http",
 	username : "datawarehouse",
 	password : "datawarehouse",
 	database : "t6",
-	retentionPolicies:{"requests": "quota7d", "data": "autogen", "events": "autogen"}
+	retentionPolicies:{"requests": "quota7d", "data": "autogen", "events": "autogen"},
+	influxdb: {
+		host : "localhost",
+		protocol : "http",
+		port : 8086,
+	},
+	telegraf: {
+		host : "localhost",
+		protocol : "http",
+		port : 8186,
+	}
 };
 
 /* Quota settings */
