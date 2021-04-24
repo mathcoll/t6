@@ -203,6 +203,7 @@ router.all("*", function (req, res, next) {
 		req.user = jwtdecoded;
 	}
 	
+	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota7d";
 	if ( req.headers.authorization && req.user ) {
 		var limit = req.user!==null?(quota[req.user.role]).calls:-1;
 		if (req.user !== null && req.user.role  !== null ) {
@@ -219,12 +220,11 @@ router.all("*", function (req, res, next) {
 				//res.header("X-RateLimit-Reset", "");
 			}
 			res.header("Cache-Control", "no-cache, max-age=360, private, must-revalidate, proxy-revalidate");
-			
 			if( (req.user && i >= limit) ) {
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id, typeof req.user.id!=="undefined"?req.user.id:o.user_id);
 				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 			} else {
-				var tags = {user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+				var tags = {rp: rp, user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 				var fields = {url: o.url};
 
 				req.session.cookie.secure = true;
@@ -234,7 +234,7 @@ router.all("*", function (req, res, next) {
 					measurement: "requests",
 					tags: tags,
 					fields: fields,
-				}], { precision: "s", retentionPolicy: influxSettings.retentionPolicies.requests })
+				}], { precision: "s", retentionPolicy: rp })
 				.then(err => {
 					if (err) {
 						t6console.error(
@@ -263,13 +263,13 @@ router.all("*", function (req, res, next) {
 			}
 		});
 	} else {
-		var tags = {user_id: "anonymous", session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+		var tags = {rp: rp, user_id: "anonymous", session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
 		var fields = {url: o.url};
 		dbInfluxDB.writePoints([{
 			measurement: "requests",
 			tags: tags,
 			fields: fields,
-		}], { precision: "s", retentionPolicy: influxSettings.retentionPolicies.requests }).then(err => {
+		}], { precision: "s", retentionPolicy: rp }).then(err => {
 			if (err) {
 				t6console.error(
 					sprintf(

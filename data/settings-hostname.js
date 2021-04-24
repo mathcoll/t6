@@ -76,12 +76,12 @@ db_type	= {
 };
 influxSettings		= {
 	host : "localhost",
-	port : 8086,
+	port : 8086, // 8086 for direct influxdb 1.x version / 8186 when using a telegraf instance
 	protocol : "http",
 	username : "datawarehouse",
 	password : "datawarehouse",
 	database : "t6",
-	retentionPolicies:{"requests": "quota7d"}
+	retentionPolicies:{"requests": "quota7d", "data": "autogen", "events": "autogen"}
 };
 
 /* Quota settings */

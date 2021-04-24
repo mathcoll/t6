@@ -196,7 +196,8 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			group_by = sprintf("GROUP BY time(%s)", group);
 		}
 
-		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, group_by, sorting, limit, (page-1)*limit);
+		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen"
+		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, retention, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.log(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(data => {
@@ -411,6 +412,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				*/
 				if ( save === true ) {
 					t6sensorfusion.fuse(my_flow, payload);
+					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
 						var tags = {};
@@ -419,6 +421,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							tags.flow_id = flow_id;
 						}
 						tags.user_id = req.user.id;
+						tags.rp = rp;
 						if(typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null) {
 							tags.track_id = my_flow.track_id;
 						}
@@ -431,7 +434,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							tags: tags,
 							fields: fields[0],
 							timestamp: timestamp,
-						}], { retentionPolicy: "autogen", }).then(err => {
+						}], { retentionPolicy: rp }).then(err => {
 							if (err) {
 								t6console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 							}
