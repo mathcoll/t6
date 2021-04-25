@@ -26,6 +26,7 @@ global.t6notifications	= require("./t6notifications");
 global.t6events			= require("./t6events");
 global.t6console		= require("./t6console");
 global.t6otahistory		= require("./t6otahistory");
+global.t6sensorfusion	= require("./t6sensorfusion");
 
 var express				= require("express");
 var timeout				= require("connect-timeout");
@@ -63,14 +64,17 @@ global.Loess			= require("loess");
 global.D3Node			= require("d3-node");
 global.exec				= require("child_process").exec;
 global.t6events.setMeasurement("events");
-global.t6events.setRP("autogen");
+global.t6events.setRP(typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen");
 global.algorithm		= "aes-256-cbc";
 global.t6ConnectedObjects = [];
 if( db_type.influxdb === true ) {
 	var influx		= require("influx");
-	var dbString	= `${influxSettings.protocol}://${influxSettings.host}:${influxSettings.port}/${influxSettings.database}`;
+	var dbString	= `${influxSettings.influxdb.protocol}://${influxSettings.influxdb.host}:${influxSettings.influxdb.port}/${influxSettings.database}`;
 	dbInfluxDB		= new influx.InfluxDB(dbString);
-	t6console.info(`Activating influxdb: ${dbString}`);
+}
+if( db_type.telegraf === true ) {
+	var dbStringTelegraf	= `${influxSettings.telegraf.protocol}://${influxSettings.telegraf.host}:${influxSettings.telegraf.port}/${influxSettings.database}`;
+	dbTelegraf		= new influx.InfluxDB(dbStringTelegraf);
 }
 moduleLoadEndTime = new Date();
 
@@ -86,6 +90,12 @@ t6console.info(`Setting Error Logs to ${logErrorFile}`);
 t6console.info(`Log level: ${logLevel}`);
 t6console.info(`Environment: ${process.env.NODE_ENV}`);
 t6console.info(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
+if(dbTelegraf) {
+	t6console.info(`Activated telegraf for writing: ${dbStringTelegraf}`);
+}
+if(dbInfluxDB) {
+	t6console.info(`Activated influxdb for reading: ${dbString}`);
+}
 
 /* Main Database settings */
 var initDbMain = function() {

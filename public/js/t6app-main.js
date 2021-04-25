@@ -107,6 +107,7 @@ var app = {
 		"snippets": "widgets",
 		"status": "favorite",
 		"terms": "business_center",
+		"track": "call_merge",
 		"type": "label",
 		"units": "hourglass_empty",
 		"update": "update",

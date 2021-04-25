@@ -18,9 +18,10 @@ t6events.setRP = function(rp) {
 t6events.add = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
-		var tags = {what: what, where: where};
+		var tags = {rp: retention, what: what, where: where};
 		var fields = {who: who};
-		dbInfluxDB.writePoints([{
+		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+		dbWrite.writePoints([{
 			measurement: measurement,
 			tags: tags,
 			fields: fields,

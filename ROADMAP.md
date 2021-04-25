@@ -1,4 +1,10 @@
-## t6 api&PWA Roadmap
+## t6 Api&PWA Roadmap
+### Milestone 11: Sensor-Fusion
+  - [ ] Add processor to telegraf to customize fusion
+  - [x] Dispatch write datapoints to telegraf instead of influxDB
+  - [x] Instantiate a telegraf server
+  - [x] Create separate branch for sensor-Fusion
+
 ### Milestone 10: Objects localization / maps
   - [ ] Add filters to #objects-maps to customize displays
   - [ ] Add an operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map

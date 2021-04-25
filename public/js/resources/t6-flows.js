@@ -6,13 +6,12 @@ app.resources.flows = {
 			toast("No Flow id found!", {timeout:3000, type: "error"});
 		} else {
 			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-			
-			console.log(myForm.querySelector("input[name='MQTT Topic']").value);
 			var body = {
 				name: myForm.querySelector("input[name='Name']").value,
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 				data_type: myForm.querySelector("select[name='DataType']").value,
 				unit: myForm.querySelector("select[name='Unit']").value,
+				track_id: myForm.querySelector("input[name='Track']").value,
 				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?"true":"false",
 				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
@@ -58,6 +57,7 @@ app.resources.flows = {
 			mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 			data_type: myForm.querySelector("select[name='DataType']").value,
 			unit: myForm.querySelector("select[name='Unit']").value,
+			track_id: myForm.querySelector("input[name='Track']").value,
 			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?"true":"false",
 			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 		};
@@ -188,6 +188,13 @@ app.resources.flows = {
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
+					
+					node += app.getSubtitle("Sensor Fusion");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.track, "Track", flow.attributes.track_id===null?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
 
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+id+"'>";
 					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
@@ -234,7 +241,17 @@ app.resources.flows = {
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "show_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
+
+					if ( flow.attributes.track_id ) {
+						node += app.getSubtitle("Sensor Fusion");
+						node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+						node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+						node += app.getField(app.icons.track, "Track", flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: isEdit});
+						node += "	</div>";
+						node += "</section>";
+					}
 					
+					node += app.getSubtitle("Data preview");
 					node += "<section class='mdl-grid mdl-cell--12-col' id='"+flow.id+"'>";
 					node += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
 					node += "		<span class='mdl-list__item mdl-list__item--two-line'>";
@@ -281,7 +298,7 @@ app.resources.flows = {
 				
 				var c = document.createElement("div");
 				c.className = "page-content mdl-grid mdl-grid--no-spacing";
-				c.dataset.idsupercoollllll = flow.id;
+				c.dataset.flow_id = flow.id;
 				c.innerHTML = node;
 				(app.containers.flow).querySelector(".page-content").remove();
 				(app.containers.flow).appendChild(c);
@@ -386,6 +403,13 @@ app.resources.flows = {
 		if( !app.isLtr() ) {
 			node += "	<div class='mdl-layout-spacer'></div>";
 		}
+		node += "</section>";
+					
+		node += app.getSubtitle("Sensor Fusion");
+		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField(app.icons.track, "Track", flow.attributes.track_id===undefined?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: true});
+		node += "	</div>";
 		node += "</section>";
 
 		(app.containers.flow_add).querySelector(".page-content").innerHTML = node;
