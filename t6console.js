@@ -9,25 +9,25 @@ t6console.log = function(...logmessage) {
 
 t6console.debug = function(...debugmessage) {
 	if ( logLevel.indexOf("DEBUG") > -1 ) {
-		console.log(moment().format(logDateFormat), "[DEBUG]".cyan, debugmessage);
+		console.debug(moment().format(logDateFormat), "[DEBUG]".cyan, debugmessage);
 	}
 };
 
 t6console.info = function(...infomessage) {
 	if ( logLevel.indexOf("INFO") > -1 ) {
-		console.log(moment().format(logDateFormat), "[INFO]".blue, infomessage);
+		console.info(moment().format(logDateFormat), "[INFO]".blue, infomessage);
 	}
 };
 
 t6console.warn = function(...warningmessage) {
 	if ( logLevel.indexOf("WARNING") > -1 ) {
-		console.log(moment().format(logDateFormat), "[WARNING]".yellow, warningmessage);
+		console.warn(moment().format(logDateFormat), "[WARNING]".yellow, warningmessage);
 	}
 };
 
 t6console.warning = function(...warningmessage) {
 	if ( logLevel.indexOf("WARNING") > -1 ) {
-		console.log(moment().format(logDateFormat), "[WARNING]".yellow, warningmessage);
+		console.warn(moment().format(logDateFormat), "[WARNING]".yellow, warningmessage);
 	}
 };
 

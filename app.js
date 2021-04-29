@@ -386,7 +386,7 @@ t6console.info(sprintf("%s has started and listening to %s (using Build-Version=
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
-	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": moment().format("x"), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
+	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x")), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
 	t6console.info(sprintf("Connected to Mqtt broker on %s:%s - %s", mqttHost, mqttPort, mqttRoot));
 	mqttClient.subscribe("objects/status/#", function (err) {
 		if (!err) {
