@@ -64,6 +64,7 @@ global.statistics		= require("simple-statistics");
 global.Loess			= require("loess");
 global.D3Node			= require("d3-node");
 global.exec				= require("child_process").exec;
+global.changeCase		= require("change-case");
 global.t6events.setMeasurement("events");
 global.t6events.setRP(typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen");
 global.algorithm		= "aes-256-cbc";

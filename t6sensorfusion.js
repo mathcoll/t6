@@ -8,9 +8,51 @@ t6sensorfusion.export = function() {
 t6sensorfusion.preprocessor = function(flow, payload) {
 	let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:(typeof flow.preprocessor!=="undefined"?flow.preprocessor:{});
 	payload.preprocessor = typeof payload.preprocessor!="undefined"?payload.preprocessor:{};
-	if(typeof flow!=="undefined" && typeof flow.preprocessor!=="undefined") {
+	payload.preprocessor.initialValue = payload.value;
+	//if(typeof flow!=="undefined" && typeof flow.preprocessor!=="undefined") {
 		// payload.preprocessor can be an Array
-		switch(preprocessor) {
+		switch(preprocessor.type) {
+			case "change-case": // Convert strings between camelCase, PascalCase, Capital Case, snake_case and more
+				switch(preprocessor.transform) {
+					case "camelCase":
+						payload.value = changeCase.camelCase(payload.value.toString());
+						break;
+					case "capitalCase":
+						payload.value = changeCase.capitalCase(payload.value);
+						break;
+					case "constantCase":
+						payload.value = changeCase.constantCase(payload.value);
+						break;
+					case "dotCase":
+						payload.value = changeCase.dotCase(payload.value);
+						break;
+					case "headerCase":
+						payload.value = changeCase.headerCase(payload.value);
+						break;
+					case "noCase":
+						payload.value = changeCase.noCase(payload.value);
+						break;
+					case "paramCase":
+						payload.value = changeCase.paramCase(payload.value);
+						break;
+					case "pascalCase":
+						payload.value = changeCase.pascalCase(payload.value);
+						break;
+					case "pathCase":
+						payload.value = changeCase.pathCase(payload.value);
+						break;
+					case "sentenceCase":
+						payload.value = changeCase.sentenceCase(payload.value);
+						break;
+					case "snakeCase":
+						payload.value = changeCase.snakeCase(payload.value);
+						break;
+				}
+				if(preprocessor.transform === 0) {
+					payload.preprocessor.message = "Value cannot be null, unsaved";
+					payload.save = false;
+				}
+				break;
 			case "notnull": 
 				if(parseFloat(payload.value) === 0) {
 					payload.preprocessor.message = "Value cannot be null, unsaved";
@@ -23,13 +65,13 @@ t6sensorfusion.preprocessor = function(flow, payload) {
 					payload.save = false;
 				}
 				break;
-			default :
+			default:
 				payload.preprocessor.message = `No Preprocessor found for ${flow.preprocessor}`;
 				break;
 		}
-	} else {
-		payload.preprocessor.message = `No Preprocessor defined`;
-	}
+	//} else {
+	//	payload.preprocessor.message = `No Preprocessor defined`;
+	//}
 	payload.preprocessor.status = "completed";
 	return payload;
 };
