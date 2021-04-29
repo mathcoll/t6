@@ -36,6 +36,7 @@ var bodyParser			= require("body-parser");
 var bearer				= require("bearer");
 var pug					= require("pug");
 var compression			= require("compression");
+var colors				= require("colors");
 global.bcrypt			= require("bcrypt");
 global.crypto			= require("crypto");
 global.expressJwt		= require("express-jwt");
@@ -385,7 +386,7 @@ t6console.info(sprintf("%s has started and listening to %s (using Build-Version=
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
-	t6mqtt.publish(null, mqttInfo, JSON.stringify({"dtepoch": moment().format("x"), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
+	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": moment().format("x"), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
 	t6console.info(sprintf("Connected to Mqtt broker on %s:%s - %s", mqttHost, mqttPort, mqttRoot));
 	mqttClient.subscribe("objects/status/#", function (err) {
 		if (!err) {
@@ -396,7 +397,7 @@ mqttClient.on("connect", function () {
 mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split("objects/status/")[1];
 	let stat = message.toString();
-	t6console.info(sprintf("Object Status Changed: %s is %s", object, stat==="1"?"connected":"disconnected"), "("+message+")");
+	t6console.info(sprintf("Object Status Changed: %s is %s", object, stat==="1"?"visible":"hidden"), "("+message+")");
 	if ( stat === "1" && t6ConnectedObjects.indexOf(object)<0 ) {
 		t6ConnectedObjects.push(object);
 	} else {
