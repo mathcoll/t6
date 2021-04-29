@@ -1,14 +1,16 @@
 "use strict";
 var t6sensorfusion = module.exports = {};
 
-t6sensorfusion.export = function(rule) {
-	console.dir(JSON.stringify(rule));
+t6sensorfusion.export = function() {
+	console.dir(JSON.stringify());
 };
 
 t6sensorfusion.preprocessor = function(flow, payload) {
+	let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:(typeof flow.preprocessor!=="undefined"?flow.preprocessor:{});
 	payload.preprocessor = typeof payload.preprocessor!="undefined"?payload.preprocessor:{};
 	if(typeof flow!=="undefined" && typeof flow.preprocessor!=="undefined") {
-		switch(flow.preprocessor) {
+		// payload.preprocessor can be an Array
+		switch(preprocessor) {
 			case "notnull": 
 				if(parseFloat(payload.value) === 0) {
 					payload.preprocessor.message = "Value cannot be null, unsaved";
