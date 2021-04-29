@@ -69,8 +69,8 @@ global.algorithm		= "aes-256-cbc";
 global.t6ConnectedObjects = [];
 if( db_type.influxdb === true ) {
 	var influx		= require("influx");
-	var dbString	= `${influxSettings.influxdb.protocol}://${influxSettings.influxdb.host}:${influxSettings.influxdb.port}/${influxSettings.database}`;
-	dbInfluxDB		= new influx.InfluxDB(dbString);
+	var dbStringInfluxDB	= `${influxSettings.influxdb.protocol}://${influxSettings.influxdb.host}:${influxSettings.influxdb.port}/${influxSettings.database}`;
+	dbInfluxDB		= new influx.InfluxDB(dbStringInfluxDB);
 }
 if( db_type.telegraf === true ) {
 	var dbStringTelegraf	= `${influxSettings.telegraf.protocol}://${influxSettings.telegraf.host}:${influxSettings.telegraf.port}/${influxSettings.database}`;
@@ -94,7 +94,7 @@ if(dbTelegraf) {
 	t6console.info(`Activated telegraf for writing: ${dbStringTelegraf}`);
 }
 if(dbInfluxDB) {
-	t6console.info(`Activated influxdb for reading: ${dbString}`);
+	t6console.info(`Activated influxdb for reading: ${dbStringInfluxDB}`);
 }
 
 /* Main Database settings */

@@ -380,6 +380,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		var envelope = {
 			from:		from,
 			to:			bcc,
+			user_id:	payload.user_id?payload.user_id:to,
 			subject:	"dbInfluxDB ERR",
 			text:		"Html email client is required",
 			html:		err
@@ -392,6 +393,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 	if ( !payload.environment ) {
 		payload.environment = process.env.NODE_ENV;
+	}
+	if ( !payload.text ) {
+		payload.text = "";
 	}
 	if ( !payload.mqtt_topic ) {
 		payload.mqtt_topic = mqtt_topic;

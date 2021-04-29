@@ -410,8 +410,18 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				t6console.debug("fields = "+ fields[0]);
 				t6console.debug("timestamp = "+ timestamp);
 				*/
+				//t6console.log("payload = ", payload);
+				payload = t6sensorfusion.preprocessor(my_flow, payload);
+				value = payload.value;
+				save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+				unit = typeof payload.unit!=="undefined"?payload.unit:"";
+				mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+				latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
+				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
+				text = typeof payload.text!=="undefined"?payload.text:"";
+				//payload = await t6sensorfusion.fuse(my_flow, payload);
+			
 				if ( save === true ) {
-					t6sensorfusion.fuse(my_flow, payload);
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
@@ -422,10 +432,10 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						}
 						tags.user_id = req.user.id;
 						tags.rp = rp;
-						if(typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null) {
+						if(typeof my_flow!=="undefined" && (typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null)) {
 							tags.track_id = my_flow.track_id;
 						}
-						if (text!== "") {
+						if (text!=="") {
 							fields[0].text = text;
 						}
 
@@ -487,6 +497,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields[0].datatype = datatype;
 				fields[0].publish = publish;
 				fields[0].mqtt_topic = mqtt_topic;
+				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
 
 				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
