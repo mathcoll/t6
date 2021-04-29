@@ -398,6 +398,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					value = ""+value;
 					fields[0] = {time:""+time, valueString: value,};
 				}
+				payload.value = value;
 				// End casting
 				
 				/*
