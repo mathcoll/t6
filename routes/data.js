@@ -368,6 +368,29 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			t6console.debug("Prerequisite Index=", prerequisite, "(>0 means something is required.)");
 			*/
 			if ( prerequisite <= 0 ) {
+				/*
+				t6console.debug("value = "+ value);
+				t6console.debug("datatype = "+ datatype);
+				t6console.debug("text = "+ text);
+				t6console.debug("influxdb = "+ db_type.influxdb);
+				t6console.debug("save = "+ save);
+				t6console.debug("tags = "+ tags);
+				t6console.debug("fields = "+ fields[0]);
+				t6console.debug("timestamp = "+ timestamp);
+				*/
+				//t6console.log("payload = ", payload);
+				payload.value = value;
+				payload.user_id = req.user.id;
+				payload = t6sensorfusion.preprocessor(my_flow, payload);
+				value = payload.value;
+				save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+				unit = typeof payload.unit!=="undefined"?payload.unit:"";
+				mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+				latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
+				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
+				text = typeof payload.text!=="undefined"?payload.text:"";
+				//payload = await t6sensorfusion.fuse(my_flow, payload);
+				
 				// Cast value according to Flow settings
 				var fields = [];
 				if ( datatype === "boolean" ) {
@@ -398,29 +421,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					value = ""+value;
 					fields[0] = {time:""+time, valueString: value,};
 				}
-				payload.value = value;
 				// End casting
-				
-				/*
-				t6console.debug("value = "+ value);
-				t6console.debug("datatype = "+ datatype);
-				t6console.debug("text = "+ text);
-				t6console.debug("influxdb = "+ db_type.influxdb);
-				t6console.debug("save = "+ save);
-				t6console.debug("tags = "+ tags);
-				t6console.debug("fields = "+ fields[0]);
-				t6console.debug("timestamp = "+ timestamp);
-				*/
-				//t6console.log("payload = ", payload);
-				payload = t6sensorfusion.preprocessor(my_flow, payload);
-				value = payload.value;
-				save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
-				unit = typeof payload.unit!=="undefined"?payload.unit:"";
-				mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
-				latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
-				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
-				text = typeof payload.text!=="undefined"?payload.text:"";
-				//payload = await t6sensorfusion.fuse(my_flow, payload);
 			
 				if ( save === true ) {
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
@@ -500,7 +501,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields[0].publish = publish;
 				fields[0].mqtt_topic = mqtt_topic;
 				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
-				t6console.log(fields);
 
 				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
