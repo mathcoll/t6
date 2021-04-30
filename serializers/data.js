@@ -20,10 +20,10 @@ function DataSerializer(data) {
 			},
 			dataLinks : {
 				self : function(d) {
-					if ( typeof d.id!=="undefined" ) {
+					if ( typeof d.id!=="undefined" && d.save===true ) {
 						return sprintf("%s/v%s/data/%s", baseUrl_https, version, d.id);
 					} else {
-						return null;
+						return undefined;
 					}
 				},
 			},

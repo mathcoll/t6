@@ -486,6 +486,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 
 				fields.flow_id = flow_id;
 				fields.id = time*1000000;
+				fields[0].save = JSON.parse(save);
 				fields[0].flow_id = flow_id;
 				fields[0].parent;
 				fields[0].first;
@@ -499,6 +500,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields[0].publish = publish;
 				fields[0].mqtt_topic = mqtt_topic;
 				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
+				t6console.log(fields);
 
 				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
