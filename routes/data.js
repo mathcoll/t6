@@ -337,6 +337,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 		var latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
 		var longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
 		var text		= typeof payload.text!=="undefined"?payload.text:"";
+		var fields;
 
 		if ( !flow_id || !req.user.id ) {
 			// Not Authorized because token is invalid
@@ -370,7 +371,13 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				payload.value = value;
 				payload.datatype = datatype;
 				payload.user_id = req.user.id;
-				payload = t6sensorfusion.preprocessor(my_flow, payload);
+				payload.preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:[];
+				payload.preprocessor.push({"name": "sanitize", "datatype": datatype});
+				let preprocess = t6sensorfusion.preprocessor(my_flow, payload);
+				
+				payload = preprocess.payload;
+				fields = preprocess.fields;
+				
 				value = payload.value;
 				save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 				unit = typeof payload.unit!=="undefined"?payload.unit:"";
@@ -379,38 +386,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
 				//payload = t6sensorfusion.fuse(my_flow, payload);
-				
-				// Cast value according to Flow settings
-				var fields = [];
-				if ( datatype === "boolean" ) {
-					value = str2bool(value);
-					fields[0] = {time:""+time, valueBoolean: value,};
-				} else if ( datatype === "date" ) {
-					value = value;
-					fields[0] = {time:""+time, valueDate: value,};
-				} else if ( datatype === "integer" ) {
-					value = parseInt(value, 10);
-					fields[0] = {time:""+time, valueInteger: value+"i",};
-				} else if ( datatype === "json" ) {
-					value = {value:value,};
-					fields[0] = {time:""+time, valueJson: value,};
-				} else if ( datatype === "string" ) {
-					value = ""+value;
-					fields[0] = {time:""+time, valueString: value,};
-				} else if ( datatype === "time" ) {
-					value = value;
-					fields[0] = {time:""+time, valueTime: value,};
-				} else if ( datatype === "float" ) {
-					value = parseFloat(value);
-					fields[0] = {time:""+time, valueFloat: value,};
-				} else if ( datatype === "geo" ) {
-					value = ""+value;
-					fields[0] = {time:""+time, valueString: value,};
-				} else {
-					value = ""+value;
-					fields[0] = {time:""+time, valueString: value,};
-				}
-				// End casting
 			
 				if ( save === true ) {
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";

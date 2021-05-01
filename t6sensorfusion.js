@@ -21,6 +21,7 @@ t6sensorfusion.cryptValue = function(value, sender, encoding) {
 }
 
 t6sensorfusion.preprocessor = function(flow, payload) {
+	let fields = [];
 	let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:(typeof flow.preprocessor!=="undefined"?flow.preprocessor:{});
 	preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 	payload.preprocessor = typeof payload.preprocessor!="undefined"?payload.preprocessor:[];
@@ -35,6 +36,56 @@ t6sensorfusion.preprocessor = function(flow, payload) {
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
 				}
+				break;
+			case "sanitize": // Sanitize value
+				let time= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
+				if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
+				if (pp.datatype) {
+					switch(pp.datatype) {
+						case "boolean":
+							payload.value = validator.toBoolean(payload.value, false);
+							fields[0] = {time:""+time, valueBoolean: payload.value,};
+							break;
+						case "date":
+							payload.value = validator.toDate(payload.value);
+							fields[0] = {time:""+time, valueDate: payload.value,};
+							break;
+						case "float":
+							//payload.value = validator.toFloat(payload.value); // https://github.com/validatorjs/validator.js/issues/1663
+							payload.value = parseFloat(payload.value);
+							fields[0] = {time:""+time, valueFloat: payload.value,};
+							break;
+						case "geo":
+							payload.value = ""+payload.value;
+							fields[0] = {time:""+time, valueString: payload.value,};
+							break;
+						case "integer":
+							payload.value = validator.toInt(payload.value, 10);
+							fields[0] = {time:""+time, valueInteger: payload.value+"i",};
+							break;
+						case "json":
+							payload.value = {value:payload.value,};
+							fields[0] = {time:""+time, valueJson: payload.value,};
+							break;
+						case "string":
+							payload.value = ""+payload.value;
+							fields[0] = {time:""+time, valueString: payload.value,};
+							break;
+						case "time":
+							payload.value = payload.value ;
+							fields[0] = {time:""+time, valueTime: payload.value,};
+							break;
+						default:
+							payload.value = ""+payload.value;
+							fields[0] = {time:""+time, valueString: payload.value,};
+							break;
+					}
+					pp.message = `Converted to ${pp.datatype}.`;
+				} else {
+					fields[0] = {time:""+time, valueString: payload.value,};
+					pp.message = `Not datatype to convert to. Default to String.`;
+				}
+			
 				break;
 			case "transform": // Transform value
 				switch(pp.mode) {
@@ -53,43 +104,44 @@ t6sensorfusion.preprocessor = function(flow, payload) {
 						}
 						break;
 					case "camelCase":
-						payload.value = changeCase.camelCase(payload.value.toString());
+						payload.value = changeCase.camelCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "capitalCase":
-						payload.value = changeCase.capitalCase(payload.value.toString());
+						payload.value = changeCase.capitalCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "upperCase":
 						payload.value = payload.value.toUpperCase();
 						break;
 					case "constantCase":
-						payload.value = changeCase.constantCase(payload.value.toString());
+						payload.value = changeCase.constantCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "dotCase":
-						payload.value = changeCase.dotCase(payload.value.toString());
+						payload.value = changeCase.dotCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "headerCase":
-						payload.value = changeCase.headerCase(payload.value.toString());
+						payload.value = changeCase.headerCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "noCase":
-						payload.value = changeCase.noCase(payload.value.toString());
+						payload.value = changeCase.noCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "paramCase":
-						payload.value = changeCase.paramCase(payload.value.toString());
+						payload.value = changeCase.paramCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "pascalCase":
-						payload.value = changeCase.pascalCase(payload.value.toString());
+						payload.value = changeCase.pascalCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "pathCase":
-						payload.value = changeCase.pathCase(payload.value.toString());
+						payload.value = changeCase.pathCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "sentenceCase":
-						payload.value = changeCase.sentenceCase(payload.value.toString());
+						payload.value = changeCase.sentenceCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 					case "snakeCase":
-						payload.value = changeCase.snakeCase(payload.value.toString());
+						payload.value = changeCase.snakeCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 						break;
 				}
 				pp.transformedValue = payload.value;
+				pp.message = `Transformed to ${pp.mode}.`;
 				break;
 			default:
 				pp.message = flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
@@ -99,7 +151,7 @@ t6sensorfusion.preprocessor = function(flow, payload) {
 		i++;
 	});
 	
-	return payload;
+	return {payload, fields};
 };
 
 t6sensorfusion.fuse = function(flow, payload) {
