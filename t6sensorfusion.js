@@ -28,7 +28,7 @@ t6sensorfusion.preprocessor = function(flow, payload) {
 	preprocessor.map(function(pp) {
 		pp.initialValue = payload.value;
 		switch(pp.name) {
-			case "validation": // Reject non-valid value
+			case "validate": // Reject non-valid value
 				switch(pp.test) {
 					case "isEmail":
 						payload.save = validator.isEmail(payload.value.toString())===false?false:payload.save;
