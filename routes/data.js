@@ -344,8 +344,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 		} else {
 			flows		= db.getCollection("flows");
 			datatypes	= db.getCollection("datatypes");
-			var f = flows.chain().find({id: ""+flow_id,}).limit(1);
-			let my_flow = f.data()[0];
+			var f = flows.chain().find({id: ""+flow_id,}).limit(1); // TODO: should be more restrictive by adding constraint on user_id, as the flow sharing is not yet planned
+			let my_flow = f.data()[0]; // Warning TODO, my_flow can be unset when user posting to fake flow_id
 			var join = f.eqJoin(datatypes.chain(), "data_type", "id");
 			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].left && (f.data())[0].left.mqtt_topic ) {
 				mqtt_topic = (f.data())[0].left.mqtt_topic;
@@ -353,33 +353,22 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			var datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:null;
 			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_encrypted && !isEncrypted ) {
 				//t6console.log("(f.data())[0].left", (f.data())[0].left);
+				t6console.debug("Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
+				t6console.debug(".. & Payload isEncrypted", isEncrypted);
 				prerequisite += 1;
 			}
 			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_signed && !isSigned ) {
 				//t6console.log("(f.data())[0].left", (f.data())[0].left);
+				t6console.debug("Flow require isSigned -", (f.data())[0].left.require_signed);
+				t6console.debug(".. & Payload isSigned", isSigned);
 				prerequisite += 1;
 			}
-			/*
-			t6console.debug("payload=", payload);
-			t6console.debug("Flow require isSigned -", (f.data())[0].left.require_signed);
-			t6console.debug(".. & Payload isSigned", isSigned);
-			t6console.debug("Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
-			t6console.debug(".. & Payload isEncrypted", isEncrypted);
+
 			t6console.debug("Prerequisite Index=", prerequisite, "(>0 means something is required.)");
-			*/
 			if ( prerequisite <= 0 ) {
-				/*
-				t6console.debug("value = "+ value);
-				t6console.debug("datatype = "+ datatype);
-				t6console.debug("text = "+ text);
-				t6console.debug("influxdb = "+ db_type.influxdb);
-				t6console.debug("save = "+ save);
-				t6console.debug("tags = "+ tags);
-				t6console.debug("fields = "+ fields[0]);
-				t6console.debug("timestamp = "+ timestamp);
-				*/
 				//t6console.log("payload = ", payload);
 				payload.value = value;
+				payload.datatype = datatype;
 				payload.user_id = req.user.id;
 				payload = t6sensorfusion.preprocessor(my_flow, payload);
 				value = payload.value;
@@ -389,7 +378,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
-				//payload = await t6sensorfusion.fuse(my_flow, payload);
+				//payload = t6sensorfusion.fuse(my_flow, payload);
 				
 				// Cast value according to Flow settings
 				var fields = [];
