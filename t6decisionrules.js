@@ -231,6 +231,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		});
 
+		engine.on("failure", function(rule, almanac) {
+			//t6console.error("decisionrule failure rule : ", rule);
+			//t6console.error("decisionrule failure almanac : ", almanac);
+		});
+		
 		engine.on("success", function(event, almanac, ruleResult) {
 			if ( !payload.mqtt_topic ) {
 				if ( event.params.mqtt_topic ) {
