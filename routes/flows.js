@@ -3,7 +3,7 @@ var express = require("express");
 var router = express.Router();
 var FlowSerializer = require("../serializers/flow");
 var ErrorSerializer = require("../serializers/error");
-var flows;
+let flows;
 
 function str2bool(v) {
 	return [true, "yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
@@ -55,7 +55,7 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 				query = { "user_id" : req.user.id };
 			}
 		}
-		var flow = flows.chain().find(query).offset(offset).limit(size).data();
+		let flow = flows.chain().find(query).offset(offset).limit(size).data();
 		/*
 		units	= db.getCollection("units");
 		var flow = flows.chain().find(query).offset(offset).limit(size);
@@ -133,6 +133,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
+					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
 				};
 				t6events.add("t6Api", "flow add", newFlow.id, req.user.id);
 				flows.insert(newFlow);
@@ -204,6 +205,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
 						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
+						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
 						result = item;
 					});
 					if ( typeof result !== "undefined" ) {

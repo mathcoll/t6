@@ -5,7 +5,7 @@ function DataSerializer(data) {
 	this.serialize = function() {
 		return new JSONAPISerializer("data", {
 			keyForAttribute: "underscore_case",
-			attributes : [ "time", "timestamp", "value" ],
+			attributes : [ "time", "timestamp", "value", "preprocessor" ],
 			topLevelLinks : {
 				parent	: data.parent>0?sprintf("%s/v%s/flows/%s", baseUrl_https, version, data.flow_id):undefined,
 				self	: data.pageSelf>0?sprintf("%s/v%s/data/%s?limit=%s&page=%s&sort=%s", baseUrl_https, version, data.flow_id, data.limit, data.pageSelf, data.sort):undefined,
@@ -20,10 +20,10 @@ function DataSerializer(data) {
 			},
 			dataLinks : {
 				self : function(d) {
-					if ( typeof d.id!=="undefined" ) {
-						return sprintf("%s/v%s/data/%s", baseUrl_https, version, d.id);
+					if ( typeof d.id!=="undefined" && d.save===true ) {
+						return sprintf("%s/v%s/data/%s/%s", baseUrl_https, version, d.flow_id, d.id);
 					} else {
-						return null;
+						return undefined;
 					}
 				},
 			},

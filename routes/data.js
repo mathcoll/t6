@@ -3,14 +3,11 @@ var express = require("express");
 var router = express.Router();
 var DataSerializer = require("../serializers/data");
 var ErrorSerializer = require("../serializers/error");
-var flows;
-var objects;
-var datatypes;
-var units;
+let flows;
+let objects;
+let datatypes;
+let units;
 
-function str2bool(v) {
-	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
-}
 function getJson(v) {
 	try {
 		return JSON.parse(v);
@@ -120,7 +117,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
 	} else {
 		flows = db.getCollection("flows");
-		units	= db.getCollection("units");
+		units = db.getCollection("units");
 
 		let where = "";
 		if ( data_id ) {
@@ -165,14 +162,14 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			limit = 1;
 		}
 
-		var flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
-		var join = flow.eqJoin(units.chain(), "unit", "id");
+		let flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
+		let join = flow.eqJoin(units.chain(), "unit", "id");
 
-		var flowsDT = db.getCollection("flows");
+		let flowsDT = db.getCollection("flows");
 		datatypes	= db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
-		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
-		var datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
+		let flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
+		let joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
+		let datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 		let fields;
 
 		if ( typeof modifier!=="undefined" ) {
@@ -196,7 +193,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			group_by = sprintf("GROUP BY time(%s)", group);
 		}
 
-		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen"
+		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, retention, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.log(sprintf("Query: %s", query));
 
@@ -273,7 +270,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 	let isEncrypted = false;
 	let isSigned = false;
 	let prerequisite = 0;
-	var object_id = payload.object_id;
+	let object_id = payload.object_id;
 
 	if ( payload.signedPayload || payload.encryptedPayload ) {
 		var cert = jwtsettings.secret; //- fs.readFileSync("private.key");
@@ -337,6 +334,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 		var latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
 		var longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
 		var text		= typeof payload.text!=="undefined"?payload.text:"";
+		var fields;
 
 		if ( !flow_id || !req.user.id ) {
 			// Not Authorized because token is invalid
@@ -344,74 +342,50 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 		} else {
 			flows		= db.getCollection("flows");
 			datatypes	= db.getCollection("datatypes");
-			var f = flows.chain().find({id: ""+flow_id,}).limit(1);
-			let my_flow = f.data()[0];
-			var join = f.eqJoin(datatypes.chain(), "data_type", "id");
-			if ( !mqtt_topic && (f.data())[0] && (f.data())[0].left && (f.data())[0].left.mqtt_topic ) {
-				mqtt_topic = (f.data())[0].left.mqtt_topic;
+			let f = flows.chain().find({id: ""+flow_id, user_id: req.user.id,}).limit(1);
+			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id
+			let join = f.eqJoin(datatypes.chain(), "data_type", "id");
+			let datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:null;
+			if ( !mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
+				mqtt_topic = ((f.data())[0].left).mqtt_topic;
 			}
-			var datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:null;
-			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_encrypted && !isEncrypted ) {
+			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !isEncrypted ) {
 				//t6console.log("(f.data())[0].left", (f.data())[0].left);
+				t6console.debug("Flow require isEncrypted -", current_flow.left.require_encrypted);
+				t6console.debug(".. & Payload isEncrypted", isEncrypted);
 				prerequisite += 1;
 			}
-			if ( typeof (f.data())[0]!=="undefined" && (f.data())[0].left.require_signed && !isSigned ) {
-				//t6console.log("(f.data())[0].left", (f.data())[0].left);
+			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !isSigned ) {
+				//t6console.log("current_flow.left", current_flow.left);
+				t6console.debug("Flow require isSigned -", current_flow.left.require_signed);
+				t6console.debug(".. & Payload isSigned", isSigned);
 				prerequisite += 1;
 			}
-			/*
-			t6console.debug("payload=", payload);
-			t6console.debug("Flow require isSigned -", (f.data())[0].left.require_signed);
-			t6console.debug(".. & Payload isSigned", isSigned);
-			t6console.debug("Flow require isEncrypted -", (f.data())[0].left.require_encrypted);
-			t6console.debug(".. & Payload isEncrypted", isEncrypted);
-			t6console.debug("Prerequisite Index=", prerequisite, "(>0 means something is required.)");
-			*/
+
+			t6console.debug("Prerequisite Index=", prerequisite, "(when >0 it means something is required.)");
 			if ( prerequisite <= 0 ) {
-				// Cast value according to Flow settings
-				var fields = [];
-				if ( datatype === "boolean" ) {
-					value = str2bool(value);
-					fields[0] = {time:""+time, valueBoolean: value,};
-				} else if ( datatype === "date" ) {
-					value = value;
-					fields[0] = {time:""+time, valueDate: value,};
-				} else if ( datatype === "integer" ) {
-					value = parseInt(value, 10);
-					fields[0] = {time:""+time, valueInteger: value+"i",};
-				} else if ( datatype === "json" ) {
-					value = {value:value,};
-					fields[0] = {time:""+time, valueJson: value,};
-				} else if ( datatype === "string" ) {
-					value = ""+value;
-					fields[0] = {time:""+time, valueString: value,};
-				} else if ( datatype === "time" ) {
-					value = value;
-					fields[0] = {time:""+time, valueTime: value,};
-				} else if ( datatype === "float" ) {
-					value = parseFloat(value);
-					fields[0] = {time:""+time, valueFloat: value,};
-				} else if ( datatype === "geo" ) {
-					value = ""+value;
-					fields[0] = {time:""+time, valueString: value,};
-				} else {
-					value = ""+value;
-					fields[0] = {time:""+time, valueString: value,};
-				}
-				// End casting
+				payload.user_id = req.user.id; //to get the Object
 				
-				/*
-				t6console.debug("value = "+ value);
-				t6console.debug("datatype = "+ datatype);
-				t6console.debug("text = "+ text);
-				t6console.debug("influxdb = "+ db_type.influxdb);
-				t6console.debug("save = "+ save);
-				t6console.debug("tags = "+ tags);
-				t6console.debug("fields = "+ fields[0]);
-				t6console.debug("timestamp = "+ timestamp);
-				*/
-				if ( save === true ) {
-					t6sensorfusion.fuse(my_flow, payload);
+				let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
+				preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
+				preprocessor.push({"name": "sanitize", "datatype": datatype});
+				let result = t6sensorfusion.preprocessor(current_flow, payload, preprocessor);
+				payload = result.payload;
+				preprocessor = result.preprocessor;
+				payload.preprocessor = result.preprocessor;
+				fields = result.fields;
+
+				/* might be moved to preprocessor */
+				save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+				unit = typeof payload.unit!=="undefined"?payload.unit:"";
+				mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+				latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
+				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
+				text = typeof payload.text!=="undefined"?payload.text:"";
+				/* end might be moved to preprocessor */
+				//payload = t6sensorfusion.fuse(my_flow, payload);
+
+				if ( save === true ) { // TODO : make sure preprocessor is completed before saving value
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
@@ -422,10 +396,10 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						}
 						tags.user_id = req.user.id;
 						tags.rp = rp;
-						if(typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null) {
+						if(typeof my_flow!=="undefined" && (typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null)) {
 							tags.track_id = my_flow.track_id;
 						}
-						if (text!== "") {
+						if (text!=="") {
 							fields[0].text = text;
 						}
 
@@ -445,8 +419,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					}
 				}
 
-				if ( publish === true ) {
-					let payloadFact = {"dtepoch": time, "value": value, "flow": flow_id}; // This is the minimal payload
+				if ( publish === true ) { // TODO : make sure preprocessor is completed before passing to Rule engine
+					let payloadFact = {"dtepoch": time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": payload.flow_id, "datatype": datatype, "mqtt_topic": typeof mqtt_topic!=="undefined"?(mqtt_topic).toString():""}; // This is the minimal payload
 					if ( typeof object_id !== "undefined" ) {
 						payloadFact.object_id = object_id;
 						objects	= db.getCollection("objects");
@@ -461,6 +435,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							payloadFact.object = object;
 						}
 					}
+					
 					if ( text ) {
 						payloadFact.text = text;
 					}
@@ -475,6 +450,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 
 				fields.flow_id = flow_id;
 				fields.id = time*1000000;
+				fields[0].save = JSON.parse(save);
 				fields[0].flow_id = flow_id;
 				fields[0].parent;
 				fields[0].first;
@@ -483,10 +459,11 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields[0].id = time*1000000;
 				fields[0].time = time*1000000;
 				fields[0].timestamp = time*1000000;
-				fields[0].value = value;
+				fields[0].value = payload.value;
 				fields[0].datatype = datatype;
 				fields[0].publish = publish;
 				fields[0].mqtt_topic = mqtt_topic;
+				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
 
 				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
