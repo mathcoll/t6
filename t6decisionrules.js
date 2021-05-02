@@ -231,6 +231,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		});
 
+		engine.on("failure", function(rule, almanac) {
+			//t6console.error("decisionrule failure rule : ", rule);
+			//t6console.error("decisionrule failure almanac : ", almanac);
+		});
+		
 		engine.on("success", function(event, almanac, ruleResult) {
 			if ( !payload.mqtt_topic ) {
 				if ( event.params.mqtt_topic ) {
@@ -248,7 +253,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			t6events.add("t6App", `Matching_EventType_${event.type}`, user_id, user_id, {"type": event.type, "user_id": user_id, "rule_id": event.params.rule_id});
 			t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 			if( event.type === "mqttPublish" ) {
-				let mqttPayload = {dtepoch:payload.dtepoch, value:payload.value, flow: payload.flow};
+				let mqttPayload = {date: moment(parseInt(payload.dtepoch)).format("LLL"), dtepoch:parseInt(payload.dtepoch, 10), value:payload.value, flow: payload.flow};
 				if ( typeof payload.message !== "undefined" ) {
 					mqttPayload.message = payload.message;
 				}
@@ -373,13 +378,14 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			} else {
 				t6console.warn(sprintf("No matching EventType: %s", event.type));
 			}
-			t6mqtt.publish(null, mqttInfo+"/ruleEvents/"+user_id, JSON.stringify({"dtepoch":moment().format("x"),"message":sprintf("Rule %s, EventType: %s", event.params.rule_id, event.type), "environment": process.env.NODE_ENV}), true);
+			t6mqtt.publish(null, mqttInfo+"/ruleEvents/"+user_id, JSON.stringify({"date":moment().format("LLL"), "dtepoch":parseInt(moment().format("x"), 10),"EventType": event.type, "rule_id": event.params.rule_id, "message":"Rule matching EventType", "environment": process.env.NODE_ENV}), true);
 		});
 		engine.run(payload);
 	}).catch(err => {
 		var envelope = {
 			from:		from,
 			to:			bcc,
+			user_id:	payload.user_id?payload.user_id:to,
 			subject:	"dbInfluxDB ERR",
 			text:		"Html email client is required",
 			html:		err
@@ -392,6 +398,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 	if ( !payload.environment ) {
 		payload.environment = process.env.NODE_ENV;
+	}
+	if ( !payload.text ) {
+		payload.text = "";
 	}
 	if ( !payload.mqtt_topic ) {
 		payload.mqtt_topic = mqtt_topic;

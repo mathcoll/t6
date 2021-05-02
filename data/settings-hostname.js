@@ -67,7 +67,7 @@ fs.access(mailDKIMCertificate, fs.constants.W_OK, err => {
 			}
 		});
 	}
-	t6console.info(`${mailDKIMCertificate} ${err ? "is not not found. Transporter is not using DKIM" : "Transporter is using DKIM certificate."}`);
+	t6console.info(`mailDKIMCertificate ${err ? "is not not found. Transporter is not using DKIM" : "found. Transporter is using DKIM certificate."}`);
 });
 
 /* Database settings - Storage */
