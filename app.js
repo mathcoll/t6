@@ -87,17 +87,17 @@ process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on("uncaughtException", function(err) {
 	t6console.error((err && err.stack) ? err.stack : err);
 });
-t6console.info(`Starting ${appName} v${VERSION}, using node v${process.versions.node}`);
-t6console.info(`Setting Access Logs to ${logAccessFile}`);
-t6console.info(`Setting Error Logs to ${logErrorFile}`);
-t6console.info(`Log level: ${logLevel}`);
-t6console.info(`Environment: ${process.env.NODE_ENV}`);
-t6console.info(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
+t6console.log(`Starting ${appName} v${VERSION}, using node v${process.versions.node}`);
+t6console.log(`Setting Access Logs to ${logAccessFile}`);
+t6console.log(`Setting Error Logs to ${logErrorFile}`);
+t6console.log(`Log level: ${logLevel}`);
+t6console.log(`Environment: ${process.env.NODE_ENV}`);
+t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
 if(dbTelegraf) {
-	t6console.info(`Activated telegraf for writing: ${dbStringTelegraf}`);
+	t6console.log(`Activated telegraf for writing: ${dbStringTelegraf}`);
 }
 if(dbInfluxDB) {
-	t6console.info(`Activated influxdb for reading: ${dbStringInfluxDB}`);
+	t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
 }
 
 /* Main Database settings */
@@ -105,12 +105,12 @@ var initDbMain = function() {
 	if ( db.getCollection("objects") === null ) {
 		t6console.error("- Collection Objects is failing");
 	} else {
-		t6console.info(db.getCollection("objects").count(), "resources in Objects collection.");
+		t6console.log(db.getCollection("objects").count(), "resources in Objects collection.");
 	}
 	if ( db.getCollection("flows") === null ) {
 		t6console.error("- Collection Flows is failing");
 	} else {
-		t6console.info(db.getCollection("flows").count(), "resources in Flows collection.");
+		t6console.log(db.getCollection("flows").count(), "resources in Flows collection.");
 	}
 	if ( db.getCollection("users") === null ) {
 		t6console.error("- Collection Users is failing");
@@ -124,17 +124,17 @@ var initDbMain = function() {
 		let tokens	= db.getCollection("tokens");
 		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
 		if ( expired ) { tokens.remove(expired); db.save(); }
-		t6console.info(db.getCollection("tokens").count(), "resources in Tokens collection (in db).");
+		t6console.log(db.getCollection("tokens").count(), "resources in Tokens collection (in db).");
 	}
 	if ( db.getCollection("units") === null ) {
 		t6console.error("- Collection Units is failing");
 	} else {
-		t6console.info(db.getCollection("units").count(), "resources in Units collection.");
+		t6console.log(db.getCollection("units").count(), "resources in Units collection.");
 	}
 	if ( db.getCollection("datatypes") === null ) {
 		t6console.error("- Collection Datatypes is failing");
 	} else {
-		t6console.info(db.getCollection("datatypes").count(), "resources in Datatypes collection.");
+		t6console.log(db.getCollection("datatypes").count(), "resources in Datatypes collection.");
 	}
 }
 var initDbRules = function() {
@@ -144,7 +144,7 @@ var initDbRules = function() {
 	if ( dbRules.getCollection("rules") === null ) {
 		t6console.error("- Collection Rules is failing");
 	} else {
-		t6console.info(dbRules.getCollection("rules").count(), "resources in Rules collection.");
+		t6console.log(dbRules.getCollection("rules").count(), "resources in Rules collection.");
 	}
 }
 var initDbSnippets = function() {
@@ -154,7 +154,7 @@ var initDbSnippets = function() {
 	if ( dbSnippets.getCollection("snippets") === null ) {
 		t6console.error("- Collection Snippets is failing");
 	} else {
-		t6console.info(dbSnippets.getCollection("snippets").count(), "resources in Snippets collection.");
+		t6console.log(dbSnippets.getCollection("snippets").count(), "resources in Snippets collection.");
 	}
 }
 var initDbDashboards = function() {
@@ -164,7 +164,7 @@ var initDbDashboards = function() {
 	if ( dbDashboards.getCollection("dashboards") === null ) {
 		t6console.error("- Collection Dashboards is failing");
 	} else {
-		t6console.info(dbDashboards.getCollection("dashboards").count(), "resources in Dashboards collection.");
+		t6console.log(dbDashboards.getCollection("dashboards").count(), "resources in Dashboards collection.");
 	}
 }
 var initDbTokens = function() {
@@ -178,7 +178,7 @@ var initDbTokens = function() {
 		let tokens	= dbTokens.getCollection("tokens");
 		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
 		if ( expired ) { tokens.remove(expired); db.save(); }
-		t6console.info(dbTokens.getCollection("tokens").count(), "resources in Tokens collection (in separate db).");
+		t6console.log(dbTokens.getCollection("tokens").count(), "resources in Tokens collection (in separate db).");
 	}
 }
 var initDbSources = function() {
@@ -188,7 +188,7 @@ var initDbSources = function() {
 	if ( dbSources.getCollection("sources") === null ) {
 		t6console.error("- Collection Sources is failing");
 	} else {
-		t6console.info(dbSources.getCollection("sources").count(), "resources in Sources collection.");
+		t6console.log(dbSources.getCollection("sources").count(), "resources in Sources collection.");
 	}
 }
 var initDbOtaHistory = function() {
@@ -198,7 +198,7 @@ var initDbOtaHistory = function() {
 	if ( dbOtaHistory.getCollection("otahistory") === null ) {
 		t6console.error("- Collection OtaHistory is failing");
 	} else {
-		t6console.info(dbOtaHistory.getCollection("otahistory").count(), "resources in OtaHistory collection.");
+		t6console.log(dbOtaHistory.getCollection("otahistory").count(), "resources in OtaHistory collection.");
 	}
 }
 var initDbUis = function() {
@@ -208,7 +208,7 @@ var initDbUis = function() {
 	if ( dbUis.getCollection("uis") === null ) {
 		t6console.error("- Collection UIs is failing");
 	} else {
-		t6console.info(dbUis.getCollection("uis").count(), "resources in UIs collection.");
+		t6console.log(dbUis.getCollection("uis").count(), "resources in UIs collection.");
 	}
 };
 
@@ -384,22 +384,22 @@ if (app.get("env") === "development") {
 }
 
 t6events.add("t6App", "start", "self", t6BuildVersion);
-t6console.info(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
+t6console.log(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
 	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x")), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
-	t6console.info(sprintf("Connected to Mqtt broker on %s:%s - %s", mqttHost, mqttPort, mqttRoot));
+	t6console.log(sprintf("Connected to Mqtt broker on %s:%s - %s", mqttHost, mqttPort, mqttRoot));
 	mqttClient.subscribe("objects/status/#", function (err) {
 		if (!err) {
-			t6console.info("Subscribed to Mqtt topic \"objects/status/#\"");
+			t6console.log("Subscribed to Mqtt topic \"objects/status/#\"");
 		}
 	})
 });
 mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split("objects/status/")[1];
 	let stat = message.toString();
-	t6console.info(sprintf("Object Status Changed: %s is %s", object, stat==="1"?"visible":"hidden"), "("+message+")");
+	t6console.log(sprintf("Object Status Changed: %s is %s", object, stat==="1"?"visible":"hidden"), "("+message+")");
 	if ( stat === "1" && t6ConnectedObjects.indexOf(object)<0 ) {
 		t6ConnectedObjects.push(object);
 	} else {
@@ -408,8 +408,8 @@ mqttClient.on("message", function (topic, message) {
 			t6ConnectedObjects.splice(i, 1);
 		}
 	}
-	t6console.info(sprintf("Connected Objects: %s", t6ConnectedObjects));
+	t6console.log(sprintf("Connected Objects: %s", t6ConnectedObjects));
 });
 global.startProcessTime = new Date()-start;
-t6console.info(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
+t6console.log(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
 module.exports = app;
