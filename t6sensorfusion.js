@@ -26,6 +26,7 @@ t6sensorfusion.cryptValue = function(value, sender, encoding) {
 t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 	let fields = [];
 	let i=0;
+	let errorMode=false;
 	listPreprocessor.map(function(pp) {
 		pp.initialValue = payload.value;
 		switch(pp.name) {
@@ -37,6 +38,7 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 						break;
 				}
 				break;
+
 			case "sanitize": // Sanitize value
 				let time= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
 				if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
@@ -88,8 +90,30 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 				}
 			
 				break;
+
+			case "convert": // Convert value unit converter
+				if (pp.from && pp.to) {
+					switch(pp.type) {
+						case "time":
+						case "distance":
+						case "mass":
+						case "volume":
+						case "storage":
+							payload.value = units.convert(`${payload.value} ${pp.from} to ${pp.to}`);
+							pp.message = `Converted ${pp.type} from ${pp.from} to ${pp.to}.`;
+							break;
+						default: 
+							pp.message = `Convert type "${pp.type}" is not recognized.`;
+							break;
+					}
+					pp.transformedValue = payload.value;
+				} else {
+					pp.message = `Not unit to convert from/to.`;
+				}
+			
+				break;
+
 			case "transform": // Transform value
-				let errorMode=false;
 				switch(pp.mode) {
 					case "aes-256-cbc": // aes-256-cbc encryption
 						if(typeof payload.object_id!=="undefined") {
@@ -148,6 +172,7 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 				pp.transformedValue = payload.value;
 				pp.message = errorMode===1?`Could'd find mode ${pp.mode}.`:`Transformed to ${pp.mode}.`;
 				break;
+
 			default:
 				pp.message = flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
 				break;
