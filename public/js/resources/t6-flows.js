@@ -14,6 +14,7 @@ app.resources.flows = {
 				track_id: myForm.querySelector("input[name='Track']").value,
 				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?"true":"false",
 				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
+				preprocessor: JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 
@@ -60,6 +61,7 @@ app.resources.flows = {
 			track_id: myForm.querySelector("input[name='Track']").value,
 			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?"true":"false",
 			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
+			preprocessor: JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value),
 		};
 		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log("DEBUG onAddFlow", JSON.stringify(body));
@@ -193,6 +195,7 @@ app.resources.flows = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.track, "Track", flow.attributes.track_id===null?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: isEdit});
+					node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor!==undefined?JSON.stringify(flow.attributes.preprocessor):"", {type: "textarea", id: "preprocessor", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
 
@@ -242,11 +245,12 @@ app.resources.flows = {
 					node += "	</div>";
 					node += "</section>";
 
-					if ( flow.attributes.track_id ) {
+					if ( flow.attributes.track_id || flow.attributes.preprocessor ) {
 						node += app.getSubtitle("Sensor Fusion");
 						node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 						node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-						node += app.getField(app.icons.track, "Track", flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: isEdit});
+						node += app.getField(app.icons.track, "Track", flow.attributes.track_id!==undefined?flow.attributes.track_id:"", {type: "text", id: "Track_id", isEdit: isEdit});
+						node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor!==undefined?JSON.stringify(flow.attributes.preprocessor):"", {type: "textarea", id: "preprocessor", isEdit: isEdit});
 						node += "	</div>";
 						node += "</section>";
 					}
@@ -409,6 +413,7 @@ app.resources.flows = {
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.track, "Track", flow.attributes.track_id===undefined?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: true});
+		node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor===undefined?"":JSON.stringify(flow.attributes.preprocessor), {type: "textarea", id: "preprocessor", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 

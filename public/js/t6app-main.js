@@ -92,6 +92,7 @@ var app = {
 		"description": "label",
 		"docs": "code",
 		"edit": "edit",
+		"exploration": "explore",
 		"flows": "settings_input_component",
 		"icon": "label_outline",
 		"link_off": "link_off",
@@ -102,6 +103,7 @@ var app = {
 		"code": "code",
 		"name": "list",
 		"objects": "devices_other",
+		"preprocessor": "mediation",
 		"rules": "call_split",
 		"settings": "settings",
 		"snippets": "widgets",
@@ -2676,7 +2678,7 @@ var touchStartPoint, touchMovePoint;
 			container = (app.containers.objects).querySelector('.page-content');
 		}
 		if (type === 'flows') {
-			fabs.push({id: "DataExploration", icon: "flare", tooltip: "Data Exploration"});
+			fabs.push({id: "DataExploration", icon: app.icons.exploration, tooltip: "Data Exploration"});
 			fabs.push({id: "createFlow", icon: "add", tooltip: "Add a new flow"});
 			container = (app.containers.flows).querySelector('.page-content');
 		}
@@ -2701,7 +2703,7 @@ var touchStartPoint, touchMovePoint;
 			container = (app.containers.sources).querySelector('.page-content');
 		}
 		if (type === 'exploration') {
-			fabs.push({id: "exploreFlows", icon: "flare", tooltip: "Explore"});
+			fabs.push({id: "exploreFlows", icon: app.icons.exploration, tooltip: "Explore"});
 			container = (app.containers.exploration).querySelector('.page-content');
 		}
 		if (container && fabs.length > -1) {
