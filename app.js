@@ -26,7 +26,7 @@ global.t6notifications	= require("./t6notifications");
 global.t6events			= require("./t6events");
 global.t6console		= require("./t6console");
 global.t6otahistory		= require("./t6otahistory");
-global.t6sensorfusion	= require("./t6sensorfusion");
+global.t6preprocessor	= require("./t6preprocessor");
 
 var express				= require("express");
 var timeout				= require("connect-timeout");

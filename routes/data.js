@@ -369,7 +369,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
 				preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 				preprocessor.push({"name": "sanitize", "datatype": datatype});
-				let result = t6sensorfusion.preprocessor(current_flow, payload, preprocessor);
+				let result = t6preprocessor.preprocessor(current_flow, payload, preprocessor);
 				payload = result.payload;
 				preprocessor = result.preprocessor;
 				payload.preprocessor = result.preprocessor;
@@ -383,7 +383,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
 				/* end might be moved to preprocessor */
-				//payload = t6sensorfusion.fuse(my_flow, payload);
+				//payload = t6preprocessor.fuse(my_flow, payload);
 
 				if ( save === true ) { // TODO : make sure preprocessor is completed before saving value
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";

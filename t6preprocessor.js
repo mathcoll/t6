@@ -1,15 +1,15 @@
 "use strict";
-var t6sensorfusion = module.exports = {};
+var t6preprocessor = module.exports = {};
 
-t6sensorfusion.export = function() {
+t6preprocessor.export = function() {
 	console.dir(JSON.stringify());
 };
 
-t6sensorfusion.str2bool = function(v) {
+t6preprocessor.str2bool = function(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
 }
 
-t6sensorfusion.cryptValue = function(value, sender, encoding) {
+t6preprocessor.cryptValue = function(value, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
 		let iv = crypto.randomBytes(16);
 		// sender.secret_key_crypt must be 256 bytes (32 characters)
@@ -23,7 +23,7 @@ t6sensorfusion.cryptValue = function(value, sender, encoding) {
 	}
 }
 
-t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
+t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 	let fields = [];
 	let i=0;
 	let errorMode=false;
@@ -46,7 +46,7 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 					switch(pp.datatype) {
 						case "boolean":
 							//payload.value = validator.toBoolean(payload.value, false);
-							payload.value = t6sensorfusion.str2bool(payload.value.toString());
+							payload.value = t6preprocessor.str2bool(payload.value.toString());
 							fields[0] = {time:""+time, valueBoolean: payload.value,};
 							break;
 						case "date":
@@ -92,6 +92,10 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 				break;
 
 			case "convert": // Convert value unit converter
+				if (customUnits.db!=="") {
+					units.importDBSync(customUnits.db);
+				}
+				//t6console.log(units.types);
 				if (pp.from && pp.to) {
 					switch(pp.type) {
 						case "time":
@@ -99,6 +103,8 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 						case "mass":
 						case "volume":
 						case "storage":
+						case "things":
+						case "temperature":
 							payload.value = units.convert(`${payload.value} ${pp.from} to ${pp.to}`);
 							pp.message = `Converted ${pp.type} from ${pp.from} to ${pp.to}.`;
 							break;
@@ -120,7 +126,7 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 							let objects	= db.getCollection("objects");
 							let object = objects.findOne({ "$and": [ { "user_id": { "$eq": payload.user_id } }, { "id": { "$eq": payload.object_id } }, ]});
 							if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
-								payload.value = t6sensorfusion.cryptValue(""+payload.value, {secret_key_crypt: object.secret_key_crypt});
+								payload.value = t6preprocessor.cryptValue(""+payload.value, {secret_key_crypt: object.secret_key_crypt});
 								pp.message = `Encrypted using Object "${p.object_id}"`;
 							} else {
 								pp.message = "Warning: No secret_key found on Object, can't encrypt w/o secret_key from the Object.";
@@ -183,7 +189,7 @@ t6sensorfusion.preprocessor = function(flow, payload, listPreprocessor) {
 	return {payload, fields, preprocessor: listPreprocessor};
 };
 
-t6sensorfusion.fuse = function(flow, payload) {
+t6preprocessor.fuse = function(flow, payload) {
 	payload.fuse = typeof payload.fuse!="undefined"?payload.fuse:{};
 	if(typeof flow!=="undefined" && typeof flow.track_id!=="undefined") {
 		// look for all tracks
@@ -200,4 +206,4 @@ t6sensorfusion.fuse = function(flow, payload) {
 	return payload;
 };
 
-module.exports = t6sensorfusion;
+module.exports = t6preprocessor;
