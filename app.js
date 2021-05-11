@@ -225,11 +225,10 @@ let dbs = [
 	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
 ];
 dbs.forEach(file => {
-	fs.access(file, (fs.constants || fs).W_OK, err => {
-		t6console.warn(`${file} ${err ? "is not writable" : "is writable"}`);
-	});
-	fs.chmod(file, 0o644 , err => {
-		t6console.warn(`- ${file} ${err ? "can't be chmoded" : "is 0644 now."}`);
+	fs.chmod(file, 0o600 , err => {
+		if(err) {
+			t6console.warn(`- ${file} ${err ? "can't be chmoded" : "is 0600 now."}`);
+		}
 	});
 });
 
