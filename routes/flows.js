@@ -101,6 +101,7 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
  * @apiParam {Boolean} [require_encrypted=false] require_encrypted
  * @apiParam {Integer} permission Permission is not used anymore (deprecated)
  * @apiParam {String[]} [objects] List of Object Ids
+ * @apiParam {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 201
  * @apiUse 400
@@ -134,6 +135,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
+					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
 				t6events.add("t6Api", "flow add", newFlow.id, req.user.id);
 				flows.insert(newFlow);
@@ -163,6 +165,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiParam {Object[]} [permission]
  * @apiParam {String[]} [objects] List of Object Ids
  * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
+ * @apiParam {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 200
  * @apiUse 400
@@ -206,6 +209,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
+						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
 						result = item;
 					});
 					if ( typeof result !== "undefined" ) {

@@ -15,6 +15,12 @@ app.resources.flows = {
 				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?"true":"false",
 				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 				preprocessor: JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value),
+				influx_db_cloud: {
+					"token": myForm.querySelector("input[name='Token']").value,
+					"org": myForm.querySelector("input[name='Org']").value,
+					"url": myForm.querySelector("input[name='Url']").value,
+					"bucket": myForm.querySelector("input[name='Bucket']").value
+				},
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 
@@ -61,6 +67,12 @@ app.resources.flows = {
 			track_id: myForm.querySelector("input[name='Track']").value,
 			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?"true":"false",
 			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
+			influx_db_cloud: {
+				"token": myForm.querySelector("input[name='Token']").value,
+				"org": myForm.querySelector("input[name='Org']").value,
+				"url": myForm.querySelector("input[name='Url']").value,
+				"bucket": myForm.querySelector("input[name='Bucket']").value
+			},
 			preprocessor: JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value),
 		};
 		if ( localStorage.getItem("settings.debug") == "true" ) {
@@ -191,7 +203,17 @@ app.resources.flows = {
 					node += "	</div>";
 					node += "</section>";
 					
-					node += app.getSubtitle("Sensor Fusion");
+					node += app.getSubtitle("Save datapoints to influxDb Cloud");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField(app.icons.token, "Token", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.token, {type: "text", id: "Token", isEdit: isEdit});
+					node += app.getField(app.icons.org, "Org", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.org, {type: "text", id: "Org", isEdit: isEdit});
+					node += app.getField(app.icons.url, "Url", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.url, {type: "text", id: "Url", isEdit: isEdit});
+					node += app.getField(app.icons.bucket, "Bucket", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.bucket, {type: "text", id: "Bucket", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
+					
+					node += app.getSubtitle("Sensor Data Fusion");
 					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.track, "Track", flow.attributes.track_id===null?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: isEdit});
@@ -244,9 +266,21 @@ app.resources.flows = {
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "show_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
+					
+					if ( flow.attributes.influx_db_cloud ) {
+						node += app.getSubtitle("Save datapoints to influxDb Cloud");
+						node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+						node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+						node += app.getField(app.icons.token, "Token", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.token, {type: "text", id: "Token", isEdit: isEdit});
+						node += app.getField(app.icons.org, "Org", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.org, {type: "text", id: "Org", isEdit: isEdit});
+						node += app.getField(app.icons.url, "Url", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.url, {type: "text", id: "Url", isEdit: isEdit});
+						node += app.getField(app.icons.bucket, "Bucket", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.bucket, {type: "text", id: "Bucket", isEdit: isEdit});
+						node += "	</div>";
+						node += "</section>";
+					}
 
 					if ( flow.attributes.track_id || flow.attributes.preprocessor ) {
-						node += app.getSubtitle("Sensor Fusion");
+						node += app.getSubtitle("Sensor Data Fusion");
 						node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 						node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 						node += app.getField(app.icons.track, "Track", flow.attributes.track_id!==undefined?flow.attributes.track_id:"", {type: "text", id: "Track_id", isEdit: isEdit});
@@ -409,7 +443,17 @@ app.resources.flows = {
 		}
 		node += "</section>";
 					
-		node += app.getSubtitle("Sensor Fusion");
+		node += app.getSubtitle("Save datapoints to influxDb Cloud");
+		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField(app.icons.token, "Token", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.token, {type: "text", id: "Token", isEdit: isEdit});
+		node += app.getField(app.icons.org, "Org", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.org, {type: "text", id: "Org", isEdit: isEdit});
+		node += app.getField(app.icons.url, "Url", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.url, {type: "text", id: "Url", isEdit: isEdit});
+		node += app.getField(app.icons.bucket, "Bucket", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.bucket, {type: "text", id: "Bucket", isEdit: isEdit});
+		node += "	</div>";
+		node += "</section>";
+					
+		node += app.getSubtitle("Sensor Data Fusion");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.track, "Track", flow.attributes.track_id===undefined?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: true});

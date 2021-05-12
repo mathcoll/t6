@@ -81,6 +81,10 @@ var app = {
 		"manage_notifications": "Customize notifications",
 	},
 	icons: {
+		"token": "label",
+		"org": "label",
+		"url": "label",
+		"bucket": "label",
 		"color": "format_color_fill",
 		"copy": "content_copy",
 		"dashboards": "dashboard",
