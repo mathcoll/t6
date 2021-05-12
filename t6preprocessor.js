@@ -60,7 +60,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 							break;
 						case "geo":
 							payload.value = ""+payload.value;
-							fields[0] = {time:""+time, valueString: payload.value,};
+							fields[0] = {time:""+time, valueGeo: payload.value,};
 							break;
 						case "integer":
 							payload.value = validator.toInt(payload.value, 10);
