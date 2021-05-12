@@ -23,6 +23,7 @@
     "prepublish": "npm -v"
   },
   "dependencies": {
+    "@influxdata/influxdb-client": "^1.13.0",
     "acorn": "^8.1.1",
     "arduino-cli": "^0.37.0",
     "bcrypt": "^5.0.1",

@@ -249,12 +249,14 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiParam {Boolean} [save=false] Flag to store in database the Value
  * @apiParam {String} [unit=undefined] Unit of the Value
  * @apiParam {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
+ * @apiParam {uuid-v4} [data_type="Default value from the Flow resource"] DataType Id
  * @apiParam {String} [text=undefined] Optional text to qualify Value
  * @apiParam {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
  * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
  * @apiParam {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
+ * @apiParam {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401
@@ -343,9 +345,23 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			flows		= db.getCollection("flows");
 			datatypes	= db.getCollection("datatypes");
 			let f = flows.chain().find({id: ""+flow_id, user_id: req.user.id,}).limit(1);
-			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id
-			let join = f.eqJoin(datatypes.chain(), "data_type", "id");
-			let datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:null;
+			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
+			let join;
+			let datatype;
+
+			if(typeof payload.data_type!=="undefined") {
+				let dt = (datatypes.chain().find({id: ""+payload.data_type,}).limit(1)).data()[0];
+				datatype = (typeof payload.data_type!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
+				t6console.log(`Getting datatype "${datatype}" from payload`);
+			} else if (typeof current_flow!=="undefined") {
+				join = f.eqJoin(datatypes.chain(), "data_type", "id");
+				datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
+				t6console.log(`Getting datatype "${datatype}" from Flow`);
+			} else {
+				datatype = "string";
+				t6console.log(`Getting datatype "${datatype}" from default value`);
+			}
+
 			if ( !mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
 				mqtt_topic = ((f.data())[0].left).mqtt_topic;
 			}
@@ -383,7 +399,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
 				/* end might be moved to preprocessor */
-				//payload = t6preprocessor.fuse(my_flow, payload);
+				//payload = t6preprocessor.fuse(current_flow, payload);
 
 				if ( save === true ) { // TODO : make sure preprocessor is completed before saving value
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
@@ -396,7 +412,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						}
 						tags.user_id = req.user.id;
 						tags.rp = rp;
-						if(typeof my_flow!=="undefined" && (typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null)) {
+						if(typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null)) {
 							tags.track_id = my_flow.track_id;
 						}
 						if (text!=="") {
@@ -416,8 +432,56 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						}).catch(err => {
 							t6console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						});
+					} // end influx
+				} // end save
+				
+				if ((typeof current_flow!=="undefined" && typeof current_flow.influx_db_cloud!=="undefined") || typeof payload.influx_db_cloud!=="undefined") {
+					t6console.log("influxDbCloud Saving to Cloud.");
+
+					const {InfluxDB} = require("@influxdata/influxdb-client");
+					const token = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.token!=="undefined")?payload.influx_db_cloud.token:current_flow.influx_db_cloud.token;
+					const org = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.org!=="undefined")?payload.influx_db_cloud.org:current_flow.influx_db_cloud.org;
+					const url = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.url!=="undefined")?payload.influx_db_cloud.url:current_flow.influx_db_cloud.url;
+					const bucket = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.bucket!=="undefined")?payload.influx_db_cloud.bucket:current_flow.influx_db_cloud.bucket;
+					
+					if(token && org && url && bucket) {
+						const dbInfluxDBCloud = new InfluxDB({url: url, token: token})
+						
+						const {Point} = require("@influxdata/influxdb-client");
+						const writeApi = dbInfluxDBCloud.getWriteApi(org, bucket);
+						
+						const point = new Point("data")
+							.tag("user_id", req.user.id)
+							.tag("flow_id", flow_id)
+							.tag("track_id", (typeof my_flow!=="undefined" && (typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null))?my_flow.track_id:null);
+						point.timestamp(timestamp);
+						
+						typeof fields[0].valueFloat!=="undefined"?point.floatField("valueFloat", parseFloat(fields[0].valueFloat)):null;
+						typeof fields[0].valueBoolean!=="undefined"?point.booleanField("valueBoolean", fields[0].valueBoolean):null;
+						typeof fields[0].valueInteger!=="undefined"?point.intField("valueInteger", fields[0].valueInteger):null;
+						typeof fields[0].valueString!=="undefined"?point.stringField("valueString", fields[0].valueString):null;
+						typeof fields[0].valueDate!=="undefined"?point.stringField("valueDate", fields[0].valueDate):null;
+						typeof fields[0].valueJson!=="undefined"?point.stringField("valueJson", fields[0].valueJson):null;
+						typeof fields[0].valueGeo!=="undefined"?point.stringField("valueGeo", fields[0].valueGeo):null;
+						typeof fields[0].text!=="undefined"?point.stringField("text", fields[0].text):null;
+						writeApi.writePoint(point);
+						writeApi
+							.close()
+							.then(() => {
+								t6console.log("Wrote to influxDbCloud");
+								//t6console.log(point);
+								t6events.add("t6App", "Wrote to influxDbCloud", req.user.id, req.user.id, {"user_id": req.user.id});
+							})
+							.catch(e => {
+								t6console.error(e);
+								t6console.log("Write Error on influxDbCloud");
+								t6events.add("t6App", "Write Error on influxDbCloud", req.user.id, req.user.id, {"user_id": req.user.id, "error": e});
+							});
+					} // end valid token
+					else {
+						t6console.log("Can't save to Cloud ; missing credentials.");
 					}
-				}
+				} // end saveToCloud
 
 				if ( publish === true ) { // TODO : make sure preprocessor is completed before passing to Rule engine
 					let payloadFact = {"dtepoch": time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": payload.flow_id, "datatype": datatype, "mqtt_topic": typeof mqtt_topic!=="undefined"?(mqtt_topic).toString():""}; // This is the minimal payload
