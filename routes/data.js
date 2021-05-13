@@ -55,7 +55,7 @@ function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
 	} else if ( datatype === "float" ) {
 		fields = "valueFloat";
 	} else if ( datatype === "geo" ) {
-		fields = "valueString";
+		fields = "valueGeo";
 	} else {
 		fields = "value";
 	}
