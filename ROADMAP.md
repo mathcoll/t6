@@ -1,6 +1,13 @@
 ## t6 Api&PWA Roadmap
-### Milestone 11: Sensor-Fusion
-  - [ ] Add processor to telegraf to customize fusion
+### Milestone 12 - May 2021: InfluxData Cloud secondary storage (as an option)
+  - [ ] Use only one library (instead of 2!) to write datapoints to both timeseries InfluxDb and InfluxData Cloud
+  - [x] UI modifications to edit InfluxData Cloud token information
+  - [x] Customize Payload to allow storing datapoint on InfluxData Cloud
+  - [x] Customize Flows to allow storing datapoint on InfluxData Cloud
+
+### Milestone 11 - April 2021: Sensor-Data-Fusion
+  - [ ] ~~Add processor to telegraf to customize fusion~~
+  - [x] Implement internal Preprocessor to Validate, Sanitize, Convert and/or Transform input payload values
   - [x] Dispatch write datapoints to telegraf instead of influxDB
   - [x] Instantiate a telegraf server
   - [x] Create separate branch for sensor-Fusion
@@ -14,8 +21,8 @@
   - [ ] Rebuild all Snippets using its own svg api from t6
   
 ### Milestone 8: Exploratory data analysis (EDA)
-  - [ ] Distinct facts
-  - [ ] Distinct categories
+  - [ ] EDA List distinct facts
+  - [ ] EDA List distinct categories
   - [x] Filter on 1 source to get graphical and non graphical EDA results
   - [x] [Head and Tail](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
   - [x] [Summary statistics](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
