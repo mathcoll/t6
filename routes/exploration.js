@@ -96,7 +96,7 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 			where = "AND time > now()-52w";// TODO : performance issue ; make the max to 1Y
 		}
 		let query = `SELECT FIRST(${dt}) as first, LAST(${dt}) as last, COUNT(${dt}) as count, MEAN(${dt}) as mean, stddev(${dt}) as std_dev, SPREAD(${dt}) as spread, MIN(${dt}) as minimum, MAX(${dt}) as maximum, MODE(${dt}) as mode, MEDIAN(${dt}) as median, PERCENTILE(${dt},25) as "quantile1", PERCENTILE(${dt},50) as "quantile2", PERCENTILE(${dt},75) as "quantile3" FROM data WHERE flow_id='${flow_id}' ${where}`;
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 		let start = typeof req.query.start !== "undefined" ? req.query.start : "";
 		let end = typeof req.query.end !== "undefined" ? req.query.end : "";
 		dbInfluxDB.query(query).then(data => {
@@ -187,7 +187,7 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 			where = "AND time > now()-52w";// TODO : performance issue ; make the max to 1Y
 		}
 		let query = `SELECT ${dt} as value FROM data WHERE flow_id='${flow_id}' ${where}`;
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
 				let normalityData;
@@ -234,7 +234,7 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		let query = sprintf("SELECT * FROM data WHERE flow_id='%s' ORDER BY time %s LIMIT %s OFFSET %s", flow_id, sorting, limit, 0);
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
 				data.map(function(d) {
@@ -339,7 +339,7 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 		}
 
 		query = `SELECT MEAN(${dt}) as mean FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
@@ -470,7 +470,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 		}
 
 		query = `SELECT ${dt} as value FROM data WHERE flow_id='${flow_id}' ${where} ${group_by} LIMIT ${limit} OFFSET 1`;
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(queryData => {
 			if (queryData.length > 0) {
@@ -699,7 +699,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 		}
 
 		query = `SELECT MEAN(${dt}) as mean, PERCENTILE(${dt},25) as "q1", PERCENTILE(${dt},50) as "q2", PERCENTILE(${dt},75) as "q3" FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
@@ -930,7 +930,7 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 		}
 
 		query = `SELECT MEAN(${dt}) as value FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
@@ -1072,7 +1072,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 		}
 
 		query = sprintf("SELECT %s as value FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", dt, flow_id, where, sorting, limit, (page - 1) * limit);
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(queryData => {
 			if (queryData.length > 0) {
@@ -1249,7 +1249,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		}
 
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page - 1) * limit);
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(queryData => {
 			if (queryData.length > 0) {
@@ -1477,7 +1477,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 		}
 
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, group_by, sorting, limit, (page - 1) * limit);
-		t6console.log(sprintf("Query: %s", query));
+		t6console.debug(sprintf("Query: %s", query));
 
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {

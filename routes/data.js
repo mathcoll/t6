@@ -427,16 +427,16 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							timestamp: timestamp,
 						}], { retentionPolicy: rp }).then(err => {
 							if (err) {
-								t6console.log({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+								t6console.error({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 							}
 						}).catch(err => {
-							t6console.log({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							t6console.error({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						});
 					} // end influx
 				} // end save
 				
 				if ((typeof current_flow!=="undefined" && typeof current_flow.influx_db_cloud!=="undefined") || typeof payload.influx_db_cloud!=="undefined") {
-					t6console.log("influxDbCloud Saving to Cloud.");
+					t6console.debug("influxDbCloud Saving to Cloud.");
 
 					const {InfluxDB} = require("@influxdata/influxdb-client");
 					const token = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.token!=="undefined")?payload.influx_db_cloud.token:current_flow.influx_db_cloud.token;
@@ -468,13 +468,13 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						writeApi
 							.close()
 							.then(() => {
-								t6console.log("Wrote to influxDbCloud");
+								t6console.debug("Wrote to influxDbCloud");
 								//t6console.log(point);
 								t6events.add("t6App", "Wrote to influxDbCloud", req.user.id, req.user.id, {"user_id": req.user.id});
 							})
 							.catch(e => {
 								t6console.error(e);
-								t6console.log("Write Error on influxDbCloud");
+								t6console.debug("Write Error on influxDbCloud");
 								t6events.add("t6App", "Write Error on influxDbCloud", req.user.id, req.user.id, {"user_id": req.user.id, "error": e});
 							});
 					} // end valid token
