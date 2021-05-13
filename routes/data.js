@@ -352,14 +352,14 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			if(typeof payload.data_type!=="undefined") {
 				let dt = (datatypes.chain().find({id: ""+payload.data_type,}).limit(1)).data()[0];
 				datatype = (typeof payload.data_type!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
-				t6console.log(`Getting datatype "${datatype}" from payload`);
+				t6console.debug(`Getting datatype "${datatype}" from payload`);
 			} else if (typeof current_flow!=="undefined") {
 				join = f.eqJoin(datatypes.chain(), "data_type", "id");
 				datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
-				t6console.log(`Getting datatype "${datatype}" from Flow`);
+				t6console.debug(`Getting datatype "${datatype}" from Flow`);
 			} else {
 				datatype = "string";
-				t6console.log(`Getting datatype "${datatype}" from default value`);
+				t6console.debug(`Getting datatype "${datatype}" from default value`);
 			}
 
 			if ( !mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
