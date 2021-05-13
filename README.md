@@ -19,7 +19,8 @@ To install t6, follow the guide on [Wiki page](https://github.com/mathcoll/t6/wi
 
 ## t6 Android Application
 _t6_ is available on the [Android Google Play Store](https://play.google.com/store/apps/details?id=info.internetcollaboratif.api) for free.
-This Aplpication is using exactly the same code and Api from this repository.
+This Application is using exactly the same code and Api from this repository.
+Some additonal [Applicatin screenshts](https://github.com/mathcoll/t6/wiki/Application-Screenshots).
 
 ## t6 Lighthouse report generated on 27/07/2020
 <a href="https://gist.github.com/mathcoll/015e276a92827cdf8a4277706dcff432.js">
