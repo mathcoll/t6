@@ -1,0 +1,94 @@
+doctype html
+head(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+  meta(http-equiv='Content-Type' content='text/html; charset=UTF-8' style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+  meta(name='viewport' content='width=device-width' style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+  title t6 updates on Data Exploration
+table.body-wrap(style="-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:none;background:#efefef;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;height:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+  tbody
+    tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+      td.container(style="clear:both!important;display:block!important;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0 auto!important;max-width:580px!important;padding:0")
+        table(style="border-collapse:collapse;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+          tbody
+            tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+              td.masthead(style="background:#fff no-repeat;color:#795548;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0" align="center")
+                img(src=baseUrl+'/img/t6.png')
+                h1(style="color:#795548;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:32px;line-height:1.25;margin:10px!important;margin-bottom:20px;max-width:90%;padding:0;text-transform:uppercase")
+                  | Control and Modify your data
+            tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+              td.content(style="background:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:30px 35px")
+
+                h2(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0")
+                  | Hi #{user.firstName} #{user.lastName},
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                  a(href='' + baseUrl + '?utm_source=t6app&utm_medium=email&utm_campaign=newsletter', style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;text-decoration:none") t6  
+                  | is adding new features on the IoT platform. As a user you might be interested in these great updates!
+
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
+                hr(style='border:1px solid #999; width: 10%;')
+
+                h3(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:22px;font-weight:700;margin:0;padding:0")
+                | 🔥 A Preprocessor to transform measurements
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                | Decision Rule is processing values to trigger actions based on rules. And it will remain! 
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                | t6 is now capable of transforming the value before it goes to this Rule Engine - and prior to storing into Database! So basically, the purpose of this new Preprocessor is to modify, validate, convert, and/or sanitize the measured value and send it back to Database + Rule Engine.
+                | The preprocessor can either be added to Flow or directly from your payload.
+                table(style="border-collapse:collapse;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+                  tbody
+                    tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                      td(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0" align="center")
+                        p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                          a.btn.btn-primary(href="https://github.com/mathcoll/t6/wiki/Preprocessor-Sensor-Data-Fusion" style="-moz-user-select:none;background-color:#795548;background-image:none;border-color:#795548;border-radius:4px;color:#fff;cursor:pointer;display:inline-block;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.42857;margin:0;margin-bottom:0;padding:6px 12px;text-align:center;text-decoration:none;vertical-align:middle;white-space:nowrap") Preprocessor documentation
+
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
+                hr(style='border:1px solid #999; width: 10%;')
+
+                h3(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:22px;font-weight:700;margin:0;padding:0")
+                | 🔥 Alternative InfluxData Cloud Storage
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                | By default, using t6 Saas is storing datapoint on t6 Timeseries.
+                br
+                | You can now customize this default behaviour and add your own Cloud Storage setting so that datapoints are forwarded to InfluxData.
+                | The credentials/tokens to connect your own Cloud Storage can either be added to Flow or directly from your payload.
+                table(style="border-collapse:collapse;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+                  tbody
+                    tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                      td(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0" align="center")
+                        p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                          a.btn.btn-primary(href="https://github.com/mathcoll/t6/wiki/InfluxData-Cloud-Storage" style="-moz-user-select:none;background-color:#795548;background-image:none;border-color:#795548;border-radius:4px;color:#fff;cursor:pointer;display:inline-block;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.42857;margin:0;margin-bottom:0;padding:6px 12px;text-align:center;text-decoration:none;vertical-align:middle;white-space:nowrap") Cloud Storage documentation
+
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
+                hr(style='border:1px solid #999; width: 10%;')
+
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                | As a reminder, 
+                a(href='https://forms.gle/ZTKmJyJGHzNdktqs8', style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;text-decoration:none") a survey about Sensor Data Fusion 
+                | is waiting for your feedbacks so that t6 team can improve the best product for you.
+                
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                | We hope these new features will please you as it please us to add.                
+
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                  | Thank you, and see you soon 
+                  a(href='' + baseUrl + '?utm_source=t6app&utm_medium=email&utm_campaign=newsletter', style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;text-decoration:none") on t6.
+                p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+                  em(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                    | &ndash;
+                    br
+                    | Mathieu from t6
+    tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+      td.container(style="clear:both!important;display:block!important;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0 auto!important;max-width:580px!important;padding:0")
+        table(style="border-collapse:collapse;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;width:100%!important")
+          tbody
+            tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+              td.content.footer(style="background:0 0;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:30px 35px" align="center")
+                p(style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.65;margin:0;margin-bottom:0;padding:0;text-align:center")
+                  | Sent to #{user.email} by 
+                  a(href='' + baseUrl + '?utm_source=t6app&utm_medium=email&utm_campaign=newsletter', style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;text-decoration:none") t6 from internetcollaboratif.info
+                p(style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.65;margin:0;margin-bottom:0;padding:0;text-align:center")
+                  | This is an automated system email. Please do not reply to this email. 
+                  a(href='' + baseUrl + '/mail/' + user.email + '/unsubscribe/newsletter/' + user.unsubscription_token + '?utm_source=t6app&utm_medium=email&utm_campaign=newsletter&utm_content=unsubscribe', style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;font-weight:700;line-height:1.65;margin:0;padding:0;text-decoration:none") Unsubscribe from newsletters.
+                  br
+                  a(href="https://join.slack.com/t/internetcollaboratif/shared_invite/enQtNzg3NTk5MDk4ODg2LTVjNzlhOWY1NDViYWQxZmMxMjE3YjE5NzU5ZTY2NzRjNGJhMzUzMzc4NjY1YTIzMTBhODUyYzlhYWU1YmI0MmE" style="color:#888;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0;text-decoration:none") Join t6 on Slack
+                  
+                  
