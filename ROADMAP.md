@@ -16,15 +16,15 @@
   - [x] Instantiate a telegraf server
   - [x] Create separate branch for sensor-Fusion
 
-### Milestone 10: Objects localization / maps
+### Milestone 10 - February 2021: Objects localization / maps
   - [ ] :sos: Add filters to #objects-maps to customize displays
   - [ ] :sos: Add an operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map
   - [x] Add a dedicated page (#objects-maps) to locate objects on a map
 
-### Milestone 9: Full svg charting - no more chart.js library as dependency
+### Milestone 9 - October 2020: Full svg charting ; no more chart.js library as dependency
   - [ ] :sos: Rebuild all Snippets using its own svg api from t6
   
-### Milestone 8: Exploratory data analysis (EDA)
+### Milestone 8 - October 2020: Exploratory data analysis (EDA)
   - [ ] :sos: EDA List distinct facts
   - [ ] :sos: EDA List distinct categories
   - [x] Filter on 1 source to get graphical and non graphical EDA results
@@ -43,7 +43,7 @@
 
 ### Milestone 5 - June 2019: Process with a better TSdb database integration - anything but SQLite
   - [x] influxDb branch is live and running.
-  - [x] SQLite ~~still can be activated as backup or alternative~~ [is deprecated and not maintained](https://github.com/mathcoll/t6/commit/4a6db17f26fdd1cc24413a6b67d49918149aa7fb)
+  - [x] :ballot_box_with_check: SQLite ~~still can be activated as backup or alternative~~ [is deprecated and not maintained](https://github.com/mathcoll/t6/commit/4a6db17f26fdd1cc24413a6b67d49918149aa7fb)
   
 ### Milestone 4 - May 2019: Add Security to POST datapoints payloads
   - [x] Signature on datapoint POST
@@ -51,7 +51,7 @@
   - [x] Flows allows to force signature and/or encryption when datapoints are POSTed
 
 ### Milestone 3: Implement additional snippets
-  - [ ] :ballot_box_with_check: ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
+  - [ ] :x: ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
   - [x] Graphs snippets
 
 ### Milestone 2 - April 2016: Dashboard integration
