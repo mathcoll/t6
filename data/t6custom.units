@@ -9,8 +9,5 @@ things:
   jong			1jong
 
 temperature:
-  celcius,c			33.8fahrenheit
-  fahrenheit,f		-17.2222celcius
-  kelvin,k			-272.15celcius
-  kelvin,k			-457.87fahrenheit
-  celcius,c			1celcius
+  celcius,c			9fahrenheit
+  fahrenheit,f		1celcius
