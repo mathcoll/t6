@@ -1,4 +1,4 @@
-## t6 Api&PWA Roadmap
+# t6 Api&PWA Roadmap
   - [x] : Task completed
   - [ ] : Task not started or even not completed
   - :sos: : please refers to [CONTRIBUTING.md](../blob/master/CONTRIBUTING.md) in case you would like to help :-)
@@ -6,6 +6,7 @@
 
 ------------
 
+## 2021
 ### Milestone 12 - May 2021: InfluxData Cloud secondary storage (as an option)
   - [ ] Use only one library (instead of 2!) to write datapoints to both timeseries InfluxDb and InfluxData Cloud
   - [x] UI modifications to edit InfluxData Cloud token information
@@ -24,6 +25,7 @@
   - [ ] :sos: Add an operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map
   - [x] Add a dedicated page (#objects-maps) to locate objects on a map
 
+## 2020
 ### Milestone 9 - October 2020: Full svg charting ; no more chart.js library as dependency
   - [ ] :sos: Rebuild all Snippets using its own svg api from t6
   
@@ -44,6 +46,7 @@
 ### Milestone 6 - March 2020: Add Decision Rules Algorithm
   - [x] [Algorithm linear regression for basic prediction/anomaly detection](https://api.internetcollaboratif.info/news/2020-03-10-newsletter-linearegression)
 
+## 2019
 ### Milestone 5 - June 2019: Process with a better TSdb database integration - anything but SQLite
   - [x] influxDb branch is live and running.
   - [x] :ballot_box_with_check: SQLite ~~still can be activated as backup or alternative~~ [is deprecated and not maintained](https://github.com/mathcoll/t6/commit/4a6db17f26fdd1cc24413a6b67d49918149aa7fb)
@@ -57,6 +60,7 @@
   - [ ] :x: ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
   - [x] Graphs snippets
 
+## Before 2019
 ### Milestone 2 - April 2016: Dashboard integration
   - [x] Dashboards are fully integrated into the UI
   - [x] Some snippets are available to see graphs, display a simple value (like temperature), or display current date
