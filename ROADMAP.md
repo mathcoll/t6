@@ -13,16 +13,16 @@
   - [x] Create separate branch for sensor-Fusion
 
 ### Milestone 10: Objects localization / maps
-  - [ ] Add filters to #objects-maps to customize displays
-  - [ ] Add an operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map
+  - [ ] :sos: Add filters to #objects-maps to customize displays
+  - [ ] :sos: Add an operator on t6 rule engine to update Object attribute like the latitude/longitude. This feature will make available the localization on the map
   - [x] Add a dedicated page (#objects-maps) to locate objects on a map
 
 ### Milestone 9: Full svg charting - no more chart.js library as dependency
-  - [ ] Rebuild all Snippets using its own svg api from t6
+  - [ ] :sos: Rebuild all Snippets using its own svg api from t6
   
 ### Milestone 8: Exploratory data analysis (EDA)
-  - [ ] EDA List distinct facts
-  - [ ] EDA List distinct categories
+  - [ ] :sos: EDA List distinct facts
+  - [ ] :sos: EDA List distinct categories
   - [x] Filter on 1 source to get graphical and non graphical EDA results
   - [x] [Head and Tail](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
   - [x] [Summary statistics](https://api.internetcollaboratif.info/news/2020-10-19-newsletter-data-exploration)
@@ -47,7 +47,7 @@
   - [x] Flows allows to force signature and/or encryption when datapoints are POSTed
 
 ### Milestone 3: Implement additional snippets
-  - [ ] ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
+  - :ballot_box_with_check: ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
   - [x] Graphs snippets
 
 ### Milestone 2 - April 2016: Dashboard integration
