@@ -1,9 +1,13 @@
 ## t6 Api&PWA Roadmap
 
 :sos: : please refers to [CONTRIBUTING.md](../blob/master/CONTRIBUTING.md) in case you would like to help :-)
+
 [x] : Task completed
+
 :ballot_box_with_check: : Task completed but no longer activated today - deprecated
+
 [ ] : Task not started or even not completed
+
 
 ### Milestone 12 - May 2021: InfluxData Cloud secondary storage (as an option)
   - [ ] Use only one library (instead of 2!) to write datapoints to both timeseries InfluxDb and InfluxData Cloud
