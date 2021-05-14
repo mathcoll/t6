@@ -20,6 +20,7 @@ To install t6, follow the guide on [Wiki page](https://github.com/mathcoll/t6/wi
 ## t6 Android Application
 _t6_ is available on the [Android Google Play Store](https://play.google.com/store/apps/details?id=info.internetcollaboratif.api) for free.
 This Application is using exactly the same code and Api from this repository.
+
 <a href="https://play.google.com/store/apps/details?id=info.internetcollaboratif.api">
 	<img src="https://cdn.internetcollaboratif.info/img/en_badge_web_generic.png" />
 </a>
