@@ -1,4 +1,8 @@
 ## t6 Api&PWA Roadmap
+
+:sos: : please refers to [CONTRIBUTING.md](../blob/master/CONTRIBUTING.md) in case you would like to help :-)
+
+
 ### Milestone 12 - May 2021: InfluxData Cloud secondary storage (as an option)
   - [ ] Use only one library (instead of 2!) to write datapoints to both timeseries InfluxDb and InfluxData Cloud
   - [x] UI modifications to edit InfluxData Cloud token information
@@ -47,7 +51,7 @@
   - [x] Flows allows to force signature and/or encryption when datapoints are POSTed
 
 ### Milestone 3: Implement additional snippets
-  - :ballot_box_with_check: ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
+  - [ ] :ballot_box_with_check: ~~Maps snippets, that could help for a geolocalization/geotracing~~ This feature become depredated as the #objects-maps allows to locate all objects on the map.
   - [x] Graphs snippets
 
 ### Milestone 2 - April 2016: Dashboard integration
