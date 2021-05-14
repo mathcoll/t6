@@ -1,12 +1,12 @@
 ## t6 Api&PWA Roadmap
 
-:sos: : please refers to [CONTRIBUTING.md](../blob/master/CONTRIBUTING.md) in case you would like to help :-)
+ :sos: : please refers to [CONTRIBUTING.md](../blob/master/CONTRIBUTING.md) in case you would like to help :-)
 
-[x] : Task completed
+ [x] : Task completed
 
-:ballot_box_with_check: : Task completed but no longer activated today - deprecated
+ :ballot_box_with_check: : Task completed but no longer activated today - deprecated
 
-[ ] : Task not started or even not completed
+ [ ] : Task not started or even not completed
 
 
 ### Milestone 12 - May 2021: InfluxData Cloud secondary storage (as an option)
