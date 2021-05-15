@@ -505,10 +505,10 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 			user.pushSubscription.user_id = user_id;
 			let payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 			t6notifications.sendPush(user.pushSubscription, payload);
+			res.status(200).send({"status": "sent", "count": 1});
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());
 		}
-		res.status(200).send({"status": "sent", "count": 1});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 181, "code": 403, "message": "Forbidden"}).serialize());
 	}
