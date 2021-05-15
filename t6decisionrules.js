@@ -109,10 +109,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	engine.addOperator("distanceGreaterThan", (factValue, jsonValue) => {
 		let factLatitude = p.latitude?p.latitude:localization.latitude;
 		let factLongitude = p.longitude?p.longitude:localization.longitude;
-		t6console.debug("distanceGreaterThan Fact=", factLatitude, factLongitude);
-		t6console.debug("distanceGreaterThan Limit=", jsonValue);
-		t6console.debug("Object", p.object.latitude, p.object.longitude);
-		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
+		if ( typeof p.object!=="undefined" && typeof p.object.latitude!=="undefined" && typeof p.object.longitude!=="undefined" ) {
+			t6console.debug("distanceGreaterThan Fact=", factLatitude, factLongitude);
+			t6console.debug("distanceGreaterThan Limit=", jsonValue);
+			t6console.debug("Object", p.object.latitude, p.object.longitude);
 			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: parseInt(jsonValue, 10)});
 			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
 			t6console.debug("dist=", p.distance, "is GreaterThan", jsonValue, !dist);
@@ -124,10 +124,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	engine.addOperator("distanceLessThan", (factValue, jsonValue) => {
 		let factLatitude = p.latitude?p.latitude:localization.latitude;
 		let factLongitude = p.longitude?p.longitude:localization.longitude;
-		t6console.debug("distanceLessThan Fact=", factLatitude, factLongitude);
-		t6console.debug("distanceLessThan Limit=", jsonValue);
-		t6console.debug("Object", p.object.latitude, p.object.longitude);
-		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
+		if ( typeof p.object!=="undefined" && typeof p.object.latitude!=="undefined" && typeof p.object.longitude!=="undefined" ) {
+			t6console.debug("distanceLessThan Fact=", factLatitude, factLongitude);
+			t6console.debug("distanceLessThan Limit=", jsonValue);
+			t6console.debug("Object", p.object.latitude, p.object.longitude);
 			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: parseInt(jsonValue, 10)});
 			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
 			t6console.debug("dist=", p.distance, "is LessThan", jsonValue, !dist);

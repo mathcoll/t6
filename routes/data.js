@@ -504,12 +504,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					if ( text ) {
 						payloadFact.text = text;
 					}
-					if ( latitude ) {
-						payloadFact.latitude = latitude;
-					}
-					if ( longitude ) {
-						payloadFact.longitude = longitude;
-					}
+					payloadFact.latitude = typeof latitude!=="undefined"?latitude:null;
+					payloadFact.longitude = typeof longitude!=="undefined"?longitude:null;
 					t6decisionrules.action(req.user.id, payloadFact, mqtt_topic);
 				}
 
