@@ -484,7 +484,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				} // end saveToCloud
 
 				if ( publish === true ) { // TODO : make sure preprocessor is completed before passing to Rule engine
-					let payloadFact = {"dtepoch": time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": payload.flow_id, "datatype": datatype, "mqtt_topic": typeof mqtt_topic!=="undefined"?(mqtt_topic).toString():""}; // This is the minimal payload
+					let flow = flow_id!==null?flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:(typeof current_flow!=="undefined"?current_flow.id:""));
+					let payloadFact = {"dtepoch": time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "datatype": datatype, "mqtt_topic": typeof mqtt_topic!=="undefined"?(mqtt_topic).toString():""}; // This is the bare minimal payload
 					if ( typeof object_id !== "undefined" ) {
 						payloadFact.object_id = object_id;
 						objects	= db.getCollection("objects");
