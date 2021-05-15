@@ -86,6 +86,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
 						from: from,
 						bcc: bcc,
 						to: to,
+						user_id: user.id,
 						list: {
 							unsubscribe: {
 								url: baseUrl_https+"/mail/"+user.email+"/unsubscribe/reminder/"+user.unsubscription_token+"/",
@@ -163,6 +164,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 						from: from,
 						bcc: bcc,
 						to: to,
+						user_id: user.id,
 						list: {
 							unsubscribe: {
 								url: baseUrl_https+"/mail/"+user.email+"/unsubscribe/changePassword/"+user.unsubscription_token+"/",
@@ -239,6 +241,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret, algorithm
 						from: from,
 						bcc: bcc,
 						to: to,
+						user_id: user.id,
 						list: {
 							unsubscribe: {
 								url: baseUrl_https+"/mail/"+user.email+"/unsubscribe/newsletter/"+user.unsubscription_token+"/",

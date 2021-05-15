@@ -309,6 +309,7 @@ function checkForTooManyFailure(req, res, email) {
 					from: from,
 					bcc: typeof bcc!=="undefined"?bcc:null,
 					to: to,
+					user_id: "unknown",
 					subject: "t6 warning notification",
 					text: "Html email client is required",
 					html: html
