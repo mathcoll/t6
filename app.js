@@ -89,9 +89,11 @@ process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on("uncaughtException", function(err) {
 	t6console.error((err && err.stack) ? err.stack : err);
 });
-t6console.log(`Starting ${appName} v${VERSION}, using node v${process.versions.node}`);
-t6console.log(`Setting Access Logs to ${logAccessFile}`);
-t6console.log(`Setting Error Logs to ${logErrorFile}`);
+t6console.log(`Starting ${appName} v${VERSION}`);
+t6console.log(`Node: v${process.versions.node}`);
+t6console.log(`Build: v${t6BuildVersion}`);
+t6console.log(`Access Logs: ${logAccessFile}`);
+t6console.log(`Error Logs: ${logErrorFile}`);
 t6console.log(`Log level: ${logLevel}`);
 t6console.log(`Environment: ${process.env.NODE_ENV}`);
 t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
@@ -385,7 +387,7 @@ if (app.get("env") === "development") {
 }
 
 t6events.add("t6App", "start", "self", t6BuildVersion);
-t6console.log(sprintf("%s has started and listening to %s (using Build-Version=%s)", appName, process.env.BASE_URL_HTTPS, t6BuildVersion));
+t6console.log(`${appName} has started and is listening to ${process.env.BASE_URL_HTTPS}.`);
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
