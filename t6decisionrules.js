@@ -109,10 +109,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	engine.addOperator("distanceGreaterThan", (factValue, jsonValue) => {
 		let factLatitude = p.latitude?p.latitude:localization.latitude;
 		let factLongitude = p.longitude?p.longitude:localization.longitude;
+		t6console.debug("distanceGreaterThan Fact=", factLatitude, factLongitude);
+		t6console.debug("distanceGreaterThan Limit=", jsonValue);
+		t6console.debug("Object", p.object.latitude, p.object.longitude);
 		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
-			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: jsonValue});
-			t6console.debug("distanceGreaterThan", dist);
+			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: parseInt(jsonValue, 10)});
 			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
+			t6console.debug("dist=", p.distance, "is GreaterThan", jsonValue, !dist);
 			return !dist;
 		} else {
 			return false;
@@ -121,10 +124,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	engine.addOperator("distanceLessThan", (factValue, jsonValue) => {
 		let factLatitude = p.latitude?p.latitude:localization.latitude;
 		let factLongitude = p.longitude?p.longitude:localization.longitude;
+		t6console.debug("distanceLessThan Fact=", factLatitude, factLongitude);
+		t6console.debug("distanceLessThan Limit=", jsonValue);
+		t6console.debug("Object", p.object.latitude, p.object.longitude);
 		if ( typeof p.object!=="undefined" && p.object.latitude && p.object.longitude ) {
-			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: jsonValue});
-			t6console.debug("distanceLessThan", dist);
+			let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: parseInt(jsonValue, 10)});
 			p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
+			t6console.debug("dist=", p.distance, "is LessThan", jsonValue, !dist);
 			return dist;
 		} else {
 			return false;
@@ -151,6 +157,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		//t6console.debug("valuesFromDb", valuesFromDb);
 
 		engine.addOperator("lastEventGreaterThanInclusive", (factValue, jsonValue) => {
+			t6console.debug("addOperator lastEventGreaterThanInclusive", factValue, jsonValue);
 			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, "seconds")).isBefore(moment(p.dtepoch*1)) ) {
 				//t6console.debug("lastEventGreaterThanInclusive DETECTED");
 				return true;
@@ -161,6 +168,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("lastEventLessThanInclusive", (factValue, jsonValue) => {
+			t6console.debug("addOperator lastEventLessThanInclusive", factValue, jsonValue);
 			if ( Number.parseFloat(jsonValue).toString() !== "NaN" && (moment(timesFromDb.slice(1)[0]).add(jsonValue, "seconds")).isAfter(moment(p.dtepoch*1)) ) {
 				//t6console.debug("lastEventLessThanInclusive DETECTED");
 				return true;
@@ -171,6 +179,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("anomalyGreaterThanInclusive", (factValue, jsonValue) => {
+			t6console.debug("addOperator anomalyGreaterThanInclusive", factValue, jsonValue);
 			p.anomalyDetection = {};
 			let lr = statistics.linearRegression(indexesValuesFromDb);
 			p.anomalyDetection.predicted = Math.abs(lr.m)+lr.b;
@@ -188,6 +197,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("anomalyLessThanInclusive", (factValue, jsonValue) => {
+			t6console.debug("addOperator anomalyLessThanInclusive", factValue, jsonValue);
 			p.anomalyDetection = {};
 			let lr = statistics.linearRegression(indexesValuesFromDb);
 			p.anomalyDetection.predicted = Math.abs(lr.m)+lr.b;
@@ -204,6 +214,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("changeGreaterThanInclusive", (factValue, jsonValue) => {
+			t6console.debug("addOperator changeGreaterThanInclusive", factValue, jsonValue);
 			p.diffFromPrevious = {};
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
 			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
@@ -218,6 +229,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("changeLessThanInclusive", (factValue, jsonValue) => {
+			t6console.debug("addOperator changeLessThanInclusive", factValue, jsonValue);
 			p.diffFromPrevious = {};
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
 			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
@@ -231,12 +243,15 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 		});
 
-		engine.on("failure", function(rule, almanac) {
-			//t6console.error("decisionrule failure rule : ", rule);
-			//t6console.error("decisionrule failure almanac : ", almanac);
+		engine.on("failure", function(rule, almanac, ruleResult) {
+			//t6console.debug("decisionrule failure rule : ", rule, ruleResult);
+			//t6console.debug("decisionrule failure almanac : ", almanac);
 		});
 		
 		engine.on("success", function(event, almanac, ruleResult) {
+			t6console.debug(sprintf("onSuccess", event, almanac, ruleResult));
+			t6events.add("t6App", `Matching_EventType_${event.type}`, user_id, user_id, {"type": event.type, "user_id": user_id, "rule_id": event.params.rule_id});
+			t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 			if ( !payload.mqtt_topic ) {
 				if ( event.params.mqtt_topic ) {
 					payload.mqtt_topic = event.params.mqtt_topic;
@@ -250,8 +265,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			}
 
-			t6events.add("t6App", `Matching_EventType_${event.type}`, user_id, user_id, {"type": event.type, "user_id": user_id, "rule_id": event.params.rule_id});
-			t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 			if( event.type === "mqttPublish" ) {
 				let mqttPayload = {date: moment(parseInt(payload.dtepoch)).format("LLL"), dtepoch:parseInt(payload.dtepoch, 10), value:payload.value, flow: payload.flow};
 				if ( typeof payload.message !== "undefined" ) {
@@ -385,13 +398,17 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		var envelope = {
 			from:		from,
 			to:			bcc,
+			bcc:		bcc,
 			user_id:	payload.user_id?payload.user_id:to,
-			subject:	"dbInfluxDB ERR",
+			subject:	"dbInfluxDB ERR on decisionRule (checkRulesFromUser)",
 			text:		"Html email client is required",
 			html:		err
 		};
+		t6console.error("dbInfluxDB ERR on decisionRule (checkRulesFromUser)", err);
+		t6console.debug("ERR on decisionRule (checkRulesFromUser) :");
+		t6console.debug("payload", payload);
+		t6console.debug("envelope", envelope);
 		t6mailer.sendMail(envelope);
-		t6console.error("dbInfluxDB ERR", err);
 	});
 }; // t6decisionrules.checkRulesFromUser
 
@@ -405,10 +422,15 @@ t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 	if ( !payload.mqtt_topic ) {
 		payload.mqtt_topic = mqtt_topic;
 	}
+	if ( !payload.flow ) {
+		payload.flow = "";
+	}
 	if ( !user_id ) {
+		t6console.error(sprintf("Can't load rule for unknown_user", user_id));
 		user_id = "unknown_user";
 	} else {
 		t6console.info(sprintf("Loading rules for User: %s", user_id));
+		t6console.debug("payload before checkRulesFromUser", payload);
 		t6decisionrules.checkRulesFromUser(user_id, payload);
 	}
 	payload = null;
