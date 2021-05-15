@@ -36,6 +36,30 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 						payload.save = validator.isEmail(payload.value.toString())===false?false:payload.save;
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
+					case "isAscii":
+						payload.save = validator.isAscii(payload.value.toString())===false?false:payload.save;
+						pp.message = payload.save===false?"Value is rejected":undefined;
+						break;
+					case "isBase32":
+						payload.save = validator.isBase32(payload.value.toString())===false?false:payload.save;
+						pp.message = payload.save===false?"Value is rejected":undefined;
+						break;
+					case "isBase58":
+						payload.save = validator.isBase58(payload.value.toString())===false?false:payload.save;
+						pp.message = payload.save===false?"Value is rejected":undefined;
+						break;
+					case "isBase64":
+						payload.save = validator.isBase64(payload.value.toString())===false?false:payload.save;
+						pp.message = payload.save===false?"Value is rejected":undefined;
+						break;
+					case "isBIC":
+						payload.save = validator.isBIC(payload.value.toString())===false?false:payload.save;
+						pp.message = payload.save===false?"Value is rejected":undefined;
+						break;
+					case "isBoolean":
+						payload.save = validator.isBoolean(payload.value.toString())===false?false:payload.save;
+						pp.message = payload.save===false?"Value is rejected":undefined;
+						break;
 				}
 				break;
 
