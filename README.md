@@ -12,7 +12,7 @@ Please referes to CONTRIBUTING.md in case you would like to help :-)
 
 ## IoT and Physical World
 Physical World are composed by your sensors and actuators, real physical Objects.
-In _t6_, physical Objects needs* a virtual _Object_ as a reference in _t6_ and then, they are able to add _Data_ to _[Flows](https://github.com/mathcoll/t6/wiki/Flow)_.
+In _t6_, physical Objects needs* a virtual _[Object](https://github.com/mathcoll/t6/wiki/Object)_ as a reference in _t6_ and then, they are able to add _Data_ to _[Flows](https://github.com/mathcoll/t6/wiki/Flow)_.
 
 _*_ : remain optional
 
