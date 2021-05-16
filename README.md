@@ -12,15 +12,15 @@ Please referes to CONTRIBUTING.md in case you would like to help :-)
 
 ## IoT and Physical World
 Physical World are composed by your sensors and actuators, real physical Objects.
-In t6, physical Objects needs* a virtual _Object_ as a reference in t6 and then, they are able to add _Data_ to _Flows_.
+In _t6_, physical Objects needs* a virtual _Object_ as a reference in _t6_ and then, they are able to add _Data_ to _[Flows](https://github.com/mathcoll/t6/wiki/Flow)_.
 
 _*_ : remain optional
 
-Sample nodeMCU and Arduino scripts are available in the _[sensors repository](https://github.com/mathcoll/t6/tree/master/sensors)_ and on [t6iot Arduino library](https://github.com/mathcoll/t6iot).
+Sample nodeMCU and Arduino scripts are available in the [sensors repository](https://github.com/mathcoll/t6/tree/master/sensors) and on [t6iot Arduino library](https://github.com/mathcoll/t6iot).
 
 ## t6 API first: Live, eat, and breathe the API-first lifestyle of t6
 Detailed [Api documentation](https://api.internetcollaboratif.info/docs/) will help you to connect your sensors to _t6_.
-Installing _t6_ on your own server is easy, follow the installation guide](https://github.com/mathcoll/t6/wiki/Installing-t6) on Wiki page.
+Installing _t6_ on your own server is easy, follow the [installation guide](https://github.com/mathcoll/t6/wiki/Installing-t6) on Wiki page.
 More detailed explanation on [how _t6_ works](https://github.com/mathcoll/t6/wiki) is also readable on Wiki page.
 
 ## t6 Android Application
