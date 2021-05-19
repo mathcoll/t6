@@ -445,7 +445,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					const bucket = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.bucket!=="undefined")?payload.influx_db_cloud.bucket:current_flow.influx_db_cloud.bucket;
 					
 					if(token && org && url && bucket) {
-						const dbInfluxDBCloud = new InfluxDB({url: url, token: token})
+						const dbInfluxDBCloud = new InfluxDB({url: url, token: token});
 						
 						const {Point} = require("@influxdata/influxdb-client");
 						const writeApi = dbInfluxDBCloud.getWriteApi(org, bucket);
