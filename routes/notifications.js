@@ -262,11 +262,12 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret, algorithm
 									}
 							);
 							db.save();
-						}).catch(function(err){
+						}).catch(function(error){
 							var err = new Error("Internal Error");
 							err.status = 500;
+							t6console.error(error.responseCode, error.response);
 							res.status(err.status || 500).render(err.status, {
-								title : "Internal Error"+app.get("env"),
+								title : "Internal Error "+app.get("env"),
 								user: req.session.user,
 								currentUrl: req.path,
 								err: err
