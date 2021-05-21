@@ -387,7 +387,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				};
 				users	= db.getCollection("users");
 				let user = users.findOne({ "id": user_id });
-				t6notifications.sendPush(user.pushSubscription, p);
+				if (user && user.pushSubscription) {
+					t6notifications.sendPush(user.pushSubscription, p);
+				} else {
+					t6console.error("No user or no pushSubscription found, can't sendPush");
+				}
 			} else {
 				t6console.warn(sprintf("No matching EventType: %s", event.type));
 			}
