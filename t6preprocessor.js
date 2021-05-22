@@ -25,7 +25,6 @@ t6preprocessor.cryptValue = function(value, sender, encoding) {
 
 t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 	let fields = [];
-	let i=0;
 	let errorMode=false;
 	listPreprocessor.map(function(pp) {
 		pp.initialValue = payload.value;
@@ -140,7 +139,6 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 				} else {
 					pp.message = "Not unit to convert from/to.";
 				}
-			
 				break;
 
 			case "transform": // Transform value
@@ -208,7 +206,6 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 				break;
 		}
 		pp.status = "completed";
-		i++;
 	});
 	return {payload, fields, preprocessor: listPreprocessor};
 };
