@@ -211,19 +211,22 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 };
 
 t6preprocessor.fuse = function(flow, payload) {
-	payload.fuse = typeof payload.fuse!="undefined"?payload.fuse:{};
-	if(typeof flow!=="undefined" && typeof flow.track_id!=="undefined") {
+	payload.fuse = {initialValue: payload.value};
+	let track_id = typeof payload.track_id!=="undefined"?payload.track_id:(typeof flow.track_id!=="undefined"?flow.track_id:null);
+	if(track_id!==null) {
 		// look for all tracks
 		let flows = db.getCollection("flows");
-		let tracks = flows.chain().find({track_id: flow.track_id, user_id: flow.user_id,}).data();
+		let tracks = flows.chain().find({track_id: track_id, user_id: flow.user_id,}).data();
+		payload.fuse.message = [];
 		if ( tracks.length > -1 ) {
 			tracks.map(function(track) {
 				t6console.log(track);
 				t6console.log(payload);
+				payload.fuse.message.push(`Used ${track.id} as Track`);
 			});
+			payload.fuse.status = "completed";
 		}
 	}
-	payload.fuse.status = "completed";
 	return payload;
 };
 

@@ -399,7 +399,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
 				/* end might be moved to preprocessor */
-				//payload = t6preprocessor.fuse(current_flow, payload);
+				payload = t6preprocessor.fuse(current_flow, payload);
 
 				if ( save === true ) { // TODO : make sure preprocessor is completed before saving value
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
@@ -413,7 +413,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						tags.user_id = req.user.id;
 						tags.rp = rp;
 						if(typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null)) {
-							tags.track_id = my_flow.track_id;
+							tags.track_id = current_flow.track_id;
 						}
 						if (text!=="") {
 							fields[0].text = text;
@@ -511,20 +511,23 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 
 				fields.flow_id = flow_id;
 				fields.id = time*1000000;
+				fields.parent = flow_id;
+				fields.first;
+				fields.prev;
+				fields.next;
 				fields[0].save = JSON.parse(save);
 				fields[0].flow_id = flow_id;
-				fields[0].parent;
-				fields[0].first;
-				fields[0].prev;
-				fields[0].next;
+				fields[0].datatype = datatype;
+				fields[0].title = current_flow.title;
+				fields[0].ttl = current_flow.ttl;
 				fields[0].id = time*1000000;
 				fields[0].time = time*1000000;
 				fields[0].timestamp = time*1000000;
 				fields[0].value = payload.value;
-				fields[0].datatype = datatype;
 				fields[0].publish = publish;
 				fields[0].mqtt_topic = mqtt_topic;
 				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
+				fields[0].fuse = typeof payload.fuse!=="undefined"?payload.fuse:null;
 
 				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
