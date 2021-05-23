@@ -119,7 +119,7 @@ var initDbMain = function() {
 	if ( db.getCollection("users") === null ) {
 		t6console.error("- Collection Users is failing");
 	} else {
-		t6console.info(db.getCollection("users").count(), "resources in Users collection.");
+		t6console.log(db.getCollection("users").count(), "resources in Users collection.");
 	}
 	if ( db.getCollection("tokens") === null ) {
 		t6console.error("- Collection Tokens is failing");
