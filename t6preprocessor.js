@@ -211,21 +211,76 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 };
 
 t6preprocessor.fuse = function(flow, payload) {
+	if(typeof flow==="undefined") {
+		payload.fuse = {
+			initialValue: payload.value,
+			status: "abandonned",
+			message: ["Error: undefined Flow"]
+		};
+		return payload;
+	}
+	/*
+		see doc A Review of Data Fusion Techniques.pdf
+		fusion.classification: complementary
+			when the information provided by
+			the input sources represents different parts of the
+			scene and could thus be used to obtain more complete
+			global information. For example, in the case of visual
+			sensor networks, the information on the same target
+			provided by two cameras with different fields of view
+			is considered complementary;
+			
+		fusion.classification: redundant
+			when two or more input sources provide
+			information about the same target and could thus be
+			fused to increment the confidence. For example, the
+			data coming from overlapped areas in visual sensor
+			networks are considered redundant;
+			
+		fusion.classification: cooperative
+			when the provided information is combined into new
+			information that is typically more complex than the
+			original information. For example, multi-modal (audio
+			and video) data fusion is considered cooperative.
+	*/
 	payload.fuse = {initialValue: payload.value};
-	let track_id = typeof payload.track_id!=="undefined"?payload.track_id:(typeof flow.track_id!=="undefined"?flow.track_id:null);
-	if(track_id!==null) {
+	let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof flow!=="undefined" && typeof flow.track_id!=="undefined")?flow.track_id:null);
+	if(track_id!==null && track_id!=="" && typeof flow!=="undefined") {
 		// look for all tracks
 		let flows = db.getCollection("flows");
 		let tracks = flows.chain().find({track_id: track_id, user_id: flow.user_id,}).data();
+		t6queue.add({"taskType": "fuse", "flow_id": flow.flow_id, "time": payload.time, "value": payload.value, "track_id": track_id, "user_id": flow.user_id,});
+		/*
+		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
+		let query = `SELECT time, time::field as tf, valueFloat, flow_id FROM ${retention}.data WHERE track_id='${track_id}' ORDER BY time desc LIMIT 50 OFFSET 0`; // Hardcoded
+		t6console.debug(`Query for Fusion: ${query}`);
+		dbInfluxDB.query(query).then(data => {
+			if ( data.length > 0 ) {
+				data.map(function(d) {
+					d.aggregate = moment(Date.parse(d.time)).hour(); // Hardcoded
+					d.time = Date.parse(d.time);
+					if(d.flow_id==flow.id) { // Hardcoded
+						d.weigth = 2;
+					} else {
+						d.weigth = 1;
+					}
+					t6console.debug(`${d.time}: ${d.valueFloat} --> w${d.weigth} (${d.flow_id})`); // Hardcoded
+				});
+			}
+		}).catch(err => {
+			t6console.error(`Error getting values to fuse : ${err}`);
+		});
+		*/
 		payload.fuse.message = [];
 		if ( tracks.length > -1 ) {
 			tracks.map(function(track) {
-				t6console.log(track);
-				t6console.log(payload);
+				t6console.log("track", track);
+				//t6console.log(payload);
 				payload.fuse.message.push(`Used ${track.id} as Track`);
 			});
 			payload.fuse.status = "completed";
 		}
+		//t6queue.start();
 	}
 	return payload;
 };

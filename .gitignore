@@ -11,6 +11,7 @@ data/*-blanc.js
 data/*-pink.js
 data/*-guruplug.js
 data/certificates/*
+data/*.sqlite
 
 # Website auths
 public/BingSiteAuth.xml

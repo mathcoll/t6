@@ -518,8 +518,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields[0].save = JSON.parse(save);
 				fields[0].flow_id = flow_id;
 				fields[0].datatype = datatype;
-				fields[0].title = current_flow.title;
-				fields[0].ttl = current_flow.ttl;
+				fields[0].title = typeof current_flow!=="undefined"?current_flow.title:null;
+				fields[0].ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
 				fields[0].id = time*1000000;
 				fields[0].time = time*1000000;
 				fields[0].timestamp = time*1000000;

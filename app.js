@@ -12,6 +12,7 @@ global.path				= require("path");
 global.session			= require("express-session");
 global.FileStore		= require("session-file-store")(session);
 global.firebaseAdmin	= require("firebase-admin");
+global.Queue			= require("node-persistent-queue");
 
 /* Environment settings */
 require(`./data/settings-${os.hostname()}.js`);
@@ -27,6 +28,7 @@ global.t6events			= require("./t6events");
 global.t6console		= require("./t6console");
 global.t6otahistory		= require("./t6otahistory");
 global.t6preprocessor	= require("./t6preprocessor");
+global.t6queue			= require("./t6queue");
 
 var express				= require("express");
 var timeout				= require("connect-timeout");
@@ -267,6 +269,7 @@ var sources			= require("./routes/sources");
 var uis				= require("./routes/uis");
 var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
+var fuse			= require("./routes/fuse");
 app					= express();
 routesLoadEndTime = new Date();
 t6console.info(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
@@ -327,6 +330,7 @@ app.use("/v"+version+"/ota", ota);
 app.use("/v"+version+"/sources", sources);
 app.use("/v"+version+"/uis", uis);
 app.use("/v"+version+"/exploration", exploration);
+app.use("/v"+version+"/fuse", fuse);
 app.use("/news", news);
 app.use("/", pwa);
 t6console.info("App is instanciated.");
