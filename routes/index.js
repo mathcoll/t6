@@ -756,6 +756,7 @@ router.get("/status", function(req, res, next) {
 			"sources": dbSources.getCollection("sources").count(),
 			"otahistory": dbOtaHistory.getCollection("otahistory").count(),
 			"uis": dbUis.getCollection("uis").count(),
+			"jobs": dbJobs.getCollection("jobs").count(),
 		};
 	}
 	if ( typeof req.user!=="undefined" && typeof req.user.id!=="undefined" ) {
