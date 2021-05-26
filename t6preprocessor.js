@@ -249,7 +249,11 @@ t6preprocessor.fuse = function(flow, payload) {
 		// look for all tracks
 		let flows = db.getCollection("flows");
 		let tracks = flows.chain().find({track_id: track_id, user_id: flow.user_id,}).data();
-		t6queue.add({"taskType": "fuse", "flow_id": flow.flow_id, "time": payload.time, "value": payload.value, "track_id": track_id, "user_id": flow.user_id,});
+		t6console.log("time", parseInt(payload.time, 10));
+		t6console.log("TTL", parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10));
+		t6console.log("Should be executed at", moment((parseInt(payload.time, 10)/1000+parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10))*1000).format(logDateFormat));
+		// {"taskType": "fuse", "flow_id": flow.flow_id, "time": payload.time, "value": payload.value, "track_id": track_id, "user_id": flow.user_id,}
+		t6queue.add({"taskType": "fuse", "flow_id": flow.flow_id, "time": parseInt(payload.time, 10), "ttl": parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600000, 10), "track_id": track_id, "user_id": flow.user_id,});
 		/*
 		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 		let query = `SELECT time, time::field as tf, valueFloat, flow_id FROM ${retention}.data WHERE track_id='${track_id}' ORDER BY time desc LIMIT 50 OFFSET 0`; // Hardcoded

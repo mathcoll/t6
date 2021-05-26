@@ -181,11 +181,6 @@ ota = {
 	"defaultPort": 8266
 };
 
-/* t6queue */
-persistentQueue = {
-	"db": "/path/to/data/t6queue.sqlite"
-};
-
 /* custom units */
 customUnits = {
 	"db": "/path/to/data/t6custom.units"

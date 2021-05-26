@@ -217,6 +217,16 @@ var initDbUis = function() {
 		t6console.log(dbUis.getCollection("uis").count(), "resources in UIs collection.");
 	}
 };
+var initDbJobs = function() {
+	if ( dbJobs === null ) {
+		t6console.error("db Jobs is failing");
+	}
+	if ( dbJobs.getCollection("jobs") === null ) {
+		t6console.error("- Collection Jobs is failing");
+	} else {
+		t6console.log(dbJobs.getCollection("jobs").count(), "resources in Jobs collection.");
+	}
+};
 
 t6console.info("Setting correct permission on Databases...");
 let dbs = [
@@ -228,6 +238,7 @@ let dbs = [
 	path.join(__dirname, "data", `sources-${os.hostname()}.json`),
 	path.join(__dirname, "data", `otahistory-${os.hostname()}.json`),
 	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
+	path.join(__dirname, "data", `jobs-${os.hostname()}.json`),
 ];
 dbs.forEach(file => {
 	fs.chmod(file, 0o600 , err => {
@@ -247,6 +258,7 @@ dbTokens = new loki(path.join(__dirname, "data", `tokens-${os.hostname()}.json`)
 dbSources = new loki(path.join(__dirname, "data", `sources-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSources});
 dbOtaHistory = new loki(path.join(__dirname, "data", `otahistory-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
 dbUis = new loki(path.join(__dirname, "data", `uis-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUis});
+dbJobs = new loki(path.join(__dirname, "data", `jobs-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbJobs});
 
 t6console.info("Loading routes...");
 routesLoadTime = new Date();
