@@ -12,7 +12,6 @@ global.path				= require("path");
 global.session			= require("express-session");
 global.FileStore		= require("session-file-store")(session);
 global.firebaseAdmin	= require("firebase-admin");
-global.Queue			= require("node-persistent-queue");
 
 /* Environment settings */
 require(`./data/settings-${os.hostname()}.js`);
