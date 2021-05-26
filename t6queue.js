@@ -13,8 +13,9 @@ t6queue.getLength = function() {
 
 t6queue.add = function(job) {
 	jobs = dbJobs.getCollection("jobs");
+	let job_id = uuid.v4();
 	let newJob = {
-		"job_id": uuid.v4(),
+		"job_id": job_id,
 		"taskType": job.taskType,
 		"flow_id": job.flow_id,
 		"execTime": ((parseInt(job.time, 10)/1000)+parseInt(typeof job.ttl!=="undefined"?job.ttl:3600, 10))*1000,
@@ -22,6 +23,7 @@ t6queue.add = function(job) {
 		"user_id": job.user_id
 	}
 	jobs.insert(newJob);
+	return job_id;
 };
 
 t6queue.start = function(limit) {

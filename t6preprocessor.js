@@ -252,30 +252,9 @@ t6preprocessor.fuse = function(flow, payload) {
 		t6console.log("time", parseInt(payload.time, 10));
 		t6console.log("TTL", parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10));
 		t6console.log("Should be executed at", moment((parseInt(payload.time, 10)/1000+parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10))*1000).format(logDateFormat));
-		// {"taskType": "fuse", "flow_id": flow.flow_id, "time": payload.time, "value": payload.value, "track_id": track_id, "user_id": flow.user_id,}
-		t6queue.add({"taskType": "fuse", "flow_id": flow.flow_id, "time": parseInt(payload.time, 10), "ttl": parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600000, 10), "track_id": track_id, "user_id": flow.user_id,});
-		/*
-		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
-		let query = `SELECT time, time::field as tf, valueFloat, flow_id FROM ${retention}.data WHERE track_id='${track_id}' ORDER BY time desc LIMIT 50 OFFSET 0`; // Hardcoded
-		t6console.debug(`Query for Fusion: ${query}`);
-		dbInfluxDB.query(query).then(data => {
-			if ( data.length > 0 ) {
-				data.map(function(d) {
-					d.aggregate = moment(Date.parse(d.time)).hour(); // Hardcoded
-					d.time = Date.parse(d.time);
-					if(d.flow_id==flow.id) { // Hardcoded
-						d.weigth = 2;
-					} else {
-						d.weigth = 1;
-					}
-					t6console.debug(`${d.time}: ${d.valueFloat} --> w${d.weigth} (${d.flow_id})`); // Hardcoded
-				});
-			}
-		}).catch(err => {
-			t6console.error(`Error getting values to fuse : ${err}`);
-		});
-		*/
+		let job_id = t6queue.add({"taskType": "fuse", "flow_id": flow.flow_id, "time": parseInt(payload.time, 10), "ttl": parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10), "track_id": track_id, "user_id": flow.user_id,});
 		payload.fuse.message = [];
+		payload.fuse.message.push(`Fuse job_id ${job_id}`);
 		if ( tracks.length > -1 ) {
 			tracks.map(function(track) {
 				t6console.log("track", track);
@@ -284,7 +263,6 @@ t6preprocessor.fuse = function(flow, payload) {
 			});
 			payload.fuse.status = "completed";
 		}
-		//t6queue.start();
 	}
 	return payload;
 };
