@@ -19,9 +19,11 @@ t6queue.add = function(job) {
 		"taskType": job.taskType,
 		"flow_id": job.flow_id,
 		"execTime": ((parseInt(job.time, 10)/1000)+parseInt(typeof job.ttl!=="undefined"?job.ttl:3600, 10))*1000,
+		"ttl": parseInt(typeof job.ttl!=="undefined"?job.ttl:3600, 10)*1000,
 		"track_id": job.track_id, 
 		"user_id": job.user_id
 	}
+	//t6console.log(JSON.stringify(newJob));
 	jobs.insert(newJob);
 	return job_id;
 };
@@ -39,6 +41,7 @@ t6queue.start = function(limit) {
 		jobsToExec.map(function(j) {
 			t6console.log(`Executing Job ${j.job_id}`, moment(j.execTime).format(logDateFormat));
 			t6console.log(JSON.stringify(j));
+			t6preprocessor.fuse();
 			jobs.remove(j);
 			dbJobs.saveDatabase();
 		});

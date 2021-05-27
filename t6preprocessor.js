@@ -202,7 +202,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 				break;
 
 			default:
-				pp.message = flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
+				pp.message = typeof flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
 				break;
 		}
 		pp.status = "completed";
@@ -210,58 +210,59 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 	return {payload, fields, preprocessor: listPreprocessor};
 };
 
-t6preprocessor.fuse = function(flow, payload) {
-	if(typeof flow==="undefined") {
-		payload.fuse = {
-			initialValue: payload.value,
+t6preprocessor.fuse = function(job) {
+	let payload = {};
+	/*
+		TODO :
+		Should first check if the execTime is valid
+		Should then check if taskType === "fuse"
+	*/
+	if(typeof job.track_id==="undefined" || job.track_id===null || job.track_id==="") {
+		payload = {
 			status: "abandonned",
-			message: ["Error: undefined Flow"]
+			messages: ["Error: undefined track_id"]
 		};
 		return payload;
-	}
-	/*
-		see doc A Review of Data Fusion Techniques.pdf
-		fusion.classification: complementary
-			when the information provided by
-			the input sources represents different parts of the
-			scene and could thus be used to obtain more complete
-			global information. For example, in the case of visual
-			sensor networks, the information on the same target
-			provided by two cameras with different fields of view
-			is considered complementary;
-			
-		fusion.classification: redundant
-			when two or more input sources provide
-			information about the same target and could thus be
-			fused to increment the confidence. For example, the
-			data coming from overlapped areas in visual sensor
-			networks are considered redundant;
-			
-		fusion.classification: cooperative
-			when the provided information is combined into new
-			information that is typically more complex than the
-			original information. For example, multi-modal (audio
-			and video) data fusion is considered cooperative.
-	*/
-	payload.fuse = {initialValue: payload.value};
-	let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof flow!=="undefined" && typeof flow.track_id!=="undefined")?flow.track_id:null);
-	if(track_id!==null && track_id!=="" && typeof flow!=="undefined") {
+	} else if(typeof job.user_id==="undefined" || job.user_id===null || job.user_id==="") {
+		payload = {
+			status: "abandonned",
+			messages: ["Error: undefined user_id"]
+		};
+		return payload;
+	} else {
 		// look for all tracks
 		let flows = db.getCollection("flows");
-		let tracks = flows.chain().find({track_id: track_id, user_id: flow.user_id,}).data();
-		t6console.log("time", parseInt(payload.time, 10));
-		t6console.log("TTL", parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10));
-		t6console.log("Should be executed at", moment((parseInt(payload.time, 10)/1000+parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10))*1000).format(logDateFormat));
-		let job_id = t6queue.add({"taskType": "fuse", "flow_id": flow.flow_id, "time": parseInt(payload.time, 10), "ttl": parseInt(typeof flow.ttl!=="undefined"?flow.ttl:3600, 10), "track_id": track_id, "user_id": flow.user_id,});
-		payload.fuse.message = [];
-		payload.fuse.message.push(`Fuse job_id ${job_id}`);
+		let tracks = flows.chain().find({track_id: job.track_id, user_id: job.user_id,}).data();
 		if ( tracks.length > -1 ) {
+			let start = job.execTime-job.ttl;
+			let end = job.execTime;
+			payload = {
+				status: "completed",
+				flow_id: job.track_id,
+				fromDate: moment(start).format(logDateFormat),
+				toDate: moment(end).format(logDateFormat),
+				messages: [],
+				tracks: [],
+			}
+			/*
+				TODO :
+				Get values from influx between the range date ; and from all the tracks --> where track_id = job.track_id
+				Use merge-nearest-time-series in a recursive way, on all tracks
+				So that all data from all tracks are merged together
+				Compute the "merge": according to algos
+				Inject datapoints to influx on job.track_id
+				Purge job from the list
+			*/
 			tracks.map(function(track) {
-				t6console.log("track", track);
-				//t6console.log(payload);
-				payload.fuse.message.push(`Used ${track.id} as Track`);
+				payload.tracks.push(track.id);
+				payload.messages.push(`Track ${track.id}: injected into Flow ${job.track_id}`);
 			});
-			payload.fuse.status = "completed";
+		} else {
+			payload = {
+				status: "abandonned",
+				messages: ["Error: coundn't find any track'"]
+			};
+			return payload;
 		}
 	}
 	return payload;

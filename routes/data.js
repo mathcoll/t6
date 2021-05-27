@@ -400,8 +400,11 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
 				/* end might be moved to preprocessor */
-				payload = t6preprocessor.fuse(current_flow, payload);
-
+				
+				let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
+				let job_id = t6queue.add({"taskType": "fuse", "flow_id": current_flow.flow_id, "time": parseInt(payload.time, 10), "ttl": parseInt(typeof current_flow.ttl!=="undefined"?current_flow.ttl:3600, 10), "track_id": track_id, "user_id": current_flow.user_id,});
+				payload.fuse = {"initialValue": payload.value, "messages": [`Added fusion job using job_id=${job_id}`], "job_id": job_id};
+		
 				if ( save === true ) { // TODO : make sure preprocessor is completed before saving value
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 					if ( db_type.influxdb === true ) {
