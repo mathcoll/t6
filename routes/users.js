@@ -504,7 +504,13 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 			user.pushSubscription = user.pushSubscription!==null?user.pushSubscription:{};
 			user.pushSubscription.user_id = user_id;
 			let payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-			t6notifications.sendPush(user.pushSubscription, payload);
+			let result = t6notifications.sendPush(user.pushSubscription, payload);
+			if(result && (result.statusCode === 404 || result.statusCode === 410)) {
+				t6console.error("result", result);
+				t6console.error("Can't sendPush because of a status code Error", result.statusCode);
+				// We should remove the token from user
+				// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+			}
 			res.status(200).send({"status": "sent", "count": 1});
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());

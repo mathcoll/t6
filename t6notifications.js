@@ -13,8 +13,8 @@ if (firebase.admin.serviceAccountFile) {
 			payload.type = typeof payload.type!=="undefined"?payload.type:"message";
 			payload = JSON.stringify(payload);
 		}
-		t6console.debug("t6notifications.sendPush", subscriber);
-		t6console.debug("t6notifications.sendPush", payload);
+		//t6console.debug("t6notifications.sendPush", subscriber);
+		//t6console.debug("t6notifications.sendPush", payload);
 		if ( subscriber.endpoint ) {
 			webpush.setGCMAPIKey(pushSubscriptionOptions.gcmAPIKey);
 			webpush.setVapidDetails(
@@ -29,8 +29,7 @@ if (firebase.admin.serviceAccountFile) {
 				t6events.add("t6App", "sendPush", subscriber.user_id, subscriber.user_id, {"endpoint": subscriber.endpoint, "error": {"statusCode": e.statusCode, "body": e.body}});
 				t6console.error(e);
 				if(e.statusCode === 404 || e.statusCode === 410) {
-					// TODO
-					// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+					return e;
 				}
 			});
 			
