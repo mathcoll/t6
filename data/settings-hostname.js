@@ -185,3 +185,8 @@ ota = {
 customUnits = {
 	"db": "/path/to/data/t6custom.units"
 };
+
+/* Data Fusion */
+dataFusion = {
+	"activated": true,
+}
