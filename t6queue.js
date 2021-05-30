@@ -22,7 +22,7 @@ t6queue.add = function(job) {
 		"ttl": parseInt(typeof job.ttl!=="undefined"?job.ttl:3600, 10)*1000,
 		"track_id": job.track_id, 
 		"user_id": job.user_id
-	}
+	};
 	//t6console.log(JSON.stringify(newJob));
 	jobs.insert(newJob);
 	return job_id;

@@ -433,9 +433,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 								break;
 						}
 
-						payload.fuse.messages.push(`Fusion processed.`);
+						payload.fuse.messages.push("Fusion processed.");
 					} else {
-						payload.fuse.messages.push(`Fusion not processed; missing measurements on some tracks.`);
+						payload.fuse.messages.push("Fusion not processed; missing measurements on some tracks.");
 					}
 					// Clean expired buffer
 					let size = t6preprocessor.clearExpiredMeasurement();
