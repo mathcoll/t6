@@ -97,6 +97,8 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
  * @apiParam {String} [theme] Flow theme, deprecated
  * @apiParam {String} [mqtt_topic]] Mqtt topic
  * @apiParam {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
+ * @apiParam {String} [fusion_algorithm] Data Fusion algorithm
+ * @apiParam {Integer} [ttl] Time To Live before datapoint on Flow will expire
  * @apiParam {Boolean} [require_signed=false] require_signed
  * @apiParam {Boolean} [require_encrypted=false] require_encrypted
  * @apiParam {Integer} permission Permission is not used anymore (deprecated)
@@ -134,6 +136,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
+					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
+					ttl:				parseInt(typeof req.body.ttl!=="undefined"?req.body.ttl:undefined, 10),
 					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
 					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
@@ -160,6 +164,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiParam {String} [unit] Flow Unit
  * @apiParam {String} [mqtt_topic]] Mqtt topic
  * @apiParam {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
+ * @apiParam {String} [fusion_algorithm] Data Fusion algorithm
+ * @apiParam {Integer} [ttl] Time To Live before datapoint on Flow will expire
  * @apiParam {Boolean} [require_signed=false] require_signed
  * @apiParam {Boolean} [require_encrypted=false] require_encrypted
  * @apiParam {Object[]} [permission]
@@ -208,6 +214,8 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
 						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
+						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
+						item.ttl				= parseInt(typeof req.body.ttl!=="undefined"?req.body.ttl:item.ttl, 10);
 						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
 						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
 						result = item;

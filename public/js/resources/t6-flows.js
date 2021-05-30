@@ -12,15 +12,17 @@ app.resources.flows = {
 				data_type: myForm.querySelector("select[name='DataType']").value,
 				unit: myForm.querySelector("select[name='Unit']").value,
 				track_id: myForm.querySelector("input[name='Track']").value,
+				fusion_algorithm: myForm.querySelector("input[id='fusion_algorithm']").value,
+				ttl: myForm.querySelector("input[name='TTL']").value,
 				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?"true":"false",
 				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
-				preprocessor: JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value),
 				influx_db_cloud: {
 					"token": myForm.querySelector("input[name='Token']").value,
 					"org": myForm.querySelector("input[name='Org']").value,
 					"url": myForm.querySelector("input[name='Url']").value,
 					"bucket": myForm.querySelector("input[name='Bucket']").value
 				},
+				preprocessor: myForm.querySelector("textarea[id='preprocessor']").value&&JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value)!=="undefined"?JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value):undefined,
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
 
@@ -65,6 +67,8 @@ app.resources.flows = {
 			data_type: myForm.querySelector("select[name='DataType']").value,
 			unit: myForm.querySelector("select[name='Unit']").value,
 			track_id: myForm.querySelector("input[name='Track']").value,
+			fusion_algorithm: myForm.querySelector("input[id='fusion_algorithm']").value,
+			ttl: myForm.querySelector("input[name='TTL']").value,
 			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?"true":"false",
 			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 			influx_db_cloud: {
@@ -73,7 +77,7 @@ app.resources.flows = {
 				"url": myForm.querySelector("input[name='Url']").value,
 				"bucket": myForm.querySelector("input[name='Bucket']").value
 			},
-			preprocessor: JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value),
+			preprocessor: myForm.querySelector("textarea[id='preprocessor']").value&&JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value)!=="undefined"?JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value):undefined,
 		};
 		if ( localStorage.getItem("settings.debug") == "true" ) {
 			console.log("DEBUG onAddFlow", JSON.stringify(body));
@@ -218,6 +222,8 @@ app.resources.flows = {
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(app.icons.track, "Track", flow.attributes.track_id===null?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: isEdit});
 					node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor!==undefined?JSON.stringify(flow.attributes.preprocessor):"", {type: "textarea", id: "preprocessor", isEdit: isEdit});
+					node += app.getField(app.icons.algorithm, "Fusion Algorithm", typeof flow.attributes.fusion_algorithm==="undefined"?flow.attributes.fusion_algorithm:"", {type: "text", id: "fusion_algorithm", isEdit: isEdit});
+					node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl!==null?flow.attributes.ttl:"", {type: "text", id: "Ttl", isEdit: isEdit, pattern: app.patterns.ttl, error: 'Must be an Integer.'});
 					node += "	</div>";
 					node += "</section>";
 
@@ -285,6 +291,8 @@ app.resources.flows = {
 						node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 						node += app.getField(app.icons.track, "Track", flow.attributes.track_id!==undefined?flow.attributes.track_id:"", {type: "text", id: "Track_id", isEdit: isEdit});
 						node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor!==undefined?JSON.stringify(flow.attributes.preprocessor):"", {type: "textarea", id: "preprocessor", isEdit: isEdit});
+					node += app.getField(app.icons.algorithm, "Fusion Algorithm", typeof flow.attributes.fusion_algorithm==="undefined"?flow.attributes.fusion_algorithm:"", {type: "text", id: "fusion_algorithm", isEdit: isEdit});
+					node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl!==null?flow.attributes.ttl:"", {type: "text", id: "Ttl", isEdit: isEdit, pattern: app.patterns.ttl, error: 'Must be an Integer.'});
 						node += "	</div>";
 						node += "</section>";
 					}
@@ -446,10 +454,10 @@ app.resources.flows = {
 		node += app.getSubtitle("Save datapoints to influxDb Cloud");
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.token, "Token", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.token, {type: "text", id: "Token", isEdit: isEdit});
-		node += app.getField(app.icons.org, "Org", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.org, {type: "text", id: "Org", isEdit: isEdit});
-		node += app.getField(app.icons.url, "Url", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.url, {type: "text", id: "Url", isEdit: isEdit});
-		node += app.getField(app.icons.bucket, "Bucket", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.bucket, {type: "text", id: "Bucket", isEdit: isEdit});
+		node += app.getField(app.icons.token, "Token", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.token, {type: "text", id: "Token", isEdit: true});
+		node += app.getField(app.icons.org, "Org", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.org, {type: "text", id: "Org", isEdit: true});
+		node += app.getField(app.icons.url, "Url", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.url, {type: "text", id: "Url", isEdit: true});
+		node += app.getField(app.icons.bucket, "Bucket", flow.attributes.influx_db_cloud===undefined?"":flow.attributes.influx_db_cloud.bucket, {type: "text", id: "Bucket", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 					
@@ -458,6 +466,8 @@ app.resources.flows = {
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		node += app.getField(app.icons.track, "Track", flow.attributes.track_id===undefined?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: true});
 		node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor===undefined?"":JSON.stringify(flow.attributes.preprocessor), {type: "textarea", id: "preprocessor", isEdit: true});
+					node += app.getField(app.icons.algorithm, "Fusion Algorithm", typeof flow.attributes.fusion_algorithm==="undefined"?flow.attributes.fusion_algorithm:"", {type: "text", id: "fusion_algorithm", isEdit: true});
+		node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl===null?"":flow.attributes.ttl, {type: "text", id: "Ttl", isEdit: true, pattern: app.patterns.ttl, error: 'Must be an Integer.'});
 		node += "	</div>";
 		node += "</section>";
 

@@ -1,5 +1,6 @@
 "use strict";
 var t6preprocessor = module.exports = {};
+var fBuff;
 
 t6preprocessor.export = function() {
 	console.dir(JSON.stringify());
@@ -68,42 +69,42 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 				if (pp.datatype) {
 					switch(pp.datatype) {
 						case "boolean":
-							//payload.value = validator.toBoolean(payload.value, false);
-							payload.value = t6preprocessor.str2bool(payload.value.toString());
-							fields[0] = {time:""+time, valueBoolean: payload.value,};
+							//payload.sanitizedValue = validator.toBoolean(payload.value, false);
+							payload.sanitizedValue = t6preprocessor.str2bool(payload.value.toString());
+							fields[0] = {time:""+time, valueBoolean: payload.sanitizedValue,};
 							break;
 						case "date":
-							payload.value = validator.toDate(payload.value);
-							fields[0] = {time:""+time, valueDate: payload.value,};
+							payload.sanitizedValue = validator.toDate(payload.value);
+							fields[0] = {time:""+time, valueDate: payload.sanitizedValue,};
 							break;
 						case "float":
-							//payload.value = validator.toFloat(payload.value); // https://github.com/validatorjs/validator.js/issues/1663
-							payload.value = parseFloat(payload.value);
-							fields[0] = {time:""+time, valueFloat: payload.value,};
+							//payload.sanitizedValue = validator.toFloat(payload.value); // https://github.com/validatorjs/validator.js/issues/1663
+							payload.sanitizedValue = parseFloat(payload.value);
+							fields[0] = {time:""+time, valueFloat: payload.sanitizedValue,};
 							break;
 						case "geo":
-							payload.value = ""+payload.value;
-							fields[0] = {time:""+time, valueGeo: payload.value,};
+							payload.sanitizedValue = ""+payload.value;
+							fields[0] = {time:""+time, valueGeo: payload.sanitizedValue,};
 							break;
 						case "integer":
-							payload.value = validator.toInt(payload.value, 10);
-							fields[0] = {time:""+time, valueInteger: payload.value+"i",};
+							payload.sanitizedValue = validator.toInt(payload.value, 10);
+							fields[0] = {time:""+time, valueInteger: payload.sanitizedValue+"i",};
 							break;
 						case "json":
-							payload.value = {value:payload.value,};
-							fields[0] = {time:""+time, valueJson: payload.value,};
+							payload.sanitizedValue = {value:payload.value,};
+							fields[0] = {time:""+time, valueJson: payload.sanitizedValue,};
 							break;
 						case "string":
-							payload.value = ""+payload.value;
-							fields[0] = {time:""+time, valueString: payload.value,};
+							payload.sanitizedValue = ""+payload.value;
+							fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
 							break;
 						case "time":
-							payload.value = payload.value ;
-							fields[0] = {time:""+time, valueTime: payload.value,};
+							payload.sanitizedValue = payload.value ;
+							fields[0] = {time:""+time, valueTime: payload.sanitizedValue,};
 							break;
 						default:
-							payload.value = ""+payload.value;
-							fields[0] = {time:""+time, valueString: payload.value,};
+							payload.sanitizedValue = ""+payload.value;
+							fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
 							break;
 					}
 					pp.message = `Converted to ${pp.datatype}.`;
@@ -208,6 +209,87 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 		pp.status = "completed";
 	});
 	return {payload, fields, preprocessor: listPreprocessor};
+};
+
+t6preprocessor.addMeasurementToFusion = function(measurement) {
+	if(typeof measurement==="undefined" || measurement===null || measurement==="") {
+		return false;
+	} else {
+		fBuff = dbFusionBuffer.getCollection("measures");
+		let newMeasure = {
+			"expiration": parseInt(measurement.time+measurement.ttl, 10),
+			"time": measurement.time, 
+			"flow_id": measurement.flow_id, 
+			"track_id": measurement.track_id, 
+			"sanitizedValue": measurement.sanitizedValue, 
+			"user_id": measurement.user_id
+		}
+		fBuff.insert(newMeasure);
+		return true;
+	}
+};
+
+t6preprocessor.getMeasuresFromBuffer = function(id) {
+	fBuff = dbFusionBuffer.getCollection("measures");
+	let measures = fBuff.find( { "$and": [{ "expiration" : { "$gte": moment().format("x") } }, { "expiration" : { "$ne": "" } }, { "flow_id": id} ]} );
+	t6console.debug(`Track: ${id} is ${measures.length} length and is fusing to Flow`);
+	return (typeof measures!=="undefined" && measures!==null)?measures:[];
+};
+
+t6preprocessor.isElligibleToFusion = function(tracks) {
+	let invalidCount=0;
+	tracks.map(function(track) {
+		if((track.measurements).length <= 0) {
+			t6console.debug(`Track ${track.id} is empty, track is not elligible to fusion.`);
+			invalidCount++;
+		} else {
+			t6console.debug(`Track ${track.id} is ${(track.measurements).length} length, track is elligible to fusion.`);
+		}
+	});
+	return invalidCount>0?false:true;
+};
+
+t6preprocessor.reduceMeasure = function(tracks) {
+	tracks.map(function(track) {
+		track.average = (track.measurements).reduce(function (acc, measure) {
+			return acc + measure.sanitizedValue;
+		}, 0) / (track.measurements).length;
+		track.count = (track.measurements).length;
+	});
+	// TODO : we should also compute the average time within the measures
+	return tracks;
+}
+
+t6preprocessor.getAllTracks = function(flow_id, track_id, user_id) {
+	let allTracks = [];
+	if(track_id===null || track_id==="") {
+		return allTracks;
+	} else {
+		let flows = db.getCollection("flows");
+		let tracks = flows.chain().find({track_id: track_id, user_id: user_id,}).data();
+		if ( tracks.length > -1 ) {
+			tracks.map(function(track) {
+				//track.id is the flow_id
+				allTracks.push({id: track.id, measurements: t6preprocessor.getMeasuresFromBuffer(track.id)});
+			});
+			t6console.debug("getAllTracks:", allTracks.length);
+			return allTracks;
+		} else {
+			return allTracks;
+		}
+	}
+};
+
+t6preprocessor.clearExpiredMeasurement = function() {
+	fBuff = dbFusionBuffer.getCollection("measures");
+	let expired = fBuff.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+	let size = 0;
+	if ( expired ) {
+		size = expired.length;
+		fBuff.remove(expired);
+		dbFusionBuffer.save();
+	}
+	return size;
 };
 
 t6preprocessor.fuse = function(job) {

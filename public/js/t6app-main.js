@@ -81,6 +81,7 @@ var app = {
 		"manage_notifications": "Customize notifications",
 	},
 	icons: {
+		"algorithm": "healing",
 		"token": "stars",
 		"org": "corporate_fare",
 		"url": "cloud_upload",
@@ -114,6 +115,7 @@ var app = {
 		"status": "favorite",
 		"terms": "business_center",
 		"track": "call_merge",
+		"ttl": "timer",
 		"type": "label",
 		"units": "hourglass_empty",
 		"update": "update",
@@ -175,7 +177,7 @@ var app = {
 	snippets: [],
 	defaultResources: {
 		object: { id: "", attributes: { name: "", description: "", is_public: false, type: "", ipv4: "", ipv6: "", longitude: 0, latitude: 0, position: "", source_id: "-", ui_id: "" } },
-		flow: { id: "", attributes: { name: "", mqtt_topic: "", require_signed: false, require_encrypted: false } },
+		flow: { id: "", attributes: { name: "", mqtt_topic: "", require_signed: false, require_encrypted: false, ttl: "", preprocessor: [], fusion_algorithm: "" } },
 		dashboard: { id: "", attributes: { name: "", description: "" } },
 		snippet: { id: "", attributes: { name: "", icon: "", color: "" } },
 		mqtt: { id: "", attributes: { name: "" } },
@@ -199,7 +201,7 @@ var app = {
 		secret_key_crypt: "^[a-fA-F0-9]{64}$",
 		integerNotNegative: "^[^a-zA-Z]{1,4}$",
 		meta_revision: "^[0-9]{1,}$",
-		ttl: "^[1-9]+$",
+		ttl: "^[0-9]+$",
 		uuidv4: "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
 		date: "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]) ([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$",
 	},

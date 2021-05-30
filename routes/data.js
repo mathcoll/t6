@@ -399,19 +399,56 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
+				payload.value = payload.sanitizedValue;
 				/* end might be moved to preprocessor */
-				
-				let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
-				let job_id = t6queue.add({"taskType": "fuse", "flow_id": current_flow.flow_id, "time": parseInt(payload.time, 10), "ttl": parseInt(typeof current_flow.ttl!=="undefined"?current_flow.ttl:3600, 10), "track_id": track_id, "user_id": current_flow.user_id,});
-				payload.fuse = {"initialValue": payload.value, "messages": [`Added fusion job using job_id=${job_id}`], "job_id": job_id};
-		
+
+				if ( dataFusion.activated === true ) { // TODO : make sure preprocessor is completed before saving value
+					payload.fuse = {"messages": []};
+					
+					let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
+					t6preprocessor.addMeasurementToFusion({
+						"flow_id": current_flow.id,
+						"track_id": track_id,
+						"user_id": current_flow.user_id,
+						"sanitizedValue": payload.sanitizedValue,
+						"latitude": payload.latitude,
+						"longitude": payload.longitude,
+						"time": parseInt(payload.time, 10),
+						"ttl": parseInt(typeof current_flow.ttl!=="undefined"?current_flow.ttl:3600, 10)*1000,
+					});
+
+					let allTracks = t6preprocessor.getAllTracks(current_flow.id, track_id, current_flow.user_id);
+					if( t6preprocessor.isElligibleToFusion(allTracks) ) { // Check if we have at least 1 measure for each track
+						t6console.debug("Fusion is elligible");
+						// Compute average for each tracks
+						let allTracksAfterAverage = t6preprocessor.reduceMeasure(allTracks);
+						t6console.debug(allTracksAfterAverage);
+						// Fuse
+						switch(current_flow.fusion_algorithm) {
+							case "average":
+								break;
+							case "weightedaverage":
+								break;
+							default:
+								break;
+						}
+
+						payload.fuse.messages.push(`Fusion processed.`);
+					} else {
+						payload.fuse.messages.push(`Fusion not processed; missing measurements on some tracks.`);
+					}
+					// Clean expired buffer
+					let size = t6preprocessor.clearExpiredMeasurement();
+					size>0?payload.fuse.messages.push(`${size} expired measurements - cleaned from buffer.`):null;
+				} // end Fusion
+
 				if ( save === true ) { // TODO : make sure preprocessor is completed before saving value
 					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 					if ( db_type.influxdb === true ) {
 						/* InfluxDB database */
 						var tags = {};
 						var timestamp = time*1000000;
-						if (flow_id!== "") {
+						if (flow_id!=="") {
 							tags.flow_id = flow_id;
 						}
 						tags.user_id = req.user.id;
@@ -511,7 +548,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					payloadFact.latitude = typeof latitude!=="undefined"?latitude:null;
 					payloadFact.longitude = typeof longitude!=="undefined"?longitude:null;
 					t6decisionrules.action(req.user.id, payloadFact, mqtt_topic);
-				}
+				} // end publish
 
 				fields.flow_id = flow_id;
 				fields.id = time*1000000;
