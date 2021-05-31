@@ -421,7 +421,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					});
 
 					let allTracks = t6preprocessor.getAllTracks((typeof current_flow!=="undefined"?current_flow.id:"unknown"), track_id, (typeof current_flow!=="undefined"?current_flow.user_id:"unknown"));
-					if( t6preprocessor.isElligibleToFusion(allTracks) ) { // Check if we have at least 1 measure for each track
+					if( typeof current_flow!=="undefined" && t6preprocessor.isElligibleToFusion(allTracks) ) { // Check if we have at least 1 measure for each track
 						t6console.debug("Fusion is elligible.");
 						payload.fusion.messages.push("Fusion is elligible.");
 						// Compute average for each tracks
