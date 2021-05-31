@@ -403,9 +403,11 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				/* end might be moved to preprocessor */
 
 				if ( dataFusion.activated === true ) { // TODO : make sure preprocessor is completed before saving value
-					payload.fuse = {"messages": []};
+					payload.fusion.messages = [];
 					
 					let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
+					let fusion_algorithm = typeof payload.fusion.algorithm!=="undefined"?payload.fusion.algorithm:((typeof current_flow!=="undefined" && typeof current_flow.fusion_algorithm!=="undefined")?current_flow.fusion_algorithm:null);
+					t6console.debug("fusion_algorithm", fusion_algorithm);
 					t6preprocessor.addMeasurementToFusion({
 						"flow_id": current_flow.id,
 						"track_id": track_id,
@@ -419,27 +421,46 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 
 					let allTracks = t6preprocessor.getAllTracks(current_flow.id, track_id, current_flow.user_id);
 					if( t6preprocessor.isElligibleToFusion(allTracks) ) { // Check if we have at least 1 measure for each track
-						t6console.debug("Fusion is elligible");
+						t6console.debug("Fusion is elligible.");
+						payload.fusion.messages.push("Fusion is elligible.");
 						// Compute average for each tracks
 						let allTracksAfterAverage = t6preprocessor.reduceMeasure(allTracks);
 						t6console.debug(allTracksAfterAverage);
 						// Fuse
-						switch(current_flow.fusion_algorithm) {
-							case "average":
-								break;
+						let total=0;
+						let sumWeight=0;
+						let fusionValue;
+						switch(fusion_algorithm) {
 							case "weightedaverage":
+								allTracksAfterAverage.map(function(track) {
+									sumWeight += typeof track.weight!=="undefined"?track.weight:1;
+									total += track.average * sumWeight;
+								});
+								fusionValue = total / sumWeight;
 								break;
+							case "average":
 							default:
+								allTracksAfterAverage.map(function(track) {
+									total += track.average;
+								});
+								fusionValue = total / allTracksAfterAverage.length;
 								break;
 						}
 
-						payload.fuse.messages.push("Fusion processed.");
+						payload.fusion.initialValue = payload.value;
+						payload.value = fusionValue;
+						payload.fusion.algorithm = fusion_algorithm;
+						payload.fusion.messages.push("Fusion processed.");
+						
+						// Do we need to save measure to Primary Flow ?
+						payload.fusion.primary_flow = track_id;
+						
 					} else {
-						payload.fuse.messages.push("Fusion not processed; missing measurements on some tracks.");
+						payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks.");
 					}
 					// Clean expired buffer
 					let size = t6preprocessor.clearExpiredMeasurement();
-					size>0?payload.fuse.messages.push(`${size} expired measurements - cleaned from buffer.`):null;
+					size>0?payload.fusion.messages.push(`${size} expired measurements - cleaned from buffer.`):null;
 				} // end Fusion
 
 				if ( save === true ) { // TODO : make sure preprocessor is completed before saving value
@@ -568,7 +589,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields[0].publish = publish;
 				fields[0].mqtt_topic = mqtt_topic;
 				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
-				fields[0].fuse = typeof payload.fuse!=="undefined"?payload.fuse:null;
+				fields[0].fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
 
 				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
 				res.status(200).send(new DataSerializer(fields).serialize());
