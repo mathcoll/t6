@@ -403,23 +403,24 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				/* end might be moved to preprocessor */
 
 				if ( dataFusion.activated === true ) { // TODO : make sure preprocessor is completed before saving value
+					payload.fusion = typeof payload.fusion!=="undefined"?payload.fusion:{};
 					payload.fusion.messages = [];
 					
 					let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
 					let fusion_algorithm = typeof payload.fusion.algorithm!=="undefined"?payload.fusion.algorithm:((typeof current_flow!=="undefined" && typeof current_flow.fusion_algorithm!=="undefined")?current_flow.fusion_algorithm:null);
 					t6console.debug("fusion_algorithm", fusion_algorithm);
 					t6preprocessor.addMeasurementToFusion({
-						"flow_id": current_flow.id,
+						"flow_id": typeof current_flow!=="undefined"?current_flow.id:"unknown",
 						"track_id": track_id,
-						"user_id": current_flow.user_id,
+						"user_id": typeof current_flow!=="undefined"?current_flow.user_id:"unknown",
 						"sanitizedValue": payload.sanitizedValue,
 						"latitude": payload.latitude,
 						"longitude": payload.longitude,
 						"time": parseInt(payload.time, 10),
-						"ttl": parseInt(typeof current_flow.ttl!=="undefined"?current_flow.ttl:3600, 10)*1000,
+						"ttl": parseInt((typeof current_flow!=="undefined" && typeof current_flow.ttl!=="undefined")?current_flow.ttl:3600, 10)*1000,
 					});
 
-					let allTracks = t6preprocessor.getAllTracks(current_flow.id, track_id, current_flow.user_id);
+					let allTracks = t6preprocessor.getAllTracks((typeof current_flow!=="undefined"?current_flow.id:"unknown"), track_id, (typeof current_flow!=="undefined"?current_flow.user_id:"unknown"));
 					if( t6preprocessor.isElligibleToFusion(allTracks) ) { // Check if we have at least 1 measure for each track
 						t6console.debug("Fusion is elligible.");
 						payload.fusion.messages.push("Fusion is elligible.");
