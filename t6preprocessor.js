@@ -238,15 +238,17 @@ t6preprocessor.getMeasuresFromBuffer = function(id) {
 
 t6preprocessor.isElligibleToFusion = function(tracks) {
 	let invalidCount=0;
+	let errorTracks = [];
 	tracks.map(function(track) {
 		if((track.measurements).length <= 0) {
 			t6console.debug(`Track ${track.id} is empty, track is not elligible to fusion.`);
+			errorTracks.push(track.id);
 			invalidCount++;
 		} else {
 			t6console.debug(`Track ${track.id} is ${(track.measurements).length} length, track is elligible to fusion.`);
 		}
 	});
-	return invalidCount>0?false:true;
+	return invalidCount>0?[false, errorTracks]:[true, errorTracks];
 };
 
 t6preprocessor.reduceMeasure = function(tracks) {
