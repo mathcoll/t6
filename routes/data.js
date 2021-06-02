@@ -448,13 +448,17 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 								fusionValue = total / allTracksAfterAverage.length;
 								break;
 						}
+						let v = getFieldsFromDatatype(datatype, false, false);
 						payload.fusion.initialValue = payload.value;
 						payload.value = fusionValue;
+						(fields[0])[v] = fusionValue;
+						payload.fusion.correction = payload.fusion.initialValue - fusionValue;
 						payload.fusion.algorithm = fusion_algorithm;
 						payload.fusion.messages.push("Fusion processed.");
 						
-						// Do we need to save measure to Primary Flow ?
+						// Do we need to save measure to Primary Flow ? // TODO : so instead of the track.. :-(
 						payload.fusion.primary_flow = track_id;
+						flow_id = track_id;
 						
 					} else {
 						payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks.");
