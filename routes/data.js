@@ -422,7 +422,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 
 					let allTracks = t6preprocessor.getAllTracks((typeof current_flow!=="undefined"?current_flow.id:"unknown"), track_id, (typeof current_flow!=="undefined"?current_flow.user_id:"unknown"));
 					let [isElligible, errorTracks] = t6preprocessor.isElligibleToFusion(allTracks);
-					if( typeof current_flow!=="undefined" && isElligible ) { // Check if we have at least 1 measure for each track
+					if( typeof current_flow!=="undefined" && isElligible && allTracks.length > 0 ) { // Check if we have at least 1 measure for each track
 						t6console.debug("Fusion is elligible.");
 						payload.fusion.messages.push("Fusion is elligible.");
 						// Compute average for each tracks
@@ -498,7 +498,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 								t6console.error({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 							}
 						}).catch(err => {
-							t6console.error({"message": "Error catched on writting to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
+							t6console.error({"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
 						});
 					} // end influx
 				} // end save
