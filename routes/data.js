@@ -408,6 +408,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					
 					let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
 					let fusion_algorithm = typeof payload.fusion.algorithm!=="undefined"?payload.fusion.algorithm:((typeof current_flow!=="undefined" && typeof current_flow.fusion_algorithm!=="undefined")?current_flow.fusion_algorithm:null);
+					let requireDataType = typeof payload.data_type!=="undefined"?payload.data_type:(current_flow!=="undefined"?current_flow.user_id:"unknown"); // By default, making sure all trracks are having the same datatype
 					t6console.debug("fusion_algorithm", fusion_algorithm);
 					t6preprocessor.addMeasurementToFusion({
 						"flow_id": typeof current_flow!=="undefined"?current_flow.id:"unknown",
@@ -418,10 +419,11 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						"longitude": payload.longitude,
 						"time": parseInt(payload.time, 10),
 						"ttl": parseInt((typeof current_flow!=="undefined" && typeof current_flow.ttl!=="undefined")?current_flow.ttl:3600, 10)*1000,
+						"datatype": requireDataType,
 					});
 
 					let allTracks = t6preprocessor.getAllTracks((typeof current_flow!=="undefined"?current_flow.id:"unknown"), track_id, (typeof current_flow!=="undefined"?current_flow.user_id:"unknown"));
-					let [isElligible, errorTracks] = t6preprocessor.isElligibleToFusion(allTracks);
+					let [isElligible, errorTracks] = t6preprocessor.isElligibleToFusion(allTracks, requireDataType);
 					if( typeof current_flow!=="undefined" && isElligible && allTracks.length > 0 ) { // Check if we have at least 1 measure for each track
 						t6console.debug("Fusion is elligible.");
 						payload.fusion.messages.push("Fusion is elligible.");
@@ -432,11 +434,13 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						let total=0;
 						let sumWeight=0;
 						let fusionValue;
+						payload.fusion.measurements = [];
 						switch(fusion_algorithm) {
 							case "weightedaverage":
 								allTracksAfterAverage.map(function(track) {
 									sumWeight += typeof track.weight!=="undefined"?track.weight:1;
 									total += track.average * sumWeight;
+									payload.fusion.measurements.push({id: track.id, count: track.count});
 								});
 								fusionValue = total / sumWeight;
 								break;
@@ -444,6 +448,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							default:
 								allTracksAfterAverage.map(function(track) {
 									total += track.average;
+									payload.fusion.measurements.push({id: track.id, count: track.count});
 								});
 								fusionValue = total / allTracksAfterAverage.length;
 								break;
@@ -461,7 +466,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						flow_id = track_id;
 						
 					} else {
-						payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks.");
+						payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes.");
 						payload.fusion.error_tracks = errorTracks;
 					}
 					// Clean expired buffer

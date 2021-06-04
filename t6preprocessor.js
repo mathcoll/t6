@@ -218,10 +218,11 @@ t6preprocessor.addMeasurementToFusion = function(measurement) {
 		fBuff = dbFusionBuffer.getCollection("measures");
 		let newMeasure = {
 			"expiration": parseInt(measurement.time+measurement.ttl, 10),
-			"time": measurement.time, 
-			"flow_id": measurement.flow_id, 
-			"track_id": measurement.track_id, 
-			"sanitizedValue": measurement.sanitizedValue, 
+			"time": measurement.time,
+			"flow_id": measurement.flow_id,
+			"track_id": measurement.track_id,
+			"sanitizedValue": measurement.sanitizedValue,
+			"datatype": measurement.datatype,
 			"user_id": measurement.user_id
 		}
 		fBuff.insert(newMeasure);
@@ -236,7 +237,7 @@ t6preprocessor.getMeasuresFromBuffer = function(id) {
 	return (typeof measures!=="undefined" && measures!==null)?measures:[];
 };
 
-t6preprocessor.isElligibleToFusion = function(tracks) {
+t6preprocessor.isElligibleToFusion = function(tracks, requireDataType=null) {
 	let invalidCount=0;
 	let errorTracks = [];
 	tracks.map(function(track) {
@@ -246,6 +247,13 @@ t6preprocessor.isElligibleToFusion = function(tracks) {
 			invalidCount++;
 		} else {
 			t6console.debug(`Track ${track.id} is ${(track.measurements).length} length, track is elligible to fusion.`);
+		}
+		if(requireDataType && track.datatype !== requireDataType) {
+			t6console.debug(`Track ${track.id} is not elligible to fusion due to incompatible datatype ${track.datatype} !== ${requireDataType}.`);
+			errorTracks.push(track.id);
+			invalidCount++;
+		} else {
+			t6console.debug(`Track ${track.id} is having a compatible datatype ${track.datatype}, track is elligible to fusion.`);
 		}
 	});
 	return invalidCount>0?[false, errorTracks]:[true, errorTracks];
