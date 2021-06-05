@@ -222,7 +222,7 @@ t6preprocessor.addMeasurementToFusion = function(measurement) {
 			"flow_id": measurement.flow_id,
 			"track_id": measurement.track_id,
 			"sanitizedValue": measurement.sanitizedValue,
-			"datatype": measurement.datatype,
+			"data_type": measurement.data_type,
 			"user_id": measurement.user_id
 		}
 		fBuff.insert(newMeasure);
@@ -242,31 +242,41 @@ t6preprocessor.isElligibleToFusion = function(tracks, requireDataType=null) {
 	let errorTracks = [];
 	tracks.map(function(track) {
 		if((track.measurements).length <= 0) {
-			t6console.debug(`Track ${track.id} is empty, track is not elligible to fusion.`);
+			t6console.debug(`No measurements, not elligible to fusion.`);
 			errorTracks.push(track.id);
 			invalidCount++;
 		} else {
-			t6console.debug(`Track ${track.id} is ${(track.measurements).length} length, track is elligible to fusion.`);
+			t6console.debug(`${(track.measurements).length} measurements, elligible to fusion.`);
 		}
-		if(requireDataType && track.datatype !== requireDataType) {
-			t6console.debug(`Track ${track.id} is not elligible to fusion due to incompatible datatype ${track.datatype} !== ${requireDataType}.`);
+		if(typeof requireDataType!=="undefined" && requireDataType!==null && requireDataType!==track.data_type) {
+			t6console.debug(typeof requireDataType);
+			t6console.debug(typeof track.data_type);
+			t6console.debug(requireDataType);
+			t6console.debug(track.data_type);
+			t6console.debug(`Incompatible datatype ${track.data_type} !== ${requireDataType}.`);
 			errorTracks.push(track.id);
 			invalidCount++;
 		} else {
-			t6console.debug(`Track ${track.id} is having a compatible datatype ${track.datatype}, track is elligible to fusion.`);
+			t6console.debug(`compatible datatype ${track.data_type}, elligible to fusion.`);
 		}
 	});
 	return invalidCount>0?[false, errorTracks]:[true, errorTracks];
 };
 
 t6preprocessor.reduceMeasure = function(tracks) {
+	let times = [];
 	tracks.map(function(track) {
 		track.average = (track.measurements).reduce(function (acc, measure) {
+			times.push(measure.time);
 			return acc + measure.sanitizedValue;
 		}, 0) / (track.measurements).length;
 		track.count = (track.measurements).length;
+		let meanTime = statistics.min(times) + (statistics.max(times)-statistics.min(times)) / 2;
+		track.time = meanTime;
+		t6console.debug("MIN date", moment(statistics.min(times)).format(logDateFormat));
+		t6console.debug("MAX date", moment(statistics.max(times)).format(logDateFormat));
+		t6console.debug("MEAN date", moment(meanTime).format(logDateFormat));
 	});
-	// TODO : we should also compute the average time within the measures
 	return tracks;
 }
 
@@ -280,7 +290,7 @@ t6preprocessor.getAllTracks = function(flow_id, track_id, user_id) {
 		if ( tracks.length > -1 ) {
 			tracks.map(function(track) {
 				//track.id is the flow_id
-				allTracks.push({id: track.id, measurements: t6preprocessor.getMeasuresFromBuffer(track.id)});
+				allTracks.push({id: track.id, measurements: t6preprocessor.getMeasuresFromBuffer(track.id), data_type: track.data_type});
 			});
 			t6console.debug("getAllTracks:", allTracks.length);
 			return allTracks;
