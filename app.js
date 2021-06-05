@@ -55,6 +55,7 @@ global.request			= require("request");
 global.serialport		= require("serialport");
 global.favicon			= require("serve-favicon");
 global.sprintf			= require("sprintf-js").sprintf;
+global.statistics		= require("simple-statistics");
 global.strength			= require("strength");
 global.stringformat		= require("string-format");
 global.util				= require("util");

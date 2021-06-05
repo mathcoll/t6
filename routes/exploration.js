@@ -27,7 +27,7 @@ function getFieldsFromDatatype(datatype, asValue, includeTime = true) {
 	} else if (datatype === "float") {
 		fields = "valueFloat";
 	} else if (datatype === "geo") {
-		fields = "valueString";
+		fields = "valueGeo";
 	} else {
 		fields = "value";
 	}
@@ -281,7 +281,6 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
  * @apiUse 500
  */
 router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
-	var statistics = require("simple-statistics");
 	var d3nBar = require("d3node-barchart"); // TODO : it should be an histogram !
 	var flow_id = req.query.flow_id;
 	var group = req.query.group;
@@ -1453,7 +1452,6 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 		let fields;
 
 		fields = getFieldsFromDatatype(datatype, false);
-		var statistics = require("simple-statistics");
 		let dt = getFieldsFromDatatype(datatype, false, false);
 		if (typeof select !== "undefined") { // TODO: needs refacto and allows multiple coma separated values
 			fields = "";
