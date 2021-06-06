@@ -152,8 +152,8 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 			};
 		var rule = rules.findOne( query );
 		if ( rule ) {
-			t6console.debug(req.body.meta.revision + rule.meta.revision);
-			t6console.debug((req.body.meta.revision - rule.meta.revision));
+			//t6console.debug(req.body.meta.revision + rule.meta.revision);
+			//t6console.debug((req.body.meta.revision - rule.meta.revision));
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) !== 0 ) {
 				res.status(409).send(new ErrorSerializer({"id": 539.2, "code": 409, "message": "Bad Request"}).serialize());
 			} else {
