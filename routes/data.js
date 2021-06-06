@@ -425,7 +425,8 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 
 					let allTracks = t6preprocessor.getAllTracks((typeof current_flow!=="undefined"?current_flow.id:"unknown"), track_id, (typeof current_flow!=="undefined"?current_flow.user_id:"unknown"));
 					let [isElligible, errorTracks] = t6preprocessor.isElligibleToFusion(allTracks, requireDataType);
-					if( typeof current_flow!=="undefined" && isElligible && allTracks.length > 0 ) { // Check if we have at least 1 measure for each track
+					
+					if( typeof current_flow!=="undefined" && isElligible && allTracks.length > 0 && (track_id!=="" || track_id!==null) ) { // Check if we have at least 1 measure for each track
 						t6console.debug("Fusion is elligible.");
 						payload.fusion.messages.push("Fusion is elligible.");
 						// Compute average for each tracks
@@ -484,7 +485,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 						flow_id = track_id;
 						
 					} else {
-						payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes.");
+						payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes ; or no track on Flow/payload.");
 						payload.fusion.error_tracks = errorTracks;
 					}
 					// Clean expired buffer

@@ -757,7 +757,7 @@ router.get("/status", function(req, res, next) {
 			"otahistory": dbOtaHistory.getCollection("otahistory").count(),
 			"uis": dbUis.getCollection("uis").count(),
 			"jobs": dbJobs.getCollection("jobs").count(),
-			"fusionbuffers": dbFusionBuffer.getCollection("measures").count(),
+			"fusionbuffer": dbFusionBuffer.getCollection("measures").count(),
 		};
 	}
 	if ( typeof req.user!=="undefined" && typeof req.user.id!=="undefined" ) {
