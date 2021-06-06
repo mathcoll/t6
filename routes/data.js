@@ -400,6 +400,12 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
 				text = typeof payload.text!=="undefined"?payload.text:"";
 				payload.value = payload.sanitizedValue;
+				if(payload.NeedRedacted) {
+					payload.preprocessor.map(function(pp) {
+						pp.initialValue = "**REDACTED**";
+						pp.transformedValue = "**REDACTED**";
+					});
+				}
 				/* end might be moved to preprocessor */
 
 				// TODO : make sure preprocessor is completed before Fusion
