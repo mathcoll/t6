@@ -17,10 +17,12 @@ t6preprocessor.cryptValue = function(value, sender, encoding) {
 		let cipher = crypto.createCipheriv(algorithm, Buffer.from(sender.secret_key_crypt, "hex"), iv);
 		let encrypted = cipher.update(value);
 		encrypted = Buffer.concat([encrypted, cipher.final()]);
+		t6console.debug(`Initialization Vector: ${iv.toString("hex")}`);
+		t6console.debug(`AES Encrypted Output: ${encrypted.toString("hex")}`);
 		return iv.toString("hex") + ":" + encrypted.toString("hex");
 	} else {
 		t6console.error("Error: Missing secret_key_crypt");
-		return "Error: Missing secret_key_crypt";
+		return value;
 	}
 }
 
@@ -150,7 +152,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 							let object = objects.findOne({ "$and": [ { "user_id": { "$eq": payload.user_id } }, { "id": { "$eq": payload.object_id } }, ]});
 							if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
 								payload.value = t6preprocessor.cryptValue(""+payload.value, {secret_key_crypt: object.secret_key_crypt});
-								pp.message = `Encrypted using Object "${p.object_id}"`;
+								pp.message = `Encrypted using Object "${payload.object_id}"`;
 							} else {
 								pp.message = "Warning: No secret_key found on Object, can't encrypt w/o secret_key from the Object.";
 							}
