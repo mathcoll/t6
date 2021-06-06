@@ -137,7 +137,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
-					ttl:				parseInt(typeof req.body.ttl!=="undefined"?req.body.ttl:undefined, 10),
+					ttl:				typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):undefined,
 					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
 					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
@@ -184,25 +184,31 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 500
  */
 router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var flow_id = req.params.flow_id;
+	let flow_id = req.params.flow_id;
 	if ( flow_id ) {
-		var permission = typeof req.body.permission!=="undefined"?req.body.permission:undefined;
+		let permission = typeof req.body.permission!=="undefined"?req.body.permission:undefined;
 		if ( permission < 600 ) {
 			res.status(400).send(new ErrorSerializer({"id": 239, "code": 400, "message": "Bad Request", "details": "Permission must be greater than 600!"}).serialize());
 		} else {
 			flows	= db.getCollection("flows");
-			var query = {
+			
+			flows.ensureIndex("id");
+			var rset = flows.chain();
+			rset.find({"id": 1}); // force index to be built
+			db.save();
+			
+			let query = {
 				"$and": [
 						{ "id": flow_id },
 						{ "user_id": req.user.id },
 					]
 				};
-			var flow = flows.findOne( query );
+			let flow = flows.findOne( query );
 			if ( flow ) {
 				if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - flow.meta.revision) !== 0 ) {
 					res.status(409).send(new ErrorSerializer({"id": 239.2, "code": 409, "message": "Bad Request"}).serialize());
 				} else {
-					var result;
+					let result;
 					flows.chain().find({ "id": flow_id }).update(function(item) {
 						item.name				= typeof req.body.name!=="undefined"?req.body.name:item.name;
 						item.unit				= typeof req.body.unit!=="undefined"?req.body.unit:item.unit;
@@ -215,14 +221,14 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
-						item.ttl				= parseInt(typeof req.body.ttl!=="undefined"?req.body.ttl:item.ttl, 10);
+						item.ttl				= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.ttl, 10);
 						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
 						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
 						result = item;
 					});
 					if ( typeof result !== "undefined" ) {
 						db.save();
-						
+
 						res.header("Location", "/v"+version+"/flows/"+flow_id);
 						res.status(200).send({ "code": 200, message: "Successfully updated", flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
 					} else {
