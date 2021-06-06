@@ -2,7 +2,7 @@
 
 # t6 - Connect real world Object to Digital Api
 _t6_ is a "Data-first" IoT platform to connect physical Objects with time-series DB and perform Data Analysis.
-Please referes to CONTRIBUTING.md in case you would like to help :-)
+Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/CONTRIBUTING.md) in case you would like to help :-)
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/app/internetcollaboratif/t6?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
 
@@ -39,4 +39,4 @@ Some additional [Application screenshots](https://github.com/mathcoll/t6/wiki/Ap
 </a>
 
 ## Helping and contributing to t6
-Please refers to [CONTRIBUTING.md](../blob/master/CONTRIBUTING.md) in case you would like to help&contribute :-)
+Please refers to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/CONTRIBUTING.md) in case you would like to help & contribute :-)
