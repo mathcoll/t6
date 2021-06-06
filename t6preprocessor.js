@@ -152,6 +152,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 							let object = objects.findOne({ "$and": [ { "user_id": { "$eq": payload.user_id } }, { "id": { "$eq": payload.object_id } }, ]});
 							if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
 								payload.value = t6preprocessor.cryptValue(""+payload.value, {secret_key_crypt: object.secret_key_crypt});
+								pp.initialValue = "**REDACTED**";
 								pp.message = `Encrypted using Object "${payload.object_id}"`;
 							} else {
 								pp.message = "Warning: No secret_key found on Object, can't encrypt w/o secret_key from the Object.";
