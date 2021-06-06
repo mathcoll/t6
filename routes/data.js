@@ -207,7 +207,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
 				data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
 				data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
-				data.ttl = 3600; // TODO
+				data.ttl = (((join.data())[0].left).data_ttl!==null && ((join.data())[0].left).data_ttl!=="")?((join.data())[0].left).data_ttl:3600;
 				data.flow_id = flow_id;
 				data.pageSelf = page;
 				data.pageNext = page+1;
@@ -450,6 +450,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 							case "pda": // Probabilistic Data Association (PDA)
 								break;
 							case "jpda": // Joint PDA (JPDA)
+								break;
+							case "lsh": // Locality-Sensitive Hashing (LSH)
+							case "locality_sensitive_hashing":
 								break;
 							case "nn": // Nearest Neighbors (NN)
 							case "nearest_neighbors":
