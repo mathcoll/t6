@@ -245,7 +245,7 @@ t6preprocessor.isElligibleToFusion = function(tracks, requireDataType=null) {
 	let errorTracks = [];
 	tracks.map(function(track) {
 		if((track.measurements).length <= 0) {
-			t6console.debug(`No measurements, not elligible to fusion.`);
+			t6console.debug("No measurements, not elligible to fusion.");
 			errorTracks.push(track.id);
 			invalidCount++;
 		} else {

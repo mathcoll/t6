@@ -228,6 +228,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 					});
 					if ( typeof result !== "undefined" ) {
 						db.save();
+						db.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
 
 						res.header("Location", "/v"+version+"/flows/"+flow_id);
 						res.status(200).send({ "code": 200, message: "Successfully updated", flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
