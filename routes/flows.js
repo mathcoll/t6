@@ -133,7 +133,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
-					ttl:				(typeof req.body.ttl!=="undefined"?req.body.ttl:undefined).toString(),
+					ttl:				typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):undefined,
 					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
 					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
@@ -210,7 +210,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
-						item.ttl				= (typeof req.body.ttl!=="undefined"?req.body.ttl:item.ttl).toString();
+						item.ttl				= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.ttl, 10);
 						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
 						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
 						result = item;
