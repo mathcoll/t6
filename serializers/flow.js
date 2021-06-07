@@ -8,7 +8,6 @@ function FlowSerializer(flow) {
 			attributes : [ "name", "unit", "objects", "require_signed", "require_encrypted", "permission", "data_type", "mqtt_topic", "track_id", "fusion_algorithm", "ttl", "preprocessor", "influx_db_cloud", "meta" ],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/flows", baseUrl_https, version),
-				self : flow.pageSelf!==undefined?sprintf("%s/v%s/flows/?page=%s&size=%s", baseUrl_https, version, flow.pageSelf, flow.size):undefined,
 				first : flow.pageFirst!==undefined?sprintf("%s/v%s/flows/?page=%s&size=%s", baseUrl_https, version, flow.pageFirst, flow.size):undefined,
 				prev : flow.pagePrev!==undefined?sprintf("%s/v%s/flows/?page=%s&size=%s", baseUrl_https, version, flow.pagePrev, flow.size):undefined,
 				next : flow.pageNext!==undefined?sprintf("%s/v%s/flows/?page=%s&size=%s", baseUrl_https, version, flow.pageNext, flow.size):undefined,

@@ -63,6 +63,7 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 		t6console.log("flow" + flow.data()[0].left);
 		t6console.log("join" + join.data()[0].left);
 		flow = (join.data()).length>0?join.data()[0].left:[];
+		flow.unit = (join.data())[0].right.name;
 		*/
 		
 		var total = flows.find(query).length;
@@ -72,10 +73,12 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
-		flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
-		//flow.unit = (join.data())[0].right.name;
-
-		res.status(200).send(new FlowSerializer(flow).serialize());
+		if (flow && flow[0]) {
+			flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
+			res.status(200).send(new FlowSerializer(flow).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 236.5, "code": 404, "message": "Not Found"}).serialize());
+		}
 	} else {
 		res.status(401).send(new ErrorSerializer({"id": 237, "code": 401, "message": "Unauthorized"}).serialize());
 	}
