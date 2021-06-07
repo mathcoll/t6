@@ -1,7 +1,6 @@
 "use strict";
 var express = require("express");
 var router = express.Router();
-var users;
 
 function getUuid() {
 	return uuid.v4();
@@ -68,7 +67,6 @@ router.get("/OAuth2/authorize", function (req, res) {
 		"ifttt": "Event when Datapoint is posted to t6.",
 	};
 	if ( client_id === ifttt.serviceClientId && req.session.user_id ) {
-		users	= db.getCollection("users");
 		var queryU = { "id": req.session.user_id };
 		var user = users.findOne(queryU);
 		if ( user ) {
@@ -140,7 +138,6 @@ router.post("/OAuth2/authorize", function (req, res) {
 		"ifttt": "Event when Datapoint is posted to t6.",
 	};
 	if ( (req.body.Username && req.body.Password) && (!req.body.grant_type || req.body.grant_type === "password") ) {
-		users	= db.getCollection("users");
 		var email = req.body.Username;
 		var password = req.body.Password;
 
@@ -216,7 +213,6 @@ router.post("/OAuth2/token", function(req, res) {
 	let client_secret = req.body.client_secret;
 	let redirect_uri = req.body.redirect_uri;
 
-	users	= db.getCollection("users");
 	var queryU = { "iftttCode": code };
 	var user = users.findOne(queryU);
 	if ( user && client_secret === ifttt.serviceSecret && client_id === ifttt.serviceClientId ) {
@@ -321,7 +317,6 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 	} else if(bearer) {
 		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if( !err && decoded ) {
-				users	= db.getCollection("users");
 				let queryU = { "id": decoded.id };
 				t6console.debug(queryU);
 				let user = users.findOne(queryU);
@@ -373,7 +368,6 @@ router.delete("/v1/triggers/eventTrigger/trigger_identity/:trigger_identity([0-9
 	} else {
 		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if( !err && decoded ) {
-				users	= db.getCollection("users");
 				let queryU = { "$and": [
 					{ "id": decoded.id },
 					{ "iftttTrigger_identity": req.params.trigger_identity },

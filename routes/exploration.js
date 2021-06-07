@@ -2,9 +2,6 @@
 var express = require("express");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
-var flows;
-var objects;
-var datatypes;
 var units;
 
 function getFieldsFromDatatype(datatype, asValue, includeTime = true) {
@@ -63,9 +60,7 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		var datatypeType = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.type : null;
@@ -156,9 +151,7 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405.2, "message": "Method Not Allowed" }).serialize());
 	} else {
-		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		let dt = getFieldsFromDatatype(datatype, false, false);
@@ -296,9 +289,6 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 
 		if (typeof req.query.start !== "undefined") {
@@ -326,7 +316,6 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
 		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
 		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
@@ -427,9 +416,6 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 
 		if (typeof req.query.start !== "undefined") {
@@ -456,9 +442,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
-		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		let dt = getFieldsFromDatatype(datatypeName, false, false);
@@ -657,9 +641,6 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 
 		if (typeof req.query.start !== "undefined") {
@@ -685,9 +666,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
-		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		let dt = getFieldsFromDatatype(datatypeName, false, false);
@@ -888,9 +867,6 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 
 		if (typeof req.query.start !== "undefined") {
@@ -916,9 +892,7 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
-		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		let dt = getFieldsFromDatatype(datatypeName, false, false);
@@ -1015,9 +989,6 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 
 		if (typeof req.query.start !== "undefined") {
@@ -1058,9 +1029,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
-		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		let dt = getFieldsFromDatatype(datatype, false, false);
@@ -1181,9 +1150,6 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 
 		if (typeof req.query.start !== "undefined") {
@@ -1225,7 +1191,6 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
 		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
 		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
@@ -1401,9 +1366,6 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 
 		if (typeof req.query.start !== "undefined") {
@@ -1444,9 +1406,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
-		var flowsDT = db.getCollection("flows");
-		datatypes = db.getCollection("datatypes");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		let fields;

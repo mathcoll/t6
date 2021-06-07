@@ -148,7 +148,6 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 				switch(pp.mode) {
 					case "aes-256-cbc": // aes-256-cbc encryption
 						if(typeof payload.object_id!=="undefined") {
-							let objects	= db.getCollection("objects");
 							let object = objects.findOne({ "$and": [ { "user_id": { "$eq": payload.user_id } }, { "id": { "$eq": payload.object_id } }, ]});
 							if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
 								payload.value = t6preprocessor.cryptValue(""+payload.value, {secret_key_crypt: object.secret_key_crypt});
@@ -288,7 +287,6 @@ t6preprocessor.getAllTracks = function(flow_id, track_id, user_id) {
 	if(track_id===null || track_id==="") {
 		return allTracks;
 	} else {
-		let flows = db.getCollection("flows");
 		let tracks = flows.chain().find({track_id: track_id, user_id: user_id,}).data();
 		if ( tracks.length > -1 ) {
 			tracks.map(function(track) {
@@ -336,7 +334,6 @@ t6preprocessor.fuse = function(job) {
 		return payload;
 	} else {
 		// look for all tracks
-		let flows = db.getCollection("flows");
 		let tracks = flows.chain().find({track_id: job.track_id, user_id: job.user_id,}).data();
 		if ( tracks.length > -1 ) {
 			let start = job.execTime-job.ttl;

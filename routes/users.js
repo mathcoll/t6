@@ -5,7 +5,6 @@ var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
 var AccessTokenSerializer = require("../serializers/accessToken");
 var refreshTokenSerializer = require("../serializers/refreshToken");
-var users;
 var tokens;
 var accessTokens;
 
@@ -29,7 +28,6 @@ router.get("/newcomers", function (req, res) {
 		var query = `SELECT who FROM events WHERE what='user add' ORDER BY time desc LIMIT ${size} OFFSET ${offset}`; // TODO WTF ?? using influx for that ??
 		t6console.log(query);
 		dbInfluxDB.query(query).then(data => {
-			users	= db.getCollection("users");
 			data.map(function(u) {
 				let us;
 				// TODO WTF ?? so why not getting directly from db ??
@@ -72,7 +70,6 @@ router.get("/list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetti
 		page = page>0?page:1;
 		var offset = Math.ceil(size*(page-1));
 		
-		users	= db.getCollection("users");
 		var json = users.chain().find(filter).simplesort("subscription_date", true).offset(offset).limit(size).data();
 		json.totalcount = users.chain().find(filter).data().length;
 		json.pageSelf	= page;
@@ -107,7 +104,7 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: 
 		var expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
 		if ( expired ) {
 			tokens.remove(expired);
-			db.save();
+			db_tokens.save();
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 204,"code": 403, "message": "Forbidden"}).serialize());
@@ -132,7 +129,7 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret, algorithms: j
 		var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 		if ( expired ) {
 			tokens.remove(expired);
-			db.save();
+			db_tokens.save();
 		}
 		res.status(200).send(new refreshTokenSerializer(tokens.find({"user_id": { "$eq": req.user.id }})).serialize());
 	} else {
@@ -199,7 +196,6 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.id === user_id || req.user.role === "admin" ) {
-		users	= db.getCollection("users");
 		res.status(200).send(new UserSerializer(users.chain().find({"id": { "$eq": user_id }}).simplesort("expiration", true).data()).serialize());
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 16, "code": 403, "message": "Forbidden"}).serialize());
@@ -225,7 +221,6 @@ router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.id === user_id ) {
-		users	= db.getCollection("users");
 		res.status(200).send( {token: users.findOne({"id": { "$eq": user_id }}).token} );
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 17, "code": 403, "message": "Forbidden"}).serialize());
@@ -250,8 +245,6 @@ router.post("/", function (req, res) {
 	if ( !(req.body.email && escape(req.body.email).match(new RegExp(/^([a-zA-Z0-9_\-\.+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.+)|(([a-zA-Z0-9\-]+\.+)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)))) {
 		res.status(412).send(new ErrorSerializer({"id": 9,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
-		users	= db.getCollection("users");
-		
 		if ( users.find({"email": { "$eq": req.body.email }}).length > 0 ) {
 			res.status(409).send(new ErrorSerializer({"id": 9.5,"code": 409, "message": "Conflict: User email already exists"}).serialize());
 		} else {
@@ -283,7 +276,7 @@ router.post("/", function (req, res) {
 
 			var tokens	= dbTokens.getCollection("tokens");
 			tokens.insert(new_token);
-			db.save();
+			db_tokens.save();
 			var expired = tokens.find(
 				{ "$and": [
 					{ "expiration" : { "$lt": moment().format("x") } },
@@ -292,7 +285,7 @@ router.post("/", function (req, res) {
 			);
 			if ( expired ) {
 				tokens.remove(expired);
-				db.save();
+				db_tokens.save();
 			}
 
 			res.render("emails/welcome", {user: new_user, token: new_token.token}, function(err, html) {
@@ -346,7 +339,7 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
 			};
 			var tokens	= dbTokens.getCollection("tokens");
 			tokens.insert(new_token);
-			db.save();
+			db_tokens.save();
 			var expired = tokens.find(
 				{ "$and": [
 					{"user_id" : req.user.id},
@@ -356,7 +349,7 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
 			);
 			if ( expired ) {
 				tokens.remove(expired);
-				db.save();
+				db_tokens.save();
 			}
 			res.status(201).send({ "code": 201, "id": 201.1, message: "Created", accessToken: new AccessTokenSerializer(new_token).serialize() });
 		}
@@ -384,7 +377,6 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
 	if ( !req.body.password ) {
 		res.status(412).send(new ErrorSerializer({"id": 8.3,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
-		users	= db.getCollection("users");
 		var user = (users.chain().find({ "token": req.params.token }).data())[0];
 		if ( user ) {
 			t6console.debug("Found user", user, "From token", req.params.token);
@@ -392,8 +384,8 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
 			user.passwordLastUpdated = parseInt(moment().format("x"), 10);
 			user.token = null;
 			users.update(user);
-			db.save();
-			t6console.debug("Saved user", user, req.body.password);
+			db_users.save();
+			t6console.debug("Saved user", user);
 			t6events.add("t6App", "user reset password", user.id, user.id);
 			res.header("Location", "/v"+version+"/users/"+user.id);
 			res.status(200).send({ "code": 200, message: "Successfully updated", user: new UserSerializer(user).serialize() }); 
@@ -423,13 +415,12 @@ router.post("/instruction", function (req, res) {
 		res.status(412).send(new ErrorSerializer({"id": 8.3,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
 		var query = { "email": req.body.email };
-		users	= db.getCollection("users");
 		var user = (users.chain().find(query).data())[0];
 		if ( user ) {
 			var token = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.");
 			user.token = token;
 			users.update(user);
-			db.save();
+			db_users.save();
 
 			res.render("emails/forgot-password", {user: user, token: token}, function(err, html) {
 				var to = user.firstName+" "+user.lastName+" <"+user.email+">";
@@ -471,11 +462,10 @@ router.post("/instruction", function (req, res) {
  */
 router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		users	= db.getCollection("users");
 		users.chain().find().update(function(user) {
 			user.unsubscription_token = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 		});
-		db.save();
+		db_users.save();
 		res.status(200).send({"status": "done", "count": users.chain().find().data().length});
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
@@ -497,7 +487,6 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algo
 router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let user_id = req.params.user_id;
 	if ( req.user.role === "admin" ) {
-		users	= db.getCollection("users");
 		let user = users.findOne({ "$and": [ { "id": { "$eq": user_id } }, { "pushSubscription": { "$ne": null } }, ] });
 		if (user!==null && typeof user.pushSubscription!=="undefined" ) {
 			user = typeof user!=="undefined"?user:{pushSubscription:{}};
@@ -565,7 +554,6 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 	if ( !( (req.body.email || req.body.lastName || req.body.firstName ) || ( req.body.password ) ) ) {
 		res.status(412).send(new ErrorSerializer({"id": 8,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
-		users	= db.getCollection("users");
 		if ( req.user.id === user_id || req.user.role === "admin" ) {
 			var result;
 			users.findAndUpdate(
@@ -578,7 +566,7 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 					result = item;
 				}
 			);
-			db.save();
+			db_users.save();
 			res.header("Location", "/v"+version+"/users/"+user_id);
 			res.status(200).send({ "code": 200, message: "Successfully updated", user: new UserSerializer(result).serialize() });
 		} else {
@@ -639,7 +627,6 @@ router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsetting
 router.delete("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.id === user_id ) { //Well ... not sure
-		users = db.getCollection("users");
 		var u = users.find({"id": { "$eq": user_id }});
 		if (u) {
 			users.remove(u);

@@ -112,16 +112,19 @@ var initDbMain = function() {
 		t6console.error("- Collection Objects is failing");
 	} else {
 		t6console.log(db.getCollection("objects").count(), "resources in Objects collection.");
+		global.objects = db.getCollection("objects");
 	}
 	if ( db.getCollection("flows") === null ) {
 		t6console.error("- Collection Flows is failing");
 	} else {
 		t6console.log(db.getCollection("flows").count(), "resources in Flows collection.");
+		global.flows = db.getCollection("flows");
 	}
 	if ( db.getCollection("users") === null ) {
 		t6console.error("- Collection Users is failing");
 	} else {
 		t6console.log(db.getCollection("users").count(), "resources in Users collection.");
+		global.users = db.getCollection("users");
 	}
 	if ( db.getCollection("tokens") === null ) {
 		t6console.error("- Collection Tokens is failing");
@@ -131,17 +134,21 @@ var initDbMain = function() {
 		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
 		if ( expired ) { tokens.remove(expired); db.save(); }
 		t6console.log(db.getCollection("tokens").count(), "resources in Tokens collection (in db).");
+		global.tokens = db.getCollection("tokens");
 	}
 	if ( db.getCollection("units") === null ) {
 		t6console.error("- Collection Units is failing");
 	} else {
 		t6console.log(db.getCollection("units").count(), "resources in Units collection.");
+		global.units = db.getCollection("units");
 	}
 	if ( db.getCollection("datatypes") === null ) {
 		t6console.error("- Collection Datatypes is failing");
 	} else {
 		t6console.log(db.getCollection("datatypes").count(), "resources in Datatypes collection.");
+		global.datatypes = db.getCollection("datatypes");
 	}
+	convertCombinedToDistinctDb(db);
 }
 var initDbRules = function() {
 	if ( dbRules === null ) {
@@ -173,7 +180,7 @@ var initDbDashboards = function() {
 		t6console.log(dbDashboards.getCollection("dashboards").count(), "resources in Dashboards collection.");
 	}
 }
-var initDbTokens = function() {
+var initDbTokens_ext = function() {
 	if ( dbTokens === null ) {
 		t6console.error("db Tokens is failing");
 	}
@@ -183,7 +190,7 @@ var initDbTokens = function() {
 		/* Some optimization */
 		let tokens	= dbTokens.getCollection("tokens");
 		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
-		if ( expired ) { tokens.remove(expired); db.save(); }
+		if ( expired ) { tokens.remove(expired); dbTokens.save(); }
 		t6console.log(dbTokens.getCollection("tokens").count(), "resources in Tokens collection (in separate db).");
 	}
 }
@@ -237,6 +244,148 @@ var initDbFusionBuffer = function() {
 		t6console.log(dbFusionBuffer.getCollection("measures").count(), "resources in FusionBuffer collection.");
 	}
 };
+var initDbFlows = function() {
+	if ( db_flows === null ) {
+		t6console.error("db flows is failing");
+	}
+	if ( db_flows.getCollection("flows") === null ) {
+		t6console.error("- Collection flows is created");
+		db_flows.addCollection("flows");
+	} else {
+		global.flows = db_flows.getCollection("flows");
+		t6console.log(db_flows.getCollection("flows").count(), "resources in flows collection.");
+	}
+};
+var initDbObjects = function() {
+	if ( db_objects === null ) {
+		t6console.error("db objects is failing");
+	}
+	if ( db_objects.getCollection("objects") === null ) {
+		t6console.error("- Collection objects is created");
+		db_objects.addCollection("objects");
+	} else {
+		global.objects = db_objects.getCollection("objects");
+		t6console.log(db_objects.getCollection("objects").count(), "resources in objects collection.");
+	}
+};
+var initDbUsers = function() {
+	if ( db_users === null ) {
+		t6console.error("db users is failing");
+	}
+	if ( db_users.getCollection("users") === null ) {
+		t6console.error("- Collection users is created");
+		db_users.addCollection("users");
+	} else {
+		global.users = db_users.getCollection("users");
+		t6console.log(db_users.getCollection("users").count(), "resources in users collection.");
+	}
+};
+var initDbTokens_int = function() {
+	if ( db_tokens === null ) {
+		t6console.error("db tokens is failing");
+	}
+	if ( db_tokens.getCollection("tokens") === null ) {
+		t6console.error("- Collection tokens is created");
+		db_tokens.addCollection("tokens");
+	} else {
+		global.tokens = db_tokens.getCollection("tokens");
+		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
+		if ( expired ) { tokens.remove(expired); db_tokens.save(); }
+		t6console.log(db_tokens.getCollection("tokens").count(), "resources in tokens collection (in combined db).");
+	}
+};
+var initDbUnits = function() {
+	if ( db_units === null ) {
+		t6console.error("db units is failing");
+	}
+	if ( db_units.getCollection("units") === null ) {
+		t6console.error("- Collection units is created");
+		db_units.addCollection("units");
+	} else {
+		global.units = db_units.getCollection("units");
+		t6console.log(db_units.getCollection("units").count(), "resources in units collection.");
+	}
+};
+var initDbDatatypes = function() {
+	if ( db_datatypes === null ) {
+		t6console.error("db datatypes is failing");
+	}
+	if ( db_datatypes.getCollection("datatypes") === null ) {
+		t6console.error("- Collection datatypes is created");
+		db_datatypes.addCollection("datatypes");
+	} else {
+		global.datatypes = db_datatypes.getCollection("datatypes");
+		t6console.log(db_datatypes.getCollection("datatypes").count(), "resources in datatypes collection.");
+	}
+};
+
+
+
+
+var convertCombinedToDistinctDb = function(db) {
+	var old;
+	/* REBUILD DB */
+	let db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let objects_new = db_objects.addCollection("objects");
+	let objects_old = db.getCollection("objects");
+	old = objects_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		objects_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let flows_new = db_flows.addCollection("flows");
+	let flows_old = db.getCollection("flows");
+	old = flows_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		flows_new.insert(f);
+	});
+
+	/* REBUILD DB */
+	let db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let users_new = db_users.addCollection("users");
+	let users_old = db.getCollection("users");
+	old = users_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		users_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let tokens_new = db_tokens.addCollection("tokens");
+	let tokens_old = db.getCollection("tokens");
+	old = tokens_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		tokens_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let units_new = db_units.addCollection("units");
+	let units_old = db.getCollection("units");
+	old = units_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		units_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let datatypes_new = db_datatypes.addCollection("datatypes");
+	let datatypes_old = db.getCollection("datatypes");
+	old = datatypes_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		datatypes_new.insert(f);
+	});
+} // END convertCombinedToDistinctDb
+
+
 
 t6console.info("Setting correct permission on Databases...");
 let dbs = [
@@ -250,6 +399,13 @@ let dbs = [
 	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
 	path.join(__dirname, "data", `jobs-${os.hostname()}.json`),
 	path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`),
+	
+	path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`),
 ];
 dbs.forEach(file => {
 	fs.chmod(file, 0o600 , err => {
@@ -261,11 +417,23 @@ dbs.forEach(file => {
 
 t6console.info("Initializing Databases...");
 dbLoadTime = new Date();
-db = new loki(path.join(__dirname, "data", `db-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbMain});
+
+let useOldDbAndConvert = false; // migration flag
+if (useOldDbAndConvert) {
+	db = new loki(path.join(__dirname, "data", `db-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbMain});
+} else { /* Use the news split database : */
+	global.db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbObjects});
+	global.db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFlows});
+	global.db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUsers});
+	global.db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens_int});
+	global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
+	global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
+}
+
 dbRules = new loki(path.join(__dirname, "data", `rules-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
 dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
 dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
-dbTokens = new loki(path.join(__dirname, "data", `tokens-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
+dbTokens = new loki(path.join(__dirname, "data", `tokens-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens_ext});
 dbSources = new loki(path.join(__dirname, "data", `sources-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSources});
 dbOtaHistory = new loki(path.join(__dirname, "data", `otahistory-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
 dbUis = new loki(path.join(__dirname, "data", `uis-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUis});
@@ -415,7 +583,7 @@ if (app.get("env") === "development") {
 }
 
 t6events.add("t6App", "start", "self", t6BuildVersion);
-t6console.log(`${appName} has started and is listening to ${process.env.BASE_URL_HTTPS}.`);
+t6console.log(`${appName} started / listening to ${process.env.BASE_URL_HTTPS}.`);
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {

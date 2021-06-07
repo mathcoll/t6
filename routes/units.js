@@ -3,7 +3,6 @@ var express = require("express");
 var router = express.Router();
 var UnitSerializer = require("../serializers/unit");
 var ErrorSerializer = require("../serializers/error");
-var units;
 
 /**
  * @api {get} /units/:unit_id Get Unit(s)
@@ -21,7 +20,6 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res) {
 	var json;
 	var unit_id = req.params.unit_id;
 	var type = req.query.type;
-	units	= db.getCollection("units");
 	if ( typeof type === "undefined" ) {
 		if ( typeof unit_id === "undefined" ) {
 			json = units.find();
@@ -55,7 +53,6 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res) {
  */
 router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		units	= db.getCollection("units");
 		var new_unit = {
 			id: uuid.v4(),
 			name:	typeof req.body.name!=="undefined"?req.body.name:"unamed",
@@ -94,7 +91,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		var unit_id = req.params.unit_id;
-		units	= db.getCollection("units");
 		var result;
 		units.findAndUpdate(
 			function(i){return i.id==unit_id;},
@@ -108,7 +104,7 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 				result = item;
 			}
 		);
-		db.save();
+		db_units.save();
 
 		res.header("Location", "/v"+version+"/units/"+unit_id);
 		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new UnitSerializer(result).serialize() });
@@ -134,11 +130,10 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		var unit_id = req.params.unit_id;
-		units	= db.getCollection("units");
 		var u = units.find({"id": { "$eq": unit_id }});
 		if (u) {
 			units.remove(u);
-			db.save();
+			db_units.save();
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: unit_id }); // TODO: missing serializer
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());

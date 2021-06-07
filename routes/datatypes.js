@@ -3,7 +3,6 @@ var express = require("express");
 var router = express.Router();
 var DataTypeSerializer = require("../serializers/datatype");
 var ErrorSerializer = require("../serializers/error");
-var datatypes;
 
 /**
  * @api {get} /datatypes/:datatype_id Get DataType(s)
@@ -20,7 +19,6 @@ var datatypes;
  */
 router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 	var datatype_id = req.params.datatype_id;
-	datatypes	= db.getCollection("datatypes");
 	var json;
 	if ( typeof datatype_id === "undefined" ) {
 		json = datatypes.find();
@@ -47,7 +45,6 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
  */
 router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		datatypes	= db.getCollection("datatypes");
 		var classification = undefined;
 		if(typeof req.body.type!=="undefined") {
 			if(req.body.type==="numerical") {
@@ -91,7 +88,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		var datatype_id = req.params.datatype_id;
-		datatypes	= db.getCollection("datatypes");
 		var classification = undefined;
 		if(typeof req.body.type!=="undefined") {
 			if(req.body.type==="numerical") {
@@ -112,7 +108,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 				result 		= item;
 			}
 		);
-		db.save();
+		db_datatypes.save();
 		
 		res.header("Location", "/v"+version+"/datatypes/"+datatype_id);
 		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new DataTypeSerializer(result).serialize() });
@@ -137,11 +133,10 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 router.delete("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		var datatype_id = req.params.datatype_id;
-		datatypes	= db.getCollection("datatypes");
 		var d = datatypes.find({"id": { "$eq": datatype_id }});
 		if (d) {
 			datatypes.remove(d);
-			db.save();
+			db_datatypes.save();
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: datatype_id }); // TODO: missing serializer
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 51, "code": 404, "message": "Not Found"}).serialize());

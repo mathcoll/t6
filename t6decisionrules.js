@@ -7,7 +7,6 @@ var Sentiment = require("sentiment");
 var geodist = require("geodist");
 var statistics = require("simple-statistics");
 var rules;
-var users;
 
 function cryptPayload(payload, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
@@ -276,7 +275,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				if ( typeof payload.object_id!=="undefined" ) {
 					mqttPayload.object_id = payload.object_id;
 					if( typeof user_id!=="undefined" ) {
-						let objects	= db.getCollection("objects");
 						let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
 						if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
 							mqttPayload.value = cryptPayload(""+mqttPayload.value, {secret_key_crypt: object.secret_key_crypt}); // ascii, binary, base64, hex, utf8
@@ -385,7 +383,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					"tag": event.params.tag,
 					"vibrate": event.params.vibrate
 				};
-				users	= db.getCollection("users");
 				let user = users.findOne({ "id": user_id });
 				if (user && user.pushSubscription) {
 					let result = t6notifications.sendPush(user.pushSubscription, p);

@@ -4,8 +4,6 @@ var router = express.Router();
 var ObjectSerializer = require("../serializers/object");
 var ErrorSerializer = require("../serializers/error");
 var UISerializer = require("../serializers/ui");
-var users;
-var objects;
 var uis;
 var sources;
 
@@ -27,7 +25,6 @@ var sources;
  */
 router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
 	uis	= dbUis.getCollection("uis");
 	var query = {
 		"$and": [
@@ -60,7 +57,6 @@ router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secr
  */
 router.get("/(:object_id([0-9a-z\-]+))/show", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
 	uis	= dbUis.getCollection("uis");
 	var query = {
 		"$and": [
@@ -106,8 +102,6 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 	var object_id = req.params.object_id;
 	var typenumber = req.params.typenumber;
 	var errorcorrectionlevel = typeof req.params.errorcorrectionlevel!=="undefined"?req.params.errorcorrectionlevel:"M";
-		
-	objects	= db.getCollection("objects");
 	var query;
 	if ( typeof object_id !== "undefined" ) {
 		query = {
@@ -149,7 +143,6 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 	var object_id = req.params.object_id;
 	var name = req.query.name;
-	objects	= db.getCollection("objects");
 	var query;
 	if ( typeof object_id !== "undefined" ) {
 		query = {
@@ -189,7 +182,6 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
  */
 router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
 	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
 	if ( object && object.ipv4 && object.fqbn ) {
 
@@ -235,7 +227,6 @@ router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwts
  */
 router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
 	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
 	if ( object && object.ipv4 && object.fqbn ) {
 		let opts = {
@@ -284,7 +275,6 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
-	objects	= db.getCollection("objects");
 	var query;
 	if ( typeof object_id !== "undefined" ) {
 		query = {
@@ -358,7 +348,6 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
 	var source_id = req.params.source_id;
-	objects	= db.getCollection("objects");
 	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
 	if ( object ) {
 		if(object.source_id == source_id) {
@@ -369,7 +358,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
 				result = item;
 			});
 			if ( typeof result!=="undefined" ) {
-				db.save();
+				db_objects.save();
 				res.header("Location", "/v"+version+"/objects/"+object_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", object: new ObjectSerializer(result).serialize() });
 			} else {
@@ -400,8 +389,6 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
  */
 router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
-
 	var query = {
 		"$and": [
 			{ "id": object_id },
@@ -440,7 +427,6 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 				const child = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
 				child.on("close", (code) => {
 					t6console.log(`child process exited with code ${code}`);
-					users	= db.getCollection("users");
 					let user = users.findOne({"id": req.user.id });
 					if (code === 0) {
 						if (user && typeof user.pushSubscription !== "undefined" ) {
@@ -512,8 +498,6 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
  * @apiUse 429
  */
 router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	objects	= db.getCollection("objects");
-		
 	/* Check for quota limitation */
 	var queryQ = { "user_id" : req.user.id };
 	var i = (objects.find(queryQ)).length;
@@ -592,14 +576,12 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  */
 router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
-	//t6console.log(objects);
 	var query = {
-		"$and": [
-				{ "id": object_id },
-				{ "user_id": req.user.id },
-			]
-		};
+	"$and": [
+			{ "id": object_id },
+			{ "user_id": req.user.id },
+		]
+	};
 	var object = objects.findOne( query );
 	if ( object ) {
 		if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - object.meta.revision) !== 0 ) {
@@ -634,7 +616,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 				});
 			}
 			if ( typeof result!=="undefined" ) {
-				db.save();
+				db_objects.save();
 
 				res.header("Location", "/v"+version+"/objects/"+object_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", object: new ObjectSerializer(result).serialize() });
@@ -662,7 +644,6 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
  */
 router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
-	objects	= db.getCollection("objects");
 	var query = {
 		"$and": [
 			{ "user_id" : req.user.id, }, // delete only object from current user
@@ -673,7 +654,7 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 	//t6console.log(o);
 	if ( o.length > 0 ) {
 		objects.remove(o);
-		db.saveDatabase();
+		db_objects.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: object_id }); // TODO: missing serializer
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 131, "code": 404, "message": "Not Found"}).serialize());
@@ -707,13 +688,12 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 		// Not Authorized because token is invalid
 		res.status(401).send(new ErrorSerializer({"id": 134, "code": 401, "message": "Not Authorized"}).serialize());
 	} else if ( object_id && typeof req.body.value !== "undefined" ) {
-		objects	= db.getCollection("objects");
 		var query = {
 			"$and": [
-					{ "user_id" : req.user.id },
-					{ "id" : object_id },
-				]
-			};
+				{ "user_id" : req.user.id },
+				{ "id" : object_id },
+			]
+		};
 		var object = objects.findOne(query);
 		
 		if ( object ) {
@@ -725,7 +705,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 				object.parameters.push({ name: pName, value: req.body.value , type: "String"});
 			}
 			if ( p !== null ) {
-				db.saveDatabase();
+				db_objects.saveDatabase();
 				
 				res.header("Location", "/v"+version+"/objects/"+pName);
 				res.status(201).send({ "code": 201, message: "Success", name: pName, value: p[0].value });
@@ -766,13 +746,12 @@ router.get("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 		// Not Authorized because token is invalid
 		res.status(401).send(new ErrorSerializer({"id": 137, "code": 401, "message": "Not Authorized"}).serialize());
 	} else if ( object_id ) {
-		objects	= db.getCollection("objects");
 		var query = {
 			"$and": [
-					{ "user_id" : req.user.id },
-					{ "id" : object_id },
-				]
-			};
+				{ "user_id" : req.user.id },
+				{ "id" : object_id },
+			]
+		};
 		var object = objects.findOne(query);
 		
 		if ( object ) {

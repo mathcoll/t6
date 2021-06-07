@@ -3,10 +3,6 @@ var express = require("express");
 var router = express.Router();
 var DataSerializer = require("../serializers/data");
 var ErrorSerializer = require("../serializers/error");
-let flows;
-let objects;
-let datatypes;
-let units;
 
 function getJson(v) {
 	try {
@@ -116,9 +112,6 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	if ( !flow_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
 	} else {
-		flows = db.getCollection("flows");
-		units = db.getCollection("units");
-
 		let where = "";
 		if ( data_id ) {
 			if ( data_id.toString().length === 10 ) { data_id *= 1e9; }
@@ -165,9 +158,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		let flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
 		let join = flow.eqJoin(units.chain(), "unit", "id");
 
-		let flowsDT = db.getCollection("flows");
-		datatypes	= db.getCollection("datatypes");
-		let flowDT = flowsDT.chain().find({id: flow_id,}).limit(1);
+		let flowDT = flows.chain().find({id: flow_id,}).limit(1);
 		let joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		let datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 		let fields;
@@ -207,7 +198,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
 				data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
 				data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
-				data.ttl = (((join.data())[0].left).data_ttl!==null && ((join.data())[0].left).data_ttl!=="")?((join.data())[0].left).data_ttl:3600;
+				data.ttl = (((join.data())[0].left).ttl!==null && ((join.data())[0].left).ttl!=="")?((join.data())[0].left).ttl:3600;
 				data.flow_id = flow_id;
 				data.pageSelf = page;
 				data.pageNext = page+1;
@@ -276,8 +267,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 
 	if ( payload.signedPayload || payload.encryptedPayload ) {
 		var cert = jwtsettings.secret; //- fs.readFileSync("private.key");
-		objects	= db.getCollection("objects");
-
 		var query;
 		if ( typeof object_id !== "undefined" ) {
 			query = {
@@ -343,8 +332,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			// Not Authorized because token is invalid
 			res.status(401).send(new ErrorSerializer({"id": 64, "code": 401, "message": "Not Authorized",}).serialize());
 		} else {
-			flows		= db.getCollection("flows");
-			datatypes	= db.getCollection("datatypes");
 			let f = flows.chain().find({id: ""+flow_id, user_id: req.user.id,}).limit(1);
 			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
 			let join;
@@ -599,7 +586,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 					let payloadFact = {"dtepoch": time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "datatype": datatype, "mqtt_topic": typeof mqtt_topic!=="undefined"?(mqtt_topic).toString():""}; // This is the bare minimal payload
 					if ( typeof object_id !== "undefined" ) {
 						payloadFact.object_id = object_id;
-						objects	= db.getCollection("objects");
 						let query = {
 						"$and": [
 								{ "user_id" : req.user.id },

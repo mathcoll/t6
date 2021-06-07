@@ -3,7 +3,6 @@ var express = require("express");
 var router = express.Router();
 var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
-var users;
 
 /**
  * @api {get} /notifications/debug/:mail Get html of email
@@ -45,7 +44,6 @@ router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret, algorithms: j
 router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.user.id;
 	if ( req.user && user_id ) {
-		users	= db.getCollection("users");
 		var json = users.findOne( { id: user_id } );
 		//t6console.log(json.unsubscription);
 		res.status(200).send({unsubscription: json.unsubscription, unsubscription_token: json.unsubscription_token });
@@ -68,7 +66,6 @@ router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret, algorit
  */
 router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		users	= db.getCollection("users");
 		var query = { "$and": [
 					{"subscription_date": { "$lte": moment().subtract(7, "days") }},
 					{"reminderMail": undefined},
@@ -105,7 +102,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
 									item.reminderMail = parseInt(moment().format("x"), 10);
 								}
 						);
-						db.save();
+						db_users.save();
 					}).catch(function(err){
 						var err = new Error("Internal Error");
 						err.status = 500;
@@ -141,7 +138,6 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
  */
 router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		users	= db.getCollection("users");
 		//var query = {"token": { "$eq": null }};
 		var query = { "$and": [
 					{"$or": [{"passwordLastUpdated": { "$lte": moment().subtract(3, "months") }}, {passwordLastUpdated: undefined}]},
@@ -183,7 +179,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 									item.changePassword = parseInt(moment().format("x"), 10);
 								}
 						);
-						db.save();
+						db_users.save();
 					}).catch(function(err){
 						var err = new Error("Internal Error");
 						err.status = 500;
@@ -226,7 +222,6 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret, algorithm
 		var year = req.query.year;
 		var template = req.query.template;
 		var subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰 t6 updates";
-		users	= db.getCollection("users");
 		var query = { "$and": [
 					{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
 				]};
@@ -261,7 +256,7 @@ router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret, algorithm
 										item.newsletter = parseInt(moment().format("x"), 10);
 									}
 							);
-							db.save();
+							db_users.save();
 						}).catch(function(error){
 							var err = new Error("Internal Error");
 							err.status = 500;

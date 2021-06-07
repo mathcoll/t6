@@ -3,8 +3,6 @@ var express = require("express");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 var ObjectSerializer = require("../serializers/object");
-var users;
-var objects;
 var sources;
 
 /**
@@ -95,7 +93,6 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 	var source_id = req.params.source_id;
 	var object_id = req.params.object_id;
 	// find all objects linked to this source
-	objects	= db.getCollection("objects");
 	sources	= dbSources.getCollection("sources");
 	var query;
 	if ( typeof object_id !== "undefined" ) {
@@ -157,8 +154,7 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 					
 					const child = exec(`${cmd}`);
 					child.on("close", (code) => {
-						t6console.log(`child process exited with code ${code}`);
-						users = db.getCollection("users");
+						t6console.debug(`child process exited with code ${code}`);
 						let user = users.findOne({"id": req.user.id });
 						let payload;
 						if (code === 0) {
@@ -219,7 +215,6 @@ router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
-	objects	= db.getCollection("objects");
 	var query;
 	if ( typeof name !== "undefined" ) {
 		query = {

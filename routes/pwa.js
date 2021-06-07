@@ -2,7 +2,6 @@
 var express = require("express");
 var router	= express.Router();
 var ErrorSerializer = require("../serializers/error");
-var users;
 
 router.get("/", function(req, res) {
 	res.setHeader("Cache-Control", "public, max-age=86400");
@@ -47,7 +46,6 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 	var unsubscription_token = req.params.unsubscription_token;
 	
 	if ( list == "changePassword" || list == "reminder" || list == "newsletter" ) {
-		users	= db.getCollection("users");
 		var result;
 
 		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
@@ -55,7 +53,7 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
 			user.unsubscription[""+list] = moment().format("x");
 			result = user;
 		});
-		db.save();
+		db_users.save();
 
 		if (!req.headers["Content-Type"] || req.headers["Content-Type"].indexOf("application/json") !== 0) {
 			res.status(200).send({"status": "unsubscribed", "list": list});
@@ -95,7 +93,6 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 	var unsubscription_token = req.params.unsubscription_token;
 	
 	if ( list == "changePassword" || list == "reminder" || list == "newsletter" ) {
-		users	= db.getCollection("users");
 		var result;
 
 		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
@@ -103,7 +100,7 @@ router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_tok
 			user.unsubscription[""+list] = null;
 			result = user;
 		});
-		db.save();
+		db_users.save();
 
 		if (!req.headers["Content-Type"] || req.headers["Content-Type"].indexOf("application/json") !== 0) {
 			res.status(200).send({"status": "subscribed", "list": list});

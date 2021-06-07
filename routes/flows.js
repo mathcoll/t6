@@ -3,7 +3,6 @@ var express = require("express");
 var router = express.Router();
 var FlowSerializer = require("../serializers/flow");
 var ErrorSerializer = require("../serializers/error");
-let flows;
 
 function str2bool(v) {
 	return [true, "yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
@@ -33,8 +32,6 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 	var offset = Math.ceil(size*(page-1));
 	var name = req.query.name;
 	if ( typeof req.user !== "undefined" && typeof req.user.id !== "undefined" ) {
-		flows	= db.getCollection("flows");
-
 		var query;
 		if ( typeof flow_id !== "undefined" ) {
 			query = {
@@ -57,7 +54,6 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 		}
 		let flow = flows.chain().find(query).offset(offset).limit(size).data();
 		/*
-		units	= db.getCollection("units");
 		var flow = flows.chain().find(query).offset(offset).limit(size);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 		
@@ -76,6 +72,7 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
+		flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
 		//flow.unit = (join.data())[0].right.name;
 
 		res.status(200).send(new FlowSerializer(flow).serialize());
@@ -110,7 +107,6 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
  * @apiUse 429
  */
 router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	flows	= db.getCollection("flows");
 	/* Check for quota limitation */
 	var queryQ = { "user_id" : req.user.id };
 	var i = (flows.find(queryQ)).length;
@@ -137,7 +133,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
-					ttl:				typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):undefined,
+					ttl:				(typeof req.body.ttl!=="undefined"?req.body.ttl:undefined).toString(),
 					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
 					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
@@ -190,13 +186,6 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 		if ( permission < 600 ) {
 			res.status(400).send(new ErrorSerializer({"id": 239, "code": 400, "message": "Bad Request", "details": "Permission must be greater than 600!"}).serialize());
 		} else {
-			flows	= db.getCollection("flows");
-			
-			flows.ensureIndex("id");
-			var rset = flows.chain();
-			rset.find({"id": 1}); // force index to be built
-			db.save();
-			
 			let query = {
 				"$and": [
 						{ "id": flow_id },
@@ -221,15 +210,15 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
-						item.ttl				= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.ttl, 10);
+						item.ttl				= (typeof req.body.ttl!=="undefined"?req.body.ttl:item.ttl).toString();
 						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
 						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
 						result = item;
+
+						db_flows.save();
+						db_flows.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
 					});
 					if ( typeof result !== "undefined" ) {
-						db.save();
-						db.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
-
 						res.header("Location", "/v"+version+"/flows/"+flow_id);
 						res.status(200).send({ "code": 200, message: "Successfully updated", flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
 					} else {
@@ -257,7 +246,6 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 router.delete("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	// TODO: delete all data related to that flow?
 	var flow_id = req.params.flow_id;
-	flows	= db.getCollection("flows");
 	var query = {
 		"$and": [
 			{ "user_id" : req.user.id, }, // delete only flow from current user
@@ -267,7 +255,7 @@ router.delete("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 	var f = flows.find(query);
 	if ( f.length > 0 ) {
 		flows.remove(f);
-		db.saveDatabase();
+		db_flows.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: flow_id }); // TODO: missing serializer
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 243, "code": 404, "message": "Not Found"}).serialize());

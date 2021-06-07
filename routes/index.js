@@ -3,7 +3,6 @@ var express = require("express");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 var tokens;
-var users;
 
 var timeoutNotification;
 function sendNotification(pushSubscription, payload) {
@@ -188,7 +187,6 @@ function sendNotification(pushSubscription, payload) {
 
 //catch API calls for quotas
 router.all("*", function (req, res, next) {
-	users	= db.getCollection("users");
 	var o = {
 		key:		typeof req.user!=="undefined"?req.user.key:"",
 		secret:		typeof req.user!=="undefined"?req.user.secret:null,
@@ -344,7 +342,7 @@ router.delete("/tokens/all", function (req, res) {
 		var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 		if ( expired ) {
 			tokens.remove(expired);
-			db.save();
+			db_tokens.save();
 		}
 		return res.status(201).json( {status: "ok", "cleaned": expired.length} );
 	} else {
@@ -402,7 +400,7 @@ router.post("/authenticate", function (req, res) {
 					user.pushSubscription = pushSubscription;
 				}
 				users.update(user);
-				db.save();
+				db_users.save();
 
 				req.session.cookie.secure = true;
 				req.session.cookie.user_id = user.id;
@@ -492,13 +490,13 @@ router.post("/authenticate", function (req, res) {
 				user.pushSubscription = pushSubscription;
 			}
 			users.update(user);
-			db.save();
+			db_users.save();
 			
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			users.update(user);
-			db.save();
+			db_users.save();
 
 			var payload = JSON.parse(JSON.stringify(user));
 			payload.permissions = undefined;
@@ -577,7 +575,7 @@ router.post("/authenticate", function (req, res) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			users.update(user);
-			db.save();
+			db_users.save();
 
 			var payload = JSON.parse(JSON.stringify(user));
 			payload.permissions = undefined;
@@ -743,12 +741,12 @@ router.get("/status", function(req, res, next) {
 	};
 	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
 		status.dbAll = {
-			"objects": db.getCollection("objects").count(),
-			"flows": db.getCollection("flows").count(),
-			"users": db.getCollection("users").count(),
-			"tokens": db.getCollection("tokens").count(),
-			"units": db.getCollection("units").count(),
-			"datatypes": db.getCollection("datatypes").count(),
+			"objects": db_objects.getCollection("objects").count(),
+			"flows": db_flows.getCollection("flows").count(),
+			"users": db_users.getCollection("users").count(),
+			"tokens": db_tokens.getCollection("tokens").count(),
+			"units": db_units.getCollection("units").count(),
+			"datatypes": db_datatypes.getCollection("datatypes").count(),
 			"rules": dbRules.getCollection("rules").count(),
 			"snippets": dbSnippets.getCollection("snippets").count(),
 			"dashboards": dbDashboards.getCollection("dashboards").count(),
@@ -763,12 +761,12 @@ router.get("/status", function(req, res, next) {
 	if ( typeof req.user!=="undefined" && typeof req.user.id!=="undefined" ) {
 		let u = {"user_id": req.user.id};
 		status.db = {
-			"objects": db.getCollection("objects").find(u).length,
-			"flows": db.getCollection("flows").find(u).length,
+			"objects": db_objects.getCollection("objects").find(u).length,
+			"flows": db_flows.getCollection("flows").find(u).length,
 			"users": 1,
-			"tokens": db.getCollection("tokens").find(u).length,
-			"units": db.getCollection("units").count(),
-			"datatypes": db.getCollection("datatypes").count(),
+			"tokens": db_tokens.getCollection("tokens").find(u).length,
+			"units": db_units.getCollection("units").count(),
+			"datatypes": db_datatypes.getCollection("datatypes").count(),
 			"rules": dbRules.getCollection("rules").find(u).length,
 			"snippets": dbSnippets.getCollection("snippets").find(u).length,
 			"dashboards": dbDashboards.getCollection("dashboards").find(u).length,
