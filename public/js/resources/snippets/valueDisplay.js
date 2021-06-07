@@ -31,6 +31,7 @@ var snippet = {
 			var time = response.data[0].attributes.time;
 			var unit = typeof response.links.unit!=="undefined"?response.links.unit:"";
 			var ttl = response.links.ttl;
+			console.log("DEBUG", ttl);
 			var value = [];
 			for (var i=0; i<limit-1; i++) {
 				var cur = i;
