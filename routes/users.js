@@ -152,26 +152,32 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret, algorithms: j
  * @apiUse 500
  */
 router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	if ( typeof req.user !== "undefined" ) {
-		var options = {
-			url: "https://en.gravatar.com/" + req.user.mail_hash + ".json",
-			headers: {
-				"User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/44.0"
-			}
-		};
-		request(options, function(error, response, body) {
-			if ( !error && response.statusCode !== 404 ) {
-				req.user.gravatar = JSON.parse(body);
-			} else {
-				req.user.gravatar = {};
-			}
-			var json = new UserSerializer(req.user).serialize();
-			if ( typeof json !== "undefined" ) {
-				res.status(200).send(json);
-			} else {
-				res.status(404).send(new ErrorSerializer({"id": 11,"code": 404, "message": "Not Found"}).serialize());
-			}
-		});
+	if (typeof req.user!=="undefined") {
+		var json;
+		if (typeof req.user.mail_hash!=="undefined") {
+			var options = {
+				url: "https://en.gravatar.com/" + req.user.mail_hash + ".json",
+				headers: {
+					"User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/44.0"
+				}
+			};
+			request(options, function(error, response, body) {
+				if ( !error && response.statusCode !== 404 ) {
+					req.user.gravatar = JSON.parse(body);
+				} else {
+					req.user.gravatar = {};
+				}
+				json = new UserSerializer(req.user).serialize();
+				if ( typeof json !== "undefined" ) {
+					res.status(200).send(json);
+				} else {
+					res.status(404).send(new ErrorSerializer({"id": 11,"code": 404, "message": "Not Found"}).serialize());
+				}
+			});
+		} else {
+			json = new UserSerializer(req.user).serialize();
+			res.status(200).send(json);
+		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 10,"code": 403, "message": "Forbidden"}).serialize());
 	}
