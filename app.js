@@ -106,6 +106,70 @@ if(dbInfluxDB) {
 	t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
 }
 
+
+var convertCombinedToDistinctDb = function(db) {
+	var old;
+	/* REBUILD DB */
+	let db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let objects_new = db_objects.addCollection("objects");
+	let objects_old = db.getCollection("objects");
+	old = objects_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		objects_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let flows_new = db_flows.addCollection("flows");
+	let flows_old = db.getCollection("flows");
+	old = flows_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		flows_new.insert(f);
+	});
+
+	/* REBUILD DB */
+	let db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let users_new = db_users.addCollection("users");
+	let users_old = db.getCollection("users");
+	old = users_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		users_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let tokens_new = db_tokens.addCollection("tokens");
+	let tokens_old = db.getCollection("tokens");
+	old = tokens_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		tokens_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let units_new = db_units.addCollection("units");
+	let units_old = db.getCollection("units");
+	old = units_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		units_new.insert(f);
+	});
+	
+	/* REBUILD DB */
+	let db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true});
+	let datatypes_new = db_datatypes.addCollection("datatypes");
+	let datatypes_old = db.getCollection("datatypes");
+	old = datatypes_old.chain().find({}).data();
+	old.map(function(f) {
+		f.$loki = undefined;
+		datatypes_new.insert(f);
+	});
+}; // END convertCombinedToDistinctDb
+
 /* Main Database settings */
 var initDbMain = function() {
 	if ( db.getCollection("objects") === null ) {
@@ -318,74 +382,6 @@ var initDbDatatypes = function() {
 		t6console.log(db_datatypes.getCollection("datatypes").count(), "resources in datatypes collection.");
 	}
 };
-
-
-
-
-var convertCombinedToDistinctDb = function(db) {
-	var old;
-	/* REBUILD DB */
-	let db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true});
-	let objects_new = db_objects.addCollection("objects");
-	let objects_old = db.getCollection("objects");
-	old = objects_old.chain().find({}).data();
-	old.map(function(f) {
-		f.$loki = undefined;
-		objects_new.insert(f);
-	});
-	
-	/* REBUILD DB */
-	let db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true});
-	let flows_new = db_flows.addCollection("flows");
-	let flows_old = db.getCollection("flows");
-	old = flows_old.chain().find({}).data();
-	old.map(function(f) {
-		f.$loki = undefined;
-		flows_new.insert(f);
-	});
-
-	/* REBUILD DB */
-	let db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true});
-	let users_new = db_users.addCollection("users");
-	let users_old = db.getCollection("users");
-	old = users_old.chain().find({}).data();
-	old.map(function(f) {
-		f.$loki = undefined;
-		users_new.insert(f);
-	});
-	
-	/* REBUILD DB */
-	let db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true});
-	let tokens_new = db_tokens.addCollection("tokens");
-	let tokens_old = db.getCollection("tokens");
-	old = tokens_old.chain().find({}).data();
-	old.map(function(f) {
-		f.$loki = undefined;
-		tokens_new.insert(f);
-	});
-	
-	/* REBUILD DB */
-	let db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true});
-	let units_new = db_units.addCollection("units");
-	let units_old = db.getCollection("units");
-	old = units_old.chain().find({}).data();
-	old.map(function(f) {
-		f.$loki = undefined;
-		units_new.insert(f);
-	});
-	
-	/* REBUILD DB */
-	let db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true});
-	let datatypes_new = db_datatypes.addCollection("datatypes");
-	let datatypes_old = db.getCollection("datatypes");
-	old = datatypes_old.chain().find({}).data();
-	old.map(function(f) {
-		f.$loki = undefined;
-		datatypes_new.insert(f);
-	});
-} // END convertCombinedToDistinctDb
-
-
 
 t6console.info("Setting correct permission on Databases...");
 let dbs = [
