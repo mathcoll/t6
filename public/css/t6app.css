@@ -107,7 +107,7 @@ a {
   bottom:auto !important;
 }
 #currentUserEmail {
-  color: #ffffff;
+  color: #fff;
 }
 code.nostyle div span h1, code.nostyle div span {
   font-size: initial;
@@ -149,8 +149,8 @@ code.nostyle br {
 }
 @media only screen and (max-device-width: 480px) {
   #hof-container h1 {
-  font-size: 24px;
-  line-height: 28px;
+    font-size: 24px;
+    line-height: 28px;
   }
 }
 #hof-container {
