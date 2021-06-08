@@ -67,6 +67,8 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		var datatypeClassification = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.classification : null;
 		let dt = getFieldsFromDatatype(datatypeName, false, false);
 		let where = "";
+		let start = typeof req.query.start!=="undefined"?req.query.start:"";
+		let end = typeof req.query.end!=="undefined"?req.query.end:"";
 		if (typeof req.query.start !== "undefined") {
 			if (!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
 				if (req.query.start.toString().length === 10) { start = req.query.start * 1e9; }
@@ -92,8 +94,6 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		}
 		let query = `SELECT FIRST(${dt}) as first, LAST(${dt}) as last, COUNT(${dt}) as count, MEAN(${dt}) as mean, stddev(${dt}) as std_dev, SPREAD(${dt}) as spread, MIN(${dt}) as minimum, MAX(${dt}) as maximum, MODE(${dt}) as mode, MEDIAN(${dt}) as median, PERCENTILE(${dt},25) as "quantile1", PERCENTILE(${dt},50) as "quantile2", PERCENTILE(${dt},75) as "quantile3" FROM data WHERE flow_id='${flow_id}' ${where}`;
 		t6console.debug(sprintf("Query: %s", query));
-		let start = typeof req.query.start !== "undefined" ? req.query.start : "";
-		let end = typeof req.query.end !== "undefined" ? req.query.end : "";
 		dbInfluxDB.query(query).then(data => {
 			if (data.length > 0) {
 				data.map(function(d) {
