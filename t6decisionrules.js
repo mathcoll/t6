@@ -265,7 +265,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			}
 
 			if( event.type === "mqttPublish" ) {
-				let mqttPayload = {date: moment(parseInt(payload.dtepoch)).format("LLL"), dtepoch:parseInt(payload.dtepoch, 10), value:payload.value, flow: payload.flow};
+				let mqttPayload = {date: moment(parseInt(payload.dtepoch, 10)).format("LLL"), dtepoch:parseInt(payload.dtepoch, 10), value:payload.value, flow: payload.flow};
 				if ( typeof payload.message !== "undefined" ) {
 					mqttPayload.message = payload.message;
 				}
