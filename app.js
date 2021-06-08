@@ -244,20 +244,6 @@ var initDbDashboards = function() {
 		t6console.log(dbDashboards.getCollection("dashboards").count(), "resources in Dashboards collection.");
 	}
 }
-var initDbTokens_ext = function() {
-	if ( dbTokens === null ) {
-		t6console.error("db Tokens is failing");
-	}
-	if ( dbTokens.getCollection("tokens") === null ) {
-		t6console.error("- Collection Tokens is failing");
-	} else {
-		/* Some optimization */
-		let tokens	= dbTokens.getCollection("tokens");
-		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
-		if ( expired ) { tokens.remove(expired); dbTokens.save(); }
-		t6console.log(dbTokens.getCollection("tokens").count(), "resources in Tokens collection (in separate db).");
-	}
-}
 var initDbSources = function() {
 	if ( dbSources === null ) {
 		t6console.error("db Sources is failing");
@@ -344,7 +330,21 @@ var initDbUsers = function() {
 		t6console.log(db_users.getCollection("users").count(), "resources in users collection.");
 	}
 };
-var initDbTokens_int = function() {
+var initDbAccessTokens = function() {
+	if ( db_access_tokens === null ) {
+		t6console.error("db AccessTokens is failing");
+	}
+	if ( db_access_tokens.getCollection("accesstokens") === null ) {
+		t6console.error("- Collection AccessTokens is failing");
+		db_access_tokens.addCollection("accesstokens");
+	} else {
+		global.access_tokens = db_access_tokens.getCollection("accesstokens");
+		let expired = access_tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
+		if ( expired ) { access_tokens.remove(expired); db_access_tokens.save(); }
+		t6console.log(db_access_tokens.getCollection("accesstokens").count(), "resources in AccessTokens collection.");
+	}
+}
+var initDbTokens = function() {
 	if ( db_tokens === null ) {
 		t6console.error("db tokens is failing");
 	}
@@ -355,7 +355,7 @@ var initDbTokens_int = function() {
 		global.tokens = db_tokens.getCollection("tokens");
 		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
 		if ( expired ) { tokens.remove(expired); db_tokens.save(); }
-		t6console.log(db_tokens.getCollection("tokens").count(), "resources in tokens collection (in combined db).");
+		t6console.log(db_tokens.getCollection("tokens").count(), "resources in tokens collection.");
 	}
 };
 var initDbUnits = function() {
@@ -389,7 +389,6 @@ let dbs = [
 	path.join(__dirname, "data", `rules-${os.hostname()}.json`),
 	path.join(__dirname, "data", `snippets-${os.hostname()}.json`),
 	path.join(__dirname, "data", `dashboards-${os.hostname()}.json`),
-	path.join(__dirname, "data", `tokens-${os.hostname()}.json`),
 	path.join(__dirname, "data", `sources-${os.hostname()}.json`),
 	path.join(__dirname, "data", `otahistory-${os.hostname()}.json`),
 	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
@@ -400,6 +399,7 @@ let dbs = [
 	path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`),
 ];
@@ -421,7 +421,8 @@ if (useOldDbAndConvert) {
 	global.db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbObjects});
 	global.db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFlows});
 	global.db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUsers});
-	global.db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens_int});
+	global.db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
+	global.db_access_tokens = new loki(path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbAccessTokens});
 	global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
 	global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
 }
@@ -429,7 +430,6 @@ if (useOldDbAndConvert) {
 dbRules = new loki(path.join(__dirname, "data", `rules-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
 dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
 dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
-dbTokens = new loki(path.join(__dirname, "data", `tokens-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens_ext});
 dbSources = new loki(path.join(__dirname, "data", `sources-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSources});
 dbOtaHistory = new loki(path.join(__dirname, "data", `otahistory-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
 dbUis = new loki(path.join(__dirname, "data", `uis-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUis});

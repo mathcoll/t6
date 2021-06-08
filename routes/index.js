@@ -2,7 +2,6 @@
 var express = require("express");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
-var tokens;
 
 var timeoutNotification;
 function sendNotification(pushSubscription, payload) {
@@ -378,7 +377,6 @@ router.delete("/tokens/all", function (req, res) {
  * @apiUse 500
  */
 router.post("/authenticate", function (req, res) {
-	tokens	= dbTokens.getCollection("tokens");
 	var pushSubscription = req.body.pushSubscription;
 	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === "password") ) {
 		var email = req.body.username;
@@ -455,7 +453,7 @@ router.post("/authenticate", function (req, res) {
 				var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 				if ( expired ) {
 					tokens.remove(expired);
-					dbTokens.save();
+					db_tokens.save(); // There might be a bug here. not the same tokens !
 				}
 
 				var refresh_token = user.id + "." + refreshPayload;
@@ -463,11 +461,11 @@ router.post("/authenticate", function (req, res) {
 				return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 			} else {
 				checkForTooManyFailure(req, res, email);
-				return res.status(403).send(new ErrorSerializer({"id": 102.1, "code": 403, "message": "Forbidden"}).serialize());
+				return res.status(403).send(new ErrorSerializer({"id": 102.11, "code": 403, "message": "Forbidden"}).serialize());
 			}
 		} else {
 			t6console.debug("No user found or no password set yet.");
-			return res.status(403).send(new ErrorSerializer({"id": 102.2, "code": 403, "message": "Forbidden"}).serialize());
+			return res.status(403).send(new ErrorSerializer({"id": 102.21, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
 		var queryT = {
@@ -476,7 +474,7 @@ router.post("/authenticate", function (req, res) {
 					{ "secret": req.body.secret },
 				]
 		};
-		var u = tokens.findOne(queryT);
+		var u = access_tokens.findOne(queryT);
 		if ( u && typeof u.user_id !== "undefined" ) {
 			var user = users.findOne({id: u.user_id});
 			var geo = geoip.lookup(req.ip);
@@ -489,8 +487,8 @@ router.post("/authenticate", function (req, res) {
 				timeoutNotification = setTimeout(sendNotification, 5000, pushSubscription, payload);
 				user.pushSubscription = pushSubscription;
 			}
-			users.update(user);
-			db_users.save();
+			//users.update(user);
+			//db_users.save();
 			
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
@@ -547,14 +545,14 @@ router.post("/authenticate", function (req, res) {
 			var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 			if ( expired ) {
 				tokens.remove(expired);
-				dbTokens.save();
+				db_tokens.save();
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
 			t6events.add("t6App", "POST_authenticate", user.id, user.id);
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			return res.status(403).send(new ErrorSerializer({"id": 102.3, "code": 403, "message": "Forbidden"}).serialize());
+			return res.status(403).send(new ErrorSerializer({"id": 102.32, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( req.body.refresh_token && req.body.grant_type === "refresh_token" ) {
 		var user_id = req.body.refresh_token.split(".")[0];
@@ -630,18 +628,18 @@ router.post("/authenticate", function (req, res) {
 			var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 			if ( expired ) {
 				tokens.remove(expired);
-				dbTokens.save();
+				db_tokens.save();
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
 			t6events.add("t6App", "POST_authenticate", user.id, user.id);
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			return res.status(403).send(new ErrorSerializer({"id": 102.4, "code": 403, "message": "Invalid Refresh Token"}).serialize());
+			return res.status(403).send(new ErrorSerializer({"id": 102.43, "code": 403, "message": "Invalid Refresh Token"}).serialize());
 		}
 	} else {
 		// TODO
-		return res.status(400).send(new ErrorSerializer({"id": 102.3, "code": 400, "message": "Required param grant_type"}).serialize());
+		return res.status(400).send(new ErrorSerializer({"id": 102.33, "code": 400, "message": "Required param grant_type"}).serialize());
 	}
 });
 

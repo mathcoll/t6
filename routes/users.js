@@ -97,14 +97,12 @@ router.get("/list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetti
  */
 router.get("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( typeof req.user !== "undefined" ) {
-		tokens	= dbTokens.getCollection("tokens");
-		var accessTokens = tokens.chain().find({ "$and": [ {"user_id": req.user.id}, { "expiration" : { "$gt": moment().format("x") } } ]}).simplesort("expiration", true).data();
+		let accessTokens = access_tokens.chain().find({ "$and": [ {"user_id": req.user.id}, { "expiration" : { "$gt": moment().format("x") } } ]}).simplesort("expiration", true).data();
 		res.status(200).send(new AccessTokenSerializer(accessTokens).serialize());
-
-		var expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
+		var expired = access_tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
 		if ( expired ) {
-			tokens.remove(expired);
-			db_tokens.save();
+			access_tokens.remove(expired);
+			db_access_tokens.save();
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 204,"code": 403, "message": "Forbidden"}).serialize());
@@ -125,7 +123,7 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: 
  */
 router.get("/me/sessions", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.id ) {
-		tokens	= dbTokens.getCollection("tokens");
+		tokens	= db_tokens.getCollection("tokens");
 		var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 		if ( expired ) {
 			tokens.remove(expired);
@@ -343,10 +341,9 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
 				memo:				(req.body.memo).substring(0, 128),
 				expiration:			moment().add(24, "hours").format("x"),
 			};
-			var tokens	= dbTokens.getCollection("tokens");
-			tokens.insert(new_token);
-			db_tokens.save();
-			var expired = tokens.find(
+			access_tokens.insert(new_token);
+			db_access_tokens.save();
+			var expired = access_tokens.find(
 				{ "$and": [
 					{"user_id" : req.user.id},
 					{ "expiration" : { "$lt": moment().format("x") } },
@@ -354,8 +351,8 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
 				]}
 			);
 			if ( expired ) {
-				tokens.remove(expired);
-				db_tokens.save();
+				access_tokens.remove(expired);
+				db_access_tokens.save();
 			}
 			res.status(201).send({ "code": 201, "id": 201.1, message: "Created", accessToken: new AccessTokenSerializer(new_token).serialize() });
 		}
@@ -597,16 +594,15 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var key = req.params.key;
 	if ( key ) {
-		accessTokens = dbTokens.getCollection("tokens");
 		var queryT = {
 			"$and": [
 				{ "key": key },
 				{ "user_id": req.user.id },
 			]
 		};
-		var u = accessTokens.findOne(queryT);
+		var u = access_tokens.findOne(queryT);
 		if (u) {
-			accessTokens.remove(u);
+			access_tokens.remove(u);
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: key }); // TODO: missing serializer
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 6,"code": 404, "message": "Not Found"}).serialize());
