@@ -170,50 +170,6 @@ var convertCombinedToDistinctDb = function(db) {
 	});
 }; // END convertCombinedToDistinctDb
 
-/* Main Database settings */
-var initDbMain = function() {
-	if ( db.getCollection("objects") === null ) {
-		t6console.error("- Collection Objects is failing");
-	} else {
-		t6console.log(db.getCollection("objects").count(), "resources in Objects collection.");
-		global.objects = db.getCollection("objects");
-	}
-	if ( db.getCollection("flows") === null ) {
-		t6console.error("- Collection Flows is failing");
-	} else {
-		t6console.log(db.getCollection("flows").count(), "resources in Flows collection.");
-		global.flows = db.getCollection("flows");
-	}
-	if ( db.getCollection("users") === null ) {
-		t6console.error("- Collection Users is failing");
-	} else {
-		t6console.log(db.getCollection("users").count(), "resources in Users collection.");
-		global.users = db.getCollection("users");
-	}
-	if ( db.getCollection("tokens") === null ) {
-		t6console.error("- Collection Tokens is failing");
-	} else {
-		/* Some optimization */
-		let tokens	= db.getCollection("tokens");
-		let expired = tokens.find( { "$and": [ { "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } }]} );
-		if ( expired ) { tokens.remove(expired); db.save(); }
-		t6console.log(db.getCollection("tokens").count(), "resources in Tokens collection (in db).");
-		global.tokens = db.getCollection("tokens");
-	}
-	if ( db.getCollection("units") === null ) {
-		t6console.error("- Collection Units is failing");
-	} else {
-		t6console.log(db.getCollection("units").count(), "resources in Units collection.");
-		global.units = db.getCollection("units");
-	}
-	if ( db.getCollection("datatypes") === null ) {
-		t6console.error("- Collection Datatypes is failing");
-	} else {
-		t6console.log(db.getCollection("datatypes").count(), "resources in Datatypes collection.");
-		global.datatypes = db.getCollection("datatypes");
-	}
-	convertCombinedToDistinctDb(db);
-}
 var initDbRules = function() {
 	if ( dbRules === null ) {
 		t6console.error("db Rules is failing");
@@ -414,18 +370,13 @@ dbs.forEach(file => {
 t6console.info("Initializing Databases...");
 dbLoadTime = new Date();
 
-let useOldDbAndConvert = false; // migration flag
-if (useOldDbAndConvert) {
-	db = new loki(path.join(__dirname, "data", `db-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbMain});
-} else { /* Use the news split database : */
-	global.db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbObjects});
-	global.db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFlows});
-	global.db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUsers});
-	global.db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
-	global.db_access_tokens = new loki(path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbAccessTokens});
-	global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
-	global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
-}
+global.db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbObjects});
+global.db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFlows});
+global.db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUsers});
+global.db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbTokens});
+global.db_access_tokens = new loki(path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbAccessTokens});
+global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
+global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
 
 dbRules = new loki(path.join(__dirname, "data", `rules-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
 dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
