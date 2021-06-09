@@ -337,7 +337,7 @@ function checkForTooManyFailure(req, res, email) {
  */
 router.delete("/tokens/all", function (req, res) {
 	if ( req.user.role === "admin" ) {
-		tokens	= dbTokens.getCollection("tokens");
+		tokens	= db_tokens.getCollection("tokens");
 		var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 		if ( expired ) {
 			tokens.remove(expired);
@@ -662,7 +662,7 @@ router.post("/refresh", function (req, res) {
 	// get the refreshToken from body
 	var refreshToken = req.body.refreshToken;
 	// Find that refreshToken in Db
-	tokens	= dbTokens.getCollection("tokens");
+	tokens	= db_tokens.getCollection("tokens");
 	var queryT = {
 		"$and": [
 					{ "refreshToken": refreshToken },
@@ -672,7 +672,7 @@ router.post("/refresh", function (req, res) {
 	var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 	if ( expired ) {
 		tokens.remove(expired);
-		dbTokens.save();
+		db_tokens.save();
 	}
 	var myToken = tokens.findOne(queryT);
 	if ( !myToken ) {
@@ -707,7 +707,7 @@ router.post("/refresh", function (req, res) {
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 			// Add the refresh token to the list
-			tokens	= dbTokens.getCollection("tokens");
+			tokens	= db_tokens.getCollection("tokens");
 			var refreshPayload = user.id + "." + crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 			tokens.insert({ user_id: user.id, refreshToken: refreshPayload, expiration: refreshTokenExp, });
@@ -748,7 +748,7 @@ router.get("/status", function(req, res, next) {
 			"rules": dbRules.getCollection("rules").count(),
 			"snippets": dbSnippets.getCollection("snippets").count(),
 			"dashboards": dbDashboards.getCollection("dashboards").count(),
-			"tokens2": dbTokens.getCollection("tokens").count(),
+			"tokens2": db_tokens.getCollection("tokens").count(),
 			"sources": dbSources.getCollection("sources").count(),
 			"otahistory": dbOtaHistory.getCollection("otahistory").count(),
 			"uis": dbUis.getCollection("uis").count(),
@@ -768,7 +768,7 @@ router.get("/status", function(req, res, next) {
 			"rules": dbRules.getCollection("rules").find(u).length,
 			"snippets": dbSnippets.getCollection("snippets").find(u).length,
 			"dashboards": dbDashboards.getCollection("dashboards").find(u).length,
-			"tokens2": dbTokens.getCollection("tokens").find(u).length,
+			"tokens2": db_tokens.getCollection("tokens").find(u).length,
 			"sources": dbSources.getCollection("sources").find(u).length,
 			"otahistory": dbOtaHistory.getCollection("otahistory").find(u).length,
 			"uis": dbUis.getCollection("uis").find(u).length,
