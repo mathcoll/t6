@@ -27,7 +27,7 @@ global.t6events			= require("./t6events");
 global.t6console		= require("./t6console");
 global.t6otahistory		= require("./t6otahistory");
 global.t6preprocessor	= require("./t6preprocessor");
-global.t6queue			= require("./t6queue");
+global.t6jobs			= require("./t6jobs");
 
 var express				= require("express");
 var timeout				= require("connect-timeout");
@@ -231,13 +231,15 @@ var initDbUis = function() {
 	}
 };
 var initDbJobs = function() {
-	if ( dbJobs === null ) {
+	if ( db_jobs === null ) {
 		t6console.error("db Jobs is failing");
 	}
-	if ( dbJobs.getCollection("jobs") === null ) {
-		t6console.error("- Collection Jobs is failing");
+	if ( db_jobs.getCollection("jobs") === null ) {
+		t6console.error("- Collection Jobs is created");
+		db_jobs.addCollection("jobs");
 	} else {
-		t6console.log(dbJobs.getCollection("jobs").count(), "resources in Jobs collection.");
+		global.jobs = db_jobs.getCollection("jobs");
+		t6console.log(db_jobs.getCollection("jobs").count(), "resources in Jobs collection.");
 	}
 };
 var initDbFusionBuffer = function() {
@@ -348,9 +350,9 @@ let dbs = [
 	path.join(__dirname, "data", `sources-${os.hostname()}.json`),
 	path.join(__dirname, "data", `otahistory-${os.hostname()}.json`),
 	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
-	path.join(__dirname, "data", `jobs-${os.hostname()}.json`),
 	path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`),
 	
+	path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
@@ -384,7 +386,7 @@ dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()
 dbSources = new loki(path.join(__dirname, "data", `sources-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSources});
 dbOtaHistory = new loki(path.join(__dirname, "data", `otahistory-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
 dbUis = new loki(path.join(__dirname, "data", `uis-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUis});
-dbJobs = new loki(path.join(__dirname, "data", `jobs-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbJobs});
+db_jobs = new loki(path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbJobs});
 dbFusionBuffer = new loki(path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFusionBuffer});
 
 t6console.info("Loading routes...");
@@ -408,7 +410,7 @@ var sources			= require("./routes/sources");
 var uis				= require("./routes/uis");
 var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
-var fuse			= require("./routes/fuse");
+var jobs			= require("./routes/jobs");
 app					= express();
 routesLoadEndTime = new Date();
 t6console.info(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
@@ -469,7 +471,7 @@ app.use("/v"+version+"/ota", ota);
 app.use("/v"+version+"/sources", sources);
 app.use("/v"+version+"/uis", uis);
 app.use("/v"+version+"/exploration", exploration);
-app.use("/v"+version+"/fuse", fuse);
+app.use("/v"+version+"/jobs", jobs);
 app.use("/news", news);
 app.use("/", pwa);
 t6console.info("App is instanciated.");

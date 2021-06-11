@@ -2,7 +2,6 @@
 var express = require("express");
 var router = express.Router();
 const fsP = require("fs").promises;
-var users;
 
 async function walk(dir, fileList = []) {
 	const files = await fsP.readdir(dir);

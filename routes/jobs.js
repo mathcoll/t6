@@ -4,8 +4,8 @@ var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
 
 /**
- * @api {get} /fuse/:job_id Get information about Fuse queue
- * @apiName Get information about Fuse queue
+ * @api {get} /jobs/:job_id Get information about jobs in queue
+ * @apiName Get information about jobs in queue
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * 
@@ -26,7 +26,7 @@ router.get("/?(:job_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, 
 					{ "job_id" : job_id },
 				]
 			};
-		let jobs = dbJobs.getCollection("jobs");
+		let jobs = db_jobs.getCollection("jobs");
 		let j = jobs.findOne(query);
 		if(j) {
 			j.$loki = undefined;
@@ -38,7 +38,7 @@ router.get("/?(:job_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, 
 		}
 	} else {
 		if ( req.user.role === "admin" ) {
-			let length = t6queue.getLength();
+			let length = t6jobs.getLength();
 			res.status(200).send({ "code": 200, "length": length });
 		} else {
 			res.status(401).send(new ErrorSerializer({"id": 8820, "code": 401, "message": "Unauthorized"}).serialize());
@@ -47,8 +47,8 @@ router.get("/?(:job_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, 
 });
 
 /**
- * @api {post} /fuse/:job_id?/start Start Fuse queue
- * @apiName Start Fuse queue
+ * @api {post} /jobs/:job_id?/start Start a job
+ * @apiName Start a job
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * 
@@ -68,7 +68,7 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
 					{ "job_id" : job_id },
 				]
 			};
-		let jobs = dbJobs.getCollection("jobs");
+		let jobs = db_jobs.getCollection("jobs");
 		let job = jobs.findOne(query);
 		if ( job ) {
 			let fuse = t6preprocessor.fuse(job);
@@ -79,7 +79,7 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
 	} else {
 		limit = typeof req.body.limit!=="undefined"?req.body.limit:10;
 		if ( req.user.role === "admin" ) {
-			t6queue.start(limit);
+			t6jobs.start(limit);
 			res.status(200).send({ "code": 201, message: "Successfully started" });
 		} else {
 			res.status(401).send(new ErrorSerializer({"id": 8824, "code": 401, "message": "Unauthorized"}).serialize());

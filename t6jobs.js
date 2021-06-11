@@ -1,18 +1,18 @@
 "use strict";
-var t6queue = module.exports = {};
+var t6jobs = module.exports = {};
 var jobs;
 
-t6queue.export = function() {
+t6jobs.export = function() {
 	t6console.log(JSON.stringify());
 };
 
-t6queue.getLength = function() {
-	jobs = dbJobs.getCollection("jobs");
+t6jobs.getLength = function() {
+	jobs = db_jobs.getCollection("jobs");
 	return jobs.chain().find().limit(10).data().length;
 };
 
-t6queue.add = function(job) {
-	jobs = dbJobs.getCollection("jobs");
+t6jobs.add = function(job) {
+	jobs = db_jobs.getCollection("jobs");
 	let job_id = uuid.v4();
 	let newJob = {
 		"job_id": job_id,
@@ -28,8 +28,8 @@ t6queue.add = function(job) {
 	return job_id;
 };
 
-t6queue.start = function(limit) {
-	jobs = dbJobs.getCollection("jobs");
+t6jobs.start = function(limit) {
+	jobs = db_jobs.getCollection("jobs");
 	var query = {
 		"$and": [
 			{ "taskType" : "fuse" },
@@ -43,12 +43,12 @@ t6queue.start = function(limit) {
 			t6console.log(JSON.stringify(j));
 			t6preprocessor.fuse();
 			jobs.remove(j);
-			dbJobs.saveDatabase();
+			db_jobs.saveDatabase();
 		});
 	}
 };
 
-t6queue.next = function() {
+t6jobs.next = function() {
 	t6console.log("t6queue contains "+queue.getLength()+" job/s");
 	if(task.job.taskType === "fuse" && task.job.time+task.job.ttl>Date.now()) {
 		t6console.log("next task", task.job.time, task.job.ttl, ">", Date.now());
@@ -61,4 +61,4 @@ t6queue.next = function() {
 	}
 };
 
-module.exports = t6queue;
+module.exports = t6jobs;

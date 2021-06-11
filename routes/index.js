@@ -752,7 +752,7 @@ router.get("/status", function(req, res, next) {
 			"sources": dbSources.getCollection("sources").count(),
 			"otahistory": dbOtaHistory.getCollection("otahistory").count(),
 			"uis": dbUis.getCollection("uis").count(),
-			"jobs": dbJobs.getCollection("jobs").count(),
+			"jobs": db_jobs.getCollection("jobs").count(),
 			"fusionbuffer": dbFusionBuffer.getCollection("measures").count(),
 		};
 	}
@@ -771,6 +771,7 @@ router.get("/status", function(req, res, next) {
 			"dashboards": dbDashboards.getCollection("dashboards").find(u).length,
 			"sources": dbSources.getCollection("sources").find(u).length,
 			"otahistory": dbOtaHistory.getCollection("otahistory").find(u).length,
+			"jobs": db_jobs.getCollection("jobs").find(u).length,
 			"uis": dbUis.getCollection("uis").find(u).length,
 		};
 		status.RateLimit = {
