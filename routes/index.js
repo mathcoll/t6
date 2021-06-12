@@ -725,6 +725,9 @@ router.post("/refresh", function (req, res) {
  * 
  * @apiUse 200
  */
+router.head("/status", function(req, res, next) {
+	res.status(200).send({"status": "ok"});
+});
 router.get("/status", function(req, res, next) {
 	var status = {
 		version: version,
