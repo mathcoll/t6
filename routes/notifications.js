@@ -88,7 +88,7 @@ router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, 
 			user: req.user,
 			device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"",
 			geoip: geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{}
-		}
+		};
 		res.render(`emails/newsletters/${template}`, data, function(err, html) {
 			if(!err) {
 				res.status(200).send(html);
