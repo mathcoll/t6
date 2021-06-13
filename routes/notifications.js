@@ -42,7 +42,7 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
 		if(!dryrun || dryrun === false) {
 			t6mailer.sendMail(newsletter.metadata.mailOptions).then(function(info){
 				users.findAndUpdate(
-					function(i){return i.id==newsletter.metadata.mailOptions.user_id;},
+					function(i){return i.id===newsletter.metadata.mailOptions.user_id;},
 					function(item){
 						item.newsletter = parseInt(moment().format("x"), 10);
 					}
@@ -286,7 +286,7 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
 				]};
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && template ) {
-			planNewsletter(req, res, recipients, template, subject)
+			planNewsletter(req, res, recipients, template, subject);
 			res.status(202).send(new UserSerializer(recipients).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
