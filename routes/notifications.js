@@ -65,8 +65,8 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
 }
 
 /**
- * @api {get} /notifications/debug/:mail Get html of email
- * @apiName Get html of email
+ * @api {get} /notifications/mail/newsletter/preview/ Preview html of a Newsletter
+ * @apiName Preview html of a Newsletter
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiHeader {String} [Content-Type] text/html
@@ -76,19 +76,29 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
  * @apiUse 200
  * @apiUse 403
  */
-router.get("/debug/:mail", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
-	var mail = req.params.mail;
-	var agent = useragent.parse(req.headers["user-agent"]);
+router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
+	let template = req.query.template;
+	let subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰 t6 updates";
+	let agent = useragent.parse(req.headers["user-agent"]);
 	
 	if ( req.user.role === "admin" ) {
-		res.render("emails/"+mail, {
+		let user = req.user;
+		let data = {
 			currentUrl: req.path,
 			user: req.user,
 			device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"",
 			geoip: geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{}
+		}
+		res.render(`emails/newsletters/${template}`, data, function(err, html) {
+			if(!err) {
+				res.status(200).send(html);
+			} else {
+				res.status(500).send(new ErrorSerializer({"id": 18.1, "code": 403, "message": "Error rendering a newsletter"}).serialize());
+				t6console.error("Error rendering a newsletter", err);
+			}
 		});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 
