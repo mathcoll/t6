@@ -34,7 +34,6 @@ global.timeout			= require("connect-timeout");
 global.morgan			= require("morgan");
 global.cookieParser		= require("cookie-parser");
 global.bodyParser		= require("body-parser");
-global.bearer			= require("bearer");
 global.pug				= require("pug");
 global.compression		= require("compression");
 global.colors			= require("colors");
