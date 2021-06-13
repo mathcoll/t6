@@ -26,7 +26,6 @@ router.get("/?(:job_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, 
 					{ "job_id" : job_id },
 				]
 			};
-		let jobs = db_jobs.getCollection("jobs");
 		let j = jobs.findOne(query);
 		if(j) {
 			j.$loki = undefined;
@@ -39,7 +38,7 @@ router.get("/?(:job_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, 
 	} else {
 		if ( req.user.role === "admin" ) {
 			let length = t6jobs.getLength();
-			res.status(200).send({ "code": 200, "length": length });
+			res.status(200).send({ "code": 200, length, jobs: t6jobs.getIds() });
 		} else {
 			res.status(401).send(new ErrorSerializer({"id": 8820, "code": 401, "message": "Unauthorized"}).serialize());
 		}
@@ -68,7 +67,6 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
 					{ "job_id" : job_id },
 				]
 			};
-		let jobs = db_jobs.getCollection("jobs");
 		let job = jobs.findOne(query);
 		if ( job ) {
 			let fuse = t6preprocessor.fuse(job);
@@ -84,6 +82,41 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
 		} else {
 			res.status(401).send(new ErrorSerializer({"id": 8824, "code": 401, "message": "Unauthorized"}).serialize());
 		}
+	}
+});
+
+/**
+ * @api {post} /jobs/:job_id Delete a job
+ * @apiName Delete a job
+ * @apiGroup 8. Administration
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [job_id] Job Id
+ * 
+ * @apiUse 201
+ * @apiUse 500
+ */
+router.delete("/(:job_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let job_id = req.params.job_id;
+	t6console.log(job_id);
+	if ( typeof job_id !== "undefined" ) {
+		let query = {
+			"$and": [
+					{ "user_id" : req.user.id },
+					{ "job_id" : job_id },
+				]
+			};
+		let job = jobs.findOne(query);
+		if ( job ) {
+			jobs.remove(job);
+			db_jobs.saveDatabase();
+			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: job_id }); // TODO: missing serializer
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 8825.1, "code": 404, "message": "Not Found", job_id: job_id}).serialize());
+		}
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 8825.2, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

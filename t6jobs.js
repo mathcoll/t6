@@ -1,18 +1,46 @@
 "use strict";
 var t6jobs = module.exports = {};
-var jobs;
 
 t6jobs.export = function() {
 	t6console.log(JSON.stringify());
 };
 
-t6jobs.getLength = function() {
-	jobs = db_jobs.getCollection("jobs");
-	return jobs.chain().find().limit(10).data().length;
+t6jobs.getLength = function(query, limit) {
+	return jobs.chain().find(query!==null?query:{}).limit(limit!==null?limit:1).data().length;
+};
+
+t6jobs.remove = function(query, limit) {
+	var jobsToRemove = jobs.chain().find(query).limit(limit).data();
+	if ( jobsToRemove ) {
+		jobsToRemove.map(function(job) {
+			t6console.debug(`Removing Job ${job.job_id}`);
+			jobs.remove(job);
+			db_jobs.saveDatabase();
+		});
+	}
+	return true;
+};
+
+t6jobs.get = function(query, limit) {
+	return jobs.chain().find(query).limit(limit!==null?limit:1).data();
+};
+
+t6jobs.getIds = function(user_id) {
+	let query;
+	if(user_id) {
+		query = { "user_id" : user_id };
+	} else {
+		query = {};
+	}
+	let j = jobs.chain().find(query).data();
+	let ids = [];
+	j.map(function(job) {
+		ids.push(job.job_id);
+	});
+	return ids;
 };
 
 t6jobs.add = function(job) {
-	jobs = db_jobs.getCollection("jobs");
 	let job_id = uuid.v4();
 	let newJob = {
 		"job_id": job_id,
@@ -21,7 +49,8 @@ t6jobs.add = function(job) {
 		"execTime": ((parseInt(job.time, 10)/1000)+parseInt(typeof job.ttl!=="undefined"?job.ttl:3600, 10))*1000,
 		"ttl": parseInt(typeof job.ttl!=="undefined"?job.ttl:3600, 10)*1000,
 		"track_id": job.track_id, 
-		"user_id": job.user_id
+		"user_id": job.user_id, 
+		"metadata": typeof job.metadata!=="undefined"?job.metadata:null
 	};
 	//t6console.log(JSON.stringify(newJob));
 	jobs.insert(newJob);
@@ -29,7 +58,6 @@ t6jobs.add = function(job) {
 };
 
 t6jobs.start = function(limit) {
-	jobs = db_jobs.getCollection("jobs");
 	var query = {
 		"$and": [
 			{ "taskType" : "fuse" },
