@@ -386,7 +386,7 @@ router.post("/authenticate", function (req, res) {
 		//t6console.debug(queryU);
 		var user = users.findOne(queryU);
 		if ( user && typeof user.password!=="undefined" ) {
-			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
+			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
 				var geo = geoip.lookup(req.ip);
 				if ( typeof user.location === "undefined" || user.location === null ) {
 					user.location = {geo: geo, ip: req.ip,};
