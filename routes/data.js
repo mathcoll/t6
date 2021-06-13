@@ -36,24 +36,32 @@ function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
 	if( includeTime ) {
 		fields += "time, ";
 	}
-	if ( datatype === "boolean" ) {
-		fields = "valueBoolean";
-	} else if ( datatype === "date" ) {
-		fields = "valueDate";
-	} else if ( datatype === "integer" ) {
-		fields = "valueInteger";
-	} else if ( datatype === "json" ) {
-		fields = "valueJson";
-	} else if ( datatype === "string" ) {
-		fields = "valueString";
-	} else if ( datatype === "time" ) {
-		fields = "valueTime";
-	} else if ( datatype === "float" ) {
-		fields = "valueFloat";
-	} else if ( datatype === "geo" ) {
-		fields = "valueGeo";
-	} else {
-		fields = "value";
+	switch(datatype) {
+		case "boolean": 
+			fields += "valueBoolean";
+			break;
+		case "date": 
+			fields += "valueDate";
+			break;
+		case "integer": 
+			fields += "valueInteger";
+			break;
+		case "json": 
+			fields += "valueJson";
+			break;
+		case "time": 
+			fields += "valueTime";
+			break;
+		case "float": 
+			fields += "valueFloat";
+			break;
+		case "geo": 
+			fields += "valueGeo";
+			break;
+		case "string": 
+		default: 
+			fields += "valueString";
+			break;
 	}
 	if( asValue ) {
 		fields += " as value";
