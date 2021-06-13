@@ -78,7 +78,6 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
  */
 router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let template = req.query.template;
-	let subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰 t6 updates";
 	let agent = useragent.parse(req.headers["user-agent"]);
 	
 	if ( req.user.role === "admin" ) {
