@@ -29,7 +29,7 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
-	rules = dbRules.getCollection("rules");
+	rules = db_rules.getCollection("rules");
 	var query;
 	if ( typeof rule_id !== "undefined" ) {
 		query = {
@@ -91,7 +91,7 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
  * @apiUse 429
  */
 router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	rules	= dbRules.getCollection("rules");
+	rules	= db_rules.getCollection("rules");
 	/* Check for quota limitation */
 	var queryR = { "user_id" : req.user.id };
 	var i = (rules.find(queryR)).length;
@@ -143,7 +143,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;
 	if ( rule_id ) {
-		rules	= dbRules.getCollection("rules");
+		rules	= db_rules.getCollection("rules");
 		var query = {
 			"$and": [
 					{ "id": rule_id },
@@ -166,7 +166,7 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 					result = item;
 				});
 				if ( typeof result !== "undefined" ) {
-					dbRules.save();
+					db_rules.save();
 					
 					res.header("Location", "/v"+version+"/rules/"+rule_id);
 					res.status(200).send({ "code": 200, message: "Successfully updated", rule: new RuleSerializer(result).serialize() });
@@ -193,7 +193,7 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
  */
 router.delete("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;
-	rules	= dbRules.getCollection("rules");
+	rules	= db_rules.getCollection("rules");
 	var query = {
 		"$and": [
 			{ "user_id" : req.user.id, }, // delete only rule from current user
@@ -203,7 +203,7 @@ router.delete("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 	var s = rules.find(query);
 	if ( s.length > 0 ) {
 		rules.remove(s);
-		dbRules.saveDatabase();
+		db_rules.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: rule_id }); // TODO: missing serializer
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 532, "code": 404, "message": "Not Found"}).serialize());

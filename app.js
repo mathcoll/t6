@@ -108,13 +108,15 @@ if(dbInfluxDB) {
 }
 
 var initDbRules = function() {
-	if ( dbRules === null ) {
+	if ( db_rules === null ) {
 		t6console.error("db Rules is failing");
 	}
-	if ( dbRules.getCollection("rules") === null ) {
+	if ( db_rules.getCollection("rules") === null ) {
 		t6console.error("- Collection Rules is failing");
+		db_rules.addCollection("rules");
 	} else {
-		t6console.log(dbRules.getCollection("rules").count(), "resources in Rules collection.");
+		global.rules = db_rules.getCollection("rules");
+		t6console.log(db_rules.getCollection("rules").count(), "resources in Rules collection.");
 	}
 }
 var initDbSnippets = function() {
@@ -281,7 +283,6 @@ var initDbDatatypes = function() {
 t6console.info("Setting correct permission on Databases...");
 let dbs = [
 	path.join(__dirname, "data", `db-${os.hostname()}.json`),
-	path.join(__dirname, "data", `rules-${os.hostname()}.json`),
 	path.join(__dirname, "data", `snippets-${os.hostname()}.json`),
 	path.join(__dirname, "data", `dashboards-${os.hostname()}.json`),
 	path.join(__dirname, "data", `sources-${os.hostname()}.json`),
@@ -289,14 +290,15 @@ let dbs = [
 	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
 	path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`),
 	
-	path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
 ];
 dbs.forEach(file => {
 	fs.chmod(file, 0o600 , err => {
@@ -316,8 +318,8 @@ global.db_tokens = new loki(path.join(__dirname, "data", `t6db-tokens__${os.host
 global.db_access_tokens = new loki(path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbAccessTokens});
 global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
 global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
+global.db_rules = new loki(path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
 
-dbRules = new loki(path.join(__dirname, "data", `rules-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
 dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
 dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
 dbSources = new loki(path.join(__dirname, "data", `sources-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSources});

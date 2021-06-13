@@ -2,7 +2,6 @@
 var t6decisionrules = module.exports = {};
 var Engine = require("json-rules-engine").Engine;
 var Rule = require("json-rules-engine").Rule;
-var rules;
 
 function cryptPayload(payload, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
@@ -18,15 +17,11 @@ function cryptPayload(payload, sender, encoding) {
 	}
 }
 
-t6decisionrules.export = function(rule) {
-	console.dir(JSON.stringify(rule));
-};
-
 t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	let p = payload;
 	let limit = 10;
+	let engine = new Engine();
 	p.user_id = user_id;
-	rules = dbRules.getCollection("rules");
 	
 	var query = {
 		"$and": [
@@ -35,7 +30,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		]
 	};
 	var r = rules.chain().find(query).data();
-	let engine = new Engine();
 	if ( r.length > 0 ) {
 		r.forEach(function(theRule) {
 			theRule.rule.event.params.rule_id = theRule.id;
