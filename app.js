@@ -107,6 +107,11 @@ if(dbInfluxDB) {
 	t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
 }
 
+
+str2bool = function(v) {
+	return [true, "yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
+}
+
 var initDbRules = function() {
 	if ( db_rules === null ) {
 		t6console.error("db Rules is failing");
