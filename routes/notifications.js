@@ -4,6 +4,66 @@ var router = express.Router();
 var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
 
+function planNewsletter(req, res, recipients, template, subject) {
+	/* add newsletter to job queue to be sent later */
+	recipients.forEach(function(user) {
+		t6console.debug(`Rendering email body for ${user.firstName} ${user.lastName} <${user.email}>`);
+		res.render(`emails/newsletters/${template}`, {user: user}, function(err, html) {
+			if(!err) {
+				var to = `${user.firstName} ${user.lastName} <${user.email}>`;
+				var mailOptions = {
+					from: from,
+					bcc: bcc,
+					to: to,
+					user_id: user.id,
+					list: {
+						unsubscribe: {
+							url: `${baseUrl_https}/mail/${user.email}/unsubscribe/newsletter/${user.unsubscription_token}/`,
+							comment: "Unsubscribe from this newsletter"
+						},
+					},
+					subject: subject,
+					text: "Html email client is required",
+					html: html
+				};
+				t6jobs.add({taskType: "newsletter", time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {mailOptions}});
+			} else {
+				t6console.error("Error scheduling a newsletter", err);
+			}
+		});
+	});
+}
+
+function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
+	t6console.debug("sendNewsletter: GO ", newsletters.length);
+	newsletters.map(function(newsletter) {
+		t6console.debug(newsletter.metadata.mailOptions.to);
+		/* Send a newsletter to each subscribers */
+		if(!dryrun || dryrun === false) {
+			t6mailer.sendMail(newsletter.metadata.mailOptions).then(function(info){
+				users.findAndUpdate(
+					function(i){return i.id==newsletter.metadata.mailOptions.user_id;},
+					function(item){
+						item.newsletter = parseInt(moment().format("x"), 10);
+					}
+				);
+				db_users.save();
+				t6jobs.remove({"job_id": newsletter.job_id}, 1); // remove job from list
+				if(recurring) {
+					t6console.debug(`Scheduling another task to send Newsletter in ${recurring} seconds.`);
+					setTimeout(function() {
+						sendNewsletter(t6jobs.get({taskType: "newsletter", user_id: user_id}, limit), dryrun, recurring, user_id, limit);
+					}, recurring);
+				}
+			}).catch(function(error){
+				t6console.error("error", error);
+				return { "status": "Internal Error "+app.get("env") };
+			});
+		}
+	});
+	return (!dryrun || dryrun === false)?{"status": `Newsletter sent to ${newsletters.length} recipients.`}:{"status": `Newsletter simulated to ${newsletters.length} recipients.`};
+}
+
 /**
  * @api {get} /notifications/debug/:mail Get html of email
  * @apiName Get html of email
@@ -202,8 +262,8 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 });
 
 /**
- * @api {get} /notifications/mail/newsletter Send newsletter to subscribers
- * @apiName Send newsletter to subscribers
+ * @api {post} /notifications/mail/newsletter/plan Plan a newsletter to be sent to subscribers
+ * @apiName Plan a newsletter to be sent to subscribers
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -213,70 +273,56 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
  * @apiUse 403
  * @apiUse 404
  */
-router.get("/mail/newsletter", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var size = typeof req.query.size!=="undefined"?req.query.size:20;
+router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var limit = typeof req.query.limit!=="undefined"?req.query.limit:20;
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
-	var offset = Math.ceil(size*(page-1));
+	var offset = Math.ceil(limit*(page-1));
 	if ( req.user.role === "admin" ) {
-		var year = req.query.year;
 		var template = req.query.template;
 		var subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰 t6 updates";
 		var query = { "$and": [
 					{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
 				]};
-		var json = users.chain().find( query ).offset(offset).limit(size).data();
-		if ( json.length > 0 && year && template ) {
-			/* Send a newsletter to each subscribers */
-			json.forEach(function(user) {
-				t6console.info("Rendering email body for " + user.firstName+" "+user.lastName+" <"+user.email+">");
-				res.render("emails/newsletters/"+template, {user: user}, function(err, html) {
-					var to = user.firstName+" "+user.lastName+" <"+user.email+">";
-					var mailOptions = {
-						from: from,
-						bcc: bcc,
-						to: to,
-						user_id: user.id,
-						list: {
-							unsubscribe: {
-								url: baseUrl_https+"/mail/"+user.email+"/unsubscribe/newsletter/"+user.unsubscription_token+"/",
-								comment: "Unsubscribe from this newsletter"
-							},
-						},
-						subject: subject,
-						text: "Html email client is required",
-						html: html
-					};
-					if(!req.query.dryrun || req.query.dryrun === "false") {
-						//t6console.debug(mailOptions);
-						t6mailer.sendMail(mailOptions).then(function(info){
-							users.findAndUpdate(
-									function(i){return i.id==user.id;},
-									function(item){
-										item.newsletter = parseInt(moment().format("x"), 10);
-									}
-							);
-							db_users.save();
-						}).catch(function(error){
-							var err = new Error("Internal Error");
-							err.status = 500;
-							t6console.error(error.responseCode, error.response);
-							res.status(err.status || 500).render(err.status, {
-								title : "Internal Error "+app.get("env"),
-								user: req.session.user,
-								currentUrl: req.path,
-								err: err
-							});
-						});
-					}
-				});
-			});
-			res.status(202).send(new UserSerializer(json).serialize());
+		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
+		if ( recipients.length > 0 && template ) {
+			planNewsletter(req, res, recipients, template, subject)
+			res.status(202).send(new UserSerializer(recipients).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
+ * @api {post} /notifications/mail/newsletter/send Send a newsletter from planned subscribers
+ * @apiName Send a newsletter from planned subscribers
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let limit = typeof req.query.limit!=="undefined"?req.query.limit:20;
+	let dryrun = typeof req.query.dryrun!=="undefined"?str2bool(req.query.dryrun):false;
+	let recurring = typeof req.query.recurring!=="undefined"?parseInt(req.query.recurring, 10):null;
+	if ( req.user.role === "admin" ) {
+		let newsletters = t6jobs.get({taskType: "newsletter", user_id: req.user.id}, limit);
+		t6console.debug("newsletters : ", newsletters);
+		if(newsletters.length > 0) {
+			let response = sendNewsletter(newsletters, dryrun, recurring, req.user.id, limit);
+			res.status(202).send({"response": response});
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 18.2, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
 	}
 });
 
