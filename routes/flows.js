@@ -4,10 +4,6 @@ var router = express.Router();
 var FlowSerializer = require("../serializers/flow");
 var ErrorSerializer = require("../serializers/error");
 
-function str2bool(v) {
-	return [true, "yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
-}
-
 /**
  * @api {get} /flows/:flow_id Get Flow(s)
  * @apiName Get Flow(s)
