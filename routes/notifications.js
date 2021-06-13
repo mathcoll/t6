@@ -82,7 +82,6 @@ router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, 
 	let agent = useragent.parse(req.headers["user-agent"]);
 	
 	if ( req.user.role === "admin" ) {
-		let user = req.user;
 		let data = {
 			currentUrl: req.path,
 			user: req.user,
