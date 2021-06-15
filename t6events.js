@@ -54,7 +54,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 			})
 		};
 		request(options, function(error, response, body) {
-			if ( !error && response.statusCode !== 404 ) {
+			if ( !error && typeof response!=="undefined" && response.statusCode !== 404 ) {
 				t6console.info(`GA4 Event "${what.replace(/[^a-zA-Z]/g,"_")}" on measurement_id: ${trackings.firebaseConfig.server.measurementId}`);
 				t6console.info("GA4 user_id:", user_id);
 				t6console.info("GA4 client_id:", client_id);
