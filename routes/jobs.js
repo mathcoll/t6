@@ -97,19 +97,27 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
  * @apiUse 201
  * @apiUse 500
  */
-router.delete("/(:job_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.delete("/(:job_id([0-9a-z\-*]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let job_id = req.params.job_id;
-	t6console.log(job_id);
-	if ( typeof job_id !== "undefined" ) {
-		let query = {
+	if ( typeof job_id!=="undefined" && job_id!==null && job_id!=="null" ) {
+		let query;
+		if(job_id === "*") {
+			query = {
+			"$and": [
+					{ "user_id" : req.user.id },
+				]
+			};
+		} else {
+			query = {
 			"$and": [
 					{ "user_id" : req.user.id },
 					{ "job_id" : job_id },
 				]
 			};
-		let job = jobs.findOne(query);
+		}
+		let job = jobs.chain().find(query);
 		if ( job ) {
-			jobs.remove(job);
+			job.remove().data();
 			db_jobs.saveDatabase();
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: job_id }); // TODO: missing serializer
 		} else {
