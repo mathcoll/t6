@@ -293,8 +293,8 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
 		var template = req.query.template;
 		var subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰 t6 updates";
 		var query = { "$and": [
-					{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
-				]};
+			{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
+		]};
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && template ) {
 			planNewsletter(req, res, recipients, template, subject);
