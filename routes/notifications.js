@@ -8,7 +8,7 @@ function planNewsletter(req, res, recipients, template, subject) {
 	/* add newsletter to job queue to be sent later */
 	recipients.forEach(function(user) {
 		t6console.debug(`Rendering email body for ${user.firstName} ${user.lastName} <${user.email}>`);
-		res.render(`emails/newsletters/${template}`, {user: user}, function(err, html) {
+		res.render(`emails/newsletters/${template}`, {user: user, tpl: template}, function(err, html) {
 			if(!err) {
 				var to = `${user.firstName} ${user.lastName} <${user.email}>`;
 				var mailOptions = {
@@ -49,11 +49,13 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
 				);
 				db_users.save();
 				t6jobs.remove({"job_id": newsletter.job_id}, 1); // remove job from list
-				if(recurring) {
+				if(Number.isInteger(recurring)) {
 					t6console.debug(`Scheduling another task to send Newsletter in ${recurring} seconds.`);
 					setTimeout(function() {
 						sendNewsletter(t6jobs.get({taskType: "newsletter", user_id: user_id}, limit), dryrun, recurring, user_id, limit);
 					}, recurring);
+				} else {
+					t6console.debug(`Not recurring.`);
 				}
 			}).catch(function(error){
 				t6console.error("error", error);
@@ -83,6 +85,7 @@ router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, 
 	if ( req.user.role === "admin" ) {
 		let data = {
 			currentUrl: req.path,
+			tpl: template,
 			user: req.user,
 			device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"",
 			geoip: geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{}
