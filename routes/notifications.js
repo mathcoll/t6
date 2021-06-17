@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
+let timer;
 
 function planNewsletter(req, res, recipients, template, subject) {
 	/* add newsletter to job queue to be sent later */
@@ -13,7 +14,6 @@ function planNewsletter(req, res, recipients, template, subject) {
 				var to = `${user.firstName} ${user.lastName} <${user.email}>`;
 				var mailOptions = {
 					from: from,
-					bcc: bcc,
 					to: to,
 					user_id: user.id,
 					list: {
@@ -51,7 +51,7 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
 				t6jobs.remove({"job_id": newsletter.job_id}, 1); // remove job from list
 				if(Number.isInteger(recurring)) {
 					t6console.debug(`Scheduling another task to send Newsletter in ${recurring} seconds.`);
-					setTimeout(function() {
+					timer = setTimeout(function() {
 						sendNewsletter(t6jobs.get({taskType: "newsletter", user_id: user_id}, limit), dryrun, recurring, user_id, limit);
 					}, recurring);
 				} else {
@@ -334,6 +334,27 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
+ * @api {post} /notifications/mail/newsletter/stop Stop a newsletter sending
+ * @apiName Stop a newsletter sending
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post("/mail/newsletter/stop", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	if ( req.user.role === "admin" ) {
+		clearTimeout(timer);
+		res.status(202).send({"response": "timer is stopped"});
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 20, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
 	}
 });
 
