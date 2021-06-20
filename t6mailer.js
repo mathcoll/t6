@@ -20,13 +20,12 @@ t6mailer.sendMail = (envelope) => new Promise((resolve, reject) => {
 			reject({"status": "error", "info": err});
 		});
 	} else {
-		envelope.to = envelope.bcc;
-		t6console.debug("sendMail To/Bcc", envelope.to, envelope.bcc);
+		envelope.to = t6mailer.getBcc();
 		transporter.sendMail(envelope).then(function(info) {
-			t6console.debug(info);
+			t6console.debug("sendMail Info", envelope.to, envelope.bcc, info);
 			resolve({"status": "info", "info": info});
 		}).catch(function(err) {
-			t6console.error(err);
+			t6console.error("sendMail err", envelope.to, envelope.bcc, err);
 			reject({"status": "error", "info": err});
 		});
 	}

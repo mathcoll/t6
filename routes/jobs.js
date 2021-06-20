@@ -102,27 +102,16 @@ router.delete("/(:job_id([0-9a-z\-*]+))", expressJwt({secret: jwtsettings.secret
 	if ( typeof job_id!=="undefined" && job_id!==null && job_id!=="null" ) {
 		let query;
 		if(job_id === "*") {
-			query = {
-			"$and": [
-					{ "user_id" : req.user.id },
-				]
-			};
+			query = { "$and": [ { "job_id" : { "$ne": null } } ] };
 		} else {
-			query = {
-			"$and": [
-					{ "user_id" : req.user.id },
-					{ "job_id" : job_id },
-				]
-			};
+			query = { "$and": [ { "job_id" : job_id } ] };
 		}
-		let job = jobs.chain().find(query);
-		if ( job ) {
-			job.remove().data();
-			db_jobs.saveDatabase();
-			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: job_id }); // TODO: missing serializer
-		} else {
-			res.status(404).send(new ErrorSerializer({"id": 8825.1, "code": 404, "message": "Not Found", job_id: job_id}).serialize());
+		if ( req.user.role !== "admin" ) {
+			query["$and"].push({ "user_id" : req.user.id });
 		}
+		jobs.chain().find(query).remove();
+		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: job_id }); // TODO: missing serializer
+		db_jobs.saveDatabase();
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 8825.2, "code": 404, "message": "Not Found"}).serialize());
 	}

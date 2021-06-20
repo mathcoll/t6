@@ -70,9 +70,10 @@ global.util				= require("util");
 global.useragent		= require("useragent");
 global.validator		= require("validator");
 global.webpush			= require("web-push");
+global.algorithm		= "aes-256-cbc";
 global.t6events.setMeasurement("events");
 global.t6events.setRP(typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen");
-global.algorithm		= "aes-256-cbc";
+global.t6mailer.setBcc(bcc);
 global.t6ConnectedObjects = [];
 if( db_type.influxdb === true ) {
 	//var {InfluxDB} = require("@influxdata/influxdb-client"); // Should use "writeApi"

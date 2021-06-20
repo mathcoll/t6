@@ -10,18 +10,19 @@ t6jobs.getLength = function(query, limit) {
 };
 
 t6jobs.remove = function(query, limit) {
-	var jobsToRemove = jobs.chain().find(query).limit(limit).data();
-	if ( jobsToRemove ) {
-		jobsToRemove.map(function(job) {
-			t6console.debug(`Removing Job ${job.job_id}`);
-			jobs.remove(job);
+	jobs = db_jobs.getCollection("jobs");
+	return new Promise((resolve, reject) => {
+		if ( jobs.chain().find(typeof query!=="undefined"?query:{}).limit(typeof limit!=="undefined"?limit:null).remove() ) {
 			db_jobs.saveDatabase();
-		});
-	}
-	return true;
+			return resolve(query.job_id);	
+		} else {
+			return reject("Can't find job to be removed.");
+		}
+	});
 };
 
 t6jobs.get = function(query, limit) {
+	jobs = db_jobs.getCollection("jobs");
 	return jobs.chain().find(query).limit(limit!==null?limit:1).data();
 };
 
@@ -35,7 +36,7 @@ t6jobs.getIds = function(user_id) {
 	let j = jobs.chain().find(query).data();
 	let ids = [];
 	j.map(function(job) {
-		ids.push(job.job_id);
+		ids.push({"job_id": job.job_id, "user_id": job.user_id, "queue_id": typeof job.$loki!=="undefined"?job.$loki:null});
 	});
 	return ids;
 };

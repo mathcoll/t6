@@ -48,23 +48,24 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
 					}
 				);
 				db_users.save();
-				t6jobs.remove({"job_id": newsletter.job_id}, 1); // remove job from list
+				t6console.debug( "Removing", t6jobs.remove({"job_id": newsletter.job_id}, 1) ); // remove job from list
 				cpt++;
 				if(Number.isInteger(recurring) && cpt<limit) {
 					timer = setTimeout(function() {
-						sendNewsletter(t6jobs.get({taskType: "newsletter", user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
+						sendNewsletter(t6jobs.get({"taskType": "newsletter", user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
 					}, recurring);
 					t6console.debug(`Scheduling another task to send Newsletter in ${recurring}ms (cpt=${cpt}<${limit}).`);
 				} else {
 					t6console.debug(`Not recurring (cpt=${cpt}>=${limit}).`);
 				}
+				return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
 			}).catch(function(error){
 				t6console.error("error", error);
 				return { "status": "Internal Error "+app.get("env") };
 			});
 		}
 	});
-	return (!dryrun || dryrun === false)?{"status": `Newsletter sending to ${limit} recipients.`}:{"status": `Newsletter simulating to ${limit} recipients.`};
+	return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
 }
 
 /**
@@ -267,6 +268,32 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 			res.status(202).send(new UserSerializer(json).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
+ * @api {post} /notifications/mail/newsletter/count Count subscribers
+ * @apiName Count subscribers
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.get("/mail/newsletter/count", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	if ( req.user.role === "admin" ) {
+		let query = { "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] };
+		var recipients = users.chain().find( query ).data();
+		if ( recipients.length > 0 ) {
+			res.status(200).send({"subscribers": recipients.length});
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
