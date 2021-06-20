@@ -34,8 +34,8 @@ function planNewsletter(req, res, recipients, template, subject) {
 	});
 }
 
-function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
-	t6console.debug("sendNewsletter: GO ", newsletters.length);
+function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
+	t6console.debug("sendNewsletter: GO ", newsletters.length, "limit", limit, "cpt", cpt);
 	newsletters.map(function(newsletter) {
 		t6console.debug(newsletter.metadata.mailOptions.to);
 		/* Send a newsletter to each subscribers */
@@ -49,13 +49,14 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
 				);
 				db_users.save();
 				t6jobs.remove({"job_id": newsletter.job_id}, 1); // remove job from list
-				if(Number.isInteger(recurring)) {
-					t6console.debug(`Scheduling another task to send Newsletter in ${recurring} seconds.`);
+				cpt++;
+				if(Number.isInteger(recurring) && cpt<limit) {
 					timer = setTimeout(function() {
-						sendNewsletter(t6jobs.get({taskType: "newsletter", user_id: user_id}, limit), dryrun, recurring, user_id, limit);
+						sendNewsletter(t6jobs.get({taskType: "newsletter", user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
 					}, recurring);
+					t6console.debug(`Scheduling another task to send Newsletter in ${recurring}ms (cpt=${cpt}<${limit}).`);
 				} else {
-					t6console.debug(`Not recurring.`);
+					t6console.debug(`Not recurring (cpt=${cpt}>=${limit}).`);
 				}
 			}).catch(function(error){
 				t6console.error("error", error);
@@ -63,7 +64,7 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit) {
 			});
 		}
 	});
-	return (!dryrun || dryrun === false)?{"status": `Newsletter sent to ${newsletters.length} recipients.`}:{"status": `Newsletter simulated to ${newsletters.length} recipients.`};
+	return (!dryrun || dryrun === false)?{"status": `Newsletter sending to ${limit} recipients.`}:{"status": `Newsletter simulating to ${limit} recipients.`};
 }
 
 /**
@@ -324,10 +325,10 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
 	let dryrun = typeof req.query.dryrun!=="undefined"?str2bool(req.query.dryrun):false;
 	let recurring = typeof req.query.recurring!=="undefined"?parseInt(req.query.recurring, 10):null;
 	if ( req.user.role === "admin" ) {
-		let newsletters = t6jobs.get({taskType: "newsletter", user_id: req.user.id}, limit);
+		let newsletters = t6jobs.get({taskType: "newsletter", user_id: req.user.id}, recurring!==null?1:limit);
 		t6console.debug("newsletters : ", newsletters);
 		if(newsletters.length > 0) {
-			let response = sendNewsletter(newsletters, dryrun, recurring, req.user.id, limit);
+			let response = sendNewsletter(newsletters, dryrun, recurring, req.user.id, limit, 0);
 			res.status(202).send({"response": response});
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 18.2, "code": 404, "message": "Not Found"}).serialize());
