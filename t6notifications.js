@@ -8,7 +8,7 @@ if (firebase.admin.serviceAccountFile) {
 		databaseURL: "https://t6-app.firebaseio.com"
 	});
 	
-	t6notifications.sendPush = function(subscriber, payload) {
+	t6notifications.sendPush = (subscriber, payload) => new Promise((resolve, reject) => {
 		if ( typeof payload === "object" ) {
 			payload.type = typeof payload.type!=="undefined"?payload.type:"message";
 			payload = JSON.stringify(payload);
@@ -25,10 +25,12 @@ if (firebase.admin.serviceAccountFile) {
 			webpush.sendNotification(subscriber, payload, pushSubscriptionOptions).then(res => {
 				t6console.debug("t6notifications.sendPush Response:", res);
 				t6events.add("t6App", "sendPush", subscriber.user_id, subscriber.user_id, {"endpoint": subscriber.endpoint, "success":  {"statusCode": res.statusCode}});
+				resolve({"status": "info", "info": res});
 			}).catch(e => {
 				t6events.add("t6App", "sendPush", subscriber.user_id, subscriber.user_id, {"endpoint": subscriber.endpoint, "error": {"statusCode": e.statusCode, "body": e.body}});
 				t6console.error(e);
 				if(e.statusCode === 404 || e.statusCode === 410) {
+					reject({"status": "error", "info": e});
 					return e;
 				}
 			});
@@ -36,7 +38,7 @@ if (firebase.admin.serviceAccountFile) {
 		} else {
 			t6console.warn("t6notifications.sendPush failed with no endpoint. Didn't sent.");
 		}
-	};
+	});
 	t6notifications.sendFCM = function(subscriber, payload) {
 		const registrationTokens = typeof subscriber!=="object"?[subscriber]:subscriber;
 		const message = payload;
