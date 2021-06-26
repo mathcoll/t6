@@ -370,32 +370,6 @@ router.get("/mail/newsletter/subscribers", expressJwt({secret: jwtsettings.secre
 });
 
 /**
- * @api {get} /notifications/push/count Count Push subscribers
- * @apiName Count Push subscribers
- * @apiGroup 9. Notifications
- * @apiVersion 2.0.1
- * @apiUse AuthAdmin
- * @apiPermission Admin
- * 
- * @apiUse 202
- * @apiUse 403
- * @apiUse 404
- */
-router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	if ( req.user.role === "admin" ) {
-		let query = {  "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
-		var recipients = users.chain().find( query ).data();
-		if ( recipients.length > 0 ) {
-			res.status(200).send({"subscribers": recipients.length});
-		} else {
-			res.status(404).send(new ErrorSerializer({"id": 21.2, "code": 404, "message": "Not Found"}).serialize());
-		}
-	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
-	}
-});
-
-/**
  * @api {post} /notifications/mail/newsletter/plan Plan a newsletter to be sent to subscribers
  * @apiName Plan a newsletter to be sent to subscribers
  * @apiGroup 9. Notifications
@@ -421,45 +395,6 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && template ) {
 			planNewsletter(req, res, recipients, template, subject);
-			res.status(202).send(new UserSerializer(recipients).serialize());
-		} else {
-			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
-		}
-	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
-	}
-});
-
-/**
- * @api {post} /notifications/push/plan Plan a push to be sent to subscribers
- * @apiName Plan a push to be sent to subscribers
- * @apiGroup 9. Notifications
- * @apiVersion 2.0.1
- * @apiUse AuthAdmin
- * @apiPermission Admin
- * 
- * @apiUse 202
- * @apiUse 403
- * @apiUse 404
- */
-router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	let limit = typeof req.query.limit!=="undefined"?req.query.limit:20;
-	let page = typeof req.query.page!=="undefined"?req.query.page:1;
-	page = page>0?page:1;
-	let offset = Math.ceil(limit*(page-1));
-	if ( req.user.role === "admin" ) {
-		let body = req.body.body;
-		let title = typeof req.body.title!=="undefined"?req.body.title:"📰 t6 updates";
-		let icon = typeof req.body.icon!=="undefined"?req.body.icon:null;
-		let vibrate = typeof req.body.vibrate!=="undefined"?req.body.vibrate:[]; 
-		let actions = typeof req.body.actions!=="undefined"?req.body.actions:[]; 
-		let badge = typeof req.body.badge!=="undefined"?req.body.badge:null;
-		let options = {icon, vibrate, actions, badge}
-		let query = {  "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
-		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
-		if ( recipients.length > 0 && body && title ) {
-			planPush(req, res, recipients, body, title, options);
-			t6console.debug(body, title, options);
 			res.status(202).send(new UserSerializer(recipients).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
@@ -496,6 +431,71 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
+ * @api {get} /notifications/push/count Count Push subscribers
+ * @apiName Count Push subscribers
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	if ( req.user.role === "admin" ) {
+		let query = {  "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
+		var recipients = users.chain().find( query ).data();
+		if ( recipients.length > 0 ) {
+			res.status(200).send({"subscribers": recipients.length});
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 21.2, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
+ * @api {post} /notifications/push/plan Plan a push to be sent to subscribers
+ * @apiName Plan a push to be sent to subscribers
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let limit = typeof req.query.limit!=="undefined"?req.query.limit:20;
+	let page = typeof req.query.page!=="undefined"?req.query.page:1;
+	page = page>0?page:1;
+	let offset = Math.ceil(limit*(page-1));
+	if ( req.user.role === "admin" ) {
+		let body = req.body.body;
+		let title = typeof req.body.title!=="undefined"?req.body.title:"📰 t6 updates";
+		let icon = typeof req.body.icon!=="undefined"?req.body.icon:null;
+		let vibrate = typeof req.body.vibrate!=="undefined"?req.body.vibrate:[]; 
+		let actions = typeof req.body.actions!=="undefined"?req.body.actions:[]; 
+		let badge = typeof req.body.badge!=="undefined"?req.body.badge:null;
+		let options = {icon, vibrate, actions, badge};
+		let query = {  "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
+		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
+		if ( recipients.length > 0 && body && title ) {
+			planPush(req, res, recipients, body, title, options);
+			t6console.debug(body, title, options);
+			res.status(202).send(new UserSerializer(recipients).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
 	}
 });
 
