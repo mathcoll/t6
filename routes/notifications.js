@@ -34,10 +34,10 @@ function planNewsletter(req, res, recipients, template, subject) {
 	});
 }
 
-function planPush(req, res, recipients, body, title, icon, vibrate, actions) {
+function planPush(req, res, recipients, body, title, options) {
 	/* add newsletter to job queue to be sent later */
 	recipients.forEach(function(user) {
-		let payload = "{\"type\": \"message\", \"title\": \""+title+"\", \"body\": \""+body+"\", \"icon\": \""+icon+"\", \"vibrate\":"+JSON.stringify(vibrate)+", \"actions\":"+JSON.stringify(actions)+"}";
+		let payload = "{\"type\": \"message\", \"title\": \""+title+"\", \"body\": \""+body+"\", \"badge\": \""+options.badge+"\", \"icon\": \""+options.icon+"\", \"vibrate\":"+JSON.stringify(options.vibrate)+", \"actions\":"+JSON.stringify(options.actions)+"}";
 		t6console.debug(`Rendering push notification to ${user.firstName} ${user.lastName}`);
 		t6console.debug(payload);
 		t6jobs.add({taskType: "push", time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {"pushSubscription": user.pushSubscription, "payload": payload}});
@@ -338,6 +338,38 @@ router.get("/mail/newsletter/count", expressJwt({secret: jwtsettings.secret, alg
 });
 
 /**
+ * @api {get} /notifications/mail/newsletter/subscribers Get Newsletter subscribers
+ * @apiName Get Newsletter subscribers
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission Admin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.get("/mail/newsletter/subscribers", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	if ( req.user.role === "admin" ) {
+		let query = { "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] };
+		var recipients = users.chain().find( query ).data();
+		if ( recipients.length > 0 ) {
+			let csv = "";
+			csv += `"name","email"\n`;
+			recipients.map(function(user) {
+				csv += `"${user.firstName} ${user.lastName}", "${user.email}"\n`;
+			});
+			res.setHeader("content-type", "application/csv");
+			res.status(200).send(csv);
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+	}
+});
+
+/**
  * @api {get} /notifications/push/count Count Push subscribers
  * @apiName Count Push subscribers
  * @apiGroup 9. Notifications
@@ -421,11 +453,13 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
 		let icon = typeof req.body.icon!=="undefined"?req.body.icon:null;
 		let vibrate = typeof req.body.vibrate!=="undefined"?req.body.vibrate:[]; 
 		let actions = typeof req.body.actions!=="undefined"?req.body.actions:[]; 
+		let badge = typeof req.body.badge!=="undefined"?req.body.badge:null;
+		let options = {icon, vibrate, actions, badge}
 		let query = {  "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && body && title ) {
-			planPush(req, res, recipients, body, title, icon, vibrate, actions);
-			t6console.debug(body, title, icon, vibrate, actions);
+			planPush(req, res, recipients, body, title, options);
+			t6console.debug(body, title, options);
 			res.status(202).send(new UserSerializer(recipients).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
