@@ -40,7 +40,7 @@ router.get("/networkError", function(req, res) {
  * @apiUse 403
  * @apiUse 404
  */
-router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
+router.get("/mail/:mail/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
@@ -87,7 +87,7 @@ router.get("/mail/:mail(*@*)/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_t
  * @apiUse 403
  * @apiUse 404
  */
-router.get("/mail/:mail(*@*)/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
+router.get("/mail/:mail/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0-9a-zA-Z\-]+)/", function(req, res) {
 	var mail = req.params.mail;
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
