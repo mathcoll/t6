@@ -7,6 +7,13 @@
 ------------
 
 ## 2021
+### Milestone 13 - June 2021: Sensor Data Fusion
+  - [x] [Sensor Data Fusion](https://api.internetcollaboratif.info/news/2021-06-16-newsletter-sensor-data-fusion)
+  - [x] Customize Tracks on Flows
+  - [ ] Customize Ttl on each Flows
+  - [x] Timed buffer on preprocessor to fuse and combine multiple measurements together
+  - [x] Payload value transformation/sanitization/convertion using a preprocessor when measurement is sent
+  
 ### Milestone 12 - May 2021: InfluxData Cloud secondary storage (as an option)
   - [ ] Use only one library (instead of 2!) to write datapoints to both timeseries InfluxDb and InfluxData Cloud
   - [x] UI modifications to edit InfluxData Cloud token information
