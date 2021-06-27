@@ -485,7 +485,7 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
 		let actions = typeof req.body.actions!=="undefined"?req.body.actions:[]; 
 		let badge = typeof req.body.badge!=="undefined"?req.body.badge:null;
 		let options = {icon, vibrate, actions, badge};
-		let query = {  "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
+		let query = { "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && body && title ) {
 			planPush(req, res, recipients, body, title, options);
