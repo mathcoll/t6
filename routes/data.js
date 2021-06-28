@@ -32,7 +32,7 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 	}
 }
 function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
-	let fields;
+	let fields = "";
 	if( includeTime ) {
 		fields += "time, ";
 	}
@@ -231,6 +231,285 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	}
 });
 
+
+
+
+function preprocessor(payload, fields, datatype, current_flow) {
+	return new Promise((resolve, reject) => {
+		let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
+		preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
+		preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
+		let result = t6preprocessor.preprocessor(current_flow, payload, preprocessor);
+		payload = result.payload;
+		preprocessor = result.preprocessor;
+		payload.preprocessor = result.preprocessor;
+		fields = result.fields;
+		payload.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+		payload.unit = typeof payload.unit!=="undefined"?payload.unit:"";
+		payload.mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+		payload.latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
+		payload.longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
+		payload.text = typeof payload.text!=="undefined"?payload.text:"";
+		if(payload.sanitizedValue) {
+			payload.value = payload.sanitizedValue;
+		}
+		if(payload.needRedacted) {
+			payload.preprocessor.map(function(pp) {
+				pp.initialValue = "**REDACTED**";
+				pp.transformedValue = "**REDACTED**";
+			});
+		}
+		if(payload.isRejected) {
+			payload.save = false;
+			return resolve({payload, fields});
+		} else {
+			return resolve({payload, fields});
+		}
+	});
+}
+
+function fusion(payload, fields, current_flow) {
+	return new Promise((resolve, reject) => {
+		// TODO : make sure preprocessor is completed before Fusion
+		if ( dataFusion.activated === true ) {
+			payload.fusion = typeof payload.fusion!=="undefined"?payload.fusion:{};
+			payload.fusion.messages = [];
+			
+			let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
+			let fusion_algorithm = typeof payload.fusion.algorithm!=="undefined"?payload.fusion.algorithm:((typeof current_flow!=="undefined" && typeof current_flow.fusion_algorithm!=="undefined")?current_flow.fusion_algorithm:null);
+			let requireDataType = typeof payload.data_type!=="undefined"?payload.data_type:(typeof current_flow!=="undefined"?current_flow.data_type:undefined); // By default, making sure all trracks are having the same datatype
+			t6console.debug("fusion_algorithm", fusion_algorithm);
+			t6preprocessor.addMeasurementToFusion({
+				"flow_id": typeof current_flow!=="undefined"?current_flow.id:"unknown",
+				"track_id": track_id,
+				"user_id": typeof current_flow!=="undefined"?current_flow.user_id:"unknown",
+				"sanitizedValue": payload.sanitizedValue,
+				"latitude": payload.latitude,
+				"longitude": payload.longitude,
+				"time": parseInt(payload.time, 10),
+				"ttl": parseInt((typeof current_flow!=="undefined" && typeof current_flow.ttl!=="undefined")?current_flow.ttl:3600, 10)*1000,
+				"data_type": requireDataType,
+			});
+			let allTracks = t6preprocessor.getAllTracks((typeof current_flow!=="undefined"?current_flow.id:"unknown"), track_id, (typeof current_flow!=="undefined"?current_flow.user_id:"unknown"));
+			let [isElligible, errorTracks] = t6preprocessor.isElligibleToFusion(allTracks, requireDataType);
+			
+			if( typeof current_flow!=="undefined" && isElligible && allTracks.length > 0 && (track_id!=="" || track_id!==null) ) { // Check if we have at least 1 measure for each track
+				t6console.debug("Fusion is elligible.");
+				payload.fusion.messages.push("Fusion is elligible.");
+				// Compute average for each tracks
+				let allTracksAfterAverage = t6preprocessor.reduceMeasure(allTracks);
+				t6console.debug(allTracksAfterAverage);
+				// Fuse
+				let total=0;
+				let sumWeight=0;
+				let fusionValue;
+				let fusionTime;
+				payload.fusion.measurements = [];
+				switch(fusion_algorithm) {
+					case "mht": // Multiple Hypothesis Test (MHT)
+						break;
+					case "pda": // Probabilistic Data Association (PDA)
+						break;
+					case "jpda": // Joint PDA (JPDA)
+						break;
+					case "lsh": // Locality-Sensitive Hashing (LSH)
+					case "locality_sensitive_hashing":
+						break;
+					case "nn": // Nearest Neighbors (NN)
+					case "nearest_neighbors":
+						break;
+					case "mmse": // minimum mean square error (MMSE)
+						break;
+					case "average_weighted":
+						allTracksAfterAverage.map(function(track) {
+							sumWeight += typeof track.weight!=="undefined"?track.weight:1;
+							total += track.average * sumWeight;
+							fusionTime = track.time;
+							payload.fusion.measurements.push({id: track.id, count: track.count});
+						});
+						fusionValue = total / sumWeight;
+						break;
+					case "average":
+					default:
+						allTracksAfterAverage.map(function(track) {
+							total += track.average;
+							payload.fusion.measurements.push({id: track.id, count: track.count});
+							fusionTime = track.time;
+						});
+						fusionValue = total / allTracksAfterAverage.length;
+						break;
+				}
+				let v = getFieldsFromDatatype(datatype, false, false);
+				payload.fusion.initialValue = payload.value;
+				payload.value = fusionValue;
+				(fields[0])[v] = fusionValue;
+				payload.fusion.correction = payload.fusion.initialValue - fusionValue;
+				payload.fusion.algorithm = fusion_algorithm;
+				payload.fusion.messages.push("Fusion processed.");
+				
+				// Do we need to save measure to Primary Flow ? // TODO : so instead of the track.. :-(
+				payload.fusion.primary_flow = track_id;
+				time = fusionTime; // Code consistency !
+				payload.timestamp = fusionTime/1000000;
+				t6console.debug("fusionTime", moment(fusionTime).format(logDateFormat));
+				flow_id = track_id;
+			} else {
+				payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes ; or no track on Flow/payload.");
+				payload.fusion.error_tracks = errorTracks;
+				return resolve({payload, fields});
+			}
+			// Clean expired buffer
+			let size = t6preprocessor.clearExpiredMeasurement();
+			size>0?payload.fusion.messages.push(`${size} expired measurements - cleaned from buffer.`):null;
+		} // end Fusion
+		return resolve({payload, fields});
+	});
+}
+
+function saveToLocal(payload, fields, current_flow) {
+	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+	return new Promise((resolve, reject) => {
+		// TODO : make sure preprocessor is completed before saving value
+		if ( save === true ) {
+			let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
+			if ( db_type.influxdb === true ) {
+				t6console.debug("Saving to timeseries");
+				/* InfluxDB database */
+				var tags = {};
+				payload.timestamp = payload.time*1000000;
+				if (payload.flow_id!=="") {
+					tags.flow_id = payload.flow_id;
+				}
+				tags.user_id = payload.user_id;
+				tags.rp = rp;
+				if(typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null)) {
+					tags.track_id = current_flow.track_id;
+				}
+				if (payload.text!=="") {
+					fields[0].text = payload.text;
+				}
+
+				let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+				dbWrite.writePoints([{
+					measurement: "data",
+					tags: tags,
+					fields: fields[0],
+					timestamp: payload.timestamp,
+				}], { retentionPolicy: rp }).then(err => {
+					if (err) {
+						t6console.error({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
+						return resolve("Error on writePoints to influxDb");
+					} else {
+						let v = getFieldsFromDatatype(payload.datatype, false, false);
+						t6console.debug(`Saved "${(fields[0])[v]}" using rp=${rp} / Tags :`, tags);
+						return resolve({payload, fields});
+					}
+				}).catch(err => {
+					t6console.error({"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
+					return resolve({payload, fields});
+				});
+			} // end influx
+		} else {
+			t6console.debug("Save Process Disabled!");
+			return resolve({payload, fields});
+		} // end save
+	});
+}
+
+function saveToCloud(payload, fields, current_flow) {
+	return new Promise((resolve, reject) => {
+		// TODO : make sure preprocessor is completed before saving value
+		if ((typeof current_flow!=="undefined" && typeof current_flow.influx_db_cloud!=="undefined") || typeof payload.influx_db_cloud!=="undefined") {
+			const {InfluxDB} = require("@influxdata/influxdb-client");
+			let token = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.token!=="undefined")?payload.influx_db_cloud.token:current_flow.influx_db_cloud.token;
+			let org = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.org!=="undefined")?payload.influx_db_cloud.org:current_flow.influx_db_cloud.org;
+			let url = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.url!=="undefined")?payload.influx_db_cloud.url:current_flow.influx_db_cloud.url;
+			let bucket = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.bucket!=="undefined")?payload.influx_db_cloud.bucket:current_flow.influx_db_cloud.bucket;
+			
+			if(token && org && url && bucket) {
+				t6console.debug("influxDbCloud Saving to Cloud.");
+				const dbInfluxDBCloud = new InfluxDB({url: url, token: token});
+				
+				const {Point} = require("@influxdata/influxdb-client");
+				let writeApi = dbInfluxDBCloud.getWriteApi(org, bucket);
+				
+				let point = new Point("data")
+					.tag("user_id", payload.user_id)
+					.tag("flow_id", payload.flow_id)
+					.tag("track_id", (typeof my_flow!=="undefined" && (typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null))?my_flow.track_id:null);
+				point.timestamp(timestamp);
+				
+				typeof fields[0].valueFloat!=="undefined"?point.floatField("valueFloat", parseFloat(fields[0].valueFloat)):null;
+				typeof fields[0].valueBoolean!=="undefined"?point.booleanField("valueBoolean", fields[0].valueBoolean):null;
+				typeof fields[0].valueInteger!=="undefined"?point.intField("valueInteger", fields[0].valueInteger):null;
+				typeof fields[0].valueString!=="undefined"?point.stringField("valueString", fields[0].valueString):null;
+				typeof fields[0].valueDate!=="undefined"?point.stringField("valueDate", fields[0].valueDate):null;
+				typeof fields[0].valueJson!=="undefined"?point.stringField("valueJson", fields[0].valueJson):null;
+				typeof fields[0].valueGeo!=="undefined"?point.stringField("valueGeo", fields[0].valueGeo):null;
+				typeof fields[0].text!=="undefined"?point.stringField("text", fields[0].text):null;
+				writeApi.writePoint(point);
+				writeApi
+					.close()
+					.then(() => {
+						t6console.debug("Wrote to influxDbCloud");
+						//t6console.log(point);
+						t6events.add("t6App", "Wrote to influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id});
+						return resolve({payload, fields});
+					})
+					.catch(e => {
+						t6console.error("Write Error on influxDbCloud");
+						t6console.error(e);
+						t6events.add("t6App", "Write Error on influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id, "error": e});
+						return reject({payload, fields});
+					});
+			} // end valid token
+			else {
+				t6console.warn("Can't save to Cloud ; missing credentials.");
+				return resolve({payload, fields});
+			}
+		} // end saveToCloud
+		else {
+			t6console.warn("Not customized to save to Cloud");
+			return resolve({payload, fields});
+		}
+	});
+}
+
+function ruleEngine(payload, fields, current_flow) {
+	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
+	return new Promise((resolve, reject) => {
+		// TODO : make sure preprocessor is completed before publishing
+		if ( publish === true ) {
+			t6console.debug("Publishing to Rule Engine");
+			let flow = payload.flow_id!==null?payload.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:(typeof current_flow!=="undefined"?current_flow.id:""));
+			let payloadFact = {"dtepoch": payload.time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "datatype": payload.datatype, "mqtt_topic": payload.mqtt_topic}; // This is the bare minimal payload
+			if ( typeof payload.object_id !== "undefined" ) {
+				payloadFact.object_id = payload.object_id;
+				let query = {
+				"$and": [
+						{ "user_id" : payload.user_id },
+						{ "id" : payload.object_id },
+					]
+				};
+				var object = objects.findOne(query);
+				if ( object ) {
+					payloadFact.object = object;
+				}
+			}
+			if ( payload.text ) {
+				payloadFact.text = payload.text;
+			}
+			payloadFact.latitude = typeof payload.latitude!=="undefined"?payload.latitude:null;
+			payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
+			t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic);
+			return resolve({payload, fields});
+		} else {
+			t6console.debug("Not Publishing to Rule Engine");
+			return resolve({payload, fields});
+		} // end publish
+	});
+}
+
 /**
  * @api {post} /data/:flow_id Create a DataPoint
  * @apiName Create a DataPoint
@@ -322,44 +601,42 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 	
 	if ( typeof payload !== "undefined" && !error ) {
 		payload = getJson(payload);
-		var flow_id		= typeof req.params.flow_id!=="undefined"?req.params.flow_id:payload.flow_id;
-		var time		= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
+		var time			= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
 		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
-		payload.time	= time;
-		var value		= typeof payload.value!=="undefined"?payload.value:"";
-		var publish		= typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
-		var save		= typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
-		var unit		= typeof payload.unit!=="undefined"?payload.unit:"";
-		var mqtt_topic	= typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
-		var latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
-		var longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
-		var text		= typeof payload.text!=="undefined"?payload.text:"";
-		var fields;
+		payload.time		= time;
+		payload.user_id		= typeof req.user.id!=="undefined"?req.user.id:null; //to get the Object
+		payload.flow_id 	= typeof req.params.flow_id!=="undefined"?req.params.flow_id:payload.flow_id;
+		payload.value		= typeof payload.value!=="undefined"?payload.value:"";
+		payload.unit		= typeof payload.unit!=="undefined"?payload.unit:"";
+		payload.mqtt_topic	= typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+		payload.latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
+		payload.longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
+		payload.text		= typeof payload.text!=="undefined"?payload.text:"";
+		var fields = {};
 
-		if ( !flow_id || !req.user.id ) {
+		if ( !payload.flow_id || !req.user.id ) {
 			// Not Authorized because token is invalid
 			res.status(401).send(new ErrorSerializer({"id": 64, "code": 401, "message": "Not Authorized",}).serialize());
 		} else {
-			let f = flows.chain().find({id: ""+flow_id, user_id: req.user.id,}).limit(1);
+			let f = flows.chain().find({id: ""+payload.flow_id, user_id: req.user.id,}).limit(1);
 			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
 			let join;
-			let datatype;
 
 			if(typeof payload.data_type!=="undefined") {
 				let dt = (datatypes.chain().find({id: ""+payload.data_type,}).limit(1)).data()[0];
-				datatype = (typeof payload.data_type!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
-				t6console.debug(`Getting datatype "${datatype}" from payload`);
+				payload.datatype = (typeof payload.data_type!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
+				t6console.debug(`Getting datatype "${payload.datatype}" from payload`);
 			} else if (typeof current_flow!=="undefined") {
 				join = f.eqJoin(datatypes.chain(), "data_type", "id");
-				datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
-				t6console.debug(`Getting datatype "${datatype}" from Flow`);
+				payload.datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
+				t6console.debug(`Getting datatype "${payload.datatype}" from Flow`);
 			} else {
-				datatype = "string";
-				t6console.debug(`Getting datatype "${datatype}" from default value`);
+				payload.datatype = "string";
+				t6console.debug(`Getting datatype "${payload.datatype}" from default value`);
 			}
 
-			if ( !mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
-				mqtt_topic = ((f.data())[0].left).mqtt_topic;
+			if ( !payload.mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
+				payload.mqtt_topic = ((f.data())[0].left).mqtt_topic;
 			}
 			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !isEncrypted ) {
 				//t6console.log("(f.data())[0].left", (f.data())[0].left);
@@ -373,272 +650,51 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				t6console.debug(".. & Payload isSigned", isSigned);
 				prerequisite += 1;
 			}
-
 			t6console.debug("Prerequisite Index=", prerequisite, "(when >0 it means something is required.)");
+
 			if ( prerequisite <= 0 ) {
-				payload.user_id = req.user.id; //to get the Object
-				
-				let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
-				preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
-				preprocessor.push({"name": "sanitize", "datatype": datatype});
-				let result = t6preprocessor.preprocessor(current_flow, payload, preprocessor);
-				payload = result.payload;
-				preprocessor = result.preprocessor;
-				payload.preprocessor = result.preprocessor;
-				fields = result.fields;
-
-				/* might be moved to preprocessor */
-				save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
-				unit = typeof payload.unit!=="undefined"?payload.unit:"";
-				mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
-				latitude = typeof payload.latitude!=="undefined"?payload.latitude:"";
-				longitude = typeof payload.longitude!=="undefined"?payload.longitude:"";
-				text = typeof payload.text!=="undefined"?payload.text:"";
-				payload.value = payload.sanitizedValue;
-				if(payload.NeedRedacted) {
-					payload.preprocessor.map(function(pp) {
-						pp.initialValue = "**REDACTED**";
-						pp.transformedValue = "**REDACTED**";
+				preprocessor(payload, fields, payload.datatype, current_flow)
+					.then((pp) => {
+						return fusion(pp.payload, pp.fields, current_flow);
+					})
+					.then((fu) => {
+						return saveToLocal(fu.payload, fu.fields, current_flow);
+					})
+					.then((sl) => {
+						return saveToCloud(sl.payload, sl.fields, current_flow);
+					})
+					.then((sc) => {
+						return ruleEngine(sc.payload, sc.fields, current_flow);
+					})
+					.then((re) => {
+						let fields = re.fields;
+						fields.flow_id = payload.flow_id;
+						fields.id = time*1000000;
+						fields.parent = payload.flow_id;
+						fields.first;
+						fields.prev;
+						fields.next;
+						fields[0].save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
+						fields[0].flow_id = payload.flow_id;
+						fields[0].datatype = payload.datatype;
+						fields[0].title = typeof current_flow!=="undefined"?current_flow.title:null;
+						fields[0].ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
+						fields[0].id = payload.time*1000000;
+						fields[0].time = payload.time*1000000;
+						fields[0].timestamp = payload.time*1000000;
+						fields[0].value = payload.value;
+						fields[0].publish = payload.publish;
+						fields[0].mqtt_topic = payload.mqtt_topic;
+						fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
+						fields[0].fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
+		
+						res.header("Location", "/v"+version+"/flows/"+payload.flow_id+"/"+fields[0].id);
+						res.status(200).send(new DataSerializer(fields).serialize());
+						t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
+					})
+					.catch((error) => { 
+						t6console.error(error);
 					});
-				}
-				/* end might be moved to preprocessor */
-
-				// TODO : make sure preprocessor is completed before Fusion
-				if ( dataFusion.activated === true ) {
-					payload.fusion = typeof payload.fusion!=="undefined"?payload.fusion:{};
-					payload.fusion.messages = [];
-					
-					let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
-					let fusion_algorithm = typeof payload.fusion.algorithm!=="undefined"?payload.fusion.algorithm:((typeof current_flow!=="undefined" && typeof current_flow.fusion_algorithm!=="undefined")?current_flow.fusion_algorithm:null);
-					let requireDataType = typeof payload.data_type!=="undefined"?payload.data_type:(typeof current_flow!=="undefined"?current_flow.data_type:undefined); // By default, making sure all trracks are having the same datatype
-					t6console.debug("fusion_algorithm", fusion_algorithm);
-					t6preprocessor.addMeasurementToFusion({
-						"flow_id": typeof current_flow!=="undefined"?current_flow.id:"unknown",
-						"track_id": track_id,
-						"user_id": typeof current_flow!=="undefined"?current_flow.user_id:"unknown",
-						"sanitizedValue": payload.sanitizedValue,
-						"latitude": payload.latitude,
-						"longitude": payload.longitude,
-						"time": parseInt(payload.time, 10),
-						"ttl": parseInt((typeof current_flow!=="undefined" && typeof current_flow.ttl!=="undefined")?current_flow.ttl:3600, 10)*1000,
-						"data_type": requireDataType,
-					});
-
-					let allTracks = t6preprocessor.getAllTracks((typeof current_flow!=="undefined"?current_flow.id:"unknown"), track_id, (typeof current_flow!=="undefined"?current_flow.user_id:"unknown"));
-					let [isElligible, errorTracks] = t6preprocessor.isElligibleToFusion(allTracks, requireDataType);
-					
-					if( typeof current_flow!=="undefined" && isElligible && allTracks.length > 0 && (track_id!=="" || track_id!==null) ) { // Check if we have at least 1 measure for each track
-						t6console.debug("Fusion is elligible.");
-						payload.fusion.messages.push("Fusion is elligible.");
-						// Compute average for each tracks
-						let allTracksAfterAverage = t6preprocessor.reduceMeasure(allTracks);
-						t6console.debug(allTracksAfterAverage);
-						// Fuse
-						let total=0;
-						let sumWeight=0;
-						let fusionValue;
-						let fusionTime;
-						payload.fusion.measurements = [];
-						switch(fusion_algorithm) {
-							case "mht": // Multiple Hypothesis Test (MHT)
-								break;
-							case "pda": // Probabilistic Data Association (PDA)
-								break;
-							case "jpda": // Joint PDA (JPDA)
-								break;
-							case "lsh": // Locality-Sensitive Hashing (LSH)
-							case "locality_sensitive_hashing":
-								break;
-							case "nn": // Nearest Neighbors (NN)
-							case "nearest_neighbors":
-								break;
-							case "mmse": // minimum mean square error (MMSE)
-								break;
-							case "average_weighted":
-								allTracksAfterAverage.map(function(track) {
-									sumWeight += typeof track.weight!=="undefined"?track.weight:1;
-									total += track.average * sumWeight;
-									fusionTime = track.time;
-									payload.fusion.measurements.push({id: track.id, count: track.count});
-								});
-								fusionValue = total / sumWeight;
-								break;
-							case "average":
-							default:
-								allTracksAfterAverage.map(function(track) {
-									total += track.average;
-									payload.fusion.measurements.push({id: track.id, count: track.count});
-									fusionTime = track.time;
-								});
-								fusionValue = total / allTracksAfterAverage.length;
-								break;
-						}
-						let v = getFieldsFromDatatype(datatype, false, false);
-						payload.fusion.initialValue = payload.value;
-						payload.value = fusionValue;
-						(fields[0])[v] = fusionValue;
-						payload.fusion.correction = payload.fusion.initialValue - fusionValue;
-						payload.fusion.algorithm = fusion_algorithm;
-						payload.fusion.messages.push("Fusion processed.");
-						
-						// Do we need to save measure to Primary Flow ? // TODO : so instead of the track.. :-(
-						payload.fusion.primary_flow = track_id;
-						time = fusionTime; // Code consistency !
-						payload.timestamp = fusionTime/1000000;
-						t6console.debug("fusionTime", moment(fusionTime).format(logDateFormat));
-						flow_id = track_id;
-						
-					} else {
-						payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes ; or no track on Flow/payload.");
-						payload.fusion.error_tracks = errorTracks;
-					}
-					// Clean expired buffer
-					let size = t6preprocessor.clearExpiredMeasurement();
-					size>0?payload.fusion.messages.push(`${size} expired measurements - cleaned from buffer.`):null;
-				} // end Fusion
-
-				// TODO : make sure preprocessor is completed before saving value
-				if ( save === true ) {
-					let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
-					if ( db_type.influxdb === true ) {
-						t6console.debug("Saving to timeseries");
-						/* InfluxDB database */
-						var tags = {};
-						var timestamp = time*1000000;
-						if (flow_id!=="") {
-							tags.flow_id = flow_id;
-						}
-						tags.user_id = req.user.id;
-						tags.rp = rp;
-						if(typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null)) {
-							tags.track_id = current_flow.track_id;
-						}
-						if (text!=="") {
-							fields[0].text = text;
-						}
-
-						let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
-						dbWrite.writePoints([{
-							measurement: "data",
-							tags: tags,
-							fields: fields[0],
-							timestamp: timestamp,
-						}], { retentionPolicy: rp }).then(err => {
-							if (err) {
-								t6console.error({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
-							} else {
-								let v = getFieldsFromDatatype(datatype, false, false);
-								t6console.debug(`Saved ${(fields[0])[v]} on rp=${rp} / Tags :`, tags);
-								//t6console.debug(`Using `, fields[0], timestamp);
-							}
-						}).catch(err => {
-							t6console.error({"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": timestamp});
-						});
-					} // end influx
-				} else {
-					t6console.debug("Save Process Disabled!");
-				} // end save
-				
-				// TODO : make sure preprocessor is completed before saving value
-				if ((typeof current_flow!=="undefined" && typeof current_flow.influx_db_cloud!=="undefined") || typeof payload.influx_db_cloud!=="undefined") {
-					const {InfluxDB} = require("@influxdata/influxdb-client");
-					const token = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.token!=="undefined")?payload.influx_db_cloud.token:current_flow.influx_db_cloud.token;
-					const org = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.org!=="undefined")?payload.influx_db_cloud.org:current_flow.influx_db_cloud.org;
-					const url = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.url!=="undefined")?payload.influx_db_cloud.url:current_flow.influx_db_cloud.url;
-					const bucket = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.bucket!=="undefined")?payload.influx_db_cloud.bucket:current_flow.influx_db_cloud.bucket;
-					
-					if(token && org && url && bucket) {
-						t6console.debug("influxDbCloud Saving to Cloud.");
-						const dbInfluxDBCloud = new InfluxDB({url: url, token: token});
-						
-						const {Point} = require("@influxdata/influxdb-client");
-						const writeApi = dbInfluxDBCloud.getWriteApi(org, bucket);
-						
-						const point = new Point("data")
-							.tag("user_id", req.user.id)
-							.tag("flow_id", flow_id)
-							.tag("track_id", (typeof my_flow!=="undefined" && (typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null))?my_flow.track_id:null);
-						point.timestamp(timestamp);
-						
-						typeof fields[0].valueFloat!=="undefined"?point.floatField("valueFloat", parseFloat(fields[0].valueFloat)):null;
-						typeof fields[0].valueBoolean!=="undefined"?point.booleanField("valueBoolean", fields[0].valueBoolean):null;
-						typeof fields[0].valueInteger!=="undefined"?point.intField("valueInteger", fields[0].valueInteger):null;
-						typeof fields[0].valueString!=="undefined"?point.stringField("valueString", fields[0].valueString):null;
-						typeof fields[0].valueDate!=="undefined"?point.stringField("valueDate", fields[0].valueDate):null;
-						typeof fields[0].valueJson!=="undefined"?point.stringField("valueJson", fields[0].valueJson):null;
-						typeof fields[0].valueGeo!=="undefined"?point.stringField("valueGeo", fields[0].valueGeo):null;
-						typeof fields[0].text!=="undefined"?point.stringField("text", fields[0].text):null;
-						writeApi.writePoint(point);
-						writeApi
-							.close()
-							.then(() => {
-								t6console.debug("Wrote to influxDbCloud");
-								//t6console.log(point);
-								t6events.add("t6App", "Wrote to influxDbCloud", req.user.id, req.user.id, {"user_id": req.user.id});
-							})
-							.catch(e => {
-								t6console.error(e);
-								t6console.debug("Write Error on influxDbCloud");
-								t6events.add("t6App", "Write Error on influxDbCloud", req.user.id, req.user.id, {"user_id": req.user.id, "error": e});
-							});
-					} // end valid token
-					else {
-						t6console.log("Can't save to Cloud ; missing credentials.");
-					}
-				} // end saveToCloud
-
-				// TODO : make sure preprocessor is completed before publishing
-				if ( publish === true ) {
-					t6console.debug("Publishing");
-					let flow = flow_id!==null?flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:(typeof current_flow!=="undefined"?current_flow.id:""));
-					let payloadFact = {"dtepoch": time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "datatype": datatype, "mqtt_topic": typeof mqtt_topic!=="undefined"?(mqtt_topic).toString():""}; // This is the bare minimal payload
-					if ( typeof object_id !== "undefined" ) {
-						payloadFact.object_id = object_id;
-						let query = {
-						"$and": [
-								{ "user_id" : req.user.id },
-								{ "id" : object_id },
-							]
-						};
-						var object = objects.findOne(query);
-						if ( object ) {
-							payloadFact.object = object;
-						}
-					}
-					
-					if ( text ) {
-						payloadFact.text = text;
-					}
-					payloadFact.latitude = typeof latitude!=="undefined"?latitude:null;
-					payloadFact.longitude = typeof longitude!=="undefined"?longitude:null;
-					t6decisionrules.action(req.user.id, payloadFact, mqtt_topic);
-				} else {
-					t6console.debug("No Publishing");
-				} // end publish
-
-				fields.flow_id = flow_id;
-				fields.id = time*1000000;
-				fields.parent = flow_id;
-				fields.first;
-				fields.prev;
-				fields.next;
-				fields[0].save = JSON.parse(save);
-				fields[0].flow_id = flow_id;
-				fields[0].datatype = datatype;
-				fields[0].title = typeof current_flow!=="undefined"?current_flow.title:null;
-				fields[0].ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
-				fields[0].id = time*1000000;
-				fields[0].time = time*1000000;
-				fields[0].timestamp = time*1000000;
-				fields[0].value = payload.value;
-				fields[0].publish = publish;
-				fields[0].mqtt_topic = mqtt_topic;
-				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
-				fields[0].fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
-
-				res.header("Location", "/v"+version+"/flows/"+flow_id+"/"+fields[0].id);
-				res.status(200).send(new DataSerializer(fields).serialize());
-				t6events.add("t6Api", "POST data", typeof req.user.id!=="undefined"?req.user.id:null, typeof req.user.id!=="undefined"?req.user.id:null, {flow_id: flow_id});
 			} else {
 				res.status(412).send(new ErrorSerializer({"id": 64.2, "code": 412, "message": "Precondition Failed "+prerequisite,}).serialize());
 			}
