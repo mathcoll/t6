@@ -40,7 +40,7 @@ function planPush(req, res, recipients, body, title, options) {
 		let payload = "{\"type\": \"message\", \"title\": \""+title+"\", \"body\": \""+body+"\", \"badge\": \""+options.badge+"\", \"icon\": \""+options.icon+"\", \"vibrate\":"+JSON.stringify(options.vibrate)+", \"actions\":"+JSON.stringify(options.actions)+"}";
 		t6console.debug(`Rendering push notification to ${user.firstName} ${user.lastName}`);
 		t6console.debug(payload);
-		t6jobs.add({taskType: "push", time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {"pushSubscription": user.pushSubscription, "payload": payload}});
+		t6jobs.add({taskType: "push", time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {"pushSubscription": user.pushSubscription, "payload": payload, "user_id": user.id}});
 	});
 }
 
@@ -49,23 +49,23 @@ function sendPush(pushers, dryrun, recurring, user_id, limit, cpt=0) {
 	pushers.map(function(push) {
 		/* Send a push to each subscribers */
 		if(!dryrun || dryrun === false) {
-			t6notifications.sendPush(push.metadata.pushSubscription, push.metadata.payload).then(function(info){
-				t6console.debug( "Removing", t6jobs.remove({"job_id": push.job_id}, 1) ); // remove job from list
-				cpt++;
-				if(Number.isInteger(recurring) && cpt<limit) {
-					timer = setTimeout(function() {
-						sendPush(t6jobs.get({"taskType": "push", user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
-					}, recurring);
-					t6console.debug(`Scheduling another task to send push in ${recurring}ms (cpt=${cpt}<${limit}).`);
-				} else {
-					t6console.debug(`Not recurring (cpt=${cpt}>=${limit}).`);
-				}
+			t6notifications.sendPush(push.metadata, push.metadata.payload).then(function(info){
 				t6console.debug(info);
 				return (!dryrun || dryrun === false)?{"status": `Sending push to ${limit} recipients.`}:{"status": `Simulating push to ${limit} recipients.`};
 			}).catch(function(error){
 				t6console.error("error", error);
 				return { "status": "Internal Error "+app.get("env") };
 			});
+			cpt++;
+			if(Number.isInteger(recurring) && cpt<limit) {
+				timer = setTimeout(function() {
+					sendPush(t6jobs.get({"taskType": "push", user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
+				}, recurring);
+				t6console.debug(`Scheduling another task to send push in ${recurring}ms (cpt=${cpt}<${limit}).`);
+			} else {
+				t6console.debug(`Not recurring (cpt=${cpt}>=${limit}).`);
+			}
+			t6console.debug( "Removing", t6jobs.remove({"job_id": push.job_id}, 1) ); // remove job from list
 		}
 	});
 	return (!dryrun || dryrun === false)?{"status": `Sending push to ${limit} recipients.`}:{"status": `Simulating push to ${limit} recipients.`};
@@ -448,7 +448,7 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
  */
 router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		let query = {  "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
+		let query = { "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, { "pushSubscription.endpoint": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
 		var recipients = users.chain().find( query ).data();
 		if ( recipients.length > 0 ) {
 			res.status(200).send({"subscribers": recipients.length});
@@ -485,7 +485,7 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
 		let actions = typeof req.body.actions!=="undefined"?req.body.actions:[]; 
 		let badge = typeof req.body.badge!=="undefined"?req.body.badge:null;
 		let options = {icon, vibrate, actions, badge};
-		let query = { "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, {"pushSubscription.newsletter": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
+		let query = { "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, { "pushSubscription.endpoint": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && body && title ) {
 			planPush(req, res, recipients, body, title, options);
