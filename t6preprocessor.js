@@ -119,9 +119,9 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 
 			case "convert": // Convert value unit converter
 				if (customUnits.db!=="") {
-					units.importDBSync(customUnits.db);
+					nodeunits.importDBSync(customUnits.db);
 				}
-				//t6console.log(units.types);
+				//t6console.log(nodeunits.types);
 				if (pp.from && pp.to) {
 					switch(pp.type) {
 						case "time":
@@ -131,7 +131,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 						case "storage":
 						case "things":
 						case "temperature":
-							payload.value = units.convert(`${payload.value} ${pp.from} to ${pp.to}`);
+							payload.value = nodeunits.convert(`${payload.value} ${pp.from} to ${pp.to}`);
 							pp.message = `Converted ${pp.type} from ${pp.from} to ${pp.to}.`;
 							break;
 						default: 
