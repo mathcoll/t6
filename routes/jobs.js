@@ -11,37 +11,21 @@ var ErrorSerializer = require("../serializers/error");
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} [job_id] Job Id
+ * @apiParam {string} [taskType] Task type
  * 
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
  * @apiUse 500
  */
-router.get("/?(:job_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var job_id = req.params.job_id;
-	if ( typeof job_id !== "undefined" ) {
-		let query = {
-			"$and": [
-					{ "user_id" : req.user.id },
-					{ "job_id" : job_id },
-				]
-			};
-		let j = jobs.findOne(query);
-		if(j) {
-			j.$loki = undefined;
-			j.meta.revision = undefined;
-			j.meta.version = undefined;
-			res.status(200).send(j);
-		} else {
-			res.status(404).send(new ErrorSerializer({"id": 8820.5, "code": 404, "message": "Not Found"}).serialize());
-		}
+router.get("/?(:job_id([0-9a-z\-]+))?/?(:taskType([0-9a-zA-Z\-]+))?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	if ( req.user.role === "admin" ) {
+		let job_id = typeof req.params.job_id!=="undefined"?req.params.job_id:null;
+		let taskType = typeof req.query.taskType!=="undefined"?req.query.taskType:null;
+		let length = t6jobs.getLength();
+		res.status(200).send({ "code": 200, length, jobs: t6jobs.getJobs(job_id, null, taskType) });
 	} else {
-		if ( req.user.role === "admin" ) {
-			let length = t6jobs.getLength();
-			res.status(200).send({ "code": 200, length, jobs: t6jobs.getIds() });
-		} else {
-			res.status(401).send(new ErrorSerializer({"id": 8820, "code": 401, "message": "Unauthorized"}).serialize());
-		}
+		res.status(401).send(new ErrorSerializer({"id": 8820, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 

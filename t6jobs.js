@@ -26,17 +26,22 @@ t6jobs.get = function(query, limit) {
 	return jobs.chain().find(query).limit(limit!==null?limit:1).data();
 };
 
-t6jobs.getIds = function(user_id) {
-	let query;
-	if(user_id) {
-		query = { "user_id" : user_id };
-	} else {
-		query = {};
+t6jobs.getJobs = function(job_id=null, user_id=null, taskType=null) {
+	let query = {};
+	if(taskType) {
+		query.taskType = taskType;
 	}
+	if(user_id) {
+		query.user_id = user_id;
+	}
+	if(job_id) {
+		query.job_id = job_id;
+	}
+	t6console.debug("query on get Jobs Ids", query);
 	let j = jobs.chain().find(query).data();
 	let ids = [];
 	j.map(function(job) {
-		ids.push({"job_id": job.job_id, "user_id": job.user_id, "queue_id": typeof job.$loki!=="undefined"?job.$loki:null});
+		ids.push({"job_id": job.job_id, "user_id": job.user_id, "metadata": job.metadata, "taskType": job.taskType, "queue_id": typeof job.$loki!=="undefined"?job.$loki:null});
 	});
 	return ids;
 };
