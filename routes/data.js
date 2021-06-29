@@ -469,7 +469,7 @@ function saveToCloud(payload, fields, current_flow) {
 			}
 		} // end saveToCloud
 		else {
-			t6console.warn("Not customized to save to Cloud");
+			t6console.debug("Not customized to save to Cloud");
 			return resolve({payload, fields});
 		}
 	});
