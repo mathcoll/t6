@@ -274,11 +274,11 @@ function fusion(payload, fields, current_flow) {
 		if ( dataFusion.activated === true ) {
 			payload.fusion = typeof payload.fusion!=="undefined"?payload.fusion:{};
 			payload.fusion.messages = [];
-			
+			t6console.debug("Fusion is enabled on t6", payload.fusion);
 			let track_id = typeof payload.track_id!=="undefined"?payload.track_id:((typeof current_flow!=="undefined" && typeof current_flow.track_id!=="undefined")?current_flow.track_id:null);
 			let fusion_algorithm = typeof payload.fusion.algorithm!=="undefined"?payload.fusion.algorithm:((typeof current_flow!=="undefined" && typeof current_flow.fusion_algorithm!=="undefined")?current_flow.fusion_algorithm:null);
 			let requireDataType = typeof payload.data_type!=="undefined"?payload.data_type:(typeof current_flow!=="undefined"?current_flow.data_type:undefined); // By default, making sure all trracks are having the same datatype
-			t6console.debug("fusion_algorithm", fusion_algorithm);
+			t6console.debug("Using fusion algorithm", fusion_algorithm);
 			t6preprocessor.addMeasurementToFusion({
 				"flow_id": typeof current_flow!=="undefined"?current_flow.id:"unknown",
 				"track_id": track_id,
@@ -339,7 +339,7 @@ function fusion(payload, fields, current_flow) {
 						fusionValue = total / allTracksAfterAverage.length;
 						break;
 				}
-				let v = getFieldsFromDatatype(datatype, false, false);
+				let v = getFieldsFromDatatype(payload.datatype, false, false);
 				payload.fusion.initialValue = payload.value;
 				payload.value = fusionValue;
 				(fields[0])[v] = fusionValue;
@@ -349,10 +349,10 @@ function fusion(payload, fields, current_flow) {
 				
 				// Do we need to save measure to Primary Flow ? // TODO : so instead of the track.. :-(
 				payload.fusion.primary_flow = track_id;
-				time = fusionTime; // Code consistency !
+				payload.time = fusionTime; // Code consistency !
 				payload.timestamp = fusionTime/1000000;
 				t6console.debug("fusionTime", moment(fusionTime).format(logDateFormat));
-				flow_id = track_id;
+				payload.flow_id = track_id;
 			} else {
 				payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes ; or no track on Flow/payload.");
 				payload.fusion.error_tracks = errorTracks;
