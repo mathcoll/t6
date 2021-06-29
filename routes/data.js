@@ -436,8 +436,8 @@ function saveToCloud(payload, fields, current_flow) {
 				let point = new Point("data")
 					.tag("user_id", payload.user_id)
 					.tag("flow_id", payload.flow_id)
-					.tag("track_id", (typeof my_flow!=="undefined" && (typeof my_flow.track_id!=="undefined" && my_flow.track_id!=="" && my_flow.track_id!==null))?my_flow.track_id:null);
-				point.timestamp(timestamp);
+					.tag("track_id", (typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null))?current_flow.track_id:null);
+				point.timestamp(payload.timestamp);
 				
 				typeof fields[0].valueFloat!=="undefined"?point.floatField("valueFloat", parseFloat(fields[0].valueFloat)):null;
 				typeof fields[0].valueBoolean!=="undefined"?point.booleanField("valueBoolean", fields[0].valueBoolean):null;
