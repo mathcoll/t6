@@ -36,31 +36,31 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 				switch(pp.test) {
 					case "isEmail":
 						payload.isRejected = validator.isEmail(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===false?"Value is rejected":undefined;
+						pp.message = payload.isRejected===true?"Value is rejected":undefined;
 						break;
 					case "isAscii":
 						payload.isRejected = validator.isAscii(payload.value.toString())===false?true:false;
-						pp.message = payload.save===false?"Value is rejected":undefined;
+						pp.message = payload.isRejected===true?"Value is rejected":undefined;
 						break;
 					case "isBase32":
 						payload.isRejected = validator.isBase32(payload.value.toString())===false?true:false;
-						pp.message = payload.save===false?"Value is rejected":undefined;
+						pp.message = payload.isRejected===true?"Value is rejected":undefined;
 						break;
 					case "isBase58":
 						payload.isRejected = validator.isBase58(payload.value.toString())===false?true:false;
-						pp.message = payload.save===false?"Value is rejected":undefined;
+						pp.message = payload.isRejected===true?"Value is rejected":undefined;
 						break;
 					case "isBase64":
 						payload.isRejected = validator.isBase64(payload.value.toString())===false?true:false;
-						pp.message = payload.save===false?"Value is rejected":undefined;
+						pp.message = payload.isRejected===true?"Value is rejected":undefined;
 						break;
 					case "isBIC":
 						payload.isRejected = validator.isBIC(payload.value.toString())===false?true:false;
-						pp.message = payload.save===false?"Value is rejected":undefined;
+						pp.message = payload.isRejected===true?"Value is rejected":undefined;
 						break;
 					case "isBoolean":
 						payload.isRejected = validator.isBoolean(payload.value.toString())===false?true:false;
-						pp.message = payload.save===false?"Value is rejected":undefined;
+						pp.message = payload.isRejected===true?"Value is rejected":undefined;
 						break;
 				}
 				break;
