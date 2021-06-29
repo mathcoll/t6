@@ -35,31 +35,31 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 			case "validate": // Reject non-valid value
 				switch(pp.test) {
 					case "isEmail":
-						payload.save = validator.isEmail(payload.value.toString())===false?false:payload.save;
-						pp.message = payload.save===false?"Value is rejected":undefined;
+						payload.isRejected = validator.isEmail(payload.value.toString())===false?true:false;
+						pp.message = payload.isRejected===false?"Value is rejected":undefined;
 						break;
 					case "isAscii":
-						payload.save = validator.isAscii(payload.value.toString())===false?false:payload.save;
+						payload.isRejected = validator.isAscii(payload.value.toString())===false?true:false;
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
 					case "isBase32":
-						payload.save = validator.isBase32(payload.value.toString())===false?false:payload.save;
+						payload.isRejected = validator.isBase32(payload.value.toString())===false?true:false;
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
 					case "isBase58":
-						payload.save = validator.isBase58(payload.value.toString())===false?false:payload.save;
+						payload.isRejected = validator.isBase58(payload.value.toString())===false?true:false;
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
 					case "isBase64":
-						payload.save = validator.isBase64(payload.value.toString())===false?false:payload.save;
+						payload.isRejected = validator.isBase64(payload.value.toString())===false?true:false;
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
 					case "isBIC":
-						payload.save = validator.isBIC(payload.value.toString())===false?false:payload.save;
+						payload.isRejected = validator.isBIC(payload.value.toString())===false?true:false;
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
 					case "isBoolean":
-						payload.save = validator.isBoolean(payload.value.toString())===false?false:payload.save;
+						payload.isRejected = validator.isBoolean(payload.value.toString())===false?true:false;
 						pp.message = payload.save===false?"Value is rejected":undefined;
 						break;
 				}
@@ -119,9 +119,9 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 
 			case "convert": // Convert value unit converter
 				if (customUnits.db!=="") {
-					units.importDBSync(customUnits.db);
+					nodeunits.importDBSync(customUnits.db);
 				}
-				//t6console.log(units.types);
+				//t6console.log(nodeunits.types);
 				if (pp.from && pp.to) {
 					switch(pp.type) {
 						case "time":
@@ -131,7 +131,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 						case "storage":
 						case "things":
 						case "temperature":
-							payload.value = units.convert(`${payload.value} ${pp.from} to ${pp.to}`);
+							payload.value = nodeunits.convert(`${payload.value} ${pp.from} to ${pp.to}`);
 							pp.message = `Converted ${pp.type} from ${pp.from} to ${pp.to}.`;
 							break;
 						default: 
@@ -158,7 +158,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 						} else {
 							pp.message = "Warning: No Object found on payload, can't encrypt w/o secret_key from the Object.";
 						}
-						payload.NeedRedacted = true;
+						payload.needRedacted = true;
 						break;
 					case "camelCase":
 						payload.value = changeCase.camelCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
