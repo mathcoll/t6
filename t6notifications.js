@@ -15,9 +15,9 @@ if (firebase.admin.serviceAccountFile) {
 		}
 		let subscriber = meta.pushSubscription;
 		let subscriber_id = meta.user_id;
-		//t6console.debug("t6notifications.sendPush", subscriber);
+		//t6console.debug("t6notifications.sendPush", meta);
 		//t6console.debug("t6notifications.sendPush", payload);
-		if ( subscriber.endpoint ) {
+		if ( subscriber && subscriber.endpoint ) {
 			if ( process.env.NODE_ENV === "production" ) {
 				webpush.setGCMAPIKey(pushSubscriptionOptions.gcmAPIKey);
 				webpush.setVapidDetails(

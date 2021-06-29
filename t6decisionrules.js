@@ -375,9 +375,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				};
 				let user = users.findOne({ "id": user_id });
 				if (user && user.pushSubscription) {
-					let result = t6notifications.sendPush(user.pushSubscription, p);
+					let result = t6notifications.sendPush(user, p).catch((error) => { 
+						t6console.warn("user user", user);
+						t6console.warn(error);
+					});
 					if(result && (result.statusCode === 404 || result.statusCode === 410)) {
-						t6console.debug("result", result);
 						t6console.error("Can't sendPush because of a status code Error", result.statusCode);
 						// We should remove the token from user
 						// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
