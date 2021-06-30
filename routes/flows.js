@@ -122,7 +122,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					id:					flow_id,
 					user_id:			req.user.id,
 					name:				typeof req.body.name!=="undefined"?req.body.name:"unamed",
-					data_type:			typeof req.body.data_type!=="undefined"?req.body.data_type:"",
+					data_type:			typeof req.body.data_type!=="undefined"?req.body.data_type:"", // TODO : in Flow collection, the data_type should be renamed to datatype_id
 					unit:				typeof req.body.unit!=="undefined"?req.body.unit:"",
 					theme:				typeof req.body.theme!=="undefined"?req.body.theme:"",
 					mqtt_topic:			typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:"",
@@ -140,7 +140,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				flows.insert(newFlow);
 				
 				res.header("Location", "/v"+version+"/flows/"+newFlow.id);
-				res.status(201).send({ "code": 201, message: "Created", flow: new FlowSerializer(newFlow).serialize() }); // TODO: missing serializer
+				res.status(201).send({ "code": 201, message: "Created", flow: new FlowSerializer(newFlow).serialize() });
 			}
 		}
 	}
@@ -200,7 +200,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 					flows.chain().find({ "id": flow_id }).update(function(item) {
 						item.name				= typeof req.body.name!=="undefined"?req.body.name:item.name;
 						item.unit				= typeof req.body.unit!=="undefined"?req.body.unit:item.unit;
-						item.data_type			= typeof req.body.data_type!=="undefined"?req.body.data_type:item.data_type;
+						item.data_type			= typeof req.body.data_type!=="undefined"?req.body.data_type:item.data_type; // TODO : in Flow collection, the data_type should be renamed to datatype_id
 						item.permission			= typeof permission!=="undefined"?permission:item.permission;
 						item.objects			= typeof req.body.objects!=="undefined"?req.body.objects:item.objects;
 						item.mqtt_topic			= typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:item.mqtt_topic;
@@ -219,7 +219,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 					});
 					if ( typeof result !== "undefined" ) {
 						res.header("Location", "/v"+version+"/flows/"+flow_id);
-						res.status(200).send({ "code": 200, message: "Successfully updated", flow: new FlowSerializer(result).serialize() }); // TODO: missing serializer
+						res.status(200).send({ "code": 200, message: "Successfully updated", flow: new FlowSerializer(result).serialize() });
 					} else {
 						res.status(404).send(new ErrorSerializer({"id": 240, "code": 404, "message": "Not Found"}).serialize());
 					}

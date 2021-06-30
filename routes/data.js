@@ -527,7 +527,7 @@ function ruleEngine(payload, fields, current_flow) {
  * @apiParam {Boolean} [save=false] Flag to store in database the Value
  * @apiParam {String} [unit=undefined] Unit of the Value
  * @apiParam {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
- * @apiParam {uuid-v4} [data_type="Default value from the Flow resource"] DataType Id
+ * @apiParam {uuid-v4} [datatype_id="Default value from the Flow resource"] DataType Id
  * @apiParam {String} [text=undefined] Optional text to qualify Value
  * @apiParam {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
  * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
@@ -622,12 +622,12 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
 			let join;
 
-			if(typeof payload.data_type!=="undefined") {
-				let dt = (datatypes.chain().find({id: ""+payload.data_type,}).limit(1)).data()[0];
-				payload.datatype = (typeof payload.data_type!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
+			if(typeof payload.datatype_id!=="undefined") { 
+				let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
+				payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
 				t6console.debug(`Getting datatype "${payload.datatype}" from payload`);
 			} else if (typeof current_flow!=="undefined") {
-				join = f.eqJoin(datatypes.chain(), "data_type", "id");
+				join = f.eqJoin(datatypes.chain(), "data_type", "id"); // TODO : in Flow collection, the data_type should be renamed to datatype_id
 				payload.datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
 				t6console.debug(`Getting datatype "${payload.datatype}" from Flow`);
 			} else {
