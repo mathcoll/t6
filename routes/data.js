@@ -31,6 +31,21 @@ function decryptPayload(encryptedPayload, sender, encoding) {
 		return false;
 	}
 }
+function getObjectKey(object_id) {
+	return new Promise((resolve, reject) => {
+		if ( typeof object_id !== "undefined" ) {
+			let query = { "$and": [ { "user_id" : req.user.id }, { "id" : object_id }, ] };
+			var object = objects.findOne(query);
+			if ( object && object.secret_key ) {
+				return resolve(object);
+			} else {
+				return reject("No Secret Key available on Object.");
+			}
+		} else {
+			return reject("No Object_id defined to get Key.");
+		}
+	});
+}
 function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
 	let fields = "";
 	if( includeTime ) {
@@ -545,163 +560,164 @@ function ruleEngine(payload, fields, current_flow) {
  * @apiUse 500
  */
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
-	let payload = req.body;
+	let payloadArray = Array.isArray(req.body)===false?[req.body]:req.body;
 	let error;
 	let isEncrypted = false;
 	let isSigned = false;
 	let prerequisite = 0;
-	let object_id = payload.object_id;
-
-	if ( payload.signedPayload || payload.encryptedPayload ) {
-		var cert = jwtsettings.secret; //- fs.readFileSync("private.key");
-		var query;
-		if ( typeof object_id !== "undefined" ) {
-			query = {
-			"$and": [
-					{ "user_id" : req.user.id },
-					{ "id" : object_id },
-				]
-			};
-			var object = objects.findOne(query);
-			if ( object && object.secret_key ) {
-				cert = object.secret_key;
-			}
-		}
-
-		if ( payload.encryptedPayload ) {
-			// The payload is encrypted
-			isEncrypted = true;
-			let decrypted = decryptPayload(payload.encryptedPayload.trim(), object); // ascii, binary, base64, hex, utf8
-			payload = decrypted!==false?decrypted:payload;
-			payload = getJson(payload);
-		}
-
-		if ( typeof payload !== "undefined" && payload.signedPayload ) {
-			// The payload is signed
-			isSigned = true;
-			jwt.verify(payload.signedPayload, cert, function(err, decoded) {
-				if ( !err ) {
-					payload = decoded;
-					if ( payload.encryptedPayload ) {
+	let fields = {};
+	let location;
+	
+	payloadArray.map((payload, pIndex) => {
+		let object_id = payload.object_id;
+		if ( object_id && ( payload.signedPayload || payload.encryptedPayload ) ) {
+			getObjectKey(object_id)
+				.then((object) => {
+					let cert = typeof object.secret_key!=="undefined"?object.secret_key:jwtsettings.secret;//- fs.readFileSync("private.key");
+					
+					if ( typeof payload !== "undefined" && payload.encryptedPayload ) {
 						// The payload is encrypted
 						isEncrypted = true;
 						let decrypted = decryptPayload(payload.encryptedPayload.trim(), object); // ascii, binary, base64, hex, utf8
 						payload = decrypted!==false?decrypted:payload;
+						payload = getJson(payload);
 					}
-				} else {
-					payload = undefined;
-					error = err;
-					t6console.error("Error "+error);
-					res.status(401).send(new ErrorSerializer({"id": 62.4, "code": 401, "message": "Invalid Signature",}).serialize());
-					next();
-				}
-			});
-		}
-	}
+					
+					if ( typeof payload !== "undefined" && payload.signedPayload ) {
+						// The payload is signed
+						isSigned = true;
+						jwt.verify(payload.signedPayload, cert, function(err, decoded) {
+							if ( !err ) {
+								payload = decoded;
+								if ( payload.encryptedPayload ) {
+									// The payload is encrypted
+									isEncrypted = true;
+									let decrypted = decryptPayload(payload.encryptedPayload.trim(), object); // ascii, binary, base64, hex, utf8
+									payload = decrypted!==false?decrypted:payload;
+								}
+							} else {
+								payload = undefined;
+								t6console.error("Error "+err);
+								res.status(401).send(new ErrorSerializer({"id": 62.4, "code": 401, "message": "Invalid Signature",}).serialize());
+								next();
+							}
+						});
+					}
+				})
+				.catch((error) => { 
+					t6console.error(error);
+				});
+		} // End signedPayload || encryptedPayload
+		if ( typeof payload !== "undefined" && !error ) {
+			payload = getJson(payload);
+			var time			= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
+			if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
+			payload.time		= time;
+			payload.user_id		= typeof req.user.id!=="undefined"?req.user.id:null; //to get the Object
+			payload.flow_id 	= typeof req.params.flow_id!=="undefined"?req.params.flow_id:payload.flow_id;
+			payload.value		= typeof payload.value!=="undefined"?payload.value:"";
+			payload.unit		= typeof payload.unit!=="undefined"?payload.unit:"";
+			payload.mqtt_topic	= typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+			payload.latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
+			payload.longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
+			payload.text		= typeof payload.text!=="undefined"?payload.text:"";
 	
-	if ( typeof payload !== "undefined" && !error ) {
-		payload = getJson(payload);
-		var time			= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
-		if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
-		payload.time		= time;
-		payload.user_id		= typeof req.user.id!=="undefined"?req.user.id:null; //to get the Object
-		payload.flow_id 	= typeof req.params.flow_id!=="undefined"?req.params.flow_id:payload.flow_id;
-		payload.value		= typeof payload.value!=="undefined"?payload.value:"";
-		payload.unit		= typeof payload.unit!=="undefined"?payload.unit:"";
-		payload.mqtt_topic	= typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
-		payload.latitude	= typeof payload.latitude!=="undefined"?payload.latitude:"";
-		payload.longitude	= typeof payload.longitude!=="undefined"?payload.longitude:"";
-		payload.text		= typeof payload.text!=="undefined"?payload.text:"";
-		var fields = {};
-
-		if ( !payload.flow_id || !req.user.id ) {
-			// Not Authorized because token is invalid
-			res.status(401).send(new ErrorSerializer({"id": 64, "code": 401, "message": "Not Authorized",}).serialize());
+			if ( !payload.flow_id || !req.user.id ) {
+				// Not Authorized because token is invalid
+				res.status(401).send(new ErrorSerializer({"id": 64, "code": 401, "message": "Not Authorized",}).serialize());
+			} else {
+				let f = flows.chain().find({id: ""+payload.flow_id, user_id: req.user.id,}).limit(1);
+				let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
+				let join;
+	
+				if(typeof payload.datatype_id!=="undefined") { 
+					let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
+					payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
+					t6console.debug(`Getting datatype "${payload.datatype}" from payload`);
+				} else if (typeof current_flow!=="undefined") {
+					join = f.eqJoin(datatypes.chain(), "data_type", "id"); // TODO : in Flow collection, the data_type should be renamed to datatype_id
+					payload.datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
+					t6console.debug(`Getting datatype "${payload.datatype}" from Flow`);
+				} else {
+					payload.datatype = "string";
+					t6console.debug(`Getting datatype "${payload.datatype}" from default value`);
+				}
+	
+				if ( !payload.mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
+					payload.mqtt_topic = ((f.data())[0].left).mqtt_topic;
+				}
+				if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !isEncrypted ) {
+					//t6console.log("(f.data())[0].left", (f.data())[0].left);
+					t6console.debug("Flow require isEncrypted -", current_flow.left.require_encrypted);
+					t6console.debug(".. & Payload isEncrypted", isEncrypted);
+					prerequisite += 1;
+				}
+				if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !isSigned ) {
+					//t6console.log("current_flow.left", current_flow.left);
+					t6console.debug("Flow require isSigned -", current_flow.left.require_signed);
+					t6console.debug(".. & Payload isSigned", isSigned);
+					prerequisite += 1;
+				}
+				t6console.debug("Prerequisite Index=", prerequisite, "(when >0 it means something is required.)");
+	
+				if ( prerequisite <= 0 ) {
+					preprocessor(payload, fields, payload.datatype, current_flow)
+						.then((pp) => {
+							return fusion(pp.payload, pp.fields, current_flow);
+						})
+						.then((fu) => {
+							return saveToLocal(fu.payload, fu.fields, current_flow);
+						})
+						.then((sl) => {
+							return saveToCloud(sl.payload, sl.fields, current_flow);
+						})
+						.then((sc) => {
+							return ruleEngine(sc.payload, sc.fields, current_flow);
+						})
+						.then((re) => {
+							fields = re.fields;
+							fields.flow_id = payload.flow_id;
+							fields.id = time*1000000;
+							fields.parent = payload.flow_id;
+							fields.first;
+							fields.prev;
+							fields.next;
+							fields[pIndex].save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
+							fields[pIndex].flow_id = payload.flow_id;
+							fields[pIndex].datatype = payload.datatype;
+							fields[pIndex].title = typeof current_flow!=="undefined"?current_flow.title:null;
+							fields[pIndex].ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
+							fields[pIndex].id = payload.time*1000000;
+							fields[pIndex].time = payload.time*1000000;
+							fields[pIndex].timestamp = payload.time*1000000;
+							fields[pIndex].value = payload.value;
+							fields[pIndex].publish = payload.publish;
+							fields[pIndex].mqtt_topic = payload.mqtt_topic;
+							fields[pIndex].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
+							fields[pIndex].fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
+							if(payloadArray.length===1) {
+								location = `/v/${version}/flows/${payload.flow_id}/${fields.id}`;
+								res.header("Location", location);
+							}
+							res.status(200).send(new DataSerializer(fields).serialize());
+							t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
+						})
+						.catch((error) => { 
+							t6console.error(error);
+						});
+				} else {
+					res.status(412).send(new ErrorSerializer({"id": 64.2, "code": 412, "message": "Precondition Failed "+prerequisite,}).serialize());
+				}
+			}
 		} else {
-			let f = flows.chain().find({id: ""+payload.flow_id, user_id: req.user.id,}).limit(1);
-			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
-			let join;
-
-			if(typeof payload.datatype_id!=="undefined") { 
-				let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
-				payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
-				t6console.debug(`Getting datatype "${payload.datatype}" from payload`);
-			} else if (typeof current_flow!=="undefined") {
-				join = f.eqJoin(datatypes.chain(), "data_type", "id"); // TODO : in Flow collection, the data_type should be renamed to datatype_id
-				payload.datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
-				t6console.debug(`Getting datatype "${payload.datatype}" from Flow`);
-			} else {
-				payload.datatype = "string";
-				t6console.debug(`Getting datatype "${payload.datatype}" from default value`);
-			}
-
-			if ( !payload.mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
-				payload.mqtt_topic = ((f.data())[0].left).mqtt_topic;
-			}
-			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !isEncrypted ) {
-				//t6console.log("(f.data())[0].left", (f.data())[0].left);
-				t6console.debug("Flow require isEncrypted -", current_flow.left.require_encrypted);
-				t6console.debug(".. & Payload isEncrypted", isEncrypted);
-				prerequisite += 1;
-			}
-			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !isSigned ) {
-				//t6console.log("current_flow.left", current_flow.left);
-				t6console.debug("Flow require isSigned -", current_flow.left.require_signed);
-				t6console.debug(".. & Payload isSigned", isSigned);
-				prerequisite += 1;
-			}
-			t6console.debug("Prerequisite Index=", prerequisite, "(when >0 it means something is required.)");
-
-			if ( prerequisite <= 0 ) {
-				preprocessor(payload, fields, payload.datatype, current_flow)
-					.then((pp) => {
-						return fusion(pp.payload, pp.fields, current_flow);
-					})
-					.then((fu) => {
-						return saveToLocal(fu.payload, fu.fields, current_flow);
-					})
-					.then((sl) => {
-						return saveToCloud(sl.payload, sl.fields, current_flow);
-					})
-					.then((sc) => {
-						return ruleEngine(sc.payload, sc.fields, current_flow);
-					})
-					.then((re) => {
-						let fields = re.fields;
-						fields.flow_id = payload.flow_id;
-						fields.id = time*1000000;
-						fields.parent = payload.flow_id;
-						fields.first;
-						fields.prev;
-						fields.next;
-						fields[0].save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
-						fields[0].flow_id = payload.flow_id;
-						fields[0].datatype = payload.datatype;
-						fields[0].title = typeof current_flow!=="undefined"?current_flow.title:null;
-						fields[0].ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
-						fields[0].id = payload.time*1000000;
-						fields[0].time = payload.time*1000000;
-						fields[0].timestamp = payload.time*1000000;
-						fields[0].value = payload.value;
-						fields[0].publish = payload.publish;
-						fields[0].mqtt_topic = payload.mqtt_topic;
-						fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
-						fields[0].fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
-		
-						res.header("Location", "/v"+version+"/flows/"+payload.flow_id+"/"+fields[0].id);
-						res.status(200).send(new DataSerializer(fields).serialize());
-						t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
-					})
-					.catch((error) => { 
-						t6console.error(error);
-					});
-			} else {
-				res.status(412).send(new ErrorSerializer({"id": 64.2, "code": 412, "message": "Precondition Failed "+prerequisite,}).serialize());
-			}
+			res.status(412).send(new ErrorSerializer({"id": 65, "code": 412, "message": "Precondition Failed "+error,}).serialize());
 		}
-	} else {
-		res.status(412).send(new ErrorSerializer({"id": 65, "code": 412, "message": "Precondition Failed "+error,}).serialize());
-	}
+	}); // End payloadArray.map
+	/*
+	processSerie(payloadArray).then((fields) => {
+		res.status(200).send(new DataSerializer(fields).serialize());
+	});
+	*/
 });
 
 module.exports = router;
