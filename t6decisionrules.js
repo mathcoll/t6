@@ -376,7 +376,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				let user = users.findOne({ "id": user_id });
 				if (user && user.pushSubscription) {
 					let result = t6notifications.sendPush(user, p).catch((error) => { 
-						t6console.warn("user user", user);
 						t6console.warn(error);
 					});
 					if(result && (result.statusCode === 404 || result.statusCode === 410)) {
