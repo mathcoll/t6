@@ -191,7 +191,7 @@ code.nostyle br {
 #hof p {
   color: #795548;
 }
-@media screen and (min-width:760px) {
+@media screen and (min-width: 760px) {
   #hof .mdl-cell--4-col:nth-child(2n-1) {
   padding: 6em 0;
   }
