@@ -1263,40 +1263,40 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				
 				// Show the main horizontal line
 				svg.append("line")
-				  .attr("x1", x(data.min) )
-				  .attr("x2", x(data.max) )
-				  .attr("y1", bxCenter)
-				  .attr("y2", bxCenter)
-				  .attr("stroke", "black")
-				  .attr("class", "main-horizontal-line");
+					.attr("x1", x(data.min) )
+					.attr("x2", x(data.max) )
+					.attr("y1", bxCenter)
+					.attr("y2", bxCenter)
+					.attr("stroke", "black")
+					.attr("class", "main-horizontal-line");
 			
 				// text label for the x Axis
 				svg.append('text')
-				    .attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
-				    .style('text-anchor', 'middle')
-				    .text(_labels.xAxis);
+					.attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+					.style('text-anchor', 'middle')
+					.text(_labels.xAxis);
 			
 				// Show the box
 				svg.append("rect")
-				  .attr("x", x(data.q1))
-				  .attr("y", bxCenter - bxHeight/2 )
-				  .attr("height", bxHeight )
-				  .attr("width", (x(data.q3)-x(data.q1)) )
-				  .attr("stroke", "black")
-				  .attr("class", "box");
+					.attr("x", x(data.q1))
+					.attr("y", bxCenter - bxHeight/2 )
+					.attr("height", bxHeight )
+					.attr("width", (x(data.q3)-x(data.q1)) )
+					.attr("stroke", "black")
+					.attr("class", "box");
 			
 				// show median, min and max vertical lines
 				svg.selectAll("boxplot")
-				  .data([data.min, data.median, data.max])
-				  .enter()
-				  .append("line")
-				    .attr("x1", function(d){ return(x(d))})
-				    .attr("x2", function(d){ return(x(d))})
-				    .attr("y1", bxCenter-bxHeight/2 )
-				    .attr("y2", bxCenter+bxHeight/2 )
-				    .attr("stroke", "black")
-				    .style("stroke-width", _lineWidth)
-				    .attr("class", "min-line median-line max-line");
+				.data([data.min, data.median, data.max])
+					.enter()
+					.append("line")
+					.attr("x1", function(d){ return(x(d))})
+					.attr("x2", function(d){ return(x(d))})
+					.attr("y1", bxCenter-bxHeight/2)
+					.attr("y2", bxCenter+bxHeight/2)
+					.attr("stroke", "black")
+					.style("stroke-width", _lineWidth)
+					.attr("class", "min-line median-line max-line");
 
 				res.setHeader("content-type", "image/svg+xml");
 				res.status(200).send(d3n.svgString());
