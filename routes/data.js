@@ -550,66 +550,66 @@ function processPayload(payloadArray, req) {
 	return new Promise((resolve, reject) => {
 		let location;
 		const promises = payloadArray.flatMap((payload, pIndex) => {
-		payload.errorMessage = req.body.length>3?["Maximum payload reach. Some payload will be ignored"]:[];
-		payload.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
-		preloadPayload(payload, req.user.id)
-			.then((pp) => {
-				return signatureCheck(pp.payload, pp.object);
-			})
-			.then((sc) => {
-				return decrypt(sc.payload, sc.object);
-			})
-			.then((dy) => {
-				return signatureCheck(dy.payload, dy.object); // yes do it twice because we can have both signature and encryption
-			})
-			.then((sc) => {
-				return verifyPrerequisites(sc.payload);
-			})
-			.then((vp) => {
-				return preprocessor(vp.payload, {}, vp.current_flow);
-			})
-			.then((pp) => {
-				return fusion(pp.payload, pp.fields, pp.current_flow);
-			})
-			.then((fu) => {
-				return saveToLocal(fu.payload, fu.fields, fu.current_flow);
-			})
-			.then((sl) => {
-				return saveToCloud(sl.payload, sl.fields, sl.current_flow);
-			})
-			.then((sc) => {
-				return ruleEngine(sc.payload, sc.fields, sc.current_flow);
-			})
-			.then((re) => {
-				let measure = re.fields;
-				let payload = re.payload;
-				measure.parent = payload.flow_id;
-				measure.self = payload.flow_id;
-				measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
-				measure.flow_id = payload.flow_id;
-				measure.datatype = payload.datatype;
-				measure.title = typeof current_flow!=="undefined"?current_flow.title:null;
-				measure.ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
-				measure.id = payload.time*1000000;
-				measure.time = payload.time*1000000;
-				measure.timestamp = payload.time*1000000;
-				measure.value = payload.value;
-				measure.publish = payload.publish;
-				measure.mqtt_topic = payload.mqtt_topic;
-				measure.preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
-				measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
-				measure.location = `/v/${version}/flows/${payload.flow_id}/${measure.id}`;
-				
-				t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
-				process.push(measure);
-				if(pIndex+1 === payloadArray.length) {
-					resolve(process);
-				}
-		})
-			.catch((err) => {
-				t6console.error("Error on the big chain: ", err);
-				reject(process);
-			});
+			payload.errorMessage = req.body.length>3?["Maximum payload reach. Some payload will be ignored"]:[];
+			payload.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
+			preloadPayload(payload, req.user.id)
+				.then((pp) => {
+					return signatureCheck(pp.payload, pp.object);
+				})
+				.then((sc) => {
+					return decrypt(sc.payload, sc.object);
+				})
+				.then((dy) => {
+					return signatureCheck(dy.payload, dy.object); // yes do it twice because we can have both signature and encryption
+				})
+				.then((sc) => {
+					return verifyPrerequisites(sc.payload);
+				})
+				.then((vp) => {
+					return preprocessor(vp.payload, {}, vp.current_flow);
+				})
+				.then((pp) => {
+					return fusion(pp.payload, pp.fields, pp.current_flow);
+				})
+				.then((fu) => {
+					return saveToLocal(fu.payload, fu.fields, fu.current_flow);
+				})
+				.then((sl) => {
+					return saveToCloud(sl.payload, sl.fields, sl.current_flow);
+				})
+				.then((sc) => {
+					return ruleEngine(sc.payload, sc.fields, sc.current_flow);
+				})
+				.then((re) => {
+					let measure = re.fields;
+					let payload = re.payload;
+					measure.parent = payload.flow_id;
+					measure.self = payload.flow_id;
+					measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
+					measure.flow_id = payload.flow_id;
+					measure.datatype = payload.datatype;
+					measure.title = typeof current_flow!=="undefined"?current_flow.title:null;
+					measure.ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
+					measure.id = payload.time*1000000;
+					measure.time = payload.time*1000000;
+					measure.timestamp = payload.time*1000000;
+					measure.value = payload.value;
+					measure.publish = payload.publish;
+					measure.mqtt_topic = payload.mqtt_topic;
+					measure.preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
+					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
+					measure.location = `/v/${version}/flows/${payload.flow_id}/${measure.id}`;
+					
+					t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
+					process.push(measure);
+					if(pIndex+1 === payloadArray.length) {
+						resolve(process);
+					}
+				})
+				.catch((err) => {
+					t6console.error("Error on the big chain: ", err);
+					reject(process);
+				});
 		});
 	});
 }
