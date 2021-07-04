@@ -427,10 +427,10 @@ body {
   padding: 8px 4px;
   vertical-align: middle;
   position: absolute;
-}
-.mdl-chip .close,
-.mdl-chip .edit {
   display:none;
+}
+.mdl-chip .edit {
+  right: 60px;
 }
 .mdl-chip[draggable="true"] .close {
   right: 25px;
@@ -438,9 +438,6 @@ body {
 .mdl-chip:hover .close,
 .mdl-chip:hover .edit {
   display:inline;
-}
-.mdl-chip .edit {
-  right: 60px;
 }
 .mdl-textfield {
   width: calc(100% - 48px) !important;
