@@ -833,7 +833,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 	.catch((err) => {
 		t6console.error("Error on processPayload: ", err);
 		res.status(412).send({err: err, "id": 999, "code": 412, "message": "Precondition failed"});
-	});;
+	});
 });
 
 module.exports = router;
