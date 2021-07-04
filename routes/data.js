@@ -249,10 +249,6 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	}
 });
 
-
-
-
-
 function preloadPayload(payload, user_id) {
 	t6console.debug("preloadPayload");
 	return new Promise((resolve, reject) => {
@@ -325,9 +321,9 @@ function signatureCheck(payload, object) {
 					payload.isSigned = true;
 					resolve({payload, object});
 				} else {
-					t6console.error("Error inside signatureCheck > jwt.verify", error);
+					t6console.error("Error inside signatureCheck > jwt.verify");
 					payload.isSigned = false;
-					reject({payload, object});
+					resolve({payload, object});
 				}
 			});
 		} else {
@@ -401,11 +397,11 @@ function verifyPrerequisites(payload, object) {
 		payload.prerequisite = 0;
 		if ( !payload.value ) {
 			t6console.error("Error: verifyPrerequisites : no value.");
-			reject({payload, object, current_flow: null});
+			resolve({payload, object, current_flow: null});
 		}
 		if ( !payload.flow_id ) {
 			t6console.error("Error: verifyPrerequisites : no flow_id.");
-			reject({payload, object, current_flow: null});
+			resolve({payload, object, current_flow: null});
 		} else {
 			let f = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
 			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
@@ -452,6 +448,9 @@ function verifyPrerequisites(payload, object) {
 function preprocessor(payload, fields, current_flow) {
 	t6console.debug("preprocessor");
 	return new Promise((resolve, reject) => {
+		if(!payload || current_flow===null) {
+			resolve({payload, fields, current_flow});
+		}
 		let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
 		preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 		preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
@@ -483,7 +482,9 @@ function preprocessor(payload, fields, current_flow) {
 function fusion(payload, fields, current_flow) {
 	t6console.debug("fusion");
 	return new Promise((resolve, reject) => {
-		// TODO : make sure preprocessor is completed before Fusion
+		if(!payload || current_flow===null) {
+			resolve({payload, fields, current_flow});
+		}
 		if ( dataFusion.activated === true ) {
 			payload.fusion = typeof payload.fusion!=="undefined"?payload.fusion:{};
 			payload.fusion.messages = [];
@@ -583,7 +584,9 @@ function saveToLocal(payload, fields, current_flow) {
 	t6console.debug("saveToLocal");
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	return new Promise((resolve, reject) => {
-		// TODO : make sure preprocessor is completed before saving value
+		if(!payload || current_flow===null) {
+			resolve({payload, fields, current_flow});
+		}
 		if ( save === true ) {
 			let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 			if ( db_type.influxdb === true ) {
@@ -633,6 +636,9 @@ function saveToLocal(payload, fields, current_flow) {
 function saveToCloud(payload, fields, current_flow) {
 	t6console.debug("saveToCloud");
 	return new Promise((resolve, reject) => {
+		if(!payload || current_flow===null) {
+			resolve({payload, fields, current_flow});
+		}
 		if ((typeof current_flow!=="undefined" && typeof current_flow.influx_db_cloud!=="undefined") || typeof payload.influx_db_cloud!=="undefined") {
 			const {InfluxDB} = require("@influxdata/influxdb-client");
 			let token = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.token!=="undefined")?payload.influx_db_cloud.token:current_flow.influx_db_cloud.token;
@@ -761,7 +767,6 @@ function ruleEngine(payload, fields, current_flow) {
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
 	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body).slice(0, 3); // only process 3 first measures from payload and ignore the others
 	let location;
-
 	payloadArray.map((payload, pIndex) => {
 		payload.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
 		preloadPayload(payload, req.user.id)
@@ -801,9 +806,6 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields.first;
 				fields.prev;
 				fields.next;
-				t6console.error("fields", fields);
-				t6console.error("pIndex", pIndex);
-				t6console.error("fields[0]", fields[pIndex]);
 				fields[0].save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
 				fields[0].flow_id = payload.flow_id;
 				fields[0].datatype = payload.datatype;
@@ -817,11 +819,11 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				fields[0].mqtt_topic = payload.mqtt_topic;
 				fields[0].preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
 				fields[0].fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
-				if(payloadArray.length===1) {
+				if(pIndex===0) {
 					location = `/v/${version}/flows/${payload.flow_id}/${fields.id}`;
 					res.header("Location", location);
+					res.status(200).send(new DataSerializer(fields).serialize());
 				}
-				res.status(200).send(new DataSerializer(fields).serialize());
 				t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
 				
 				return;
