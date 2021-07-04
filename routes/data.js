@@ -12,39 +12,23 @@ function getJson(v) {
 		return v;
 	}
 }
-function decryptPayload(encryptedPayload, sender, encoding) {
-	if ( sender && sender.secret_key_crypt ) {
-		var decryptedPayload;
-		var key = Buffer.from(sender.secret_key_crypt, "hex");
-		let textParts = encryptedPayload.split(":");
-		let iv = Buffer.from(textParts.shift(), "hex");
-		encryptedPayload = textParts.shift();
-
-		let decipher = crypto.createDecipheriv(algorithm, key, iv);
-		decipher.setAutoPadding(true);
-		decryptedPayload = decipher.update(encryptedPayload, "base64", encoding || "utf8");// ascii, binary, base64, hex, utf8
-		decryptedPayload += decipher.final(encoding || "utf8");
-
-		//t6console.log("\nPayload decrypted:\n decryptedPayload);
-		return decryptedPayload!==""?decryptedPayload:false;
-	} else {
-		//t6console.log("decryptPayload Error: Missing secret_key_crypt");
-		return false;
-	}
-}
 function getObjectKey(payload, user_id) {
+	t6console.error("getObjectKey", payload.object_id);
 	return new Promise((resolve, reject) => {
 		if ( typeof payload.object_id !== "undefined" ) {
 			let query = { "$and": [ { "user_id" : user_id }, { "id" : payload.object_id }, ] };
 			var object = objects.findOne(query);
 			if ( object && object.secret_key ) {
+				t6console.debug("Retrived key from Object.");
 				resolve({payload, object});
 			} else {
 				t6console.debug("No Secret Key available on Object.");
+				payload.errorMessage.push("No Secret Key available on Object.");
 				reject({payload, object});
 			}
 		} else {
 			t6console.debug("No Object_id defined to get Key.");
+			payload.errorMessage.push("No object_id defined to get secret Key.");
 			reject({payload, object});
 		}
 	});
@@ -266,6 +250,7 @@ function preloadPayload(payload, user_id) {
 		payload.text		= typeof payload.text!=="undefined"?payload.text:"";
 		payload.save		= typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 		payload.publish		= typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
+		payload.errorMessage = [];
 		if(payload.object_id) {
 			getObjectKey(payload, user_id)
 				.then((ok) => {
@@ -277,7 +262,8 @@ function preloadPayload(payload, user_id) {
 				})
 				.catch((error) => { 
 					t6console.error("Error inside preloadPayload > getObjectKey", error);
-					resolve({payload, object});
+					payload.errorMessage.push("Couldn't get secret key from Object. "+error);
+					reject({payload, object});
 				});
 		} else {
 			resolve({payload, object});
@@ -381,6 +367,7 @@ function decrypt(payload, object) {
 				resolve({payload, object});
 			} else {
 				t6console.error("Error inside decrypt: Object is not available or does not contains any secret key.");
+				payload.errorMessage.push("Object is not available or does not contains any secret key. "+error);
 				payload.isEncrypted = false;
 				reject({payload, object});
 			}
@@ -439,6 +426,7 @@ function verifyPrerequisites(payload, object) {
 			if (payload.prerequisite <= 0) {
 				resolve({payload, object, current_flow});
 			} else {
+				payload.errorMessage.push("Payload is requiring either signature and/or encryption. "+error);
 				reject({payload, object, current_flow: null});
 			}
 		}
@@ -828,8 +816,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 				
 				return;
 			})
-			.catch((error) => { 
-				t6console.error("Error ... well .. on the big chain...", error);
+			.catch((err) => { 
+				t6console.error("Error ... well .. on the big chain...", err);
+				res.status(412).send({err: err, "id": 999, "code": 412, "message": "Precondition failed"});
 			});
 	});
 });
