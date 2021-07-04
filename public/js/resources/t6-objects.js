@@ -386,7 +386,7 @@ app.resources.objects = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Save changes to Object</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) { node += "	<div class='mdl-layout-spacer'></div>"; }
 					node += "</section>";
 				} else {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";

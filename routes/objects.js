@@ -406,7 +406,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 			let exec = require("child_process").exec;
 
 			let odir = `${ota.build_dir}/${object.source_id}`;
-			if (!fs.existsSync(odir)) fs.mkdirSync(odir);
+			if (!fs.existsSync(odir)) { fs.mkdirSync(odir); }
 			
 			let vdir = `${ota.build_dir}/${object.source_id}/${version}`;
 			if (!fs.existsSync(vdir)) { fs.mkdirSync(vdir); }
