@@ -144,7 +144,7 @@ router.post("/OAuth2/authorize", function (req, res) {
 		var queryU = { "$and": [ { "email": email } ] };
 		var user = users.findOne(queryU);
 		if ( user ) {
-			if ( bcrypt.compareSync(password, user.password) || md5(password) == user.password ) {
+			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
 				req.session.user_id = user.id;
 				// Add the code to the connected user
 				let code = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.");
@@ -237,7 +237,7 @@ router.post("/OAuth2/token", function(req, res) {
 router.get("/v1/status", function (req, res) {
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
-	if ( ChannelKey == ServiceKey && ChannelKey === ifttt.serviceKey ) {
+	if ( ChannelKey === ServiceKey && ChannelKey === ifttt.serviceKey ) {
 		res.status(200).send(result);
 	} else {
 		res.status(401).send({ "errors": [{"message": "Not Authorized"}] });
@@ -293,7 +293,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 	if ( authorization ) {
 		bearer = authorization.split(" ")[1];
 	}
-	if ( (bearer && bearer === result.data.accessToken) || (ChannelKey == ServiceKey && ChannelKey === ifttt.serviceKey) ) {
+	if ( (bearer && bearer === result.data.accessToken) || (ChannelKey === ServiceKey && ChannelKey === ifttt.serviceKey) ) {
 		let resultT = {
 			data:[],
 			eventTrigger: result.data.samples.triggers.eventTrigger
@@ -303,7 +303,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 			//t6console.log("resultT" + resultT);
 			let limit = parseInt(req.body.limit, 10);
 			if (!limit && limit !== 0) { limit = 3; }
-			if (limit==0) { limit = 0; }
+			if (limit===0) { limit = 0; }
 			if (limit>10) { limit = 3; }
 			for (let i=0; i<limit; i++) {
 				(resultT.data).push(getDataItem(i, req.body.triggerFields.user_id));

@@ -207,7 +207,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
 					t6console.debug(mailOptions);
 					t6mailer.sendMail(mailOptions).then(function(info){
 						users.findAndUpdate(
-								function(i){return i.id==user.id;},
+								function(i){return i.id===user.id;},
 								function(item){
 									item.reminderMail = parseInt(moment().format("x"), 10);
 								}

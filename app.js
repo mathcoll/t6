@@ -360,7 +360,7 @@ routesLoadEndTime = new Date();
 t6console.info(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
 
 var CrossDomain = function(req, res, next) {
-	if (req.method == "OPTIONS") {
+	if (req.method === "OPTIONS") {
 		//res.header("Access-Control-Allow-Origin", "*");
 		res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");

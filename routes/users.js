@@ -560,7 +560,7 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 		if ( req.user.id === user_id || req.user.role === "admin" ) {
 			var result;
 			users.findAndUpdate(
-				function(i){return i.id==user_id;},
+				function(i){return i.id===user_id;},
 				function(item){
 					item.firstName		= typeof req.body.firstName!=="undefined"?req.body.firstName:item.firstName;
 					item.lastName		= typeof req.body.lastName!=="undefined"?req.body.lastName:item.lastName;

@@ -350,7 +350,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
 	var source_id = req.params.source_id;
 	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
 	if ( object ) {
-		if(object.source_id == source_id) {
+		if(object.source_id === source_id) {
 			let result;
 			objects.chain().find({ "id": object_id }).update(function(item) {
 				item.source_id = "";
@@ -698,7 +698,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 		
 		if ( object ) {
 			object.parameters = typeof object.parameters!=="undefined"?object.parameters:[];
-			var p = object.parameters.filter(function(e, i) { if ( e.name == pName ) { object.parameters[i].value = req.body.value; return e; } });
+			var p = object.parameters.filter(function(e, i) { if ( e.name === pName ) { object.parameters[i].value = req.body.value; return e; } });
 			if ( p.length === 0 ) {
 				// was not found so we create the custom parameter
 				p.push({ name: pName, value: req.body.value , type: "String"});
@@ -755,7 +755,7 @@ router.get("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 		var object = objects.findOne(query);
 		
 		if ( object ) {
-			var p = object.parameters.filter(function(e) { if ( e.name == pName ) { return e; } });
+			var p = object.parameters.filter(function(e) { if ( e.name === pName ) { return e; } });
 			if ( p !== null && p[0] ) {
 				res.status(200).send({ "code": 200, message: "Success", name: pName, value: p[0].value });
 			} else {

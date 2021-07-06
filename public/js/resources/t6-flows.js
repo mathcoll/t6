@@ -96,7 +96,7 @@ app.resources.flows = {
 		.then(function(response) {
 			app.setSection("flows");
 			var flowsList = new Array();
-			if ( JSON.parse(localStorage.getItem("flows")) != "null" && JSON.parse(localStorage.getItem("flows")).length > -1 ) {
+			if ( JSON.parse(localStorage.getItem("flows")) !== "null" && JSON.parse(localStorage.getItem("flows")).length > -1 ) {
 				flowsList = JSON.parse(localStorage.getItem("flows"));
 			}
 			flowsList.push({id: response.flow.data.id, name:response.flow.data.attributes.name, type: response.flow.data.type});

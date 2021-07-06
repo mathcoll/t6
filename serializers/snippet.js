@@ -19,7 +19,7 @@ function SnippetTypeSerializer(snippet) {
 					return sprintf("%s/v%s/snippets/%s", baseUrl_https, version, snippet.id);
 				},
 				user : function(snippet) {
-					if ( snippet.user_id!="" ) {
+					if ( snippet.user_id!=="" ) {
 						return sprintf("%s/v%s/users/%s", baseUrl_https, version, snippet.user_id);
 					} else {
 						return null;

@@ -174,7 +174,7 @@ self.addEventListener("push", function(event) {
 			renotify: tag!==null?false:true
 		};
 		console.log("[pushSubscription]", "notif.type", notif.type);
-		if ( notif.type == "message" ) {
+		if ( notif.type === "message" ) {
 			event.waitUntil(self.registration.showNotification(title, options));
 			if ( typeof firebase !== "undefined" ) {
 				firebase.analytics().setUserProperties({"notification_receive": 1});

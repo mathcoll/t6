@@ -20,7 +20,7 @@ function DashboardTypeSerializer(dashboard) {
 					return sprintf("%s/v%s/dashboards/%s", baseUrl_https, version, dashboard.id);
 				},
 				user : function(dashboard) {
-					if ( dashboard.user_id!="" ) {
+					if ( dashboard.user_id!=="" ) {
 						return sprintf("%s/v%s/users/%s", baseUrl_https, version, dashboard.user_id);
 					} else {
 						return null;

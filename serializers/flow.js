@@ -15,14 +15,14 @@ function FlowSerializer(flow) {
 			},
 			dataLinks : {
 				unit : function(flow) {
-					if ( flow.unit!="" ) {
+					if ( flow.unit!=="" ) {
 						return sprintf("%s/v%s/units/%s", baseUrl_https, version, flow.unit);
 					} else {
 						return null;
 					}
 				},
 				data : function(flow) {
-					if ( flow.id!="" ) {
+					if ( flow.id!=="" ) {
 						return sprintf("%s/v%s/data/%s", baseUrl_https, version, flow.id);
 					} else {
 						return null;

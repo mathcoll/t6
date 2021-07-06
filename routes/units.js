@@ -93,7 +93,7 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 		var unit_id = req.params.unit_id;
 		var result;
 		units.findAndUpdate(
-			function(i){return i.id==unit_id;},
+			function(i){return i.id===unit_id;},
 			function(item){
 				item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
 				item.format			= typeof req.body.format!=="undefined"?req.body.format:item.format;
