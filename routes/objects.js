@@ -406,7 +406,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 			let exec = require("child_process").exec;
 
 			let odir = `${ota.build_dir}/${object.source_id}`;
-			if (!fs.existsSync(odir)) fs.mkdirSync(odir);
+			if (!fs.existsSync(odir)) { fs.mkdirSync(odir); }
 			
 			let vdir = `${ota.build_dir}/${object.source_id}/${version}`;
 			if (!fs.existsSync(vdir)) { fs.mkdirSync(vdir); }
@@ -415,7 +415,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 			if (!fs.existsSync(dir)) { fs.mkdirSync(dir); }
 
 			fs.writeFile(`${dir}/${object.id}.ino`, source.content, function (err) {
-				if (err) throw err;
+				if (err) { throw err; }
 				t6console.log("File is created successfully.", `${dir}/${object.id}.ino`);
 				t6console.log("Using version ", version);
 				

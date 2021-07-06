@@ -503,7 +503,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					normalize: true, // default true if degree > 1, false otherwise
 					robust: false, // default false
 					iterations: 1 //default 4 if robust = true, 1 otherwise
-				}
+				};
 				let model = new Loess.default(graphLoessData, options);
 				//let newData = model.grid([graphLoessData.x.length]);
 				let fit = model.predict(); //newData
@@ -511,7 +511,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 				var m = 0;
 				fit.fitted.map((y, idx) => {
 					graphLoess.push({ key: idx, value: y, halfwidth: fit.halfwidth[idx] });
-				})
+				});
 				let xScaleScatter = d3.scaleTime()
 					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphScatterData, d => d.key))
 					.rangeRound([0, width]);
@@ -550,7 +550,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					.y0(d => yScaleR(d.value - d.halfwidth))
 					.y1(d => yScaleR(d.value + d.halfwidth));
 
-				if (_isCurve) lineChart.curve(d3.curveBasis);
+				if (_isCurve) { lineChart.curve(d3.curveBasis); }
 
 				g.append("g")
 					.append("path")
@@ -745,23 +745,19 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				let barHeight = (height / 4) - 2 * m;
 				let w, p;
 				let totalValues = graphData.length;
-				let min = d3.min(graphData.map(function(d) { return (d.value) }));
-				let q1 = d3.quantile(graphData.map(function(d) { return (d.value) }), .25);
-				let q2 = d3.quantile(graphData.map(function(d) { return (d.value) }), .5);
-				let q3 = d3.quantile(graphData.map(function(d) { return (d.value) }), .75);
-				let max = d3.max(graphData.map(function(d) { return (d.value) }));
+				let min = d3.min(graphData.map(function(d) { return (d.value); }));
+				let q1 = d3.quantile(graphData.map(function(d) { return (d.value); }), .25);
+				let q2 = d3.quantile(graphData.map(function(d) { return (d.value); }), .5);
+				let q3 = d3.quantile(graphData.map(function(d) { return (d.value); }), .75);
+				let max = d3.max(graphData.map(function(d) { return (d.value); }));
 				g.append("rect").attr("x", width - 290).attr("y", m).attr("width", sidePlotWidth).attr("height", height).attr("fill", "none").style("fill", "none").style("stroke", "black").style("stroke-width", 2);
-
-
-
-
 
 				let xText = width - 290 + 2*m;
 				let yText = (barHeight/2 + 2*m + 11/2);
 				let xRect = width - 290 + m;
 				let yRect = 2*m;
-				w = (graphData.filter(function(d) { return (d.value > q3 && d.value < max) }).length) * (sidePlotWidth-2*m) / totalValues;
-				p = 100*((graphData.filter(function(d) { return (d.value > q3 && d.value < max) }).length) / totalValues).toFixed(1);
+				w = (graphData.filter(function(d) { return (d.value > q3 && d.value < max); }).length) * (sidePlotWidth-2*m) / totalValues;
+				p = 100*((graphData.filter(function(d) { return (d.value > q3 && d.value < max); }).length) / totalValues).toFixed(1);
 				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append("text")
 					.attr("x", xText)
@@ -769,13 +765,10 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					.attr("font-size", "11px")
 					.text(`${q3.toFixed(4)} < value < ${max.toFixed(4)} : ${p}%`);
 
-
-
-
 				yText += barHeight+2*m;
 				yRect += barHeight+2*m;
-				w = (graphData.filter(function(d) { return (d.value > q3 && d.value < q2) }).length) * (sidePlotWidth-2*m) / totalValues;
-				p = 100*((graphData.filter(function(d) { return (d.value > q3 && d.value < q2) }).length) / totalValues).toFixed(1);
+				w = (graphData.filter(function(d) { return (d.value > q3 && d.value < q2); }).length) * (sidePlotWidth-2*m) / totalValues;
+				p = 100*((graphData.filter(function(d) { return (d.value > q3 && d.value < q2); }).length) / totalValues).toFixed(1);
 				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append("text")
 					.attr("x", xText)
@@ -783,14 +776,10 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					.attr("font-size", "11px")
 					.text(`${q3.toFixed(4)} < value < ${q2.toFixed(4)} : ${p}%`);
 
-
-
-
-
 				yText += barHeight+2*m;
 				yRect += barHeight+2*m;
-				w = (graphData.filter(function(d) { return (d.value > q2 && d.value < q1) }).length) * (sidePlotWidth-2*m) / totalValues;
-				p = 100*((graphData.filter(function(d) { return (d.value > q2 && d.value < q1) }).length) / totalValues).toFixed(1);
+				w = (graphData.filter(function(d) { return (d.value > q2 && d.value < q1); }).length) * (sidePlotWidth-2*m) / totalValues;
+				p = 100*((graphData.filter(function(d) { return (d.value > q2 && d.value < q1); }).length) / totalValues).toFixed(1);
 				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append("text")
 					.attr("x", xText)
@@ -798,22 +787,16 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					.attr("font-size", "11px")
 					.text(`${q2.toFixed(4)} < value < ${q1.toFixed(4)} : ${p}%`);
 
-
-
-
-
 				yText += barHeight+2*m;
 				yRect += barHeight+2*m;
-				w = (graphData.filter(function(d) { return (d.value > min && d.value < q1) }).length) * (sidePlotWidth-2*m) / totalValues;
-				p = 100*((graphData.filter(function(d) { return (d.value > min && d.value < q1) }).length) / totalValues).toFixed(1);
+				w = (graphData.filter(function(d) { return (d.value > min && d.value < q1); }).length) * (sidePlotWidth-2*m) / totalValues;
+				p = 100*((graphData.filter(function(d) { return (d.value > min && d.value < q1); }).length) / totalValues).toFixed(1);
 				g.append("rect").attr("x", xRect).attr("y", yRect).attr("width", w).attr("height", barHeight).attr("fill", (d, i) => i < _lineColors.length ? _lineColors[i] : _lineColor);
 				g.append("text")
 					.attr("x", xText)
 					.attr("y", yText)
 					.attr("font-size", "11px")
 					.text(`${min.toFixed(4)} < value < ${q1.toFixed(4)} : ${p}%`);
-
-
 
 				g.append("g")
 					.attr("fill", "none")
@@ -1088,8 +1071,8 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				//    .x(d => xScale(d.date))
 				//    .y(d => yScale(d.value));
 				    .defined(d => !isNaN(d.value))
-				    .x(function(d) { return xScale(d.date) })
-				    .y(function(d) { return yScale(d.value) });
+				    .x(function(d) { return xScale(d.date); })
+				    .y(function(d) { return yScale(d.value); });
 				
 				if (_isCurve) lineChart.curve(d3.curveBasis);
 				
@@ -1263,40 +1246,40 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				
 				// Show the main horizontal line
 				svg.append("line")
-				  .attr("x1", x(data.min) )
-				  .attr("x2", x(data.max) )
-				  .attr("y1", bxCenter)
-				  .attr("y2", bxCenter)
-				  .attr("stroke", "black")
-				  .attr("class", "main-horizontal-line");
+					.attr("x1", x(data.min) )
+					.attr("x2", x(data.max) )
+					.attr("y1", bxCenter)
+					.attr("y2", bxCenter)
+					.attr("stroke", "black")
+					.attr("class", "main-horizontal-line");
 			
 				// text label for the x Axis
 				svg.append('text')
-				    .attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
-				    .style('text-anchor', 'middle')
-				    .text(_labels.xAxis);
+					.attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+					.style('text-anchor', 'middle')
+					.text(_labels.xAxis);
 			
 				// Show the box
 				svg.append("rect")
-				  .attr("x", x(data.q1))
-				  .attr("y", bxCenter - bxHeight/2 )
-				  .attr("height", bxHeight )
-				  .attr("width", (x(data.q3)-x(data.q1)) )
-				  .attr("stroke", "black")
-				  .attr("class", "box");
+					.attr("x", x(data.q1))
+					.attr("y", bxCenter - bxHeight/2 )
+					.attr("height", bxHeight )
+					.attr("width", (x(data.q3)-x(data.q1)) )
+					.attr("stroke", "black")
+					.attr("class", "box");
 			
 				// show median, min and max vertical lines
 				svg.selectAll("boxplot")
-				  .data([data.min, data.median, data.max])
-				  .enter()
-				  .append("line")
-				    .attr("x1", function(d){ return(x(d))})
-				    .attr("x2", function(d){ return(x(d))})
-				    .attr("y1", bxCenter-bxHeight/2 )
-				    .attr("y2", bxCenter+bxHeight/2 )
-				    .attr("stroke", "black")
-				    .style("stroke-width", _lineWidth)
-				    .attr("class", "min-line median-line max-line");
+				.data([data.min, data.median, data.max])
+					.enter()
+					.append("line")
+					.attr("x1", function(d){ return(x(d)); })
+					.attr("x2", function(d){ return(x(d)); })
+					.attr("y1", bxCenter-bxHeight/2)
+					.attr("y2", bxCenter+bxHeight/2)
+					.attr("stroke", "black")
+					.style("stroke-width", _lineWidth)
+					.attr("class", "min-line median-line max-line");
 
 				res.setHeader("content-type", "image/svg+xml");
 				res.status(200).send(d3n.svgString());

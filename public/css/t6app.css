@@ -191,7 +191,7 @@ code.nostyle br {
 #hof p {
   color: #795548;
 }
-@media screen and (min-width:760px) {
+@media screen and (min-width: 760px) {
   #hof .mdl-cell--4-col:nth-child(2n-1) {
   padding: 6em 0;
   }
@@ -374,7 +374,7 @@ body {
   background: #ececec;
 }
 .mdl-chips {
-  margin: 0 0 8px 0;;
+  margin: 0 0 8px 0;
   outline: none;
   width: 100%;
   min-height: 40px;
@@ -427,10 +427,10 @@ body {
   padding: 8px 4px;
   vertical-align: middle;
   position: absolute;
-}
-.mdl-chip .close,
-.mdl-chip .edit {
   display:none;
+}
+.mdl-chip .edit {
+  right: 60px;
 }
 .mdl-chip[draggable="true"] .close {
   right: 25px;
@@ -438,9 +438,6 @@ body {
 .mdl-chip:hover .close,
 .mdl-chip:hover .edit {
   display:inline;
-}
-.mdl-chip .edit {
-  right: 60px;
 }
 .mdl-textfield {
   width: calc(100% - 48px) !important;

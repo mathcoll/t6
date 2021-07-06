@@ -244,7 +244,7 @@ router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 						json: true,
 				};
 				nmap.scan(opts, function(err, report) {
-					if (err) throw new Error(err);
+					if (err) { throw new Error(err); }
 					for (var item in report) {
 						o.is_connected = report[item]["runstats"][0]["hosts"][0]["item"]["up"]>0?true:false;
 					}

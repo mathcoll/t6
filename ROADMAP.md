@@ -8,6 +8,7 @@
 
 ## 2021
 ### Milestone 13 - June 2021: Sensor Data Fusion
+  - [x] Send multiple datapoints (measurements) from the same payload - using an Array
   - [x] [Sensor Data Fusion](https://api.internetcollaboratif.info/news/2021-06-16-newsletter-sensor-data-fusion)
   - [x] Customize Tracks on Flows
   - [ ] Customize Ttl on each Flows

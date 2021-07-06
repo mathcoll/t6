@@ -36,7 +36,7 @@ function planNewsletter(req, res, recipients, template, subject) {
 
 function planPush(req, res, recipients, body, title, options) {
 	/* add newsletter to job queue to be sent later */
-	recipients.forEach(function(user) {
+	recipients.forEach(function(user) { // TODO foreach or Array.map ?
 		let payload = "{\"type\": \"message\", \"title\": \""+title+"\", \"body\": \""+body+"\", \"badge\": \""+options.badge+"\", \"icon\": \""+options.icon+"\", \"vibrate\":"+JSON.stringify(options.vibrate)+", \"actions\":"+JSON.stringify(options.actions)+"}";
 		t6console.debug(`Rendering push notification to ${user.firstName} ${user.lastName}`);
 		t6console.debug(payload);

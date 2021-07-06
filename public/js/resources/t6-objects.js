@@ -362,7 +362,7 @@ app.resources.objects = {
 				var btnId = [app.getUniqueId(), app.getUniqueId(), app.getUniqueId(), app.getUniqueId()];
 				if ( isEdit ) {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";
-					if( app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( app.isLtr() ) { node += "	<div class='mdl-layout-spacer'></div>"; }
 					node += "	<div class='mdl-cell--1-col-phone pull-left'>";
 					node += "		<button id='"+btnId[0]+"' class='back-button mdl-cell mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect' data-id='"+object.id+"'>";
 					node += "			<i class='material-icons'>chevron_left</i>";
@@ -386,7 +386,7 @@ app.resources.objects = {
 					node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[2]+"'>Save changes to Object</label>";
 					node += "		</button>";
 					node += "	</div>";
-					if( !app.isLtr() ) node += "	<div class='mdl-layout-spacer'></div>";
+					if( !app.isLtr() ) { node += "	<div class='mdl-layout-spacer'></div>"; }
 					node += "</section>";
 				} else {
 					node += "<section class='mdl-grid mdl-cell--12-col fixedActionButtons' data-id='"+object.id+"'>";

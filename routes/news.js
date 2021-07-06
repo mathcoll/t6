@@ -10,7 +10,7 @@ async function walk(dir, fileList = []) {
 		if (stat.isDirectory()) {
 			fileList = await walk(path.join(dir, file), fileList);
 		}
-		else fileList.push({date: file.substring(0, 10), f: file.substring(0, file.length-4), title: file.substring(11, file.length-4)});
+		else { fileList.push({date: file.substring(0, 10), f: file.substring(0, file.length-4), title: file.substring(11, file.length-4)}); }
 	}
 	return fileList;
 }

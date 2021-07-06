@@ -55,7 +55,7 @@ var snippet = {
 					datapoints.push({ x: new Date(d.attributes.timestamp), y: d.attributes.value });
 				});
 				let type = opt.type&&typeof opt.type.value!=="undefined"?opt.type.value:opt.type.default_value;
-				let unit = " ("+sprintf(typeof response.links.unit!=="undefined"?response.links.unit:"", "")+")";
+				let unit = " ("+sprintf(typeof response.links.unit_format!=="undefined"?response.links.unit_format:"", "")+")";
 				let data = {
 					datasets: [{
 						label: typeof params.flowNames!=="undefined"?params.flowNames[0]:"",
