@@ -550,7 +550,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					.y0(d => yScaleR(d.value - d.halfwidth))
 					.y1(d => yScaleR(d.value + d.halfwidth));
 
-				if (_isCurve) lineChart.curve(d3.curveBasis);
+				if (_isCurve) { lineChart.curve(d3.curveBasis); }
 
 				g.append("g")
 					.append("path")
