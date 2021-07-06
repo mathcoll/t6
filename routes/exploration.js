@@ -1051,43 +1051,43 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				height = height - _margin.top - _margin.bottom;
 
 				let xScale = d3.scaleTime()
-				    .domain(d3.extent(data, function(d) { return d.date; }))
-				    .range([0, width]);
+					.domain(d3.extent(data, function(d) { return d.date; }))
+					.range([0, width]);
 				let line_xAxis = d3.axisBottom(xScale)
-				      .tickSize(_tickSize)
-				      .tickPadding(_tickPadding);
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
 				svg.append('g').attr('transform', `translate(0, ${height})`).call(line_xAxis);
 
 				let yScale = d3.scaleLinear()
-				    .domain(d3.extent(data, (d) => d.value))
-				    .range([height, 0]);
+					.domain(d3.extent(data, (d) => d.value))
+					.range([height, 0]);
 				let line_yAxis = d3.axisLeft(yScale)
-				      .tickSize(_tickSize)
-				      .tickPadding(_tickPadding);
+					.tickSize(_tickSize)
+					.tickPadding(_tickPadding);
 				svg.append("g").call(line_yAxis);
 				
 				let lineChart = d3.line()
-				//    .x(d => xScale(d.date))
-				//    .y(d => yScale(d.value));
-				    .defined((d) => !isNaN(d.value))
-				    .x(function(d) { return xScale(d.date); })
-				    .y(function(d) { return yScale(d.value); });
+					//.x(d => xScale(d.date))
+					//.y(d => yScale(d.value));
+					.defined((d) => !isNaN(d.value))
+					.x(function(d) { return xScale(d.date); })
+					.y(function(d) { return yScale(d.value); });
 				
 				if (_isCurve) lineChart.curve(d3.curveBasis);
 				
 				// text label for the x Axis
 				svg.append('text')
-				    .attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
-				    .style('text-anchor', 'middle')
-				    .text(_labels.xAxis);
+					.attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+					.style('text-anchor', 'middle')
+					.text(_labels.xAxis);
 				
 				svg.append('path')
-				  .datum(data)
-				  .attr('fill', 'none')
-				  .attr('stroke', _lineColor)
-				  .attr('stroke-width', _lineWidth)
-				  .attr("class", "line")
-				  .attr("d", lineChart);
+					.datum(data)
+					.attr('fill', 'none')
+					.attr('stroke', _lineColor)
+					.attr('stroke-width', _lineWidth)
+					.attr("class", "line")
+					.attr("d", lineChart);
 
 				res.setHeader("content-type", "image/svg+xml");
 				res.status(200).send(d3n.svgString());
