@@ -127,7 +127,7 @@ function signatureCheck(payload, object) {
 			timestamp: payload.timestamp,
 			save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
 			publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
-		}
+		};
 		object = typeof object!=="undefined"?object:{};
 		object.secret_key = typeof object.secret_key!=="undefined"?object.secret_key:jwtsettings.secret;
 		if ( typeof payload!=="undefined" && payload.signedPayload && object.secret_key ) {

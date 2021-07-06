@@ -189,4 +189,4 @@ customUnits = {
 /* Data Fusion */
 dataFusion = {
 	"activated": true,
-}
+};

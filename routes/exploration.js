@@ -745,7 +745,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				let barHeight = (height / 4) - 2 * m;
 				let w, p;
 				let totalValues = graphData.length;
-				let min = d3.min(graphData.map(function(d) { return (d.value) }));
+				let min = d3.min(graphData.map(function(d) { return (d.value); }));
 				let q1 = d3.quantile(graphData.map(function(d) { return (d.value); }), .25);
 				let q2 = d3.quantile(graphData.map(function(d) { return (d.value); }), .5);
 				let q3 = d3.quantile(graphData.map(function(d) { return (d.value); }), .75);

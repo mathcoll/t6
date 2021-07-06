@@ -27,8 +27,8 @@ function DataSerializer(data) {
 						return undefined;
 					}
 				},
-				unit: function(d) {return typeof d.unit_id!=="undefined"?sprintf("%s/v%s/units/%s", baseUrl_https, version, d.unit_id):undefined },
-				datatype: function(d) {return typeof d.datatype_id!=="undefined"?sprintf("%s/v%s/datatypes/%s", baseUrl_https, version, d.datatype_id):undefined },
+				unit: function(d) {return typeof d.unit_id!=="undefined"?sprintf("%s/v%s/units/%s", baseUrl_https, version, d.unit_id):undefined; },
+				datatype: function(d) {return typeof d.datatype_id!=="undefined"?sprintf("%s/v%s/datatypes/%s", baseUrl_https, version, d.datatype_id):undefined; },
 			},
 		}).serialize(data);
 	};
