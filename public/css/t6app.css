@@ -60,7 +60,8 @@
 * {
   box-sizing: border-box;
 }
-html, body {
+html,
+body {
   padding: 0;
   margin: 0;
   height: 100%;
@@ -109,7 +110,8 @@ a {
 #currentUserEmail {
   color: #fff;
 }
-code.nostyle div span h1, code.nostyle div span {
+code.nostyle div span h1,
+code.nostyle div span {
   font-size: initial;
   font-family: initial;
   text-transform: none;
@@ -162,7 +164,8 @@ code.nostyle br {
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
 }
-#hof-container div p, #hof-container div span {
+#hof-container div p,
+#hof-container div span {
   margin: 0;
 }
 #hof-container > article {
@@ -275,7 +278,8 @@ footer div > img {
   position: absolute;
   right: 10px;
 }
-.mdl-cell--12-col, .mdl-cell--12-col-desktop.mdl-cell--12-col-desktop {
+.mdl-cell--12-col,
+.mdl-cell--12-col-desktop.mdl-cell--12-col-desktop {
   width: calc(100%);
 }
 h1.page_title {
@@ -456,7 +460,8 @@ div .mdl-textfield__icon ~ select,
 .mdl-textfield__icon ~ label {
   width: calc(100% - 48px) !important;
 }
-div.is-focused .mdl-textfield__icon ~ select, div.is-focused .mdl-textfield__icon ~ label {
+div.is-focused .mdl-textfield__icon ~ select,
+div.is-focused .mdl-textfield__icon ~ label {
   width: 100% !important;
 }
 [draggable] {
@@ -506,7 +511,8 @@ section:not("#exploration") .is-disabled {
 .is-hover div.mdl-card.mdl-shadow--2dp:not(.is-disabled) {
   background: #ffffff3d;
 }
-section.is-active .mdl-button--fab.is-not-here, .play-fab.is-not-here a {
+section.is-active .mdl-button--fab.is-not-here,
+.play-fab.is-not-here a {
   opacity: 0;
   transform: scale(0);
   -webkit-transition: all 100ms linear !important;
@@ -516,7 +522,8 @@ section.is-active .mdl-button--fab.is-not-here, .play-fab.is-not-here a {
   transition: all 100ms linear !important;
   transition-delay: .5s !important;
 }
-section.is-active .mdl-button--fab.is-here, .play-fab.is-here a {
+section.is-active .mdl-button--fab.is-here,
+.play-fab.is-here a {
   opacity: 1;
   transform: scale(1);
   -webkit-transition: all 100ms linear !important;
@@ -612,12 +619,14 @@ div.mdl-list__item-primary-content span.heading {
   white-space: nowrap;
 }
 @media only screen and (min-width: 840px) {
-  .mdl-cell--6-col, .mdl-cell--6-col-desktop.mdl-cell--6-col-desktop {
+  .mdl-cell--6-col,
+  .mdl-cell--6-col-desktop.mdl-cell--6-col-desktop {
   width: calc(50% - 0px);
   }
 }
 @media only screen and (max-width: 479px) {
-  .mdl-cell--6-col, .mdl-cell--6-col-phone.mdl-cell--6-col-phone {
+  .mdl-cell--6-col,
+  .mdl-cell--6-col-phone.mdl-cell--6-col-phone {
   width: calc(100% - 0px);
   }
 }
@@ -641,7 +650,8 @@ div.mdl-list__item-primary-content span.heading {
   }
 }
 @media only screen and (min-width: 480px) and (max-width: 839px) {
-  .mdl-grid--no-spacing > .mdl-cell--6-col, .mdl-grid--no-spacing > .mdl-cell--6-col-tablet.mdl-cell--6-col-tablet {
+  .mdl-grid--no-spacing > .mdl-cell--6-col,
+  .mdl-grid--no-spacing > .mdl-cell--6-col-tablet.mdl-cell--6-col-tablet {
   width: 50%;
   }
 }
@@ -922,13 +932,15 @@ section#dashboard_grids div.mdl-grid.mdl-tabs__panel {
 .btn.warning {
   background-color: #e67e22;
 }
-.btn.warning:hover, .btn.warning:focus {
+.btn.warning:hover,
+.btn.warning:focus {
   background-color: #d35400;
 }
 .btn.danger {
   background-color: #e74c3c;
 }
-.btn.danger:hover, .btn.danger:focus {
+.btn.danger:hover,
+.btn.danger:focus {
   background-color: #c0392b;
 }
 .mdl-subheader-content {
@@ -1507,7 +1519,8 @@ dialog .mdl-dialog__title {
   float: left!important;
   text-align: left!important;
 }
-.mdl-cell--1-col, .mdl-cell--1-col-phone.mdl-cell--1-col-phone {
+.mdl-cell--1-col,
+.mdl-cell--1-col-phone.mdl-cell--1-col-phone {
   width: calc(20% - 24px) !important;
 }
 .mdl-list__item-primary-content {
@@ -1813,7 +1826,8 @@ input#signup\.lastName {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.mdl-selectfield--floating-label.is-dirty .mdl-selectfield__label, .mdl-selectfield--floating-label.is-focused .mdl-selectfield__label {
+.mdl-selectfield--floating-label.is-dirty .mdl-selectfield__label,
+.mdl-selectfield--floating-label.is-focused .mdl-selectfield__label {
   color: rgb(63, 81, 181);
   font-size: 12px;
   top: 4px;
@@ -1840,7 +1854,8 @@ input#signup\.lastName {
 .mdl-selectfield.is-invalid .mdl-selectfield__error {
   visibility: visible;
 }
-.mdl-selectfield.is-focused .mdl-selectfield__error, .mdl-selectfield--floating-label.is-focused .mdl-selectfield__error {
+.mdl-selectfield.is-focused .mdl-selectfield__error,
+.mdl-selectfield--floating-label.is-focused .mdl-selectfield__error {
   visibility: hidden;
 }
 .mdl-selectfield__box {
@@ -2104,7 +2119,8 @@ div#cookieconsent_buttons {
   text-align: center;
   font-family: Arial, sans-serif;
 }
-div#cookieconsent_accept, div#cookieconsent_accept a {
+div#cookieconsent_accept,
+div#cookieconsent_accept a {
   border-radius: 5px;
   border: 0px none;
   padding: 6px 10px;
