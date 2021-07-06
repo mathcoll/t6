@@ -233,7 +233,7 @@ router.all("*", function (req, res, next) {
 					tags: tags,
 					fields: fields,
 				}], { precision: "s", retentionPolicy: rp })
-				.then(err => {
+				.then((err) => {
 					if (err) {
 						t6console.error(
 							sprintf(
@@ -243,7 +243,7 @@ router.all("*", function (req, res, next) {
 						);
 					}
 					next();
-				}).catch(err => {
+				}).catch((err) => {
 					t6console.error(
 						sprintf(
 							"Error catch on writting to influxDb %s",
@@ -268,7 +268,7 @@ router.all("*", function (req, res, next) {
 			measurement: "requests",
 			tags: tags,
 			fields: fields,
-		}], { precision: "s", retentionPolicy: rp }).then(err => {
+		}], { precision: "s", retentionPolicy: rp }).then((err) => {
 			if (err) {
 				t6console.error(
 					sprintf(

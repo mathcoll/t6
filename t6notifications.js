@@ -25,18 +25,18 @@ if (firebase.admin.serviceAccountFile) {
 					pushSubscriptionOptions.vapidDetails.publicKey,
 					pushSubscriptionOptions.vapidDetails.privateKey
 				);
-				webpush.sendNotification(subscriber, payload, pushSubscriptionOptions).then(res => {
+				webpush.sendNotification(subscriber, payload, pushSubscriptionOptions).then((res) => {
 					t6console.debug("t6notifications.sendPush Response:", res);
 					t6events.add("t6App", "sendPush", subscriber_id, subscriber_id, {"endpoint": subscriber.endpoint, "success":  {"statusCode": res.statusCode}});
 					resolve({"status": "info", "info": res});
-				}).catch(e => {
+				}).catch((err) => {
 					t6events.add("t6App", "sendPush", subscriber_id, subscriber_id, {"endpoint": subscriber.endpoint, "error": {"statusCode": e.statusCode, "body": e.body}});
 					t6console.error(e);
-					if(e.statusCode === 404 || e.statusCode === 410) {
+					if(err.statusCode === 404 || err.statusCode === 410) {
 						// User subscription is expired ; we should remove endpoint and keys from Db
 						// find user where "id" == subscriber_id and remove its pushSubscription from lokijs
-						reject({"status": "error", "info": e});
-						return e;
+						reject({"status": "error", "info": err});
+						return err;
 					}
 				});
 			} else {

@@ -2,7 +2,6 @@
 var express = require("express");
 var router = express.Router();
 var ErrorSerializer = require("../serializers/error");
-var units;
 
 function getFieldsFromDatatype(datatype, asValue, includeTime = true) {
 	let fields;
@@ -94,7 +93,7 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		}
 		let query = `SELECT FIRST(${dt}) as first, LAST(${dt}) as last, COUNT(${dt}) as count, MEAN(${dt}) as mean, stddev(${dt}) as std_dev, SPREAD(${dt}) as spread, MIN(${dt}) as minimum, MAX(${dt}) as maximum, MODE(${dt}) as mode, MEDIAN(${dt}) as median, PERCENTILE(${dt},25) as "quantile1", PERCENTILE(${dt},50) as "quantile2", PERCENTILE(${dt},75) as "quantile3" FROM data WHERE flow_id='${flow_id}' ${where}`;
 		t6console.debug(sprintf("Query: %s", query));
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			if (data.length > 0) {
 				data.map(function(d) {
 					d.links = {
@@ -119,7 +118,7 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 			} else {
 				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
 			}
-		}).catch(err => {
+		}).catch((err) => {
 			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
 		});
 	}
@@ -455,7 +454,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 		query = `SELECT ${dt} as value FROM data WHERE flow_id='${flow_id}' ${where} ${group_by} LIMIT ${limit} OFFSET 1`;
 		t6console.debug(sprintf("Query: %s", query));
 
-		dbInfluxDB.query(query).then(queryData => {
+		dbInfluxDB.query(query).then((queryData) => {
 			if (queryData.length > 0) {
 				let graphScatterData = [];
 				let graphLoessData = { x: [], y: [] };
@@ -513,10 +512,10 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					graphLoess.push({ key: idx, value: y, halfwidth: fit.halfwidth[idx] });
 				});
 				let xScaleScatter = d3.scaleTime()
-					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphScatterData, d => d.key))
+					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphScatterData, (d) => d.key))
 					.rangeRound([0, width]);
 				let yScaleScatter = d3.scaleLinear()
-					.domain(allKeys ? [d3.min(graphScatterData, d => d3.min(d, v => v.value)), d3.max(graphScatterData, d => d3.max(d, v => v.value))] : d3.extent(graphScatterData, d => d.value))
+					.domain(allKeys ? [d3.min(graphScatterData, (d) => d3.min(d, (v) => v.value)), d3.max(graphScatterData, (d) => d3.max(d, (v) => v.value))] : d3.extent(graphScatterData, (d) => d.value))
 					.rangeRound([height, 0]);
 				let xAxis = d3.axisBottom(xScaleScatter)
 					.tickSize(_tickSize)
@@ -526,11 +525,11 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					.tickPadding(_tickPadding);
 					
 				let xScale = d3.scaleTime()
-					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphLoess, d => d.key))
+					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphLoess, (d) => d.key))
 					.rangeRound([0, width]);
 				var yScaleR = d3.scaleLinear()
 					//.domain(allKeys ? [d3.min(graphLoess, d => d3.min(d, v => v.value)), d3.max(graphLoess, d => d3.max(d, v => v.value))] : d3.extent(graphLoess, d => d.value))
-					.domain(allKeys ? [d3.min(graphScatterData, d => d3.min(d, v => v.value)), d3.max(graphScatterData, d => d3.max(d, v => v.value))] : d3.extent(graphScatterData, d => d.value))
+					.domain(allKeys ? [d3.min(graphScatterData, (d) => d3.min(d, (v) => v.value)), d3.max(graphScatterData, (d) => d3.max(d, (v) => v.value))] : d3.extent(graphScatterData, (d) => d.value))
 					.rangeRound([height, 0]);
 				/*
 				xAxis = d3.axisBottom(xScale)
@@ -542,13 +541,13 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					.tickPadding(_tickPadding);
 
 				let lineChart = d3.line()
-					.x(d => xScale(d.key))
-					.y(d => yScaleR(d.value));
+					.x((d) => xScale(d.key))
+					.y((d) => yScaleR(d.value));
 					
 				const area = d3.area()
-					.x(d => xScale(d.key))
-					.y0(d => yScaleR(d.value - d.halfwidth))
-					.y1(d => yScaleR(d.value + d.halfwidth));
+					.x((d) => xScale(d.key))
+					.y0((d) => yScaleR(d.value - d.halfwidth))
+					.y1((d) => yScaleR(d.value + d.halfwidth));
 
 				if (_isCurve) { lineChart.curve(d3.curveBasis); }
 
@@ -715,10 +714,10 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 
 				const { allKeys } = graphData;
 				const xScale = d3.scaleTime()
-					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphData, d => d.key))
+					.domain(allKeys ? d3.extent(allKeys) : d3.extent(graphData, (d) => d.key))
 					.range([0, width - sidePlotWidth]);
 				const yScale = d3.scaleLinear()
-					.domain(allKeys ? [d3.min(graphData, d => d3.min(d, v => v.value)), d3.max(graphData, d => d3.max(d, v => v.value))] : d3.extent(graphData, d => d.value))
+					.domain(allKeys ? [d3.min(graphData, (d) => d3.min(d, (v) => v.value)), d3.max(graphData, (d) => d3.max(d, (v) => v.value))] : d3.extent(graphData, (d) => d.value))
 					.rangeRound([height, 0]);
 				const xAxis = d3.axisBottom(xScale)
 					.tickSize(_tickSize)
@@ -727,8 +726,8 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					.tickSize(_tickSize)
 					.tickPadding(_tickPadding);
 				const lineChart = d3.line()
-					.x(d => xScale(d.key))
-					.y(d => yScale(d.value));
+					.x((d) => xScale(d.key))
+					.y((d) => yScale(d.value));
 
 				if (_isCurve) lineChart.curve(d3.curveBasis);
 
@@ -1060,7 +1059,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				svg.append('g').attr('transform', `translate(0, ${height})`).call(line_xAxis);
 
 				let yScale = d3.scaleLinear()
-				    .domain(d3.extent(data, d => d.value))
+				    .domain(d3.extent(data, (d) => d.value))
 				    .range([height, 0]);
 				let line_yAxis = d3.axisLeft(yScale)
 				      .tickSize(_tickSize)
@@ -1070,7 +1069,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				let lineChart = d3.line()
 				//    .x(d => xScale(d.date))
 				//    .y(d => yScale(d.value));
-				    .defined(d => !isNaN(d.value))
+				    .defined((d) => !isNaN(d.value))
 				    .x(function(d) { return xScale(d.date); })
 				    .y(function(d) { return yScale(d.value); });
 				

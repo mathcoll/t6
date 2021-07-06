@@ -132,7 +132,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	let indexesFromDb = [];
 	let timesFromDb = [];
 	let indexesValuesFromDb = [];
-	dbInfluxDB.query(influxQuery).then(data => {
+	dbInfluxDB.query(influxQuery).then((data) => {
 		if ( data.length > 0 ) {
 			data.map(function(d, i) {
 				valuesFromDb.push(d.value);
@@ -392,7 +392,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			t6mqtt.publish(null, mqttInfo+"/ruleEvents/"+user_id, JSON.stringify({"date":moment().format("LLL"), "dtepoch":parseInt(moment().format("x"), 10),"EventType": event.type, "rule_id": event.params.rule_id, "message":"Rule matching EventType", "environment": process.env.NODE_ENV}), true);
 		});
 		engine.run(payload);
-	}).catch(err => {
+	}).catch((err) => {
 		var envelope = {
 			from:		from,
 			to:			bcc,

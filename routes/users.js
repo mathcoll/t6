@@ -27,7 +27,7 @@ router.get("/newcomers", function (req, res) {
 	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
 		var query = `SELECT who FROM events WHERE what='user add' ORDER BY time desc LIMIT ${size} OFFSET ${offset}`; // TODO WTF ?? using influx for that ??
 		t6console.log(query);
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			data.map(function(u) {
 				let us;
 				// TODO WTF ?? so why not getting directly from db ??

@@ -42,7 +42,7 @@ bcc					= "t6 <contact@domain.tld>"; // To receive New account in your Admin inb
 mailhost			= "my_smtp.domain.tld"; // Your Smtp server
 mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smtp credentials
 mailDKIMCertificate = "/path/to/data/certificates/dkim/privatekey.txt"; // The DKIM cetificate private file
-fs.access(mailDKIMCertificate, fs.constants.W_OK, err => {
+fs.access(mailDKIMCertificate, fs.constants.W_OK, (err) => {
 	if (err) {
 		transporter = nodemailer.createTransport({
 			host : mailhost,

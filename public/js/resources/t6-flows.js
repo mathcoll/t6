@@ -388,8 +388,8 @@ app.resources.flows = {
 					.then(
 						app.fetchStatusHandler
 					)
-					.then(response => response.text())
-					.then(svg => document.getElementById("flow-graph-"+flow.id).insertAdjacentHTML("afterbegin", svg));
+					.then((response) => response.text())
+					.then((svg) => document.getElementById("flow-graph-"+flow.id).insertAdjacentHTML("afterbegin", svg));
 				}
 			}
 		})

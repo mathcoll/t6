@@ -459,7 +459,7 @@ function saveToLocal(payload, fields, current_flow) {
 					tags: tags,
 					fields: fields[0],
 					timestamp: payload.timestamp,
-				}], { retentionPolicy: rp }).then(err => {
+				}], { retentionPolicy: rp }).then((err) => {
 					if (err) {
 						t6console.error({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
 						resolve({payload, fields, current_flow});
@@ -468,7 +468,7 @@ function saveToLocal(payload, fields, current_flow) {
 						t6console.debug(`Saved "${(fields[0])[v]}" using rp=${rp} / Tags :`, tags);
 						resolve({payload, fields, current_flow});
 					}
-				}).catch(err => {
+				}).catch((err) => {
 					t6console.error({"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
 					resolve({payload, fields, current_flow});
 				});
@@ -522,7 +522,7 @@ function saveToCloud(payload, fields, current_flow) {
 						t6events.add("t6App", "Wrote to influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id});
 						resolve({payload, fields, current_flow});
 					})
-					.catch(e => {
+					.catch((e) => {
 						t6console.error("Write Error on influxDbCloud");
 						t6console.error(e);
 						t6events.add("t6App", "Write Error on influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id, "error": e});
@@ -773,7 +773,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, retention, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.debug(sprintf("Query: %s", query));
 
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			if ( data.length > 0 ) {
 				data.map(function(d) {
 					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);

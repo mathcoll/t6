@@ -305,8 +305,8 @@ let dbs = [
 	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
 ];
-dbs.forEach(file => {
-	fs.chmod(file, 0o600 , err => {
+dbs.forEach((file) => {
+	fs.chmod(file, 0o600 , (err) => {
 		if(err) {
 			t6console.warn(`- ${file} ${err ? "can't be chmoded" : "is 0600 now."}`);
 		}

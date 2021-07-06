@@ -437,7 +437,7 @@ app.resources.objects = {
 				if ( source_id_selector ) {
 					source_id_selector.addEventListener("change", function(e) {
 						if (e.srcElement.value!=="-") {
-							let subsource = JSON.parse(localStorage.getItem("sources")).find(subsource => subsource.id == e.srcElement.value);
+							let subsource = JSON.parse(localStorage.getItem("sources")).find((subsource) => {subsource.id == e.srcElement.value});
 							let sel = document.getElementById("source_version");
 							for (let i = sel.options.length-1; i >= 0; i--) { sel.options[i] = null;}
 							if ((subsource.subversions).length <= 0) {

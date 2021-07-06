@@ -25,9 +25,9 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 			measurement: measurement,
 			tags: tags,
 			fields: fields,
-		}], { retentionPolicy: retention, }).then(err => {
+		}], { retentionPolicy: retention, }).then((err) => {
 			return true;
-		}).catch(err => {
+		}).catch((err) => {
 			t6console.error("Error writting event to influxDb:", err);
 		});
 	}
