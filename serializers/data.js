@@ -13,10 +13,11 @@ function DataSerializer(data) {
 				prev	: data.pagePrev>0?sprintf("%s/v%s/data/%s?limit=%s&page=%s&sort=%s", baseUrl_https, version, data.flow_id, data.limit, data.pagePrev, data.sort):undefined,
 				next	: data.pageNext>0?sprintf("%s/v%s/data/%s?limit=%s&page=%s&sort=%s", baseUrl_https, version, data.flow_id, data.limit, data.pageNext, data.sort):undefined,
 				last	: data.pageLast>0?sprintf("%s/v%s/data/%s?limit=%s&page=%s&sort=%s", baseUrl_https, version, data.flow_id, data.limit, data.pageLast, data.sort):undefined,
+				unit	: typeof data.unit_id!=="undefined"?sprintf("%s/v%s/units/%s", baseUrl_https, version, data.unit_id):undefined,
+				unit_format: data.unit_format,
+				datatype: typeof data.datatype_id!=="undefined"?sprintf("%s/v%s/datatypes/%s", baseUrl_https, version, data.datatype_id):undefined,
 				title	: data.title,
 				ttl		: data.ttl,
-				unit	: data.unit,
-				datatype: data.datatype,
 			},
 			dataLinks : {
 				self : function(d) {
@@ -26,6 +27,8 @@ function DataSerializer(data) {
 						return undefined;
 					}
 				},
+				unit: function(d) {return typeof d.unit_id!=="undefined"?sprintf("%s/v%s/units/%s", baseUrl_https, version, d.unit_id):undefined },
+				datatype: function(d) {return typeof d.datatype_id!=="undefined"?sprintf("%s/v%s/datatypes/%s", baseUrl_https, version, d.datatype_id):undefined },
 			},
 		}).serialize(data);
 	};

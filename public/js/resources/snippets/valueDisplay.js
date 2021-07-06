@@ -29,8 +29,8 @@ var snippet = {
 		}).then(function(response) {
 			var id = response.data[0].attributes.id;
 			var time = response.data[0].attributes.time;
-			var unit = typeof response.links.unit!=="undefined"?response.links.unit:"";
-			var ttl = response.links.ttl;
+			var unit = typeof response.links.unit_format!=="undefined"?response.links.unit_format:"%s";
+			var ttl = typeof response.links.ttl!=="undefined"?response.links.ttl:3600;
 			console.log("DEBUG", ttl);
 			var value = [];
 			for (var i=0; i<limit-1; i++) {

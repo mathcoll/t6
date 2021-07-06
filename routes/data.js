@@ -13,9 +13,9 @@ function getJson(v) {
 	}
 }
 function getObjectKey(payload, user_id) {
-	t6console.error("getObjectKey", payload.object_id);
 	return new Promise((resolve, reject) => {
 		if ( typeof payload.object_id !== "undefined" ) {
+			t6console.debug("getObjectKey", payload.object_id);
 			let query = { "$and": [ { "user_id" : user_id }, { "id" : payload.object_id }, ] };
 			var object = objects.findOne(query);
 			if ( object && object.secret_key ) {
@@ -70,7 +70,7 @@ function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
 	}
 	return fields;
 }
-function preloadPayload(payload, user_id) {
+function preloadPayload(payload, req) {
 	t6console.debug("preloadPayload");
 	return new Promise((resolve, reject) => {
 		payload = getJson(payload);
@@ -78,25 +78,29 @@ function preloadPayload(payload, user_id) {
 		payload.timestamp	 = (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
 		if ( payload.timestamp.toString().length <= 10 ) { payload.timestamp = moment(time*1000).format("x"); }
 		payload.time		 = payload.timestamp;
-		payload.user_id		 = typeof user_id!=="undefined"?user_id:null;
+		payload.user_id		 = typeof req.user.id!=="undefined"?req.user.id:null;
 		payload.value		 = typeof payload.value!=="undefined"?payload.value:"";
-		payload.unit		 = typeof payload.unit!=="undefined"?payload.unit:"";
+		payload.unit		 = (typeof payload.unit!=="undefined" && payload.unit!==null)?payload.unit:undefined;
+		payload.unit_id		 = (typeof payload.unit_id!=="undefined" && payload.unit_id!==null)?payload.unit_id:undefined;
+		payload.datatype	 = (typeof payload.datatype!=="undefined" && payload.datatype!==null)?payload.datatype:undefined;
+		payload.datatype_id	 = (typeof payload.datatype_id!=="undefined" && payload.datatype_id!==null)?payload.datatype_id:undefined;
 		payload.mqtt_topic	 = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
 		payload.latitude	 = typeof payload.latitude!=="undefined"?payload.latitude:"";
 		payload.longitude	 = typeof payload.longitude!=="undefined"?payload.longitude:"";
 		payload.text		 = typeof payload.text!=="undefined"?payload.text:"";
 		payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 		payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
-		payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
+		payload.errorMessage = req.body.length>3?["Maximum payload reach. Some payload will be ignored"]:[];
+		payload.flow_id		 = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
 		if(payload.object_id) {
-			getObjectKey(payload, user_id)
+			getObjectKey(payload, req.user.id)
 				.then((ok) => {
 					payload = ok.payload;
 					object = ok.object;
 					resolve({payload, object});
 				})
 				.catch((error) => { 
-					t6console.error("Error inside preloadPayload > getObjectKey", error);
+					t6console.debug("Error inside preloadPayload > getObjectKey", error);
 					payload.errorMessage.push("Couldn't get secret key from Object. "+error);
 					resolve({payload, object});
 				});
@@ -112,6 +116,9 @@ function signatureCheck(payload, object) {
 			flow_id: payload.flow_id,
 			user_id: payload.user_id,
 			unit: payload.unit,
+			unit_id: payload.unit_id,
+			datatype: payload.datatype,
+			datatype_id: payload.datatype_id,
 			mqtt_topic: payload.mqtt_topic,
 			latitude: payload.latitude,
 			longitude: payload.longitude,
@@ -130,6 +137,9 @@ function signatureCheck(payload, object) {
 					payload.flow_id = typeof payload.flow_id!=="undefined"?payload.flow_id:initialPayload.flow_id;
 					payload.user_id = typeof payload.user_id!=="undefined"?payload.user_id:initialPayload.user_id;
 					payload.unit = typeof payload.unit!=="undefined"?payload.unit:initialPayload.unit;
+					payload.unit_id = typeof payload.unit_id!=="undefined"?payload.unit_id:initialPayload.unit_id;
+					payload.datatype = typeof payload.datatype!=="undefined"?payload.datatype:initialPayload.datatype;
+					payload.datatype_id = payload.datatype_id!=="undefined"?payload.datatype_id:initialPayload.datatype_id;
 					payload.mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:initialPayload.mqtt_topic;
 					payload.latitude = typeof payload.latitude!=="undefined"?payload.latitude:initialPayload.latitude;
 					payload.longitude = typeof payload.longitude!=="undefined"?payload.longitude:initialPayload.longitude;
@@ -147,7 +157,7 @@ function signatureCheck(payload, object) {
 				}
 			});
 		} else {
-			t6console.warn("Is payload really signed?");
+			t6console.debug("Is payload really signed?");
 			resolve({payload, object});
 		}
 	});
@@ -159,6 +169,9 @@ function decrypt(payload, object) {
 			flow_id: payload.flow_id,
 			user_id: payload.user_id,
 			unit: payload.unit,
+			unit_id: payload.unit_id,
+			datatype: payload.datatype,
+			datatype_id: payload.datatype_id,
 			mqtt_topic: payload.mqtt_topic,
 			latitude: payload.latitude,
 			longitude: payload.longitude,
@@ -168,7 +181,6 @@ function decrypt(payload, object) {
 			save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
 			publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
 		}
-		t6console.debug("initialPayload", initialPayload);
 		if ( typeof payload!=="undefined" && payload.encryptedPayload && object ) {
 			let encryptedPayload = payload.encryptedPayload.trim();
 			if ( object && object.secret_key_crypt ) {
@@ -186,6 +198,9 @@ function decrypt(payload, object) {
 				payload.flow_id = typeof payload.flow_id!=="undefined"?payload.flow_id:initialPayload.flow_id;
 				payload.user_id = typeof payload.user_id!=="undefined"?payload.user_id:initialPayload.user_id;
 				payload.unit = typeof payload.unit!=="undefined"?payload.unit:initialPayload.unit;
+				payload.unit_id = typeof payload.unit_id!=="undefined"?payload.unit_id:initialPayload.unit_id;
+				payload.datatype = typeof payload.datatype!=="undefined"?payload.datatype:initialPayload.datatype;
+				payload.datatype_id = payload.datatype_id!=="undefined"?payload.datatype_id:initialPayload.datatype_id;
 				payload.mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:initialPayload.mqtt_topic;
 				payload.latitude = typeof payload.latitude!=="undefined"?payload.latitude:initialPayload.latitude;
 				payload.longitude = typeof payload.longitude!=="undefined"?payload.longitude:initialPayload.longitude;
@@ -221,38 +236,54 @@ function verifyPrerequisites(payload, object) {
 			t6console.error("Error: verifyPrerequisites : no flow_id.");
 			resolve({payload, object, current_flow: null});
 		} else {
-			let f = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
-			let current_flow = (f.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
-			let join;
+			let fDatatypes = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
+			let fUnits = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
+			let current_flow = (fDatatypes.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
+			let joinDatatypes, joinUnits;
 	
-			if(typeof payload.datatype_id!=="undefined") { 
+			if(typeof payload.datatype_id!=="undefined" && payload.datatype_id!=="") { 
 				let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
 				payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
 				t6console.debug(`Getting datatype "${payload.datatype}" from payload`);
 			} else if (typeof current_flow!=="undefined") {
-				join = f.eqJoin(datatypes.chain(), "data_type", "id"); // TODO : in Flow collection, the data_type should be renamed to datatype_id
-				payload.datatype = typeof (join.data())[0]!=="undefined"?(join.data())[0].right.name:"string";
+				joinDatatypes = fDatatypes.eqJoin(datatypes.chain(), "data_type", "id"); // TODO : in Flow collection, the data_type should be renamed to datatype_id
+				payload.datatype = typeof (joinDatatypes.data())[0]!=="undefined"?(joinDatatypes.data())[0].right.name:"string";
+				payload.datatype_id = typeof (joinDatatypes.data())[0]!=="undefined"?(joinDatatypes.data())[0].right.id:undefined;
 				t6console.debug(`Getting datatype "${payload.datatype}" from Flow`);
 			} else {
 				payload.datatype = "string";
 				t6console.debug(`Getting datatype "${payload.datatype}" from default value`);
 			}
-	
-			if ( !payload.mqtt_topic && (f.data())[0] && ((f.data())[0].left) && ((f.data())[0].left).mqtt_topic ) {
-				payload.mqtt_topic = ((f.data())[0].left).mqtt_topic;
+			
+			if ( !payload.mqtt_topic && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
+				payload.mqtt_topic = ((joinDatatypes.data())[0].left).mqtt_topic;
 			}
+			
+			if(typeof payload.unit_id!=="undefined" && payload.unit_id!=="") { 
+				let u = (units.chain().find({id: ""+payload.unit_id,}).limit(1)).data()[0];
+				payload.unit = (typeof payload.unit_id!=="undefined" && typeof u!=="undefined")?u.name:"No unit";
+				t6console.debug(`Getting unit "${payload.unit}" from payload`);
+			} else if (typeof current_flow!=="undefined") {
+				joinUnits = fUnits.eqJoin(units.chain(), "unit", "id"); // TODO : in Flow collection, the unit should be renamed to unit_id
+				payload.unit = typeof (joinUnits.data())[0]!=="undefined"?(joinUnits.data())[0].right.name:"No unit";
+				payload.unit_id = typeof (joinUnits.data())[0]!=="undefined"?(joinUnits.data())[0].right.id:undefined;
+				t6console.debug(`Getting unit "${payload.unit}" from Flow`);
+			} else {
+				payload.unit = "No unit";
+				t6console.debug(`Getting unit "${payload.unit}" from default value`);
+			}
+	
 			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !isEncrypted ) {
-				//t6console.log("(f.data())[0].left", (f.data())[0].left);
 				t6console.debug("Flow require isEncrypted -", current_flow.left.require_encrypted);
 				t6console.debug(".. & Payload isEncrypted", isEncrypted);
 				payload.prerequisite += 1;
 			}
 			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !isSigned ) {
-				//t6console.log("current_flow.left", current_flow.left);
 				t6console.debug("Flow require isSigned -", current_flow.left.require_signed);
 				t6console.debug(".. & Payload isSigned", isSigned);
 				payload.prerequisite += 1;
 			}
+
 			t6console.debug("Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
 			if (payload.prerequisite <= 0) {
 				resolve({payload, object, current_flow});
@@ -288,10 +319,10 @@ function preprocessor(payload, fields, current_flow) {
 		}
 		if(payload.isRejected) {
 			payload.save = false;
-			t6console.debug("preprocessor : inside isRejected");
+			t6console.debug("Preprocessor rejected value.");
 			resolve({payload, fields, current_flow});
 		} else {
-			t6console.debug("preprocessor : inside is Not Rejected");
+			t6console.debug("Preprocessor accepted value.");
 			resolve({payload, fields, current_flow});
 		}
 	});
@@ -511,12 +542,12 @@ function saveToCloud(payload, fields, current_flow) {
 }
 function ruleEngine(payload, fields, current_flow) {
 	t6console.debug("ruleEngine");
-	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
+	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true; // TODO : to be cleaned
 	return new Promise((resolve, reject) => {
-		if ( publish === true ) {
+		if ( publish === true ) {														 // TODO : to be cleaned
 			t6console.debug("Publishing to Rule Engine");
 			let flow = payload.flow_id!==null?payload.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:(typeof current_flow!=="undefined"?current_flow.id:""));
-			let payloadFact = {"dtepoch": payload.time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "datatype": payload.datatype, "mqtt_topic": payload.mqtt_topic}; // This is the bare minimal payload
+			let payloadFact = {"dtepoch": payload.time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "unit": (typeof payload.unit!=="undefined"?payload.unit:""), "datatype": payload.datatype, "mqtt_topic": payload.mqtt_topic}; // This is the bare minimal payload
 			if ( typeof payload.object_id !== "undefined" ) {
 				payloadFact.object_id = payload.object_id;
 				let query = {
@@ -548,11 +579,8 @@ function processPayload(payloadArray, req) {
 	t6console.debug("processPayload");
 	let process = [];
 	return new Promise((resolve, reject) => {
-		let location;
-		const promises = payloadArray.flatMap((payload, pIndex) => {
-			payload.errorMessage = req.body.length>3?["Maximum payload reach. Some payload will be ignored"]:[];
-			payload.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
-			preloadPayload(payload, req.user.id)
+		payloadArray.flatMap((payload, pIndex) => {
+			preloadPayload(payload, req)
 				.then((pp) => {
 					return signatureCheck(pp.payload, pp.object);
 				})
@@ -583,21 +611,25 @@ function processPayload(payloadArray, req) {
 				.then((re) => {
 					let measure = re.fields;
 					let payload = re.payload;
+					let current_flow = re.current_flow;
 					measure.parent = payload.flow_id;
 					measure.self = payload.flow_id;
 					measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
+					measure.publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):null;
 					measure.flow_id = payload.flow_id;
 					measure.datatype = payload.datatype;
-					measure.title = typeof current_flow!=="undefined"?current_flow.title:null;
-					measure.ttl = typeof current_flow!=="undefined"?current_flow.ttl:null;
+					measure.datatype_id = payload.datatype_id;
+					measure.unit = payload.unit;
+					measure.unit_id = payload.unit_id;
 					measure.id = payload.time*1000000;
 					measure.time = payload.time*1000000;
 					measure.timestamp = payload.time*1000000;
 					measure.value = payload.value;
-					measure.publish = payload.publish;
 					measure.mqtt_topic = payload.mqtt_topic;
-					measure.preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:null;
-					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:null;
+					measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
+					measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
+					measure.preprocessor = (typeof current_flow!=="undefined" && current_flow!==null)?payload.preprocessor:undefined;
+					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
 					measure.location = `/v/${version}/flows/${payload.flow_id}/${measure.id}`;
 					
 					t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
@@ -749,7 +781,11 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 					d.time = Date.parse(d.time);
 				});
 				data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
-				data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:"";
+				//data.datatype = payload.datatype;
+				//data.datatype_id = payload.datatype_id;
+				data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:""; // TODO : not consistent with POST
+				data.unit_format = ((join.data())[0].right)!==null?((join.data())[0].right).format:""; // TODO : not consistent with POST
+				data.unit_id = ((join.data())[0].right)!==null?((join.data())[0].right).id:"";
 				data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
 				data.ttl = (((join.data())[0].left).ttl!==null && ((join.data())[0].left).ttl!=="")?((join.data())[0].left).ttl:3600;
 				data.flow_id = flow_id;
@@ -819,14 +855,16 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 		res.header("Location", process[0].location); // hum ...
 		process.parent = process[0].parent; // hum ...
 		process.flow_id = process[0].flow_id; // hum ...
+		process.datatype= process[0].datatype; // hum ...
+		process.datatype_id= process[0].datatype_id; // hum ...
+		process.unit = process[0].unit; // hum ...
+		process.unit_id = process[0].unit_id; // hum ...
+		process.title = process[0].title; // hum ...
+		process.ttl = process[0].ttl; // hum ...
 		process.pageSelf = 1;
 		process.pageFirst = 1;
 		process.limit = 20;
 		process.sort = "asc";
-		process.title = "";
-		process.ttl	= "";
-		process.unit = "";
-		process.datatype= "";
 		t6console.debug(`Finished processing all ${payloadArray.length} measurements`);
 		res.status(200).send(new DataSerializer(process).serialize());
 	})

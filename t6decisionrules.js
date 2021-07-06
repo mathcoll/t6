@@ -424,10 +424,10 @@ t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 		payload.flow = "";
 	}
 	if ( !user_id ) {
-		t6console.error(sprintf("Can't load rule for unknown_user", user_id));
 		user_id = "unknown_user";
+		t6console.error(`Can't load rule for unknown user: ${user_id}`);
 	} else {
-		t6console.info(sprintf("Loading rules for User: %s", user_id));
+		t6console.debug(`Loading rules for User: ${user_id}`);
 		t6console.debug("payload before checkRulesFromUser", payload);
 		t6decisionrules.checkRulesFromUser(user_id, payload);
 	}
