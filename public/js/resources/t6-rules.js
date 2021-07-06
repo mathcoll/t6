@@ -19,7 +19,7 @@ app.resources.rules = {
 				},
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				console.log("DEBUG onEditRule", JSON.stringify(body));
 			}
 			var myHeaders = new Headers();
@@ -57,7 +57,7 @@ app.resources.rules = {
 				}
 			}
 		};
-		if ( localStorage.getItem("settings.debug") == "true" ) {
+		if ( localStorage.getItem("settings.debug") === "true" ) {
 			console.log("DEBUG onAddRule", JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
@@ -302,7 +302,7 @@ app.resources.rules = {
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("displayRule error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});

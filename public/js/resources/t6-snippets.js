@@ -61,7 +61,7 @@ app.resources.snippets = {
 			flows: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(flow) { return ((JSON.parse(localStorage.getItem("flows")))[flow.getAttribute("data-id")]).id; }),
 		};
 		body.options.width = typeof body.options.width!=="undefined"?body.options.width:{"value": "12"};
-		if ( localStorage.getItem("settings.debug") == "true" ) {
+		if ( localStorage.getItem("settings.debug") === "true" ) {
 			console.log("DEBUG onAddSnippet", JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
@@ -342,7 +342,7 @@ app.resources.snippets = {
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("displaySnippet error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});

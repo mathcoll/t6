@@ -466,7 +466,7 @@ app.resources.sources = {
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("displaySource error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});

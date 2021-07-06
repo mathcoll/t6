@@ -549,7 +549,7 @@ app.resources.objects = {
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("displayObject error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});
@@ -679,7 +679,7 @@ app.resources.objects = {
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("displayObject error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});

@@ -12,7 +12,7 @@ app.resources.dashboards = {
 				snippets: Array.prototype.map.call(myForm.querySelectorAll(".mdl-chips .mdl-chip"), function(snippet) { return ((JSON.parse(localStorage.getItem("snippets")))[snippet.getAttribute("data-id")]).id; }),
 				meta: {revision: myForm.querySelector("input[name='meta.revision']").value, },
 			};
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				console.log("DEBUG onEditDashboard", JSON.stringify(body));
 			}
 			var myHeaders = new Headers();
@@ -225,7 +225,7 @@ app.resources.dashboards = {
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("displayDashboard error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});

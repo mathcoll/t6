@@ -79,7 +79,7 @@ app.resources.flows = {
 			},
 			preprocessor: myForm.querySelector("textarea[id='preprocessor']").value&&JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value)!=="undefined"?JSON.parse(myForm.querySelector("textarea[id='preprocessor']").value):undefined,
 		};
-		if ( localStorage.getItem("settings.debug") == "true" ) {
+		if ( localStorage.getItem("settings.debug") === "true" ) {
 			console.log("DEBUG onAddFlow", JSON.stringify(body));
 		}
 		var myHeaders = new Headers();
@@ -394,7 +394,7 @@ app.resources.flows = {
 			}
 		})
 		.catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("displayFlow error occured..." + error, {timeout:3000, type: "error"});
 			}
 		});

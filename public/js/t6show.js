@@ -205,7 +205,7 @@ let materializeLight = (inputJson) => {
 let registerServiceWorker = function() {
 	return navigator.serviceWorker.register("/sw.js", { scope: "/" })
 	.then(function(registration) {
-		if ( localStorage.getItem("settings.debug") == "true" ) {
+		if ( localStorage.getItem("settings.debug") === "true" ) {
 			console.log("[ServiceWorker] Registered with scope:", registration.scope);
 		}
 		if ( (typeof firebase !== "object" || typeof firebase === "undefined") && typeof firebase.apps !== "object" && typeof firebase.apps.length !== "number" ) {

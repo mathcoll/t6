@@ -54,7 +54,7 @@ var snippet = {
 			}
 			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true);}, 2000);
 		}).catch(function (error) {
-			if ( localStorage.getItem("settings.debug") == "true" ) {
+			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("getSnippet Inside error..." + error, {timeout:3000, type: "error"});
 			}
 		});
