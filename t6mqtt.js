@@ -8,7 +8,7 @@ t6mqtt.publish = function(user_id, topic, payload, retain) {
 	} else {
 		topic = topic!==null?topic:mqttRoot+"undefined/default";
 	}
-	while( topic.charAt(0)==="/" ) { topic = topic.substr(1) }
+	while( topic.charAt(0)==="/" ) { topic = topic.substr(1); }
 	try {
 		if ( payload && typeof payload !== "string" ) {
 			payload = JSON.parse(payload);

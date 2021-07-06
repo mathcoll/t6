@@ -8,7 +8,7 @@ t6preprocessor.export = function() {
 
 t6preprocessor.str2bool = function(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
-}
+};
 
 t6preprocessor.cryptValue = function(value, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
