@@ -5,8 +5,8 @@ var UnitSerializer = require("../serializers/unit");
 var ErrorSerializer = require("../serializers/error");
 
 /**
- * @api {get} /units/:unit_id Get Unit(s)
- * @apiName Get Unit(s)
+ * @api {get} /units/:unit_id Get Units
+ * @apiName Get Units
  * @apiGroup General
  * @apiVersion 2.0.1
  * 

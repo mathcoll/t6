@@ -10,7 +10,7 @@ var sources;
 /**
  * @api {get} /objects/:object_id/ui Get UI for an Object
  * @apiName Get UI for an Object
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -50,7 +50,7 @@ router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secr
 /**
  * @api {get} /objects/:object_id/show Show an Object UI
  * @apiName Show an Object UI
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -83,7 +83,7 @@ router.get("/(:object_id([0-9a-z\-]+))/show", expressJwt({secret: jwtsettings.se
 /**
  * @api {get} /objects/:object_id/qrcode/:typenumber/:errorcorrectionlevel Get qrcode for an Object
  * @apiName Get qrcode for an Object
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -126,7 +126,7 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 /**
  * @api {get} /objects/:object_id Get Public Object 
  * @apiName Get Public Object
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -170,7 +170,7 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 /**
  * @api {get} /objects/:object_id/latest-version Get Object OTA latest version ready to be deployed
  * @apiName Get Object OTA latest version ready to be deployed
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -215,7 +215,7 @@ router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwts
 /**
  * @api {get} /objects/:object_id/ota-status Get Object OTA status
  * @apiName Get Object OTA status
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -252,9 +252,9 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtset
 });
 
 /**
- * @api {get} /objects/ Get Object(s)
- * @apiName Get Object(s)
- * @apiGroup 1. Object & User Interfaces
+ * @api {get} /objects/ Get Objects
+ * @apiName Get Objects
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -333,7 +333,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 /**
  * @api {post} /objects/:object_id/unlink/:source_id Unlink Object from the selected Source
  * @apiName Unlink Object from the selected Source
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -375,7 +375,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
 /**
  * @api {post} /objects/:object_id/build Build an Arduino source for the selected object
  * @apiName Build an Arduino source for the selected object
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -470,7 +470,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 /**
  * @api {post} /objects Create new Object
  * @apiName Create new Object
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -542,7 +542,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 /**
  * @api {put} /objects/:object_id Edit an Object
  * @apiName Edit an Object
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -632,7 +632,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 /**
  * @api {delete} /objects/:object_id Delete an Object
  * @apiName Delete an Object
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -664,7 +664,7 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 /**
  * @api {put} /objects/:object_id/:pName Edit Object Custom Parameter
  * @apiName Edit Object Custom Parameter
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -723,7 +723,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 /**
  * @api {get} /objects/:object_id/:pName Get Object Custom Parameter
  * @apiName Get Object Custom Parameter
- * @apiGroup 1. Object & User Interfaces
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

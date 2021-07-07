@@ -4,8 +4,8 @@ var router = express.Router();
 var MqttSerializer = require("../serializers/mqtt");
 
 /**
- * @api {get} /mqtts/:mqtt_id Get Mqtt(s)
- * @apiName Get Mqtt(s)
+ * @api {get} /mqtts/:mqtt_id Get Mqtts
+ * @apiName Get Mqtts
  * @apiGroup 7. Mqtt
  * @apiVersion 2.0.1
  * 

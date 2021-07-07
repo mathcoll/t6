@@ -6,8 +6,8 @@ var ErrorSerializer = require("../serializers/error");
 var dashboards;
 
 /**
- * @api {get} /dashboards/:dashboard_id Get Dashboard(s)
- * @apiName Get Dashboard(s)
+ * @api {get} /dashboards/:dashboard_id Get Dashboards
+ * @apiName Get Dashboards
  * @apiGroup 3. Dashboard
  * @apiVersion 2.0.1
  * 

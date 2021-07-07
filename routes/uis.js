@@ -6,8 +6,8 @@ var ErrorSerializer = require("../serializers/error");
 var uis;
 
 /**
- * @api {get} /uis/:ui_id Get UI(s)
- * @apiName Get UI(s)
+ * @api {get} /uis/:ui_id Get UIs
+ * @apiName Get UIs
  * @apiGroup 1. Object
  * @apiVersion 2.0.1
  * 

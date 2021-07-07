@@ -801,8 +801,8 @@ router.get("/index", function(req, res, next) {
 
 
 /**
- * @api {get} /terms Get Terms & Privacy for PWA
- * @apiName Get Terms & Privacy for PWA
+ * @api {get} /terms Get Terms and Privacy for PWA
+ * @apiName Get Terms and Privacy for PWA
  * @apiGroup General
  * @apiVersion 2.0.1
  * 

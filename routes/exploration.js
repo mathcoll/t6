@@ -40,7 +40,7 @@ function gaussian_pdf(x, mean, sigma) {
 /**
  * @api {get} /exploration/summary Explore summary
  * @apiName Explore summary 
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -127,7 +127,7 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 /**
  * @api {get} /exploration/normality Explore for normality
  * @apiName Explore for normality
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -201,9 +201,27 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 });
 
 /**
- * @api {get} /exploration/head|tail Explore the first|last n rows
- * @apiName Explore the first|last n rows
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @api {get} /exploration/head Explore the first n rows
+ * @apiName Explore the first n rows
+ * @apiGroup 10 Exploratory Data Analysis EDA
+ * @apiVersion 2.0.1
+ *
+ * @apiUse Auth
+ * 
+ * @apiParam {uuid-v4} flow_id Flow ID to explore
+ * @apiParam {Integer} n Number of rows
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+
+/**
+ * @api {get} /exploration/tail Explore the last n rows
+ * @apiName Explore the last n rows
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -246,9 +264,9 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 });
 
 /**
- * @api {get} /exploration/kernelDensityEstimation Explore Distribution (kernelDensityEstimation)
- * @apiName Explore Distribution (kernelDensityEstimation)
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @api {get} /exploration/kernelDensityEstimation Explore Distribution kernelDensityEstimation
+ * @apiName Explore Distribution kernelDensityEstimation
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -366,9 +384,9 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 });
 
 /**
- * @api {get} /exploration/loess Explore LOESS (LOcally Estimated Scatterplot Smoothing)
- * @apiName Explore LOESS (LOcally Estimated Scatterplot Smoothing)
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @api {get} /exploration/loess Explore LOESS LOcally Estimated Scatterplot Smoothing
+ * @apiName Explore LOESS LOcally Estimated Scatterplot Smoothing
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -605,7 +623,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 /**
  * @api {get} /exploration/frequencyDistribution Explore Frequency Distribution
  * @apiName Explore Frequency Distribution
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -820,7 +838,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 /**
  * @api {get} /exploration/export Export rough data as json array
  * @apiName Export rough data as json array
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -910,7 +928,7 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 /**
  * @api {get} /exploration/trend Explore Trend
  * @apiName Explore Trend
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * 
  * 
  */
@@ -921,7 +939,7 @@ router.get("/trend/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 /**
  * @api {get} /exploration/seasonality Explore Seasonality
  * @apiName Explore Seasonality
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * 
  * 
  */
@@ -932,7 +950,7 @@ router.get("/seasonality/?", expressJwt({ secret: jwtsettings.secret, algorithms
 /**
  * @api {get} /exploration/outliers Explore Outliers
  * @apiName Explore Outliers
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * 
  * 
  */
@@ -943,7 +961,7 @@ router.get("/outliers/?", expressJwt({ secret: jwtsettings.secret, algorithms: j
 /**
  * @api {get} /exploration/line Get Explore Plot line
  * @apiName Get Explore Plot line
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -1101,7 +1119,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 /**
  * @api {get} /exploration/boxplot Explore Boxplot
  * @apiName Explore Boxplot
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -1293,7 +1311,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 /**
  * @api {get} /exploration/:flow_id/exploration Get Exploration
  * @apiName Explore Flows
- * @apiGroup 10 Exploratory Data Analysis (EDA)
+ * @apiGroup 10 Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  * @apiDeprecated /!\ Please use other Apis 
  *

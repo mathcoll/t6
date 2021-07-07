@@ -5,8 +5,8 @@ var DataTypeSerializer = require("../serializers/datatype");
 var ErrorSerializer = require("../serializers/error");
 
 /**
- * @api {get} /datatypes/:datatype_id Get DataType(s)
- * @apiName Get DataType(s)
+ * @api {get} /datatypes/:datatype_id Get DataTypes
+ * @apiName Get DataTypes
  * @apiGroup General
  * @apiVersion 2.0.1
  * 

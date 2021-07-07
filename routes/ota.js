@@ -8,7 +8,7 @@ var sources;
 /**
  * @api {get} /ota/board-listall List all known boards and their corresponding FQBN
  * @apiName List all known boards and their corresponding FQBN
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -31,7 +31,7 @@ router.get("/board-listall", expressJwt({secret: jwtsettings.secret, algorithms:
 /**
  * @api {get} /ota/lib-list Shows a list of all installed libraries
  * @apiName Shows a list of all installed libraries
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -54,7 +54,7 @@ router.get("/lib-list", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 /**
  * @api {get} /ota/core-list Shows a list of all installed platform core
  * @apiName Shows a list of all installed platform core
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -77,7 +77,7 @@ router.get("/core-list", expressJwt({secret: jwtsettings.secret, algorithms: jwt
 /**
  * @api {post} /ota/:source_id/deploy/:object_id Deploy a Source to all linked Objects Over The Air
  * @apiName Deploy a Source to all linked Objects Over The Air
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -196,7 +196,7 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 /**
  * @api {get} /ota/:source_id Get Objects linked to source
  * @apiName Get Objects linked to source
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

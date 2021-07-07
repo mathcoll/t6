@@ -6,8 +6,8 @@ var ErrorSerializer = require("../serializers/error");
 var snippets;
 
 /**
- * @api {get} /snippets/:snippet_id Get Snippet(s)
- * @apiName Get Snippet(s)
+ * @api {get} /snippets/:snippet_id Get Snippets
+ * @apiName Get Snippets
  * @apiGroup 4. Snippet
  * @apiVersion 2.0.1
  * 

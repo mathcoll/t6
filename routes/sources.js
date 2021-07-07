@@ -7,9 +7,9 @@ var ErrorSerializer = require("../serializers/error");
 var sources;
 
 /**
- * @api {get} /sources/:source_id Get Source(s)
- * @apiName Get Source(s)
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @api {get} /sources/:source_id Get Sources
+ * @apiName Get Sources
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -107,7 +107,7 @@ router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secr
 /**
  * @api {get} /sources/:source_id/child Get Children of Source
  * @apiName Get Children of Source
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -150,7 +150,7 @@ router.get("/:source_id([0-9a-z\-]+)/child", expressJwt({secret: jwtsettings.sec
 /**
  * @api {post} /sources Create new Source
  * @apiName Create new Source
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -191,7 +191,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 /**
  * @api {put} /sources/:source_id Edit a Source
  * @apiName Edit a Source
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -294,7 +294,7 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 /**
  * @api {delete} /sources/:source_id Delete a Source
  * @apiName Delete a Source
- * @apiGroup 6. Source and Over The Air (OTA)
+ * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth

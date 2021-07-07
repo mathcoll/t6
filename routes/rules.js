@@ -6,8 +6,8 @@ var ErrorSerializer = require("../serializers/error");
 var rules;
 
 /**
- * @api {get} /rules/:rule_id Get Rule(s)
- * @apiName Get Rule(s)
+ * @api {get} /rules/:rule_id Get Rules
+ * @apiName Get Rules
  * @apiGroup 5. Rule
  * @apiVersion 2.0.1
  * 

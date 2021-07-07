@@ -647,8 +647,8 @@ function processPayload(payloadArray, req) {
 }
 
 /**
- * @api {get} /data/:flow_id/:data_id? Get DataPoint(s)
- * @apiName Get DataPoint(s)
+ * @api {get} /data/:flow_id/:data_id? Get DataPoints
+ * @apiName Get DataPoints
  * @apiGroup 0 DataPoint
  * @apiVersion 2.0.1
  *

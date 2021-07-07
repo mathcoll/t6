@@ -5,8 +5,8 @@ var FlowSerializer = require("../serializers/flow");
 var ErrorSerializer = require("../serializers/error");
 
 /**
- * @api {get} /flows/:flow_id Get Flow(s)
- * @apiName Get Flow(s)
+ * @api {get} /flows/:flow_id Get Flows
+ * @apiName Get Flows
  * @apiGroup 2. Flow
  * @apiVersion 2.0.1
  * 
