@@ -244,13 +244,13 @@ footer > ul {
 footer > ul li {
   float: left;
   margin: 0 !important;
-  padding: 0px 0px;
+  padding: 0;
   width: 33%;
   color: #fff;
   font-weight: 700;
 }
 footer > ul li ul {
-  padding: 0px;
+  padding: 0;
 }
 footer > ul li ul li {
   width: 100%;
@@ -348,7 +348,7 @@ span.mdl-list__item-sub-title {
   min-height: auto !important;
   padding: 5px 16px !important;
 }
-#TypeSample { margin-left: 0px !important; }
+#TypeSample { margin-left: 0 !important; }
 #TypeSample > div { width: calc(100% - 48px) !important; }
 body {
   display: -webkit-box;
@@ -962,7 +962,7 @@ h1.mdl-subheader-content {
   position: -ms-sticky;
   position: sticky;
   top: 0;
-  margin-bottom: 0px;
+  margin-bottom: 0;
   z-index: 2;
   background: #ececec;
 }
@@ -1265,7 +1265,7 @@ form.resetpassword > div.mdl-shadow--2dp img {
   height: 130px;
   width: 130px;
   border: 5px solid #fff;
-  margin: -60px 0px 0px 0px;
+  margin: -60px 0 0 0;
   background: url(/img/opl_img.webp);
   background-size: auto auto;
   background-size: 130px 130px;
@@ -1295,8 +1295,8 @@ form.resetpassword > div.mdl-shadow--2dp img {
   font-weight: 500;
   padding-left: 15px;
   padding-right: 10px;
-  -webkit-transition: opacity 0.3s cubic-bezier(0, 0, 0.30, 1) 0;
-  transition: opacity 0.3s cubic-bezier(0, 0, 0.30, 1) 0;
+  -webkit-transition: opacity 0.3s cubic-bezier(0, 0, 0.3, 1) 0;
+  transition: opacity 0.3s cubic-bezier(0, 0, 0.3, 1) 0;
   text-transform: initial;
   margin: 5px -150px;
   border-radius: 2px;
@@ -1391,12 +1391,12 @@ form.resetpassword > div.mdl-shadow--2dp img {
   position: fixed;
   top: 0;
   bottom: 0;
-  box-shadow: 0px 0px 11px 0px rgba(0, 0, 0, 0.4);
-  -webkit-transition: transform 0.3s cubic-bezier(0, 0, 0.30, 1);
-  -webkit-transition: -webkit-transform 0.3s cubic-bezier(0, 0, 0.30, 1);
-  transition: -webkit-transform 0.3s cubic-bezier(0, 0, 0.30, 1);
-  transition: transform 0.3s cubic-bezier(0, 0, 0.30, 1);
-  transition: transform 0.3s cubic-bezier(0, 0, 0.30, 1), -webkit-transform 0.3s cubic-bezier(0, 0, 0.30, 1);
+  box-shadow: 0 0 11px 0 rgba(0, 0, 0, 0.4);
+  -webkit-transition: transform 0.3s cubic-bezier(0, 0, 0.3, 1);
+  -webkit-transition: -webkit-transform 0.3s cubic-bezier(0, 0, 0.3, 1);
+  transition: -webkit-transform 0.3s cubic-bezier(0, 0, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0, 0, 0.3, 1);
+  transition: transform 0.3s cubic-bezier(0, 0, 0.3, 1), -webkit-transform 0.3s cubic-bezier(0, 0, 0.3, 1);
   -webkit-transform: translateX(-110%);
   transform: translateX(-110%);
   will-change: transform;
@@ -1415,8 +1415,8 @@ form.resetpassword > div.mdl-shadow--2dp img {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.3);
-  -webkit-transition: opacity 0.15s cubic-bezier(0, 0, 0.30, 1);
-  transition: opacity 0.15s cubic-bezier(0, 0, 0.30, 1);
+  -webkit-transition: opacity 0.15s cubic-bezier(0, 0, 0.3, 1);
+  transition: opacity 0.15s cubic-bezier(0, 0, 0.3, 1);
   visibility: hidden;
   opacity: 0;
   z-index: 3;
@@ -1478,7 +1478,7 @@ form.resetpassword > div.mdl-shadow--2dp img {
 .mdl-layout__drawer.is-visible {
   -webkit-transform: translateX(0) !important;
   transform: translateX(0) !important;
-  border-right: 0px !important;
+  border-right: 0 !important;
 }
 #drawer a.mdl-navigation__link {
   color: rgba(121, 85, 72, 1);
@@ -1862,7 +1862,7 @@ input#signup\.lastName {
   top: -25px;
   left: 0;
   right: 0;
-  bottom: 0px;
+  bottom: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.12);
   outline: none;
   overflow: hidden;
@@ -2066,7 +2066,7 @@ input ~ .mdl-checkbox__label {
 }
 .mdl-switch.is-upgraded,
 .mdl-checkbox.is-upgraded {
-  padding-left: 0px !important;
+  padding-left: 0 !important;
 }
 .mdl-selectfield {
   padding: 0;
@@ -2079,18 +2079,18 @@ input ~ .mdl-checkbox__label {
   position: fixed;
   padding: 0;
   width: 100%;
-  left: 0px;
+  left: 0;
   font-size: 13px;
   font-weight: normal;
   text-align: left;
   letter-spacing: normal;
   color: rgb(0, 0, 0);
   font-family: Arial, sans-serif;
-  bottom: 0px;
+  bottom: 0;
 }
 #cookieconsent_wrapper {
   width: 100%;
-  margin: 0px auto;
+  margin: 0 auto;
   font-size: 13px;
   font-weight: normal;
   text-align: center;
@@ -2102,14 +2102,14 @@ input ~ .mdl-checkbox__label {
 h4#cookieconsent_header {
   background-color: rgb(238, 238, 238);
   z-index: 999999;
-  padding: 0px 0px 7px;
+  padding: 0 0 7px;
   text-align: center;
   color: rgb(0, 0, 0);
   font-family: Arial, sans-serif;
   display: block;
   font-size: 15px;
   font-weight: bold;
-  margin: 0px;
+  margin: 0;
 }
 div#cookieconsent_buttons {
   margin: 10px auto;
@@ -2121,7 +2121,7 @@ div#cookieconsent_buttons {
 div#cookieconsent_accept,
 div#cookieconsent_accept a {
   border-radius: 5px;
-  border: 0px none;
+  border: 0 none;
   padding: 6px 10px;
   font-weight: bold;
   font-size: 13px;
