@@ -96,5 +96,5 @@ t6BuildDate=$(date -R)
 echo "{\"t6BuildVersion\": \"${t6BuildVersion}\", \"t6BuildDate\": \"${t6BuildDate}\"}" > ../t6BuildVersion.json
 echo t6BuildVersion: $t6BuildVersion
 echo t6BuildDate: $t6BuildDate
-sed -i "1 s/^.*$/var dataCacheName= 't6-cache-$t6BuildVersion';/i" ../public/service-worker.js
+sed -i "1 s/^.*$/var dataCacheName= \"t6-cache-$t6BuildVersion\";/i" ../public/service-worker.js
 echo Full Minification Completed.
