@@ -512,7 +512,7 @@ section:not("#exploration") .is-disabled {
   transform: scale(0.99);
 }
 .is-hover div.mdl-card.mdl-shadow--2dp:not(.is-disabled) {
-  background: #fff3d;
+  background: #fff;
 }
 section.is-active .mdl-button--fab.is-not-here,
 .play-fab.is-not-here a {
@@ -756,9 +756,6 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
   position: relative;
   margin: 5px 0;
   border-radius: 8px;
-}
-.mdl-card__actions.mdl-card--border {
-  border-width: thick;
 }
 .mdl-card__title {
   border-radius: 8px 8px 0 0;
@@ -1224,6 +1221,7 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
   color: #fff;
 }
 .mdl-card__title {
+  border-width: thick;
   background: #795548;
   padding: 5px 10px;
 }
@@ -1565,9 +1563,6 @@ dialog .mdl-dialog__title {
   vertical-align: middle;
   width: 42px;
 }
-.collection .collection-item {
-  line-height: 1.5rem;
-}
 .collection .collection-item.avatar .secondary-content {
   position: absolute;
   right: 16px;
@@ -1775,10 +1770,7 @@ svg.footer:after {
 }
 @media screen and (max-width:1024px) {
   .mdl-layout__tab-bar {
-  width: calc(100% - 60px);
   padding: 0 0 0 40px;
-  }
-  .mdl-layout__tab-bar {
   width: calc(100% - 30px) !important;
   }
 }
@@ -1795,8 +1787,8 @@ svg.footer:after {
   vertical-align: middle;
   line-height: 20px;
   font-size: 16px;
-  padding: 20px 0;
-  z-index: inherit
+  z-index: inherit;
+  padding: 0;
 }
 .mdl-selectfield__select {
   visibility: visible;
@@ -2072,9 +2064,6 @@ input ~ .mdl-checkbox__label {
 .mdl-switch.is-upgraded,
 .mdl-checkbox.is-upgraded {
   padding-left: 0 !important;
-}
-.mdl-selectfield {
-  padding: 0;
 }
 
 /*cookieconsent*/
