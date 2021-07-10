@@ -7,6 +7,7 @@ var ErrorSerializer = require("../serializers/error");
 /**
  * @api {get} /units/:unit_id Get Units
  * @apiName Get Units
+ * @apiDescription t6 implement a immutable unit list as referential.
  * @apiGroup General
  * @apiVersion 2.0.1
  * 

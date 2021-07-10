@@ -1,3 +1,9 @@
 #!/bin/bash
 
-apidoc -i  ../routes/ -o ../docs/docs/ -f data.js -f datatypes.js -f ota.js -f mqtts.js -f rules.js -f dashboards.js -f snippets.js -f flows.js -f objects.js -f units.js -f users.js -f exploration.js -f notifications.js -f index.js --template ../docs/template/
+#apidoc -i /home/mathieu/Projets/2019/internetcollaboratif.info/t6/routes/ -o /home/mathieu/Projets/2019/internetcollaboratif.info/doc/docs/ -f data.js -f datatypes.js -f ota.js -f mqtts.js -f rules.js -f dashboards.js -f snippets.js -f flows.js -f objects.js -f units.js -f users.js -f exploration.js -f notifications.js -f index.js --template ../docs/template/
+
+#apidoc -i /home/mathieu/Projets/2019/internetcollaboratif.info/t6/routes/ -o /home/mathieu/Projets/2019/internetcollaboratif.info/doc/docs/ -f data.js -f datatypes.js -f ota.js -f mqtts.js -f rules.js -f dashboards.js -f snippets.js -f flows.js -f objects.js -f units.js -f users.js -f exploration.js -f notifications.js -f index.js --template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/templatev2/
+
+#apidoc -i /home/mathieu/Projets/2019/internetcollaboratif.info/t6/routes/ -o /home/mathieu/Projets/2019/internetcollaboratif.info/doc/docs/ -f data.js -f datatypes.js -f ota.js -f mqtts.js -f rules.js -f dashboards.js -f snippets.js -f flows.js -f objects.js -f units.js -f users.js -f exploration.js -f notifications.js -f index.js --template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/templatev3/
+
+apidoc -i /home/mathieu/Projets/2019/internetcollaboratif.info/t6/routes/ -o /home/mathieu/Projets/2019/internetcollaboratif.info/doc/docs/ -f data.js -f datatypes.js -f ota.js -f mqtts.js -f rules.js -f dashboards.js -f snippets.js -f flows.js -f objects.js -f units.js -f users.js -f exploration.js -f notifications.js -f index.js --template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/templatev4/

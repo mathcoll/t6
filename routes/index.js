@@ -177,7 +177,7 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine AuthAdmin Admin access rights needed.
- * Only t6 Administrator user have permission to this Endpoint.
+ * Only t6 Administrator users have permission to this Endpoint.
  * 
  * @apiHeader {String} Authorization Bearer &lt;Token&gt;
  * @apiHeader {String} [Accept] application/json
@@ -352,8 +352,9 @@ router.delete("/tokens/all", function (req, res) {
 /**
  * @api {post} /authenticate Authenticate - get JWT Token
  * @apiName Authenticate - get JWT Token
- * @apiDescription The authenticate endpoint provide you an access token which is multiple use but expiring within 5 minutes.
+ * @apiDescription The authenticate endpoint provide an access token which is multiple use but expiring within 5 minutes.
  * Once it has expired an access_token can be refreshed to extend duration or you can generate a new one from this authenticate endpoint.
+ * Several Authentification process are handled: using your personnal credentials, using a Key+Secret Access long life Token (which can be revoked) 
  * @apiGroup User
  * @apiVersion 2.0.1
  * 

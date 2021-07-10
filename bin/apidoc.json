@@ -16,7 +16,8 @@
 	"template": {
 		"withCompare": true,
 		"withGenerator": true,
-		"forceLanguage": "en"
+		"forceLanguage": "en",
+		"aloneDisplay": false
 	},
 	"order": [
 		"User",

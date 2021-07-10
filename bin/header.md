@@ -1,15 +1,15 @@
 <h2>Introduction</h2>
 <p>
-	t6 is using either Http or Https protocols to manage your Objects, Flows and Data Points.
+	t6 is using Https protocols to manage your Objects, Flows and DataPoints, Dashboards and so on.
 </p>
 <p>
-	Endpoints allows to manage your own Objects, Flows, Users, and Data Points using normalized verbs:
+	Endpoints allows to manage your own Objects, Flows, Users, and DataPoints using normalized verbs:
 </p>
 <ul>
-<li><strong class="type type__get">GET</strong> verb is used to retrieve information from t6 datastore;</li>
-<li><strong class="type type__post">POST</strong> verb is used to create a new element;</li>
-<li><strong class="type type__put">PUT</strong> verb is used to edit an existing elements;</li>
-<li><strong class="type type__delete">DELETE</strong> verb is used to delete existing elements.</li>
+<li><strong class="navtype navtype__get">GET</strong> verb is used to retrieve information from t6;</li>
+<li><strong class="navtype navtype__post">POST</strong> verb is used to create a new element;</li>
+<li><strong class="navtype navtype__put">PUT</strong> verb is used to edit an existing elements;</li>
+<li><strong class="navtype navtype__del">DELETE</strong> verb is used to delete existing elements.</li>
 </ul>
 <p>
 	All API enpoints support json and optional Http Headers can be provided:<br />

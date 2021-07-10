@@ -929,6 +929,7 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
  * @api {get} /exploration/trend Explore Trend
  * @apiName Explore Trend
  * @apiGroup 10 Exploratory Data Analysis EDA
+ * @apiVersion 2.0.1
  * 
  * 
  */
@@ -940,6 +941,7 @@ router.get("/trend/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
  * @api {get} /exploration/seasonality Explore Seasonality
  * @apiName Explore Seasonality
  * @apiGroup 10 Exploratory Data Analysis EDA
+ * @apiVersion 2.0.1
  * 
  * 
  */
@@ -951,6 +953,7 @@ router.get("/seasonality/?", expressJwt({ secret: jwtsettings.secret, algorithms
  * @api {get} /exploration/outliers Explore Outliers
  * @apiName Explore Outliers
  * @apiGroup 10 Exploratory Data Analysis EDA
+ * @apiVersion 2.0.1
  * 
  * 
  */
