@@ -349,7 +349,7 @@ app.resources.sources = {
 					}
 					for (var i in app.buttons.expandSourceButtons) {
 						if ( (app.buttons.expandSourceButtons[i]).childElementCount > -1 ) {
-							(app.buttons.expandSourceButtons[i]).addEventListener('click', app.expand, false);
+							(app.buttons.expandSourceButtons[i]).addEventListener("click", app.expand, false);
 						}
 					}
 					for (var i in app.buttons.link_offSourceObject) {

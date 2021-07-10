@@ -661,8 +661,8 @@ app.resources.objects = {
 				if ( object.attributes.longitude && object.attributes.latitude ) {
 					/* Localization Map */
 					var map = L.map("osm").setView([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], 13);
-					L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-						attribution: '© <a href="//osm.org/copyright">OpenStreetMap</a>',
+					L.tileLayer("https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png", {
+						attribution: "© <a href=\"//osm.org/copyright\">OpenStreetMap</a>",
 						minZoom: 1,
 						maxZoom: 20,
 						trackResize: true,
@@ -849,13 +849,13 @@ app.resources.objects = {
 		});
 		var mIcon = new CustomIcon({iconUrl: "/img/m/marker-icon.png"});
 		var marker = L.marker([parseFloat(object.attributes.latitude), parseFloat(object.attributes.longitude)], {icon: mIcon, draggable: true}).addTo(map);
-		marker.on('dragend', function(event) {
+		marker.on("dragend", function(event) {
 			var position = marker.getLatLng();
 			marker.setLatLng(position, {
 				draggable: true
 			}).bindPopup(position).update();
-			document.getElementById('Latitude').value = parseFloat(position.lat, 10).toFixed(6);
-			document.getElementById('Longitude').value = parseFloat(position.lng, 10).toFixed(6);
+			document.getElementById("Latitude").value = parseFloat(position.lat, 10).toFixed(6);
+			document.getElementById("Longitude").value = parseFloat(position.lng, 10).toFixed(6);
 		});
 		setTimeout(function() {map.invalidateSize(true);}, 1000);
 		/* End Localization Map */
@@ -926,7 +926,7 @@ app.resources.objects = {
 		if ( object.attributes.meta.updated ) {
 			element += `<span data-date="updated" class="hidden">Updated on ${moment(object.attributes.meta.updated).format(app.date_format)}</span>`;
 		} else {
-			element += `<span data-date="updated" class="hidden">Never been updated yet.</span>`;
+			element += "<span data-date=\"updated\" class=\"hidden\">Never been updated yet.</span>";
 		}
 		element += `
 					</span>

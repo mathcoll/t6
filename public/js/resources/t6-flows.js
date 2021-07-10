@@ -223,7 +223,7 @@ app.resources.flows = {
 					node += app.getField(app.icons.track, "Track", flow.attributes.track_id===null?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: isEdit});
 					node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor!==undefined?JSON.stringify(flow.attributes.preprocessor):"", {type: "textarea", id: "preprocessor", isEdit: isEdit});
 					node += app.getField(app.icons.algorithm, "Fusion Algorithm", typeof flow.attributes.fusion_algorithm==="undefined"?flow.attributes.fusion_algorithm:"", {type: "text", id: "fusion_algorithm", isEdit: isEdit});
-					node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl!==null?flow.attributes.ttl:"", {type: "text", id: "Ttl", isEdit: isEdit, pattern: app.patterns.ttl, error: 'Must be an Integer.'});
+					node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl!==null?flow.attributes.ttl:"", {type: "text", id: "Ttl", isEdit: isEdit, pattern: app.patterns.ttl, error: "Must be an Integer."});
 					node += "	</div>";
 					node += "</section>";
 
@@ -292,7 +292,7 @@ app.resources.flows = {
 						node += app.getField(app.icons.track, "Track", flow.attributes.track_id!==undefined?flow.attributes.track_id:"", {type: "text", id: "Track_id", isEdit: isEdit});
 						node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor!==undefined?JSON.stringify(flow.attributes.preprocessor):"", {type: "textarea", id: "preprocessor", isEdit: isEdit});
 					node += app.getField(app.icons.algorithm, "Fusion Algorithm", typeof flow.attributes.fusion_algorithm==="undefined"?flow.attributes.fusion_algorithm:"", {type: "text", id: "fusion_algorithm", isEdit: isEdit});
-					node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl!==null?flow.attributes.ttl:"", {type: "text", id: "Ttl", isEdit: isEdit, pattern: app.patterns.ttl, error: 'Must be an Integer.'});
+					node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl!==null?flow.attributes.ttl:"", {type: "text", id: "Ttl", isEdit: isEdit, pattern: app.patterns.ttl, error: "Must be an Integer."});
 						node += "	</div>";
 						node += "</section>";
 					}
@@ -467,7 +467,7 @@ app.resources.flows = {
 		node += app.getField(app.icons.track, "Track", flow.attributes.track_id===undefined?"":flow.attributes.track_id, {type: "text", id: "Track_id", isEdit: true});
 		node += app.getField(app.icons.preprocessor, "Preprocessor", flow.attributes.preprocessor===undefined?"":JSON.stringify(flow.attributes.preprocessor), {type: "textarea", id: "preprocessor", isEdit: true});
 					node += app.getField(app.icons.algorithm, "Fusion Algorithm", typeof flow.attributes.fusion_algorithm==="undefined"?flow.attributes.fusion_algorithm:"", {type: "text", id: "fusion_algorithm", isEdit: true});
-		node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl===null?"":flow.attributes.ttl, {type: "text", id: "Ttl", isEdit: true, pattern: app.patterns.ttl, error: 'Must be an Integer.'});
+		node += app.getField(app.icons.ttl, "TTL", flow.attributes.ttl===null?"":flow.attributes.ttl, {type: "text", id: "Ttl", isEdit: true, pattern: app.patterns.ttl, error: "Must be an Integer."});
 		node += "	</div>";
 		node += "</section>";
 

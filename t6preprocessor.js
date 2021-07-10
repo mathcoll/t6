@@ -112,7 +112,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 					pp.message = `Converted to ${pp.datatype}.`;
 				} else {
 					fields[0] = {time:""+time, valueString: payload.value,};
-					pp.message = `Not datatype to convert to. Default to String.`;
+					pp.message = "Not datatype to convert to. Default to String.";
 				}
 			
 				break;

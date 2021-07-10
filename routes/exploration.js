@@ -1097,12 +1097,12 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				if (_isCurve) lineChart.curve(d3.curveBasis);
 				
 				// text label for the x Axis
-				svg.append('text')
-					.attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
-					.style('text-anchor', 'middle')
+				svg.append("text")
+					.attr("transform", `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+					.style("text-anchor", "middle")
 					.text(_labels.xAxis);
 				
-				svg.append('path')
+				svg.append("path")
 					.datum(data)
 					.attr('fill', 'none')
 					.attr('stroke', _lineColor)

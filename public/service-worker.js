@@ -231,12 +231,12 @@ self.addEventListener("notificationclick", function(event) {
 		}
 		event.notification.close();
 		if ( typeof firebase !== "undefined" ) {
-			firebase.analytics().setUserProperties({'notification_click': 1});
+			firebase.analytics().setUserProperties({"notification_click": 1});
 		}
 		event.notification.close();
 	}
 });
-self.addEventListener('pushsubscriptionchange', function(event) {
+self.addEventListener("pushsubscriptionchange", function(event) {
 	console.log("[pushSubscription]", "Subscription expired", event);
 	event.waitUntil(
 		self.registration.pushManager.subscribe({ userVisibleOnly: true })
