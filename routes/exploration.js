@@ -180,7 +180,7 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 		}
 		let query = `SELECT ${dt} as value FROM data WHERE flow_id='${flow_id}' ${where}`;
 		t6console.debug(sprintf("Query: %s", query));
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			if (data.length > 0) {
 				let normalityData;
 				let arrayOfValues = data.map(function(row) { return row.value; });
@@ -194,7 +194,7 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 			} else {
 				res.status(404).send({ err: "No data found", "id": 8985.5, "code": 404, "message": "Not found" });
 			}
-		}).catch(err => {
+		}).catch((err) => {
 			res.status(500).send({ err: err, "id": 8985.0, "code": 500, "message": "Internal Error" });
 		});
 	}
@@ -1045,7 +1045,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 		query = sprintf("SELECT %s as value FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", dt, flow_id, where, sorting, limit, (page - 1) * limit);
 		t6console.debug(sprintf("Query: %s", query));
 
-		dbInfluxDB.query(query).then(queryData => {
+		dbInfluxDB.query(query).then((queryData) => {
 			if (queryData.length > 0) {
 				let data = [];
 				const d3n = new D3Node({

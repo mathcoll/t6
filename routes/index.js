@@ -210,7 +210,7 @@ router.all("*", function (req, res, next) {
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
 		var query = `SELECT count(url) FROM "${influxSettings.retentionPolicies.requests}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 7d) LIMIT 1`;
 
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
 				res.header("X-RateLimit-Remaining", limit-i);
@@ -253,7 +253,7 @@ router.all("*", function (req, res, next) {
 					next();
 				});
 			}
-		}).catch(err => {
+		}).catch((err) => {
 			if(typeof i!=="undefined") {
 				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
 			} else {

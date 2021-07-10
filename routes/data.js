@@ -806,7 +806,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			} else {
 				res.status(404).send({err: "No data found", "id": 899.5, "code": 404, "message": "Not found"});
 			}
-		}).catch(err => {
+		}).catch((err) => {
 			res.status(500).send({err: err, "id": 899, "code": 500, "message": "Internal Error"});
 		});
 	}
