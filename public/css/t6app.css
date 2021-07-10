@@ -1516,12 +1516,12 @@ dialog .mdl-dialog__title {
   padding: 0;
 }
 .pull-right {
-  float: right!important;
-  text-align: right!important;
+  float: right !important;
+  text-align: right !important;
 }
 .pull-left {
-  float: left!important;
-  text-align: left!important;
+  float: left !important;
+  text-align: left !important;
 }
 .mdl-cell--1-col,
 .mdl-cell--1-col-phone.mdl-cell--1-col-phone {
