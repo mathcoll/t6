@@ -121,6 +121,7 @@ code.nostyle div span {
 code.nostyle br {
   display: contents;
 }
+
 /* Home - Hall of fame */
 #hof {
   color: rgb(121,85,72,1);
@@ -228,6 +229,7 @@ h3.feature-title {
 img.z-depth-0 {
   margin: 0 auto;
 }
+
 /* end Home */
 footer {
   background: linear-gradient(178deg, transparent 10%, rgb(121, 85, 72) 11%);
@@ -469,6 +471,7 @@ div.is-focused .mdl-textfield__icon ~ label {
   -khtml-user-select: none;
   -webkit-user-select: none;
   user-select: none;
+
   /* Required to make elements draggable in old WebKit */
   -khtml-user-drag: element;
   -webkit-user-drag: element;
@@ -551,6 +554,7 @@ section.fixedActionButtons button.mdl-button {
   min-height: 68px;
   display: block;
 }
+
 /* Snippets */
 div .heading {
   font-weight: 600;
@@ -706,6 +710,7 @@ div.mdl-list__item-primary-content span.heading {
 div.mdl-list__item .mdl-list__item-secondary-content:only-child {
   width: 100%;
 }
+
 /* End Snippets */
 
 .mdl-layout__header.is-compact {
@@ -2071,6 +2076,7 @@ input ~ .mdl-checkbox__label {
 .mdl-selectfield {
   padding: 0;
 }
+
 /*cookieconsent*/
 #cookieconsent {
   background-color: rgb(238, 238, 238);
