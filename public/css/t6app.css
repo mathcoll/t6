@@ -105,7 +105,7 @@ a {
   margin: 10px 10px;
 }
 #currentUserName {
-  bottom:auto !important;
+  bottom: auto !important;
 }
 #currentUserEmail {
   color: #fff;
@@ -391,7 +391,7 @@ body {
   font-weight: 500;
   color: rgba(0, 0, 0, 0.6);
   line-height: 32px;
-  padding:0 30px 0 12px;
+  padding: 0 30px 0 12px;
   border-radius: 16px;
   background-color: #e4e4e4;
   margin-bottom: 5px;
@@ -432,7 +432,7 @@ body {
   padding: 8px 4px;
   vertical-align: middle;
   position: absolute;
-  display:none;
+  display: none;
 }
 .mdl-chip .edit {
   right: 60px;
@@ -442,7 +442,7 @@ body {
 }
 .mdl-chip:hover .close,
 .mdl-chip:hover .edit {
-  display:inline;
+  display: inline;
 }
 .mdl-textfield {
   width: calc(100% - 48px) !important;
@@ -1490,7 +1490,7 @@ form.resetpassword > div.mdl-shadow--2dp img {
 }
 #drawer a.mdl-navigation__link .material-icons,
 #drawer a.mdl-navigation__link .arduino-icon {
-  vertical-align:middle;
+  vertical-align: middle;
   padding: 0 10px 0 0;
 }
 #drawer a.mdl-navigation__link .arduino-icon {
