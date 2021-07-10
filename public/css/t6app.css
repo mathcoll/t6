@@ -512,7 +512,7 @@ section:not("#exploration") .is-disabled {
   transform: scale(0.99);
 }
 .is-hover div.mdl-card.mdl-shadow--2dp:not(.is-disabled) {
-  background: #ffffff3d;
+  background: #fff3d;
 }
 section.is-active .mdl-button--fab.is-not-here,
 .play-fab.is-not-here a {
@@ -569,7 +569,7 @@ div.valuedisplay .snippet-value,
 div.valuedisplay .snippet-value1,
 div.valuedisplay .snippet-value2,
 div.valuedisplay .snippet-value3 {
-  color: #ffffff;
+  color: #fff;
   display: inline;
   font-weight: 600;
 }
@@ -577,7 +577,7 @@ div.valuedisplay .snippet-unit,
 div.valuedisplay .snippet-unit1,
 div.valuedisplay .snippet-unit2,
 div.valuedisplay .snippet-unit3 {
-  color: #ffffff;
+  color: #fff;
   display: inline;
   font-weight: 600;
 }
@@ -738,7 +738,7 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 }
 .card-valuedisplay,
 .card-flowgraph {
-  background: #ffffff none repeat scroll 0 0;
+  background: #fff none repeat scroll 0 0;
   min-height: 250px;
   width: 100%;
   overflow: hidden;
@@ -750,7 +750,7 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
 .card-sparkline,
 .card-simplerow,
 .card-simpleclock {
-  background: #ffffff none repeat scroll 0 0;
+  background: #fff none repeat scroll 0 0;
   width: 100%;
   overflow: hidden;
   position: relative;
@@ -832,7 +832,7 @@ section#profile .card.card-user .card-heading.heading-left .user-image {
   top: 30px;
 }
 section#profile .card.card-user .card-heading .user-image {
-  border: 5px solid #ffffff;
+  border: 5px solid #fff;
   border-radius: 40px;
   height: 80px;
   position: absolute;
@@ -1543,15 +1543,15 @@ dialog .mdl-dialog__title {
   position: relative;
 }
 .collection .collection-item {
-  background-color: #ffffff;
+  background-color: #fff;
   border-bottom: 1px solid #e0e0e0;
   line-height: 1.5rem;
   margin: 0;
   padding: 5px;
 }
 .collection .collection-item.avatar i.circle {
-  background-color: #999999;
-  color: #ffffff;
+  background-color: #999;
+  color: #fff;
   font-size: 18px;
   line-height: 42px;
   text-align: center;
@@ -1760,13 +1760,13 @@ svg.footer:after {
 .mdl-layout__subheader,
 .mdl-layout-subheader {
   padding: 15px !important;
-  color: #ffffff !important;
+  color: #fff !important;
   display: block !important;
 }
 .mdl-list__item { color: inherit !important; line-height: 2 !important; }
 .mdl-layout__title,
 .mdl-layout-title {
-  color: #ffffff;
+  color: #fff;
   position: absolute !important;
   left: 1em !important;
   bottom: 1em !important;
