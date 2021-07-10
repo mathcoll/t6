@@ -974,8 +974,8 @@ h1.mdl-subheader-content {
 .header {
   width: 100%;
   height: 56px;
-  color: #FFF;
-  background: #1E88E5;
+  color: #fff;
+  background: #1e88e5;
   position: fixed;
   font-size: 20px;
   box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 2px 9px 1px rgba(0, 0, 0, 0.12), 0 4px 2px -2px rgba(0, 0, 0, 0.2);
@@ -1063,7 +1063,7 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 }
 .loader #spinner {
   box-sizing: border-box;
-  stroke: #673AB7;
+  stroke: #673ab7;
   stroke-width: 3px;
   -webkit-transform-origin: 50%;
   transform-origin: 50%;
@@ -1159,7 +1159,7 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
   pointer-events: auto;
 }
 .dialog {
-  background: #FFF;
+  background: #fff;
   border-radius: 2px;
   box-shadow: 0 0 14px rgba(0, 0, 0, 0.24), 0 14px 28px rgba(0, 0, 0, 0.48);
   min-width: 280px;
@@ -1441,7 +1441,7 @@ form.resetpassword > div.mdl-shadow--2dp img {
 }
 .menu__header {
   height: 50px;
-  background: #1E88E5;
+  background: #1e88e5;
   color: #fff;
   border-bottom: 1px solid #ddd;
   float: none !important;
