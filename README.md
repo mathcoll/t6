@@ -19,7 +19,7 @@ _*_ : remain optional
 Sample nodeMCU and Arduino scripts are available in the [sensors repository](https://github.com/mathcoll/t6/tree/master/sensors) and on [t6iot Arduino library](https://github.com/mathcoll/t6iot).
 
 ## t6 API first: Live, eat, and breathe the API-first lifestyle of t6
-Detailed [Api documentation](https://api.internetcollaboratif.info/docs/) will help you to connect your sensors to _t6_.
+Detailed [Api documentation](https://doc.internetcollaboratif.info) will help you to connect your sensors to _t6_.
 Installing _t6_ on your own server is easy, follow the [installation guide](https://github.com/mathcoll/t6/wiki/Installing-t6) on Wiki page.
 More detailed explanation on [how _t6_ works](https://github.com/mathcoll/t6/wiki) is also readable on Wiki page.
 
