@@ -1,6 +1,7 @@
 <h2>Introduction</h2>
 <p>
-	t6 is using Https protocols to manage your Objects, Flows and DataPoints, Dashboards and so on.
+	t6 is using Https protocols to manage your Objects, Flows and DataPoints, Dashboards and so on.<br />
+	This documentation is aiming to give technical overview ; The <a href="https://github.com/mathcoll/t6/wiki">functionnal features are explained in the Wiki.</a>
 </p>
 <p>
 	Endpoints allows to manage your own Objects, Flows, Users, and DataPoints using normalized verbs:
@@ -70,4 +71,6 @@
 <h2>t6 Architechture</h2>
 <p>
 	<img src="https://raw.githubusercontent.com/mathcoll/t6/master/public/img/m/t6.png" class="img-responsive center-block" alt="General-structure"/>
+	<br />
+	<a href="https://github.com/mathcoll/t6/wiki">More details on t6 features in the Wiki.</a>
 </p>
