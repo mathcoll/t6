@@ -87,19 +87,19 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam (Request body) {String} [name=unamed] Flow Name
- * @apiParam (Request body) {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
- * @apiParam (Request body) {String} [unit] Flow Unit
- * @apiParam (Request body) {String} [theme] Flow theme, deprecated
- * @apiParam (Request body) {String} [mqtt_topic]] Mqtt topic
- * @apiParam (Request body) {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
- * @apiParam (Request body) {String} [fusion_algorithm] Data Fusion algorithm
- * @apiParam (Request body) {Integer} [ttl] Time To Live before datapoint on Flow will expire
- * @apiParam (Request body) {Boolean} [require_signed=false] require_signed
- * @apiParam (Request body) {Boolean} [require_encrypted=false] require_encrypted
- * @apiParam (Request body) {Integer} permission Permission is not used anymore (deprecated)
- * @apiParam (Request body) {String[]} [objects] List of Object Ids
- * @apiParam (Request body) {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
+ * @apiBody {String} [name=unamed] Flow Name
+ * @apiBody {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
+ * @apiBody {String} [unit] Flow Unit
+ * @apiBody {String} [theme] Flow theme, deprecated
+ * @apiBody {String} [mqtt_topic]] Mqtt topic
+ * @apiBody {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
+ * @apiBody {String} [fusion_algorithm] Data Fusion algorithm
+ * @apiBody {Integer} [ttl] Time To Live before datapoint on Flow will expire
+ * @apiBody {Boolean} [require_signed=false] require_signed
+ * @apiBody {Boolean} [require_encrypted=false] require_encrypted
+ * @apiBody {Integer} permission Permission is not used anymore (deprecated)
+ * @apiBody {String[]} [objects] List of Object Ids
+ * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 201
  * @apiUse 400
@@ -154,19 +154,19 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} flow_id Flow Id
- * @apiParam (Request body) {String} [name] Flow Name
- * @apiParam (Request body) {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
- * @apiParam (Request body) {String} [unit] Flow Unit
- * @apiParam (Request body) {String} [mqtt_topic]] Mqtt topic
- * @apiParam (Request body) {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
- * @apiParam (Request body) {String} [fusion_algorithm] Data Fusion algorithm
- * @apiParam (Request body) {Integer} [ttl] Time To Live before datapoint on Flow will expire
- * @apiParam (Request body) {Boolean} [require_signed=false] require_signed
- * @apiParam (Request body) {Boolean} [require_encrypted=false] require_encrypted
- * @apiParam (Request body) {Object[]} [permission]
- * @apiParam (Request body) {String[]} [objects] List of Object Ids
- * @apiParam (Request body) (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
- * @apiParam (Request body) {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
+ * @apiBody {String} [name] Flow Name
+ * @apiBody {String} [data_type] Flow Data Type, this parameter is really important and will define the Value cast in datastore
+ * @apiBody {String} [unit] Flow Unit
+ * @apiBody {String} [mqtt_topic]] Mqtt topic
+ * @apiBody {uuid-v4} [track_id] The flow_id of the primary sensor in case using Sensor-Fusion
+ * @apiBody {String} [fusion_algorithm] Data Fusion algorithm
+ * @apiBody {Integer} [ttl] Time To Live before datapoint on Flow will expire
+ * @apiBody {Boolean} [require_signed=false] require_signed
+ * @apiBody {Boolean} [require_encrypted=false] require_encrypted
+ * @apiBody {Object[]} [permission]
+ * @apiBody {String[]} [objects] List of Object Ids
+ * @apiBody (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
+ * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 200
  * @apiUse 400

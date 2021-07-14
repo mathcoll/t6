@@ -75,9 +75,9 @@ router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.se
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam (Request body) {String} [name=unamed] Dashboard Name
- * @apiParam (Request body) {String} [description] Dashboard Description
- * @apiParam (Request body) {String[]} [snippets] List of Snippets Ids
+ * @apiBody {String} [name=unamed] Dashboard Name
+ * @apiBody {String} [description] Dashboard Description
+ * @apiBody {String[]} [snippets] List of Snippets Ids
  * 
  * @apiUse 201
  * @apiUse 400
@@ -118,10 +118,10 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} flow_id Dashboard Id
- * @apiParam (Request body) {String} [name=unamed] Dashboard Name
- * @apiParam (Request body) {String} [description] Dashboard Description
- * @apiParam (Request body) {String[]} [snippets] List of Snippets Ids
- * @apiParam (Request body) (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
+ * @apiBody {String} [name=unamed] Dashboard Name
+ * @apiBody {String} [description] Dashboard Description
+ * @apiBody {String[]} [snippets] List of Snippets Ids
+ * @apiBody (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
  * @apiUse 400

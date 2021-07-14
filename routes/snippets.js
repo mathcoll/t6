@@ -74,11 +74,11 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
  * 
  * @apiUse Auth
  * @apiParam {String} [name=unamed] Snippet Name
- * @apiParam (Request body) {String} [type] Snippet Type
- * @apiParam (Request body) {String} [icon] Snippet Icon
- * @apiParam (Request body) {String} [color] Snippet Color
- * @apiParam (Request body) {String[]} [flows] List of Flow Ids
- * @apiParam (Request body) {String[]} [options] Options as json object
+ * @apiBody {String} [type] Snippet Type
+ * @apiBody {String} [icon] Snippet Icon
+ * @apiBody {String} [color] Snippet Color
+ * @apiBody {String[]} [flows] List of Flow Ids
+ * @apiBody {String[]} [options] Options as json object
  * 
  * @apiUse 201
  * @apiUse 400
@@ -121,12 +121,12 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam (Request body) {String} [name=unamed] Snippet Name
- * @apiParam (Request body) {String} [type] Snippet Type
- * @apiParam (Request body) {String} [icon] Snippet Icon
- * @apiParam (Request body) {String} [color] Snippet Color
- * @apiParam (Request body) {String[]} [flows] List of Flow Ids
- * @apiParam (Request body) {String[]} [options] Options as json object
+ * @apiBody {String} [name=unamed] Snippet Name
+ * @apiBody {String} [type] Snippet Type
+ * @apiBody {String} [icon] Snippet Icon
+ * @apiBody {String} [color] Snippet Color
+ * @apiBody {String[]} [flows] List of Flow Ids
+ * @apiBody {String[]} [options] Options as json object
  * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200

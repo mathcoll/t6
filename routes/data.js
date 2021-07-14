@@ -824,20 +824,20 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} [flow_id] Flow ID you want to add Data Point to. This parameter is optional as it can be defined in the payload itself
- * @apiParam (Request body) {uuid-v4} flow_id Flow ID you want to add Data Point to
- * @apiParam (Request body) {String} value Data Point value
- * @apiParam (Request body) {Boolean} [publish=true] Flag to publish to Mqtt Topic ; This parameter might become deprecated.
- * @apiParam (Request body) {Boolean} [save=false] Flag to store in database the Value
- * @apiParam (Request body) {String} [unit=undefined] Unit of the Value
- * @apiParam (Request body) {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
- * @apiParam (Request body) {uuid-v4} [datatype_id="Default value from the Flow resource"] DataType Id
- * @apiParam (Request body) {String} [text=undefined] Optional text to qualify Value
- * @apiParam (Request body) {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
- * @apiParam (Request body) {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
- * @apiParam (Request body) {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
- * @apiParam (Request body) {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
- * @apiParam (Request body) {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
- * @apiParam (Request body) {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
+ * @apiBody {uuid-v4} flow_id Flow ID you want to add Data Point to
+ * @apiBody {String} value Data Point value
+ * @apiBody {Boolean} [publish=true] Flag to publish to Mqtt Topic ; This parameter might become deprecated.
+ * @apiBody {Boolean} [save=false] Flag to store in database the Value
+ * @apiBody {String} [unit=undefined] Unit of the Value
+ * @apiBody {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
+ * @apiBody {uuid-v4} [datatype_id="Default value from the Flow resource"] DataType Id
+ * @apiBody {String} [text=undefined] Optional text to qualify Value
+ * @apiBody {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
+ * @apiBody {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
+ * @apiBody {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
+ * @apiBody {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
+ * @apiBody {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
+ * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401

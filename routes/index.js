@@ -358,12 +358,14 @@ router.delete("/tokens/all", function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam (Request body) {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
- * @apiParam (Request body) {String} [username] Your own username
- * @apiParam (Request body) {String} [password] Your own password
- * @apiParam (Request body) {String} [key=undefined] In "access_token" context, Client Api Key
- * @apiParam (Request body) {String} [secret=undefined] In "access_token" context, Client Api Secret
- * @apiParam (Request body) {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
+ * @apiBody {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
+ * @apiBody {String} [username] Your own username
+ * @apiBody {String} [password] Your own password
+ * @apiBody {String} [key=undefined] In "access_token" context, Client Api Key
+ * @apiBody {String} [secret=undefined] In "access_token" context, Client Api Secret
+ * @apiBody {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
+ *
+ * @apiBody {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
  * 
  * @apiSuccess {String} status Status of the Authentication
  * @apiSuccess {String} token JWT Token

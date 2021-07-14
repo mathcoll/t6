@@ -38,9 +38,9 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
  * @apiUse AuthAdmin
  * @apiPermission Admin
  * 
- * @apiParam (Request body) {String} [name=unamed] DataType Name
- * @apiParam (Request body) {String="categorical","numerical","object"} type Type of the datatype
- * @apiParam (Request body) {String="discrete","continuous","ordinal","nominal"} classification Classification of the datatype
+ * @apiBody {String} [name=unamed] DataType Name
+ * @apiBody {String="categorical","numerical","object"} type Type of the datatype
+ * @apiBody {String="discrete","continuous","ordinal","nominal"} classification Classification of the datatype
  * 
  * @apiUse 401
  */
@@ -80,9 +80,9 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiPermission Admin
  * 
  * @apiParam {uuid-v4} datatype_id DataType Id
- * @apiParam (Request body) {String} name Name of datatype
- * @apiParam (Request body) {String="categorical","numerical","object"} type Type of the datatype
- * @apiParam (Request body) {String="discrete","continuous","ordinal","nominal"} classification Classification of the datatype
+ * @apiBody {String} name Name of datatype
+ * @apiBody {String="categorical","numerical","object"} type Type of the datatype
+ * @apiBody {String="discrete","continuous","ordinal","nominal"} classification Classification of the datatype
  * 
  * @apiUse 401
  */

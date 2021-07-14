@@ -474,24 +474,24 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam (Request body) {String} [name=unamed] Object Name
- * @apiParam (Request body) {String} [type=default] Object Type, to customize icon on the List
- * @apiParam (Request body) {String{1024}} [description] Object Description
- * @apiParam (Request body) {String} [position] Object Location Name
- * @apiParam (Request body) {String} [longitude] Object Location Longitude
- * @apiParam (Request body) {String} [latitude] Object Location Latitude
- * @apiParam (Request body) {String} [ipv4] Object IP v4
- * @apiParam (Request body) {String} [ipv6] Object IP v6
- * @apiParam (Request body) {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
- * @apiParam (Request body) {String} [secret_key] Object Secret Key in symmetric signature
- * @apiParam (Request body) {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
- * @apiParam (Request body) {String} [fqbn] fqbn
- * @apiParam (Request body) {Integer} [source_version=0] Source version
- * @apiParam (Request body) {uuid-v4} [source_id] Source Id
- * @apiParam (Request body) {uuid-v4} [ui_id] UI Id
- * @apiParam (Request body) {Object} [communication] Communication parameters
- * @apiParam (Request body) {String[]="onoff", "lowerupper", "openclose", "setvalgetval"} [communication.allowed_commands] Commands
- * @apiParam (Request body) {String="restAPI", "messageQueue"} [communication.interface] Interface
+ * @apiBody {String} [name=unamed] Object Name
+ * @apiBody {String} [type=default] Object Type, to customize icon on the List
+ * @apiBody {String{1024}} [description] Object Description
+ * @apiBody {String} [position] Object Location Name
+ * @apiBody {String} [longitude] Object Location Longitude
+ * @apiBody {String} [latitude] Object Location Latitude
+ * @apiBody {String} [ipv4] Object IP v4
+ * @apiBody {String} [ipv6] Object IP v6
+ * @apiBody {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
+ * @apiBody {String} [secret_key] Object Secret Key in symmetric signature
+ * @apiBody {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
+ * @apiBody {String} [fqbn] fqbn
+ * @apiBody {Integer} [source_version=0] Source version
+ * @apiBody {uuid-v4} [source_id] Source Id
+ * @apiBody {uuid-v4} [ui_id] UI Id
+ * @apiBody {Object} [communication] Communication parameters
+ * @apiBody {String[]="onoff", "lowerupper", "openclose", "setvalgetval"} [communication.allowed_commands] Commands
+ * @apiBody {String="restAPI", "messageQueue"} [communication.interface] Interface
  * 
  * @apiUse 201
  * @apiUse 403
@@ -547,26 +547,26 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} [object_id] Object Id
- * @apiParam (Request body) {String} [name] Object Name
- * @apiParam (Request body) {String} [type] Object Type, to customize icon on the List
- * @apiParam (Request body) {String{1024}} [description] Object Description
- * @apiParam (Request body) {String} [position] Object Location Name
- * @apiParam (Request body) {String} [longitude] Object Location Longitude
- * @apiParam (Request body) {String} [latitude] Object Location Latitude
- * @apiParam (Request body) {String} [ipv4] Object IP v4
- * @apiParam (Request body) {String} [ipv6] Object IP v6
- * @apiParam (Request body) {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
- * @apiParam (Request body) {Boolean} [is_public=false] Alias of isPublic
- * @apiParam (Request body) (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
- * @apiParam (Request body) {String} [secret_key] Object Secret Key in symmetric signature
- * @apiParam (Request body) {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
- * @apiParam (Request body) {String} [fqbn] fqbn
- * @apiParam (Request body) {Integer} [source_version] Source version
- * @apiParam (Request body) {uuid-v4} [source_id] Source Id
- * @apiParam (Request body) {uuid-v4} [ui_id] UI Id
- * @apiParam (Request body) {Object} [communication] Communication parameters
- * @apiParam (Request body) {String[]="onoff", "lowerupper", "openclose", "setvalgetval"} [communication.allowed_commands] Commands
- * @apiParam (Request body) {String="restAPI", "messageQueue"} [communication.interface] Interface
+ * @apiBody {String} [name] Object Name
+ * @apiBody {String} [type] Object Type, to customize icon on the List
+ * @apiBody {String{1024}} [description] Object Description
+ * @apiBody {String} [position] Object Location Name
+ * @apiBody {String} [longitude] Object Location Longitude
+ * @apiBody {String} [latitude] Object Location Latitude
+ * @apiBody {String} [ipv4] Object IP v4
+ * @apiBody {String} [ipv6] Object IP v6
+ * @apiBody {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
+ * @apiBody {Boolean} [is_public=false] Alias of isPublic
+ * @apiBody (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
+ * @apiBody {String} [secret_key] Object Secret Key in symmetric signature
+ * @apiBody {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
+ * @apiBody {String} [fqbn] fqbn
+ * @apiBody {Integer} [source_version] Source version
+ * @apiBody {uuid-v4} [source_id] Source Id
+ * @apiBody {uuid-v4} [ui_id] UI Id
+ * @apiBody {Object} [communication] Communication parameters
+ * @apiBody {String[]="onoff", "lowerupper", "openclose", "setvalgetval"} [communication.allowed_commands] Commands
+ * @apiBody {String="restAPI", "messageQueue"} [communication.interface] Interface
  * 
  * @apiUse 200
  * @apiUse 400
@@ -669,8 +669,8 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} object_id Object Id
- * @apiParam (Request body) {String} pName Custom Parameter Name
- * @apiParam (Request body) {String} value Custom Parameter Value
+ * @apiBody {String} pName Custom Parameter Name
+ * @apiBody {String} value Custom Parameter Value
  * 
  * @apiUse 201
  * @apiUse 401

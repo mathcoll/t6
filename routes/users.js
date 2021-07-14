@@ -244,9 +244,9 @@ router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secre
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam (Request body) {String} firstName The User First Name
- * @apiParam (Request body) {String} lastName The User Last Name
- * @apiParam (Request body) {String} email The User Email address
+ * @apiBody {String} firstName The User First Name
+ * @apiBody {String} lastName The User Last Name
+ * @apiBody {String} email The User Email address
  * 
  * @apiUse 201
  * @apiUse 412
@@ -328,7 +328,7 @@ router.post("/", function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam (Request body) {String{128}} [memo] Free memo string
+ * @apiBody {String{128}} [memo] Free memo string
  * 
  * @apiUse Auth
  * @apiUse 201
@@ -375,7 +375,7 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
  * @apiVersion 2.0.1
  * 
  * @apiParam {String} token Token to identify the user
- * @apiParam (Request body) {String} password The new password
+ * @apiBody {String} password The new password
  * 
  * @apiUse 201
  * @apiUse 403
@@ -413,7 +413,7 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam (Request body) {String} email to identify the user
+ * @apiBody {String} email to identify the user
  * 
  * @apiUse 200
  * @apiUse 404
@@ -550,9 +550,9 @@ router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} user_id User ID
- * @apiParam (Request body) {String} [firstName] The new User First Name
- * @apiParam (Request body) {String} [lastName] The new User Last Name
- * @apiParam (Request body) {String} [email] The new User Email address
+ * @apiBody {String} [firstName] The new User First Name
+ * @apiBody {String} [lastName] The new User Last Name
+ * @apiBody {String} [email] The new User Email address
  * 
  * @apiUse 200
  * @apiUse 403

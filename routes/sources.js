@@ -155,9 +155,9 @@ router.get("/:source_id([0-9a-z\-]+)/child", expressJwt({secret: jwtsettings.sec
  * 
  * @apiUse Auth
  *
- * @apiParam (Request body) {String} content Content of the arduino source
- * @apiParam (Request body) {String} name Name of the file
- * @apiParam (Request body) {String} [password] Password for OTA
+ * @apiBody {String} content Content of the arduino source
+ * @apiBody {String} name Name of the file
+ * @apiBody {String} [password] Password for OTA
  * 
  * @apiUse 201
  * @apiUse 400
@@ -201,9 +201,9 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse Auth
  * @apiParam {uuid-v4} [source_id] Source Id
  *
- * @apiParam (Request body) {String} content Content of the arduino source
- * @apiParam (Request body) {String} name Name of the file
- * @apiParam (Request body) {String} [password] Password for OTA
+ * @apiBody {String} content Content of the arduino source
+ * @apiBody {String} name Name of the file
+ * @apiBody {String} [password] Password for OTA
  * 
  * @apiUse 200
  * @apiUse 400

@@ -468,11 +468,11 @@ router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jw
  * @apiUse AuthAdmin
  * @apiPermission Admin
 
- * @apiParam (Request body) {String} [title] Notification title
- * @apiParam (Request body) {String} [icon] Notification icon
- * @apiParam (Request body) {Array} [vibrate] Notification array of vibration
- * @apiParam (Request body) {Array} [actions] Notification array of actions
- * @apiParam (Request body) {String} [badge] Notification badge
+ * @apiBody {String} [title] Notification title
+ * @apiBody {String} [icon] Notification icon
+ * @apiBody {Array} [vibrate] Notification array of vibration
+ * @apiBody {Array} [actions] Notification array of actions
+ * @apiBody {String} [badge] Notification badge
  * 
  * @apiUse 202
  * @apiUse 403
@@ -513,10 +513,10 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
  * @apiUse AuthAdmin
  * @apiPermission Admin
  *
- * @apiParam (Request body) {Integer} [limit] 
- * @apiParam (Request body) {boolean} [dryrun] 
- * @apiParam (Request body) {Integer} [recurring] 
- * @apiParam (Request body) {String} [recurring] 
+ * @apiBody {Integer} [limit] 
+ * @apiBody {boolean} [dryrun] 
+ * @apiBody {Integer} [recurring] 
+ * @apiBody {String} [recurring] 
  * 
  * @apiUse 202
  * @apiUse 403
