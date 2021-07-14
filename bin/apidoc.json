@@ -1,7 +1,7 @@
 {
 	"name": "t6, IoT platform and API",
 	"version": "2.0.1",
-	"description": "t6 is a 'Data-first' IoT platform to connect physical Objects with time-series DB and perform Data Analysis.",
+	"description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
 	"title": "t6, IoT platform and API",
 	"url": "https://api.internetcollaboratif.info/v2.0.1",
 	"sampleUrl": "https://api.internetcollaboratif.info/v2.0.1",
@@ -10,7 +10,7 @@
 		"filename": "header.md"
 	},
 	"footer": {
-		"title": "t6, IoT platform and API",
+		"title": "Credits",
 		"filename": "footer.md"
 	},
 	"template": {
@@ -20,18 +20,18 @@
 		"aloneDisplay": false
 	},
 	"order": [
+		"0. DataPoint Measure",
+		"1. Object and User Interfaces",
+		"2. Flow",
+		"3. Dashboard",
+		"4. Snippet",
+		"5. Rule",
+		"6. Source and Over The Air OTA",
+		"7. Mqtt",
+		"8. Administration",
+		"9. Notifications email",
+		"10. Exploratory Data Analysis EDA",
 		"User",
-		"0 Datapoint",
-		"1 Object and User Interfaces",
-		"2 Flow",
-		"3 Dashboard",
-		"4 Snippet",
-		"5 Rule",
-		"6 Source and Over The Air OTA",
-		"7 Mqtt",
-		"8 Administration",
-		"9 Notifications email",
-		"10 Exploratory Data Analysis EDA",
 		"General"
 	]
 }

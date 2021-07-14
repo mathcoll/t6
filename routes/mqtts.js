@@ -11,7 +11,9 @@ var MqttSerializer = require("../serializers/mqtt");
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} [mqtt_id] Mqtt Id
- * @apiParam {String} [name] 
+ * @apiParam {String} [size=20] Size of the resultset
+ * @apiParam {Number} [page] Page offset
+ * @apiParam (Request body) {String} [name] 
  * 
  * @apiUse 200
  * @apiUse 401

@@ -82,9 +82,9 @@ router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {String} [name=unamed] Rule Name
- * @apiParam {String} [rule] Rule
- * @apiParam {Boolean} [active] Status of the rule
+ * @apiParam (Request body) {String} [name=unamed] Rule Name
+ * @apiParam (Request body) {String} [rule] Rule
+ * @apiParam (Request body) {Boolean} [active] Status of the rule
  * 
  * @apiUse 201
  * @apiUse 400
@@ -125,10 +125,10 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} [rule_id] Rule Id
- * @apiParam {String} [name=unamed] Rule Name
- * @apiParam {String} [rule] Rule
- * @apiParam {Boolean} [active] Status of the rule
- * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
+ * @apiParam (Request body) {String} [name=unamed] Rule Name
+ * @apiParam (Request body) {String} [rule] Rule
+ * @apiParam (Request body) {Boolean} [active] Status of the rule
+ * @apiParam (Request body) (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
  * @apiUse 400

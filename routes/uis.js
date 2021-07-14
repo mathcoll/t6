@@ -78,7 +78,7 @@ router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret, 
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {json} UI
+ * @apiParam (Request body) {json} UI
  * 
  * @apiUse 201
  * @apiUse 403
@@ -111,7 +111,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} [ui_id] UI Id
- * @apiParam {json} UI
+ * @apiParam (Request body) {json} UI
  * 
  * @apiUse 200
  * @apiUse 400

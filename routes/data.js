@@ -649,7 +649,7 @@ function processPayload(payloadArray, req) {
 /**
  * @api {get} /data/:flow_id/:data_id? Get DataPoints
  * @apiName Get DataPoints
- * @apiGroup 0 DataPoint
+ * @apiGroup 0. DataPoint Measure
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
@@ -818,25 +818,26 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiDescription Create a DataPoint to t6. This needs to post the datapoint over a flow from your own collection.
  * The payload can be crypted using aes-256-cbc algorithm and optionally signed as well. Using both encrypting and signature require to sign the payload first and then to encrypt the new payload as an enveloppe.
  * On both Sign & Encrypt, it is required to claim the object_id in the body so that the symmetric Secret Key can be found on the object as well as the Crypt Secret.
- * @apiGroup 0 DataPoint
+ * @apiGroup 0. DataPoint Measure
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID you want to add Data Point to
- * @apiParam {String} value Data Point value
- * @apiParam {Boolean} [publish=true] Flag to publish to Mqtt Topic ; This parameter might become deprecated.
- * @apiParam {Boolean} [save=false] Flag to store in database the Value
- * @apiParam {String} [unit=undefined] Unit of the Value
- * @apiParam {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
- * @apiParam {uuid-v4} [datatype_id="Default value from the Flow resource"] DataType Id
- * @apiParam {String} [text=undefined] Optional text to qualify Value
- * @apiParam {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
- * @apiParam {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
- * @apiParam {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
- * @apiParam {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
- * @apiParam {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
- * @apiParam {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
+ * @apiParam {uuid-v4} [flow_id] Flow ID you want to add Data Point to. This parameter is optional as it can be defined in the payload itself
+ * @apiParam (Request body) {uuid-v4} flow_id Flow ID you want to add Data Point to
+ * @apiParam (Request body) {String} value Data Point value
+ * @apiParam (Request body) {Boolean} [publish=true] Flag to publish to Mqtt Topic ; This parameter might become deprecated.
+ * @apiParam (Request body) {Boolean} [save=false] Flag to store in database the Value
+ * @apiParam (Request body) {String} [unit=undefined] Unit of the Value
+ * @apiParam (Request body) {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
+ * @apiParam (Request body) {uuid-v4} [datatype_id="Default value from the Flow resource"] DataType Id
+ * @apiParam (Request body) {String} [text=undefined] Optional text to qualify Value
+ * @apiParam (Request body) {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
+ * @apiParam (Request body) {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
+ * @apiParam (Request body) {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
+ * @apiParam (Request body) {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
+ * @apiParam (Request body) {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
+ * @apiParam (Request body) {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401

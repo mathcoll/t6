@@ -6,8 +6,8 @@ var ObjectSerializer = require("../serializers/object");
 var sources;
 
 /**
- * @api {get} /ota/board-listall List all known boards and their corresponding FQBN
- * @apiName List all known boards and their corresponding FQBN
+ * @api {get} /ota/board-listall List boards and FQBN
+ * @apiName List boards and FQBN
  * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
@@ -29,8 +29,8 @@ router.get("/board-listall", expressJwt({secret: jwtsettings.secret, algorithms:
 });
 
 /**
- * @api {get} /ota/lib-list Shows a list of all installed libraries
- * @apiName Shows a list of all installed libraries
+ * @api {get} /ota/lib-list List all installed libraries
+ * @apiName List all installed libraries
  * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
@@ -52,8 +52,8 @@ router.get("/lib-list", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 });
 
 /**
- * @api {get} /ota/core-list Shows a list of all installed platform core
- * @apiName Shows a list of all installed platform core
+ * @api {get} /ota/core-list List installed core platforms 
+ * @apiName List installed core platforms 
  * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 
@@ -75,8 +75,9 @@ router.get("/core-list", expressJwt({secret: jwtsettings.secret, algorithms: jwt
 });
 
 /**
- * @api {post} /ota/:source_id/deploy/:object_id Deploy a Source to all linked Objects Over The Air
- * @apiName Deploy a Source to all linked Objects Over The Air
+ * @api {post} /ota/:source_id/deploy/:object_id Deploy Source to a Objects
+ * @apiName Deploy Source to a Objects
+ * @apiDescription Deploy Source to a all linked Objects. This require the source to be build before. The transmission to the Object is made using OTA protocol.
  * @apiGroup 6. Source and Over The Air OTA
  * @apiVersion 2.0.1
  * 

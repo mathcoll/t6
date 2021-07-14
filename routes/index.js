@@ -325,8 +325,8 @@ function checkForTooManyFailure(req, res, email) {
 }
 
 /**
- * @api {delete} /tokens/all Clean and delete all expired users tokens
- * @apiName Clean and delete all expired users tokens
+ * @api {delete} /tokens/all Delete all expired users tokens
+ * @apiName Delete all expired users tokens
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -350,20 +350,20 @@ router.delete("/tokens/all", function (req, res) {
 });
 
 /**
- * @api {post} /authenticate Authenticate - get JWT Token
- * @apiName Authenticate - get JWT Token
+ * @api {post} /authenticate Authenticate - JWT Token
+ * @apiName Authenticate - JWT Token
  * @apiDescription The authenticate endpoint provide an access token which is multiple use but expiring within 5 minutes.
  * Once it has expired an access_token can be refreshed to extend duration or you can generate a new one from this authenticate endpoint.
  * Several Authentification process are handled: using your personnal credentials, using a Key+Secret Access long life Token (which can be revoked) 
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
- * @apiParam {String} [username] Your own username
- * @apiParam {String} [password] Your own password
- * @apiParam {String} [key=undefined] In "access_token" context, Client Api Key
- * @apiParam {String} [secret=undefined] In "access_token" context, Client Api Secret
- * @apiParam {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
+ * @apiParam (Request body) {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
+ * @apiParam (Request body) {String} [username] Your own username
+ * @apiParam (Request body) {String} [password] Your own password
+ * @apiParam (Request body) {String} [key=undefined] In "access_token" context, Client Api Key
+ * @apiParam (Request body) {String} [secret=undefined] In "access_token" context, Client Api Secret
+ * @apiParam (Request body) {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
  * 
  * @apiSuccess {String} status Status of the Authentication
  * @apiSuccess {String} token JWT Token
@@ -788,8 +788,8 @@ router.get("/status", function(req, res, next) {
 
 
 /**
- * @api {get} /index Get Cards Index for PWA
- * @apiName Get Cards Index for PWA
+ * @api {get} /index Get Index Cards
+ * @apiName Get Index Cards
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
@@ -802,8 +802,8 @@ router.get("/index", function(req, res, next) {
 
 
 /**
- * @api {get} /terms Get Terms and Privacy for PWA
- * @apiName Get Terms and Privacy for PWA
+ * @api {get} /terms Get Terms and Privacy
+ * @apiName Get Terms and Privacy
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
@@ -815,8 +815,8 @@ router.get("/terms", function(req, res, next) {
 });
 
 /**
- * @api {get} /compatible-devices Get compatible devices for PWA
- * @apiName Get compatible devices for PWA
+ * @api {get} /compatible-devices Get compatible devices
+ * @apiName Get compatible devices
  * @apiGroup General
  * @apiVersion 2.0.1
  * 
@@ -828,8 +828,8 @@ router.get("/compatible-devices", function(req, res, next) {
 });
 
 /**
- * @api {get} /open-source-licenses Get open-source-licenses for PWA
- * @apiName Get open-source-licenses for PWA
+ * @api {get} /open-source-licenses Get open-source-licenses
+ * @apiName Get open-source-licenses
  * @apiGroup General
  * @apiVersion 2.0.1
  * 

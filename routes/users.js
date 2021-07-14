@@ -9,19 +9,22 @@ var tokens;
 var accessTokens;
 
 /**
- * @api {get} /users/newcomers Get the list of 20 latest user Account created
- * @apiName Get the list of 20 latest user Account created
- * @apiDescription Get the list of 20 latest user Account created
+ * @api {get} /users/newcomers Get latest user Account
+ * @apiName Get latest user Account
+ * @apiDescription Get the list of latest user Account created
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
+ *
+ * @apiParam {String} [size=20] Size of the resultset
+ * @apiParam {Number} [page] Page offset
  * 
  * @apiUse 201
  * @apiUse 403
  */
 router.get("/newcomers", function (req, res) {
-	var size = typeof req.query.size!=="undefined"?req.query.size:20; // TODO WTF: should be "limit" !!
+	var size = typeof req.query.size!=="undefined"?req.query.size:20;
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
@@ -59,6 +62,9 @@ router.get("/newcomers", function (req, res) {
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
+ *
+ * @apiParam {String} [size=20] Size of the resultset
+ * @apiParam {Number} [page] Page offset
  * 
  * @apiUse 200
  * @apiUse 401
@@ -111,8 +117,8 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: 
 });
 
 /**
- * @api {get} /users/me/sessions Get User active sessions from JWT claim
- * @apiName Get User active sessions from JWT claim
+ * @api {get} /users/me/sessions Get User active sessions
+ * @apiName Get User active sessions
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -238,9 +244,9 @@ router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secre
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam {String} firstName The User First Name
- * @apiParam {String} lastName The User Last Name
- * @apiParam {String} email The User Email address
+ * @apiParam (Request body) {String} firstName The User First Name
+ * @apiParam (Request body) {String} lastName The User Last Name
+ * @apiParam (Request body) {String} email The User Email address
  * 
  * @apiUse 201
  * @apiUse 412
@@ -322,7 +328,7 @@ router.post("/", function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam {String{128}} [memo] Free memo string
+ * @apiParam (Request body) {String{128}} [memo] Free memo string
  * 
  * @apiUse Auth
  * @apiUse 201
@@ -369,7 +375,7 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
  * @apiVersion 2.0.1
  * 
  * @apiParam {String} token Token to identify the user
- * @apiParam {String} password The new password
+ * @apiParam (Request body) {String} password The new password
  * 
  * @apiUse 201
  * @apiUse 403
@@ -407,7 +413,7 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiParam {String} email to identify the user
+ * @apiParam (Request body) {String} email to identify the user
  * 
  * @apiUse 200
  * @apiUse 404
@@ -453,8 +459,8 @@ router.post("/instruction", function (req, res) {
 });
 
 /**
- * @api {post} /users/resetAllUsersTokens Reset unsubscription tokens for all users
- * @apiName Reset unsubscription tokens for all users
+ * @api {post} /users/resetAllUsersTokens Reset all unsubscription tokens
+ * @apiName Reset all unsubscription tokens
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -477,8 +483,8 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algo
 });
 
 /**
- * @api {post} /users/sendPush Send Push notification to a specific user
- * @apiName Send Push notification to a specific user
+ * @api {post} /users/sendPush Send Push notification to user
+ * @apiName Send Push notification to user
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -514,8 +520,8 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 });
 
 /**
- * @api {post} /users/sendFCM Send FCM message  to a specific user
- * @apiName Send FCM message to a specific user
+ * @api {post} /users/sendFCM Send FCM message to user
+ * @apiName Send FCM message to user
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -544,9 +550,9 @@ router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} user_id User ID
- * @apiParam {String} [firstName] The new User First Name
- * @apiParam {String} [lastName] The new User Last Name
- * @apiParam {String} [email] The new User Email address
+ * @apiParam (Request body) {String} [firstName] The new User First Name
+ * @apiParam (Request body) {String} [lastName] The new User Last Name
+ * @apiParam (Request body) {String} [email] The new User Email address
  * 
  * @apiUse 200
  * @apiUse 403
@@ -580,13 +586,13 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 });
 
 /**
- * @api {delete} /users/accessTokens/:key Revoke an Access Token from its key
- * @apiName Revoke an Access Token from its key
+ * @api {delete} /users/accessTokens/:key Revoke an Access Token
+ * @apiName Revoke an Access Token
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {string} key to revoke
+ * @apiParam {string} key Access Token Key to revoke
  * @apiUse 201
  * @apiUse 403
  * @apiUse 412

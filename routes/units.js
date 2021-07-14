@@ -43,11 +43,11 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res) {
  * @apiUse AuthAdmin
  * @apiPermission Admin
  * 
- * @apiParam {String} [name=unamed] Unit Name
- * @apiParam {String} [format=""] Unit Format
- * @apiParam {String="Work" "Energy (E)" "Power" "Radiant Flux (P)" "Electric Charge (Q)" "Voltage, Electrical (U)" "Electrical Conductance (S)" "Electrical Capacitance (F)" "Magnetic Flux (Wb)" "Electrical Inductance (H)" "Illuminance (E)" "Torque (M)" "Time (t)" "Current (I)" "Area" "Length" "Power (P)" "Luminance (L)" "Luminous Intensity (l)" "Température" "Temperature (T)" "Volume" "Volume (V)" "Other" "Sound" "Frequency (f)" "Pressure, Stress" "Force, Weight (F)"} [type] Unit Type
- * @apiParam {String} [system=""] System
- * @apiParam {String{1024}} [description=""] Description
+ * @apiParam (Request body) {String} [name=unamed] Unit Name
+ * @apiParam (Request body) {String} [format=""] Unit Format
+ * @apiParam (Request body) {String="Work" "Energy (E)" "Power" "Radiant Flux (P)" "Electric Charge (Q)" "Voltage, Electrical (U)" "Electrical Conductance (S)" "Electrical Capacitance (F)" "Magnetic Flux (Wb)" "Electrical Inductance (H)" "Illuminance (E)" "Torque (M)" "Time (t)" "Current (I)" "Area" "Length" "Power (P)" "Luminance (L)" "Luminous Intensity (l)" "Température" "Temperature (T)" "Volume" "Volume (V)" "Other" "Sound" "Frequency (f)" "Pressure, Stress" "Force, Weight (F)"} [type] Unit Type
+ * @apiParam (Request body) {String} [system=""] System
+ * @apiParam (Request body) {String{1024}} [description=""] Description
  * 
  * @apiUse 201
  * @apiUse 401
@@ -80,11 +80,11 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiPermission Admin
  * 
  * @apiParam {uuid-v4} unit_id Unit ID
- * @apiParam {String} [name] Unit Name
- * @apiParam {String="Work" "Energy (E)" "Power" "Radiant Flux (P)" "Electric Charge (Q)" "Voltage, Electrical (U)" "Electrical Conductance (S)" "Electrical Capacitance (F)" "Magnetic Flux (Wb)" "Electrical Inductance (H)" "Illuminance (E)" "Torque (M)" "Time (t)" "Current (I)" "Area" "Length" "Power (P)" "Luminance (L)" "Luminous Intensity (l)" "Température" "Temperature (T)" "Volume" "Volume (V)" "Other" "Sound" "Frequency (f)" "Pressure, Stress" "Force, Weight (F)"} [type] Unit Type
- * @apiParam {String} [format] Unit Format
- * @apiParam {String} [system=""] System
- * @apiParam {String{1024}} [description=""] Description
+ * @apiParam (Request body) {String} [name] Unit Name
+ * @apiParam (Request body) {String="Work" "Energy (E)" "Power" "Radiant Flux (P)" "Electric Charge (Q)" "Voltage, Electrical (U)" "Electrical Conductance (S)" "Electrical Capacitance (F)" "Magnetic Flux (Wb)" "Electrical Inductance (H)" "Illuminance (E)" "Torque (M)" "Time (t)" "Current (I)" "Area" "Length" "Power (P)" "Luminance (L)" "Luminous Intensity (l)" "Température" "Temperature (T)" "Volume" "Volume (V)" "Other" "Sound" "Frequency (f)" "Pressure, Stress" "Force, Weight (F)"} [type] Unit Type
+ * @apiParam (Request body) {String} [format] Unit Format
+ * @apiParam (Request body) {String} [system=""] System
+ * @apiParam (Request body) {String{1024}} [description=""] Description
  * 
  * @apiUse 200
  * @apiUse 401
