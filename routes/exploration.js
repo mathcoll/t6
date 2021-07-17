@@ -1195,7 +1195,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
 		var join = flow.eqJoin(units.chain(), "unit", "id");
 
-		var flowsDT = db.getCollection("flows");
+		var flowsDT = db_flows.getCollection("flows");
 		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
 		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
