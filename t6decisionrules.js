@@ -279,7 +279,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			} else if ( event.type === "email" ) {
 				var envelope = {
 					from:		event.params.from?event.params.from:from,
-					bcc:		event.params.bcc?event.params.bcc:bcc,
+					bcc:		event.params.bcc?event.params.bcc:undefined,
 					to:			event.params.to?event.params.to:bcc,
 					user_id:	payload.user_id?payload.user_id:to,
 					subject:	event.params.subject?stringformat(event.params.subject, payload):"",
