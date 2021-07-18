@@ -143,8 +143,8 @@ router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, 
 });
 
 /**
- * @api {get} /notifications/list/unsubscribed Get list of unsubscribed notifications
- * @apiName Get list of unsubscribed notifications
+ * @api {get} /notifications/list/unsubscribed List unsubscribed notifications
+ * @apiName List unsubscribed notifications
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * 
@@ -370,8 +370,8 @@ router.get("/mail/newsletter/subscribers", expressJwt({secret: jwtsettings.secre
 });
 
 /**
- * @api {post} /notifications/mail/newsletter/plan Plan a newsletter to be sent to subscribers
- * @apiName Plan a newsletter to be sent to subscribers
+ * @api {post} /notifications/mail/newsletter/plan Schedule a newsletter
+ * @apiName Schedule a newsletter
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -405,8 +405,8 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
 });
 
 /**
- * @api {post} /notifications/mail/newsletter/send Send a newsletter from planned subscribers
- * @apiName Send a newsletter from planned subscribers
+ * @api {post} /notifications/mail/newsletter/send Send a scheduled newsletter
+ * @apiName Send a scheduled newsletter
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -461,14 +461,14 @@ router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jw
 });
 
 /**
- * @api {post} /notifications/push/plan Plan a push to be sent to subscribers
- * @apiName Plan a push to be sent to subscribers
+ * @api {post} /notifications/push/plan Schedule a push
+ * @apiName Schedule a push
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission Admin
 
- * @apiBody {String} [title] Notification title
+ * @apiBody {String} [title="📰 t6 updates"] Notification title
  * @apiBody {String} [icon] Notification icon
  * @apiBody {Array} [vibrate] Notification array of vibration
  * @apiBody {Array} [actions] Notification array of actions
@@ -506,8 +506,8 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
 });
 
 /**
- * @api {post} /notifications/push/send Send a newsletter from planned subscribers
- * @apiName Send a newsletter from planned subscribers
+ * @api {post} /notifications/push/send Send a scheduled push
+ * @apiName Send a scheduled push
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
