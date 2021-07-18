@@ -19,7 +19,7 @@ var snippet = {
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: "GET", headers: myHeaders };
-		var limit = 4;
+		var limit = 4;//TODO : check when data is undefined and limit 4 is not yet reach. This could cause error on the bellow loop
 		var url = app.baseUrl+"/"+app.api_version+"/data/"+params.attributes.flows[0]+"?sort=desc&limit="+limit;
 		fetch(url, myInit)
 		.then(
