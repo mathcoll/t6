@@ -61,7 +61,7 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 		flow = (join.data()).length>0?join.data()[0].left:[];
 		flow.unit = (join.data())[0].right.name;
 		*/
-		
+
 		var total = flows.find(query).length;
 		flow.size = size;
 		flow.pageSelf = page;
@@ -77,6 +77,58 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 		}
 	} else {
 		res.status(401).send(new ErrorSerializer({"id": 237, "code": 401, "message": "Unauthorized"}).serialize());
+	}
+});
+
+/**
+ * @api {get} /flows/:flow_id/track Get Track from a Flow
+ * @apiName Get Track from a Flow
+ * @apiGroup 2. Flow
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [flow_id] Flow Id which is selected as a track on other Flows
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/:flow_id([0-9a-z\-]+)/track", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var flow_id = req.params.flow_id;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20; // TODO WTF: should be "limit" !!
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
+	if ( typeof req.user !== "undefined" && typeof req.user.id !== "undefined" ) {
+		let query = { "user_id": req.user.id };
+		if ( typeof flow_id !== "undefined" ) {
+			query = {
+			"$and": [
+					{ "track_id": flow_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		}
+		let flow = flows.chain().find(query).offset(offset).limit(size).data();
+
+		var total = flows.find(query).length;
+		flow.size = size;
+		flow.pageSelf = page;
+		flow.pageFirst = 1;
+		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
+		flow.pageLast = Math.ceil(total/size);
+		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
+		if (flow && flow[0]) {
+			flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
+			res.status(200).send(new FlowSerializer(flow).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 236.6, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(401).send(new ErrorSerializer({"id": 237.6, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
