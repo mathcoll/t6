@@ -36,7 +36,7 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiBody {String} [name=unamed] DataType Name
  * @apiBody {String="categorical","numerical","object"} type Type of the datatype
@@ -77,7 +77,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiParam {uuid-v4} datatype_id DataType Id
  * @apiBody {String} name Name of datatype
@@ -124,7 +124,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiParam {uuid-v4} datatype_id DataType Id to be deleted
  * 

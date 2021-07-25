@@ -41,7 +41,7 @@ router.get("/(:unit_id([0-9a-z\-]+))?", function (req, res) {
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiBody {String} [name=unamed] Unit Name
  * @apiBody {String} [format=""] Unit Format
@@ -77,7 +77,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiParam {uuid-v4} unit_id Unit ID
  * @apiBody {String} [name] Unit Name
@@ -120,7 +120,7 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiParam {uuid-v4} unit_id Unit Id to be deleted
  * 

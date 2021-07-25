@@ -330,7 +330,7 @@ function checkForTooManyFailure(req, res, email) {
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 201
  * @apiUse 403
@@ -370,7 +370,7 @@ router.delete("/tokens/all", function (req, res) {
  * @apiSuccess {timestamp} tokenExp Expiration timestamp of the JWT Token
  * @apiSuccess {String} refresh_token Token that can be used to refresh the Token
  * @apiSuccess {timestamp} refreshTokenExp Expiration timestamp of the Refresh Token
- * 
+ *
  * @apiUse 200
  * @apiUse 400
  * @apiUse 401

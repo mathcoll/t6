@@ -15,7 +15,7 @@ var accessTokens;
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  *
  * @apiParam {String} [size=20] Size of the resultset
  * @apiParam {Number} [page] Page offset
@@ -61,7 +61,7 @@ router.get("/newcomers", function (req, res) {
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  *
  * @apiParam {String} [size=20] Size of the resultset
  * @apiParam {Number} [page] Page offset
@@ -466,7 +466,7 @@ router.post("/instruction", function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 200
  * @apiUse 403
@@ -490,7 +490,7 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algo
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 200
  * @apiUse 403
@@ -527,7 +527,7 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
  * @apiGroup User
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 200
  * @apiUse 403

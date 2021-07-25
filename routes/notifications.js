@@ -112,7 +112,7 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
  * @apiVersion 2.0.1
  * @apiHeader {String} [Content-Type] text/html
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 200
  * @apiUse 403
@@ -168,7 +168,7 @@ router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret, algorit
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
@@ -240,7 +240,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
@@ -317,7 +317,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
@@ -343,7 +343,7 @@ router.get("/mail/newsletter/count", expressJwt({secret: jwtsettings.secret, alg
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
@@ -375,7 +375,7 @@ router.get("/mail/newsletter/subscribers", expressJwt({secret: jwtsettings.secre
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
@@ -410,7 +410,7 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
@@ -440,7 +440,7 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
@@ -466,7 +466,7 @@ router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jw
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
 
  * @apiBody {String} [title="📰 t6 updates"] Notification title
  * @apiBody {String} [icon] Notification icon
@@ -511,7 +511,7 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  *
  * @apiBody {Integer} [limit] 
  * @apiBody {boolean} [dryrun] 
@@ -546,7 +546,7 @@ router.post("/push/send", expressJwt({secret: jwtsettings.secret, algorithms: jw
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
- * @apiPermission Admin
+ * @apiPermission AuthAdmin
  * 
  * @apiUse 202
  * @apiUse 403
