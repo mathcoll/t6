@@ -189,7 +189,11 @@ router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} [rule_id] Rule Id
+ * @apiParam {uuid-v4} [rule_id] Rule Id to be deleted
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 404
  */
 router.delete("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;

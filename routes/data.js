@@ -838,6 +838,11 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiBody {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
  * @apiBody {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
  * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
+ * @apiBody {String} influx_db_cloud.token Authentication token ID
+ * @apiBody {String} influx_db_cloud.org Organization ID
+ * @apiBody {String} influx_db_cloud.url HTTP address of InfluxDB
+ * @apiBody {String} influx_db_cloud.bucket Bucket name
+ * 
  * @apiUse 200
  * @apiUse 201
  * @apiUse 401

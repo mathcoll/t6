@@ -127,7 +127,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {String} [color] Snippet Color
  * @apiBody {String[]} [flows] List of Flow Ids
  * @apiBody {String[]} [options] Options as json object
- * @apiParam (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
  * @apiUse 400
@@ -189,7 +188,11 @@ router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} snippet_id Snippet Id
+ * @apiParam {uuid-v4} snippet_id Snippet Id to be deleted
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 404
  */
 router.delete("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var snippet_id = req.params.snippet_id;

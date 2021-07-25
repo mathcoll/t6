@@ -122,10 +122,11 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
  * @apiUse AuthAdmin
  * @apiPermission Admin
  * 
- * @apiParam {uuid-v4} unit_id Unit ID
+ * @apiParam {uuid-v4} unit_id Unit Id to be deleted
  * 
  * @apiUse 200
  * @apiUse 401
+ * @apiUse 403
  * @apiUse 404
  */
 router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {

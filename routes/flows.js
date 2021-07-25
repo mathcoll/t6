@@ -292,7 +292,11 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} flow_id Flow Id
+ * @apiParam {uuid-v4} flow_id Flow Id to be deleted
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 404
  */
 router.delete("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	// TODO: delete all data related to that flow?

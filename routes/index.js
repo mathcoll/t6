@@ -11,17 +11,17 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 200
- * @apiSuccess 200 Success
- * @apiSuccessExample 200 Response
- *     HTTP/1.1 200 Success
+ * @apiSuccess 200 Server successfully understood the request
+ * @apiSuccessExample {json} 200 Success
+ *     HTTP/1.1 200 Response
  *     {
  *     }
  */
 
 /**
  * @apiDefine 201
- * @apiSuccess 201 Created
- * @apiSuccessExample 201 Response
+ * @apiSuccess 201 Creation of a new resource was successful
+ * @apiSuccessExample {json} 201 Created
  *     HTTP/1.1 201 Created
  *     {
  *       "message": "Created",
@@ -32,8 +32,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 202
- * @apiSuccess 202 Accepted
- * @apiSuccessExample 202 Response
+ * @apiSuccess 202 Server successfully understood the request, it will be done asynchroneously
+ * @apiSuccessExample {json} 202 Accepted
  *     HTTP/1.1 202 Accepted
  *     {
  *     }
@@ -41,8 +41,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 204
- * @apiSuccess 204 No Content
- * @apiSuccessExample 204 Response
+ * @apiSuccess 204 No Content on response
+ * @apiSuccessExample {json} 204 No Content
  *     HTTP/1.1 204 No Content
  *     {
  *     }
@@ -50,8 +50,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 400
- * @apiError 400 Bad Request, require a Bearer Authentication or revision is incorrect.
- * @apiErrorExample 400 Response
+ * @apiError 400 Bad Request, require a Bearer Authentication or revision is incorrect
+ * @apiErrorExample {json} 400 Response
  *     HTTP/1.1 400 Bad Request
  *     {
  *       "message": "Bad Request",
@@ -62,8 +62,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 401
- * @apiError 401 Require a Bearer Authentication.
- * @apiErrorExample 401 Response
+ * @apiError 401 Require a Bearer Authentication
+ * @apiErrorExample {json} 401 Response
  *     HTTP/1.1 401 Not Authorized
  *     {
  *       "message": "Not Authorized",
@@ -74,8 +74,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 401sign
- * @apiError 401sign Signature is invalid and required.
- * @apiErrorExample 401sign Response
+ * @apiError 401 Signature is invalid and is required
+ * @apiErrorExample {json} 401sign Response
  *     HTTP/1.1 401 Invalid Signature
  *     {
  *       "message": "Invalid Signature",
@@ -86,8 +86,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 403
- * @apiError 403 Forbidden - Token used in transaction is not valid. Check your token and/or permission.
- * @apiErrorExample 403 Response
+ * @apiError 403 Forbidden Token used in transaction is not valid - check your token and/or permission
+ * @apiErrorExample {json} 403 Response
  *     HTTP/1.1 403 Forbidden
  *     {
  *       "message": "Forbidden",
@@ -98,8 +98,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 404
- * @apiError 404 Not Found - We couldn"t find the resource you are trying to access.
- * @apiErrorExample 404 Response
+ * @apiError 404 Not Found We couldn't find the resource you are trying to access
+ * @apiErrorExample {json} 404 Response
  *     HTTP/1.1 404 Not Found
  *     {
  *       "message": "Not Found",
@@ -110,8 +110,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 405
- * @apiError 405 Method Not Allowed - API endpoint does not accept the method used.
- * @apiErrorExample 405 Response
+ * @apiError 405 Method Not Allowed ; API endpoint does not accept the method used
+ * @apiErrorExample {json} 405 Response
  *     HTTP/1.1 405 Method Not Allowed
  *     {
  *       "message": "Not Authorized",
@@ -122,8 +122,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 409
- * @apiError 409 conflict.
- * @apiErrorExample 409 Response
+ * @apiError 409 Conflict
+ * @apiErrorExample {json} 409 Response
  *     HTTP/1.1 409 conflict
  *     {
  *       "message": "conflict",
@@ -134,8 +134,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 412
- * @apiError 412 Precondition Failed.
- * @apiErrorExample 412 Response
+ * @apiError 412 Precondition Failed
+ * @apiErrorExample {json} 412 Response
  *     HTTP/1.1 412 Precondition Failed
  *     {
  *       "message": "Precondition Failed",
@@ -146,8 +146,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 429
- * @apiError 429 Too Many Requests.
- * @apiErrorExample 429 Response
+ * @apiError 429 Too Many Requests
+ * @apiErrorExample {json} 429 Response
  *     HTTP/1.1 429 Too Many Requests
  *     {
  *       "message": "Too Many Requests",
@@ -158,8 +158,8 @@ function sendNotification(pushSubscription, payload) {
 
 /**
  * @apiDefine 500
- * @apiError 500 Internal Error.
- * @apiErrorExample 500 Response
+ * @apiError 500 Internal Server Error
+ * @apiErrorExample {json} 500 Response
  *     HTTP/1.1 500 Internal Error
  *     {
  *       "message": "Internal Error",
@@ -358,13 +358,11 @@ router.delete("/tokens/all", function (req, res) {
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiBody {String="password","refresh_token","access_token"} grant_type="password" Grant type is either "password" (default) to authenticate using your own credentials, or "refresh_token" to refresh a token before it expires.
- * @apiBody {String} [username] Your own username
- * @apiBody {String} [password] Your own password
- * @apiBody {String} [key=undefined] In "access_token" context, Client Api Key
- * @apiBody {String} [secret=undefined] In "access_token" context, Client Api Secret
- * @apiBody {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
- *
+ * @apiBody (Body) {String="password","refresh_token","access_token"} grant_type="password" Grant type is the method to authenticate using your own credentials, using a pair of Key/Secret or refreshing a Bearer token before it expires.
+ * @apiBody (Body) {String} [username] Your own username, required only when grant_type="password"
+ * @apiBody (Body) {String} [password] Your own password, required only when grant_type="password"
+ * @apiBody (Body) {String} [key=undefined] Client Api Key, required only when grant_type="access_token"
+ * @apiBody {String} [secret=undefined] Client Api Secret, required only when grant_type="access_token"
  * @apiBody {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
  * 
  * @apiSuccess {String} status Status of the Authentication
@@ -381,7 +379,7 @@ router.delete("/tokens/all", function (req, res) {
  */
 router.post("/authenticate", function (req, res) {
 	var pushSubscription = req.body.pushSubscription;
-	if ( (req.body.username && req.body.password) && (!req.body.grant_type || req.body.grant_type === "password") ) {
+	if ( (req.body.username !== "" && req.body.password !== "") && (!req.body.grant_type || req.body.grant_type === "password") ) {
 		var email = req.body.username;
 		var password = req.body.password;
 
@@ -465,12 +463,12 @@ router.post("/authenticate", function (req, res) {
 			} else {
 				checkForTooManyFailure(req, res, email);
 				t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.11});
-				return res.status(403).send(new ErrorSerializer({"id": 102.11, "code": 403, "message": "Forbidden"}).serialize());
+				return res.status(403).send(new ErrorSerializer({"id": 102.11, "code": 403, "message": "Forbidden; Password does not match"}).serialize());
 			}
 		} else {
 			t6console.debug("No user found or no password set yet.");
-				t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.21});
-			return res.status(403).send(new ErrorSerializer({"id": 102.21, "code": 403, "message": "Forbidden"}).serialize());
+			t6events.add("t6App", "POST_authenticate", null, null, {"status": 403, "error_id": 102.21});
+			return res.status(403).send(new ErrorSerializer({"id": 102.21, "code": 403, "message": "Forbidden; No user found or no password set yet."}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
 		var queryT = {
@@ -645,8 +643,8 @@ router.post("/authenticate", function (req, res) {
 			return res.status(403).send(new ErrorSerializer({"id": 102.43, "code": 403, "message": "Invalid Refresh Token"}).serialize());
 		}
 	} else {
-		t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 400, "error_id": 102.33});
-		return res.status(400).send(new ErrorSerializer({"id": 102.33, "code": 400, "message": "Required param grant_type"}).serialize());
+		t6events.add("t6App", "POST_authenticate", null, null, {"status": 400, "error_id": 102.33});
+		return res.status(400).send(new ErrorSerializer({"id": 102.33, "code": 400, "message": "Required param grant_type and/or username+password needs to be defined"}).serialize());
 	}
 });
 

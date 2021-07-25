@@ -971,6 +971,9 @@ router.get("/outliers/?", expressJwt({ secret: jwtsettings.secret, algorithms: j
  *
  * @apiUse Auth
  * 
+ * @apiUse 200
+ * @apiUse 404
+ * 
  */
 router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
@@ -1128,6 +1131,9 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
+ * 
+ * @apiUse 200
+ * @apiUse 404
  * 
  */
 router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
@@ -1321,6 +1327,9 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiDeprecated /!\ Please use other Apis 
  *
  * @apiUse Auth
+ * 
+ * @apiUse 200
+ * @apiUse 404
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
  * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.

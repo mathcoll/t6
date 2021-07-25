@@ -244,8 +244,8 @@ router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secre
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiBody {String} firstName The User First Name
- * @apiBody {String} lastName The User Last Name
+ * @apiBody {String} [firstName] The User First Name
+ * @apiBody {String} [lastName] The User Last Name
  * @apiBody {String} email The User Email address
  * 
  * @apiUse 201
@@ -371,6 +371,7 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
 /**
  * @api {post} /users/token/:token Reset a User password
  * @apiName Reset a User password
+ * @apiDescription The user account corresponding to the token passed throught path parameter is upadated with the new password
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
@@ -410,10 +411,11 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
 /**
  * @api {post} /users/instruction Reset a password instruction
  * @apiName Reset a password instruction
+ * @apiDescription This Api will send the recovery email to user passed in the email body attribute.
  * @apiGroup User
  * @apiVersion 2.0.1
  * 
- * @apiBody {String} email to identify the user
+ * @apiBody {String} email to identify the user account
  * 
  * @apiUse 200
  * @apiUse 404

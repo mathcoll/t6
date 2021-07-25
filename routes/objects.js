@@ -636,7 +636,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} object_id Object Id
+ * @apiParam {uuid-v4} object_id Object Id to be deleted
  * 
  * @apiUse 200
  * @apiUse 403

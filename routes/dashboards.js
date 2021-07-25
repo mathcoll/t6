@@ -119,9 +119,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse Auth
  * @apiParam {uuid-v4} flow_id Dashboard Id
  * @apiBody {String} [name=unamed] Dashboard Name
- * @apiBody {String} [description] Dashboard Description
- * @apiBody {String[]} [snippets] List of Snippets Ids
- * @apiBody (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
+ * @apiBody {String} [description="the previous value before edition"] Dashboard Description
+ * @apiBody {String[]} [snippets="the previous value before edition"] List of Snippets Ids
  * 
  * @apiUse 200
  * @apiUse 400
@@ -180,7 +179,12 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} dashboard_id Dashboard Id
+ * @apiParam {uuid-v4} dashboard_id Dashboard Id to be deleted
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 404
  */
 router.delete("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var dashboard_id = req.params.dashboard_id;

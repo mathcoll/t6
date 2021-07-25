@@ -126,9 +126,11 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
  * @apiUse AuthAdmin
  * @apiPermission Admin
  * 
- * @apiParam {uuid-v4} datatype_id DataType Id
+ * @apiParam {uuid-v4} datatype_id DataType Id to be deleted
  * 
+ * @apiUse 200
  * @apiUse 401
+ * @apiUse 403
  * @apiUse 404
  */
 router.delete("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
