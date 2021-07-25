@@ -128,7 +128,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {String} [name=unamed] Rule Name
  * @apiBody {String} [rule] Rule
  * @apiBody {Boolean} [active] Status of the rule
- * @apiBody (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * 
  * @apiUse 200
  * @apiUse 400

@@ -217,7 +217,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
  * @apiBody {Object[]} [permission]
  * @apiBody {String[]} [objects] List of Object Ids
- * @apiBody (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 200

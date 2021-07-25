@@ -557,7 +557,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {String} [ipv6] Object IP v6
  * @apiBody {Boolean} [isPublic=false] Flag to allow dedicated page to be viewable from anybody
  * @apiBody {Boolean} [is_public=false] Alias of isPublic
- * @apiBody (meta) {Integer} [meta.revision] If set to the current revision of the resource (before PUTing), the value is checked against the current revision in database.
  * @apiBody {String} [secret_key] Object Secret Key in symmetric signature
  * @apiBody {String} [secret_key_crypt] Object Secret Key in symmetric cryptography
  * @apiBody {String} [fqbn] fqbn
