@@ -301,19 +301,10 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 	}
 	var json = objects.chain().find(query).offset(offset).limit(size).data();
 	json.map(function(o) {
-		let i = t6ConnectedObjects.indexOf(o.id);
-		if (i > -1) {
-			o.is_connected = true;
-		} else {
-			o.is_connected = false;
-		}
-		t6console.debug(`${o.id} is_connected=${o.is_connected}`);
-		if (typeof o.source_id!=="undefined" && !o.source_version) {
-			o.source_version = 0;
-		}
-		if (typeof o.source_id!=="undefined") {
-			o.otahist = t6otahistory.getLastEvent(req.user.id, o.id);
-		}
+		o.is_connected=t6ConnectedObjects.indexOf(o.id)>-1?true:false;
+		o.source_version=(typeof o.source_id!=="undefined" && !o.source_version)?0:o.source_version;
+		o.otahist = typeof o.source_id!=="undefined"?t6otahistory.getLastEvent(req.user.id, o.id):null;
+		t6console.debug(`${o.id} is_connected: ${o.is_connected}, source_version: ${o.source_version}, otahist: ${o.otahist}.`);
 		return o;
 	});
 	t6console.debug(query);
