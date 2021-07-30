@@ -307,7 +307,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 		} else {
 			o.is_connected = false;
 		}
-		t6console.debug("is_connected=" + o.is_connected);
+		t6console.debug(`${o.id} is_connected=${o.is_connected}`);
 		if (typeof o.source_id!=="undefined" && !o.source_version) {
 			o.source_version = 0;
 		}
