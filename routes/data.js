@@ -852,7 +852,6 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiUse 429
  * @apiUse 500
  */
-
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
 	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body).slice(0, 3); // only process 3 first measures from payload and ignore the others
 	t6console.debug(`Called POST datapoints with ${payloadArray.length} measurements`);
