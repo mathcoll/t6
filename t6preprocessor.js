@@ -100,6 +100,12 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 							payload.sanitizedValue = ""+payload.value;
 							fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
 							break;
+						case "image":
+							payload.sanitizedValue = validator.isBase64(payload.value.toString())===true?payload.value:null;
+							payload.isRejected = validator.isBase64(payload.value.toString())===false?true:false;
+							pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
+							fields[0] = {time:""+time, valueImage: payload.sanitizedValue,};
+							break;
 						case "time":
 							payload.sanitizedValue = payload.value ;
 							fields[0] = {time:""+time, valueTime: payload.sanitizedValue,};
@@ -204,6 +210,17 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 				pp.message = errorMode===1?`Could'd find mode ${pp.mode}.`:`Transformed to ${pp.mode}.`;
 				break;
 
+			case "aidc": // Automatic identification and data capture (AIDC)
+				switch(pp.mode) {
+					case "faceExpressionRecognition":
+						t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png");
+						break;
+					default:
+						break;
+				}
+				pp.transformedValue = payload.value;
+				break;
+			
 			default:
 				pp.message = typeof flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
 				break;
@@ -251,10 +268,10 @@ t6preprocessor.isElligibleToFusion = function(tracks, requireDataType=null) {
 			t6console.debug(`${(track.measurements).length} measurements, elligible to fusion.`);
 		}
 		if(typeof requireDataType!=="undefined" && requireDataType!==null && requireDataType!==track.data_type) {
-			t6console.debug(typeof requireDataType);
-			t6console.debug(typeof track.data_type);
-			t6console.debug(requireDataType);
-			t6console.debug(track.data_type);
+			t6console.debug("typeof requireDataType", typeof requireDataType );
+			t6console.debug("typeof track.data_type", typeof track.data_type);
+			t6console.debug("requireDataType", requireDataType);
+			t6console.debug("track.data_type", track.data_type);
 			t6console.debug(`Incompatible datatype ${track.data_type} !== ${requireDataType}.`);
 			errorTracks.push(track.id);
 			invalidCount++;
@@ -293,7 +310,7 @@ t6preprocessor.getAllTracks = function(flow_id, track_id, user_id) {
 				//track.id is the flow_id
 				allTracks.push({id: track.id, measurements: t6preprocessor.getMeasuresFromBuffer(track.id), data_type: track.data_type});
 			});
-			t6console.debug("getAllTracks:", allTracks.length);
+			t6console.debug("getAllTracks length:", allTracks.length);
 			return allTracks;
 		} else {
 			return allTracks;

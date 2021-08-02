@@ -1,5 +1,6 @@
 "use strict";
 var express = require("express");
+const { Canvas, Image } = require("canvas");
 var router = express.Router();
 var DataSerializer = require("../serializers/data");
 var ErrorSerializer = require("../serializers/error");
@@ -59,6 +60,9 @@ function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
 			break;
 		case "geo": 
 			fields += "valueGeo";
+			break;
+		case "image": 
+			fields += "valueImage";
 			break;
 		case "string": 
 		default: 
@@ -255,6 +259,25 @@ function verifyPrerequisites(payload, object) {
 				t6console.debug(`Getting datatype "${payload.datatype}" from default value`);
 			}
 			
+			if(payload.datatype==="image") {
+				if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
+					let imgDir = `${ip.image_dir}/${payload.user_id}`;
+					if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
+					let flowDir = `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`;
+					if (!fs.existsSync(flowDir)) { fs.mkdirSync(flowDir); }
+					fs.writeFile(`${flowDir}/${payload.timestamp}.png`, payload.value, "base64", function(err) {
+						if(err) {
+							t6console.error("Can't save image to storage:'", err);
+						} else {
+							t6console.debug("Successfully wrote image file to storage");
+						}
+					});
+				}
+				const img = new Image();
+				img.src = new Buffer.from(payload.value, "base64");
+				payload.img = img;
+			}
+			
 			if ( !payload.mqtt_topic && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
 				payload.mqtt_topic = ((joinDatatypes.data())[0].left).mqtt_topic;
 			}
@@ -294,13 +317,14 @@ function verifyPrerequisites(payload, object) {
 		}
 	});
 }
+			
 function preprocessor(payload, fields, current_flow) {
 	t6console.debug("preprocessor");
 	return new Promise((resolve, reject) => {
 		if(!payload || current_flow===null) {
 			resolve({payload, fields, current_flow});
 		}
-		let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
+		let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined"&&current_flow.preprocessor!=="")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
 		preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 		preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
 		let result = t6preprocessor.preprocessor(current_flow, payload, preprocessor);
@@ -453,6 +477,10 @@ function saveToLocal(payload, fields, current_flow) {
 					fields[0].text = payload.text;
 				}
 
+				t6console.debug(current_flow.datatype);
+				t6console.debug(payload.datatype);
+				t6console.debug(tags);
+				t6console.debug(fields[0]);
 				let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 				dbWrite.writePoints([{
 					measurement: "data",
@@ -512,6 +540,7 @@ function saveToCloud(payload, fields, current_flow) {
 				typeof fields[0].valueDate!=="undefined"?point.stringField("valueDate", fields[0].valueDate):null;
 				typeof fields[0].valueJson!=="undefined"?point.stringField("valueJson", fields[0].valueJson):null;
 				typeof fields[0].valueGeo!=="undefined"?point.stringField("valueGeo", fields[0].valueGeo):null;
+				typeof fields[0].valueImage!=="undefined"?point.stringField("valueImage", fields[0].valueImage):null;
 				typeof fields[0].text!=="undefined"?point.stringField("text", fields[0].text):null;
 				writeApi.writePoint(point);
 				writeApi
@@ -612,6 +641,29 @@ function processPayload(payloadArray, req) {
 					let measure = re.fields;
 					let payload = re.payload;
 					let current_flow = re.current_flow;
+					if (payload.datatype==="image") {
+						payload.value = `${payload.user_id}/${payload.flow_id}/${payload.timestamp}.png`;
+						if (payload.save===false) {
+							fs.readdir(`${ip.image_dir}/`, (files)=>{
+								if(files!==null) {
+									for (let i=0, len=files.length; i<len;i++) {
+										let match = files[i].match(/`${payload.timestamp}.*.png`/);
+										if(match !== null) {
+											fs.unlink(match[0], (err) => {
+												if (err) {
+													t6console.error(err);
+												} else {
+													t6console.debug("Successfully removed image file to storage.");
+												}
+											});
+										}
+									}
+								}
+							});
+						} else {
+							t6console.debug("Keeping file to storage.");
+						}
+					}
 					measure.parent = payload.flow_id;
 					measure.self = payload.flow_id;
 					measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
@@ -854,7 +906,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  */
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
 	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body).slice(0, 3); // only process 3 first measures from payload and ignore the others
-	t6console.debug(`Called POST datapoints with ${payloadArray.length} measurements`);
+	t6console.debug(`Called POST datapoints with ${payloadArray.length} measurement(s)`);
 	processPayload(payloadArray, req)
 	.then((process) => {
 		res.header("Location", process[0].location); // hum ...
