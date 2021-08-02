@@ -213,12 +213,13 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 			case "aidc": // Automatic identification and data capture (AIDC)
 				switch(pp.mode) {
 					case "faceExpressionRecognition":
-						t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png");
+						payload.expressions = t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png");
+						// TODO : this is dones asynchroneously, and so expression is not ready yet on EngineRules ! 
+						pp.transformedValue = `${payload.timestamp}-faceExpressionRecognition.png`;
 						break;
 					default:
 						break;
 				}
-				pp.transformedValue = payload.value;
 				break;
 			
 			default:

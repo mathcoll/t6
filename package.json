@@ -26,6 +26,7 @@
   "dependencies": {
     "@influxdata/influxdb-client": "^1.14.0",
     "@tensorflow/tfjs-node": "^3.8.0",
+    "@vladmandic/face-api": "^1.4.1",
     "acorn": "^8.3.0",
     "arduino-cli": "^0.37.0",
     "bcrypt": "^5.0.1",
@@ -53,7 +54,6 @@
     "express-http-proxy": "^1.6.2",
     "express-jwt": "^6.0.0",
     "express-session": "^1.17.2",
-    "face-api.js": "^0.22.2",
     "firebase-admin": "^9.9.0",
     "fs-extra": "^10.0.0",
     "geodist": "^0.2.1",
