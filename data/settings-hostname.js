@@ -172,13 +172,19 @@ ifttt = {
 /* OTA settings */
 /* This is seriously beta */
 ota = {
-	"build_dir" : "/path/to/data/t6/tmp", // Folder where the built sketches are stored, must be writable by t6 applciation
+	"build_dir" : "/path/to/data/t6/tmp/ota", // Folder where the built sketches are stored, must be writable by t6 applcation
 	"arduino_binary_cli" : "/path/to/bin/arduino-cli", // Binary file of Arduino-CLI, can be installed via https://arduino.github.io/arduino-cli/installation/ 
 	"config" : "/path/to/.arduino15/arduino-cli.yaml", // Arduino-CLI configuration, created using `arduino-cli config init`
 	"python3" : "/path/to/tools/python3/3.7.2-post1/python3", // Used in the deploy to OTA
 	"espota_py" : "/path/to/tools/espota.py", // Used in the deploy to OTA
 	"fqbn" : "esp8266:esp8266:nodemcu:xtal=80,vt=flash,exception=legacy,ssl=all,eesz=4M2M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
 	"defaultPort": 8266
+};
+
+/* Image processing */
+ip = {
+	"image_dir" : "/path/to/data/t6/tmp/images", // Folder, must be writable by t6 application
+	"models_dir": "/path/to/data/t6/data/models" // Folder containing the models
 };
 
 /* custom units */
