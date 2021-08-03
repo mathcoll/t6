@@ -265,11 +265,11 @@ function verifyPrerequisites(payload, object) {
 					if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
 					let flowDir = `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`;
 					if (!fs.existsSync(flowDir)) { fs.mkdirSync(flowDir); }
-					fs.writeFile(`${flowDir}/${payload.timestamp}.png`, payload.value, "base64", function(err) {
+					fs.writeFile(`${flowDir}/${payload.timestamp*1e6}.png`, payload.value, "base64", function(err) {
 						if(err) {
 							t6console.error("Can't save image to storage:'", err);
 						} else {
-							t6console.debug("Successfully wrote image file to storage");
+							t6console.debug("Successfully wrote image file to storage.");
 						}
 					});
 				}
@@ -317,7 +317,7 @@ function verifyPrerequisites(payload, object) {
 		}
 	});
 }
-			
+
 function preprocessor(payload, fields, current_flow) {
 	t6console.debug("preprocessor");
 	return new Promise((resolve, reject) => {
@@ -327,30 +327,31 @@ function preprocessor(payload, fields, current_flow) {
 		let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined"&&current_flow.preprocessor!=="")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
 		preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 		preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
-		let result = t6preprocessor.preprocessor(current_flow, payload, preprocessor);
-		payload = result.payload;
-		preprocessor = result.preprocessor;
-		payload.preprocessor = result.preprocessor;
-		fields = result.fields;
-		if(payload.sanitizedValue) {
-			payload.value = payload.sanitizedValue;
-		}
-		if(payload.needRedacted) {
-			payload.preprocessor.map(function(pp) {
-				pp.initialValue = "**REDACTED**";
-				pp.transformedValue = "**REDACTED**";
-			});
-		}
-		if(payload.isRejected) {
-			payload.save = false;
-			t6console.debug("Preprocessor rejected value.");
+		t6preprocessor.preprocessor(current_flow, payload, preprocessor).then(result => {
+			payload = result.payload;
+			preprocessor = result.preprocessor;
+			payload.preprocessor = result.preprocessor;
+			fields = result.fields;
+			if(payload.sanitizedValue) {
+				payload.value = payload.sanitizedValue;
+			}
+			if(payload.needRedacted) {
+				payload.preprocessor.map(function(pp) {
+					pp.initialValue = "**REDACTED**";
+					pp.transformedValue = "**REDACTED**";
+				});
+			}
+			if(payload.isRejected) {
+				payload.save = false;
+				t6console.debug("Preprocessor rejected value.");
+			} else {
+				t6console.debug("Preprocessor accepted value.");
+			}
 			resolve({payload, fields, current_flow});
-		} else {
-			t6console.debug("Preprocessor accepted value.");
-			resolve({payload, fields, current_flow});
-		}
+		});
 	});
 }
+
 function fusion(payload, fields, current_flow) {
 	t6console.debug("fusion");
 	return new Promise((resolve, reject) => {
@@ -436,7 +437,7 @@ function fusion(payload, fields, current_flow) {
 				// Do we need to save measure to Primary Flow ? // TODO : so instead of the track.. :-(
 				payload.fusion.primary_flow = track_id;
 				payload.time = fusionTime; // Code consistency !
-				payload.timestamp = fusionTime/1000000;
+				payload.timestamp = fusionTime/1e6;
 				t6console.debug("fusionTime", moment(fusionTime).format(logDateFormat));
 				payload.flow_id = track_id;
 			} else {
@@ -464,7 +465,7 @@ function saveToLocal(payload, fields, current_flow) {
 				t6console.debug("Saving to timeseries");
 				/* InfluxDB database */
 				var tags = {};
-				payload.timestamp = payload.time*1000000;
+				payload.timestamp = payload.time*1e6;
 				if (payload.flow_id!=="") {
 					tags.flow_id = payload.flow_id;
 				}
@@ -476,9 +477,8 @@ function saveToLocal(payload, fields, current_flow) {
 				if (payload.text!=="") {
 					fields[0].text = payload.text;
 				}
-
-				t6console.debug(current_flow.datatype);
-				t6console.debug(payload.datatype);
+				t6console.debug("current_flow Datatype:", typeof current_flow!=="undefined"?current_flow.datatype:"undefined");
+				t6console.debug("payload Datatype:", typeof payload!=="undefined"?payload.datatype:"undefined");
 				t6console.debug(tags);
 				t6console.debug(fields[0]);
 				let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
@@ -611,43 +611,53 @@ function processPayload(payloadArray, req) {
 		payloadArray.flatMap((payload, pIndex) => {
 			preloadPayload(payload, req)
 				.then((pp) => {
+					t6console.debug("Big chain signatureCheck 1");
 					return signatureCheck(pp.payload, pp.object);
 				})
 				.then((sc) => {
+					t6console.debug("Big chain decrypt");
 					return decrypt(sc.payload, sc.object);
 				})
 				.then((dy) => {
+					t6console.debug("Big chain signatureCheck 2");
 					return signatureCheck(dy.payload, dy.object); // yes do it twice because we can have both signature and encryption
 				})
 				.then((sc) => {
+					t6console.debug("Big chain verifyPrerequisites");
 					return verifyPrerequisites(sc.payload);
 				})
 				.then((vp) => {
+					t6console.debug("Big chain preprocessor");
 					return preprocessor(vp.payload, {}, vp.current_flow);
 				})
 				.then((pp) => {
+					t6console.debug("Big chain fusion");
 					return fusion(pp.payload, pp.fields, pp.current_flow);
 				})
 				.then((fu) => {
+					t6console.debug("Big chain saveToLocal");
 					return saveToLocal(fu.payload, fu.fields, fu.current_flow);
 				})
 				.then((sl) => {
+					t6console.debug("Big chain saveToCloud");
 					return saveToCloud(sl.payload, sl.fields, sl.current_flow);
 				})
 				.then((sc) => {
+					t6console.debug("Big chain ruleEngine");
 					return ruleEngine(sc.payload, sc.fields, sc.current_flow);
 				})
 				.then((re) => {
+					t6console.debug("Big chain then");
 					let measure = re.fields;
 					let payload = re.payload;
 					let current_flow = re.current_flow;
 					if (payload.datatype==="image") {
-						payload.value = `${payload.user_id}/${payload.flow_id}/${payload.timestamp}.png`;
+						payload.value = `${payload.user_id}/${payload.flow_id}/${payload.timestamp*1e6}.png`;
 						if (payload.save===false) {
 							fs.readdir(`${ip.image_dir}/`, (files)=>{
 								if(files!==null) {
 									for (let i=0, len=files.length; i<len;i++) {
-										let match = files[i].match(/`${payload.timestamp}.*.png`/);
+										let match = files[i].match(/`${payload.timestamp*1e6}.*.png`/);
 										if(match !== null) {
 											fs.unlink(match[0], (err) => {
 												if (err) {
@@ -673,9 +683,9 @@ function processPayload(payloadArray, req) {
 					measure.datatype_id = payload.datatype_id;
 					measure.unit = payload.unit;
 					measure.unit_id = payload.unit_id;
-					measure.id = payload.time*1000000;
-					measure.time = payload.time*1000000;
-					measure.timestamp = payload.time*1000000;
+					measure.id = payload.time*1e6;
+					measure.time = payload.time*1e6;
+					measure.timestamp = payload.time*1e6;
 					measure.value = payload.value;
 					measure.mqtt_topic = payload.mqtt_topic;
 					measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
@@ -683,7 +693,7 @@ function processPayload(payloadArray, req) {
 					measure.preprocessor = (typeof current_flow!=="undefined" && current_flow!==null)?payload.preprocessor:undefined;
 					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
 					measure.location = `/v/${version}/flows/${payload.flow_id}/${measure.id}`;
-					
+
 					t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
 					process.push(measure);
 					if(pIndex+1 === payloadArray.length) {
