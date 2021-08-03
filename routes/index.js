@@ -467,7 +467,7 @@ router.post("/authenticate", function (req, res) {
 			}
 		} else {
 			t6console.debug("No user found or no password set yet.");
-			t6events.add("t6App", "POST_authenticate", null, null, {"status": 403, "error_id": 102.21});
+			t6events.add("t6App", "POST_authenticate", email, email, {"status": 403, "error_id": 102.21});
 			return res.status(403).send(new ErrorSerializer({"id": 102.21, "code": 403, "message": "Forbidden; No user found or no password set yet."}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
@@ -555,7 +555,7 @@ router.post("/authenticate", function (req, res) {
 			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.32});
+			t6events.add("t6App", "POST_authenticate", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
 			return res.status(403).send(new ErrorSerializer({"id": 102.32, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( req.body.refresh_token && req.body.grant_type === "refresh_token" ) {
@@ -636,10 +636,10 @@ router.post("/authenticate", function (req, res) {
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
-			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
+			t6events.add("t6App", "POST_authenticate", user_id, user_id, {"status": 200});
 			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.43});
+			t6events.add("t6App", "POST_authenticate", user_id, user_id, {"status": 403, "error_id": 102.43});
 			return res.status(403).send(new ErrorSerializer({"id": 102.43, "code": 403, "message": "Invalid Refresh Token"}).serialize());
 		}
 	} else {
