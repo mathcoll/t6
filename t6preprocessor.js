@@ -27,208 +27,223 @@ t6preprocessor.cryptValue = function(value, sender, encoding) {
 }
 
 t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
-	let fields = [];
-	let errorMode=false;
-	listPreprocessor.map(function(pp) {
-		pp.initialValue = payload.value;
-		switch(pp.name) {
-			case "validate": // Reject non-valid value
-				switch(pp.test) {
-					case "isEmail":
-						payload.isRejected = validator.isEmail(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===true?"Value is rejected":undefined;
-						break;
-					case "isAscii":
-						payload.isRejected = validator.isAscii(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===true?"Value is rejected":undefined;
-						break;
-					case "isBase32":
-						payload.isRejected = validator.isBase32(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===true?"Value is rejected":undefined;
-						break;
-					case "isBase58":
-						payload.isRejected = validator.isBase58(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===true?"Value is rejected":undefined;
-						break;
-					case "isBase64":
-						payload.isRejected = validator.isBase64(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===true?"Value is rejected":undefined;
-						break;
-					case "isBIC":
-						payload.isRejected = validator.isBIC(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===true?"Value is rejected":undefined;
-						break;
-					case "isBoolean":
-						payload.isRejected = validator.isBoolean(payload.value.toString())===false?true:false;
-						pp.message = payload.isRejected===true?"Value is rejected":undefined;
-						break;
-				}
-				break;
-
-			case "sanitize": // Sanitize value
-				let time= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
-				if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
-				if (pp.datatype) {
-					switch(pp.datatype) {
-						case "boolean":
-							//payload.sanitizedValue = validator.toBoolean(payload.value, false);
-							payload.sanitizedValue = t6preprocessor.str2bool(payload.value.toString());
-							fields[0] = {time:""+time, valueBoolean: payload.sanitizedValue,};
+	return new Promise((resolve, reject) => {
+		let fields = [];
+		let errorMode=false;
+		listPreprocessor.map(function(pp) {
+			pp.initialValue = payload.value;
+			t6console.debug("Entering Preprocessor function for", pp);
+			switch(pp.name) {
+				case "validate": // Reject non-valid value
+					switch(pp.test) {
+						case "isEmail":
+							payload.isRejected = validator.isEmail(payload.value.toString())===false?true:false;
+							pp.message = payload.isRejected===true?"Value is rejected":undefined;
 							break;
-						case "date":
-							payload.sanitizedValue = validator.toDate(payload.value);
-							fields[0] = {time:""+time, valueDate: payload.sanitizedValue,};
+						case "isAscii":
+							payload.isRejected = validator.isAscii(payload.value.toString())===false?true:false;
+							pp.message = payload.isRejected===true?"Value is rejected":undefined;
 							break;
-						case "float":
-							//payload.sanitizedValue = validator.toFloat(payload.value); // https://github.com/validatorjs/validator.js/issues/1663
-							payload.sanitizedValue = parseFloat(payload.value);
-							fields[0] = {time:""+time, valueFloat: payload.sanitizedValue,};
+						case "isBase32":
+							payload.isRejected = validator.isBase32(payload.value.toString())===false?true:false;
+							pp.message = payload.isRejected===true?"Value is rejected":undefined;
 							break;
-						case "geo":
-							payload.sanitizedValue = ""+payload.value;
-							fields[0] = {time:""+time, valueGeo: payload.sanitizedValue,};
+						case "isBase58":
+							payload.isRejected = validator.isBase58(payload.value.toString())===false?true:false;
+							pp.message = payload.isRejected===true?"Value is rejected":undefined;
 							break;
-						case "integer":
-							payload.sanitizedValue = validator.toInt(payload.value, 10);
-							fields[0] = {time:""+time, valueInteger: payload.sanitizedValue+"i",};
-							break;
-						case "json":
-							payload.sanitizedValue = {value:payload.value,};
-							fields[0] = {time:""+time, valueJson: payload.sanitizedValue,};
-							break;
-						case "string":
-							payload.sanitizedValue = ""+payload.value;
-							fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
-							break;
-						case "image":
-							payload.sanitizedValue = validator.isBase64(payload.value.toString())===true?payload.value:null;
+						case "isBase64":
 							payload.isRejected = validator.isBase64(payload.value.toString())===false?true:false;
-							pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
-							fields[0] = {time:""+time, valueImage: payload.sanitizedValue,};
+							pp.message = payload.isRejected===true?"Value is rejected":undefined;
 							break;
-						case "time":
-							payload.sanitizedValue = payload.value ;
-							fields[0] = {time:""+time, valueTime: payload.sanitizedValue,};
+						case "isBIC":
+							payload.isRejected = validator.isBIC(payload.value.toString())===false?true:false;
+							pp.message = payload.isRejected===true?"Value is rejected":undefined;
 							break;
-						default:
-							payload.sanitizedValue = ""+payload.value;
-							fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
+						case "isBoolean":
+							payload.isRejected = validator.isBoolean(payload.value.toString())===false?true:false;
+							pp.message = payload.isRejected===true?"Value is rejected":undefined;
 							break;
 					}
-					pp.message = `Converted to ${pp.datatype}.`;
-				} else {
-					fields[0] = {time:""+time, valueString: payload.value,};
-					pp.message = "Not datatype to convert to. Default to String.";
-				}
-			
-				break;
-
-			case "convert": // Convert value unit converter
-				if (customUnits.db!=="") {
-					nodeunits.importDBSync(customUnits.db);
-				}
-				//t6console.log(nodeunits.types);
-				if (pp.from && pp.to) {
-					switch(pp.type) {
-						case "time":
-						case "distance":
-						case "mass":
-						case "volume":
-						case "storage":
-						case "things":
-						case "temperature":
-							payload.value = nodeunits.convert(`${payload.value} ${pp.from} to ${pp.to}`);
-							pp.message = `Converted ${pp.type} from ${pp.from} to ${pp.to}.`;
+					break;
+	
+				case "sanitize": // Sanitize value
+					let time= (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
+					if ( time.toString().length <= 10 ) { time = moment(time*1000).format("x"); }
+					if (pp.datatype) {
+						switch(pp.datatype) {
+							case "boolean":
+								//payload.sanitizedValue = validator.toBoolean(payload.value, false);
+								payload.sanitizedValue = t6preprocessor.str2bool(payload.value.toString());
+								fields[0] = {time:""+time, valueBoolean: payload.sanitizedValue,};
+								break;
+							case "date":
+								payload.sanitizedValue = validator.toDate(payload.value);
+								fields[0] = {time:""+time, valueDate: payload.sanitizedValue,};
+								break;
+							case "float":
+								//payload.sanitizedValue = validator.toFloat(payload.value); // https://github.com/validatorjs/validator.js/issues/1663
+								payload.sanitizedValue = parseFloat(payload.value);
+								fields[0] = {time:""+time, valueFloat: payload.sanitizedValue,};
+								break;
+							case "geo":
+								payload.sanitizedValue = ""+payload.value;
+								fields[0] = {time:""+time, valueGeo: payload.sanitizedValue,};
+								break;
+							case "integer":
+								payload.sanitizedValue = validator.toInt(payload.value, 10);
+								fields[0] = {time:""+time, valueInteger: payload.sanitizedValue+"i",};
+								break;
+							case "json":
+								payload.sanitizedValue = {value:payload.value,};
+								fields[0] = {time:""+time, valueJson: payload.sanitizedValue,};
+								break;
+							case "string":
+								payload.sanitizedValue = ""+payload.value;
+								fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
+								break;
+							case "image":
+								payload.sanitizedValue = validator.isBase64(payload.value.toString())===true?payload.value:null;
+								payload.isRejected = validator.isBase64(payload.value.toString())===false?true:false;
+								pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
+								fields[0] = {time:""+time, valueImage: payload.sanitizedValue,};
+								break;
+							case "time":
+								payload.sanitizedValue = payload.value ;
+								fields[0] = {time:""+time, valueTime: payload.sanitizedValue,};
+								break;
+							default:
+								payload.sanitizedValue = ""+payload.value;
+								fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
+								break;
+						}
+						pp.message = `Converted to ${pp.datatype}.`;
+					} else {
+						fields[0] = {time:""+time, valueString: payload.value,};
+						pp.message = "Not datatype to convert to. Default to String.";
+					}
+	
+					break;
+	
+				case "convert": // Convert value unit converter
+					if (customUnits.db!=="") {
+						nodeunits.importDBSync(customUnits.db);
+					}
+					//t6console.log(nodeunits.types);
+					if (pp.from && pp.to) {
+						switch(pp.type) {
+							case "time":
+							case "distance":
+							case "mass":
+							case "volume":
+							case "storage":
+							case "things":
+							case "temperature":
+								payload.value = nodeunits.convert(`${payload.value} ${pp.from} to ${pp.to}`);
+								pp.message = `Converted ${pp.type} from ${pp.from} to ${pp.to}.`;
+								break;
+							default: 
+								pp.message = `Convert type "${pp.type}" is not recognized.`;
+								break;
+						}
+						pp.transformedValue = payload.value;
+					} else {
+						pp.message = "Not unit to convert from/to.";
+					}
+					break;
+	
+				case "transform": // Transform value
+					switch(pp.mode) {
+						case "aes-256-cbc": // aes-256-cbc encryption
+							if(typeof payload.object_id!=="undefined") {
+								let object = objects.findOne({ "$and": [ { "user_id": { "$eq": payload.user_id } }, { "id": { "$eq": payload.object_id } }, ]});
+								if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
+									payload.value = t6preprocessor.cryptValue(""+payload.value, {secret_key_crypt: object.secret_key_crypt});
+									pp.message = `Encrypted using Object "${payload.object_id}"`;
+								} else {
+									pp.message = "Warning: No secret_key found on Object, can't encrypt w/o secret_key from the Object.";
+								}
+							} else {
+								pp.message = "Warning: No Object found on payload, can't encrypt w/o secret_key from the Object.";
+							}
+							payload.needRedacted = true;
 							break;
-						default: 
-							pp.message = `Convert type "${pp.type}" is not recognized.`;
+						case "camelCase":
+							payload.value = changeCase.camelCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "capitalCase":
+							payload.value = changeCase.capitalCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "upperCase":
+							payload.value = payload.value.toUpperCase();
+							break;
+						case "constantCase":
+							payload.value = changeCase.constantCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "dotCase":
+							payload.value = changeCase.dotCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "headerCase":
+							payload.value = changeCase.headerCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "noCase":
+							payload.value = changeCase.noCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "paramCase":
+							payload.value = changeCase.paramCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "pascalCase":
+							payload.value = changeCase.pascalCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "pathCase":
+							payload.value = changeCase.pathCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "sentenceCase":
+							payload.value = changeCase.sentenceCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						case "snakeCase":
+							payload.value = changeCase.snakeCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
+							break;
+						default:
+							errorMode=1;
 							break;
 					}
 					pp.transformedValue = payload.value;
-				} else {
-					pp.message = "Not unit to convert from/to.";
-				}
-				break;
-
-			case "transform": // Transform value
-				switch(pp.mode) {
-					case "aes-256-cbc": // aes-256-cbc encryption
-						if(typeof payload.object_id!=="undefined") {
-							let object = objects.findOne({ "$and": [ { "user_id": { "$eq": payload.user_id } }, { "id": { "$eq": payload.object_id } }, ]});
-							if ( object && typeof object.secret_key_crypt!=="undefined" && object.secret_key_crypt.length>0 ) { // TODO: Should also get the Flow.requireCrypted flag.
-								payload.value = t6preprocessor.cryptValue(""+payload.value, {secret_key_crypt: object.secret_key_crypt});
-								pp.message = `Encrypted using Object "${payload.object_id}"`;
-							} else {
-								pp.message = "Warning: No secret_key found on Object, can't encrypt w/o secret_key from the Object.";
-							}
-						} else {
-							pp.message = "Warning: No Object found on payload, can't encrypt w/o secret_key from the Object.";
-						}
-						payload.needRedacted = true;
-						break;
-					case "camelCase":
-						payload.value = changeCase.camelCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "capitalCase":
-						payload.value = changeCase.capitalCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "upperCase":
-						payload.value = payload.value.toUpperCase();
-						break;
-					case "constantCase":
-						payload.value = changeCase.constantCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "dotCase":
-						payload.value = changeCase.dotCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "headerCase":
-						payload.value = changeCase.headerCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "noCase":
-						payload.value = changeCase.noCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "paramCase":
-						payload.value = changeCase.paramCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "pascalCase":
-						payload.value = changeCase.pascalCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "pathCase":
-						payload.value = changeCase.pathCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "sentenceCase":
-						payload.value = changeCase.sentenceCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					case "snakeCase":
-						payload.value = changeCase.snakeCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
-						break;
-					default:
-						errorMode=1;
-						break;
-				}
-				pp.transformedValue = payload.value;
-				pp.message = errorMode===1?`Could'd find mode ${pp.mode}.`:`Transformed to ${pp.mode}.`;
-				break;
-
-			case "aidc": // Automatic identification and data capture (AIDC)
-				switch(pp.mode) {
-					case "faceExpressionRecognition":
-						payload.expressions = t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png");
-						// TODO : this is dones asynchroneously, and so expression is not ready yet on EngineRules ! 
-						pp.transformedValue = `${payload.timestamp}-faceExpressionRecognition.png`;
-						break;
-					default:
-						break;
-				}
-				break;
-			
-			default:
-				pp.message = typeof flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
-				break;
-		}
-		pp.status = "completed";
+					pp.message = errorMode===1?`Could'd find mode ${pp.mode}.`:`Transformed to ${pp.mode}.`;
+					break;
+	
+				case "aidc": // Automatic identification and data capture (AIDC)
+					switch(pp.mode) {
+						case "faceExpressionRecognition":
+							t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
+								.then((response) => {
+									t6console.debug("Response from my Promise :", response);
+									const { age, gender, genderProbability, expressions, angle } = response;
+									pp.age = age;
+									pp.gender = gender;
+									pp.genderProbability = genderProbability;
+									pp.expressions = expressions;
+									pp.angle = angle;
+									t6console.debug("Here is value of AIDC prepprocessor:", pp);
+								});
+								pp.transformedValue = `${payload.timestamp*1e6}-faceExpressionRecognition.png`;
+								pp.initialValue = `${payload.timestamp*1e6}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+								pp.sanitizedValue = `${payload.timestamp*1e6}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+							//const { age, gender, genderProbability, expressions, angle } = t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save);
+							break;
+						default:
+							break;
+					}
+					break;
+				
+				default:
+					pp.message = typeof flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
+					break;
+			}
+			pp.status = "completed";
+		});
+		resolve({payload, fields, preprocessor: listPreprocessor});
 	});
-	return {payload, fields, preprocessor: listPreprocessor};
 };
 
 t6preprocessor.addMeasurementToFusion = function(measurement) {
