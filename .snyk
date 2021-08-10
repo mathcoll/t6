@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.12.0
+version: v1.19.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:minimatch:20160620':
@@ -123,14 +123,17 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2021-03-01T15:36:25.042Z'
+        expires: '2021-09-09T18:20:24.706Z'
     - device > useragent:
         reason: None given
-        expires: '2021-03-01T15:36:25.042Z'
+        expires: '2021-09-09T18:20:24.706Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
         expires: '2020-08-01T19:53:40.035Z'
+      nsp > cli-table2 > lodash:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
   SNYK-JS-LOCUTUS-575119:
     - cidr-js > locutus:
         reason: None given
@@ -153,187 +156,214 @@ ignore:
   SNYK-JS-LOCUTUS-1009836:
     - cidr-js > locutus:
         reason: None given
-        expires: '2021-03-01T15:36:25.042Z'
+        expires: '2021-09-09T18:20:24.704Z'
   SNYK-JS-MATHJS-1016401:
     - loess > mathjs:
         reason: None given
-        expires: '2021-03-01T15:36:25.042Z'
+        expires: '2021-09-09T18:20:24.705Z'
   SNYK-JS-SVG2PNG-567041:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2021-03-01T15:36:25.042Z'
+      d3node-output > svg2png:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - d3node-barchart > d3node-output > svg2png:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
+      nsp > yargs > yargs-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
   'npm:content-type-parser:20170905':
     - d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
+      jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
     - d3node-barchart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
+      d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
     - d3node-linechart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
+      d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
     - d3node-piechart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
+      d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
+      d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
   SNYK-JS-Y18N-1021887:
     - d3node-barchart > d3node-output > svg2png > yargs > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.525Z'
-      npm > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.042Z'
     - npm > cacache > y18n:
         reason: None given
         expires: '2020-12-25T19:16:42.526Z'
-      npm > libnpx > y18n:
+    - npm > libnpx > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.526Z'
+    - npm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.526Z'
+    - npm > libnpx > yargs > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.526Z'
+    - npm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > pacote > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > libcipm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > libnpm > pacote > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.527Z'
+    - npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.528Z'
+    - npm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.529Z'
+    - npm > libnpm > libnpmpublish > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
+    - npm > libnpm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
+    - npm > libnpm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
+    - npm > libnpm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2020-12-25T19:16:42.530Z'
+    - npm > libnpm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - npm > libnpm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - npm > libnpm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - npm > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.042Z'
     - npm > libnpx > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.526Z'
-      npm > pacote > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.043Z'
+        expires: '2021-03-01T15:36:25.042Z'
     - npm > pacote > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.526Z'
-      npm > libnpx > yargs > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpx > yargs > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.526Z'
-      npm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.527Z'
-      npm > pacote > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > pacote > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.527Z'
-      npm > libcipm > pacote > cacache > y18n:
-        reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libcipm > pacote > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.527Z'
-      npm > libnpm > pacote > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpm > pacote > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.527Z'
-      npm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.527Z'
-      npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.528Z'
-      npm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.528Z'
-      npm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.528Z'
-      npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.528Z'
-      npm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.529Z'
-      npm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
         expires: '2021-03-01T15:36:25.043Z'
     - npm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.529Z'
-      npm > libnpm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        expires: '2021-03-01T15:36:25.043Z'
+    - npm > libnpm > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.043Z'
+    - npm > libcipm > pacote > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
+    - npm > libnpm > pacote > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.043Z'
+    - npm > libcipm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.529Z'
-      npm > libcipm > pacote > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.043Z'
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.529Z'
-      npm > libnpm > pacote > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.043Z'
+        expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.529Z'
-      npm > libcipm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
-        expires: '2020-12-25T19:16:42.529Z'
-      npm > libnpm > pacote > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
         expires: '2021-03-01T15:36:25.044Z'
     - npm > libnpm > libnpmpublish > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.530Z'
-      npm > libnpm > libnpmaccess > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-    - npm > libnpm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.530Z'
-      npm > libnpm > libnpmhook > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-    - npm > libnpm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.530Z'
-      npm > libnpm > libnpmorg > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-    - npm > libnpm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2020-12-25T19:16:42.530Z'
-      npm > libnpm > libnpmpublish > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-    - npm > libnpm > libnpmsearch > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-    - npm > libnpm > libnpmteam > npm-registry-fetch > make-fetch-happen > cacache > y18n:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-    - npm > libnpm > npm-profile > npm-registry-fetch > make-fetch-happen > cacache > y18n:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
   SNYK-JS-AJV-584908:
@@ -355,7 +385,7 @@ ignore:
   SNYK-JS-GLOBPARENT-1016905:
     - mqtt > help-me > glob-stream > glob-parent:
         reason: None given
-        expires: '2021-03-01T15:36:25.041Z'
+        expires: '2021-09-09T18:20:24.704Z'
   SNYK-JS-INI-1048974:
     - npm > ini:
         reason: None given
@@ -391,6 +421,278 @@ ignore:
     - npm > npm-user-validate:
         reason: None given
         expires: '2021-03-01T15:36:25.042Z'
+  SNYK-JS-D3COLOR-1076592:
+    - d3-node > d3 > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-scale-chromatic > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-brush > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-scale > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-scale-chromatic > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-brush > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.698Z'
+    - d3-node > d3 > d3-zoom > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-barchart > d3-node > d3 > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-linechart > d3-node > d3 > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-piechart > d3-node > d3 > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-voronoi > d3-node > d3 > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-barchart > d3-node > d3 > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-linechart > d3-node > d3 > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-piechart > d3-node > d3 > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-voronoi > d3-node > d3 > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-barchart > d3-node > d3 > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.699Z'
+    - d3node-linechart > d3-node > d3 > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-piechart > d3-node > d3 > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-voronoi > d3-node > d3 > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-barchart > d3-node > d3 > d3-scale > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-linechart > d3-node > d3 > d3-scale > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-piechart > d3-node > d3 > d3-scale > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-voronoi > d3-node > d3 > d3-scale > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-barchart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-linechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-piechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-voronoi > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-barchart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.700Z'
+    - d3node-linechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-piechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-voronoi > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-barchart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-linechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-piechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-voronoi > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-barchart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-linechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-piechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-voronoi > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.701Z'
+    - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.702Z'
+    - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+    - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+    - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+    - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+    - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+    - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+  SNYK-JS-LOCUTUS-1090597:
+    - cidr-js > locutus:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+  SNYK-JS-LODASH-1018905:
+    - nsp > cli-table2 > lodash:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+  SNYK-JS-LODASH-1040724:
+    - nsp > cli-table2 > lodash:
+        reason: Upgraded lodash yet to 4.17.21
+        expires: '2021-09-09T18:20:24.704Z'
+  SNYK-JS-LODASH-450202:
+    - nsp > cli-table2 > lodash:
+        reason: None given
+        expires: '2021-09-09T18:20:24.704Z'
+  SNYK-JS-LODASH-590103:
+    - nsp > cli-table2 > lodash:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+  SNYK-JS-LODASH-608086:
+    - nsp > cli-table2 > lodash:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+  SNYK-JS-LODASH-73638:
+    - nsp > cli-table2 > lodash:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+  SNYK-JS-LODASH-73639:
+    - nsp > cli-table2 > lodash:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+  SNYK-JS-NETMASK-1089716:
+    - libnmap > netmask:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+  SNYK-JS-TAR-1536528:
+    - npm > libnpmpack > pacote > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
+  SNYK-JS-TAR-1536531:
+    - npm > libnpmpack > pacote > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
+  SNYK-JS-TAR-1536758:
+    - npm > libnpmpack > pacote > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.705Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
+    - npm > libnpmpack > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
+  'npm:mem:20180117':
+    - nsp > yargs > os-locale > mem:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
@@ -430,3 +732,6 @@ patch:
         patched: '2020-06-19T18:33:48.851Z'
     - jsonapi-serializer > lodash:
         patched: '2020-06-19T18:33:48.851Z'
+  'npm:lodash:20180130':
+    - nsp > cli-table2 > lodash:
+        patched: '2021-08-10T18:13:31.763Z'
