@@ -131,7 +131,7 @@ ignore:
     - geoip-lite > ip-address > lodash:
         reason: None given
         expires: '2020-08-01T19:53:40.035Z'
-      nsp > cli-table2 > lodash:
+    - nsp > cli-table2 > lodash:
         reason: None given
         expires: '2021-09-09T18:20:24.704Z'
   SNYK-JS-LOCUTUS-575119:
@@ -165,51 +165,51 @@ ignore:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2021-03-01T15:36:25.042Z'
-      d3node-output > svg2png:
+    - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2021-09-09T18:20:24.705Z'
-    - d3node-barchart > d3node-output > svg2png:
+    - d3node-output > svg2png:
         reason: None given
         expires: '2021-09-09T18:20:24.705Z'
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
-      nsp > yargs > yargs-parser:
+    - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
   'npm:content-type-parser:20170905':
     - d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
-      jsdom > content-type-parser:
+    - d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-03-01T15:36:25.044Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
+    - jsdom > content-type-parser:
+        reason: None given
+        expires: '2021-09-09T18:20:24.706Z'
+    - d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
     - d3node-barchart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-      d3-node > jsdom > content-type-parser:
-        reason: None given
         expires: '2021-09-09T18:20:24.706Z'
     - d3node-linechart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-      d3node-barchart > d3-node > jsdom > content-type-parser:
-        reason: None given
         expires: '2021-09-09T18:20:24.706Z'
     - d3node-piechart > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-      d3node-linechart > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2021-09-09T18:20:24.706Z'
-    - d3node-voronoi > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-      d3node-piechart > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2021-09-09T18:20:24.706Z'
-    - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
   SNYK-JS-Y18N-1021887:
@@ -734,4 +734,4 @@ patch:
         patched: '2020-06-19T18:33:48.851Z'
   'npm:lodash:20180130':
     - nsp > cli-table2 > lodash:
-        patched: '2021-08-10T18:13:31.763Z'
+        patched: '2021-08-15T07:35:23.225Z'
