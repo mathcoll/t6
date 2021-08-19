@@ -378,7 +378,7 @@ router.delete("/tokens/all", function (req, res) {
  * @apiUse 500
  */
 router.post("/authenticate", function (req, res) {
-	var pushSubscription = req.body.pushSubscription;
+	let meta = { pushSubscription : req.body.pushSubscription};
 	if ( (req.body.username !== "" && req.body.password !== "") && (!req.body.grant_type || req.body.grant_type === "password") ) {
 		var email = req.body.username;
 		var password = req.body.password;
@@ -393,10 +393,10 @@ router.post("/authenticate", function (req, res) {
 					user.location = {geo: geo, ip: req.ip,};
 				}
 				/* pushSubscription */
-				if ( typeof pushSubscription !== "undefined" ) {
+				if ( typeof meta.pushSubscription !== "undefined" ) {
 					var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-					timeoutNotification = setTimeout(sendNotification, 5000, pushSubscription, payload);
-					user.pushSubscription = pushSubscription;
+					timeoutNotification = setTimeout(sendNotification, 5000, meta, payload);
+					user.pushSubscription = meta.pushSubscription;
 				}
 				users.update(user);
 				db_users.save();
@@ -485,10 +485,10 @@ router.post("/authenticate", function (req, res) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			/* pushSubscription */
-			if ( typeof pushSubscription !== "undefined" ) {
+			if ( typeof meta.pushSubscription !== "undefined" ) {
 				var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-				timeoutNotification = setTimeout(sendNotification, 5000, pushSubscription, payload);
-				user.pushSubscription = pushSubscription;
+				timeoutNotification = setTimeout(sendNotification, 5000, meta, payload);
+				user.pushSubscription = meta.pushSubscription;
 			}
 			//users.update(user);
 			//db_users.save();

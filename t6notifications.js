@@ -2,12 +2,10 @@
 var t6notifications = module.exports = {};
 if (firebase.admin.serviceAccountFile) {
 	var serviceAccount = require(firebase.admin.serviceAccountFile);
-	
 	firebaseAdmin.initializeApp({
 		credential: firebaseAdmin.credential.cert(serviceAccount),
 		databaseURL: "https://t6-app.firebaseio.com"
 	});
-	
 	t6notifications.sendPush = (meta, payload) => new Promise((resolve, reject) => {
 		if ( typeof payload === "object" ) {
 			payload.type = typeof payload.type!=="undefined"?payload.type:"message";
@@ -15,8 +13,9 @@ if (firebase.admin.serviceAccountFile) {
 		}
 		let subscriber = meta.pushSubscription;
 		let subscriber_id = meta.user_id;
-		//t6console.debug("t6notifications.sendPush", meta);
-		//t6console.debug("t6notifications.sendPush", payload);
+		//t6console.debug("t6notifications.sendPush meta", meta);
+		//t6console.debug("t6notifications.sendPush payload", payload);
+		//t6console.debug("t6notifications.sendPush subscriber", subscriber);
 		if ( subscriber && subscriber.endpoint ) {
 			if ( process.env.NODE_ENV === "production" ) {
 				webpush.setGCMAPIKey(pushSubscriptionOptions.gcmAPIKey);
@@ -41,7 +40,7 @@ if (firebase.admin.serviceAccountFile) {
 				});
 			} else {
 				t6console.warn(`t6notifications.sendPush disabled on ${process.env.NODE_ENV}̀`);
-				reject({"status": "warning", "info": `t6notifications.sendPush disabled on ${process.env.NODE_ENV}̀` });
+				resolve({"status": "warning", "info": `t6notifications.sendPush disabled on ${process.env.NODE_ENV}̀` });
 			}
 		} else {
 			t6console.warn("t6notifications.sendPush failing with no endpoint. Can't send.");
