@@ -20,10 +20,10 @@ var ErrorSerializer = require("../serializers/error");
  */
 router.get("/?(:job_id([0-9a-z\-]+))?/?(:taskType([0-9a-zA-Z\-]+))?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let job_id = typeof req.params.job_id!=="undefined"?req.params.job_id:null;
+	let user_id = req.user.role!=="admin"?req.user.id:null;
 	let taskType = typeof req.query.taskType!=="undefined"?req.query.taskType:null;
 	let length = t6jobs.getLength();
-	t6console.debug("User ==> ", req.user);
-	res.status(200).send({ "code": 200, length, jobs: t6jobs.getJobs(job_id, req.user.role!=="admin"?req.user:null, taskType) });
+	res.status(200).send({ "code": 200, length, jobs: t6jobs.getJobs(job_id, user_id, taskType) });
 });
 
 /**
