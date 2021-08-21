@@ -692,7 +692,7 @@ function processPayload(payloadArray, req) {
 					measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
 					measure.preprocessor = (typeof current_flow!=="undefined" && current_flow!==null)?payload.preprocessor:undefined;
 					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
-					measure.location = `/v/${version}/flows/${payload.flow_id}/${measure.id}`;
+					measure.location = `/v${version}/flows/${payload.flow_id}/${measure.id}`;
 
 					t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
 					process.push(measure);
