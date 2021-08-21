@@ -94,6 +94,19 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 								payload.sanitizedValue = validator.toInt(payload.value, 10);
 								fields[0] = {time:""+time, valueInteger: payload.sanitizedValue+"i",};
 								break;
+							case "image":
+								if(!payload.isAidcValue) {
+									payload.sanitizedValue = typeof payload.value!=="undefined"?(validator.isBase64(payload.value.toString())===true?payload.value:null):null;
+									payload.isRejected = typeof payload.value!=="undefined"?(validator.isBase64(payload.value.toString())===false?true:false):false;
+									pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
+									fields[0] = {time:""+time, valueImage: payload.sanitizedValue,};
+								} else {
+									payload.sanitizedValue = typeof payload.value!=="undefined"?(validator.isBase64(payload.value.toString())===true?payload.value:null):null;
+									payload.isRejected = typeof payload.value!=="undefined"?(validator.isBase64(payload.value.toString())===false?true:false):false;
+									pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
+									fields[0] = {time:""+time, valueString: payload.value,};
+								}
+								break;
 							case "json":
 								payload.sanitizedValue = {value:payload.value,};
 								fields[0] = {time:""+time, valueJson: payload.sanitizedValue,};
@@ -101,12 +114,6 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 							case "string":
 								payload.sanitizedValue = ""+payload.value;
 								fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
-								break;
-							case "image":
-								payload.sanitizedValue = validator.isBase64(payload.value.toString())===true?payload.value:null;
-								payload.isRejected = validator.isBase64(payload.value.toString())===false?true:false;
-								pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
-								fields[0] = {time:""+time, valueImage: payload.sanitizedValue,};
 								break;
 							case "time":
 								payload.sanitizedValue = payload.value ;
@@ -213,27 +220,48 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 					break;
 	
 				case "aidc": // Automatic identification and data capture (AIDC)
-					switch(pp.mode) {
-						case "faceExpressionRecognition":
-							t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
+					new Promise((resolve, reject) => {
+						switch(pp.mode) {
+							case "faceExpressionRecognition":
+								t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
 								.then((response) => {
-									t6console.debug("Response from my Promise :", response);
-									const { age, gender, genderProbability, expressions, angle } = response;
-									pp.age = age;
-									pp.gender = gender;
-									pp.genderProbability = genderProbability;
-									pp.expressions = expressions;
-									pp.angle = angle;
-									t6console.debug("Here is value of AIDC prepprocessor:", pp);
+									pp.expressions = response.expressions;
+									let max = ( Object.entries(pp.expressions).sort((prev, next) => prev[1] - next[1]) ).pop();
+									pp.recognizedValue = max[0];
+									pp.expressionValue = max[1];
+									pp.initialValue = `${payload.timestamp}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+									payload.value = pp.recognizedValue;
+									payload.isAidcValue = true;
+									resolve(pp);
 								});
-								pp.transformedValue = `${payload.timestamp*1e6}-faceExpressionRecognition.png`;
-								pp.initialValue = `${payload.timestamp*1e6}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
-								pp.sanitizedValue = `${payload.timestamp*1e6}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
-							//const { age, gender, genderProbability, expressions, angle } = t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save);
-							break;
-						default:
-							break;
-					}
+								break;
+	
+							case "genderRecognition":
+								t6imagesprocessing.ageAndGenderRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
+								.then((response) => {
+									pp.recognizedValue = response.gender;
+									pp.initialValue = `${payload.timestamp}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+									payload.value = pp.recognizedValue;
+									payload.isAidcValue = true;
+									resolve(pp);
+								});
+								break;
+	
+							case "ageRecognition":
+								t6imagesprocessing.ageAndGenderRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
+								.then((response) => {
+									pp.recognizedValue = Math.round(response.age);
+									pp.initialValue = `${payload.timestamp}-ageRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+									payload.value = pp.recognizedValue;
+									payload.isAidcValue = true;
+									resolve(pp);
+								});
+								break;
+	
+							default:
+								break;
+						}
+					});
 					break;
 				
 				default:
@@ -242,6 +270,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 			}
 			pp.status = "completed";
 		});
+		t6console.debug("payload before resolving : ", payload);
 		resolve({payload, fields, preprocessor: listPreprocessor});
 	});
 };

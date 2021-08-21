@@ -434,7 +434,7 @@ app.use(function(req, res, next) {
 	//next(err);
 });
 
-if ( logLevel.indexOf("DEBUG") > -1 ) {
+if ( logLevel.indexOf("INFO") > -1 ) {
 	request.debug = true;
 }
 if (app.get("env") === "development") {

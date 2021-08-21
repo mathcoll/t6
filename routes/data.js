@@ -244,7 +244,7 @@ function verifyPrerequisites(payload, object) {
 			let fUnits = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
 			let current_flow = (fDatatypes.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
 			let joinDatatypes, joinUnits;
-	
+
 			if(typeof payload.datatype_id!=="undefined" && payload.datatype_id!=="") { 
 				let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
 				payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
@@ -258,7 +258,7 @@ function verifyPrerequisites(payload, object) {
 				payload.datatype = "string";
 				t6console.debug(`Getting datatype "${payload.datatype}" from default value`);
 			}
-			
+
 			if(payload.datatype==="image") {
 				if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
 					let imgDir = `${ip.image_dir}/${payload.user_id}`;
@@ -275,9 +275,13 @@ function verifyPrerequisites(payload, object) {
 				}
 				const img = new Image();
 				img.src = new Buffer.from(payload.value, "base64");
+				//t6console.debug("Image ABC", "We are again on verifyPrerequisites");
+				//t6console.debug("Image ABC", payload.value);
 				payload.img = img;
+			} else {
+				t6console.debug("Image ABC", "We are on verifyPrerequisites and datatype = ", payload.datatype);
 			}
-			
+
 			if ( !payload.mqtt_topic && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
 				payload.mqtt_topic = ((joinDatatypes.data())[0].left).mqtt_topic;
 			}
@@ -326,6 +330,7 @@ function preprocessor(payload, fields, current_flow) {
 		}
 		let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined"&&current_flow.preprocessor!=="")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
 		preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
+		t6console.debug("Will force sanitization to:", payload.datatype);
 		preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
 		t6preprocessor.preprocessor(current_flow, payload, preprocessor).then(result => {
 			payload = result.payload;
@@ -652,12 +657,12 @@ function processPayload(payloadArray, req) {
 					let payload = re.payload;
 					let current_flow = re.current_flow;
 					if (payload.datatype==="image") {
-						payload.value = `${payload.user_id}/${payload.flow_id}/${payload.timestamp*1e6}.png`;
+						//payload.value = `${payload.user_id}/${payload.flow_id}/${payload.timestamp}.png`;
 						if (payload.save===false) {
 							fs.readdir(`${ip.image_dir}/`, (files)=>{
 								if(files!==null) {
 									for (let i=0, len=files.length; i<len;i++) {
-										let match = files[i].match(/`${payload.timestamp*1e6}.*.png`/);
+										let match = files[i].match(/`${payload.timestamp}.*.png`/);
 										if(match !== null) {
 											fs.unlink(match[0], (err) => {
 												if (err) {
@@ -917,27 +922,31 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
 	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body).slice(0, 3); // only process 3 first measures from payload and ignore the others
 	t6console.debug(`Called POST datapoints with ${payloadArray.length} measurement(s)`);
-	processPayload(payloadArray, req)
-	.then((process) => {
-		res.header("Location", process[0].location); // hum ...
-		process.parent = process[0].parent; // hum ...
-		process.flow_id = process[0].flow_id; // hum ...
-		process.datatype= process[0].datatype; // hum ...
-		process.datatype_id= process[0].datatype_id; // hum ...
-		process.unit = process[0].unit; // hum ...
-		process.unit_id = process[0].unit_id; // hum ...
-		process.title = process[0].title; // hum ...
-		process.ttl = process[0].ttl; // hum ...
-		process.pageSelf = 1;
-		process.pageFirst = 1;
-		process.limit = 20;
-		process.sort = "asc";
-		t6console.debug(`Finished processing all ${payloadArray.length} measurements`);
-		res.status(200).send(new DataSerializer(process).serialize());
-	})
-	.catch((err) => {
-		t6console.error("Error on processPayload: ", err);
-		res.status(412).send({err: err, "id": 999, "code": 412, "message": "Precondition failed"});
+	new Promise((resolve, reject) => {
+		processPayload(payloadArray, req)
+		.then((process) => {
+			res.header("Location", process[0].location); // hum ...
+			process.parent = process[0].parent; // hum ...
+			process.flow_id = process[0].flow_id; // hum ...
+			process.datatype= process[0].datatype; // hum ...
+			process.datatype_id= process[0].datatype_id; // hum ...
+			process.unit = process[0].unit; // hum ...
+			process.unit_id = process[0].unit_id; // hum ...
+			process.title = process[0].title; // hum ...
+			process.ttl = process[0].ttl; // hum ...
+			process.pageSelf = 1;
+			process.pageFirst = 1;
+			process.limit = 20;
+			process.sort = "asc";
+			res.status(200).send(new DataSerializer(process).serialize());
+			t6console.debug(`Finished processing all ${payloadArray.length} measurements`);
+			resolve(`Finished processing all ${payloadArray.length} measurements`);
+		})
+		.catch((err) => {
+			t6console.error("Error on processPayload: ", err);
+			res.status(412).send({err: err, "id": 999, "code": 412, "message": "Precondition failed"});
+			reject("Precondition failed");
+		});
 	});
 });
 
