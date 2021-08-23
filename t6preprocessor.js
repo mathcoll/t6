@@ -101,9 +101,9 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 									pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
 									fields[0] = {time:""+time, valueImage: payload.sanitizedValue,};
 								} else {
-									payload.sanitizedValue = typeof payload.value!=="undefined"?(validator.isBase64(payload.value.toString())===true?payload.value:null):null;
-									payload.isRejected = typeof payload.value!=="undefined"?(validator.isBase64(payload.value.toString())===false?true:false):false;
-									pp.message = payload.isRejected===true?"Value is rejected because it is not a base64 image string.":undefined;
+									payload.sanitizedValue = typeof payload.value!=="undefined"?payload.value:null;
+									payload.isRejected = typeof payload.value!=="undefined"?payload.value:false;
+									pp.message = payload.isRejected===true?"Value is rejected because there is not Aidc value found.":undefined;
 									fields[0] = {time:""+time, valueString: payload.value,};
 								}
 								break;
@@ -218,7 +218,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 					pp.transformedValue = payload.value;
 					pp.message = errorMode===1?`Could'd find mode ${pp.mode}.`:`Transformed to ${pp.mode}.`;
 					break;
-	
+
 				case "aidc": // Automatic identification and data capture (AIDC)
 					new Promise((resolve, reject) => {
 						switch(pp.mode) {
@@ -230,40 +230,43 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 									pp.recognizedValue = max[0];
 									pp.expressionValue = max[1];
 									pp.initialValue = `${payload.timestamp}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+									t6console.debug("Setting Aidc = true and setting value to", pp.recognizedValue);
 									payload.value = pp.recognizedValue;
 									payload.isAidcValue = true;
 									resolve(pp);
 								});
 								break;
-	
+
 							case "genderRecognition":
 								t6imagesprocessing.ageAndGenderRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
 								.then((response) => {
 									pp.recognizedValue = response.gender;
 									pp.initialValue = `${payload.timestamp}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+									t6console.debug("Setting Aidc = true and setting value to", pp.recognizedValue);
 									payload.value = pp.recognizedValue;
 									payload.isAidcValue = true;
 									resolve(pp);
 								});
 								break;
-	
+
 							case "ageRecognition":
 								t6imagesprocessing.ageAndGenderRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
 								.then((response) => {
 									pp.recognizedValue = Math.round(response.age);
 									pp.initialValue = `${payload.timestamp}-ageRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
+									t6console.debug("Setting Aidc = true and setting value to", pp.recognizedValue);
 									payload.value = pp.recognizedValue;
 									payload.isAidcValue = true;
 									resolve(pp);
 								});
 								break;
-	
+
 							default:
 								break;
 						}
 					});
 					break;
-				
+
 				default:
 					pp.message = typeof flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow.";
 					break;

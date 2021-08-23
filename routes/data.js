@@ -259,7 +259,10 @@ function verifyPrerequisites(payload, object) {
 				t6console.debug(`Getting datatype "${payload.datatype}" from default value`);
 			}
 
-			if(payload.datatype==="image") {
+			if(validator.isBase64(payload.value.toString())===true || payload.datatype==="image") {
+				const img = new Image(); // TODO: base64 does not mean it's' an image !
+				img.src = new Buffer.from(payload.value, "base64");
+				payload.img = img;
 				if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
 					let imgDir = `${ip.image_dir}/${payload.user_id}`;
 					if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
@@ -273,13 +276,7 @@ function verifyPrerequisites(payload, object) {
 						}
 					});
 				}
-				const img = new Image();
-				img.src = new Buffer.from(payload.value, "base64");
-				//t6console.debug("Image ABC", "We are again on verifyPrerequisites");
-				//t6console.debug("Image ABC", payload.value);
-				payload.img = img;
-			} else {
-				t6console.debug("Image ABC", "We are on verifyPrerequisites and datatype = ", payload.datatype);
+				t6console.debug("We have an base64 (image) on the payload value.");
 			}
 
 			if ( !payload.mqtt_topic && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
@@ -321,7 +318,6 @@ function verifyPrerequisites(payload, object) {
 		}
 	});
 }
-
 function preprocessor(payload, fields, current_flow) {
 	t6console.debug("preprocessor");
 	return new Promise((resolve, reject) => {
@@ -356,7 +352,6 @@ function preprocessor(payload, fields, current_flow) {
 		});
 	});
 }
-
 function fusion(payload, fields, current_flow) {
 	t6console.debug("fusion");
 	return new Promise((resolve, reject) => {
@@ -459,15 +454,18 @@ function fusion(payload, fields, current_flow) {
 }
 function saveToLocal(payload, fields, current_flow) {
 	t6console.debug("saveToLocal");
+	t6console.debug("saveToLocal (1) AIDC and value", payload.isAidcValue, payload.value);
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	return new Promise((resolve, reject) => {
 		if(!payload || current_flow===null) {
 			resolve({payload, fields, current_flow});
 		}
+		t6console.debug("saveToLocal (2) AIDC and value", payload.isAidcValue, payload.value);
 		if ( save === true ) {
 			let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 			if ( db_type.influxdb === true ) {
-				t6console.debug("Saving to timeseries");
+				t6console.debug("Saving to influxdb timeseries");
+				t6console.debug("saveToLocal (3) AIDC and value", payload.isAidcValue, payload.value);
 				/* InfluxDB database */
 				var tags = {};
 				payload.timestamp = payload.time*1e6;
@@ -499,15 +497,20 @@ function saveToLocal(payload, fields, current_flow) {
 					} else {
 						let v = getFieldsFromDatatype(payload.datatype, false, false);
 						t6console.debug(`Saved "${(fields[0])[v]}" using rp=${rp} / Tags :`, tags);
+						t6console.debug("saveToLocal (4) AIDC and value", payload.isAidcValue, payload.value);
 						resolve({payload, fields, current_flow});
 					}
 				}).catch((err) => {
 					t6console.error({"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
+					t6console.debug("saveToLocal (5) AIDC and value", payload.isAidcValue, payload.value);
 					resolve({payload, fields, current_flow});
 				});
-			} // end influx
+			} else {
+				t6console.debug("Missconfiguration on saving to influxdb timeseries");
+				resolve({payload, fields, current_flow});
+			}
 		} else {
-			t6console.debug("Save Process Disabled!");
+			t6console.debug("Save is Disabled on payload.");
 			resolve({payload, fields, current_flow});
 		} // end save
 	});
@@ -608,7 +611,6 @@ function ruleEngine(payload, fields, current_flow) {
 		} // end publish
 	});
 }
-
 function processPayload(payloadArray, req) {
 	t6console.debug("processPayload");
 	let process = [];
@@ -616,48 +618,37 @@ function processPayload(payloadArray, req) {
 		payloadArray.flatMap((payload, pIndex) => {
 			preloadPayload(payload, req)
 				.then((pp) => {
-					t6console.debug("Big chain signatureCheck 1");
 					return signatureCheck(pp.payload, pp.object);
 				})
 				.then((sc) => {
-					t6console.debug("Big chain decrypt");
 					return decrypt(sc.payload, sc.object);
 				})
 				.then((dy) => {
-					t6console.debug("Big chain signatureCheck 2");
 					return signatureCheck(dy.payload, dy.object); // yes do it twice because we can have both signature and encryption
 				})
 				.then((sc) => {
-					t6console.debug("Big chain verifyPrerequisites");
 					return verifyPrerequisites(sc.payload);
 				})
 				.then((vp) => {
-					t6console.debug("Big chain preprocessor");
 					return preprocessor(vp.payload, {}, vp.current_flow);
 				})
 				.then((pp) => {
-					t6console.debug("Big chain fusion");
 					return fusion(pp.payload, pp.fields, pp.current_flow);
 				})
 				.then((fu) => {
-					t6console.debug("Big chain saveToLocal");
 					return saveToLocal(fu.payload, fu.fields, fu.current_flow);
 				})
 				.then((sl) => {
-					t6console.debug("Big chain saveToCloud");
 					return saveToCloud(sl.payload, sl.fields, sl.current_flow);
 				})
 				.then((sc) => {
-					t6console.debug("Big chain ruleEngine");
 					return ruleEngine(sc.payload, sc.fields, sc.current_flow);
 				})
 				.then((re) => {
-					t6console.debug("Big chain then");
 					let measure = re.fields;
 					let payload = re.payload;
 					let current_flow = re.current_flow;
-					if (payload.datatype==="image") {
-						//payload.value = `${payload.user_id}/${payload.flow_id}/${payload.timestamp}.png`;
+					if (payload.datatype==="image" || typeof payload.img!=="undefined") {
 						if (payload.save===false) {
 							fs.readdir(`${ip.image_dir}/`, (files)=>{
 								if(files!==null) {
@@ -668,15 +659,13 @@ function processPayload(payloadArray, req) {
 												if (err) {
 													t6console.error(err);
 												} else {
-													t6console.debug("Successfully removed image file to storage.");
+													t6console.debug("Successfully removed image file from storage as 'save' is disabled.");
 												}
 											});
 										}
 									}
 								}
 							});
-						} else {
-							t6console.debug("Keeping file to storage.");
 						}
 					}
 					measure.parent = payload.flow_id;
