@@ -74,30 +74,31 @@ function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
 	}
 	return fields;
 }
-function preloadPayload(payload, req) {
-	t6console.debug("preloadPayload");
+function preparePayload(payload, options) {
+	t6console.debug("chain preloadPayload");
+	payload = getJson(payload);
+	let object;
+	payload.timestamp	 = (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
+	if ( payload.timestamp.toString().length <= 10 ) { payload.timestamp = moment(time*1000).format("x"); }
+	payload.time		 = payload.timestamp;
+	payload.errorMessage = options.errorMessage;
+	payload.user_id		 = options.user_id;
+	payload.flow_id		 = options.flow_id;
+	payload.value		 = typeof payload.value!=="undefined"?payload.value:"";
+	payload.unit		 = (typeof payload.unit!=="undefined" && payload.unit!==null)?payload.unit:undefined;
+	payload.unit_id		 = (typeof payload.unit_id!=="undefined" && payload.unit_id!==null)?payload.unit_id:undefined;
+	payload.datatype	 = (typeof payload.datatype!=="undefined" && payload.datatype!==null)?payload.datatype:undefined;
+	payload.datatype_id	 = (typeof payload.datatype_id!=="undefined" && payload.datatype_id!==null)?payload.datatype_id:undefined;
+	payload.mqtt_topic	 = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
+	payload.latitude	 = typeof payload.latitude!=="undefined"?payload.latitude:"";
+	payload.longitude	 = typeof payload.longitude!=="undefined"?payload.longitude:"";
+	payload.text		 = typeof payload.text!=="undefined"?payload.text:"";
+	payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
+
 	return new Promise((resolve, reject) => {
-		payload = getJson(payload);
-		let object;
-		payload.timestamp	 = (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
-		if ( payload.timestamp.toString().length <= 10 ) { payload.timestamp = moment(time*1000).format("x"); }
-		payload.time		 = payload.timestamp;
-		payload.user_id		 = typeof req.user.id!=="undefined"?req.user.id:null;
-		payload.value		 = typeof payload.value!=="undefined"?payload.value:"";
-		payload.unit		 = (typeof payload.unit!=="undefined" && payload.unit!==null)?payload.unit:undefined;
-		payload.unit_id		 = (typeof payload.unit_id!=="undefined" && payload.unit_id!==null)?payload.unit_id:undefined;
-		payload.datatype	 = (typeof payload.datatype!=="undefined" && payload.datatype!==null)?payload.datatype:undefined;
-		payload.datatype_id	 = (typeof payload.datatype_id!=="undefined" && payload.datatype_id!==null)?payload.datatype_id:undefined;
-		payload.mqtt_topic	 = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
-		payload.latitude	 = typeof payload.latitude!=="undefined"?payload.latitude:"";
-		payload.longitude	 = typeof payload.longitude!=="undefined"?payload.longitude:"";
-		payload.text		 = typeof payload.text!=="undefined"?payload.text:"";
-		payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
-		payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
-		payload.errorMessage = req.body.length>3?["Maximum payload reach. Some payload will be ignored"]:[];
-		payload.flow_id		 = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
 		if(payload.object_id) {
-			getObjectKey(payload, req.user.id)
+			getObjectKey(payload, payload.user_id)
 				.then((ok) => {
 					payload = ok.payload;
 					object = ok.object;
@@ -114,7 +115,7 @@ function preloadPayload(payload, req) {
 	});
 }
 function signatureCheck(payload, object) {
-	t6console.debug("signatureCheck");
+	t6console.debug("chain signatureCheck");
 	return new Promise((resolve, reject) => {
 		let initialPayload = {
 			flow_id: payload.flow_id,
@@ -167,7 +168,7 @@ function signatureCheck(payload, object) {
 	});
 }
 function decrypt(payload, object) {
-	t6console.debug("decrypt");
+	t6console.debug("chain decrypt");
 	return new Promise((resolve, reject) => {
 		let initialPayload = {
 			flow_id: payload.flow_id,
@@ -229,7 +230,7 @@ function decrypt(payload, object) {
 	});
 }
 function verifyPrerequisites(payload, object) {
-	t6console.debug("verifyPrerequisites");
+	t6console.debug("chain verifyPrerequisites");
 	return new Promise((resolve, reject) => {
 		payload.prerequisite = 0;
 		if ( !payload.value ) {
@@ -263,6 +264,7 @@ function verifyPrerequisites(payload, object) {
 				const img = new Image(); // TODO: base64 does not mean it's' an image !
 				img.src = new Buffer.from(payload.value, "base64");
 				payload.img = img;
+
 				if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
 					let imgDir = `${ip.image_dir}/${payload.user_id}`;
 					if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
@@ -282,7 +284,7 @@ function verifyPrerequisites(payload, object) {
 			if ( !payload.mqtt_topic && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
 				payload.mqtt_topic = ((joinDatatypes.data())[0].left).mqtt_topic;
 			}
-			
+
 			if(typeof payload.unit_id!=="undefined" && payload.unit_id!=="") { 
 				let u = (units.chain().find({id: ""+payload.unit_id,}).limit(1)).data()[0];
 				payload.unit = (typeof payload.unit_id!=="undefined" && typeof u!=="undefined")?u.name:"No unit";
@@ -296,12 +298,13 @@ function verifyPrerequisites(payload, object) {
 				payload.unit = "No unit";
 				t6console.debug(`Getting unit "${payload.unit}" from default value`);
 			}
-	
+
 			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !isEncrypted ) {
 				t6console.debug("Flow require isEncrypted -", current_flow.left.require_encrypted);
 				t6console.debug(".. & Payload isEncrypted", isEncrypted);
 				payload.prerequisite += 1;
 			}
+
 			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !isSigned ) {
 				t6console.debug("Flow require isSigned -", current_flow.left.require_signed);
 				t6console.debug(".. & Payload isSigned", isSigned);
@@ -319,7 +322,7 @@ function verifyPrerequisites(payload, object) {
 	});
 }
 function preprocessor(payload, fields, current_flow) {
-	t6console.debug("preprocessor");
+	t6console.debug("chain preprocessor");
 	return new Promise((resolve, reject) => {
 		if(!payload || current_flow===null) {
 			resolve({payload, fields, current_flow});
@@ -353,7 +356,7 @@ function preprocessor(payload, fields, current_flow) {
 	});
 }
 function fusion(payload, fields, current_flow) {
-	t6console.debug("fusion");
+	t6console.debug("chain fusion");
 	return new Promise((resolve, reject) => {
 		if(!payload || current_flow===null) {
 			resolve({payload, fields, current_flow});
@@ -453,19 +456,19 @@ function fusion(payload, fields, current_flow) {
 	});
 }
 function saveToLocal(payload, fields, current_flow) {
-	t6console.debug("saveToLocal");
-	t6console.debug("saveToLocal (1) AIDC and value", payload.isAidcValue, payload.value);
+	t6console.debug("chain saveToLocal");
+	t6console.debug("saveToLocal (1) AIDC and value", payload.isAidcValue, payload.value.substring(0, 10)+"... ...");
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	return new Promise((resolve, reject) => {
 		if(!payload || current_flow===null) {
 			resolve({payload, fields, current_flow});
 		}
-		t6console.debug("saveToLocal (2) AIDC and value", payload.isAidcValue, payload.value);
+		t6console.debug("saveToLocal (2) AIDC and value", payload.isAidcValue, payload.value.substring(0, 10)+"... ...");
 		if ( save === true ) {
 			let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 			if ( db_type.influxdb === true ) {
 				t6console.debug("Saving to influxdb timeseries");
-				t6console.debug("saveToLocal (3) AIDC and value", payload.isAidcValue, payload.value);
+				t6console.debug("saveToLocal (3) AIDC and value", payload.isAidcValue, payload.value.substring(0, 10)+"... ...");
 				/* InfluxDB database */
 				var tags = {};
 				payload.timestamp = payload.time*1e6;
@@ -482,8 +485,8 @@ function saveToLocal(payload, fields, current_flow) {
 				}
 				t6console.debug("current_flow Datatype:", typeof current_flow!=="undefined"?current_flow.datatype:"undefined");
 				t6console.debug("payload Datatype:", typeof payload!=="undefined"?payload.datatype:"undefined");
-				t6console.debug(tags);
-				t6console.debug(fields[0]);
+				//t6console.debug(tags);
+				//t6console.debug(fields[0]);
 				let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 				dbWrite.writePoints([{
 					measurement: "data",
@@ -496,13 +499,13 @@ function saveToLocal(payload, fields, current_flow) {
 						resolve({payload, fields, current_flow});
 					} else {
 						let v = getFieldsFromDatatype(payload.datatype, false, false);
-						t6console.debug(`Saved "${(fields[0])[v]}" using rp=${rp} / Tags :`, tags);
-						t6console.debug("saveToLocal (4) AIDC and value", payload.isAidcValue, payload.value);
+						t6console.debug(`Saved ${v} (${payload.datatype}) using rp=${rp}`);
+						t6console.debug("saveToLocal (4) AIDC and value", payload.isAidcValue, payload.value.substring(0, 10)+"... ...");
 						resolve({payload, fields, current_flow});
 					}
 				}).catch((err) => {
 					t6console.error({"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
-					t6console.debug("saveToLocal (5) AIDC and value", payload.isAidcValue, payload.value);
+					t6console.debug("saveToLocal (5) AIDC and value", payload.isAidcValue, payload.value.substring(0, 10)+"... ...");
 					resolve({payload, fields, current_flow});
 				});
 			} else {
@@ -516,7 +519,7 @@ function saveToLocal(payload, fields, current_flow) {
 	});
 }
 function saveToCloud(payload, fields, current_flow) {
-	t6console.debug("saveToCloud");
+	t6console.debug("chain saveToCloud");
 	return new Promise((resolve, reject) => {
 		if(!payload || current_flow===null) {
 			resolve({payload, fields, current_flow});
@@ -578,7 +581,7 @@ function saveToCloud(payload, fields, current_flow) {
 	});
 }
 function ruleEngine(payload, fields, current_flow) {
-	t6console.debug("ruleEngine");
+	t6console.debug("chain ruleEngine");
 	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true; // TODO : to be cleaned
 	return new Promise((resolve, reject) => {
 		if ( publish === true ) {														 // TODO : to be cleaned
@@ -611,95 +614,85 @@ function ruleEngine(payload, fields, current_flow) {
 		} // end publish
 	});
 }
-function processPayload(payloadArray, req) {
-	t6console.debug("processPayload");
-	let process = [];
-	return new Promise((resolve, reject) => {
-		payloadArray.flatMap((payload, pIndex) => {
-			preloadPayload(payload, req)
-				.then((pp) => {
-					return signatureCheck(pp.payload, pp.object);
-				})
-				.then((sc) => {
-					return decrypt(sc.payload, sc.object);
-				})
-				.then((dy) => {
-					return signatureCheck(dy.payload, dy.object); // yes do it twice because we can have both signature and encryption
-				})
-				.then((sc) => {
-					return verifyPrerequisites(sc.payload);
-				})
-				.then((vp) => {
-					return preprocessor(vp.payload, {}, vp.current_flow);
-				})
-				.then((pp) => {
-					return fusion(pp.payload, pp.fields, pp.current_flow);
-				})
-				.then((fu) => {
-					return saveToLocal(fu.payload, fu.fields, fu.current_flow);
-				})
-				.then((sl) => {
-					return saveToCloud(sl.payload, sl.fields, sl.current_flow);
-				})
-				.then((sc) => {
-					return ruleEngine(sc.payload, sc.fields, sc.current_flow);
-				})
-				.then((re) => {
-					let measure = re.fields;
-					let payload = re.payload;
-					let current_flow = re.current_flow;
-					if (payload.datatype==="image" || typeof payload.img!=="undefined") {
-						if (payload.save===false) {
-							fs.readdir(`${ip.image_dir}/`, (files)=>{
-								if(files!==null) {
-									for (let i=0, len=files.length; i<len;i++) {
-										let match = files[i].match(/`${payload.timestamp}.*.png`/);
-										if(match !== null) {
-											fs.unlink(match[0], (err) => {
-												if (err) {
-													t6console.error(err);
-												} else {
-													t6console.debug("Successfully removed image file from storage as 'save' is disabled.");
-												}
-											});
+function processAllMeasures(payloads, options) {
+	t6console.debug("processAllMeasures in a chain");
+	let result = [];
+	let _queue = Promise.resolve();
+	payloads.forEach(function(payload) {
+		_queue = _queue.then(() => {
+			t6console.debug("--------", "chaining the measure", result.length+1, "--------");
+			return preparePayload(payload, options);
+		}).then((pp) => {
+			return signatureCheck(pp.payload, pp.object); // do it once
+		}).then((sc) => {
+			return decrypt(sc.payload, sc.object);
+		}).then((dy) => {
+			return signatureCheck(dy.payload, dy.object); // yes do it twice because we can have both signature and encryption
+		}).then((sc) => {
+			return verifyPrerequisites(sc.payload);
+		}).then((vp) => {
+			return preprocessor(vp.payload, {}, vp.current_flow);
+		}).then((pp) => {
+			return fusion(pp.payload, pp.fields, pp.current_flow);
+		}).then((fu) => {
+			return saveToLocal(fu.payload, fu.fields, fu.current_flow);
+		}).then((sl) => {
+			return saveToCloud(sl.payload, sl.fields, sl.current_flow);
+		}).then((sc) => {
+			return ruleEngine(sc.payload, sc.fields, sc.current_flow);
+		}).then(re => {
+			let measure = re.fields;
+			let payload = re.payload;
+			let current_flow = re.current_flow;
+			if (payload.datatype==="image" || typeof payload.img!=="undefined") {
+				if (payload.save===false) {
+					fs.readdir(`${ip.image_dir}/`, (files)=>{
+						if(files!==null) {
+							for (let i=0, len=files.length; i<len;i++) {
+								let match = files[i].match(/`${payload.timestamp}.*.png`/);
+								if(match !== null) {
+									fs.unlink(match[0], (err) => {
+										if (err) {
+											t6console.error(err);
+										} else {
+											t6console.debug("Successfully removed image file from storage as 'save' is disabled.");
 										}
-									}
+									});
 								}
-							});
+							}
 						}
-					}
-					measure.parent = payload.flow_id;
-					measure.self = payload.flow_id;
-					measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
-					measure.publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):null;
-					measure.flow_id = payload.flow_id;
-					measure.datatype = payload.datatype;
-					measure.datatype_id = payload.datatype_id;
-					measure.unit = payload.unit;
-					measure.unit_id = payload.unit_id;
-					measure.id = payload.time*1e6;
-					measure.time = payload.time*1e6;
-					measure.timestamp = payload.time*1e6;
-					measure.value = payload.value;
-					measure.mqtt_topic = payload.mqtt_topic;
-					measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
-					measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
-					measure.preprocessor = (typeof current_flow!=="undefined" && current_flow!==null)?payload.preprocessor:undefined;
-					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
-					measure.location = `/v${version}/flows/${payload.flow_id}/${measure.id}`;
+					});
+				}
+			}
+			measure.parent = payload.flow_id;
+			measure.self = payload.flow_id;
+			measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
+			measure.publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):null;
+			measure.flow_id = payload.flow_id;
+			measure.datatype = payload.datatype;
+			measure.datatype_id = payload.datatype_id;
+			measure.unit = payload.unit;
+			measure.unit_id = payload.unit_id;
+			measure.id = payload.time*1e6;
+			measure.time = payload.time*1e6;
+			measure.timestamp = payload.time*1e6;
+			measure.value = payload.value;
+			measure.mqtt_topic = payload.mqtt_topic;
+			measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
+			measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
+			measure.preprocessor = (typeof current_flow!=="undefined" && current_flow!==null)?payload.preprocessor:undefined;
+			measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
+			measure.location = `/v${version}/flows/${payload.flow_id}/${measure.id}`;
 
-					t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
-					process.push(measure);
-					if(pIndex+1 === payloadArray.length) {
-						resolve(process);
-					}
-				})
-				.catch((err) => {
-					t6console.error("Error on the big chain: ", err);
-					reject(process);
-				});
+			t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
+			if(result.length === payloads.length) {
+				resolve(process);
+			}
+			result.push(measure);
+			return result;
 		});
 	});
+	return _queue;
 }
 
 /**
@@ -911,31 +904,33 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
 	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body).slice(0, 3); // only process 3 first measures from payload and ignore the others
 	t6console.debug(`Called POST datapoints with ${payloadArray.length} measurement(s)`);
-	new Promise((resolve, reject) => {
-		processPayload(payloadArray, req)
-		.then((process) => {
-			res.header("Location", process[0].location); // hum ...
-			process.parent = process[0].parent; // hum ...
-			process.flow_id = process[0].flow_id; // hum ...
-			process.datatype= process[0].datatype; // hum ...
-			process.datatype_id= process[0].datatype_id; // hum ...
-			process.unit = process[0].unit; // hum ...
-			process.unit_id = process[0].unit_id; // hum ...
-			process.title = process[0].title; // hum ...
-			process.ttl = process[0].ttl; // hum ...
-			process.pageSelf = 1;
-			process.pageFirst = 1;
-			process.limit = 20;
-			process.sort = "asc";
-			res.status(200).send(new DataSerializer(process).serialize());
-			t6console.debug(`Finished processing all ${payloadArray.length} measurements`);
-			resolve(`Finished processing all ${payloadArray.length} measurements`);
-		})
-		.catch((err) => {
-			t6console.error("Error on processPayload: ", err);
-			res.status(412).send({err: err, "id": 999, "code": 412, "message": "Precondition failed"});
-			reject("Precondition failed");
-		});
+
+	let options = {};
+	options.errorMessage = req.body.length>3?["Maximum payload reach. Some payload will be ignored"]:[];
+	options.user_id		 = typeof req.user.id!=="undefined"?req.user.id:null;
+	options.flow_id		 = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
+
+	processAllMeasures(payloadArray, options).then( (payload) => {
+		let response = payload;
+		res.header("Location", payload[0].location); // hum ...
+		response.parent = payload[0].parent; // hum ...
+		response.flow_id = payload[0].flow_id; // hum ...
+		response.datatype= payload[0].datatype; // hum ...
+		response.datatype_id= payload[0].datatype_id; // hum ...
+		response.unit = payload[0].unit; // hum ...
+		response.unit_id = payload[0].unit_id; // hum ...
+		response.title = payload[0].title; // hum ...
+		response.ttl = payload[0].ttl; // hum ...
+		response.pageSelf = 1;
+		response.pageFirst = 1;
+		response.limit = 20;
+		response.sort = "asc";
+		t6console.debug(`Finished processing all ${payload.length} measurements`);
+		res.status(200).send(new DataSerializer(response).serialize());
+	}).catch((err) => {
+		t6console.error("Error on processAllMeasures: ", err);
+		t6console.debug("Precondition failed");
+		res.status(412).send({err: err, "id": 999, "code": 412, "message": "Precondition failed"});
 	});
 });
 

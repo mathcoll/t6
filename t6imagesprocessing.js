@@ -12,6 +12,8 @@ faceapi.nets.faceExpressionNet.loadFromDisk(`${ip.models_dir}/weights`);
 t6imagesprocessing.ageAndGenderRecognition = function(img, dir, filename, ext, save=false) {
 	return new Promise((resolve, reject) => {
 		faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions())
+			.withFaceLandmarks()
+			.withFaceExpressions()
 			.withAgeAndGender()
 			.then((results) =>{
 				//TODO : returns only the first detection ?!
