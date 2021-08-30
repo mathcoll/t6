@@ -29,6 +29,7 @@
     "@vladmandic/face-api": "^1.4.1",
     "acorn": "^8.4.1",
     "arduino-cli": "^0.37.0",
+    "async": "^3.2.1",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "cache-require-paths": "^0.3.0",
