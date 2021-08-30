@@ -10,7 +10,7 @@ t6preprocessor.str2bool = function(v) {
 	return ["yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
 };
 
-t6preprocessor.cryptValue = function(value, sender, encoding) {
+t6preprocessor.cryptValue = async function(value, sender, encoding) {
 	if ( sender && sender.secret_key_crypt ) {
 		let iv = crypto.randomBytes(16);
 		// sender.secret_key_crypt must be 256 bytes (32 characters)
@@ -32,7 +32,7 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 		let errorMode=false;
 		listPreprocessor.map(function(pp) {
 			pp.initialValue = payload.value;
-			t6console.debug("Entering Preprocessor function for", pp);
+			t6console.debug("chain 6", "Entering Preprocessor function for", pp.name, pp.datatype);
 			switch(pp.name) {
 				case "validate": // Reject non-valid value
 					switch(pp.test) {
@@ -129,7 +129,6 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 						fields[0] = {time:""+time, valueString: payload.value,};
 						pp.message = "Not datatype to convert to. Default to String.";
 					}
-	
 					break;
 	
 				case "convert": // Convert value unit converter
@@ -273,8 +272,8 @@ t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
 			}
 			pp.status = "completed";
 		});
-		t6console.debug("payload before resolving : ", payload);
-		resolve({payload, fields, preprocessor: listPreprocessor});
+		t6console.debug("chain 6", "payload value before returning:", payload);
+		resolve ({payload, fields, preprocessor: listPreprocessor});
 	});
 };
 
@@ -378,7 +377,7 @@ t6preprocessor.clearExpiredMeasurement = function() {
 	return size;
 };
 
-t6preprocessor.fuse = function(job) {
+t6preprocessor.fuse = function(job) { // TODO deprecated function ?
 	let payload = {};
 	/*
 		TODO :

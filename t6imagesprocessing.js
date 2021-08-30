@@ -27,7 +27,7 @@ t6imagesprocessing.ageAndGenderRecognition = function(img, dir, filename, ext, s
 						if(err) {
 							t6console.error("Can't save image to storage:", err);
 						} else {
-							t6console.debug("Successfully wrote image file to storage");
+							t6console.debug("ageAndGenderRecognition", "Successfully wrote image file to storage");
 						}
 					});
 				} else {
@@ -54,7 +54,7 @@ t6imagesprocessing.faceExpressionRecognition = function(img, dir, filename, ext,
 						if(err) {
 							t6console.error("Can't save image to storage:", err);
 						} else {
-							t6console.debug("Successfully wrote image file to storage");
+							t6console.debug("faceExpressionRecognition", "Successfully wrote image file to storage");
 						}
 					});
 				} else {

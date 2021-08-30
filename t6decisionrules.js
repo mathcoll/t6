@@ -127,7 +127,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	});
 
 	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, p.user_id, limit);
-	t6console.debug("DB retrieve latest values", influxQuery);
+	t6console.info("DB retrieve latest values", influxQuery);
 	let valuesFromDb = [];
 	let indexesFromDb = [];
 	let timesFromDb = [];

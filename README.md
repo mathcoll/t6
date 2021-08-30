@@ -8,7 +8,8 @@ Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/C
 
  #nodejs #things #api #flow #home-automation #mqtt #iot #esp8266 #middleware #sensor #internet-of-things #iot-platform #sensors #iot-framework #esp8266-arduino #timeseries-db #iot-platforms #oriented-data
  
-[![Mentioned in Awesome awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
+[![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
+[![Mentioned in Awesome HQarroum awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/HQarroum/awesome-iot)
 
 --- 
 
