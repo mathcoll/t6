@@ -30,6 +30,7 @@ global.t6preprocessor	= require("./t6preprocessor");
 global.t6jobs			= require("./t6jobs");
 global.t6imagesprocessing = require("./t6imagesprocessing");
 
+global.async			= require("async");
 global.express			= require("express");
 global.timeout			= require("connect-timeout");
 global.morgan			= require("morgan");

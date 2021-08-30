@@ -26,7 +26,7 @@ t6preprocessor.cryptValue = async function(value, sender, encoding) {
 	}
 }
 
-t6preprocessor.preprocessor = function(flow, payload, listPreprocessor) {
+t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 	return new Promise((resolve, reject) => {
 		let fields = [];
 		let errorMode=false;
