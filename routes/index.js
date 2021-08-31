@@ -468,7 +468,7 @@ router.post("/authenticate", function (req, res) {
 		} else {
 			t6console.debug("No user found or no password set yet.");
 			t6events.add("t6App", "POST_authenticate", email, email, {"status": 403, "error_id": 102.21});
-			t6console.error("Auth Error", user.id, email, {"status": 403, "error_id": 102.21});
+			t6console.error("Auth Error", email, email, {"status": 403, "error_id": 102.21});
 			return res.status(403).send(new ErrorSerializer({"id": 102.21, "code": 403, "message": "Forbidden; No user found or no password set yet."}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
