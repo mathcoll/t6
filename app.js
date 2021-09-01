@@ -28,6 +28,7 @@ global.t6console		= require("./t6console");
 global.t6otahistory		= require("./t6otahistory");
 global.t6preprocessor	= require("./t6preprocessor");
 global.t6jobs			= require("./t6jobs");
+global.t6imagesprocessing = require("./t6imagesprocessing");
 
 global.async			= require("async");
 global.express			= require("express");
