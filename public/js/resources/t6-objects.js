@@ -922,7 +922,7 @@ app.resources.objects = {
 						<button data-id=""+object.id+"" class="swapDate mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect">
 							<i class="material-icons">update</i>
 						</button>
-						<span data-date="created" class="visible">Created on ${moment(object.attributes.meta.created).format(app.date_format)}"</span>`;
+						<span data-date="created" class="visible">Created on ${moment(object.attributes.meta.created).format(app.date_format)}</span>`;
 		if ( object.attributes.meta.updated ) {
 			element += `<span data-date="updated" class="hidden">Updated on ${moment(object.attributes.meta.updated).format(app.date_format)}</span>`;
 		} else {
