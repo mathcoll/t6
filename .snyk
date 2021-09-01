@@ -693,6 +693,236 @@ ignore:
     - nsp > yargs > os-locale > mem:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
+  SNYK-JS-NPMCLIARBORIST-1579165:
+    - npm > libnpmexec > @npmcli/arborist:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+  SNYK-JS-NPMCLIARBORIST-1579181:
+    - npm > libnpmexec > @npmcli/arborist:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+  SNYK-JS-REQUEST-1314897:
+    - request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+    - jsdom > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+    - d3-node > jsdom > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+    - npm > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+    - d3node-barchart > d3-node > jsdom > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+    - d3node-linechart > d3-node > jsdom > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+    - d3node-piechart > d3-node > jsdom > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.850Z'
+    - d3node-voronoi > d3-node > jsdom > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.851Z'
+    - d3node-output > svg2png > phantomjs-prebuilt > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.851Z'
+    - npm > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.851Z'
+    - d3node-barchart > d3node-output > svg2png > phantomjs-prebuilt > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.851Z'
+    - npm > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.851Z'
+    - npm > @npmcli/arborist > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.851Z'
+    - npm > libnpmexec > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.851Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.855Z'
+    - npm > libnpmversion > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.855Z'
+    - npm > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.855Z'
+    - npm > libnpmdiff > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmexec > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > request:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+  SNYK-JS-TAR-1579152:
+    - npm > libnpmexec > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.856Z'
+    - npm > libnpmpack > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/arborist > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmpack > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/arborist > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmpack > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.860Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.860Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.860Z'
+  SNYK-JS-TAR-1579155:
+    - npm > libnpmexec > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmpack > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/arborist > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmpack > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/arborist > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.857Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.858Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmpack > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.859Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.860Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.860Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.860Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > cacache > tar:
+        reason: None given
+        expires: '2021-10-01T19:53:21.860Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':

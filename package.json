@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.15.0",
-    "@tensorflow/tfjs-node": "^3.8.0",
+    "@tensorflow/tfjs-node": "^3.9.0",
     "@vladmandic/face-api": "^1.4.1",
     "acorn": "^8.4.1",
     "arduino-cli": "^0.37.0",
