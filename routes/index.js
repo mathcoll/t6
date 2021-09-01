@@ -416,7 +416,6 @@ router.post("/authenticate", function (req, res) {
 				payload.scope = "Application";
 				payload.sub = "/users/"+user.id;
 
-				let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
 				if ( user.location && user.location.ip ) {
 					payload.iss = req.ip+" - "+user.location.ip;
 				}
@@ -430,7 +429,7 @@ router.post("/authenticate", function (req, res) {
 					payload.changePassword = undefined;
 					payload.newsletter = undefined;
 				}
-				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
+				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 				var refreshPayload = crypto.randomBytes(40).toString("hex");
 				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
@@ -459,15 +458,17 @@ router.post("/authenticate", function (req, res) {
 
 				var refresh_token = user.id + "." + refreshPayload;
 				t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
-				return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+				return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 			} else {
 				checkForTooManyFailure(req, res, email);
 				t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.11});
+				t6console.error("Auth Error", user.id, {"status": 403, "error_id": 102.11});
 				return res.status(403).send(new ErrorSerializer({"id": 102.11, "code": 403, "message": "Forbidden; Password does not match"}).serialize());
 			}
 		} else {
 			t6console.debug("No user found or no password set yet.");
-			t6events.add("t6App", "POST_authenticate", null, null, {"status": 403, "error_id": 102.21});
+			t6events.add("t6App", "POST_authenticate", email, email, {"status": 403, "error_id": 102.21});
+			t6console.error("Auth Error", email, email, {"status": 403, "error_id": 102.21});
 			return res.status(403).send(new ErrorSerializer({"id": 102.21, "code": 403, "message": "Forbidden; No user found or no password set yet."}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
@@ -513,7 +514,7 @@ router.post("/authenticate", function (req, res) {
 			if ( user.location && user.location.ip ) {
 				payload.iss = req.ip+" - "+user.location.ip;
 			}
-			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
+			payload.exp = jwtsettings.expiresInSeconds;
 			if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
 				payload.location = undefined;
 				payload.unsubscription_token = undefined;
@@ -524,7 +525,7 @@ router.post("/authenticate", function (req, res) {
 				payload.changePassword = undefined;
 				payload.newsletter = undefined;
 			}
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
@@ -553,12 +554,13 @@ router.post("/authenticate", function (req, res) {
 
 			var refresh_token = user.id + "." + refreshPayload;
 			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
-			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+			return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.32});
+			t6events.add("t6App", "POST_authenticate", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
+			t6console.error("Auth Error", req.body.key, email, {"status": 403, "error_id": 102.32});
 			return res.status(403).send(new ErrorSerializer({"id": 102.32, "code": 403, "message": "Forbidden"}).serialize());
 		}
-	} else if ( req.body.refresh_token && req.body.grant_type === "refresh_token" ) {
+	} else if ( typeof req.body.refresh_token!=="undefined" && req.body.refresh_token!=="" && req.body.grant_type === "refresh_token" ) {
 		var user_id = req.body.refresh_token.split(".")[0];
 		var token = req.body.refresh_token.split(".")[1];
 
@@ -590,7 +592,6 @@ router.post("/authenticate", function (req, res) {
 			payload.scope = "ClientApi";
 			payload.sub = "/users/"+user.id;
 
-			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
 			if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
 				payload.location = undefined;
 				payload.unsubscription_token = undefined;
@@ -601,7 +602,7 @@ router.post("/authenticate", function (req, res) {
 				payload.changePassword = undefined;
 				payload.newsletter = undefined;
 			}
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: tokenExp });
+			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
 			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
@@ -636,14 +637,16 @@ router.post("/authenticate", function (req, res) {
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
-			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
-			return res.status(200).json( {status: "ok", token: token, tokenExp: tokenExp, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+			t6events.add("t6App", "POST_authenticate", user_id, user_id, {"status": 200});
+			return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			t6events.add("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.43});
+			t6events.add("t6App", "POST_authenticate", user_id, user_id, {"status": 403, "error_id": 102.43});
+			t6console.error("Auth Error", user_id, {"status": 403, "error_id": 102.43});
 			return res.status(403).send(new ErrorSerializer({"id": 102.43, "code": 403, "message": "Invalid Refresh Token"}).serialize());
 		}
 	} else {
 		t6events.add("t6App", "POST_authenticate", null, null, {"status": 400, "error_id": 102.33});
+		t6console.error("Auth Error", {"status": 403, "error_id": 102.33});
 		return res.status(400).send(new ErrorSerializer({"id": 102.33, "code": 400, "message": "Required param grant_type and/or username+password needs to be defined"}).serialize());
 	}
 });
@@ -698,7 +701,6 @@ router.post("/refresh", function (req, res) {
 			payload.scope = "Application";
 			payload.sub = "/users/"+user.id;
 			payload.iss = req.ip+" - "+user.location.ip;
-			let tokenExp = moment().add(jwtsettings.expiresInSeconds, "seconds").format("x");
 			if((req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
 				payload.location = undefined;
 				payload.unsubscription_token = undefined;

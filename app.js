@@ -29,6 +29,7 @@ global.t6otahistory		= require("./t6otahistory");
 global.t6preprocessor	= require("./t6preprocessor");
 global.t6jobs			= require("./t6jobs");
 
+global.async			= require("async");
 global.express			= require("express");
 global.timeout			= require("connect-timeout");
 global.morgan			= require("morgan");
@@ -433,7 +434,7 @@ app.use(function(req, res, next) {
 	//next(err);
 });
 
-if ( logLevel.indexOf("DEBUG") > -1 ) {
+if ( logLevel.indexOf("INFO") > -1 ) {
 	request.debug = true;
 }
 if (app.get("env") === "development") {

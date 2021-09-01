@@ -127,7 +127,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	});
 
 	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, p.user_id, limit);
-	t6console.info("DB retrieve latest values");
+	t6console.info("DB retrieve latest values", influxQuery);
 	let valuesFromDb = [];
 	let indexesFromDb = [];
 	let timesFromDb = [];
@@ -428,7 +428,7 @@ t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 		t6console.error(`Can't load rule for unknown user: ${user_id}`);
 	} else {
 		t6console.debug(`Loading rules for User: ${user_id}`);
-		t6console.debug("payload before checkRulesFromUser", payload);
+		//t6console.debug("payload before checkRulesFromUser", payload);
 		t6decisionrules.checkRulesFromUser(user_id, payload);
 	}
 	payload = null;
