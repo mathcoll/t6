@@ -234,10 +234,6 @@ function verifyPrerequisites(payload, object, callback) {
 		t6console.error("chain 5", "Error: verifyPrerequisites : no flow_id.");
 		callback("Error: verifyPrerequisites : no flow_id.", payload, object, null);
 	} else {
-		
-		if(payload.flow_id=== "75317bf5-001f-49cb-ad91-626cf43aa0cf") {
-			t6console.error(payload);
-		}
 		let fDatatypes = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
 		let fUnits = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
 		let current_flow = (fDatatypes.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
