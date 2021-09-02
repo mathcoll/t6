@@ -234,6 +234,10 @@ function verifyPrerequisites(payload, object, callback) {
 		t6console.error("chain 5", "Error: verifyPrerequisites : no flow_id.");
 		callback("Error: verifyPrerequisites : no flow_id.", payload, object, null);
 	} else {
+		
+		if(payload.flow_id=== "75317bf5-001f-49cb-ad91-626cf43aa0cf") {
+			t6console.error(payload);
+		}
 		let fDatatypes = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
 		let fUnits = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
 		let current_flow = (fDatatypes.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
@@ -254,24 +258,27 @@ function verifyPrerequisites(payload, object, callback) {
 		}
 
 		if(validator.isBase64(payload.value.toString())===true || payload.datatype==="image") {
-			const img = new Image(); // TODO: base64 does not mean it's' an image !
-			img.src = new Buffer.from(payload.value, "base64");
-			payload.img = img;
-
-			if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
-				let imgDir = `${ip.image_dir}/${payload.user_id}`;
-				if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
-				let flowDir = `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`;
-				if (!fs.existsSync(flowDir)) { fs.mkdirSync(flowDir); }
-				fs.writeFile(`${flowDir}/${payload.timestamp*1e6}.png`, payload.value, "base64", function(err) {
-					if(err) {
-						t6console.error("chain 5", "Can't save image to storage:'", err);
-					} else {
-						t6console.debug("chain 5", "Successfully wrote image file to storage.");
-					}
-				});
+			const img = new Image();
+			try {
+				img.src = new Buffer.from(payload.value, "base64");
+				payload.img = img;
+				if(payload.save===true) { // it means the image is not stored when the "save" value is overwritten on the preprocessor later :-)
+					let imgDir = `${ip.image_dir}/${payload.user_id}`;
+					if (!fs.existsSync(imgDir)) { fs.mkdirSync(imgDir); }
+					let flowDir = `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`;
+					if (!fs.existsSync(flowDir)) { fs.mkdirSync(flowDir); }
+					fs.writeFile(`${flowDir}/${payload.timestamp*1e6}.png`, payload.value, "base64", function(err) {
+						if(err) {
+							t6console.error("chain 5", "Can't save image to storage:'", err);
+						} else {
+							t6console.debug("chain 5", "Successfully wrote image file to storage.");
+						}
+					});
+				}
+				t6console.debug("chain 5", "We have a image (base64) on the payload value.");
+			} catch (err) {
+				t6console.debug("chain 5", "We don't have an image on the payload value.");
 			}
-			t6console.debug("chain 5", "We have a base64 (image) on the payload value.");
 		}
 		if ( !payload.mqtt_topic && typeof joinDatatypes!=="undefined" && (joinDatatypes.data())[0] && ((joinDatatypes.data())[0].left) && ((joinDatatypes.data())[0].left).mqtt_topic ) {
 			payload.mqtt_topic = ((joinDatatypes.data())[0].left).mqtt_topic;
