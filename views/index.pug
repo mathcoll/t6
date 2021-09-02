@@ -354,19 +354,25 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
                   h3.mdl-card__title-text Digital Asset Management
-                div.mdl-card__supporting-text.mdl-card--expand  
+                div.mdl-card__supporting-text.mdl-card--expand Track Objects and devices on t6 platform including geolocation and security secrets.
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
                   h3.mdl-card__title-text Data Flows
-                div.mdl-card__supporting-text.mdl-card--expand 
+                div.mdl-card__supporting-text.mdl-card--expand They are simple (optional) containers to control where to store the measurements. This is helpful when it comes to Data Exploration. Flows are also defining the datatype constraints and make sure measures are accurate + sanitized.
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
                   h3.mdl-card__title-text Datapoints
-                div.mdl-card__supporting-text.mdl-card--expand Measure and store Datapoint values to a timeseries.
+                div.mdl-card__supporting-text.mdl-card--expand Datapoints are the measure and values stored to timeseries.
+
+            div.mdl-grid.mdl-cell.mdl-cell--stretch
+              div.mdl-card.mdl-shadow--2dp
+                div.mdl-card__title
+                  h3.mdl-card__title-text Image Processing and AIDC
+                div.mdl-card__supporting-text.mdl-card--expand Automatic Identification and Data Capture (AIDC) is able to identify a face from an image sent to t6 as well as identify gender, age, and face expressions.
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
@@ -377,8 +383,8 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
-                  h3.mdl-card__title-text Over The Air code synchronization
-                div.mdl-card__supporting-text.mdl-card--expand Update your arduino sensors from Wifi on LAN using Over The Air (OTA) protocol.
+                  h3.mdl-card__title-text Over The Air code synchronization (OTA)
+                div.mdl-card__supporting-text.mdl-card--expand Update your arduino sensors from Wifi on LAN using OTA protocol.
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
@@ -396,37 +402,37 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
                   h3.mdl-card__title-text AES256 cbc encryption
-                div.mdl-card__supporting-text.mdl-card--expand  
+                div.mdl-card__supporting-text.mdl-card--expand t6 allows End-To-End AES encryption from the measures sent on payloads until the storage as well as the rule engine and Mqtt events.
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
-                  h3.mdl-card__title-text Exploratory Data Analysis
+                  h3.mdl-card__title-text Exploratory Data Analysis (EDA)
                 div.mdl-card__supporting-text.mdl-card--expand  
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
                   h3.mdl-card__title-text Dashboards and Snippets
-                div.mdl-card__supporting-text.mdl-card--expand  
+                div.mdl-card__supporting-text.mdl-card--expand Flexible and reusable Snippets (from a common library) inside multiple Dashboards; allows you to displays measures to curves and bars.
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
                   h3.mdl-card__title-text Rule engine
-                div.mdl-card__supporting-text.mdl-card--expand   
+                div.mdl-card__supporting-text.mdl-card--expand Trigger various actions based on customizable rules from facts (your measured values sent to t6 Api).
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
-                  h3.mdl-card__title-text JWT tokens
-                div.mdl-card__supporting-text.mdl-card--expand  
+                  h3.mdl-card__title-text JWT tokens & Authentication
+                div.mdl-card__supporting-text.mdl-card--expand Authentication in t6 is available in 3 modes : a matching username+passwords for credentials; a valid Key+Secret temporary and revokable token; or a refresh token process. All of these modes generates a signed JWT from the server and can be used fo a limited time.
 
             div.mdl-grid.mdl-cell.mdl-cell--stretch
               div.mdl-card.mdl-shadow--2dp
                 div.mdl-card__title
                   h3.mdl-card__title-text Arduino library
-                div.mdl-card__supporting-text.mdl-card--expand  
+                div.mdl-card__supporting-text.mdl-card--expand Implement your own Arduino code in IDE using the public t6 library to easy device onboarding.
 
         //- Use cases
         section#use-cases.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='3')
