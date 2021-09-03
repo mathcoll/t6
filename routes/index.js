@@ -8,6 +8,12 @@ function sendNotification(pushSubscription, payload) {
 	t6notifications.sendPush(pushSubscription, payload);
 	clearTimeout(timeoutNotification);
 }
+const getDurationInMilliseconds = (start) => {
+	const NS_PER_SEC = 1e9;
+	const NS_TO_MS = 1e6;
+	const diff = process.hrtime(start);
+	return (diff[0] * NS_PER_SEC + diff[1]) / NS_TO_MS;
+}
 
 /**
  * @apiDefine 200
@@ -183,25 +189,28 @@ function sendNotification(pushSubscription, payload) {
  * @apiHeader {String} [Accept=application/json] application/json
  * @apiHeader {String} [Content-Type=application/json] application/json
  */
-
+router.use((req, res, next) => {
+	req.startTime = process.hrtime();
+	next();
+});
 //catch API calls for quotas
 router.all("*", function (req, res, next) {
+	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota7d";
 	var o = {
-		key:		typeof req.user!=="undefined"?req.user.key:"",
+		key:		typeof req.user!=="undefined"?req.user.key:null,
 		secret:		typeof req.user!=="undefined"?req.user.secret:null,
 		user_id:	typeof req.user!=="undefined",
-		session_id:	typeof req.user!=="undefined"?req.user.session_id:null,
+		session_id:	typeof req.sessionID?req.sessionID:(req.user!=="undefined"?req.user.session_id:null),
 		verb:		req.method,
 		url:		req.originalUrl,
 		date:		moment().format("x")
 	};
 	if ( !req.user && req.headers.authorization ) {
-		var jwtdecoded = jwt.decode(req.headers.authorization.split(" ")[1]);
-		req.user = jwtdecoded;
+		jwt.verify(req.headers.authorization.split(" ")[1], jwtsettings.secret, function(err, decodedPayload) {
+			req.user = decodedPayload;
+		});
 	}
-	
-	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota7d";
-	if ( req.headers.authorization && req.user ) {
+	if ( req.user && req.headers.authorization ) {
 		var limit = req.user!==null?(quota[req.user.role]).calls:-1;
 		if (req.user !== null && req.user.role  !== null ) {
 			res.header("X-RateLimit-Limit", limit);
@@ -221,41 +230,51 @@ router.all("*", function (req, res, next) {
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id, typeof req.user.id!=="undefined"?req.user.id:o.user_id);
 				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 			} else {
-				var tags = {rp: rp, user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id, session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
-				var fields = {url: o.url};
+				res.on("close", () => {
+					var tags = {
+						rp: rp,
+						user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id,
+						session_id: typeof o.session_id!=="undefined"?o.session_id:null,
+						verb: o.verb,
+						environment: process.env.NODE_ENV,
+						durationInMilliseconds: getDurationInMilliseconds(req.startTime),
+						ip: (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim()
+					};
+					var fields = {url: o.url};
 
-				req.session.cookie.secure = true;
-				req.session.user_id = req.user.id;
+					req.session.cookie.secure = true;
+					req.session.user_id = req.user.id;
 
-				let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
-				dbWrite.writePoints([{
-					measurement: "requests",
-					tags: tags,
-					fields: fields,
-				}], { precision: "s", retentionPolicy: rp })
-				.then((err) => {
-					if (err) {
+					let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+					dbWrite.writePoints([{
+						measurement: "requests",
+						tags: tags,
+						fields: fields,
+					}], { precision: "s", retentionPolicy: rp })
+					.then((err) => {
+						if (err) {
+							t6console.error(
+								sprintf(
+									"Error on writePoints to influxDb %s",
+									{"err": err, "tags": tags, "fields": fields[0]}
+								)
+							);
+						}
+					}).catch((err) => {
 						t6console.error(
 							sprintf(
-								"Error on writePoints to influxDb %s",
+								"Error catch on writting to influxDb %s",
 								{"err": err, "tags": tags, "fields": fields[0]}
 							)
 						);
-					}
-					next();
-				}).catch((err) => {
-					t6console.error(
-						sprintf(
-							"Error catch on writting to influxDb %s",
-							{"err": err, "tags": tags, "fields": fields[0]}
-						)
-					);
-					next();
+					});
 				});
+				next();
 			}
 		}).catch((err) => {
+			t6console.error("ERROR", err);
 			if(typeof i!=="undefined") {
-				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can\"t perform your request."}));
+				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
 			} else {
 				next();
 			}
@@ -277,7 +296,6 @@ router.all("*", function (req, res, next) {
 					)
 				);
 			}
-			next(); // no User Auth..
 		}).catch(err => {
 			t6console.error(
 				sprintf(
@@ -285,8 +303,8 @@ router.all("*", function (req, res, next) {
 					{"err": err, "tags": tags, "fields": fields[0]}
 				)
 			);
-			next(); // no User Auth..
 		});
+		next(); // no User Auth..
 	}
 });
 
