@@ -151,6 +151,7 @@ function signatureCheck(payload, object, callback) {
 				payload.save = typeof payload.save!=="undefined"?payload.save:initialPayload.save;
 				payload.publish = typeof payload.publish!=="undefined"?payload.publish:initialPayload.publish;
 				payload.isSigned = true;
+				t6console.debug("chain 2&4", "signatureCheck", payload);
 				callback(null, payload, object);
 			} else {
 				t6console.error("chain 2&4", "Error: Can't verify signature.");
