@@ -218,7 +218,7 @@ router.all("*", function (req, res, next) {
 		}
 		var i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
-		var query = `SELECT count(url) FROM "${rp}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 7d) LIMIT 1`;
+		var query = `SELECT count(url) FROM "${rp}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 4w) LIMIT 1`;
 		dbInfluxDB.query(query).then((data) => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
