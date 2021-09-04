@@ -195,7 +195,7 @@ router.use((req, res, next) => {
 });
 //catch API calls for quotas
 router.all("*", function (req, res, next) {
-	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota7d";
+	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
 	var o = {
 		key:		typeof req.user!=="undefined"?req.user.key:null,
 		secret:		typeof req.user!=="undefined"?req.user.secret:null,
@@ -218,7 +218,7 @@ router.all("*", function (req, res, next) {
 		}
 		var i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
-		var query = `SELECT count(url) FROM "${influxSettings.retentionPolicies.requests}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 7d) LIMIT 1`;
+		var query = `SELECT count(url) FROM "${rp}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 7d) LIMIT 1`;
 		dbInfluxDB.query(query).then((data) => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
