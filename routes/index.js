@@ -237,13 +237,12 @@ router.all("*", function (req, res, next) {
 						session_id: typeof o.session_id!=="undefined"?o.session_id:null,
 						verb: o.verb,
 						environment: process.env.NODE_ENV,
-						durationInMilliseconds: getDurationInMilliseconds(req.startTime),
 						ip: (req.headers["x-forwarded-for"] || req.connection.remoteAddress || "").split(",")[0].trim()
 					};
 					if (o.query!=="") {
 						tags.query = o.query;
 					}
-					let fields = {url: o.url};
+					let fields = {url: o.url, durationInMilliseconds: getDurationInMilliseconds(req.startTime),};
 
 					req.session.cookie.secure = true;
 					req.session.user_id = req.user.id;
