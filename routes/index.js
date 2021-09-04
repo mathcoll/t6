@@ -202,7 +202,8 @@ router.all("*", function (req, res, next) {
 		user_id:	typeof req.user!=="undefined",
 		session_id:	typeof req.sessionID?req.sessionID:(req.user!=="undefined"?req.user.session_id:null),
 		verb:		req.method,
-		url:		req.originalUrl,
+		url:		typeof req.path!=="undefined"?req.path:req.originalUrl,
+		query:		(Object.keys(req.query).length > 0)?JSON.stringify(req.query):"",
 		date:		moment().format("x")
 	};
 	if ( !req.user && req.headers.authorization ) {
@@ -218,7 +219,6 @@ router.all("*", function (req, res, next) {
 		var i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
 		var query = `SELECT count(url) FROM "${influxSettings.retentionPolicies.requests}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 7d) LIMIT 1`;
-
 		dbInfluxDB.query(query).then((data) => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
@@ -231,16 +231,19 @@ router.all("*", function (req, res, next) {
 				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 			} else {
 				res.on("close", () => {
-					var tags = {
+					let tags = {
 						rp: rp,
 						user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id,
 						session_id: typeof o.session_id!=="undefined"?o.session_id:null,
 						verb: o.verb,
 						environment: process.env.NODE_ENV,
 						durationInMilliseconds: getDurationInMilliseconds(req.startTime),
-						ip: (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim()
+						ip: (req.headers["x-forwarded-for"] || req.connection.remoteAddress || "").split(",")[0].trim()
 					};
-					var fields = {url: o.url};
+					if (o.query!=="") {
+						tags.query = o.query;
+					}
+					let fields = {url: o.url};
 
 					req.session.cookie.secure = true;
 					req.session.user_id = req.user.id;
@@ -253,20 +256,20 @@ router.all("*", function (req, res, next) {
 					}], { precision: "s", retentionPolicy: rp })
 					.then((err) => {
 						if (err) {
-							t6console.error(
-								sprintf(
-									"Error on writePoints to influxDb %s",
-									{"err": err, "tags": tags, "fields": fields[0]}
-								)
-							);
+							t6console.error("Error catch on writePoints to influxDb", {"err": err, "tags": tags, "fields": fields[0]});
 						}
 					}).catch((err) => {
-						t6console.error(
-							sprintf(
-								"Error catch on writting to influxDb %s",
-								{"err": err, "tags": tags, "fields": fields[0]}
-							)
-						);
+						t6console.error("Error catch on writting to influxDb", {"err": err, "tags": tags, "fields": fields[0]});
+						/*
+		logs
+		err: RequestError: A 400 Bad Request error occurred: {"error":"metric parse error: expected tag at 1:126: \"requests,rp=quota7d,user_id=44800701-d6de-48f7-9577-4b3ea1fab81a,session_id=RHAzThShvHXnHMqlElCzTTUjCVTTy_oZ,verb=POST,query=\""}
+        at IncomingMessage.<anonymous> (/media/Documents/Projets/2019/internetcollaboratif.info/t6/node_modules/influx/lib/src/pool.js:50:38)
+        at IncomingMessage.emit (node:events:388:22)
+        at endReadableNT (node:internal/streams/readable:1295:12)
+        at processTicksAndRejections (node:internal/process/task_queues:80:21) {
+      req: [ClientRequest],
+      res: [IncomingMessage]
+						*/
 					});
 				});
 				next();
@@ -280,7 +283,14 @@ router.all("*", function (req, res, next) {
 			}
 		});
 	} else {
-		var tags = {rp: rp, user_id: "anonymous", session_id: typeof o.session_id!=="undefined"?o.session_id:null, verb: o.verb, environment: process.env.NODE_ENV };
+		var tags = {
+			rp: rp,
+			user_id: "anonymous",
+			session_id: typeof o.session_id!=="undefined"?o.session_id:null,
+			verb: o.verb,
+			environment: process.env.NODE_ENV,
+			ip: (req.headers["x-forwarded-for"] || req.connection.remoteAddress || "").split(",")[0].trim()
+		};
 		var fields = {url: o.url};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 		dbWrite.writePoints([{
