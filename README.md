@@ -4,12 +4,26 @@
 _t6_ is a "Data-first" IoT platform to connect physical Objects with time-series DB and perform Data Analysis.
 Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/CONTRIBUTING.md) in case you would like to help :-)
 
-![Stable version](https://img.shields.io/badge/version-2.0.1-brightgreen)
+![Stable version](https://img.shields.io/badge/version-2.0.1-blue)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/gh/mathcoll/t6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
 
-![#nodejs](https://github.com/topics/nodejs)
- #nodejs #things #api #flow #home-automation #mqtt #iot #esp8266 #middleware #sensor #internet-of-things #iot-platform #sensors #iot-framework #esp8266-arduino #timeseries-db #iot-platforms #oriented-data
+[![#nodejs](https://github.com/topics/nodejs)](https://img.shields.io/badge/%23-nodejs-brightgreen)
+[![#things](https://github.com/topics/things)](https://img.shields.io/badge/%23-things-brightgreen)
+[![#api](https://github.com/topics/api)](https://img.shields.io/badge/%23-api-brightgreen)
+[![#flow](https://github.com/topics/flow)](https://img.shields.io/badge/%23-flow-brightgreen)
+[![#home-automation](https://github.com/topics/home-automation)](https://img.shields.io/badge/%23-home-automation-brightgreen)
+[![#mqtt](https://github.com/topics/mqtt)](https://img.shields.io/badge/%23-mqtt-brightgreen)
+[![#iot](https://github.com/topics/iot)](https://img.shields.io/badge/%23-iot-brightgreen)
+[![#esp8266](https://github.com/topics/esp8266)](https://img.shields.io/badge/%23-esp8266-brightgreen)
+[![#middleware](https://github.com/topics/middleware)](https://img.shields.io/badge/%23-middleware-brightgreen)
+[![#sensor](https://github.com/topics/sensor)](https://img.shields.io/badge/%23-sensor-brightgreen)
+[![#internet-of-things](https://github.com/topics/internet-of-things)](https://img.shields.io/badge/%23-internet-of-things-brightgreen)
+[![#iot-platform](https://github.com/topics/iot-platform)](https://img.shields.io/badge/%23-iot-platform-brightgreen)
+[![#sensors](https://github.com/topics/sensors)](https://img.shields.io/badge/%23-sensors-brightgreen)
+[![#iot-framework](https://github.com/topics/iot-framework)](https://img.shields.io/badge/%23-iot-framework-brightgreen)
+[![#timeseries](https://github.com/topics/timeseries)](https://img.shields.io/badge/%23-timeseries-brightgreen)
+[![#](https://github.com/topics/)](https://img.shields.io/badge/%23--brightgreen)
  
 [![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
 [![Mentioned in Awesome HQarroum awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/HQarroum/awesome-iot)
