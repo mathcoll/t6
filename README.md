@@ -4,8 +4,11 @@
 _t6_ is a "Data-first" IoT platform to connect physical Objects with time-series DB and perform Data Analysis.
 Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/CONTRIBUTING.md) in case you would like to help :-)
 
+![Stable version](https://img.shields.io/badge/version-2.0.1-brightgreen)
+
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/gh/mathcoll/t6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
 
+![#nodejs](https://github.com/topics/nodejs)
  #nodejs #things #api #flow #home-automation #mqtt #iot #esp8266 #middleware #sensor #internet-of-things #iot-platform #sensors #iot-framework #esp8266-arduino #timeseries-db #iot-platforms #oriented-data
  
 [![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
