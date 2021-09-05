@@ -378,7 +378,7 @@ var CrossDomain = function(req, res, next) {
 		res.header("X-Frame-Options", "SAMEORIGIN");
 		res.header("X-Content-Type-Options", "nosniff");
 		if (req.url.match(/^\/(css|js|img|font)\/.+/)) {
-			res.setHeader("Cache-Control", "public, max-age=3600");
+			res.setHeader("Cache-Control", `public, max-age=${30*24*3600}`);
 		}
 		next();
 	}
