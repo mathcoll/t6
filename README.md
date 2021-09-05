@@ -8,7 +8,7 @@ Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/C
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/gh/mathcoll/t6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
 
-[![#nodejs](https://github.com/topics/nodejs)](https://img.shields.io/badge/%23-nodejs-brightgreen)
+[![#nodejs](https://img.shields.io/badge/%23-nodejs-brightgreen)](https://github.com/topics/nodejs)
 [![#things](https://github.com/topics/things)](https://img.shields.io/badge/%23-things-brightgreen)
 [![#api](https://github.com/topics/api)](https://img.shields.io/badge/%23-api-brightgreen)
 [![#flow](https://github.com/topics/flow)](https://img.shields.io/badge/%23-flow-brightgreen)
@@ -23,7 +23,6 @@ Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/C
 [![#sensors](https://github.com/topics/sensors)](https://img.shields.io/badge/%23-sensors-brightgreen)
 [![#iot-framework](https://github.com/topics/iot-framework)](https://img.shields.io/badge/%23-iot-framework-brightgreen)
 [![#timeseries](https://github.com/topics/timeseries)](https://img.shields.io/badge/%23-timeseries-brightgreen)
-[![#](https://github.com/topics/)](https://img.shields.io/badge/%23--brightgreen)
  
 [![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
 [![Mentioned in Awesome HQarroum awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/HQarroum/awesome-iot)
