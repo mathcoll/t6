@@ -6,23 +6,24 @@ Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/C
 
 ![Stable version](https://img.shields.io/badge/version-2.0.1-blue)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/gh/mathcoll/t6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
+[![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
+[![Mentioned in Awesome HQarroum awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/HQarroum/awesome-iot)
+
 [![#nodejs](https://img.shields.io/badge/%23-nodejs-brightgreen)](https://github.com/topics/nodejs)
 [![#things](https://img.shields.io/badge/%23-things-brightgreen)](https://github.com/topics/things)
 [![#api](https://img.shields.io/badge/%23-api-brightgreen)](https://github.com/topics/api)
 [![#flow](https://img.shields.io/badge/%23-flow-brightgreen)](https://github.com/topics/flow)
-[![#home-automation](https://img.shields.io/badge/%23-home-automation-brightgreen)](https://github.com/topics/home-automation)
+[![#home-automation](https://img.shields.io/badge/%23-home_automation-brightgreen)](https://github.com/topics/home automation)
 [![#mqtt](https://img.shields.io/badge/%23-mqtt-brightgreen)](https://github.com/topics/mqtt)
 [![#iot](https://img.shields.io/badge/%23-iot-brightgreen)](https://github.com/topics/iot)
 [![#esp8266](https://img.shields.io/badge/%23-esp8266-brightgreen)](https://github.com/topics/esp8266)
 [![#middleware](https://img.shields.io/badge/%23-middleware-brightgreen)](https://github.com/topics/middleware)
 [![#sensor](https://img.shields.io/badge/%23-sensor-brightgreen)](https://github.com/topics/sensor)
-[![#internet-of-things](https://img.shields.io/badge/%23-internet-of-things-brightgreen)](https://github.com/topics/internet-of-things)
-[![#iot-platform](https://img.shields.io/badge/%23-iot-platform-brightgreen)](https://github.com/topics/iot-platform)
+[![#internet-of-things](https://img.shields.io/badge/%23-internet_of_things-brightgreen)](https://github.com/topics/internet of things)
+[![#iot-platform](https://img.shields.io/badge/%23-iot_platform-brightgreen)](https://github.com/topics/iot platform)
 [![#sensors](https://img.shields.io/badge/%23-sensors-brightgreen)](https://github.com/topics/sensors)
-[![#iot-framework](https://img.shields.io/badge/%23-iot-framework-brightgreen)](https://github.com/topics/iot-framework)
+[![#iot-framework](https://img.shields.io/badge/%23-iot_framework-brightgreen)](https://github.com/topics/iot framework)
 [![#timeseries](https://img.shields.io/badge/%23-timeseries-brightgreen)](https://github.com/topics/timeseries)
-[![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
-[![Mentioned in Awesome HQarroum awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/HQarroum/awesome-iot)
 
 --- 
 
