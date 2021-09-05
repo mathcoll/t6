@@ -5,6 +5,9 @@ _t6_ is a "Data-first" IoT platform to connect physical Objects with time-series
 Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/CONTRIBUTING.md) in case you would like to help :-)
 
 ![Stable version](https://img.shields.io/badge/version-2.0.1-blue)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/mathcoll/t6)
+![GitHub contributors](https://img.shields.io/github/contributors/mathcoll/t6)
+
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/gh/mathcoll/t6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
 [![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
 [![Mentioned in Awesome HQarroum awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/HQarroum/awesome-iot)
