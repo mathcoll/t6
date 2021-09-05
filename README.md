@@ -36,10 +36,5 @@ This Application is using exactly the same code and Api from this repository.
 
 Some additional [Application screenshots](https://github.com/mathcoll/t6/wiki/Application-Screenshots).
 
-## t6 Lighthouse report generated on 27/07/2020
-<a href="https://gist.github.com/mathcoll/015e276a92827cdf8a4277706dcff432.js">
-	<img src="https://i.imgur.com/YVXCico.png" />
-</a>
-
 ## Helping and contributing to t6
 Please refers to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/CONTRIBUTING.md) in case you would like to help & contribute :-)
