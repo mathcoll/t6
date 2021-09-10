@@ -5,11 +5,12 @@ var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
 let timer;
 
-function planNewsletter(req, res, recipients, template, subject) {
+function planNewsletter(req, res, recipients, template, subject, taskType) {
 	/* add newsletter to job queue to be sent later */
 	recipients.forEach(function(user) {
 		t6console.debug(`Rendering email body for ${user.firstName} ${user.lastName} <${user.email}>`);
-		res.render(`emails/newsletters/${template}`, {user: user, tpl: template}, function(err, html) {
+		res.render(`emails/${template}`, {user: user, tpl: template, data: user.data}, function(err, html) {
+			t6console.debug(`With data`, user.data);
 			if(!err) {
 				var to = `${user.firstName} ${user.lastName} <${user.email}>`;
 				var mailOptions = {
@@ -18,17 +19,17 @@ function planNewsletter(req, res, recipients, template, subject) {
 					user_id: user.id,
 					list: {
 						unsubscribe: {
-							url: `${baseUrl_https}/mail/${user.email}/unsubscribe/newsletter/${user.unsubscription_token}/`,
-							comment: "Unsubscribe from this newsletter"
+							url: `${baseUrl_https}/mail/${user.email}/unsubscribe/${taskType}/${user.unsubscription_token}/`,
+							comment: `Unsubscribe from this ${taskType}`
 						},
 					},
 					subject: subject,
 					text: "Html email client is required",
 					html: html
 				};
-				t6jobs.add({taskType: "newsletter", time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {mailOptions}});
+				t6jobs.add({taskType: taskType, time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {mailOptions}});
 			} else {
-				t6console.error("Error scheduling a newsletter", err);
+				t6console.error(`Error scheduling a ${taskType}`, err);
 			}
 		});
 	});
@@ -106,7 +107,7 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
 }
 
 /**
- * @api {get} /notifications/mail/newsletter/preview/ Preview html of a Newsletter
+ * @api {get} /notifications/mail/preview/ Preview html of a Newsletter
  * @apiName Preview html of a Newsletter
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
@@ -117,19 +118,21 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
  * @apiUse 200
  * @apiUse 403
  */
-router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
+router.get("/mail/preview/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let template = req.query.template;
 	let agent = useragent.parse(req.headers["user-agent"]);
-	
+
 	if ( req.user.role === "admin" ) {
 		let data = {
 			currentUrl: req.path,
 			tpl: template,
 			user: req.user,
 			device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"",
-			geoip: geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{}
+			geoip: geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
+			data: [{"time":"","count":18,"meanDurationInMilliseconds":2629.742100847405625,"spreadDurationInMilliseconds":10408.405373999375,"verb":"GET"},{"time":"","count":79,"meanDurationInMilliseconds":2629.74210084745015625,"spreadDurationInMilliseconds":10508.405373943743896484375,"verb":"PUT"},{"time":"","count":59,"meanDurationInMilliseconds":29.742100839999999095859375,"spreadDurationInMilliseconds":1008.405366243796484375,"verb":"POST"}]
 		};
-		res.render(`emails/newsletters/${template}`, data, function(err, html) {
+		data.quota = quota[req.user.role];
+		res.render(`emails/${template}`, data, function(err, html) {
 			if(!err) {
 				res.status(200).send(html);
 			} else {
@@ -138,7 +141,7 @@ router.get("/mail/newsletter/preview/", expressJwt({secret: jwtsettings.secret, 
 			}
 		});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -230,7 +233,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
 			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -307,7 +310,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -333,7 +336,7 @@ router.get("/mail/newsletter/count", expressJwt({secret: jwtsettings.secret, alg
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -365,7 +368,63 @@ router.get("/mail/newsletter/subscribers", expressJwt({secret: jwtsettings.secre
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
+	}
+});
+
+/**
+ * @api {post} /notifications/mail/monthly-report/plan Schedule a newsletter
+ * @apiName Schedule a monthly-report
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission AuthAdmin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post("/mail/monthly-report/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	if ( req.user.role === "admin" ) {
+		let subject = `t6 monthly activity report`;
+		let influxQuery = `SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM quota4w.requests WHERE time > now() - 4w GROUP BY user_id)`;
+		let recipients = [];
+		//t6console.debug("get all actives users from influxDb", influxQuery);
+		// get all actives users
+		dbInfluxDB.query(influxQuery).then((activesUsers) => {
+			if ( activesUsers.length > 0 ) {
+				activesUsers.map(function(d, i) {
+					//t6console.debug("Looking for ", d.user_id);
+					let query = { "$and": [
+						{ "id": { "$eq": d.user_id } },
+						//{ "$or": [{"unsubscription": undefined}, {"unsubscription.monthlyreport": undefined}, {"unsubscription.monthlyreport": null}] },
+					]};
+					let recipient = users.findOne(query);
+					if ( recipient!==null ) {
+						//t6console.debug("Found ", recipient);
+						let influxQuery2 = `SELECT COUNT(url), MEAN(durationInMilliseconds) as meanDurationInMilliseconds, SPREAD(durationInMilliseconds) as spreadDurationInMilliseconds from quota4w.requests WHERE user_id='${d.user_id}' GROUP BY verb`;
+						dbInfluxDB.query(influxQuery2).then((data) => {
+							if ( data.length > 0 ) {
+								recipient.data = data.map(function(d, i) {
+									return typeof d==="object"?d:null;
+								});
+								planNewsletter(req, res, [recipient], "monthly-report", subject, "monthly-report");
+								recipients.push(recipient);
+							} else {
+								//t6console.debug("No data for user", recipient, influxQuery2);
+							}
+						});
+					} else {
+						//t6console.debug("Can't find", d.user_id, recipient);
+					}
+				});
+				res.status(202).send(new UserSerializer(recipients).serialize());
+			} else {
+				res.status(404).send(new ErrorSerializer({"id": 23, "code": 404, "message": "Not Found"}).serialize());
+			}
+		});
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 24, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -394,13 +453,13 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
 		]};
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && template ) {
-			planNewsletter(req, res, recipients, template, subject);
+			planNewsletter(req, res, recipients, `newsletters/${template}`, subject, "newsletter");
 			res.status(202).send(new UserSerializer(recipients).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 22, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 23, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -430,7 +489,37 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
 			res.status(404).send(new ErrorSerializer({"id": 18.2, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden"}).serialize());
+	}
+});
+
+/**
+ * @api {post} /notifications/mail/monthly-report/send Send a scheduled newsletter
+ * @apiName Send a scheduled monthly-report
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission AuthAdmin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.post("/mail/monthly-report/send", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let limit = typeof req.query.limit!=="undefined"?req.query.limit:20;
+	let dryrun = typeof req.query.dryrun!=="undefined"?str2bool(req.query.dryrun):false;
+	let recurring = typeof req.query.recurring!=="undefined"?parseInt(req.query.recurring, 10):null;
+	if ( req.user.role === "admin" ) {
+		let reports = t6jobs.get({taskType: "monthly-report", user_id: req.user.id}, recurring!==null?1:limit);
+		t6console.debug("reports : ", reports);
+		if(reports.length > 0) {
+			let response = sendNewsletter(reports, dryrun, recurring, req.user.id, limit, 0);
+			res.status(202).send({"response": response});
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 18.2, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -456,7 +545,7 @@ router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jw
 			res.status(404).send(new ErrorSerializer({"id": 21.2, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -501,7 +590,7 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -536,7 +625,7 @@ router.post("/push/send", expressJwt({secret: jwtsettings.secret, algorithms: jw
 			res.status(404).send(new ErrorSerializer({"id": 18.3, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19.3, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 19.3, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -557,7 +646,7 @@ router.post("/mail/newsletter/stop", expressJwt({secret: jwtsettings.secret, alg
 		clearTimeout(timer);
 		res.status(202).send({"response": "timer is stopped"});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 20, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 20, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 

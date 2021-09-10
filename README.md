@@ -43,10 +43,6 @@ Detailed [Api documentation](https://doc.internetcollaboratif.info) will help yo
 Installing _t6_ on your own server is easy, follow the [installation guide](https://github.com/mathcoll/t6/wiki/Installing-t6) on Wiki page.
 More detailed explanation on [![wiki](https://img.shields.io/badge/t6-Wiki%20documentation-orange)](https://github.com/mathcoll/t6/wiki) is also readable on Wiki page.
 
-
-
-
-
 ## t6 Android Application
 _t6_ is available on the [Android Google Play Store](https://play.google.com/store/apps/details?id=info.internetcollaboratif.api) for free.
 This Application is using exactly the same code and Api from this repository.
