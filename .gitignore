@@ -60,6 +60,7 @@ decisionrules/node_modules
 .node_repl_history
 
 /.clinic/
+/.settings/
 /.metadata/
 /tmp/
 /TESTING/
