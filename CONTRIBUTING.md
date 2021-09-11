@@ -8,3 +8,6 @@ Once done (including documentation, you can Pull Request to master. :-)
 ## Contributing to t6
 No specific rules. I'm not a developer myself!
 I'd suggest first to clone and install the IoT platform on your machine. And then contact us : author email on the package.json file :-)
+
+## Any question, feedback or bug found on t6 ?
+Fill the issue form on github: https://github.com/mathcoll/t6/issues
