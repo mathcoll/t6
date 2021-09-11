@@ -9,6 +9,7 @@ Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/C
 ![GitHub contributors](https://img.shields.io/github/contributors/mathcoll/t6)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/gh/mathcoll/t6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
+[![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5210/badge)](https://bestpractices.coreinfrastructure.org/projects/5210)
 [![Mentioned in Awesome phodal awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/phodal/awesome-iot)
 [![Mentioned in Awesome HQarroum awesome-iot](https://awesome.re/mentioned-badge.svg)](https://github.com/HQarroum/awesome-iot)
 
