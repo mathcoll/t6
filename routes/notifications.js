@@ -9,8 +9,9 @@ function planNewsletter(req, res, recipients, template, subject, taskType) {
 	/* add newsletter to job queue to be sent later */
 	recipients.forEach(function(user) {
 		t6console.debug(`Rendering email body for ${user.firstName} ${user.lastName} <${user.email}>`);
-		res.render(`emails/${template}`, {user: user, tpl: template, data: user.data}, function(err, html) {
+		res.render(`emails/${template}`, {user: user, tpl: template, data: user.data, quotausage: user.quotausage, quota: quota[user.role]}, function(err, html) {
 			t6console.debug(`With data`, user.data);
+			t6console.debug(`With quotausage`, user.quotausage);
 			if(!err) {
 				var to = `${user.firstName} ${user.lastName} <${user.email}>`;
 				var mailOptions = {
@@ -129,9 +130,19 @@ router.get("/mail/preview/", expressJwt({secret: jwtsettings.secret, algorithms:
 			user: req.user,
 			device: typeof agent.toAgent()!=="undefined"?agent.toAgent():"",
 			geoip: geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
-			data: [{"time":"","count":18,"meanDurationInMilliseconds":2629.742100847405625,"spreadDurationInMilliseconds":10408.405373999375,"verb":"GET"},{"time":"","count":79,"meanDurationInMilliseconds":2629.74210084745015625,"spreadDurationInMilliseconds":10508.405373943743896484375,"verb":"PUT"},{"time":"","count":59,"meanDurationInMilliseconds":29.742100839999999095859375,"spreadDurationInMilliseconds":1008.405366243796484375,"verb":"POST"}]
+			data: [{"time":"","count":18,"meanDurationInMilliseconds":1009.7421,"spreadDurationInMilliseconds":1048.4053,"verb":"GET"},{"time":"","count":79,"meanDurationInMilliseconds":2629.5625,"spreadDurationInMilliseconds":708.4845,"verb":"PUT"},{"time":"","count":59,"meanDurationInMilliseconds":29.0958,"spreadDurationInMilliseconds":2008.7965,"verb":"POST"}]
 		};
 		data.quota = quota[req.user.role];
+		data.quotausage = [
+			{ type: "objects", count: 30 },
+			{ type: "flows", count: 44 },
+			{ type: "rules", count: 16 },
+			{ type: "snippets", count: 29 },
+			{ type: "dashboards", count: 7 },
+			{ type: "sources", count: 6 },
+			{ type: "tokens", count: 12 },
+			{ type: "access_tokens", count: 3 },
+		];
 		res.render(`emails/${template}`, data, function(err, html) {
 			if(!err) {
 				res.status(200).send(html);
@@ -408,6 +419,16 @@ router.post("/mail/monthly-report/plan", expressJwt({secret: jwtsettings.secret,
 								recipient.data = data.map(function(d, i) {
 									return typeof d==="object"?d:null;
 								});
+								recipient.quotausage = [
+									{ type: "objects", count: db_objects.getCollection("objects").find({"user_id": d.user_id}).length },
+									{ type: "flows", count:  db_flows.getCollection("flows").find({"user_id": d.user_id}).length },
+									{ type: "rules", count:  db_rules.getCollection("rules").find({"user_id": d.user_id}).length },
+									{ type: "snippets", count:  dbSnippets.getCollection("snippets").find({"user_id": d.user_id}).length },
+									{ type: "dashboards", count:  dbDashboards.getCollection("dashboards").find({"user_id": d.user_id}).length },
+									{ type: "sources", count:  dbSources.getCollection("sources").find({"user_id": d.user_id}).length },
+									{ type: "tokens", count:  db_tokens.getCollection("tokens").find({"user_id": d.user_id}).length },
+									{ type: "access_tokens", count:  db_access_tokens.getCollection("accesstokens").find({"user_id": d.user_id}).length },
+								];
 								planNewsletter(req, res, [recipient], "monthly-report", subject, "monthly-report");
 								recipients.push(recipient);
 							} else {

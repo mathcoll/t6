@@ -13,48 +13,64 @@ html(xmlns='http://www.w3.org/1999/xhtml')
               tbody
                 tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
                   td.masthead(style="background:#337ab7 no-repeat;color:#337ab7;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0", align='center', colspan="2", valign="top")
+
+
                     img(src="" + baseUrl + "/img/header_mail.jpg")
-                    h1(style="color:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:32px;line-height:1.25;margin:10px!important;margin-bottom:20px;max-width:90%;padding:0;text-transform:uppercase") t6 Monthly Report
+                    h1(style="color:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:32px;line-height:1.25;margin:10px!important;margin-bottom:20px;max-width:90%;padding:0;text-transform:uppercase") t6 Monthly Activity Report
                 tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
                   td.content(style="background:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:30px 35px" colspan="2")
+
                     h2(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0") Hi #{user.firstName} #{user.lastName},
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0") Here is your #{moment().format('MMMM')} usage report based the past 30 days.
-                    p 
-                      ul(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:36px;font-weight:400;line-height:1.65;margin:0;padding:0") 
-                        each d, index in data
-                          li= d.verb + ":" + d.count + "api calls;"
+                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0") Here is your #{moment().format('MMMM')} usage report from the past 30 days timeframe.
+
+
+
+                tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                  td.masthead(style="background:#ffffff;color:#337ab7;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0", align='center', colspan="2")
+                    h2(style="color:#337ab7; font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0;text-align:center;") Api calls Method split
+                    -var sum=0
+                    ul
+                      each d, index in data
+                        -sum+=d.count
+                        li(style="color:#000000;display:inline-block; list-style:none; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 16px; font-weight: 200; line-height: 0.85; margin: 0 20px 50px 20px; padding: 0;text-align:center;")= d.verb
+                          p(style="color:#337ab7; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 48px; font-weight: 400; line-height: 2.0; margin: 0; padding: 0;text-align:center;")= d.count
+
+
 
                 tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
                   td.masthead(style="background:#ffffff;color:#337ab7;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0", align='center', colspan="2")
 
-                    h2(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0") Total Quota usage
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0") On a monthly basis, t6 allows a total of #{quota.calls} Api Calls. You are curently using :
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:36px;font-weight:400;line-height:1.65;margin:0;padding:0") 727 Api calls
-                    img(src="https://quickchart.io/chart?h=35&c=%7B%0A%20%20type%3A%20%22progressBar%22%2C%0A%20%20data%3A%20%7B%0A%20%20%20%20datasets%3A%20%5B%7B%0A%20%20%20%20%20%20data%3A%20%5B70%5D%2C%0A%20%20%20%20%20%20label%3A%22Callsforuser%22%2C%0A%20%20%20%20%7D%5D%0A%20%20%7D%2C%0A%20options%3A%7B%0A%20%20%20title%3A%7B%0A%20%20%20%20%20display%3Afalse%2C%0A%20%20%20%20%20text%3A%22%22%2C%0A%20%20%20%7D%2C%0A%20%7D%2C%0A%7D" width="350")
+                    h2(style="color:#337ab7; font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0;text-align:center;") Total Number of Api calls
+                    ul
+                      li(style="color:#000000;display:inline-block; list-style:none; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 16px; font-weight: 200; line-height: 0.85; margin: 0 20px 50px 20px; padding: 0;text-align:center;") Api called
+                        p(style="color:#337ab7; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 48px; font-weight: 400; line-height: 2.0; margin: 0; padding: 0;text-align:center;")= sum
+                        p(style="color:#0c0c0c; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 14px; font-weight: 100; line-height: 1.0; margin: 0; padding: 0;text-align:center;") #{quota.calls} Max.
 
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
-                    hr(style='border:1px solid #999; width: 10%;')
 
-                tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
-                  td.masthead(style="background:#ffffff;color:#337ab7;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0", align='center')
-                    h2(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0") HTTP methods usage
-                    img(src="https://quickchart.io/chart?c=%7B%0A%20type%3A%22doughnut%22%2C%0A%20data%3A%7B%0A%20%20%20datasets%3A%5B%0A%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20data%3A%5B68%2C2%2C727%5D%2C%0A%20%20%20%20%20%20%20backgroundColor%3A%5B%0A%20%20%20%20%20%20%20%20%20%22rgb(255%2C99%2C132)%22%2C%0A%20%20%20%20%20%20%20%20%20%22rgb(255%2C159%2C64)%22%2C%0A%20%20%20%20%20%20%20%20%20%22rgb(255%2C205%2C86)%22%2C%0A%20%20%20%20%20%20%20%5D%2C%0A%20%20%20%20%20%20%20label%3A%22Apicallsforuser%22%2C%0A%20%20%20%20%20%7D%2C%0A%20%20%20%5D%2C%0A%20%20%20labels%3A%5B%22GET%22%2C%22POST%22%2C%22PUT%22%5D%2C%0A%20%7D%2C%0A%20options%3A%7B%0A%20%20%20title%3A%7B%0A%20%20%20%20%20display%3Afalse%2C%0A%20%20%20%20%20text%3A%22%22%2C%0A%20%20%20%7D%2C%0A%20%20%20legend%3A%20%7B%0A%20%20%20%20%20%20display%3A%20false%0A%20%20%20%20%7D%2C%0A%20%20%20%20plugins%3A%20%7B%0A%20%20%20%20%20%20datalabels%3A%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20true%2C%0A%20%20%20%20%20%20%20%20formatter%3A%20(val%2C%20ctx)%20%3D%3E%20%7B%0A%20%20%20%20%20%20%20%20%20%20return%20%60%24%7Bval%7D%20(%24%7Bctx.chart.data.labels%5Bctx.dataIndex%5D%7D)%60%3B%0A%20%20%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%20%20color%3A%20%22%23fff%22%2C%0A%20%20%20%20%20%20%20%20backgroundColor%3A%20%27%23404040%27%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%22doughnutlabel%22%3A%7B%22labels%22%3A%5B%7B%22text%22%3A%22797%22%2C%22font%22%3A%7B%22size%22%3A40%2Cweight%3A%22bold%22%7D%7D%2C%7B%22text%22%3A%22Api%20calls%22%7D%5D%7D%2C%0A%20%20%20%20%7D%2C%0A%20%7D%2C%0A%7D%0A" width="300")
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
-                    hr(style='border:1px solid #999; width: 10%;')
-
-                  td.masthead(style="background:#ffffff;color:#337ab7;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0", align='center')
-                    h2(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0") Datapoints posted
-                    img(src="https://quickchart.io/chart?c=%7B%0A%20type%3A%22doughnut%22%2C%0A%20data%3A%7B%0A%20%20%20datasets%3A%5B%0A%20%20%20%20%20%7B%0A%20%20%20%20%20%20%20data%3A%5B770%5D%2C%0A%20%20%20%20%20%20%20label%3A%22Datapointsforuser%22%2C%0A%20%20%20%20%20%7D%2C%0A%20%20%20%5D%2C%0A%20%20%20labels%3A%5B%5D%2C%0A%20%7D%2C%0A%20options%3A%7B%0A%20%20%20title%3A%7B%0A%20%20%20%20%20display%3Afalse%2C%0A%20%20%20%20%20text%3A%22%22%2C%0A%20%20%20%7D%2C%0A%20%20%20legend%3A%20%7B%0A%20%20%20%20%20%20display%3A%20false%0A%20%20%20%20%7D%2C%0A%20%20%20%20plugins%3A%20%7B%0A%20%20%20%20%20%20datalabels%3A%20%7B%0A%20%20%20%20%20%20%20%20display%3A%20false%2C%0A%20%20%20%20%20%20%7D%2C%0A%20%20%20%20%20%20%22doughnutlabel%22%3A%7B%22labels%22%3A%5B%7B%22text%22%3A%22770%22%2C%22font%22%3A%7B%22size%22%3A40%2Cweight%3A%22bold%22%7D%7D%2C%7B%22text%22%3A%22Datapoints%22%7D%5D%7D%2C%0A%20%20%20%20%7D%2C%0A%20%7D%2C%0A%7D%0A" width="300")
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
-                    hr(style='border:1px solid #999; width: 10%;')
-                    
                 tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
                   td.masthead(style="background:#ffffff;color:#337ab7;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0", align='center', colspan="2")
-                    
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0") Or, please take a moment to write a short review on your experience with t6.
+
+                    h2(style="color:#337ab7; font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:28px;line-height:1.25;margin:0;margin-bottom:20px;padding:0;text-align:center;") Total Resources Usage
+                    ul
+                      each q, index in quotausage
+                        li(style="color:#000000;display:inline-block; list-style:none; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 16px; font-weight: 200; line-height: 0.85; margin: 0 20px 50px 20px; padding: 0;text-align:center;text-transform: capitalize;")= q.type
+                          p(style="color:#337ab7; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 48px; font-weight: 400; line-height: 1.5; margin: 0; padding: 0;text-align:center;")= q.count
+                          p(style="color:#0c0c0c; font-family: 'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif; font-size: 14px; font-weight: 100; line-height: 1.0; margin: 0; padding: 0;text-align:center;") #{quota[q.type]} Max.
+
+
+                    hr(style='border:1px solid #999; width: 10%;')
+
+
+                tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                  td.content(style="background:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:30px 35px" colspan="2")
+                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0") Take a moment to write a short review about your t6 experience.
                     a.btn.btn-primary(href='https://forms.gle/cAzMQ12yp8cdfhJh9', style="-moz-user-select:none;background-color:#2973ac;background-image:none;border-color:#2e6da4;border-radius:4px;color:#fff;cursor:pointer;display:inline-block;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:14px;font-weight:400;line-height:1.42857;margin:0;margin-bottom:0;padding:6px 12px;text-align:center;text-decoration:none;vertical-align:middle;white-space:nowrap") Write a review
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0") Thank you, and see you soon on t6.
-                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;margin-bottom:20px;padding:0")
+
+
+                tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
+                  td.content(style="background:#fff;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:30px 35px" colspan="2")
+                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0") Thank you, and see you soon on t6.
+                    p(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:16px;font-weight:400;line-height:1.65;margin:0;padding:0")
                       em(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0") – Mathieu from t6
         tr(style="font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0;padding:0")
           td.container(style="clear:both!important;display:block!important;font-family:'Avenir Next','Helvetica Neue',Helvetica,Helvetica,Arial,sans-serif;font-size:100%;line-height:1.65;margin:0 auto!important;max-width:580px!important;padding:0")
