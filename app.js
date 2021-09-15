@@ -232,6 +232,23 @@ var initDbUsers = function() {
 	} else {
 		global.users = db_users.getCollection("users");
 		t6console.log(db_users.getCollection("users").count(), "resources in users collection.");
+		
+		/* One shot Db cleaning */
+		/*
+		t6console.debug("Cleaning Database for Users");
+		(global.users).chain().update(
+			function(user){
+				delete user.data;
+				delete user.quotausage;
+				delete user.quota;
+				delete user.permissions;
+				// reminderMail => date à laquelle un reminder email à été envoyé
+			}
+		);
+		db_users.save();
+		t6console.debug(global.users.data[0]);
+		*/
+		/* One shot Db cleaning */
 	}
 };
 var initDbAccessTokens = function() {
