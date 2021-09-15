@@ -5,7 +5,6 @@ var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
 var AccessTokenSerializer = require("../serializers/accessToken");
 var refreshTokenSerializer = require("../serializers/refreshToken");
-var tokens;
 var accessTokens;
 
 /**
@@ -285,7 +284,6 @@ router.post("/", function (req, res) {
 			t6events.add("t6Api", "user add", new_user.id, new_user.id);
 			users.insert(new_user);
 
-			var tokens	= dbTokens.getCollection("tokens");
 			tokens.insert(new_token);
 			db_tokens.save();
 			var expired = tokens.find(

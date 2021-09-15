@@ -259,16 +259,6 @@ router.all("*", function (req, res, next) {
 						}
 					}).catch((err) => {
 						t6console.error("Error catch on writting to influxDb", {"err": err, "tags": tags, "fields": fields[0]});
-						/*
-		logs
-		err: RequestError: A 400 Bad Request error occurred: {"error":"metric parse error: expected tag at 1:126: \"requests,rp=quota7d,user_id=44800701-d6de-48f7-9577-4b3ea1fab81a,session_id=RHAzThShvHXnHMqlElCzTTUjCVTTy_oZ,verb=POST,query=\""}
-        at IncomingMessage.<anonymous> (/media/Documents/Projets/2019/internetcollaboratif.info/t6/node_modules/influx/lib/src/pool.js:50:38)
-        at IncomingMessage.emit (node:events:388:22)
-        at endReadableNT (node:internal/streams/readable:1295:12)
-        at processTicksAndRejections (node:internal/process/task_queues:80:21) {
-      req: [ClientRequest],
-      res: [IncomingMessage]
-						*/
 					});
 				});
 				next();
@@ -495,7 +485,7 @@ router.post("/authenticate", function (req, res) {
 		} else {
 			t6console.debug("No user found or no password set yet.");
 			t6events.add("t6App", "POST_authenticate", email, email, {"status": 403, "error_id": 102.21});
-			t6console.error("Auth Error", email, email, {"status": 403, "error_id": 102.21});
+			t6console.error("Auth Error", email, req.body.username, {"status": 403, "error_id": 102.21});
 			return res.status(403).send(new ErrorSerializer({"id": 102.21, "code": 403, "message": "Forbidden; No user found or no password set yet."}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
