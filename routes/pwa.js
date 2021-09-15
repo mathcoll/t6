@@ -45,24 +45,30 @@ router.get("/mail/:mail/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token(
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
 	
-	if ( list === "changePassword" || list === "reminder" || list === "newsletter" ) {
-		var result;
-
+	if ( list === "changePassword" || list === "reminder" || list === "newsletter" || list === "monthlyreport" ) {
+		let result;
+		let time;
 		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
+			time = parseInt(moment().format("x"), 10);
 			user.unsubscription = typeof user.unsubscription!=="undefined"?user.unsubscription:{};
-			user.unsubscription[""+list] = moment().format("x");
+			user.subscription = typeof user.subscription!=="undefined"?user.subscription:{};
+			user.unsubscription[""+list] = time;
+			user.subscription[""+list] = null;
+			t6console.debug("unsubscription", user.unsubscription);
+			t6console.debug("subscription", user.subscription);
 			result = user;
 		});
 		db_users.save();
 
-		if (!req.headers["Content-Type"] || req.headers["Content-Type"].indexOf("application/json") !== 0) {
-			res.status(200).send({"status": "unsubscribed", "list": list});
+		if (req.headers && typeof req.headers["content-type"]!=="undefined" && req.headers["content-type"].indexOf("json") !== 0) {
+			res.status(200).send({"status": "unsubscribed", "list": list, "time": null});
 		} else {
 			res.render("notifications-unsubscribe", {
 				currentUrl: req.path,
 				user: result,
 				mail: mail,
 				list: list,
+				time: null,
 				moment: moment,
 			});
 		}
@@ -92,24 +98,30 @@ router.get("/mail/:mail/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
 	
-	if ( list == "changePassword" || list == "reminder" || list == "newsletter" ) {
-		var result;
-
+	if ( list == "changePassword" || list == "reminder" || list == "newsletter" || list === "monthlyreport" ) {
+		let result;
+		let time;
 		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
+			time = parseInt(moment().format("x"), 10);
 			user.unsubscription = typeof user.unsubscription!=="undefined"?user.unsubscription:{};
+			user.subscription = typeof user.subscription!=="undefined"?user.subscription:{};
 			user.unsubscription[""+list] = null;
+			user.subscription[""+list] = time;
+			t6console.debug("unsubscription", user.unsubscription);
+			t6console.debug("subscription", user.subscription);
 			result = user;
 		});
 		db_users.save();
 
-		if (!req.headers["Content-Type"] || req.headers["Content-Type"].indexOf("application/json") !== 0) {
-			res.status(200).send({"status": "subscribed", "list": list});
+		if (req.headers && typeof req.headers["content-type"]!=="undefined" && req.headers["content-type"].indexOf("json") !== 0) {
+			res.status(200).send({"status": "subscribed", "list": list, "time": time});
 		} else {
 			res.render("notifications-subscribe", {
 				currentUrl: req.path,
 				user: result,
 				mail: mail,
 				list: list,
+				time: time,
 				moment: moment,
 			});
 		}

@@ -25,11 +25,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                 .mdl-card.mdl-shadow--2dp
                   .mdl-card__title(style="cursor: auto;")
                     h3.mdl-card__title-text
-                      img(src=baseUrlCdn+"/img/m/icons/icon-72x72.png", style="width: 40%;height: 40%;")
-                      span(style="margin: auto 0; white-space: initial;") Email 
+                      img(src=baseUrlCdn+"/img/m/icons/icon-32x32.png")
+                      span(style="margin: auto 0; white-space: initial;") 
                         strong #{mail} 
                         | have successfully been added to the list 
-                        strong #{list}
+                        strong "#{list}"
                         | .
                   .mdl-list__item--three-line.small-padding Your subscriptions:
                     p
@@ -48,6 +48,14 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                         -else
                           li Reminder to change Password - 
                             a(href="/mail/"+user.email+"/unsubscribe/changePassword/"+user.unsubscription_token+"/") Unsubscribe
+                        -endif
+                        
+                        -if ( user && user.unsubscription.monthlyreport > 0 )
+                          li Monthly Activity Report - 
+                            a(href="/mail/"+user.email+"/subscribe/monthlyreport/"+user.unsubscription_token+"/") Subscribe
+                        -else
+                          li Monthly Activity Report - 
+                            a(href="/mail/"+user.email+"/unsubscribe/monthlyreport/"+user.unsubscription_token+"/") Unsubscribe
                         -endif
                         
                         -if ( user && user.unsubscription.newsletter > 0 )

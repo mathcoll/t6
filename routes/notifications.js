@@ -5,33 +5,37 @@ var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
 let timer;
 
-function planNewsletter(req, res, recipients, template, subject, taskType) {
-	/* add newsletter to job queue to be sent later */
-	recipients.forEach(function(user) {
-		t6console.debug(`Rendering email body for ${user.firstName} ${user.lastName} <${user.email}>`);
-		res.render(`emails/${template}`, {user: user, tpl: template, data: user.data, quotausage: user.quotausage, quota: quota[user.role]}, function(err, html) {
-			t6console.debug(`With data`, user.data);
-			t6console.debug(`With quotausage`, user.quotausage);
-			if(!err) {
-				var to = `${user.firstName} ${user.lastName} <${user.email}>`;
-				var mailOptions = {
-					from: from,
-					to: to,
-					user_id: user.id,
-					list: {
-						unsubscribe: {
-							url: `${baseUrl_https}/mail/${user.email}/unsubscribe/${taskType}/${user.unsubscription_token}/`,
-							comment: `Unsubscribe from this ${taskType}`
+async function planNewsletter(req, res, recipients, template, subject, taskType) {
+	await new Promise((resolve, reject) => {
+		/* add newsletter to job queue to be sent later */
+		recipients.forEach(function(user) {
+			t6console.debug(`Rendering email body for ${user.firstName} ${user.lastName} <${user.email}>`);
+			res.render(`emails/${template}`, {user: user, tpl: template, data: user.data, quotausage: user.quotausage, quota: quota[user.role]}, function(err, html) {
+				//t6console.debug(`With data`, user.data);
+				//t6console.debug(`With quotausage`, user.quotausage);
+				if(!err) {
+					var to = `${user.firstName} ${user.lastName} <${user.email}>`;
+					var mailOptions = {
+						from: from,
+						to: to,
+						user_id: user.id,
+						list: {
+							unsubscribe: {
+								url: `${baseUrl_https}/mail/${user.email}/unsubscribe/${taskType}/${user.unsubscription_token}/`,
+								comment: `Unsubscribe from this ${taskType}`
+							},
 						},
-					},
-					subject: subject,
-					text: "Html email client is required",
-					html: html
-				};
-				t6jobs.add({taskType: taskType, time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {mailOptions}});
-			} else {
-				t6console.error(`Error scheduling a ${taskType}`, err);
-			}
+						subject: subject,
+						text: "Html email client is required",
+						html: html
+					};
+					t6jobs.add({taskType: taskType, time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {mailOptions}});
+					resolve();
+				} else {
+					t6console.error(`Error scheduling a ${taskType}`, err);
+					reject();
+				}
+			});
 		});
 	});
 }
@@ -157,6 +161,15 @@ router.get("/mail/preview/", expressJwt({secret: jwtsettings.secret, algorithms:
 });
 
 /**
+ * @api {get} /notifications/list/subscribed List subscribed notifications
+ * @apiName List subscribed notifications
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ */
+/**
  * @api {get} /notifications/list/unsubscribed List unsubscribed notifications
  * @apiName List unsubscribed notifications
  * @apiGroup 9. Notifications
@@ -165,12 +178,12 @@ router.get("/mail/preview/", expressJwt({secret: jwtsettings.secret, algorithms:
  * @apiUse 200
  * @apiUse 403
  */
-router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.get("/list/:mode(subscribed|unsubscribed)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var mode = typeof req.params.mode!=="undefined"?req.params.mode:"subscribed";
 	var user_id = req.user.id;
 	if ( req.user && user_id ) {
-		var json = users.findOne( { id: user_id } );
-		//t6console.log(json.unsubscription);
-		res.status(200).send({unsubscription: json.unsubscription, unsubscription_token: json.unsubscription_token });
+		var user = users.findOne( { id: user_id } );
+		res.status(200).send({subscription: mode==="subscribed"?user.subscription:undefined, unsubscription: mode==="unsubscribed"?user.unsubscription:undefined, unsubscription_token: user.unsubscription_token });
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
 	}
@@ -190,12 +203,13 @@ router.get("/list/unsubscribed", expressJwt({secret: jwtsettings.secret, algorit
  */
 router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		var query = { "$and": [
-					{"subscription_date": { "$lte": moment().subtract(7, "days") }},
-					{"reminderMail": undefined},
-					{"token": null},
-					{ "$or": [{"unsubscription": undefined}, {"unsubscription.reminder": undefined}, {"unsubscription.reminder": null}] },
-				]};
+		let query = { "$and": [
+			{"subscription_date": { "$lte": moment().subtract(7, "days") }},
+			{"reminderMail": undefined},
+			{"token": null},
+			{ "subscription.reminder": { "$lte": parseInt(moment().format("x"), 10) } },
+			{ "subscription.reminder": { "$ne": null } },
+		]};
 		var json = users.find( query );
 		
 		if ( json.length > 0 ) {
@@ -262,13 +276,13 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
  */
 router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		//var query = {"token": { "$eq": null }};
-		var query = { "$and": [
-					{"$or": [{"passwordLastUpdated": { "$lte": moment().subtract(3, "months") }}, {passwordLastUpdated: undefined}]},
-					{"changePassword": { "$lte": moment().subtract(3, "months") }},
-					{"token": null},
-					{ "$or": [{"unsubscription": undefined}, {"unsubscription.changePassword": undefined}, {"unsubscription.changePassword": null}] },
-				]};
+		let query = { "$and": [
+			{"$or": [{"passwordLastUpdated": { "$lte": moment().subtract(3, "months") }}, {passwordLastUpdated: undefined}]},
+			{"changePassword": { "$lte": moment().subtract(3, "months") }},
+			{"token": null},
+			{ "subscription.changePassword": { "$lte": parseInt(moment().format("x"), 10) } },
+			{ "subscription.changePassword": { "$ne": null } },
+		]};
 		var json = users.find( query );
 		if ( json.length > 0 ) {
 			/* Send a Reminder Email to each users */
@@ -324,10 +338,9 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
-
 /**
- * @api {get} /notifications/mail/newsletter/count Count Newsletter subscribers
- * @apiName Count Newsletter subscribers
+ * @api {get} /notifications/subscribers/newsletter/count Count subscribers (Newsletter or Pushs)
+ * @apiName Count subscribers (Newsletter or Pushs)
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -337,12 +350,72 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
  * @apiUse 403
  * @apiUse 404
  */
-router.get("/mail/newsletter/count", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+/**
+ * @api {get} /notifications/subscribers/newsletter/list List subscribers (Newsletter or Pushs) as csv
+ * @apiName List subscribers (Newsletter or Pushs) as csv
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission AuthAdmin
+ * 
+ * @apiUse 202
+ * @apiUse 403
+ * @apiUse 404
+ */
+router.get("/subscribers/:type(newsletter|monthlyreport|reminder|changePassword|push)/:mode(count|list)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var type = req.params.type;
+	var mode = typeof req.params.mode!=="undefined"?req.params.mode:"count";
 	if ( req.user.role === "admin" ) {
-		let query = { "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] };
+		let query = {};
+		switch(type) {
+			case "push": 
+				query = { "$and": [
+					{ "pushSubscription": { "$ne": null} },
+					{ "pushSubscription": { "$ne": undefined} },
+					{ "pushSubscription.endpoint": { "$ne": null} },
+					{ "pushSubscription.endpoint": { "$ne": undefined} }
+				]};
+				break;
+			case "newsletter": 
+				query = { "$and": [
+					{ "subscription.newsletter": { "$lte": parseInt(moment().format("x"), 10) } },
+					{ "subscription.newsletter": { "$ne": null } },
+				]};
+				break;
+			case "monthlyreport": 
+				query = { "$and": [
+					{ "subscription.monthlyreport": { "$lte": parseInt(moment().format("x"), 10) } },
+					{ "subscription.monthlyreport": { "$ne": null } },
+				]};
+				break;
+			case "reminder": 
+				query = { "$and": [
+					{ "subscription.reminder": { "$lte": parseInt(moment().format("x"), 10) } },
+					{ "subscription.reminder": { "$ne": null } },
+				]};
+				break;
+			case "changePassword": 
+				query = { "$and": [
+					{ "subscription.changePassword": { "$lte": parseInt(moment().format("x"), 10) } },
+					{ "subscription.changePassword": { "$ne": null } },
+				]};
+				break;
+			default:
+				break;
+		}
 		var recipients = users.chain().find( query ).data();
 		if ( recipients.length > 0 ) {
-			res.status(200).send({"subscribers": recipients.length});
+			if(mode==="list") {
+				let csv = "";
+				csv += `"name","email"\n`;
+				recipients.map(function(user) {
+					csv += `"${user.firstName} ${user.lastName}", "${user.email}"\n`;
+				});
+				res.setHeader("content-type", "application/csv");
+				res.status(200).send(csv);
+			} else if(mode==="count") {
+				res.status(200).send({"subscribers": recipients.length});
+			}
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
 		}
@@ -352,8 +425,8 @@ router.get("/mail/newsletter/count", expressJwt({secret: jwtsettings.secret, alg
 });
 
 /**
- * @api {get} /notifications/mail/newsletter/subscribers Get Newsletter subscribers
- * @apiName Get Newsletter subscribers
+ * @api {post} /notifications/mail/monthlyreport/plan Schedule a newsletter
+ * @apiName Schedule a monthlyreport
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -363,83 +436,57 @@ router.get("/mail/newsletter/count", expressJwt({secret: jwtsettings.secret, alg
  * @apiUse 403
  * @apiUse 404
  */
-router.get("/mail/newsletter/subscribers", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	if ( req.user.role === "admin" ) {
-		let query = { "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] };
-		var recipients = users.chain().find( query ).data();
-		if ( recipients.length > 0 ) {
-			let csv = "";
-			csv += `"name","email"\n`;
-			recipients.map(function(user) {
-				csv += `"${user.firstName} ${user.lastName}", "${user.email}"\n`;
-			});
-			res.setHeader("content-type", "application/csv");
-			res.status(200).send(csv);
-		} else {
-			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
-		}
-	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
-	}
-});
-
-/**
- * @api {post} /notifications/mail/monthly-report/plan Schedule a newsletter
- * @apiName Schedule a monthly-report
- * @apiGroup 9. Notifications
- * @apiVersion 2.0.1
- * @apiUse AuthAdmin
- * @apiPermission AuthAdmin
- * 
- * @apiUse 202
- * @apiUse 403
- * @apiUse 404
- */
-router.post("/mail/monthly-report/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		let subject = `t6 monthly activity report`;
 		let influxQuery = `SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM quota4w.requests WHERE time > now() - 4w GROUP BY user_id)`;
-		let recipients = [];
 		//t6console.debug("get all actives users from influxDb", influxQuery);
 		// get all actives users
 		dbInfluxDB.query(influxQuery).then((activesUsers) => {
+			let recipients = [];
 			if ( activesUsers.length > 0 ) {
 				activesUsers.map(function(d, i) {
-					//t6console.debug("Looking for ", d.user_id);
-					let query = { "$and": [
-						{ "id": { "$eq": d.user_id } },
-						//{ "$or": [{"unsubscription": undefined}, {"unsubscription.monthlyreport": undefined}, {"unsubscription.monthlyreport": null}] },
-					]};
-					let recipient = users.findOne(query);
-					if ( recipient!==null ) {
-						//t6console.debug("Found ", recipient);
-						let influxQuery2 = `SELECT COUNT(url), MEAN(durationInMilliseconds) as meanDurationInMilliseconds, SPREAD(durationInMilliseconds) as spreadDurationInMilliseconds from quota4w.requests WHERE user_id='${d.user_id}' GROUP BY verb`;
-						dbInfluxDB.query(influxQuery2).then((data) => {
-							if ( data.length > 0 ) {
-								recipient.data = data.map(function(d, i) {
-									return typeof d==="object"?d:null;
-								});
-								recipient.quotausage = [
-									{ type: "objects", count: db_objects.getCollection("objects").find({"user_id": d.user_id}).length },
-									{ type: "flows", count:  db_flows.getCollection("flows").find({"user_id": d.user_id}).length },
-									{ type: "rules", count:  db_rules.getCollection("rules").find({"user_id": d.user_id}).length },
-									{ type: "snippets", count:  dbSnippets.getCollection("snippets").find({"user_id": d.user_id}).length },
-									{ type: "dashboards", count:  dbDashboards.getCollection("dashboards").find({"user_id": d.user_id}).length },
-									{ type: "sources", count:  dbSources.getCollection("sources").find({"user_id": d.user_id}).length },
-									{ type: "tokens", count:  db_tokens.getCollection("tokens").find({"user_id": d.user_id}).length },
-									{ type: "access_tokens", count:  db_access_tokens.getCollection("accesstokens").find({"user_id": d.user_id}).length },
-								];
-								planNewsletter(req, res, [recipient], "monthly-report", subject, "monthly-report");
-								recipients.push(recipient);
-							} else {
-								//t6console.debug("No data for user", recipient, influxQuery2);
-							}
-						});
-					} else {
-						//t6console.debug("Can't find", d.user_id, recipient);
-					}
+					if (d.user_id!=="anonymous") {
+						t6console.debug("Looking for", d.user_id);
+						let query = { "$and": [
+							{ "id": { "$eq": d.user_id } },
+							{ "subscription.monthlyreport": { "$lte": parseInt(moment().format("x"), 10) } },
+							{ "subscription.monthlyreport": { "$ne": null } },
+						]};
+						let recipient = users.findOne(query);
+						if ( typeof recipient!=="undefined" && recipient!==null ) {
+							const r = recipient;
+							t6console.debug("Found recipient", recipient.id, recipient);
+							let influxQuery2 = `SELECT COUNT(url), MEAN(durationInMilliseconds) as meanDurationInMilliseconds, SPREAD(durationInMilliseconds) as spreadDurationInMilliseconds from quota4w.requests WHERE user_id='${d.user_id}' GROUP BY verb`;
+							dbInfluxDB.query(influxQuery2).then((data) => {
+								if ( data.length > 0 ) {
+									r.data = data.map(function(d, i) {
+										return typeof d==="object"?d:null;
+									});
+									r.quotausage = [
+										{ type: "objects", count: db_objects.getCollection("objects").find({"user_id": d.user_id}).length },
+										{ type: "flows", count:  db_flows.getCollection("flows").find({"user_id": d.user_id}).length },
+										{ type: "rules", count:  db_rules.getCollection("rules").find({"user_id": d.user_id}).length },
+										{ type: "snippets", count:  dbSnippets.getCollection("snippets").find({"user_id": d.user_id}).length },
+										{ type: "dashboards", count:  dbDashboards.getCollection("dashboards").find({"user_id": d.user_id}).length },
+										{ type: "sources", count:  dbSources.getCollection("sources").find({"user_id": d.user_id}).length },
+										{ type: "tokens", count:  db_tokens.getCollection("tokens").find({"user_id": d.user_id}).length },
+										{ type: "access_tokens", count:  db_access_tokens.getCollection("accesstokens").find({"user_id": d.user_id}).length },
+									];
+									planNewsletter(req, res, [r], "monthlyreport", subject, "monthlyreport");
+									recipients.push(r);
+								} else {
+									t6console.debug("No data for user", recipient, influxQuery2);
+								}
+							});
+						} else {
+							t6console.debug("Can't find any recipient by that Id", d.user_id, recipient, JSON.stringify(query));
+						}
+						//t6console.debug("recipients 1", recipients);
+					} // End Anonymous filter
 				});
 				res.status(202).send(new UserSerializer(recipients).serialize());
+				//t6console.debug("recipients 2", recipients);
 			} else {
 				res.status(404).send(new ErrorSerializer({"id": 23, "code": 404, "message": "Not Found"}).serialize());
 			}
@@ -469,8 +516,9 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
 	if ( req.user.role === "admin" ) {
 		var template = req.query.template;
 		var subject = typeof req.query.subject!=="undefined"?req.query.subject:"📰 t6 updates";
-		var query = { "$and": [
-			{ "$or": [{"unsubscription": undefined}, {"unsubscription.newsletter": undefined}, {"unsubscription.newsletter": null}] },
+		let query = { "$and": [
+			{ "subscription.newsletter": { "$lte": parseInt(moment().format("x"), 10) } },
+			{ "subscription.newsletter": { "$ne": null } },
 		]};
 		var recipients = users.chain().find( query ).offset(offset).limit(limit).data();
 		if ( recipients.length > 0 && template ) {
@@ -515,8 +563,8 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
 });
 
 /**
- * @api {post} /notifications/mail/monthly-report/send Send a scheduled newsletter
- * @apiName Send a scheduled monthly-report
+ * @api {post} /notifications/mail/monthlyreport/send Send a scheduled newsletter
+ * @apiName Send a scheduled monthlyreport
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -526,12 +574,12 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
  * @apiUse 403
  * @apiUse 404
  */
-router.post("/mail/monthly-report/send", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.post("/mail/monthlyreport/send", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let limit = typeof req.query.limit!=="undefined"?req.query.limit:20;
 	let dryrun = typeof req.query.dryrun!=="undefined"?str2bool(req.query.dryrun):false;
 	let recurring = typeof req.query.recurring!=="undefined"?parseInt(req.query.recurring, 10):null;
 	if ( req.user.role === "admin" ) {
-		let reports = t6jobs.get({taskType: "monthly-report", user_id: req.user.id}, recurring!==null?1:limit);
+		let reports = t6jobs.get({taskType: "monthlyreport", user_id: req.user.id}, recurring!==null?1:limit);
 		t6console.debug("reports : ", reports);
 		if(reports.length > 0) {
 			let response = sendNewsletter(reports, dryrun, recurring, req.user.id, limit, 0);
@@ -541,32 +589,6 @@ router.post("/mail/monthly-report/send", expressJwt({secret: jwtsettings.secret,
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden"}).serialize());
-	}
-});
-
-/**
- * @api {get} /notifications/push/count Count Push subscribers
- * @apiName Count Push subscribers
- * @apiGroup 9. Notifications
- * @apiVersion 2.0.1
- * @apiUse AuthAdmin
- * @apiPermission AuthAdmin
- * 
- * @apiUse 202
- * @apiUse 403
- * @apiUse 404
- */
-router.get("/push/count", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	if ( req.user.role === "admin" ) {
-		let query = { "$and": [ {"pushSubscription": { "$ne": null}}, {"pushSubscription": { "$ne": undefined}}, { "pushSubscription.endpoint": { "$ne": null}}, { "pushSubscription.endpoint": { "$ne": undefined}} ] };
-		var recipients = users.chain().find( query ).data();
-		if ( recipients.length > 0 ) {
-			res.status(200).send({"subscribers": recipients.length});
-		} else {
-			res.status(404).send(new ErrorSerializer({"id": 21.2, "code": 404, "message": "Not Found"}).serialize());
-		}
-	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 

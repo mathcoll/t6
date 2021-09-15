@@ -2386,8 +2386,8 @@ var touchStartPoint, touchMovePoint;
 						}
 					}
 					app.setDrawer();
-					app.fetchUnsubscriptions();
-					app.displayUnsubscriptions((app.containers.profile).querySelector('.page-content'));
+					app.fetchSubscriptions();
+					app.displaySubscriptions((app.containers.profile).querySelector('.page-content'));
 
 					document.getElementById("saveProfileButton").addEventListener("click", function(evt) {
 						app.onSaveProfileButtonClick();
@@ -2409,12 +2409,12 @@ var touchStartPoint, touchMovePoint;
 			});
 	};
 
-	app.fetchUnsubscriptions = function() {
+	app.fetchSubscriptions = function() {
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
 		myHeaders.append("Content-Type", "application/json");
 		var myInit = { method: 'GET', headers: myHeaders };
-		var url = `${app.baseUrl}/${app.api_version}/notifications/list/unsubscribed`;
+		var url = `${app.baseUrl}/${app.api_version}/notifications/list/subscribed`;
 
 		fetch(url, myInit)
 			.then(
@@ -2423,18 +2423,18 @@ var touchStartPoint, touchMovePoint;
 				return fetchResponse.json();
 			})
 			.then(function(response) {
-				var notifications = response.unsubscription !== undefined ? response.unsubscription : {};
-				localStorage.setItem("notifications.unsubscribed", JSON.stringify(notifications));
+				var notifications = typeof response.subscription!=="undefined"?response.subscription:{};
+				localStorage.setItem("notifications.subscribed", JSON.stringify(notifications));
 			})
 			.catch(function(error) {
 				if (localStorage.getItem("settings.debug") == "true") {
-					toast('fetchUnsubscriptions error' + error, { timeout: app.toastDuration, type: "error" });
+					toast('fetchSubscriptions error' + error, { timeout: app.toastDuration, type: "error" });
 				}
 			});
 	};
 
-	app.displayUnsubscriptions = function(container) {
-		var notifications = JSON.parse(app.getSetting('notifications.unsubscribed'));
+	app.displaySubscriptions = function(container) {
+		var notifications = JSON.parse(app.getSetting('notifications.subscribed'));
 		var node = "";
 		node += app.getSubtitle('Email Notifications');
 		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
@@ -2443,14 +2443,17 @@ var touchStartPoint, touchMovePoint;
 		node += "	<div class=\"card-body\">";
 		var value;
 		var isEdit = true;
-		value = notifications.reminder !== null ? 'false' : 'true';
+		value = (notifications.reminder !== null && typeof notifications.reminder !== "undefined" ) ? 'true' : 'false';
 		node += app.getField('mail_outline', 'Reminder Welcome email', value, { type: 'switch', id: 'profile.notifications.reminder', isEdit: isEdit });
 
-		value = notifications.changePassword !== null ? 'false' : 'true';
+		value = (notifications.changePassword !== null && typeof notifications.changePassword !== "undefined" ) ? 'true' : 'false';
 		node += app.getField('mail_outline', 'Reminder to change Password', value, { type: 'switch', id: 'profile.notifications.changePassword', isEdit: isEdit });
 
-		value = notifications.newsletter !== null ? 'false' : 'true';
+		value = (notifications.newsletter !== null && typeof notifications.newsletter !== "undefined" ) ? 'true' : 'false';
 		node += app.getField('mail_outline', 't6 Newsletter', value, { type: 'switch', id: 'profile.notifications.newsletter', isEdit: isEdit });
+
+		value = (notifications.monthlyreport !== null && typeof notifications.monthlyreport !== "undefined" ) ? 'true' : 'false';
+		node += app.getField('mail_outline', 't6 Monthly Activity Report', value, { type: 'switch', id: 'profile.notifications.monthlyreport', isEdit: isEdit });
 
 		node += app.getField('mail_outline', 'Security notification related to your account', true, { type: 'switch', id: 'profile.notifications.security', isEdit: false });
 		node += "	</div>";
@@ -3430,7 +3433,7 @@ var touchStartPoint, touchMovePoint;
 					app.isLogged = true;
 					app.resetSections();
 					app.fetchProfile();
-					app.fetchUnsubscriptions();
+					app.fetchSubscriptions();
 					if (window.location.hash && window.location.hash.substr(1) === 'object_add') {
 						app.displayAddObject(app.defaultResources.object);
 					} else if (window.location.hash && window.location.hash.substr(1) === 'flow_add') {
@@ -4650,7 +4653,24 @@ var touchStartPoint, touchMovePoint;
 									return fetchResponse.json();
 								})
 								.then(function(response) {
-									console.log(response);
+									let notifications = JSON.parse(localStorage.getItem("notifications.subscribed"));
+									switch(response.list) {
+										case "reminder":
+											notifications.reminder = response.time;
+											break;
+										case "newsletter": 
+											notifications.newsletter = response.time;
+											break;
+										case "changePassword": 
+											notifications.changePassword = response.time;
+											break;
+										case "monthlyreport": 
+											notifications.monthlyreport = response.time;
+											break;
+										default: 
+											break;
+									}
+									localStorage.setItem("notifications.subscribed", JSON.stringify(notifications));
 									toast('Settings updated.', { timeout: app.toastDuration, type: "done" });
 								})
 								.catch(function(error) {
