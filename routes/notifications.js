@@ -324,7 +324,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 						res.status(err.status || 500).render(err.status, {
 							title : "Internal Error"+app.get("env"),
 							user: req.session.user,
-							currentUrl: req.path,
+							currentUrl: typeof req.path!=="undefined"?req.path:"undefinedPath",
 							err: err
 						});
 					});
