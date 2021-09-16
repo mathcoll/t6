@@ -242,6 +242,12 @@ var initDbUsers = function() {
 				delete user.quotausage;
 				delete user.quota;
 				delete user.permissions;
+				user.subscription = {
+					"changePassword": (typeof user.unsubscription!=="undefined" && typeof user.unsubscription.changePassword!=="undefined")?null:user.subscription_date,
+					"newsletter": (typeof user.unsubscription!=="undefined" && typeof user.unsubscription.newsletter!=="undefined")?null:user.subscription_date,
+					"monthlyreport": (typeof user.unsubscription!=="undefined" && typeof user.unsubscription.monthlyreport!=="undefined")?null:user.subscription_date,
+					"reminder": (typeof user.unsubscription!=="undefined" && typeof user.unsubscription.reminder!=="undefined")?null:user.subscription_date,
+				}
 				// reminderMail => date à laquelle un reminder email à été envoyé
 			}
 		);
