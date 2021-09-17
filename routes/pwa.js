@@ -99,7 +99,7 @@ router.get("/mail/:mail/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0
 	var list = req.params.list;
 	var unsubscription_token = req.params.unsubscription_token;
 	
-	if ( list == "changePassword" || list == "reminder" || list == "newsletter" || list === "monthlyreport" ) {
+	if ( list === "changePassword" || list === "reminder" || list === "newsletter" || list === "monthlyreport" ) {
 		let result;
 		let time;
 		users.chain().find({ "email": mail, "unsubscription_token": unsubscription_token }).update(function(user) {
