@@ -547,10 +547,9 @@ function saveToCloud(payload, fields, current_flow, callback) {
 		if(token && org && url && bucket) {
 			t6console.debug("chain 10", "influxDbCloud Saving to Cloud.");
 			const dbInfluxDBCloud = new InfluxDB({url: url, token: token});
-			
 			const {Point} = require("@influxdata/influxdb-client");
 			let writeApi = dbInfluxDBCloud.getWriteApi(org, bucket);
-			
+
 			let point = new Point("data")
 				.tag("user_id", payload.user_id)
 				.tag("flow_id", payload.flow_id)
@@ -583,7 +582,7 @@ function saveToCloud(payload, fields, current_flow, callback) {
 				});
 		} // end valid token
 		else {
-			t6console.warn("chain 10", "Can't save to Cloud ; missing credentials.");
+			t6console.debug("chain 10", "Can't save to Cloud ; missing credentials.");
 			callback(null, {payload, fields, current_flow});
 		}
 	} // end saveToCloud
