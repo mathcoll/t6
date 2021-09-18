@@ -7,6 +7,9 @@
 ------------
 
 ## 2021
+### Milestone 14 - Septembre 2021: Image Preprocessing
+  - [x] Image preprocessing including Face, Age, Gender and Facial Expression recognition
+  
 ### Milestone 13 - June 2021: Sensor Data Fusion
   - [x] Send multiple datapoints (measurements) from the same payload - using an Array
   - [x] [Sensor Data Fusion](https://api.internetcollaboratif.info/news/2021-06-16-newsletter-sensor-data-fusion)
