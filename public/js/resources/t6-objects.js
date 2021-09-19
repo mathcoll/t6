@@ -579,7 +579,7 @@ app.resources.objects = {
 
 				document.title = (app.sectionsPageTitles["object"]).replace(/%s/g, object.attributes.name);
 				if ((app.containers.object)) {
-					((app.containers.object).querySelector(".page-content")).innerHTML = "";;
+					((app.containers.object).querySelector(".page-content")).innerHTML = "";
 				}
 				var node = "";
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+object.id+"\">";

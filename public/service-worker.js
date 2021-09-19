@@ -114,7 +114,7 @@ function matchInArray(string, expressions) {
 		}
 	}
 	return false;
-};
+}
 self.addEventListener("fetch", function(e) {
 	if (isOnline) {
 		if ( matchInArray(e.request.url, cacheBlacklist) ) {
