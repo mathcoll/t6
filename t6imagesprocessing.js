@@ -15,7 +15,7 @@ t6imagesprocessing.ageAndGenderRecognition = function(img, dir, filename, ext, s
 			.withFaceLandmarks()
 			.withFaceExpressions()
 			.withAgeAndGender()
-			.then((results) =>{
+			.then((results) => {
 				//TODO : returns only the first detection ?!
 				resolve( { age: results[0].age, gender: results[0].gender} );
 				if (save===true) {
@@ -42,7 +42,7 @@ t6imagesprocessing.faceExpressionRecognition = function(img, dir, filename, ext,
 		faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions())
 			.withFaceLandmarks()
 			.withFaceExpressions()
-			.then((results) =>{
+			.then((results) => {
 				//TODO : returns only the first detection ?!
 				resolve( {expressions: results[0].expressions} );
 				if (save===true) {

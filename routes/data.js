@@ -616,7 +616,7 @@ async function processAllMeasures(payloads, options, res) {
 					let current_flow = s2c.current_flow;
 					if (payload.datatype==="image" || typeof payload.img!=="undefined") {
 						if (payload.save===false) {
-							fs.readdir(`${ip.image_dir}/`, (files)=>{
+							fs.readdir(`${ip.image_dir}/`, (files) => {
 								if(files!==null) {
 									for (let i=0, len=files.length; i<len;i++) {
 										let match = files[i].match(/`${payload.timestamp}.*.png`/);
