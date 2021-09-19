@@ -216,7 +216,7 @@ router.all("*", function (req, res, next) {
 		key:		typeof req.user!=="undefined"?req.user.key:null,
 		secret:		typeof req.user!=="undefined"?req.user.secret:null,
 		user_id:	typeof req.user!=="undefined",
-		session_id:	typeof req.sessionID?req.sessionID:(req.user!=="undefined"?req.user.session_id:null),
+		session_id:	typeof req.sessionID?req.sessionID:(typeof req.user!=="undefined"?req.user.session_id:null),
 		verb:		req.method,
 		url:		typeof req.path!=="undefined"?req.path:req.originalUrl,
 		query:		(Object.keys(req.query).length > 0)?JSON.stringify(req.query):"",
