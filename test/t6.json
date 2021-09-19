@@ -34,15 +34,52 @@
                                 "saved.secret": "body.token.secret",
                                 "saved.user_id": "body.user.data.id",
                                 "saved.subscription_date": "body.user.data.attributes.subscription_date",
-                                "saved.username": "body.user.data.attributes.email"
+                                "saved.username": "body.user.data.attributes.email",
+                                "saved.reset_password_token": "body.user.data.attributes.token",
+                                "saved.unsubscription_token": "body.user.data.attributes.unsubscription_token"
                             },
                             "status": "201"
                         }
                     ]
                 },
                 {
-                	"name": "get instruction to reset a User password",
-                	"description": "get instruction to reset a User password",
+                	"name": "Set password",
+                	"description": "Set password",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users/token/{{saved.reset_password_token}}",
+                            "params": {
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "status": "200",
+                            "save": {
+                                "saved.reset_password_token": "body.token"
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "Sign In (/authenticate)",
+                	"description": "Sign In (/authenticate)",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/authenticate",
+                            "params": {
+                                "username": "m.lory+{{$run_id}}@free.fr",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "assert": [],
+                            "status": "200",
+                            "save": {
+                                "saved.bearer_token": "body.token",
+                                "saved.bearer_refresh_token": "body.refresh_token"
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "Generate email instruction to reset a User password",
+                	"description": "Generate email instruction to reset a User password",
                     "api_calls": [
                         {
                         	"request": "POST /v2.0.1/users/instruction",
@@ -50,32 +87,6 @@
                                 "email": "m.lory+{{$run_id}}@free.fr"
                             },
                             "assert": [],
-                            "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "get User token to reset password",
-                	"description": "get User token to reset password",
-                    "api_calls": [
-                        {
-                        	"request": "GET /v2.0.1/users/{{saved.user_id}}/token",
-                            "status": "201",
-                            "save": {
-                                "saved.token": "body.token"
-                            }
-                        }
-                    ]
-                },
-                {
-                	"name": "set User password using token",
-                	"description": "set User password using token",
-                    "api_calls": [
-                        {
-                        	"request": "POST /v2.0.1/users/token/{{saved.token}}",
-                            "params": {
-                                "password": "{{$run_id}}"
-                            },
                             "status": "200"
                         }
                     ]
@@ -88,7 +99,7 @@
                         	"request": "POST /v2.0.1/authenticate",
                             "params": {
                                 "username": "{{saved.username}}",
-                                "password": "{{$run_id}}"
+                                "password": "{{$run_id}}:{{$run_id}}"
                             },
                             "save": {
                                 "saved.bearer": "body.token"
@@ -104,7 +115,7 @@
                         {
                         	"request": "PUT /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearerFromKS}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
                                 "email": "myUpdatedEmail+{{$run_id}}@domain.tld",
@@ -120,12 +131,68 @@
                     ]
                 },
                 {
+                	"name": "can create a Flow for that User",
+                    "description": "create a Flow for that User",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/flows",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "name": "My Flow Name",
+                                "objects": [
+                                    "{{saved.object_id}}",
+                                    "1"
+                                ],
+                                "permission": 644,
+                                "unit": "String"
+                            },
+                            "save": {
+                                "saved.flow_id": "body.flow.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can publish data to Flow",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/data",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "flow_id": "{{saved.flow_id}}",
+                                "mqtt_topic": "couleurs/test",
+                                "publish": true,
+                                "save": true,
+                                "value": "Hello World",
+                                "text": "Meta text information",
+                                "object_id": "{{saved.object_id}}"
+                            },
+                            "save": {
+                            	"saved.data_id_full_url": "body.data.0.links.self",
+                            	"saved.data_id": "body.data.0.id",
+                            	"saved.time": "body.data.0.attributes.time"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
                 	"name": "can create an Object",
                     "description": "create an Object",
                     "api_calls": [
                         {
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "request": "POST /v2.0.1/objects",
                             "params": {
@@ -154,7 +221,7 @@
                     "api_calls": [
                         {
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "request": "POST /v2.0.1/objects",
                             "params": {
@@ -183,7 +250,7 @@
                     "description": "Object public page returns an error when non public",
                     "api_calls": [
                         {
-                        	"request": "GET /objects/{{saved.object_id}}/public",
+                        	"request": "GET /v2.0.1/objects/{{saved.object_id}}/public",
                             "save": {},
                             "status": "404"
                         }
@@ -194,7 +261,7 @@
                     "description": "can get an Object public page",
                     "api_calls": [
                         {
-                        	"request": "GET /objects/{{saved.object_id2}}/public",
+                        	"request": "GET /v2.0.1/objects/{{saved.object_id2}}/public",
                             "save": {},
                             "status": "200"
                         }
@@ -207,7 +274,7 @@
                         {
                         	"request": "PUT /v2.0.1/objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
                                 "description": "My object updated description",
@@ -234,7 +301,7 @@
                         {
                         	"request": "GET /v2.0.1/objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
                             "status": "200"
@@ -248,7 +315,7 @@
                         {
                         	"request": "GET /v2.0.1/objects/?name=Updated%20Object",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
                             "status": "200",
@@ -266,7 +333,7 @@
                         {
                         	"request": "GET /v2.0.1/objects/",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
                             "status": "200",
@@ -278,38 +345,13 @@
                     ]
                 },
                 {
-                	"name": "can create a Flow for that User",
-                    "description": "create a Flow for that User",
-                    "api_calls": [
-                        {
-                        	"request": "POST /v2.0.1/flows",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
-                            },
-                            "params": {
-                                "name": "My Flow Name",
-                                "objects": [
-                                    "{{saved.object_id}}",
-                                    "1"
-                                ],
-                                "permission": 644,
-                                "unit": "String"
-                            },
-                            "save": {
-                                "saved.flow_id": "body.flow.data.id"
-                            },
-                            "status": "201"
-                        }
-                    ]
-                },
-                {
                 	"name": "can update a Flow",
                     "description": "update a Flow",
                     "api_calls": [
                         {
                         	"request": "PUT /v2.0.1/flows/{{saved.flow_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
                                 "data_type": "",
@@ -317,8 +359,10 @@
                                 "objects": [
                                     "{{saved.object_id}}"
                                 ],
-                                "permission": 644,
-                                "unit": "String"
+                                "unit": "String",
+                                "theme": "",
+                                "data_type": "a394e18f-12bd-4c22-b9c3-74c387d1a8d",
+                                "unit_id": "c528045b-4928-45ad-83fa-4a242eb6059e"
                             },
                             "save": {},
                             "status": 200,
@@ -330,68 +374,31 @@
                     ]
                 },
                 {
-                	"name": "can get permissions from Token",
-                    "description": "get permissions from Token",
+                	"name": "Get User from JWT claim",
+                    "description": "Get User from JWT claim",
                     "api_calls": [
                         {
                         	"request": "GET /v2.0.1/users/me/token",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Get User active sessions from JWT claim",
+                	"description": "Get User active sessions from JWT claim",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/me/sessions",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
                             "status": "200",
-                            "assert": [{
-        	                    "select": "body.data.attributes.gravatar.entry",
-        	                    "size": 1
-        	                }]
-                        }
-                    ]
-                },
-                {
-                	"name": "can publish data to Flow",
-                    "description": "publish data to Flow",
-                    "api_calls": [
-                        {
-                        	"request": "POST /v2.0.1/data",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
-                            },
-                            "params": {
-                                "flow_id": "{{saved.flow_id}}",
-                                "mqtt_topic": "couleurs/test",
-                                "publish": "true",
-                                "save": "true",
-                                "timestamp": "",
-                                "unit": "-",
-                                "value": "Hello World"
-                            },
                             "save": {
-                            	"saved.data_id": "body.data.links.self"
-                            },
-                            "status": 200,
-                            "assert": {
-        	                    "select": "body.data",
-        	                    "size": 1
-        	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get a specific data from Flow",
-                    "description": "get a specific data from Flow",
-                    "api_calls": [
-                        {
-                        	"request": "GET {{saved.data_id}}",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
-                            },
-                            "save": {
-                            	"saved.data_id": "body.data.links.self"
-                            },
-                            "status": 404,
-                            "assert": [{
-        	                    "select": "body.data.0.attributes.flow_id",
-        	                    "equal": "{{saved.flow_id}}"
-        	                }]
+                            }
                         }
                     ]
                 },
@@ -402,7 +409,7 @@
                         {
                         	"request": "GET /v2.0.1/dashboards",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "status": 200,
                             "assert": {
@@ -419,7 +426,7 @@
                         {
                         	"request": "GET /v2.0.1/snippets",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "status": 200,
                             "assert": {
@@ -436,7 +443,7 @@
                         {
                         	"request": "GET /v2.0.1/objects",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "status": 200,
                             "assert": {
@@ -447,16 +454,19 @@
                     ]
                 },
                 {
-                	"name": "can delete a Flow",
-                    "description": "delete a Flow",
+                	"name": "can get a specific data from Flow",
+                    "description": "get a specific data from Flow",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/flows/{{saved.flow_id}}",
+                        	"request": "GET {{saved.data_id_full_url}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
-                            "save": {},
-                            "status": 404
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.data.0.id",
+        	                    "equal": "{{saved.data_id}}"
+        	                }]
                         }
                     ]
                 },
@@ -467,7 +477,7 @@
                         {
                         	"request": "DELETE /v2.0.1/objects/{{saved.object_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
                             "status": 200,
@@ -479,13 +489,57 @@
                     ]
                 },
                 {
+                	"name": "cannot get a deleted Object",
+                    "description": "cannot get a deleted Object",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/objects/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 0
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Flow",
+                    "description": "delete a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/flows/{{saved.flow_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "cannot get a deleted Flow",
+                    "description": "cannot get a deleted Flow",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/flows/{{saved.flow_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 404
+                        }
+                    ]
+                },
+                {
                 	"name": "can verify a User",
                     "description": "verify a User",
                     "api_calls": [
                         {
                         	"request": "GET /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
                             "status": 200,
@@ -503,7 +557,7 @@
                         {
                         	"request": "DELETE /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
                             "status": 200,
@@ -521,14 +575,10 @@
                         {
                         	"request": "GET /v2.0.1/users/{{saved.user_id}}",
                             "headers": {
-                                "Authorization": "Bearer {{saved.bearer}}"
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "save": {},
-                            "status": 200,
-                            "assert": {
-        	                    "select": "body.data",
-        	                    "size": 0
-        	                }
+                            "status": 404
                         }
                     ]
                 }
@@ -546,7 +596,7 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 7
+        	                    "size": 9
         	                }
                         }
                     ]
@@ -560,7 +610,7 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 49
+        	                    "size": 123
         	                }
                         }
                     ]
@@ -574,7 +624,7 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 16
+        	                    "size": 13
         	                }
                         }
                     ]
@@ -588,7 +638,21 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 6
+        	                    "size": 4
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Volumes Units",
+                	"description": "get Volumes Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/units?type=Paper%20Quantity",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
         	                }
                         }
                     ]
@@ -616,7 +680,7 @@
                             "status": 200,
                             "assert": {
                             	"select": "body.data",
-                            	"size": 7
+                            	"size": 11
         	                }
                         }
                     ]
