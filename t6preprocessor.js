@@ -24,7 +24,7 @@ t6preprocessor.cryptValue = async function(value, sender, encoding) {
 		t6console.error("Error: Missing secret_key_crypt");
 		return value;
 	}
-}
+};
 
 t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 	return new Promise((resolve, reject) => {

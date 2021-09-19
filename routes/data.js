@@ -181,7 +181,7 @@ function decrypt(payload, object, callback) {
 		timestamp: payload.timestamp,
 		save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
 		publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
-	}
+	};
 	if ( typeof payload!=="undefined" && payload.encryptedPayload && object ) {
 		let encryptedPayload = payload.encryptedPayload.trim();
 		if ( object && object.secret_key_crypt ) {

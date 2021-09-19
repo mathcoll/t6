@@ -35,7 +35,7 @@ t6imagesprocessing.ageAndGenderRecognition = function(img, dir, filename, ext, s
 				}
 			});
 	});
-}
+};
 
 t6imagesprocessing.faceExpressionRecognition = function(img, dir, filename, ext, save=false) {
 	return new Promise((resolve, reject) => {
@@ -62,6 +62,6 @@ t6imagesprocessing.faceExpressionRecognition = function(img, dir, filename, ext,
 				}
 			});
 	});
-}
+};
 
 module.exports = t6imagesprocessing;

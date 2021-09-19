@@ -511,7 +511,7 @@ mqttClient.on("connect", function () {
 		if (!err) {
 			t6console.log("Subscribed to Mqtt topic \"objects/status/#\"");
 		}
-	})
+	});
 });
 mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split("objects/status/")[1];
