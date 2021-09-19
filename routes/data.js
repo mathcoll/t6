@@ -324,7 +324,7 @@ function preprocessor(payload, fields, current_flow, callback) {
 	preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 	t6console.debug("chain 6", "Will force sanitization to:", payload.datatype);
 	preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
-	t6preprocessor.preprocessor(current_flow, payload, preprocessor).then((result) => {
+	t6preprocessor.preprocessor(current_flow, payload, preprocessor).then((result) => {
 		t6console.debug("chain 6", "Preprocessor got the result value :-)", result);
 		payload = result.payload;
 		preprocessor = result.preprocessor;
@@ -614,7 +614,7 @@ async function processAllMeasures(payloads, options, res) {
 					let measure = s2c.fields;
 					let payload = s2c.payload;
 					let current_flow = s2c.current_flow;
-					if (payload.datatype==="image" || typeof payload.img!=="undefined") {
+					if (payload.datatype==="image" || typeof payload.img!=="undefined") {
 						if (payload.save===false) {
 							fs.readdir(`${ip.image_dir}/`, (files) => {
 								if(files!==null) {
