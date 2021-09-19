@@ -347,7 +347,7 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 		query = `SELECT MEAN(${dt}) as mean FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
 		t6console.debug(sprintf("Query: %s", query));
 
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			if (data.length > 0) {
 				var graphData = [];
 				let svg;
@@ -378,7 +378,7 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 			} else {
 				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
 			}
-		}).catch(err => {
+		}).catch((err) => {
 			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
 		});
 	}

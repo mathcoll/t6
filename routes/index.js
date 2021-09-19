@@ -351,7 +351,7 @@ function checkForTooManyFailure(req, res, email) {
 				});
 			});
 		}
-	}).catch(err => {
+	}).catch((err) => {
 		t6console.error(err);
 	});
 	t6events.add("t6App", "user login failure", email, email);
