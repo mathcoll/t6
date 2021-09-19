@@ -76,7 +76,7 @@ function testStrength (input) {
 
 	var doesNotRepeat = true;
 	for (var i = 0; i < input.length; i++) {
-		if (i == 0) {
+		if (i === 0) {
 			continue;
 		}
 		if (input[i] === input[i - 1]) {
