@@ -30,7 +30,7 @@ if (firebase.admin.serviceAccountFile) {
 					resolve({"status": "info", "info": res});
 				}).catch((err) => {
 					t6events.add("t6App", "sendPush", subscriber_id, subscriber_id, {"endpoint": subscriber.endpoint, "error": {"statusCode": err.statusCode, "body": err.body}});
-					t6console.error(err);
+					t6console.debug(err);
 					if(err.statusCode === 404 || err.statusCode === 410) {
 						// User subscription is expired ; we should remove endpoint and keys from Db
 						// find user where "id" == subscriber_id and remove its pushSubscription from lokijs

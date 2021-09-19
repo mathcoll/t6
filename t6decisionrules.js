@@ -375,19 +375,26 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				};
 				let user = users.findOne({ "id": user_id });
 				if (user && user.pushSubscription) {
-					let result = t6notifications.sendPush(user, p).catch((error) => { 
-						t6console.warn(error);
+					let result = t6notifications.sendPush(user, p).catch((error) => {
+						users.chain().find({ "id": user_id }).update(function(u) {
+							u.pushSubscription = {};
+							db_users.save();
+						});
+						t6console.debug("pushSubscription is now disabled on User", error);
 					});
-					if(result && (result.statusCode === 404 || result.statusCode === 410)) {
+					if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 						t6console.error("Can't sendPush because of a status code Error", result.statusCode);
-						// We should remove the token from user
-						// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+						users.chain().find({ "id": user_id }).update(function(u) {
+							u.pushSubscription = {};
+							db_users.save();
+						});
+						t6console.debug("pushSubscription is now disabled on User", error);
 					}
 				} else {
 					t6console.error("No user or no pushSubscription found, can't sendPush");
 				}
 			} else {
-				t6console.warn(sprintf("No matching EventType: %s", event.type));
+				t6console.warn(`No matching EventType: ${event.type}`);
 			}
 			t6mqtt.publish(null, mqttInfo+"/ruleEvents/"+user_id, JSON.stringify({"date":moment().format("LLL"), "dtepoch":parseInt(moment().format("x"), 10),"EventType": event.type, "rule_id": event.params.rule_id, "message":"Rule matching EventType", "environment": process.env.NODE_ENV}), true);
 		});
@@ -396,7 +403,6 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		var envelope = {
 			from:		from,
 			to:			bcc,
-			bcc:		bcc,
 			user_id:	payload.user_id?payload.user_id:to,
 			subject:	"dbInfluxDB ERR on decisionRule (checkRulesFromUser)",
 			text:		"Html email client is required",

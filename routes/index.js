@@ -5,7 +5,23 @@ var ErrorSerializer = require("../serializers/error");
 
 var timeoutNotification;
 function sendNotification(pushSubscription, payload) {
-	t6notifications.sendPush(pushSubscription, payload);
+	let result = t6notifications.sendPush(pushSubscription, payload).catch((error) => {
+		t6console.debug("pushSubscription", pushSubscription);
+		users.chain().find({ "id": pushSubscription.user_id }).update(function(u) {
+			u.pushSubscription = {};
+			db_users.save();
+		});
+		t6console.debug("pushSubscription is now disabled on User", error);
+	});
+	if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+		t6console.debug("pushSubscription", pushSubscription);
+		t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+		users.chain().find({ "id": pushSubscription.user_id }).update(function(u) {
+			u.pushSubscription = {};
+			db_users.save();
+		});
+		t6console.debug("pushSubscription is now disabled on User", error);
+	}
 	clearTimeout(timeoutNotification);
 }
 const getDurationInMilliseconds = (start) => {
@@ -412,6 +428,7 @@ router.post("/authenticate", function (req, res) {
 				/* pushSubscription */
 				if ( typeof meta.pushSubscription !== "undefined" ) {
 					var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+					meta.user_id = user.id;
 					timeoutNotification = setTimeout(sendNotification, 5000, meta, payload);
 					user.pushSubscription = meta.pushSubscription;
 				}
@@ -505,6 +522,7 @@ router.post("/authenticate", function (req, res) {
 			/* pushSubscription */
 			if ( typeof meta.pushSubscription !== "undefined" ) {
 				var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+				meta.user_id = user.id;
 				timeoutNotification = setTimeout(sendNotification, 5000, meta, payload);
 				user.pushSubscription = meta.pushSubscription;
 			}
