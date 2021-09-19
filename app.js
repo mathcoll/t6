@@ -125,7 +125,7 @@ var initDbRules = function() {
 		global.rules = db_rules.getCollection("rules");
 		t6console.log(db_rules.getCollection("rules").count(), "resources in Rules collection.");
 	}
-}
+};
 var initDbSnippets = function() {
 	if ( dbSnippets === null ) {
 		t6console.error("db Snippets is failing");
@@ -135,7 +135,7 @@ var initDbSnippets = function() {
 	} else {
 		t6console.log(dbSnippets.getCollection("snippets").count(), "resources in Snippets collection.");
 	}
-}
+};
 var initDbDashboards = function() {
 	if ( dbDashboards === null ) {
 		t6console.error("db Dashboards is failing");
@@ -145,7 +145,7 @@ var initDbDashboards = function() {
 	} else {
 		t6console.log(dbDashboards.getCollection("dashboards").count(), "resources in Dashboards collection.");
 	}
-}
+};
 var initDbSources = function() {
 	if ( dbSources === null ) {
 		t6console.error("db Sources is failing");
@@ -155,7 +155,7 @@ var initDbSources = function() {
 	} else {
 		t6console.log(dbSources.getCollection("sources").count(), "resources in Sources collection.");
 	}
-}
+};
 var initDbOtaHistory = function() {
 	if ( dbOtaHistory === null ) {
 		t6console.error("db OtaHistory is failing");
@@ -165,7 +165,7 @@ var initDbOtaHistory = function() {
 	} else {
 		t6console.log(dbOtaHistory.getCollection("otahistory").count(), "resources in OtaHistory collection.");
 	}
-}
+};
 var initDbUis = function() {
 	if ( dbUis === null ) {
 		t6console.error("db UIs is failing");
@@ -270,7 +270,7 @@ var initDbAccessTokens = function() {
 		if ( expired ) { access_tokens.remove(expired); db_access_tokens.save(); }
 		t6console.log(db_access_tokens.getCollection("accesstokens").count(), "resources in AccessTokens collection.");
 	}
-}
+};
 var initDbTokens = function() {
 	if ( db_tokens === null ) {
 		t6console.error("db tokens is failing");
