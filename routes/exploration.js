@@ -245,7 +245,7 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 	} else {
 		let query = sprintf("SELECT * FROM data WHERE flow_id='%s' ORDER BY time %s LIMIT %s OFFSET %s", flow_id, sorting, limit, 0);
 		t6console.debug(sprintf("Query: %s", query));
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			if (data.length > 0) {
 				data.map(function(d) {
 					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x") * 1000);
@@ -257,7 +257,7 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 			} else {
 				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
 			}
-		}).catch(err => {
+		}).catch((err) => {
 			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
 		});
 	}
@@ -1226,7 +1226,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page - 1) * limit);
 		t6console.debug(sprintf("Query: %s", query));
 
-		dbInfluxDB.query(query).then(queryData => {
+		dbInfluxDB.query(query).then((queryData) => {
 			if (queryData.length > 0) {
 				let data = {};
 				queryData.map(function(row) {

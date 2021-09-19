@@ -20,8 +20,8 @@ t6imagesprocessing.ageAndGenderRecognition = function(img, dir, filename, ext, s
 				resolve( { age: results[0].age, gender: results[0].gender} );
 				if (save===true) {
 					const out = faceapi.createCanvasFromMedia(img);
-					faceapi.draw.drawDetections(out, results.map(res => res.detection));
-					faceapi.draw.drawFaceLandmarks(out, results.map(res => res.landmarks))
+					faceapi.draw.drawDetections(out, results.map((res) => res.detection));
+					faceapi.draw.drawFaceLandmarks(out, results.map((res) => res.landmarks))
 					faceapi.draw.drawFaceExpressions(out, results);
 					fs.writeFile(path.join(dir, `${filename}-ageAndGenderRecognition${ext}`), out.toBuffer("image/png"), function(err) {
 						if(err) {

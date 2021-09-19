@@ -311,7 +311,7 @@ router.all("*", function (req, res, next) {
 					)
 				);
 			}
-		}).catch(err => {
+		}).catch((err) => {
 			t6console.error(
 				sprintf(
 					"Error catch on writePoints to influxDb for anonymous %s",
@@ -326,7 +326,7 @@ router.all("*", function (req, res, next) {
 function checkForTooManyFailure(req, res, email) {
 	// Invalid Credentials
 	var query = sprintf("SELECT count(*) FROM %s WHERE (what='user login failure') AND (who='%s') AND (time>now() - 1h)", t6events.getMeasurement(), email);
-	dbInfluxDB.query(query).then(data => {
+	dbInfluxDB.query(query).then((data) => {
 		if( typeof data==="object" && typeof data[0]!=="undefined" && data[0].count_who > 2 && data[0].count_who < 4 ) {
 			// when >4, then we should block the account and maybe ban the IP address
 			var geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
