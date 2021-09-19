@@ -124,7 +124,7 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 });
 
 /**
- * @api {get} /objects/:object_id Get Public Object 
+ * @api {get} /objects/:object_id/public" Get Public Object 
  * @apiName Get Public Object
  * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
@@ -164,7 +164,11 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 	var json = objects.find(query);
 	//t6console.debug(query);
 	json = json.length>0?json:[];
-	res.status(200).send(new ObjectSerializer(json).serialize());
+	if ( json && json.length>0 ) {
+		res.status(200).send(new ObjectSerializer(json).serialize());
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 601.1, "code": 404, "message": "Not Found"}).serialize());
+	}
 });
 
 /**
@@ -208,7 +212,7 @@ router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwts
 
 		res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "port": ota.defaultPort, "fqbn": object.fqbn, "source_id": object.source_id, "objectExpectedVersion": object.source_version, "sourceLatestVersion": source.latest_version, "buildVersions": buildVersions });
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 601.2, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -247,7 +251,7 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtset
 			}
 		});
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 601.3, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
