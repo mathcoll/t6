@@ -206,7 +206,14 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
 	if ( req.user.id === user_id || req.user.role === "admin" ) {
-		res.status(200).send(new UserSerializer(users.chain().find({"id": { "$eq": user_id }}).simplesort("expiration", true).data()).serialize());
+		var json = users.chain().find({"id": { "$eq": user_id }}).simplesort("expiration", true).data();
+		//t6console.debug(query);
+		json = json.length>0?json:[];
+		if ( json && json.length>0 ) {
+			res.status(200).send(new UserSerializer(json).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 16.1, "code": 404, "message": "Not Found"}).serialize());
+		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 16, "code": 403, "message": "Forbidden"}).serialize());
 	}
