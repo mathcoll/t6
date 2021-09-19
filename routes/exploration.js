@@ -755,7 +755,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					.attr("transform", `translate(0, ${height})`)
 					.call(xAxis)
 					.selectAll("text")
-					.attr("transform", `translate(-10, 0)rotate(-45)`)
+					.attr("transform", "translate(-10, 0)rotate(-45)")
 					.style("text-anchor", "end");
 
 				g.append("g").call(yAxis);
@@ -993,7 +993,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 	let _hoverColor = "brown";
 	let _isCurve = true;
 	let _labels = { xAxis: typeof req.query.xAxis!=="undefined" ? req.query.xAxis : "", yAxis: typeof req.query.yAxis!=="undefined" ? req.query.yAxis : "" };
-	let _svgStyles = ``;
+	let _svgStyles = "";
 	if (!flow_id) {
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
@@ -1071,8 +1071,8 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				});
 
 				let svg = d3n.createSVG(width, height)
-					.append('g')
-					.attr('transform', `translate(${_margin.left}, ${_margin.top})`);
+					.append("g")
+					.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
 				width = width - _margin.left - _margin.right;
 				height = height - _margin.top - _margin.bottom;
 
@@ -1082,7 +1082,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				let line_xAxis = d3.axisBottom(xScale)
 					.tickSize(_tickSize)
 					.tickPadding(_tickPadding);
-				svg.append('g').attr('transform', `translate(0, ${height})`).call(line_xAxis);
+				svg.append("g").attr("transform", `translate(0, ${height})`).call(line_xAxis);
 
 				let yScale = d3.scaleLinear()
 					.domain(d3.extent(data, (d) => d.value))
@@ -1109,9 +1109,9 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 				
 				svg.append("path")
 					.datum(data)
-					.attr('fill', 'none')
-					.attr('stroke', _lineColor)
-					.attr('stroke-width', _lineWidth)
+					.attr("fill", "none")
+					.attr("stroke", _lineColor)
+					.attr("stroke-width", _lineWidth)
 					.attr("class", "line")
 					.attr("d", lineChart);
 
@@ -1246,8 +1246,8 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 				const d3 = d3n.d3;
 
 				let svg = d3n.createSVG(width, height)
-					.append('g')
-					.attr('transform', `translate(${_margin.left}, ${_margin.top})`);
+					.append("g")
+					.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
 				width = width - _margin.left - _margin.right;
 				height = height - _margin.top - _margin.bottom;
 				
@@ -1282,9 +1282,9 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 					.attr("class", "main-horizontal-line");
 			
 				// text label for the x Axis
-				svg.append('text')
-					.attr('transform', `translate(${width / 2}, ${height + _margin.bottom - 5})`)
-					.style('text-anchor', 'middle')
+				svg.append("text")
+					.attr("transform", `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+					.style("text-anchor", "middle")
 					.text(_labels.xAxis);
 			
 				// Show the box

@@ -438,8 +438,8 @@ router.get("/subscribers/:type(newsletter|monthlyreport|reminder|changePassword|
  */
 router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
-		let subject = `t6 monthly activity report`;
-		let influxQuery = `SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM quota4w.requests WHERE time > now() - 4w GROUP BY user_id)`;
+		let subject = "t6 monthly activity report";
+		let influxQuery = "SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM quota4w.requests WHERE time > now() - 4w GROUP BY user_id)";
 		//t6console.debug("get all actives users from influxDb", influxQuery);
 		// get all actives users
 		dbInfluxDB.query(influxQuery).then((activesUsers) => {
