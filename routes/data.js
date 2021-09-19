@@ -809,7 +809,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 
 		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
 		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, retention, flow_id, where, group_by, sorting, limit, (page-1)*limit);
-		t6console.debug(sprintf("Query: %s", query));
+		t6console.debug("Query:", query);
 
 		dbInfluxDB.query(query).then((data) => {
 			if ( data.length > 0 ) {
@@ -818,14 +818,12 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 					d.timestamp = Date.parse(d.time);
 					d.time = Date.parse(d.time);
 				});
-				data.title = ((join.data())[0].left)!==null?((join.data())[0].left).name:"";
-				//data.datatype = payload.datatype;
-				//data.datatype_id = payload.datatype_id;
-				data.unit = ((join.data())[0].right)!==null?((join.data())[0].right).format:""; // TODO : not consistent with POST
-				data.unit_format = ((join.data())[0].right)!==null?((join.data())[0].right).format:""; // TODO : not consistent with POST
-				data.unit_id = ((join.data())[0].right)!==null?((join.data())[0].right).id:"";
-				data.mqtt_topic = ((join.data())[0].left).mqtt_topic;
-				data.ttl = (((join.data())[0].left).ttl!==null && ((join.data())[0].left).ttl!=="")?((join.data())[0].left).ttl:3600;
+				data.title = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].left)!==null )?((join.data())[0].left).name:"";
+				data.unit = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).format:""; // TODO : not consistent with POST
+				data.unit_format = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).format:""; // TODO : not consistent with POST
+				data.unit_id = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).id:"";
+				data.mqtt_topic = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].left)!==null )?((join.data())[0].left).mqtt_topic:"";
+				data.ttl = (typeof (join.data())[0]!=="undefined" && ((join.data())[0].left).ttl!==null && ((join.data())[0].left).ttl!=="")?((join.data())[0].left).ttl:3600;
 				data.flow_id = flow_id;
 				data.pageSelf = page;
 				data.pageNext = page+1;
@@ -842,6 +840,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 
 				res.status(200).send(new DataSerializer(data).serialize());
 			} else {
+				t6console.debug(query);
 				res.status(404).send({err: "No data found", "id": 899.5, "code": 404, "message": "Not found"});
 			}
 		}).catch((err) => {
