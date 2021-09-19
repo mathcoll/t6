@@ -22,6 +22,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	let limit = 10;
 	let engine = new Engine();
 	p.user_id = user_id;
+	p.latitude = typeof p.latitude!=="undefined"?p.latitude:0;
+	p.longitude = typeof p.longitude!=="undefined"?p.longitude:0;
 	
 	var query = {
 		"$and": [
