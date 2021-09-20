@@ -1,7 +1,7 @@
 {
   "name": "t6",
   "version": "2.0.1",
-  "description": "t6 is an 'oriented-Data' platform to connect physical Objects with timeseries DB.",
+  "description": "t6 is a 'Data-first' IoT platform to connect physical Objects with time-series DB and perform Data Analysis.",
   "author": {
     "name": "Mathieu Lory",
     "email": "mathieu@internetcollaboratif.info"
@@ -24,10 +24,10 @@
     "prepare": "npm run snyk-protect"
   },
   "dependencies": {
-    "@influxdata/influxdb-client": "^1.15.0",
+    "@influxdata/influxdb-client": "^1.18.0",
     "@tensorflow/tfjs-node": "^3.9.0",
-    "@vladmandic/face-api": "^1.4.1",
-    "acorn": "^8.4.1",
+    "@vladmandic/face-api": "^1.5.3",
+    "acorn": "^8.5.0",
     "arduino-cli": "^0.37.0",
     "async": "^3.2.1",
     "bcrypt": "^5.0.1",
@@ -55,7 +55,7 @@
     "express-http-proxy": "^1.6.2",
     "express-jwt": "^6.1.0",
     "express-session": "^1.17.2",
-    "firebase-admin": "^9.11.0",
+    "firebase-admin": "^9.11.1",
     "fs-extra": "^10.0.0",
     "geodist": "^0.2.1",
     "geoip-lite": "^1.4.2",
@@ -78,7 +78,6 @@
     "node-units": "^0.1.7",
     "node-uuid": "^1.4.7",
     "nodemailer": "^6.6.3",
-    "npm": "^7.20.6",
     "nsp": "^3.2.1",
     "passgen": "^1.0.1",
     "path": "^0.12.7",
@@ -87,7 +86,7 @@
     "rebuild": "^0.1.2",
     "request": "^2.88.2",
     "sentiment": "^5.0.2",
-    "serialport": "^9.2.0",
+    "serialport": "^9.2.1",
     "serve-favicon": "^2.4.5",
     "session-file-store": "^1.5.0",
     "simple-statistics": "^7.7.0",
