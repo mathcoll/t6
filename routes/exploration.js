@@ -1320,7 +1320,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 
 
 /**
- * @api {get} /exploration/:flow_id/exploration Get Exploration
+ * @api {get} /exploration/:flow_id/exploration Explore Flows
  * @apiName Explore Flows
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
@@ -1451,7 +1451,7 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, group_by, sorting, limit, (page - 1) * limit);
 		t6console.debug(sprintf("Query: %s", query));
 
-		dbInfluxDB.query(query).then(data => {
+		dbInfluxDB.query(query).then((data) => {
 			if (data.length > 0) {
 				var graphData = [];
 				let svg;
@@ -1578,7 +1578,8 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 			} else {
 				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
 			}
-		}).catch(err => {
+		}).catch((err) => {
+			t6console.debug("err", err);
 			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
 		});
 	}
