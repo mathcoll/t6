@@ -235,7 +235,9 @@ router.all("*", function (req, res, next) {
 		var i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
 		var query = `SELECT count(url) FROM "${rp}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 4w) LIMIT 1`;
+		//t6console.debug(query);
 		dbInfluxDB.query(query).then((data) => {
+			//t6console.debug(data);
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
 				res.header("X-RateLimit-Remaining", limit-i);
@@ -244,7 +246,7 @@ router.all("*", function (req, res, next) {
 			res.header("Cache-Control", "no-cache, max-age=360, private, must-revalidate, proxy-revalidate");
 			if( (req.user && i >= limit) ) {
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id, typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
+				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"})).end();
 			} else {
 				res.on("close", () => {
 					let tags = {
@@ -282,7 +284,7 @@ router.all("*", function (req, res, next) {
 		}).catch((err) => {
 			t6console.error("ERROR", err);
 			if(typeof i!=="undefined") {
-				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
+				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."})).end();
 			} else {
 				next();
 			}

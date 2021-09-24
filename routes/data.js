@@ -97,6 +97,9 @@ function preparePayload(payload, options, callback) {
 	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
 	payload.retention	 = typeof payload.retention!=="undefined"?payload.retention:undefined;
 
+	if(typeof payload.retention!=="undefined" && (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1) {
+		payload.retention = influxSettings.retentionPolicies.data[0];
+	}
 	if(payload.object_id) {
 		getObjectKey(payload, payload.user_id)
 			.then((ok) => {
@@ -492,7 +495,7 @@ function saveToLocal(payload, fields, current_flow, callback) {
 		callback(null, payload, fields, current_flow);
 	}
 	if ( save === true ) {
-		let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
+		let rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
 		if(typeof payload.retention!=="undefined") {
 			rp = payload.retention;
 		}
@@ -655,6 +658,7 @@ async function processAllMeasures(payloads, options, res) {
 					measure.time = payload.time*1e6;
 					measure.timestamp = payload.time*1e6;
 					measure.value = payload.value;
+					measure.retention = payload.retention;
 					measure.mqtt_topic = payload.mqtt_topic;
 					measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
 					measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
@@ -730,6 +734,7 @@ async function processAllMeasures(payloads, options, res) {
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
+ * @apiUse 412
  * @apiUse 429
  * @apiUse 500
  */
@@ -817,8 +822,14 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			group_by = sprintf("GROUP BY time(%s)", group);
 		}
 
-		let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
+		let rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
 		rp = typeof retention!=="undefined"?retention:rp;
+		if ((influxSettings.retentionPolicies.data).indexOf(rp)===-1) {
+			t6console.debug("Retention is not valid:", rp);
+			res.status(412).send(new ErrorSerializer({"id": 899.4, "code": 412, "message": "Retention Policy not valid"}).serialize());
+			return;
+		};
+		t6console.debug("Retention is valid:", rp);
 		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, rp, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.debug("Query:", query);
 
