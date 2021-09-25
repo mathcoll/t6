@@ -128,7 +128,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		}
 	});
 
-	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, p.user_id, limit);
+	let rp = typeof p.retention!=="undefined"?p.retention:"autogen";
+	if ((influxSettings.retentionPolicies.data).indexOf(rp)===-1) {
+		t6console.debug("Retention is not valid:", rp);
+		rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
+	};
+	let influxQuery = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", rp, p.flow, p.user_id, limit);
 	t6console.info("DB retrieve latest values", influxQuery);
 	let valuesFromDb = [];
 	let indexesFromDb = [];

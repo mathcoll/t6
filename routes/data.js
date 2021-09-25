@@ -34,46 +34,6 @@ function getObjectKey(payload, user_id) {
 		}
 	});
 }
-function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
-	let fields = "";
-	if( includeTime ) {
-		fields += "time, ";
-	}
-	switch(datatype) {
-		case "boolean": 
-			fields += "valueBoolean";
-			break;
-		case "date": 
-			fields += "valueDate";
-			break;
-		case "integer": 
-			fields += "valueInteger";
-			break;
-		case "json": 
-			fields += "valueJson";
-			break;
-		case "time": 
-			fields += "valueTime";
-			break;
-		case "float": 
-			fields += "valueFloat";
-			break;
-		case "geo": 
-			fields += "valueGeo";
-			break;
-		case "image": 
-			fields += "valueImage";
-			break;
-		case "string": 
-		default: 
-			fields += "valueString";
-			break;
-	}
-	if( asValue ) {
-		fields += " as value";
-	}
-	return fields;
-}
 function preparePayload(payload, options, callback) {
 	t6console.debug("chain 1", "preparePayload");
 	payload = getJson(payload);
@@ -97,9 +57,6 @@ function preparePayload(payload, options, callback) {
 	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
 	payload.retention	 = typeof payload.retention!=="undefined"?payload.retention:undefined;
 
-	if(typeof payload.retention!=="undefined" && (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1) {
-		payload.retention = influxSettings.retentionPolicies.data[0];
-	}
 	if(payload.object_id) {
 		getObjectKey(payload, payload.user_id)
 			.then((ok) => {
@@ -312,6 +269,18 @@ function verifyPrerequisites(payload, object, callback) {
 			t6console.debug("chain 5", "Flow require isSigned -", current_flow.left.require_signed);
 			t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
 			payload.prerequisite += 1;
+		}
+
+		if( typeof payload.retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1 ) {
+			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.retention ) {
+				if ( (influxSettings.retentionPolicies.data).indexOf(current_flow.left.retention)>-1 ) {
+					payload.retention = current_flow.left.retention;
+				} else {
+					payload.retention = influxSettings.retentionPolicies.data[0];
+				}
+			} else {
+				payload.retention = influxSettings.retentionPolicies.data[0];
+			}
 		}
 
 		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
@@ -822,13 +791,25 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			group_by = sprintf("GROUP BY time(%s)", group);
 		}
 
-		let rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
-		rp = typeof retention!=="undefined"?retention:rp;
-		if ((influxSettings.retentionPolicies.data).indexOf(rp)===-1) {
-			t6console.debug("Retention is not valid:", rp);
-			res.status(412).send(new ErrorSerializer({"id": 899.4, "code": 412, "message": "Retention Policy not valid"}).serialize());
-			return;
-		};
+		let rp = typeof retention!=="undefined"?retention:"autogen";
+		if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+			if ( typeof flow!=="undefined" && flow.retention ) {
+				if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+					rp = flow.retention;
+				} else {
+					rp = influxSettings.retentionPolicies.data[0];
+					t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+					res.status(412).send(new ErrorSerializer({"id": 899.41, "code": 412, "message": "Retention Policy not valid"}).serialize());
+					return;
+				}
+			} else {
+				rp = influxSettings.retentionPolicies.data[0];
+				t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+				//res.status(412).send(new ErrorSerializer({"id": 899.42, "code": 412, "message": "Retention Policy not valid"}).serialize());
+				//return;
+			}
+		}
+		
 		t6console.debug("Retention is valid:", rp);
 		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, rp, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.debug("Query:", query);
@@ -839,6 +820,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);
 					d.timestamp = Date.parse(d.time);
 					d.time = Date.parse(d.time);
+					d.retention = rp;
 				});
 				data.title = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].left)!==null )?((join.data())[0].left).name:"";
 				data.unit = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).format:""; // TODO : not consistent with POST

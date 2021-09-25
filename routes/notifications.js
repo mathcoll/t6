@@ -439,7 +439,8 @@ router.get("/subscribers/:type(newsletter|monthlyreport|reminder|changePassword|
 router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
 		let subject = "t6 monthly activity report";
-		let influxQuery = "SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM quota4w.requests WHERE time > now() - 4w GROUP BY user_id)";
+		let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
+		let influxQuery = `SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM ${rp}.requests WHERE time > now() - 4w GROUP BY user_id)`;
 		//t6console.debug("get all actives users from influxDb", influxQuery);
 		// get all actives users
 		dbInfluxDB.query(influxQuery).then((activesUsers) => {
@@ -457,7 +458,7 @@ router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, 
 						if ( typeof recipient!=="undefined" && recipient!==null ) {
 							const r = recipient;
 							t6console.debug("Found recipient", recipient.id, recipient);
-							let influxQuery2 = `SELECT COUNT(url), MEAN(durationInMilliseconds) as meanDurationInMilliseconds, SPREAD(durationInMilliseconds) as spreadDurationInMilliseconds from quota4w.requests WHERE user_id='${d.user_id}' GROUP BY verb`;
+							let influxQuery2 = `SELECT COUNT(url), MEAN(durationInMilliseconds) as meanDurationInMilliseconds, SPREAD(durationInMilliseconds) as spreadDurationInMilliseconds from ${rp}.requests WHERE user_id='${d.user_id}' GROUP BY verb`;
 							dbInfluxDB.query(influxQuery2).then((data) => {
 								if ( data.length > 0 ) {
 									r.data = data.map(function(d, i) {

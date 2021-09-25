@@ -528,5 +528,46 @@ mqttClient.on("message", function (topic, message) {
 	t6console.log(sprintf("Connected Objects: %s", t6ConnectedObjects));
 });
 global.startProcessTime = new Date()-start;
+
+global.getFieldsFromDatatype = function(datatype, asValue, includeTime=true) {
+	let fields = "";
+	if( includeTime ) {
+		fields += "time, ";
+	}
+	switch(datatype) {
+		case "boolean": 
+			fields += "valueBoolean";
+			break;
+		case "date": 
+			fields += "valueDate";
+			break;
+		case "integer": 
+			fields += "valueInteger";
+			break;
+		case "json": 
+			fields += "valueJson";
+			break;
+		case "time": 
+			fields += "valueTime";
+			break;
+		case "float": 
+			fields += "valueFloat";
+			break;
+		case "geo": 
+			fields += "valueGeo";
+			break;
+		case "image": 
+			fields += "valueImage";
+			break;
+		case "string": 
+		default: 
+			fields += "valueString";
+			break;
+	}
+	if( asValue ) {
+		fields += " as value";
+	}
+	return fields;
+}
 t6console.log(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
 module.exports = app;
