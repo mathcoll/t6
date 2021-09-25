@@ -105,7 +105,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 			//t6console.log(dashboards);
 			
 			res.header("Location", "/v"+version+"/dashboards/"+new_dashboard.id);
-			res.status(201).send({ "code": 201, message: "Created", flow: new DashboardSerializer(new_dashboard).serialize() });
+			res.status(201).send({ "code": 201, message: "Created", dashboard: new DashboardSerializer(new_dashboard).serialize() });
 		}
 	}
 });
@@ -159,7 +159,7 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 					dbDashboards.save();
 					
 					res.header("Location", "/v"+version+"/dashboards/"+dashboard_id);
-					res.status(200).send({ "code": 200, message: "Successfully updated", flow: new DashboardSerializer(result).serialize() });
+					res.status(200).send({ "code": 200, message: "Successfully updated", dashboard: new DashboardSerializer(result).serialize() });
 				} else {
 					res.status(404).send(new ErrorSerializer({"id": 340, "code": 404, "message": "Not Found"}).serialize());
 				}
