@@ -497,6 +497,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 	var queryQ = { "user_id" : req.user.id };
 	var i = (objects.find(queryQ)).length;
 	if( i >= (quota[req.user.role]).objects ) {
+		t6console.log("QUOTA LIMIT on Objects", req.user.role, i, (quota[req.user.role]).objects);
 		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
 		var newObject = {
