@@ -549,7 +549,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
 				}
 			}
-			query = `SELECT ${dt} as value FROM data WHERE flow_id='${flow_id}' ${where} ${group_by} LIMIT ${limit} OFFSET 1`;
+			query = `SELECT ${dt} as value FROM ${rp}.data WHERE flow_id='${flow_id}' ${where} ${group_by} LIMIT ${limit} OFFSET 1`;
 			t6console.debug(sprintf("Query: %s", query));
 	
 			dbInfluxDB.query(query).then((queryData) => {
@@ -793,7 +793,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
 				}
 			}
-			query = `SELECT MEAN(${dt}) as mean, PERCENTILE(${dt},25) as "q1", PERCENTILE(${dt},50) as "q2", PERCENTILE(${dt},75) as "q3" FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
+			query = `SELECT MEAN(${dt}) as mean, PERCENTILE(${dt},25) as "q1", PERCENTILE(${dt},50) as "q2", PERCENTILE(${dt},75) as "q3" FROM ${rp}.data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
 			t6console.debug(sprintf("Query: %s", query));
 	
 			dbInfluxDB.query(query).then((data) => {
@@ -927,7 +927,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					res.setHeader("content-type", "image/svg+xml");
 					res.status(200).send(d3n.svgString());
 				} else {
-					t6console.debug("", queryData, queryData.data);
+					t6console.debug("", data, data.data);
 					res.status(412).send({ err: "No data found", "id": 898.5, "code": 412, "message": "Not found or not enougth data" });
 				}
 			}).catch(err => {
@@ -935,6 +935,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 				res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
 			});
 		} else {
+			t6console.error("flowDT", flowDT.data());
 			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 899.7, "code": 412, "message": "Precondition Failed" });
 		}
 	}
@@ -959,7 +960,6 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
- * @apiUse 412
  * @apiUse 429
  * @apiUse 500
  */
@@ -1006,45 +1006,41 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
 		let dt = getFieldsFromDatatype(datatypeName, false, false);
 
-		//if( datatypeName === "integer" || datatypeName === "float" ) {
-			let rp = typeof retention!=="undefined"?retention:"autogen";
-			let flow = (flowDT.data())[0].left;
-			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
-				if ( typeof flow!=="undefined" && flow.retention ) {
-					if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
-						rp = flow.retention;
-					} else {
-						rp = influxSettings.retentionPolicies.data[0];
-						t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
-					}
+		let rp = typeof retention!=="undefined"?retention:"autogen";
+		let flow = (flowDT.data())[0].left;
+		if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+			if ( typeof flow!=="undefined" && flow.retention ) {
+				if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+					rp = flow.retention;
 				} else {
 					rp = influxSettings.retentionPolicies.data[0];
-					t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+					t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
 				}
+			} else {
+				rp = influxSettings.retentionPolicies.data[0];
+				t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
 			}
-			query = `SELECT MEAN(${dt}) as value FROM data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
-			t6console.debug(sprintf("Query: %s", query));
-	
-			dbInfluxDB.query(query).then((data) => {
-				if (data.length > 0) {
-					var graphData = [];
-					data.map(function(row) {
-						if (typeof row.time !== "undefined" && row.value !==null) {
-							graphData.push([moment(row.time).format("DD-MM-YYYY HH:mm:ss"), parseInt(moment(row.time).format("x"), 10), row.value]);
-						}
-					});
-	
-					res.setHeader("content-type", "application/json");
-					res.status(200).send(graphData);
-				} else {
-					res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
-				}
-			}).catch((err) => {
-				res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
-			});
-		//} else {
-		//	res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 899.7, "code": 412, "message": "Precondition Failed" });
-		//}
+		}
+		query = `SELECT MEAN(${dt}) as value FROM ${rp}.data WHERE flow_id='${flow_id}' ${where} ${group_by}`;
+		t6console.debug(sprintf("Query: %s", query));
+
+		dbInfluxDB.query(query).then((data) => {
+			if (data.length > 0) {
+				var graphData = [];
+				data.map(function(row) {
+					if (typeof row.time !== "undefined" && row.value !==null) {
+						graphData.push([moment(row.time).format("DD-MM-YYYY HH:mm:ss"), parseInt(moment(row.time).format("x"), 10), row.value]);
+					}
+				});
+
+				res.setHeader("content-type", "application/json");
+				res.status(200).send(graphData);
+			} else {
+				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+			}
+		}).catch((err) => {
+			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
+		});
 	}
 });
 
@@ -1094,10 +1090,12 @@ router.get("/outliers/?", expressJwt({ secret: jwtsettings.secret, algorithms: j
  * 
  * @apiUse 200
  * @apiUse 404
+ * @apiUse 412
  * 
  */
 router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
+	var retention = req.query.retention;
 	var group = req.query.group;
 	var width = parseInt(req.query.width, 10);
 	var height = parseInt(req.query.height, 10);
@@ -1119,6 +1117,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		let where = "";
+		let group_by = "";
 
 		if (typeof req.query.start !== "undefined") {
 			if (!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
@@ -1154,94 +1153,109 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 		} else if (limit < 1) {
 			limit = 1;
 		}
-
-		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
-		var join = flow.eqJoin(units.chain(), "unit", "id");
+		if (typeof group!=="undefined") {
+			group_by = `GROUP BY time(${group})`;
+		}
 
 		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
-		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
-		let dt = getFieldsFromDatatype(datatype, false, false);
+		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
+		let dt = getFieldsFromDatatype(datatypeName, false, false);
 
-		let group_by = "";
-		if (typeof group !== "undefined") {
-			group_by = sprintf("GROUP BY time(%s)", group);
-		}
-
-		query = sprintf("SELECT %s as value FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", dt, flow_id, where, sorting, limit, (page - 1) * limit);
-		t6console.debug(sprintf("Query: %s", query));
-
-		dbInfluxDB.query(query).then((queryData) => {
-			if (queryData.length > 0) {
-				let data = [];
-				const d3n = new D3Node({
-					selector: "",
-					styles: _svgStyles,
-					container: "",
-				});
-				const d3 = d3n.d3;
-				queryData.map(function(row) {
-					if (typeof row.time !== "undefined") {
-						data.push(
-							{
-								date: parseInt(moment(row.time._nanoISO).format("x"), 10),
-								value: row.value
-							}
-						);	
+		if( datatypeName === "integer" || datatypeName === "float" ) {
+			let rp = typeof retention!=="undefined"?retention:"autogen";
+			let flow = (flowDT.data())[0].left;
+			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+				if ( typeof flow!=="undefined" && flow.retention ) {
+					if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+						rp = flow.retention;
+					} else {
+						rp = influxSettings.retentionPolicies.data[0];
+						t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
 					}
-				});
-
-				let svg = d3n.createSVG(width, height)
-					.append("g")
-					.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
-				width = width - _margin.left - _margin.right;
-				height = height - _margin.top - _margin.bottom;
-
-				let xScale = d3.scaleTime()
-					.domain(d3.extent(data, function(d) { return d.date; }))
-					.range([0, width]);
-				let line_xAxis = d3.axisBottom(xScale)
-					.tickSize(_tickSize)
-					.tickPadding(_tickPadding);
-				svg.append("g").attr("transform", `translate(0, ${height})`).call(line_xAxis);
-
-				let yScale = d3.scaleLinear()
-					.domain(d3.extent(data, (d) => d.value))
-					.range([height, 0]);
-				let line_yAxis = d3.axisLeft(yScale)
-					.tickSize(_tickSize)
-					.tickPadding(_tickPadding);
-				svg.append("g").call(line_yAxis);
-				
-				let lineChart = d3.line()
-					//.x(d => xScale(d.date))
-					//.y(d => yScale(d.value));
-					.defined((d) => !isNaN(d.value))
-					.x(function(d) { return xScale(d.date); })
-					.y(function(d) { return yScale(d.value); });
-				
-				if (_isCurve) lineChart.curve(d3.curveBasis);
-				
-				// text label for the x Axis
-				svg.append("text")
-					.attr("transform", `translate(${width / 2}, ${height + _margin.bottom - 5})`)
-					.style("text-anchor", "middle")
-					.text(_labels.xAxis);
-				
-				svg.append("path")
-					.datum(data)
-					.attr("fill", "none")
-					.attr("stroke", _lineColor)
-					.attr("stroke-width", _lineWidth)
-					.attr("class", "line")
-					.attr("d", lineChart);
-
-				res.setHeader("content-type", "image/svg+xml");
-				res.status(200).send(d3n.svgString());
-			} else {
-				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+				} else {
+					rp = influxSettings.retentionPolicies.data[0];
+					t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+				}
 			}
-		});
+			query = `SELECT ${dt} as value FROM ${rp}.data WHERE flow_id='${flow_id}' ${where} ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
+			t6console.debug(sprintf("Query: %s", query));
+
+			dbInfluxDB.query(query).then((queryData) => {
+				if (queryData.length > 0) {
+					let data = [];
+					const d3n = new D3Node({
+						selector: "",
+						styles: _svgStyles,
+						container: "",
+					});
+					const d3 = d3n.d3;
+					queryData.map(function(row) {
+						if (typeof row.time !== "undefined") {
+							data.push(
+								{
+									date: parseInt(moment(row.time._nanoISO).format("x"), 10),
+									value: row.value
+								}
+							);	
+						}
+					});
+
+					let svg = d3n.createSVG(width, height)
+						.append("g")
+						.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
+					width = width - _margin.left - _margin.right;
+					height = height - _margin.top - _margin.bottom;
+	
+					let xScale = d3.scaleTime()
+						.domain(d3.extent(data, function(d) { return d.date; }))
+						.range([0, width]);
+					let line_xAxis = d3.axisBottom(xScale)
+						.tickSize(_tickSize)
+						.tickPadding(_tickPadding);
+					svg.append("g").attr("transform", `translate(0, ${height})`).call(line_xAxis);
+
+					let yScale = d3.scaleLinear()
+						.domain(d3.extent(data, (d) => d.value))
+						.range([height, 0]);
+					let line_yAxis = d3.axisLeft(yScale)
+						.tickSize(_tickSize)
+						.tickPadding(_tickPadding);
+					svg.append("g").call(line_yAxis);
+
+					let lineChart = d3.line()
+						//.x(d => xScale(d.date))
+						//.y(d => yScale(d.value));
+						.defined((d) => !isNaN(d.value))
+						.x(function(d) { return xScale(d.date); })
+						.y(function(d) { return yScale(d.value); });
+
+					if (_isCurve) lineChart.curve(d3.curveBasis);
+
+					// text label for the x Axis
+					svg.append("text")
+						.attr("transform", `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+						.style("text-anchor", "middle")
+						.text(_labels.xAxis);
+
+					svg.append("path")
+						.datum(data)
+						.attr("fill", "none")
+						.attr("stroke", _lineColor)
+						.attr("stroke-width", _lineWidth)
+						.attr("class", "line")
+						.attr("d", lineChart);
+
+					res.setHeader("content-type", "image/svg+xml");
+					res.status(200).send(d3n.svgString());
+				} else {
+					t6console.debug("", queryData, queryData.data);
+					res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+				}
+			});
+		} else {
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 898.5, "code": 412, "message": "Precondition Failed" });
+		}
 	}
 });
 
@@ -1255,12 +1269,13 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
  * 
  * @apiUse 200
  * @apiUse 404
+ * @apiUse 412
  * 
  */
 router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
+	var retention = req.query.retention;
 	var select = typeof req.query.select !== "undefined" ? req.query.select : undefined;
-	var group = req.query.group;
 	var width = parseInt(req.query.width, 10);
 	var height = parseInt(req.query.height, 10);
 	var query;
@@ -1319,123 +1334,140 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 			limit = 1;
 		}
 
-		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
-		var join = flow.eqJoin(units.chain(), "unit", "id");
-
-		var flowsDT = db_flows.getCollection("flows");
-		var flowDT = flowsDT.chain().find({ id: flow_id, }).limit(1);
+		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
-		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
-		let fields = getFieldsFromDatatype(datatype, false);
-		let dt = getFieldsFromDatatype(datatype, false, false);
-		if (typeof select !== "undefined") { // TODO: needs refacto and allows multiple coma separated values
-			fields = "";
-			switch (select) {
-				case "min": fields += sprintf("MIN(%s) as min", dt); break;
-				case "max": fields += sprintf("MAX(%s) as max", dt); break;
-				case "first": fields += sprintf("FIRST(%s) as first", dt); break;
-				case "last": fields += sprintf("LAST(%s) as last", dt); break;
-				case "sum": fields = sprintf("SUM(%s) as sum", dt); break;
-				case "count": fields = sprintf("COUNT(%s) as count", dt); break;
-				case "median": fields += sprintf("MEDIAN(%s) as median", dt); break;
-				case "mean": fields += sprintf("MEAN(%s) as mean", dt); break;
-			}
-		} else {
-			fields = sprintf("FIRST(%s) as first, LAST(%s) as last, COUNT(%s) as count, MEAN(%s) as mean, STDDEV(%s) as stddev, MIN(%s) as min, MAX(%s) as max, PERCENTILE(%s, 25) as q1, PERCENTILE(%s, 50) as q2, PERCENTILE(%s, 75) as q3", dt, dt, dt, dt, dt, dt, dt, dt, dt, dt, dt);
-		}
+		var datatypeName = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
+		let dt = getFieldsFromDatatype(datatypeName, false, false);
 
-		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, sorting, limit, (page - 1) * limit);
-		t6console.debug(sprintf("Query: %s", query));
-
-		dbInfluxDB.query(query).then((queryData) => {
-			if (queryData.length > 0) {
-				let data = {};
-				queryData.map(function(row) {
-					if (typeof row.time !== "undefined") {
-						data.q1 = row.q1;
-						data.median = row.mean;
-						data.q3 = row.q3;
-						data.min = row.min;
-						data.max = row.max;
+		if( datatypeName === "integer" || datatypeName === "float" ) {
+			let rp = typeof retention!=="undefined"?retention:"autogen";
+			let flow = (flowDT.data())[0].left;
+			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+				if ( typeof flow!=="undefined" && flow.retention ) {
+					if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+						rp = flow.retention;
+					} else {
+						rp = influxSettings.retentionPolicies.data[0];
+						t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
 					}
-				});
-				const d3n = new D3Node({
-					selector: "",
-					styles: _svgStyles,
-					container: "",
-				});
-				const d3 = d3n.d3;
-
-				let svg = d3n.createSVG(width, height)
-					.append("g")
-					.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
-				width = width - _margin.left - _margin.right;
-				height = height - _margin.top - _margin.bottom;
-				
-				let data_sorted;
-				if (!data.q1 && !data.q3 && !data.median) {
-					data_sorted = data.sort(d3.ascending);
 				} else {
-					data_sorted = null; // WTF
+					rp = influxSettings.retentionPolicies.data[0];
+					t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
 				}
-				let q1					= typeof data.q1!=="undefined"?data.q1:d3.quantile(data_sorted, .25);
-				let median				= typeof data.median!=="undefined"?data.median:d3.quantile(data_sorted, .5);
-				let q3					= typeof data.q3!=="undefined"?data.q3:d3.quantile(data_sorted, .75);
-				let interQuantileRange	= q3 - q1;
-				let min					= q1 - 1.5 * interQuantileRange;
-				let max					= q1 + 1.5 * interQuantileRange;
-				
-				// a few features for the box
-				let bxCenter = height/2;
-				let bxHeight = height/4;
-				
-				// Show the X scale
-				let x = d3.scaleLinear().domain([data.min - interQuantileRange, data.max + interQuantileRange]).range([0, width]);
-				svg.call(d3.axisTop(x));
-				
-				// Show the main horizontal line
-				svg.append("line")
-					.attr("x1", x(data.min) )
-					.attr("x2", x(data.max) )
-					.attr("y1", bxCenter)
-					.attr("y2", bxCenter)
-					.attr("stroke", "black")
-					.attr("class", "main-horizontal-line");
-			
-				// text label for the x Axis
-				svg.append("text")
-					.attr("transform", `translate(${width / 2}, ${height + _margin.bottom - 5})`)
-					.style("text-anchor", "middle")
-					.text(_labels.xAxis);
-			
-				// Show the box
-				svg.append("rect")
-					.attr("x", x(data.q1))
-					.attr("y", bxCenter - bxHeight/2 )
-					.attr("height", bxHeight )
-					.attr("width", (x(data.q3)-x(data.q1)) )
-					.attr("stroke", "black")
-					.attr("class", "box");
-			
-				// show median, min and max vertical lines
-				svg.selectAll("boxplot")
-				.data([data.min, data.median, data.max])
-					.enter()
-					.append("line")
-					.attr("x1", function(d){ return(x(d)); })
-					.attr("x2", function(d){ return(x(d)); })
-					.attr("y1", bxCenter-bxHeight/2)
-					.attr("y2", bxCenter+bxHeight/2)
-					.attr("stroke", "black")
-					.style("stroke-width", _lineWidth)
-					.attr("class", "min-line median-line max-line");
-
-				res.setHeader("content-type", "image/svg+xml");
-				res.status(200).send(d3n.svgString());
-			} else {
-				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
 			}
-		});
+			let fields = getFieldsFromDatatype(datatypeName, false);
+			if (typeof select !== "undefined") { // TODO: needs refacto and allows multiple coma separated values
+				fields = "";
+				switch (select) {
+					case "min": fields += sprintf("MIN(%s) as min", dt); break;
+					case "max": fields += sprintf("MAX(%s) as max", dt); break;
+					case "first": fields += sprintf("FIRST(%s) as first", dt); break;
+					case "last": fields += sprintf("LAST(%s) as last", dt); break;
+					case "sum": fields = sprintf("SUM(%s) as sum", dt); break;
+					case "count": fields = sprintf("COUNT(%s) as count", dt); break;
+					case "median": fields += sprintf("MEDIAN(%s) as median", dt); break;
+					case "mean": fields += sprintf("MEAN(%s) as mean", dt); break;
+				}
+			} else {
+				fields = `FIRST(${dt}) as first, LAST(${dt}) as last, COUNT(${dt}) as count, MEAN(${dt}) as mean, STDDEV(${dt}) as stddev, MIN(${dt}) as min, MAX(${dt}) as max, PERCENTILE(${dt}, 25) as q1, PERCENTILE(${dt}, 50) as q2, PERCENTILE(${dt}, 75) as q3`;
+			}
+
+			query = `SELECT ${fields} FROM ${rp}.data WHERE flow_id='${flow_id}' ${where} ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
+			t6console.debug(sprintf("Query: %s", query));
+
+			dbInfluxDB.query(query).then((queryData) => {
+				if (queryData.length > 0) {
+					let data = {};
+					queryData.map(function(row) {
+						if (typeof row.time !== "undefined") {
+							data.q1 = row.q1;
+							data.median = row.mean;
+							data.q3 = row.q3;
+							data.min = row.min;
+							data.max = row.max;
+						}
+					});
+					const d3n = new D3Node({
+						selector: "",
+						styles: _svgStyles,
+						container: "",
+					});
+					const d3 = d3n.d3;
+	
+					let svg = d3n.createSVG(width, height)
+						.append("g")
+						.attr("transform", `translate(${_margin.left}, ${_margin.top})`);
+					width = width - _margin.left - _margin.right;
+					height = height - _margin.top - _margin.bottom;
+					
+					let data_sorted;
+					if (!data.q1 && !data.q3 && !data.median) {
+						data_sorted = data.sort(d3.ascending);
+					} else {
+						data_sorted = null; // WTF
+					}
+					let q1					= typeof data.q1!=="undefined"?data.q1:d3.quantile(data_sorted, .25);
+					let median				= typeof data.median!=="undefined"?data.median:d3.quantile(data_sorted, .5);
+					let q3					= typeof data.q3!=="undefined"?data.q3:d3.quantile(data_sorted, .75);
+					let interQuantileRange	= q3 - q1;
+					let min					= q1 - 1.5 * interQuantileRange;
+					let max					= q1 + 1.5 * interQuantileRange;
+					
+					// a few features for the box
+					let bxCenter = height/2;
+					let bxHeight = height/4;
+					
+					// Show the X scale
+					let x = d3.scaleLinear().domain([data.min - interQuantileRange, data.max + interQuantileRange]).range([0, width]);
+					svg.call(d3.axisTop(x));
+					
+					// Show the main horizontal line
+					svg.append("line")
+						.attr("x1", x(data.min) )
+						.attr("x2", x(data.max) )
+						.attr("y1", bxCenter)
+						.attr("y2", bxCenter)
+						.attr("stroke", "black")
+						.attr("class", "main-horizontal-line");
+				
+					// text label for the x Axis
+					svg.append("text")
+						.attr("transform", `translate(${width / 2}, ${height + _margin.bottom - 5})`)
+						.style("text-anchor", "middle")
+						.text(_labels.xAxis);
+				
+					// Show the box
+					svg.append("rect")
+						.attr("x", x(data.q1))
+						.attr("y", bxCenter - bxHeight/2 )
+						.attr("height", bxHeight )
+						.attr("width", (x(data.q3)-x(data.q1)) )
+						.attr("stroke", "black")
+						.attr("class", "box");
+				
+					// show median, min and max vertical lines
+					svg.selectAll("boxplot")
+					.data([data.min, data.median, data.max])
+						.enter()
+						.append("line")
+						.attr("x1", function(d){ return(x(d)); })
+						.attr("x2", function(d){ return(x(d)); })
+						.attr("y1", bxCenter-bxHeight/2)
+						.attr("y2", bxCenter+bxHeight/2)
+						.attr("stroke", "black")
+						.style("stroke-width", _lineWidth)
+						.attr("class", "min-line median-line max-line");
+	
+					res.setHeader("content-type", "image/svg+xml");
+					res.status(200).send(d3n.svgString());
+				} else {
+					t6console.debug("", queryData, queryData.data);
+					res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+				}
+			});
+		} else {
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 898.5, "code": 412, "message": "Precondition Failed" });
+		}
 	}
 });
 
@@ -1485,225 +1517,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
-	var flow_id = req.params.flow_id;
-	var group = req.query.group;
-	var dateFormat = req.query.dateFormat;
-	var graphType = req.query.graphType;
-	var select = typeof req.query.select!=="undefined" ? req.query.select : undefined;
-	var xAxis = typeof req.query.xAxis!=="undefined" ? req.query.xAxis : "";
-	var yAxis = typeof req.query.yAxis!=="undefined" ? req.query.yAxis : "";
-	var ticks = typeof req.query.ticks!=="undefined" ? req.query.ticks : 10;
-	var width = parseInt(req.query.width, 10);
-	var height = parseInt(req.query.height, 10);
-	var query;
-	var start;
-	var end;
-	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
-	} else {
-		let where = "";
-
-		if (typeof req.query.start !== "undefined") {
-			if (!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
-				if (req.query.start.toString().length === 10) { start = req.query.start * 1e9; }
-				else if (req.query.start.toString().length === 13) { start = req.query.start * 1e6; }
-				else if (req.query.start.toString().length === 16) { start = req.query.start * 1e3; }
-				where += sprintf(" AND time>=%s", parseInt(start, 10));
-			} else {
-				where += sprintf(" AND time>='%s'", req.query.start.toString());
-			}
-		}
-		if (typeof req.query.end !== "undefined") {
-			if (!isNaN(req.query.end) && parseInt(req.query.end, 10)) {
-				if (req.query.end.toString().length === 10) { end = req.query.end * 1e9; }
-				else if (req.query.end.toString().length === 13) { end = req.query.end * 1e6; }
-				else if (req.query.end.toString().length === 16) { end = req.query.end * 1e3; }
-				where += sprintf(" AND time<=%s", parseInt(end, 10));
-			} else {
-				where += sprintf(" AND time<='%s'", req.query.end.toString());
-			}
-		}
-
-		var sorting = req.query.order === "asc" ? "ASC" : (req.query.sort === "asc" ? "ASC" : "DESC");
-		var page = parseInt(req.query.page, 10);
-		if (isNaN(page) || page < 1) {
-			page = 1;
-		}
-		var limit = parseInt(req.query.limit, 10);
-		if (isNaN(limit)) {
-			limit = 10;
-		} else if (limit > 5000) {
-			limit = 5000;
-		} else if (limit < 1) {
-			limit = 1;
-		}
-
-		var flow = flows.chain().find({ "id": { "$aeq": flow_id } }).limit(1);
-		var join = flow.eqJoin(units.chain(), "unit", "id");
-
-		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
-		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
-		var datatype = typeof (joinDT.data())[0] !== "undefined" ? (joinDT.data())[0].right.name : null;
-		let fields;
-
-		fields = getFieldsFromDatatype(datatype, false);
-		let dt = getFieldsFromDatatype(datatype, false, false);
-		if (typeof select !== "undefined") { // TODO: needs refacto and allows multiple coma separated values
-			fields = "";
-			switch (select) {
-				case "min": fields += sprintf("MIN(%s) as min", dt); break;
-				case "max": fields += sprintf("MAX(%s) as max", dt); break;
-				case "first": fields += sprintf("FIRST(%s) as first", dt); break;
-				case "last": fields += sprintf("LAST(%s) as last", dt); break;
-				case "sum": fields = sprintf("SUM(%s) as sum", dt); break;
-				case "count": fields = sprintf("COUNT(%s) as count", dt); break;
-				case "median": fields += sprintf("MEDIAN(%s) as median", dt); break;
-				case "mean": fields += sprintf("MEAN(%s) as mean", dt); break;
-			}
-		} else {
-			fields = sprintf("FIRST(%s) as first, LAST(%s) as last, COUNT(%s) as count, MEAN(%s) as mean, STDDEV(%s) as stddev, MIN(%s) as min, MAX(%s) as max, PERCENTILE(%s, 25) as q1, PERCENTILE(%s, 50) as q2, PERCENTILE(%s, 75) as q3", dt, dt, dt, dt, dt, dt, dt, dt, dt, dt, dt);
-		}
-
-		let group_by = "";
-		if (typeof group !== "undefined") {
-			group_by = sprintf("GROUP BY time(%s)", group);
-		}
-
-		query = sprintf("SELECT %s FROM data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, flow_id, where, group_by, sorting, limit, (page - 1) * limit);
-		t6console.debug(sprintf("Query: %s", query));
-
-		dbInfluxDB.query(query).then((data) => {
-			if (data.length > 0) {
-				var graphData = [];
-				let svg;
-				if (graphType === "bar") {
-					var d3nBar = require("d3node-barchart");
-					data.map(function(row) {
-						if (typeof row.time !== "undefined") {
-							graphData.push({ key: moment(row.time._nanoISO).format(typeof dateFormat !== "undefined" ? dateFormat : "YYYY MM DD"), value: row[select] }); // TODO : security	
-						}
-					});
-					svg = d3nBar({
-						data: graphData,
-						selector: "",
-						container: "",
-						labels: { xAxis: xAxis, yAxis: yAxis },
-						width: width,
-						height: height,
-					});
-				} else if (graphType === "scatterplot") {
-					var d3nScatter = require("d3node-scatterplot");
-					let n = 0;
-					data.map(function(row) {
-						if (typeof row.time !== "undefined" && row[select] != null) {
-							graphData.push({ key: n, value: row[select] }); // TODO : security
-							n++;
-						}
-					});
-					svg = d3nScatter({
-						data: graphData,
-						selector: "",
-						container: "",
-						labels: { xAxis: xAxis, yAxis: yAxis },
-						width: width,
-						height: height,
-					});
-				} else if (graphType === "line") {
-					var d3nLine = require("d3node-linechart");
-					data.map(function(row) {
-						if (typeof row.time !== "undefined") {
-							graphData.push({ key: moment(row.time._nanoISO), value: row[select] }); // TODO : security	
-						}
-					});
-					svg = d3nLine({
-						data: graphData,
-						selector: "",
-						container: "",
-						labels: { xAxis: xAxis, yAxis: yAxis },
-						width: width,
-						height: height,
-					});
-				} else if (graphType === "voronoi") {
-					var d3nVoronoi = require("d3node-voronoi");
-					let n = 0;
-					data.map(function(row) {
-						if (typeof row.time !== "undefined") {
-							graphData.push(row[select]); // TODO : security	
-							n++;
-						}
-					});
-					svg = d3nVoronoi(graphData);
-				} else if (graphType === "pie") {
-					var d3nPie = require("d3node-piechart");
-					data.map(function(row) {
-						if (typeof row.time !== "undefined") {
-							graphData.push({ label: moment(row.time._nanoISO).format(typeof dateFormat !== "undefined" ? dateFormat : "YYYY MM DD"), value: row[select] }); // TODO : security	
-						}
-					});
-					svg = d3nPie({
-						data: graphData,
-						selector: "",
-						container: "",
-						labels: { xAxis: xAxis, yAxis: yAxis },
-						width: width,
-						height: height,
-					});
-				} else if (graphType === "kernelDensityEstimation") {
-					var d3nBar = require("d3node-barchart");
-					data.map(function(row) {
-						if (typeof row.time !== "undefined") {
-							graphData.push(row[select]); // TODO : security	
-						}
-					});
-					let dataDensity = new Array();
-					let densityFunc = statistics.kernelDensityEstimation(graphData);
-					let step = Math.round(statistics.max(graphData) - statistics.min(graphData), 0) / ticks;
-					for (let n = statistics.min(graphData); n < statistics.max(graphData); n += step) {
-						dataDensity.push({ key: Math.round(n * 100 / 100), value: densityFunc(n) });
-					}
-					t6console.log(dataDensity);
-					svg = d3nBar({
-						data: dataDensity,
-						selector: "",
-						container: "",
-						barColor: "#765548",
-						labels: { xAxis: xAxis, yAxis: yAxis },
-						width: width,
-						height: height,
-					});
-				} else if (graphType === "histogram") {
-					data.map(function(row) {
-						if (typeof row.time !== "undefined") {
-							graphData.push(row[select]); // TODO : security	
-						}
-					});
-					let dataDistribution = new Array();
-					let densityFunc = statistics.kernelDensityEstimation(graphData);
-					let step = Math.round(statistics.max(graphData) - statistics.min(graphData), 0) / ticks;
-					for (let n = statistics.min(graphData); n < statistics.max(graphData); n += step) {
-						dataDensity.push({ key: Math.round(n * 100 / 100), value: densityFunc(n) });
-					}
-					t6console.log(dataDistribution);
-					svg = d3nBar({
-						data: dataDistribution,
-						selector: "",
-						container: "",
-						labels: { xAxis: xAxis, yAxis: yAxis },
-						width: width,
-						height: height,
-					});
-				}
-
-				res.setHeader("content-type", "image/svg+xml");
-				res.status(200).send(svg.svgString());
-			} else {
-				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
-			}
-		}).catch((err) => {
-			t6console.debug("err", err);
-			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
-		});
-	}
+	res.status(404).send(new ErrorSerializer({ "id": 9955959595, "code": 404, "message": "Deprecated Api" }).serialize());
 });
 
 module.exports = router;
