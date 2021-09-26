@@ -224,10 +224,13 @@ router.all("*", function (req, res, next) {
 		date:		moment().format("x")
 	};
 	if ( !req.user && req.headers.authorization ) {
-		t6console.debug("User not defined but I have authorization to look after", req.headers.authorization);
 		jwt.verify(req.headers.authorization.split(" ")[1], jwtsettings.secret, function(err, decodedPayload) {
-			req.user = decodedPayload;
-			t6console.debug("User should be:", decodedPayload);
+			if(err) {
+				t6console.debug("User can't be determined:", err);
+			} else {
+				req.user = decodedPayload;
+				t6console.debug("User is valid on jwt.");
+			}
 		});
 	}
 	if ( req.user && req.headers.authorization ) {
@@ -571,7 +574,6 @@ router.post("/authenticate", function (req, res) {
 			if ( user.location && user.location.ip ) {
 				payload.iss = req.ip+" - "+user.location.ip;
 			}
-			payload.exp = jwtsettings.expiresInSeconds;
 			if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
 				payload.location = undefined;
 				payload.unsubscription_token = undefined;
