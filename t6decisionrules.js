@@ -34,8 +34,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	var r = rules.chain().find(query).data();
 	if ( r.length > 0 ) {
 		r.forEach(function(theRule) {
-			theRule.rule.event.params.rule_id = theRule.id;
-			engine.addRule(new Rule(theRule.rule));
+			if (typeof theRule.rule.event!=="undefined" && typeof theRule.rule.event.params!=="undefined") {
+				theRule.rule.event.params.rule_id = theRule.id;
+				engine.addRule(new Rule(theRule.rule));
+			}
 		});
 	}
 	// retrieve latest values
@@ -128,7 +130,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		}
 	});
 
-	let influxQuery = sprintf("SELECT %s FROM data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", p.flow, p.user_id, limit);
+	let rp = typeof p.retention!=="undefined"?p.retention:"autogen";
+	if ((influxSettings.retentionPolicies.data).indexOf(rp)===-1) {
+		t6console.debug("Retention is not valid:", rp);
+		rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
+	};
+	let influxQuery = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' AND user_id='%s' ORDER BY time DESC LIMIT %s OFFSET 1", "valueFloat as value", rp, p.flow, p.user_id, limit);
 	t6console.info("DB retrieve latest values", influxQuery);
 	let valuesFromDb = [];
 	let indexesFromDb = [];

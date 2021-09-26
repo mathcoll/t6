@@ -506,6 +506,7 @@ t6console.log(`${appName} started / listening to ${process.env.BASE_URL_HTTPS}.`
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
 	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
+	t6console.log("===========================================================");
 	t6console.log(sprintf("Connected to Mqtt broker on %s:%s - %s", mqttHost, mqttPort, mqttRoot));
 	mqttClient.subscribe("objects/status/#", function (err) {
 		if (!err) {
@@ -528,5 +529,47 @@ mqttClient.on("message", function (topic, message) {
 	t6console.log(sprintf("Connected Objects: %s", t6ConnectedObjects));
 });
 global.startProcessTime = new Date()-start;
+
+global.getFieldsFromDatatype = function(datatype, asValue, includeTime=true) {
+	let fields = "";
+	if( includeTime ) {
+		fields += "time, ";
+	}
+	switch(datatype) {
+		case "boolean": 
+			fields += "valueBoolean";
+			break;
+		case "date": 
+			fields += "valueDate";
+			break;
+		case "integer": 
+			fields += "valueInteger";
+			break;
+		case "json": 
+			fields += "valueJson";
+			break;
+		case "time": 
+			fields += "valueTime";
+			break;
+		case "float": 
+			fields += "valueFloat";
+			break;
+		case "geo": 
+			fields += "valueGeo";
+			break;
+		case "image": 
+			fields += "valueImage";
+			break;
+		case "string": 
+		default: 
+			fields += "valueString";
+			break;
+	}
+	if( asValue ) {
+		fields += " as value";
+	}
+	return fields;
+}
 t6console.log(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
+t6console.log("===========================================================");
 module.exports = app;

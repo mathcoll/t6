@@ -1,0 +1,66 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Snippets Suite",
+            "tests": [
+                {
+                	"name": "can create a Snippet",
+                	"description": "can create a Snippet",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/snippets",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "My Snippet Name",
+							    "type": "valuedisplay",
+							    "icon": "developer_board",
+							    "color": "#ffffff",
+							    "flows": [
+							        "{{saved.flow_id}}"
+							    ]
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.snippet_id": "body.snippet.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get All Snippets",
+                    "description": "get All Snippets",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/snippets",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

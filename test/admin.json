@@ -1,0 +1,135 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Admin Suite",
+            "tests": [
+                {
+                	"name": "can get all DataTypes",
+                	"description": "get all DataTypes",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/datatypes",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 9
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get all Units",
+                	"description": "get all Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/units",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 123
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Volumes Units",
+                	"description": "get Volumes Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/units?type=Volume",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 13
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Volumes Units",
+                	"description": "get Volumes Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/units?type=Température",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 4
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Volumes Units",
+                	"description": "get Volumes Units",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/units?type=Paper%20Quantity",
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get t6 server status",
+                	"description": "get t6 server status",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/status",
+                            "status": 200,
+                            "assert": {
+                            	"select": "body.status",
+                            	"equal": "running"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get t6 pwa index cards",
+                	"description": "get t6 pwa index cards",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/index",
+                            "status": 200,
+                            "assert": {
+                            	"select": "body.data",
+                            	"size": 11
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get t6 terms cards",
+                	"description": "can get t6 terms cards",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/terms",
+                            "status": 200,
+                            "assert": {
+                            	"select": "body.data",
+                            	"size": 7
+        	                }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

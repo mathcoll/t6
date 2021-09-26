@@ -80,7 +80,7 @@ influxSettings		= {
 	username : "datawarehouse",
 	password : "datawarehouse",
 	database : "t6",
-	retentionPolicies:{"requests": "quota4w", "data": "autogen", "events": "autogen"},
+	retentionPolicies:{"requests": "quota4w", "data": ["autogen", "retention1d", "retention1w", "retention4w", "retention1y"], "events": "autogen"},
 	influxdb: {
 		host : "localhost",
 		protocol : "http",

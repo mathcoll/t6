@@ -151,6 +151,7 @@ router.get("/:flow_id([0-9a-z\-]+)/track", expressJwt({secret: jwtsettings.secre
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
  * @apiBody {Integer} permission Permission is not used anymore (deprecated)
  * @apiBody {String[]} [objects] List of Object Ids
+ * @apiBody {String} [retention]] Retention Policy
  * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 201
@@ -170,15 +171,22 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				res.status(400).send(new ErrorSerializer({"id": 238, "code": 400, "message": "Bad Request", details: "Permission must be greater than 600!"}).serialize());
 			} else {
 				var flow_id = uuid.v4();
+				if ( typeof req.body.retention!=="undefined" ) {
+					if ( (influxSettings.retentionPolicies.data).indexOf(req.body.retention)===-1 ) {
+						t6console.debug("Defaulting Retention from setting (req.body.retention is invalid)", req.body.retention);
+						req.body.retention = influxSettings.retentionPolicies.data[0];
+					}
+				}
 				var newFlow = {
 					id:					flow_id,
 					user_id:			req.user.id,
+					permission:			permission,
+					retention:			req.body.retention,
 					name:				typeof req.body.name!=="undefined"?req.body.name:"unamed",
 					data_type:			typeof req.body.data_type!=="undefined"?req.body.data_type:"", // TODO : in Flow collection, the data_type should be renamed to datatype_id
 					unit:				typeof req.body.unit!=="undefined"?req.body.unit:"",
 					theme:				typeof req.body.theme!=="undefined"?req.body.theme:"",
 					mqtt_topic:			typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:"",
-					permission:			permission,
 					require_signed:		typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):false,
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
@@ -217,6 +225,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
  * @apiBody {Object[]} [permission]
  * @apiBody {String[]} [objects] List of Object Ids
+ * @apiBody {String} [retention]] Retention Policy
  * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 200
@@ -249,6 +258,12 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 				} else {
 					let result;
 					flows.chain().find({ "id": flow_id }).update(function(item) {
+						if ( typeof req.body.retention!=="undefined" ) {
+							if ( (influxSettings.retentionPolicies.data).indexOf(req.body.retention)===-1 ) {
+								t6console.debug("Defaulting Retention from setting (req.body.retention is invalid)", req.body.retention);
+								req.body.retention = influxSettings.retentionPolicies.data[0];
+							}
+						}
 						item.name				= typeof req.body.name!=="undefined"?req.body.name:item.name;
 						item.unit				= typeof req.body.unit!=="undefined"?req.body.unit:item.unit;
 						item.data_type			= typeof req.body.data_type!=="undefined"?req.body.data_type:item.data_type; // TODO : in Flow collection, the data_type should be renamed to datatype_id
@@ -262,6 +277,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
 						item.ttl				= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.ttl, 10);
 						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
+						item.retention			= typeof req.body.retention!=="undefined"?req.body.retention:item.retention;
 						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
 						result = item;
 

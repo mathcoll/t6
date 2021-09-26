@@ -34,46 +34,6 @@ function getObjectKey(payload, user_id) {
 		}
 	});
 }
-function getFieldsFromDatatype(datatype, asValue, includeTime=true) {
-	let fields = "";
-	if( includeTime ) {
-		fields += "time, ";
-	}
-	switch(datatype) {
-		case "boolean": 
-			fields += "valueBoolean";
-			break;
-		case "date": 
-			fields += "valueDate";
-			break;
-		case "integer": 
-			fields += "valueInteger";
-			break;
-		case "json": 
-			fields += "valueJson";
-			break;
-		case "time": 
-			fields += "valueTime";
-			break;
-		case "float": 
-			fields += "valueFloat";
-			break;
-		case "geo": 
-			fields += "valueGeo";
-			break;
-		case "image": 
-			fields += "valueImage";
-			break;
-		case "string": 
-		default: 
-			fields += "valueString";
-			break;
-	}
-	if( asValue ) {
-		fields += " as value";
-	}
-	return fields;
-}
 function preparePayload(payload, options, callback) {
 	t6console.debug("chain 1", "preparePayload");
 	payload = getJson(payload);
@@ -95,6 +55,7 @@ function preparePayload(payload, options, callback) {
 	payload.text		 = typeof payload.text!=="undefined"?payload.text:"";
 	payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
+	payload.retention	 = typeof payload.retention!=="undefined"?payload.retention:undefined;
 
 	if(payload.object_id) {
 		getObjectKey(payload, payload.user_id)
@@ -124,11 +85,12 @@ function signatureCheck(payload, object, callback) {
 		mqtt_topic: payload.mqtt_topic,
 		latitude: payload.latitude,
 		longitude: payload.longitude,
+		publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
+		retention: payload.retention,
+		save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
 		text: payload.text,
 		time: payload.time,
 		timestamp: payload.timestamp,
-		save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
-		publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
 	};
 	object = typeof object!=="undefined"?object:{};
 	object.secret_key = typeof object.secret_key!=="undefined"?object.secret_key:jwtsettings.secret;
@@ -150,6 +112,7 @@ function signatureCheck(payload, object, callback) {
 				payload.timestamp = typeof payload.timestamp!=="undefined"?payload.timestamp:initialPayload.timestamp;
 				payload.save = typeof payload.save!=="undefined"?payload.save:initialPayload.save;
 				payload.publish = typeof payload.publish!=="undefined"?payload.publish:initialPayload.publish;
+				payload.retention = typeof payload.retention!=="undefined"?payload.retention:initialPayload.retention;
 				payload.isSigned = true;
 				t6console.debug("chain 2&4", "signatureCheck", payload);
 				callback(null, payload, object);
@@ -176,11 +139,12 @@ function decrypt(payload, object, callback) {
 		mqtt_topic: payload.mqtt_topic,
 		latitude: payload.latitude,
 		longitude: payload.longitude,
+		publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
+		retention: payload.retention,
+		save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
 		text: payload.text,
 		time: payload.time,
 		timestamp: payload.timestamp,
-		save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
-		publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
 	};
 	if ( typeof payload!=="undefined" && payload.encryptedPayload && object ) {
 		let encryptedPayload = payload.encryptedPayload.trim();
@@ -210,6 +174,7 @@ function decrypt(payload, object, callback) {
 			payload.timestamp = typeof payload.timestamp!=="undefined"?payload.timestamp:initialPayload.timestamp;
 			payload.save = typeof payload.save!=="undefined"?payload.save:initialPayload.save;
 			payload.publish = typeof payload.publish!=="undefined"?payload.publish:initialPayload.publish;
+			payload.retention = typeof payload.retention!=="undefined"?payload.retention:initialPayload.retention;
 			payload.isEncrypted = true;
 			t6console.debug("chain 3", "decryptedPayload", payload);
 			callback(null, payload, object);
@@ -294,16 +259,28 @@ function verifyPrerequisites(payload, object, callback) {
 			t6console.debug("chain 5", `Getting unit "${payload.unit}" from default value`);
 		}
 
-		if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !isEncrypted ) {
+		if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !payload.isEncrypted ) {
 			t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.left.require_encrypted);
-			t6console.debug("chain 5", ".. & Payload isEncrypted", isEncrypted);
+			t6console.debug("chain 5", ".. & Payload isEncrypted", payload.isEncrypted);
 			payload.prerequisite += 1;
 		}
 
-		if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !isSigned ) {
+		if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !payload.isSigned ) {
 			t6console.debug("chain 5", "Flow require isSigned -", current_flow.left.require_signed);
-			t6console.debug("chain 5", ".. & Payload isSigned", isSigned);
+			t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
 			payload.prerequisite += 1;
+		}
+
+		if( typeof payload.retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1 ) {
+			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.retention ) {
+				if ( (influxSettings.retentionPolicies.data).indexOf(current_flow.left.retention)>-1 ) {
+					payload.retention = current_flow.left.retention;
+				} else {
+					payload.retention = influxSettings.retentionPolicies.data[0];
+				}
+			} else {
+				payload.retention = influxSettings.retentionPolicies.data[0];
+			}
 		}
 
 		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
@@ -487,7 +464,10 @@ function saveToLocal(payload, fields, current_flow, callback) {
 		callback(null, payload, fields, current_flow);
 	}
 	if ( save === true ) {
-		let rp = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
+		let rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
+		if(typeof payload.retention!=="undefined") {
+			rp = payload.retention;
+		}
 		if ( db_type.influxdb === true ) {
 			t6console.debug("chain 9", "Saving to influxdb timeseries");
 			/* InfluxDB database */
@@ -647,6 +627,7 @@ async function processAllMeasures(payloads, options, res) {
 					measure.time = payload.time*1e6;
 					measure.timestamp = payload.time*1e6;
 					measure.value = payload.value;
+					measure.retention = payload.retention;
 					measure.mqtt_topic = payload.mqtt_topic;
 					measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
 					measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
@@ -707,6 +688,7 @@ async function processAllMeasures(payloads, options, res) {
  * @apiParam {String} [yAxis] Label value in Y axis
  * @apiParam {Integer} [width] output width of SVG chart
  * @apiParam {Integer} [height] output height of SVG chart
+ * @apiParam {String} [retention] Retention Policy to get data from
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -721,6 +703,7 @@ async function processAllMeasures(payloads, options, res) {
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
+ * @apiUse 412
  * @apiUse 429
  * @apiUse 500
  */
@@ -728,6 +711,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
 	var modifier = req.query.modifier;
+	var retention = req.query.retention;
 	var query;
 	var start;
 	var end;
@@ -807,8 +791,27 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			group_by = sprintf("GROUP BY time(%s)", group);
 		}
 
-		let retention = typeof influxSettings.retentionPolicies.data!=="undefined"?influxSettings.retentionPolicies.data:"autogen";
-		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, retention, flow_id, where, group_by, sorting, limit, (page-1)*limit);
+		let rp = typeof retention!=="undefined"?retention:"autogen";
+		if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+			if ( typeof flow!=="undefined" && flow.retention ) {
+				if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+					rp = flow.retention;
+				} else {
+					rp = influxSettings.retentionPolicies.data[0];
+					t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+					res.status(412).send(new ErrorSerializer({"id": 899.41, "code": 412, "message": "Retention Policy not valid"}).serialize());
+					return;
+				}
+			} else {
+				rp = influxSettings.retentionPolicies.data[0];
+				t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+				//res.status(412).send(new ErrorSerializer({"id": 899.42, "code": 412, "message": "Retention Policy not valid"}).serialize());
+				//return;
+			}
+		}
+		
+		t6console.debug("Retention is valid:", rp);
+		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, rp, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.debug("Query:", query);
 
 		dbInfluxDB.query(query).then((data) => {
@@ -817,6 +820,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);
 					d.timestamp = Date.parse(d.time);
 					d.time = Date.parse(d.time);
+					d.retention = rp;
 				});
 				data.title = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].left)!==null )?((join.data())[0].left).name:"";
 				data.unit = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).format:""; // TODO : not consistent with POST
@@ -874,6 +878,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiBody {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiBody {String} [signedPayload=undefined] Optional Signed payload containing datapoint resource
  * @apiBody {String} [encryptedPayload=undefined] Optional Encrypted payload containing datapoint resource
+ * @apiBody {String} [retention] Retention Policy to store data to
  * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * @apiBody {String} influx_db_cloud.token Authentication token ID
  * @apiBody {String} influx_db_cloud.org Organization ID

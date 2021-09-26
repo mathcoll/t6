@@ -1,0 +1,220 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Main Suite",
+            "tests": [
+                {
+                	"name": "can create a User",
+                	"description": "create a User",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users",
+                            "params": {
+                                "email": "m.lory+{{$run_id}}@free.fr",
+                                "firstName": "My FirstName {{$run_id}}",
+                                "lastName": "My LastName"
+                            },
+                            "assert": [],
+                            "save": {
+                                "saved.key": "body.token.key",
+                                "saved.secret": "body.token.secret",
+                                "saved.user_id": "body.user.data.id",
+                                "saved.subscription_date": "body.user.data.attributes.subscription_date",
+                                "saved.username": "body.user.data.attributes.email",
+                                "saved.reset_password_token": "body.user.data.attributes.token",
+                                "saved.unsubscription_token": "body.user.data.attributes.unsubscription_token"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "Set password",
+                	"description": "Set password",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users/token/{{saved.reset_password_token}}",
+                            "params": {
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "status": "200",
+                            "save": {
+                                "saved.reset_password_token": "body.token"
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "Sign In (/authenticate)",
+                	"description": "Sign In (/authenticate)",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/authenticate",
+                            "params": {
+                                "username": "m.lory+{{$run_id}}@free.fr",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "assert": [],
+                            "status": "200",
+                            "save": {
+                                "saved.bearer_token": "body.token",
+                                "saved.bearer_refresh_token": "body.refresh_token"
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "Generate email instruction to reset a User password",
+                	"description": "Generate email instruction to reset a User password",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users/instruction",
+                            "params": {
+                                "email": "m.lory+{{$run_id}}@free.fr"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a simple Token for that User",
+                    "description": "create a simple Token",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/authenticate",
+                            "params": {
+                                "username": "{{saved.username}}",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "save": {
+                                "saved.bearer": "body.token"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can create an accessToken for that User",
+                    "description": "can create an accessToken for that User",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                            	"memo": "This memo help me to remember this AccessToken is used in some specific Client."
+                            },
+                            "save": {
+                                "saved.accessTokenKey": "body.accessToken.data.attributes.key",
+                                "saved.accessTokenSecret": "body.accessToken.data.attributes.secret"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get an accessToken for that User",
+                    "description": "can get an accessToken for that User",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can update a User",
+                    "description": "update a User",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /v2.0.1/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "email": "myUpdatedEmail+{{$run_id}}@domain.tld",
+                                "firstName": "My Updated FirstName",
+                                "lastName": "My Updated LastName"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.message",
+        	                    "equal": "Successfully updated"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "Get User from JWT claim",
+                    "description": "Get User from JWT claim",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/me/token",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Get User active sessions from JWT claim",
+                	"description": "Get User active sessions from JWT claim",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/me/sessions",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200",
+                            "save": {
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "can verify a User",
+                    "description": "verify a User",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
