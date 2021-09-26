@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -65,10 +66,19 @@
                         {
                         	"request": "POST /v2.0.1/authenticate",
                             "params": {
-                                "username": "m.lory+{{$run_id}}@free.fr",
+                                "username": "{{saved.username}}",
                                 "password": "{{$run_id}}:{{$run_id}}"
                             },
-                            "assert": [],
+                            "assert": [
+	                            {
+	        	                    "select": "body.status",
+	        	                    "equal": "ok"
+	        	                },
+	                            {
+	        	                    "select": "body.tokenExp",
+	        	                    "equal": 3000
+	        	                }
+        	                ],
                             "status": "200",
                             "save": {
                                 "saved.bearer_token": "body.token",
@@ -84,7 +94,7 @@
                         {
                         	"request": "POST /v2.0.1/users/instruction",
                             "params": {
-                                "email": "m.lory+{{$run_id}}@free.fr"
+                                "email": "{{saved.username}}"
                             },
                             "assert": [],
                             "status": "200"
@@ -105,43 +115,6 @@
                                 "saved.bearer": "body.token"
                             },
                             "status": "200"
-                        }
-                    ]
-                },
-                {
-                	"name": "can create an accessToken for that User",
-                    "description": "can create an accessToken for that User",
-                    "api_calls": [
-                        {
-                        	"request": "POST /v2.0.1/users/accessTokens",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer_token}}"
-                            },
-                            "params": {
-                            	"memo": "This memo help me to remember this AccessToken is used in some specific Client."
-                            },
-                            "save": {
-                                "saved.accessTokenKey": "body.accessToken.data.attributes.key",
-                                "saved.accessTokenSecret": "body.accessToken.data.attributes.secret"
-                            },
-                            "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "can get an accessToken for that User",
-                    "description": "can get an accessToken for that User",
-                    "api_calls": [
-                        {
-                        	"request": "GET /v2.0.1/users/accessTokens",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer_token}}"
-                            },
-                            "status": "200",
-                            "assert": {
-        	                    "select": "body.data",
-        	                    "size": 1
-        	                }
                         }
                     ]
                 },
@@ -211,6 +184,216 @@
         	                    "select": "body.data",
         	                    "size": 1
         	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can create an AccessToken for that User",
+                	"description": "create an AccessToken",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {"memo": "AccessToken for a test user"},
+                            "save": {
+                                "saved.accessTokenKey": "body.accessToken.data.attributes.key",
+                                "saved.accessTokenSecret": "body.accessToken.data.attributes.secret"
+                            },
+                            "status": "201",
+                            "assert": []
+                        }
+                    ]
+                },
+                {
+                	"name": "can get an accessToken for that User",
+                    "description": "can get an accessToken for that User",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "Sign In (using K/S)",
+                	"description": "Sign In (using K/S)",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/authenticate",
+                            "params": {
+                                "key": "{{saved.accessTokenKey}}",
+                                "secret": "{{saved.accessTokenSecret}}",
+                                "grant_type": "access_token"
+                            },
+                            "assert": [
+	                            {
+	        	                    "select": "body.status",
+	        	                    "equal": "ok"
+	        	                },
+	                            {
+	        	                    "select": "body.tokenExp",
+	        	                    "equal": 3000
+	        	                }
+        	                ],
+                            "status": "200",
+                            "save": {
+                                "saved.bearer_token": "body.token",
+                                "saved.bearer_refresh_token": "body.refresh_token"
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "Refresh a token",
+                	"description": "Sign In (using K/S)",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/authenticate",
+                            "params": {
+							    "grant_type": "refresh_token",
+							    "username": "{{saved.username}}",
+							    "refresh_token": "{{saved.bearer_refresh_token}}",
+							    "pushSubscription": {}
+							},
+                            "status": "200",
+                            "save": {
+                                "saved.bearer_token": "body.token",
+                                "saved.bearer_refresh_token": "body.refresh_token"
+                            },
+                            "assert": [
+	                            {
+	        	                    "select": "body.status",
+	        	                    "equal": "ok"
+	        	                },
+	                            {
+	        	                    "select": "body.tokenExp",
+	        	                    "equal": 3000
+	        	                }
+        	                ]
+                        }
+                    ]
+                },
+                {
+                	"name": "Get User and find its token to manage (un)subscription to newsletters",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /v2.0.1/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {},
+                            "status": "200",
+                            "save": {
+                                "saved.unsubscription_token": "body.data.0.attributes.unsubscription_token"
+                            },
+                            "assert": [
+	                            {
+	        	                    "select": "body.data",
+	        	                    "size": 1
+	        	                },
+	                            {
+	        	                    "select": "body.data.0.attributes.role",
+	        	                    "equal": "free"
+	        	                }
+        	                ]
+                        }
+                    ]
+                },
+                {
+                	"name": "Unsubscription from changePassword",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/unsubscribe/changePassword/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Unsubscription from reminder",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/unsubscribe/reminder/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Unsubscription from monthlyreport",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/unsubscribe/monthlyreport/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Unsubscription from newsletter",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/unsubscribe/newsletter/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Subscription to changePassword",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/subscribe/changePassword/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Subscription to reminder",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/subscribe/reminder/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Subscription to monthlyreport",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/subscribe/monthlyreport/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Subscription to newsletter",
+                	"description": "",
+                    "api_calls": [
+                        {
+                            "request": "GET /mail/{{saved.username}}/subscribe/newsletter/{{saved.unsubscription_token}}",
+                            "params": {},
+                            "status": "200"
                         }
                     ]
                 }
