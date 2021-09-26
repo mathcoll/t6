@@ -506,6 +506,7 @@ t6console.log(`${appName} started / listening to ${process.env.BASE_URL_HTTPS}.`
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
 	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
+	t6console.log("===========================================================");
 	t6console.log(sprintf("Connected to Mqtt broker on %s:%s - %s", mqttHost, mqttPort, mqttRoot));
 	mqttClient.subscribe("objects/status/#", function (err) {
 		if (!err) {
@@ -570,4 +571,5 @@ global.getFieldsFromDatatype = function(datatype, asValue, includeTime=true) {
 	return fields;
 }
 t6console.log(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
+t6console.log("===========================================================");
 module.exports = app;
