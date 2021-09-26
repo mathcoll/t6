@@ -464,22 +464,17 @@ if ( logLevel.indexOf("INFO") > -1 ) {
 if (app.get("env") === "development") {
 	app.use(function(err, req, res, next) {
 		if (err.name === "UnauthorizedError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
-			res.end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack }).end();
 		} else if (err.name === "TokenExpiredError") {
-			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token "+err.message, "stack": err.stack });
-			res.end();
+			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token "+err.message, "stack": err.stack }).end();
 		} else if (err.name === "JsonWebTokenError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
-			res.end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack }).end();
 		} else if (err.name === "NotBeforeError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
-			res.end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack }).end();
 		} else {
-			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack });
-			res.end();
+			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack }).end();
 		}
-		t6console.error("Error - app.js", err.status + err.name, err);
+		t6console.debug("Error - app.js", err.status, err.name, err);
 		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 } else {
@@ -495,7 +490,7 @@ if (app.get("env") === "development") {
 		} else {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message }).end();
 		}
-		t6console.error("Error - app.js", err.status + err.name, err);
+		t6console.debug("Error - app.js", err.status, err.name, err);
 		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 }
