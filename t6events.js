@@ -18,6 +18,7 @@ t6events.setRP = function(rp) {
 t6events.add = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
+		t6console.debug("Using db_type.influxdb");
 		var tags = {rp: retention, what: what, where: where};
 		var fields = {who: typeof who!=="undefined"?who:""};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
@@ -25,8 +26,14 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 			measurement: measurement,
 			tags: tags,
 			fields: fields,
-		}], { retentionPolicy: retention, }).then((err) => {
-			return true;
+		}], { retentionPolicy: retention }).then((err) => {
+			if(err) {
+				t6console.error("t6events.add: Error", err);
+			} else {
+				t6console.debug("t6events.add: Fine");
+				return true;
+			}
+			t6console.debug({"tags": tags, "fields": fields, "retention": retention});
 		}).catch((err) => {
 			t6console.error("Error writting event to influxDb:", err);
 		});
@@ -35,7 +42,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 	if(client_id!==null) {
 		let user_id = typeof who!=="undefined"?who:null;
 		client_id = typeof client_id!=="undefined"?client_id:"";
-		
+
 		params = typeof params!=="object"?params:{};
 		params.environnment = where;
 		params.user_id = user_id;
@@ -54,7 +61,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 			})
 		};
 		request(options, function(error, response, body) {
-			if ( !error && typeof response!=="undefined" && response.statusCode !== 404 ) {
+			if ( !error && typeof response!=="undefined" && typeof response.statusCode!=="undefined" && response.statusCode !== 404 ) {
 				t6console.info(`GA4 Event "${what.replace(/[^a-zA-Z]/g,"_")}" on measurement_id: ${trackings.firebaseConfig.server.measurementId}`);
 				t6console.info("GA4 user_id:", user_id);
 				t6console.info("GA4 client_id:", client_id);
@@ -63,7 +70,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 				t6console.info("GA4 statusCode:", response.statusCode);
 				if (d==="debug/") { t6console.log("GA4 body:", body); }
 			} else {
-				t6console.error("GA4 Error:", error, typeof response!=="undefined"?response.statusCode:"response.statusCode is undefined");
+				t6console.error("GA4 Error:", error, typeof response!=="undefined"?response.statusCode:"response is undefined or 404.");
 			}
 		});
 	}

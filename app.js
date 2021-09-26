@@ -479,7 +479,7 @@ if (app.get("env") === "development") {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack });
 			res.end();
 		}
-		t6console.error(err.status + err.name);
+		t6console.error("Error - app.js", err.status + err.name, err);
 		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 } else {
@@ -495,7 +495,7 @@ if (app.get("env") === "development") {
 		} else {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message }).end();
 		}
-		t6console.error(err.status + err.name);
+		t6console.error("Error - app.js", err.status + err.name, err);
 		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 }

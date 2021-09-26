@@ -211,6 +211,7 @@ router.use((req, res, next) => {
 });
 //catch API calls for quotas
 router.all("*", function (req, res, next) {
+	t6console.debug("catch API calls for quotas - index.js");
 	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
 	var o = {
 		key:		typeof req.user!=="undefined"?req.user.key:null,
@@ -223,8 +224,10 @@ router.all("*", function (req, res, next) {
 		date:		moment().format("x")
 	};
 	if ( !req.user && req.headers.authorization ) {
+		t6console.debug("User not defined but I have authorization to look after", req.headers.authorization);
 		jwt.verify(req.headers.authorization.split(" ")[1], jwtsettings.secret, function(err, decodedPayload) {
 			req.user = decodedPayload;
+			t6console.debug("User should be:", decodedPayload);
 		});
 	}
 	if ( req.user && req.headers.authorization ) {
@@ -234,22 +237,27 @@ router.all("*", function (req, res, next) {
 		}
 		var i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
-		var query = `SELECT count(url) FROM "${rp}"."requests" WHERE (user_id='${user_id}') AND (time>now() - 4w) LIMIT 1`;
-		//t6console.debug(query);
+		var query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 4w) LIMIT 1`;
+		t6console.debug("Query to count requests in the past 4w", query);
 		dbInfluxDB.query(query).then((data) => {
-			//t6console.debug(data);
+			t6console.debug("Found Data:", data);
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
+				t6console.debug("setting header X-RateLimit-Remaining", limit-i);
 				res.header("X-RateLimit-Remaining", limit-i);
+				t6console.debug("End setting header X-RateLimit-Remaining");
 				//res.header("X-RateLimit-Reset", "");
 			}
 			res.header("Cache-Control", "no-cache, max-age=360, private, must-revalidate, proxy-revalidate");
 			if( (req.user && i >= limit) ) {
+				t6console.debug("Limit reach (429)", i, limit, req.user);
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id, typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-				res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"})).end();
-				return;
+				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
+				//return;
 			} else {
+				t6console.debug("Limit not reach", i, limit);
 				res.on("close", () => {
+					t6console.debug("Setting up the onClose rule");
 					let tags = {
 						rp: rp,
 						user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id,
@@ -280,18 +288,20 @@ router.all("*", function (req, res, next) {
 						t6console.error("Error catch on writting to influxDb", {"err": err, "tags": tags, "fields": fields[0]});
 					});
 				});
+				t6console.debug("OK, passing to next route");
 				next();
 			}
 		}).catch((err) => {
 			t6console.error("ERROR", err);
+			t6console.debug("nothing on this query ?????????", query);
 			if(typeof i!=="undefined") {
-				res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."})).end();
-				return;
+				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
 			} else {
 				next();
 			}
 		});
 	} else {
+		t6console.debug("User and authorization are not defined", req.user, req.headers.authorization);
 		var tags = {
 			rp: rp,
 			user_id: "anonymous",
@@ -330,6 +340,7 @@ router.all("*", function (req, res, next) {
 function checkForTooManyFailure(req, res, email) {
 	// Invalid Credentials
 	var query = sprintf("SELECT count(*) FROM %s WHERE (what='user login failure') AND (who='%s') AND (time>now() - 1h)", t6events.getMeasurement(), email);
+	t6console.debug("query checkForTooManyFailure", query);
 	dbInfluxDB.query(query).then((data) => {
 		if( typeof data==="object" && typeof data[0]!=="undefined" && data[0].count_who > 2 && data[0].count_who < 4 ) {
 			// when >4, then we should block the account and maybe ban the IP address
@@ -382,7 +393,7 @@ router.delete("/tokens/all", function (req, res) {
 		}
 		return res.status(201).json( {status: "ok", "cleaned": expired.length} );
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 102.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
+		return res.status(403).send(new ErrorSerializer({"id": 102.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 
@@ -423,6 +434,8 @@ router.post("/authenticate", function (req, res) {
 		var queryU = { "$and": [ { "email": email } ] };
 		//t6console.debug(queryU);
 		var user = users.findOne(queryU);
+		user.quotausage = undefined;
+		user.data = undefined;
 		if ( user && typeof user.password!=="undefined" ) {
 			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
 				var geo = geoip.lookup(req.ip);
@@ -462,10 +475,15 @@ router.post("/authenticate", function (req, res) {
 					payload.unsubscription_token = undefined;
 					payload.passwordLastUpdated = undefined;
 					payload.iftttCode = undefined;
+					payload.iftttTrigger_identity = undefined;
+					payload.subscription = undefined;
+					payload.unsubscription = undefined;
 					payload.pushSubscription = undefined;
 					payload.reminderMail = undefined;
 					payload.changePassword = undefined;
 					payload.newsletter = undefined;
+					payload.quotausage = undefined;
+					payload.data = undefined;
 				}
 				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
@@ -559,10 +577,15 @@ router.post("/authenticate", function (req, res) {
 				payload.unsubscription_token = undefined;
 				payload.passwordLastUpdated = undefined;
 				payload.iftttCode = undefined;
+				payload.iftttTrigger_identity = undefined;
+				payload.subscription = undefined;
+				payload.unsubscription = undefined;
 				payload.pushSubscription = undefined;
 				payload.reminderMail = undefined;
 				payload.changePassword = undefined;
 				payload.newsletter = undefined;
+				payload.quotausage = undefined;
+				payload.data = undefined;
 			}
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
@@ -636,10 +659,15 @@ router.post("/authenticate", function (req, res) {
 				payload.unsubscription_token = undefined;
 				payload.passwordLastUpdated = undefined;
 				payload.iftttCode = undefined;
+				payload.iftttTrigger_identity = undefined;
+				payload.subscription = undefined;
+				payload.unsubscription = undefined;
 				payload.pushSubscription = undefined;
 				payload.reminderMail = undefined;
 				payload.changePassword = undefined;
 				payload.newsletter = undefined;
+				payload.quotausage = undefined;
+				payload.data = undefined;
 			}
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 			var refreshPayload = crypto.randomBytes(40).toString("hex");
@@ -726,6 +754,8 @@ router.post("/refresh", function (req, res) {
 		return res.status(403).send(new ErrorSerializer({"id": 109, "code": 403, "message": "Forbidden or Token Expired"}));
 	} else {
 		let user = users.findOne({ "id": myToken.user_id });
+		user.quotausage = undefined;
+		user.data = undefined;
 		if ( !user ) {
 			return res.status(403).send(new ErrorSerializer({"id": 110, "code": 403, "message": "Forbidden or Token Expired"}));
 		} else {
@@ -745,10 +775,15 @@ router.post("/refresh", function (req, res) {
 				payload.unsubscription_token = undefined;
 				payload.passwordLastUpdated = undefined;
 				payload.iftttCode = undefined;
+				payload.iftttTrigger_identity = undefined;
+				payload.subscription = undefined;
+				payload.unsubscription = undefined;
 				payload.pushSubscription = undefined;
 				payload.reminderMail = undefined;
 				payload.changePassword = undefined;
 				payload.newsletter = undefined;
+				payload.quotausage = undefined;
+				payload.data = undefined;
 			}
 			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
