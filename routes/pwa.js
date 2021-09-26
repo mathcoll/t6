@@ -65,14 +65,14 @@ router.get("/mail/:mail/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token(
 		} else {
 			res.render("notifications-unsubscribe", {
 				currentUrl: req.path,
-				user: result,
+				user: typeof result!=="undefined"?result:{"email": mail, "unsubscription_token": unsubscription_token, "unsubscription": {} },
 				mail: mail,
 				list: list,
 				time: null,
 				moment: moment,
 			});
 		}
-		t6events.add("t6App", "unsubscribe", result.id, result.id, {"list": list});
+		t6events.add("t6App", "unsubscribe", typeof result!=="undefined"?result.id:"??"+mail, typeof result!=="undefined"?result.id:"??"+mail, {"list": list});
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 10.4, "code": 404, "message": "Not Found"}).serialize());
 	}
@@ -119,14 +119,14 @@ router.get("/mail/:mail/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0
 		} else {
 			res.render("notifications-subscribe", {
 				currentUrl: req.path,
-				user: result,
+				user: typeof result!=="undefined"?result:{"email": mail, "unsubscription_token": unsubscription_token, "unsubscription": {} },
 				mail: mail,
 				list: list,
 				time: time,
 				moment: moment,
 			});
 		}
-		t6events.add("t6App", "subscribe", result.id, result.id, {"list": list});
+		t6events.add("t6App", "subscribe", typeof result!=="undefined"?result.id:"??"+mail, typeof result!=="undefined"?result.id:"??"+mail, {"list": list});
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 10.5, "code": 404, "message": "Not Found"}).serialize());
 	}
