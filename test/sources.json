@@ -1,0 +1,42 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Sources Suite",
+            "tests": [
+                {
+                	"name": "can create a Source",
+                	"description": "can create a Source",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/sources",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.source_id": "body.source.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

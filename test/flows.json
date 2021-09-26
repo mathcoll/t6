@@ -1,0 +1,192 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Flows Suite",
+            "tests": [
+                {
+                	"name": "can create a Flow for that User",
+                    "description": "create a Flow for that User",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/flows",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "name": "My Flow for Strings",
+                                "objects": [
+                                    "{{saved.object_id}}"
+                                ],
+                                "unit": "String"
+                            },
+                            "save": {
+                                "saved.flow_id_string": "body.flow.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a Float Flow",
+                    "description": "create a Float Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/flows",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "data_type": "e7dbdc23-5fa8-4083-b3ec-bb99c08a2a35",
+                                "name": "My Flow for Float",
+                                "objects": [
+                                    "{{saved.object_id}}"
+                                ],
+                                "retention": "retention1w"
+                            },
+                            "save": {
+                                "saved.flow_id_float": "body.flow.data.id",
+                                "saved.retention_float": "body.flow.data.attributes.retention"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can update a Flow",
+                    "description": "update a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /v2.0.1/flows/{{saved.flow_id_string}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "data_type": "a394e18f-12bd-4c22-b9c3-74c387d1a8d",
+                                "name": "My Flow for String is UPDATED",
+                                "objects": [
+                                    "{{saved.object_id}}"
+                                ],
+                                "unit": "",
+                                "theme": "",
+                                "retention": "retention1w",
+                                "unit_id": "c528045b-4928-45ad-83fa-4a242eb6059e"
+                            },
+                            "save": {},
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.flow.data.attributes.name",
+        	                    "equal": "My Flow for String is UPDATED"
+        	                },{
+        	                    "select": "body.flow.data.attributes.retention",
+        	                    "equal": "retention1w"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a Fusion Track",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/flows/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+				                "name": "Fused Track",
+				                "unit": "31c38904-2482-4cce-b0de-6dc9efbc2d33",
+				                "objects": [],
+				                "require_signed": false,
+				                "require_encrypted": false,
+				                "data_type": "e7dbdc23-5fa8-4083-b3ec-bb99c08a2a35",
+				                "mqtt_topic": "fused_track",
+				                "track_id": "",
+				                "ttl": 3600
+				            },
+                            "save": {
+                                "saved.track_id": "body.flow.data.id",
+                                "saved.retention_track": "body.flow.data.attributes.retention"
+                            },
+                            "status": 201,
+                            "assert": []
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a Track A",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/flows/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+				                "name": "Track A",
+				                "unit": "f7b31254-3bb6-468f-be90-57ae90a6be39",
+				                "objects": [],
+				                "require_signed": false,
+				                "require_encrypted": false,
+				                "permission": 600,
+				                "data_type": "e7dbdc23-5fa8-4083-b3ec-bb99c08a2a35",
+				                "mqtt_topic": "",
+				                "track_id": "{{saved.track_id}}",
+				                "ttl": 3600
+				            },
+                            "save": {
+                                "saved.track_A_id": "body.flow.data.id",
+                                "saved.retention_track": "body.flow.data.attributes.retention"
+                            },
+                            "status": 201,
+                            "assert": []
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a Track B",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/flows/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+				                "name": "Track B",
+				                "unit": "f7b31254-3bb6-468f-be90-57ae90a6be39",
+				                "objects": [],
+				                "require_signed": false,
+				                "require_encrypted": false,
+				                "permission": 600,
+				                "data_type": "e7dbdc23-5fa8-4083-b3ec-bb99c08a2a35",
+				                "mqtt_topic": "",
+				                "track_id": "{{saved.track_id}}",
+				                "ttl": 3600
+				            },
+                            "save": {
+                                "saved.track_B_id": "body.flow.data.id",
+                                "saved.retention_track": "body.flow.data.attributes.retention"
+                            },
+                            "status": 201,
+                            "assert": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,74 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Rules Suite",
+            "tests": [
+                {
+                	"name": "can create a Rule",
+                	"description": "can create a Rule",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/rules",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "test Rule",
+							    "user_id": "{{saved.user_id}}",
+							    "rule": {
+							        "conditions": {
+							            "all": [
+							                {
+							                    "fact": "environment",
+							                    "operator": "equal",
+							                    "value": "development"
+							                },
+							                {
+							                    "fact": "flow",
+							                    "operator": "equal",
+							                    "value": "{{saved.flow_id_float}}"
+							                },
+							                {
+							                    "fact": "value",
+							                    "operator": "anomalyGreaterThanInclusive",
+							                    "value": "0"
+							                }
+							            ]
+							        },
+							        "event": {
+							            "type": "mqttCommand",
+							            "params": {
+							                "message": "",
+							                "mqtt_topic": ""
+							            }
+							        },
+							        "priority": 1
+							    },
+							    "active": true
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.rule_id": "body.rule.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

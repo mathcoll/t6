@@ -1,0 +1,203 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Objects Suite",
+            "tests": [
+                {
+                	"name": "can create an Object",
+                    "description": "create an Object",
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "request": "POST /v2.0.1/objects",
+                            "params": {
+                                "description": "My object description",
+                                "ipv4": "127.0.0.1",
+                                "ipv6": "2001:0db8:0000:85a3:0000:0000:ac1f:8001",
+                                "name": "My Object",
+                                "position": "LivingRoom",
+                                "type": "phone",
+                                "user_id": "{{saved.user_id}}"
+                            },
+                            "save": {
+                                "saved.object_id": "body.object.data.id"
+                            },
+                            "status": "201",
+                            "assert": [{
+        	                    "select": "body.message",
+        	                    "equal": "Created"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a Public Object",
+                    "description": "create a Public Object",
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "request": "POST /v2.0.1/objects",
+                            "params": {
+                                "description": "My Public object description.",
+                                "ipv4": "127.0.0.2",
+                                "ipv6": "2001:0db8:0000:85a3:0000:0000:ac1f:8002",
+                                "name": "My Public Object",
+                                "position": "LivingRoom",
+                                "type": "phone",
+                                "isPublic": "true",
+                                "user_id": "{{saved.user_id}}"
+                            },
+                            "save": {
+                                "saved.object_id2": "body.object.data.id"
+                            },
+                            "status": "201",
+                            "assert": [{
+        	                    "select": "body.message",
+        	                    "equal": "Created"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "Object public page returns an error when non public",
+                    "description": "Object public page returns an error when non public",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/objects/{{saved.object_id}}/public",
+                            "save": {},
+                            "status": "404"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get an Object public page",
+                    "description": "can get an Object public page",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/objects/{{saved.object_id2}}/public",
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can update an Object",
+                    "description": "update an Object",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /v2.0.1/objects/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "description": "My object updated description",
+                                "ipv4": "127.0.0.2",
+                                "ipv6": "2001:0db8:0000:85a3:0000:0000:ac1f:4008",
+                                "name": "My Updated Object",
+                                "position": "BedRoom",
+                                "type": "smartphone",
+                                "user_id": "{{saved.user_id}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": [{
+        	                    "select": "body.message",
+        	                    "equal": "Successfully updated"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a specific Object",
+                    "description": "get a specific Object",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/objects/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get an Object from name",
+                    "description": "get an Object from name",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/objects/?name=Updated%20Object",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "Over Quota Object",
+                	"description": "Over Quota an Object",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/objects",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "description": "My object that can't be created",
+                                "ipv4": "127.0.0.2",
+                                "ipv6": "2001:0db8:0000:85a3:0000:0000:ac1f:4008",
+                                "name": "My Object",
+                                "position": "BedRoom",
+                                "type": "smartphone",
+                                "user_id": "{{saved.user_id}}"
+                            },
+                            "status": "429"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get all my Objects",
+                    "description": "get all my Objects",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/objects/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 2
+        	                }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

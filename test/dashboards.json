@@ -1,0 +1,62 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Dashboards Suite",
+            "tests": [
+                {
+                	"name": "can create a Dashboard",
+                	"description": "can create a Dashboard",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/dashboards",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "My test dashboard",
+							    "description": "Very intense descriptive test",
+							    "snippets": ["{{saved.snippet_id}}"]
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.dashboard_id": "body.dashboard.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get All Dashboards",
+                    "description": "get All Dashboards",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/dashboards",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

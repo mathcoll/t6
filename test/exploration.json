@@ -1,0 +1,318 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Exploration Suite",
+            "tests": [
+                {
+                	"name": "can test for datatype compatibility",
+                	"description": "string is not compatible with GET summary",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/summary?flow_id={{saved.flow_id_string}}&retention={{saved.retention}}",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "412"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Summary exploration on a compatible Float Flow",
+                	"description": "can get Summary exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/summary?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get normality exploration - without enougth data",
+                	"description": "can get normality exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/normality?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "412"
+                        }
+                    ]
+                },
+                {
+                	"name": "can publish data to Float Flow datapoint 1",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/data",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "flow_id": "{{saved.flow_id_float}}",
+                                "mqtt_topic": "couleurs/test",
+                                "publish": true,
+                                "save": true,
+                                "value": 123.456,
+                                "text": "Float Value",
+                                "retention": "{{saved.retention_float}}"
+                            },
+                            "save": {
+                            	"saved.data_id_full_url": "body.data.0.links.self",
+                            	"saved.data_id": "body.data.0.id",
+                            	"saved.time": "body.data.0.attributes.time"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can publish data to Float Flow datapoint 2",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/data",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "flow_id": "{{saved.flow_id_float}}",
+                                "mqtt_topic": "couleurs/test",
+                                "publish": true,
+                                "save": true,
+                                "value": 234.567,
+                                "text": "Float Value",
+                                "retention": "{{saved.retention_float}}"
+                            },
+                            "save": {
+                            	"saved.data_id_full_url": "body.data.0.links.self",
+                            	"saved.data_id": "body.data.0.id",
+                            	"saved.time": "body.data.0.attributes.time"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can publish data to Float Flow datapoint 3",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/data",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "flow_id": "{{saved.flow_id_float}}",
+                                "mqtt_topic": "couleurs/test",
+                                "publish": true,
+                                "save": true,
+                                "value": 345.678,
+                                "text": "Float Value",
+                                "retention": "{{saved.retention_float}}"
+                            },
+                            "save": {
+                            	"saved.data_id_full_url": "body.data.0.links.self",
+                            	"saved.data_id": "body.data.0.id",
+                            	"saved.time": "body.data.0.attributes.time"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get normality exploration",
+                	"description": "can get normality exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/normality?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get head exploration",
+                	"description": "can get head exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/head?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get tail exploration",
+                	"description": "can get tail exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/tail?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get kernelDensityEstimation exploration",
+                	"description": "can get kernelDensityEstimation exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/kernelDensityEstimation?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&group=1s",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get loess exploration - require a lot of datapoints",
+                	"description": "can get loess exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/loess?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&limit=100000&width=1200&height=300&xAxis=Time&yAxis=Loess%20is%20the%20line&degree=linear&span=0.15&band=0.7",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "412"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get frequencyDistribution exploration from a float",
+                	"description": "can get frequencyDistribution exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/frequencyDistribution?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&group=1w&width=800&height=300&ticks=20",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get export exploration from a float",
+                	"description": "can get export exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/export?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&group=365d",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get line exploration from a float",
+                	"description": "can get line exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/line?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&limit=100000&width=800&height=300&xAxis=Line",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Boxplot exploration from a float",
+                	"description": "can get Boxplot exploration from a float",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/exploration/boxplot?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&width=800&height=200&xAxis=Boxplot",
+                            "params": {
+                            },
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

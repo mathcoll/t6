@@ -1,0 +1,176 @@
+{
+    "config": {
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {},
+    "suites": [
+        {
+            "name": "t6 Cleaning Suite",
+            "tests": [
+                {
+                	"name": "can delete an accessToken for that User",
+                    "description": "can delete an accessToken for that User",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/users/accessTokens/{{saved.accessTokenKey}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "make sure accessToken for that User is DELETEd",
+                    "description": "make sure accessToken for that User is DELETEd",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 0
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete an Object 1",
+                    "description": "can delete an Object",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/objects/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete an Object 2",
+                    "description": "can delete an Object",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/objects/{{saved.object_id2}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Flow",
+                    "description": "delete a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/flows/{{saved.flow_id_string}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Flow",
+                    "description": "delete a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/flows/{{saved.flow_id_float}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "cannot get a deleted Flow",
+                    "description": "cannot get a deleted Flow",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/flows/{{saved.flow_id_float}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 404
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Dashboard",
+                    "description": "can delete a Dashboard",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/dashboards/{{saved.dashboard_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Snippet",
+                    "description": "can delete a Snippet",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/snippets/{{saved.snippet_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a User",
+                    "description": "delete a User",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /v2.0.1/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.removed_id",
+        	                    "equal": "{{saved.user_id}}"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can verify a User has been deleted",
+                    "description": "verify a User has been deleted",
+                    "api_calls": [
+                        {
+                        	"request": "GET /v2.0.1/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": 404
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
