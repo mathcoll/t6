@@ -246,7 +246,8 @@ router.all("*", function (req, res, next) {
 			res.header("Cache-Control", "no-cache, max-age=360, private, must-revalidate, proxy-revalidate");
 			if( (req.user && i >= limit) ) {
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id, typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"})).end();
+				res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"})).end();
+				return;
 			} else {
 				res.on("close", () => {
 					let tags = {
@@ -284,7 +285,8 @@ router.all("*", function (req, res, next) {
 		}).catch((err) => {
 			t6console.error("ERROR", err);
 			if(typeof i!=="undefined") {
-				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."})).end();
+				res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."})).end();
+				return;
 			} else {
 				next();
 			}
