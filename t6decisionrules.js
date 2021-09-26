@@ -34,8 +34,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 	var r = rules.chain().find(query).data();
 	if ( r.length > 0 ) {
 		r.forEach(function(theRule) {
-			theRule.rule.event.params.rule_id = theRule.id;
-			engine.addRule(new Rule(theRule.rule));
+			if (typeof theRule.rule.event!=="undefined" && typeof theRule.rule.event.params!=="undefined") {
+				theRule.rule.event.params.rule_id = theRule.id;
+				engine.addRule(new Rule(theRule.rule));
+			}
 		});
 	}
 	// retrieve latest values
