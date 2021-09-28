@@ -70,7 +70,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 				t6console.info("GA4 statusCode:", response.statusCode);
 				if (d==="debug/") { t6console.log("GA4 body:", body); }
 			} else {
-				t6console.error("GA4 Error:", error, typeof response!=="undefined"?response.statusCode:"response is undefined or 404.");
+				t6console.error("GA4 Error:", error, typeof response!=="undefined"?response.statusCode:"response is undefined or 404.", options);
 			}
 		});
 	}
