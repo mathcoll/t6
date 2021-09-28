@@ -54,7 +54,6 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 		}
 	}
 	var json = snippets.chain().find(query).offset(offset).limit(size).data();
-	t6console.debug("snippets Query", query.$and);
 
 	var total = snippets.find(query).length;
 	json.size = size;
@@ -63,7 +62,7 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
 	json.pagePrev = json.pageSelf>json.pageFirst?Math.ceil(json.pageSelf)-1:json.pageFirst;
 	json.pageLast = Math.ceil(total/size);
 	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
-	res.status(200).send(new SnippetSerializer(json).serialize());
+	res.status(200).send(new SnippetSerializer(json).serialize()).end();
 });
 
 /**

@@ -211,7 +211,6 @@ router.use((req, res, next) => {
 });
 //catch API calls for quotas
 router.all("*", function (req, res, next) {
-	t6console.debug("catch API calls for quotas - index.js");
 	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
 	var o = {
 		key:		typeof req.user!=="undefined"?req.user.key:null,
@@ -238,27 +237,22 @@ router.all("*", function (req, res, next) {
 		if (req.user !== null && req.user.role  !== null ) {
 			res.header("X-RateLimit-Limit", limit);
 		}
-		var i;
+		let i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
-		var query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 4w) LIMIT 1`;
+		let query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 4w) LIMIT 1`;
 		t6console.debug("Query to count requests in the past 4w", query);
 		dbInfluxDB.query(query).then((data) => {
-			t6console.debug("Found Data:", data);
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
-				t6console.debug("setting header X-RateLimit-Remaining", limit-i);
 				res.header("X-RateLimit-Remaining", limit-i);
-				t6console.debug("End setting header X-RateLimit-Remaining");
 				//res.header("X-RateLimit-Reset", "");
 			}
 			res.header("Cache-Control", "no-cache, max-age=360, private, must-revalidate, proxy-revalidate");
 			if( (req.user && i >= limit) ) {
-				t6console.debug("Limit reach (429)", i, limit, req.user);
 				t6events.add("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id, typeof req.user.id!=="undefined"?req.user.id:o.user_id);
 				return res.status(429).send(new ErrorSerializer({"id": 99, "code": 429, "message": "Too Many Requests"}));
 				//return;
 			} else {
-				t6console.debug("Limit not reach", i, limit);
 				res.on("close", () => {
 					t6console.debug("Setting up the onClose rule");
 					let tags = {
@@ -276,7 +270,6 @@ router.all("*", function (req, res, next) {
 
 					req.session.cookie.secure = true;
 					req.session.user_id = req.user.id;
-
 					let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 					dbWrite.writePoints([{
 						measurement: "requests",
@@ -291,15 +284,14 @@ router.all("*", function (req, res, next) {
 						t6console.error("Error catch on writting to influxDb", {"err": err, "tags": tags, "fields": fields[0]});
 					});
 				});
-				t6console.debug("OK, passing to next route");
 				next();
 			}
 		}).catch((err) => {
 			t6console.error("ERROR", err);
-			t6console.debug("nothing on this query ?????????", query);
 			if(typeof i!=="undefined") {
 				return res.status(429).send(new ErrorSerializer({"id": 101, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
 			} else {
+				return res.status(501).send(new ErrorSerializer({"id": 101.5, "code": 501, "message": "Not Implemented - Server Error... I'm sorry"}));
 				next();
 			}
 		});
@@ -328,6 +320,7 @@ router.all("*", function (req, res, next) {
 					)
 				);
 			}
+			next(); // no User Auth..
 		}).catch((err) => {
 			t6console.error(
 				sprintf(
@@ -335,8 +328,8 @@ router.all("*", function (req, res, next) {
 					{"err": err, "tags": tags, "fields": fields[0]}
 				)
 			);
+			next(); // no User Auth..
 		});
-		next(); // no User Auth..
 	}
 });
 
