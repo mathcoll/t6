@@ -464,15 +464,15 @@ if ( logLevel.indexOf("INFO") > -1 ) {
 if (app.get("env") === "development") {
 	app.use(function(err, req, res, next) {
 		if (err.name === "UnauthorizedError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack }).end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
 		} else if (err.name === "TokenExpiredError") {
-			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token "+err.message, "stack": err.stack }).end();
+			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token "+err.message, "stack": err.stack });
 		} else if (err.name === "JsonWebTokenError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack }).end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
 		} else if (err.name === "NotBeforeError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack }).end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
 		} else {
-			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack }).end();
+			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack });
 		}
 		t6console.debug("Error - app.js", err.status, err.name, err);
 		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
@@ -480,15 +480,16 @@ if (app.get("env") === "development") {
 } else {
 	app.use(function(err, req, res, next) {
 		if (err.name === "UnauthorizedError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" }).end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" });
 		} else if (err.name === "TokenExpiredError") {
-			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token" }).end();
+			res.status(410).send({ "code": err.status, "error": "Unauthorized: expired token" });
 		} else if (err.name === "JsonWebTokenError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" }).end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" });
 		} else if (err.name === "NotBeforeError") {
-			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" }).end();
+			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" });
 		} else {
-			res.status(err.status || 500).send({ "code": err.status, "error": err.message }).end();
+			t6console.error("Error - app.js", err.status, err.name, err);
+			res.status(err.status || 500).send({ "code": err.status, "error": err.message });
 		}
 		t6console.debug("Error - app.js", err.status, err.name, err);
 		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
