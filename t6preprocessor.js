@@ -290,7 +290,7 @@ t6preprocessor.addMeasurementToFusion = function(measurement) {
 			"sanitizedValue": measurement.sanitizedValue,
 			"data_type": measurement.data_type,
 			"user_id": measurement.user_id
-		}
+		};
 		fBuff.insert(newMeasure);
 		return true;
 	}

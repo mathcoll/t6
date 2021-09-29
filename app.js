@@ -565,7 +565,7 @@ global.getFieldsFromDatatype = function(datatype, asValue, includeTime=true) {
 		fields += " as value";
 	}
 	return fields;
-}
+};
 t6console.log(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
 t6console.log("===========================================================");
 module.exports = app;
