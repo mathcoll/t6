@@ -847,7 +847,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 						.x((d) => xScale(d.key))
 						.y((d) => yScale(d.value));
 	
-					if (_isCurve) lineChart.curve(d3.curveBasis);
+					if (_isCurve) { lineChart.curve(d3.curveBasis); }
 	
 					g.append("g")
 						.attr("transform", `translate(0, ${height})`)
