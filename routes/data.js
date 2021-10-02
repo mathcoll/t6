@@ -259,22 +259,22 @@ function verifyPrerequisites(payload, object, callback) {
 			t6console.debug("chain 5", `Getting unit "${payload.unit}" from default value`);
 		}
 
-		if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_encrypted && !payload.isEncrypted ) {
-			t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.left.require_encrypted);
+		if ( typeof current_flow!=="undefined" && current_flow.require_encrypted && !payload.isEncrypted ) {
+			t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.require_encrypted);
 			t6console.debug("chain 5", ".. & Payload isEncrypted", payload.isEncrypted);
 			payload.prerequisite += 1;
 		}
 
-		if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.require_signed && !payload.isSigned ) {
-			t6console.debug("chain 5", "Flow require isSigned -", current_flow.left.require_signed);
+		if ( typeof current_flow!=="undefined" && current_flow.require_signed && !payload.isSigned ) {
+			t6console.debug("chain 5", "Flow require isSigned -", current_flow.require_signed);
 			t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
 			payload.prerequisite += 1;
 		}
 
 		if( typeof payload.retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1 ) {
-			if ( typeof current_flow!=="undefined" && current_flow.left && current_flow.left.retention ) {
-				if ( (influxSettings.retentionPolicies.data).indexOf(current_flow.left.retention)>-1 ) {
-					payload.retention = current_flow.left.retention;
+			if ( typeof current_flow!=="undefined" && current_flow.retention ) {
+				if ( (influxSettings.retentionPolicies.data).indexOf(current_flow.retention)>-1 ) {
+					payload.retention = current_flow.retention;
 				} else {
 					payload.retention = influxSettings.retentionPolicies.data[0];
 				}
@@ -282,6 +282,7 @@ function verifyPrerequisites(payload, object, callback) {
 				payload.retention = influxSettings.retentionPolicies.data[0];
 			}
 		}
+		t6console.debug("chain 5", "Retention", payload.retention);
 
 		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
 		if (payload.prerequisite <= 0) {
