@@ -39,6 +39,13 @@ var app = {
 	gtm: "GTM-PH7923",
 	applicationServerKey: "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1Gt2zrKknJQX91a8RR87w8KGP_1gDSy8x6U7s",
 	registration: null,
+	allRetentions: [
+		{ name: "autogen", value: "Default" },
+		{ name: "retention1d", value: "1 day" },
+		{ name: "retention1w", value: "1 week" },
+		{ name: "retention4w", value: "4 weeks" },
+		{ name: "retention1y", value: "1 Year" }
+	],
 	defaultPageTitle: "t6 IoT App",
 	sectionsPageTitles: {
 		"index": "t6 IoT App",
@@ -104,6 +111,7 @@ var app = {
 		"login": "email",
 		"menu": "menu",
 		"mqtts": "volume_down",
+		"retention": "av_timer",
 		"sources": "code",
 		"code": "code",
 		"name": "list",

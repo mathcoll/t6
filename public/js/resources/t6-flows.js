@@ -10,6 +10,7 @@ app.resources.flows = {
 				name: myForm.querySelector("input[name='Name']").value,
 				mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 				data_type: myForm.querySelector("select[name='DataType']").value,
+				retention: myForm.querySelector("select[name='Retention']").value,
 				unit: myForm.querySelector("select[name='Unit']").value,
 				track_id: myForm.querySelector("input[name='Track']").value,
 				fusion_algorithm: myForm.querySelector("input[id='fusion_algorithm']").value,
@@ -65,6 +66,7 @@ app.resources.flows = {
 			name: myForm.querySelector("input[name='Name']").value,
 			mqtt_topic: myForm.querySelector("input[name='MQTT Topic']").value,
 			data_type: myForm.querySelector("select[name='DataType']").value,
+			retention: myForm.querySelector("select[name='Retention']").value,
 			unit: myForm.querySelector("select[name='Unit']").value,
 			track_id: myForm.querySelector("input[name='Track']").value,
 			fusion_algorithm: myForm.querySelector("input[id='fusion_algorithm']").value,
@@ -144,7 +146,6 @@ app.resources.flows = {
 					((app.containers.flow).querySelector(".page-content")).innerHTML = "";
 				}
 				var datapoints = "";
-				
 				var node = "";
 				node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+flow.id+"\">";
 				node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
@@ -198,10 +199,11 @@ app.resources.flows = {
 					//var description = flow.attributes.description!==undefined?app.nl2br(flow.attributes.description):"";
 					//node += app.getField(app.icons.description, "Description", description, {type: "text", id: "Description", isEdit: isEdit});
 					node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic!==undefined?flow.attributes.mqtt_topic:"", {type: "text", style:"text-transform: none !important;", id: "MQTTTopic", isEdit: isEdit});
-					node += app.getField(app.icons.units, "Unit", flow.attributes.unit!==""?flow.attributes.unit:undefined, {type: "select", id: "Unit", isEdit: true, options: allUnits });
-					node += app.getField(app.icons.datatypes, "DataType", flow.attributes.data_type, {type: "select", id: "DataTypeName", isEdit: true, options: allDatatypes });
+					node += app.getField(app.icons.units, "Unit", flow.attributes.unit!==""?flow.attributes.unit:undefined, {type: "select", id: "Unit", isEdit: isEdit, options: allUnits });
+					node += app.getField(app.icons.datatypes, "DataType", flow.attributes.data_type, {type: "select", id: "DataTypeName", isEdit: isEdit, options: allDatatypes });
 					node += app.getField(app.icons.datatypes, "Type", app.findDataType(flow.attributes.data_type).type, {type: "text", id: "DataTypeType", isEdit: false, options: allDatatypes });
 					node += app.getField(app.icons.datatypes, "Classification", app.findDataType(flow.attributes.data_type).classification, {type: "text", id: "DataTypeClassification", isEdit: false, options: allDatatypes });
+					node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"Default", {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "edit_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
@@ -268,6 +270,7 @@ app.resources.flows = {
 						node += app.getField(app.icons.datatypes, "Type", app.findDataType(flow.attributes.data_type).type, {type: "text", id: "DataTypeType", isEdit: false, options: allDatatypes });
 						node += app.getField(app.icons.datatypes, "Classification", app.findDataType(flow.attributes.data_type).classification, {type: "text", id: "DataTypeClassification", isEdit: false, options: allDatatypes });
 					}
+					node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"", {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "show_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "show_require_encrypted", isEdit: isEdit});
 					node += "	</div>";
@@ -422,7 +425,8 @@ app.resources.flows = {
 		node += app.getField(app.icons.mqtts, "MQTT Topic", flow.attributes.mqtt_topic, {type: "text", id: "MQTTTopic", isEdit: true});
 		node += app.getField(app.icons.units, "Unit", flow.attributes.unit, {type: "select", id: "Unit", isEdit: true, options: allUnits });
 		node += app.getField(app.icons.datatypes, "DataType", flow.attributes.datatype, {type: "select", id: "DataType", isEdit: true, options: allDatatypes });
-		node += app.getField("verified_user", flow.attributes.require_signed!==false?"Does not require signed payload  from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "add_require_signed", isEdit: true});
+		node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"", {type: "select", id: "Retention", isEdit: true, options: app.allRetentions });
+		node += app.getField("verified_user", flow.attributes.require_signed!==false?"Does not require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "add_require_signed", isEdit: true});
 		node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Does not require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "add_require_encrypted", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
