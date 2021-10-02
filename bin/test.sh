@@ -1,16 +1,18 @@
 #!/bin/sh
 
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
 jsonapitest \
-	../test/t6main.json \
-	../test/objects.json \
-	../test/flows.json \
-	../test/datapoints.json \
-	../test/snippets.json \
-	../test/dashboards.json \
-	../test/sources.json \
-	../test/rules.json \
-	../test/sources.json \
-	../test/exploration.json \
-	../test/admin.json \
-	../test/cleaning.json
+	$SCRIPT_DIR/test/t6main.json \
+	$SCRIPT_DIR/test/objects.json \
+	$SCRIPT_DIR/test/flows.json \
+	$SCRIPT_DIR/test/datapoints.json \
+	$SCRIPT_DIR/test/snippets.json \
+	$SCRIPT_DIR/test/dashboards.json \
+	$SCRIPT_DIR/test/sources.json \
+	$SCRIPT_DIR/test/rules.json \
+	$SCRIPT_DIR/test/sources.json \
+	$SCRIPT_DIR/test/exploration.json \
+	$SCRIPT_DIR/test/admin.json \
+	$SCRIPT_DIR/test/cleaning.json
 
