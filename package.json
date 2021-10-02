@@ -76,7 +76,6 @@
     "morgan": "^1.10.0",
     "mqtt": "^4.2.8",
     "node-units": "^0.1.7",
-    "node-uuid": "^1.4.7",
     "nodemailer": "^6.6.5",
     "npm": "^7.24.1",
     "nsp": "^3.2.1",
@@ -98,6 +97,7 @@
     "striptags": "^3.2.0",
     "suncalc": "^1.8.0",
     "useragent": "^2.3.0",
+    "uuid": "^8.3.2",
     "validator": "^13.6.0",
     "web-push": "^3.4.5"
   },
