@@ -440,7 +440,7 @@ router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, 
 	if ( req.user.role === "admin" ) {
 		let subject = "t6 monthly activity report";
 		let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
-		let influxQuery = `SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM ${rp}.requests WHERE time > now() - 4w GROUP BY user_id)`;
+		let influxQuery = `SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM ${rp}.requests WHERE user_id!='anonymous' AND time > now() - 4w GROUP BY user_id)`;
 		//t6console.debug("get all actives users from influxDb", influxQuery);
 		// get all actives users
 		dbInfluxDB.query(influxQuery).then((activesUsers) => {
