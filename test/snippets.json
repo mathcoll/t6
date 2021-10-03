@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Snippets Suite",
@@ -22,7 +23,7 @@
                 	"description": "can create a Snippet",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/snippets",
+                        	"request": "POST /{{app_version}}/snippets",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -48,7 +49,7 @@
                     "description": "get All Snippets",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/snippets",
+                        	"request": "GET /{{app_version}}/snippets",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

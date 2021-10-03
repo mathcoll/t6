@@ -13,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Main Suite",
@@ -23,7 +23,7 @@
                 	"description": "create a User",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/users",
+                        	"request": "POST /{{app_version}}/users",
                             "params": {
                                 "email": "m.lory+{{$run_id}}@free.fr",
                                 "firstName": "My FirstName {{$run_id}}",
@@ -48,7 +48,7 @@
                 	"description": "Set password",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/users/token/{{saved.reset_password_token}}",
+                        	"request": "POST /{{app_version}}/users/token/{{saved.reset_password_token}}",
                             "params": {
                                 "password": "{{$run_id}}:{{$run_id}}"
                             },
@@ -64,7 +64,7 @@
                 	"description": "Sign In (/authenticate)",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/authenticate",
+                        	"request": "POST /{{app_version}}/authenticate",
                             "params": {
                                 "username": "{{saved.username}}",
                                 "password": "{{$run_id}}:{{$run_id}}"
@@ -92,7 +92,7 @@
                 	"description": "Generate email instruction to reset a User password",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/users/instruction",
+                        	"request": "POST /{{app_version}}/users/instruction",
                             "params": {
                                 "email": "{{saved.username}}"
                             },
@@ -106,7 +106,7 @@
                     "description": "create a simple Token",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/authenticate",
+                        	"request": "POST /{{app_version}}/authenticate",
                             "params": {
                                 "username": "{{saved.username}}",
                                 "password": "{{$run_id}}:{{$run_id}}"
@@ -123,7 +123,7 @@
                     "description": "update a User",
                     "api_calls": [
                         {
-                        	"request": "PUT /v2.0.1/users/{{saved.user_id}}",
+                        	"request": "PUT /{{app_version}}/users/{{saved.user_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -145,7 +145,7 @@
                     "description": "Get User from JWT claim",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/users/me/token",
+                        	"request": "GET /{{app_version}}/users/me/token",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -158,7 +158,7 @@
                 	"description": "Get User active sessions from JWT claim",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/users/me/sessions",
+                        	"request": "GET /{{app_version}}/users/me/sessions",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -174,7 +174,7 @@
                     "description": "verify a User",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/users/{{saved.user_id}}",
+                        	"request": "GET /{{app_version}}/users/{{saved.user_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -192,7 +192,7 @@
                 	"description": "create an AccessToken",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/users/accessTokens",
+                        	"request": "POST /{{app_version}}/users/accessTokens",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -211,7 +211,7 @@
                     "description": "can get an accessToken for that User",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/users/accessTokens",
+                        	"request": "GET /{{app_version}}/users/accessTokens",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -228,7 +228,7 @@
                 	"description": "Sign In (using K/S)",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/authenticate",
+                        	"request": "POST /{{app_version}}/authenticate",
                             "params": {
                                 "key": "{{saved.accessTokenKey}}",
                                 "secret": "{{saved.accessTokenSecret}}",
@@ -257,7 +257,7 @@
                 	"description": "Sign In (using K/S)",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/authenticate",
+                        	"request": "POST /{{app_version}}/authenticate",
                             "params": {
 							    "grant_type": "refresh_token",
 							    "username": "{{saved.username}}",
@@ -287,7 +287,7 @@
                 	"description": "",
                     "api_calls": [
                         {
-                            "request": "GET /v2.0.1/users/{{saved.user_id}}",
+                            "request": "GET /{{app_version}}/users/{{saved.user_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

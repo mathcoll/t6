@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Flows Suite",
@@ -22,7 +23,7 @@
                     "description": "create a Flow for that User",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/flows",
+                        	"request": "POST /{{app_version}}/flows",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -45,7 +46,7 @@
                     "description": "create a Float Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/flows",
+                        	"request": "POST /{{app_version}}/flows",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -70,7 +71,7 @@
                     "description": "update a Flow",
                     "api_calls": [
                         {
-                        	"request": "PUT /v2.0.1/flows/{{saved.flow_id_string}}",
+                        	"request": "PUT /{{app_version}}/flows/{{saved.flow_id_string}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -101,7 +102,7 @@
                     "description": "",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/flows/",
+                        	"request": "POST /{{app_version}}/flows/",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -130,7 +131,7 @@
                     "description": "",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/flows/",
+                        	"request": "POST /{{app_version}}/flows/",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -160,7 +161,7 @@
                     "description": "",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/flows/",
+                        	"request": "POST /{{app_version}}/flows/",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -190,7 +191,7 @@
                     "description": "create a Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/flows",
+                        	"request": "POST /{{app_version}}/flows",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Datapoints Suite",
@@ -22,7 +23,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -53,7 +54,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -84,7 +85,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -175,7 +176,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -203,7 +204,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -237,7 +238,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -271,7 +272,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -305,7 +306,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -341,7 +342,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -373,7 +374,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -417,7 +418,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -450,7 +451,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -483,7 +484,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -516,7 +517,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -547,7 +548,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -604,7 +605,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data/{{saved.flow_id_string}}",
+                        	"request": "POST /{{app_version}}/data/{{saved.flow_id_string}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -627,7 +628,7 @@
                     "description": "update a Flow",
                     "api_calls": [
                         {
-                        	"request": "PUT /v2.0.1/flows/{{saved.flow_id_string}}",
+                        	"request": "PUT /{{app_version}}/flows/{{saved.flow_id_string}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -662,7 +663,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

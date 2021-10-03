@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Cleaning Suite",
@@ -22,7 +23,7 @@
                     "description": "can delete an accessToken for that User",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/users/accessTokens/{{saved.accessTokenKey}}",
+                        	"request": "DELETE /{{app_version}}/users/accessTokens/{{saved.accessTokenKey}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -35,7 +36,7 @@
                     "description": "make sure accessToken for that User is DELETEd",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/users/accessTokens",
+                        	"request": "GET /{{app_version}}/users/accessTokens",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -52,7 +53,7 @@
                     "description": "can delete an Object",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/objects/{{saved.object_id}}",
+                        	"request": "DELETE /{{app_version}}/objects/{{saved.object_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -65,7 +66,7 @@
                     "description": "can delete an Object",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/objects/{{saved.object_id2}}",
+                        	"request": "DELETE /{{app_version}}/objects/{{saved.object_id2}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -78,7 +79,7 @@
                     "description": "delete a Flow",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/flows/{{saved.flow_id_string}}",
+                        	"request": "DELETE /{{app_version}}/flows/{{saved.flow_id_string}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -91,7 +92,7 @@
                     "description": "delete a Flow",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/flows/{{saved.flow_id_float}}",
+                        	"request": "DELETE /{{app_version}}/flows/{{saved.flow_id_float}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -104,7 +105,7 @@
                     "description": "cannot get a deleted Flow",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/flows/{{saved.flow_id_float}}",
+                        	"request": "GET /{{app_version}}/flows/{{saved.flow_id_float}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -117,7 +118,7 @@
                     "description": "can delete a Dashboard",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/dashboards/{{saved.dashboard_id}}",
+                        	"request": "DELETE /{{app_version}}/dashboards/{{saved.dashboard_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -130,7 +131,7 @@
                     "description": "can delete a Snippet",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/snippets/{{saved.snippet_id}}",
+                        	"request": "DELETE /{{app_version}}/snippets/{{saved.snippet_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -143,7 +144,7 @@
                     "description": "delete a User",
                     "api_calls": [
                         {
-                        	"request": "DELETE /v2.0.1/users/{{saved.user_id}}",
+                        	"request": "DELETE /{{app_version}}/users/{{saved.user_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -161,7 +162,7 @@
                     "description": "verify a User has been deleted",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/users/{{saved.user_id}}",
+                        	"request": "GET /{{app_version}}/users/{{saved.user_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

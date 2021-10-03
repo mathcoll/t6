@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,17 +13,17 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Admin Suite",
             "tests": [
                 {
                 	"name": "can get all DataTypes",
-                	"description": "get all DataTypes",
+                	"description": "Get all Datatypes",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/datatypes",
+                        	"request": "GET /{{app_version}}/datatypes",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
@@ -36,7 +37,7 @@
                 	"description": "get all Units",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/units",
+                        	"request": "GET /{{app_version}}/units",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
@@ -46,11 +47,11 @@
                     ]
                 },
                 {
-                	"name": "can get Volumes Units",
-                	"description": "get Volumes Units",
+                	"name": "can get some Units using a filtered type 'Volumes'",
+                	"description": "get Units using a filter",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/units?type=Volume",
+                        	"request": "GET /{{app_version}}/units?type=Volume",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
@@ -60,11 +61,11 @@
                     ]
                 },
                 {
-                	"name": "can get Volumes Units",
-                	"description": "get Volumes Units",
+                	"name": "can get some Units using a filtered type 'Units'",
+                	"description": "get Units using a filter",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/units?type=Température",
+                        	"request": "GET /{{app_version}}/units?type=Température",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
@@ -74,11 +75,11 @@
                     ]
                 },
                 {
-                	"name": "can get Volumes Units",
-                	"description": "get Volumes Units",
+                	"name": "can get some Units using a filtered type 'Paper Quantity'",
+                	"description": "get Units using a filter",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/units?type=Paper%20Quantity",
+                        	"request": "GET /{{app_version}}/units?type=Paper%20Quantity",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
@@ -89,10 +90,10 @@
                 },
                 {
                 	"name": "can get t6 server status",
-                	"description": "get t6 server status",
+                	"description": "Server Status return basic informations",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/status",
+                        	"request": "GET /{{app_version}}/status",
                             "status": 200,
                             "assert": {
                             	"select": "body.status",
@@ -103,10 +104,10 @@
                 },
                 {
                 	"name": "can get t6 pwa index cards",
-                	"description": "get t6 pwa index cards",
+                	"description": "List of all cards on the PWA home screen",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/index",
+                        	"request": "GET /{{app_version}}/index",
                             "status": 200,
                             "assert": {
                             	"select": "body.data",
@@ -117,10 +118,10 @@
                 },
                 {
                 	"name": "can get t6 terms cards",
-                	"description": "can get t6 terms cards",
+                	"description": "List of all cards on the PWA Term&Conditions screen",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/terms",
+                        	"request": "GET /{{app_version}}/terms",
                             "status": 200,
                             "assert": {
                             	"select": "body.data",

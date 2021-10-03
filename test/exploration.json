@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Exploration Suite",
@@ -22,7 +23,7 @@
                 	"description": "string is not compatible with GET summary",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/summary?flow_id={{saved.flow_id_string}}&retention={{saved.retention}}",
+                        	"request": "GET /{{app_version}}/exploration/summary?flow_id={{saved.flow_id_string}}&retention={{saved.retention}}",
                             "params": {
                             },
                             "headers": {
@@ -38,7 +39,7 @@
                 	"description": "can get Summary exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/summary?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                        	"request": "GET /{{app_version}}/exploration/summary?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
                             "params": {
                             },
                             "headers": {
@@ -54,7 +55,7 @@
                 	"description": "can get normality exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/normality?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                        	"request": "GET /{{app_version}}/exploration/normality?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
                             "params": {
                             },
                             "headers": {
@@ -70,7 +71,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -101,7 +102,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -132,7 +133,7 @@
                     "description": "publish data to Flow",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/data",
+                        	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -173,7 +174,7 @@
                 	"description": "can get normality exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/normality?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                        	"request": "GET /{{app_version}}/exploration/normality?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
                             "params": {
                             },
                             "headers": {
@@ -189,7 +190,7 @@
                 	"description": "can get head exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/head?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                        	"request": "GET /{{app_version}}/exploration/head?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
                             "params": {
                             },
                             "headers": {
@@ -205,7 +206,7 @@
                 	"description": "can get tail exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/tail?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
+                        	"request": "GET /{{app_version}}/exploration/tail?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}",
                             "params": {
                             },
                             "headers": {
@@ -221,7 +222,7 @@
                 	"description": "can get kernelDensityEstimation exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/kernelDensityEstimation?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&group=1s",
+                        	"request": "GET /{{app_version}}/exploration/kernelDensityEstimation?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&group=1s",
                             "params": {
                             },
                             "headers": {
@@ -237,7 +238,7 @@
                 	"description": "can get loess exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/loess?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&limit=100000&width=1200&height=300&xAxis=Time&yAxis=Loess%20is%20the%20line&degree=linear&span=0.15&band=0.7",
+                        	"request": "GET /{{app_version}}/exploration/loess?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&limit=100000&width=1200&height=300&xAxis=Time&yAxis=Loess%20is%20the%20line&degree=linear&span=0.15&band=0.7",
                             "params": {
                             },
                             "headers": {
@@ -253,7 +254,7 @@
                 	"description": "can get frequencyDistribution exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/frequencyDistribution?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&group=1w&width=800&height=300&ticks=20",
+                        	"request": "GET /{{app_version}}/exploration/frequencyDistribution?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&group=1w&width=800&height=300&ticks=20",
                             "params": {
                             },
                             "headers": {
@@ -269,7 +270,7 @@
                 	"description": "can get export exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/export?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&group=365d",
+                        	"request": "GET /{{app_version}}/exploration/export?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&group=365d",
                             "params": {
                             },
                             "headers": {
@@ -285,7 +286,7 @@
                 	"description": "can get line exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/line?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&limit=100000&width=800&height=300&xAxis=Line",
+                        	"request": "GET /{{app_version}}/exploration/line?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&limit=100000&width=800&height=300&xAxis=Line",
                             "params": {
                             },
                             "headers": {
@@ -301,7 +302,7 @@
                 	"description": "can get Boxplot exploration from a float",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/exploration/boxplot?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&width=800&height=200&xAxis=Boxplot",
+                        	"request": "GET /{{app_version}}/exploration/boxplot?flow_id={{saved.flow_id_float}}&retention={{saved.retention_float}}&start=2020-03-15%2016:00:00&end=2120-03-25%2019:59:59&width=800&height=200&xAxis=Boxplot",
                             "params": {
                             },
                             "headers": {

@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Objects Suite",
@@ -25,7 +26,7 @@
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
-                            "request": "POST /v2.0.1/objects",
+                            "request": "POST /{{app_version}}/objects",
                             "params": {
                                 "description": "My object description",
                                 "ipv4": "127.0.0.1",
@@ -55,7 +56,7 @@
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
-                            "request": "POST /v2.0.1/objects",
+                            "request": "POST /{{app_version}}/objects",
                             "params": {
                                 "description": "My Public object description.",
                                 "ipv4": "127.0.0.2",
@@ -82,7 +83,7 @@
                     "description": "Object public page returns an error when non public",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/objects/{{saved.object_id}}/public",
+                        	"request": "GET /{{app_version}}/objects/{{saved.object_id}}/public",
                             "save": {},
                             "status": "404"
                         }
@@ -93,7 +94,7 @@
                     "description": "can get an Object public page",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/objects/{{saved.object_id2}}/public",
+                        	"request": "GET /{{app_version}}/objects/{{saved.object_id2}}/public",
                             "save": {},
                             "status": "200"
                         }
@@ -104,7 +105,7 @@
                     "description": "update an Object",
                     "api_calls": [
                         {
-                        	"request": "PUT /v2.0.1/objects/{{saved.object_id}}",
+                        	"request": "PUT /{{app_version}}/objects/{{saved.object_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -131,7 +132,7 @@
                     "description": "get a specific Object",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/objects/{{saved.object_id}}",
+                        	"request": "GET /{{app_version}}/objects/{{saved.object_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -145,7 +146,7 @@
                     "description": "get an Object from name",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/objects/?name=Updated%20Object",
+                        	"request": "GET /{{app_version}}/objects/?name=Updated%20Object",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -163,7 +164,7 @@
                 	"description": "Over Quota an Object",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/objects",
+                        	"request": "POST /{{app_version}}/objects",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
@@ -185,7 +186,7 @@
                     "description": "get all my Objects",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/objects/",
+                        	"request": "GET /{{app_version}}/objects/",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

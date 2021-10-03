@@ -1,5 +1,6 @@
 {
     "config": {
+        "log_path": "./jsonapitest-results.json",
         "defaults": {
             "api_call": {
                 "request": {
@@ -12,7 +13,7 @@
             }
         }
     },
-    "data": {},
+    "data": {"app_version": "v2.0.1"},
     "suites": [
         {
             "name": "t6 Dashboards Suite",
@@ -22,13 +23,13 @@
                 	"description": "can create a Dashboard",
                     "api_calls": [
                         {
-                        	"request": "POST /v2.0.1/dashboards",
+                        	"request": "POST /{{app_version}}/dashboards",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
 							    "name": "My test dashboard",
-							    "description": "Very intense descriptive test",
+							    "description": "Very descriptive test",
 							    "snippets": ["{{saved.snippet_id}}"]
 							},
                             "assert": [],
@@ -44,7 +45,7 @@
                     "description": "get All Dashboards",
                     "api_calls": [
                         {
-                        	"request": "GET /v2.0.1/dashboards",
+                        	"request": "GET /{{app_version}}/dashboards",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
