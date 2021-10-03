@@ -28,10 +28,214 @@
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
+                                "content": "void setup() { // put your setup code here, to run once: } void loop() { // put your main code here, to run repeatedly: }"
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.source_id_master": "body.source.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get all Sources",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/sources",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+                            	"select": "body.data",
+                            	"size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can update a Source",
+                	"description": "can update a Source",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /{{app_version}}/sources/{{saved.source_id_master}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "content": "void setup() { } void loop() { }"
 							},
                             "assert": [],
                             "save": {
                                 "saved.source_id": "body.source.data.id"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get children of a Source",
+                	"description": "can get children of a Source",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/sources/{{saved.source_id_master}}/child?page=1&size=20",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+                            	"select": "body.data",
+                            	"size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "List all known boards and their corresponding FQBN.",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/ota/board-listall",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Shows a list of all installed platform core",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/ota/core-list",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Shows a list of all installed libraries",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/ota/lib-list",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can link a Source to an existing Object",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /{{app_version}}/objects/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "fqbn": "esp8266:esp8266:nodemcu:xtal=80,vt=flash,ssl=all,eesz=4M2M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
+                                "source_id": "{{saved.source_id_master}}",
+                                "source_version": "1"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": [{
+        	                    "select": "body.message",
+        	                    "equal": "Successfully updated"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can get Objects linked to source",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/ota/{{saved.source_id_master}}?ota-status=true&name=",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+                            	"select": "body.data",
+                            	"size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can deploy a source to an Object",
+                	"description": "Build is required first",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/ota/{{saved.source_id_master}}/deploy/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "409"
+                        }
+                    ]
+                },
+                {
+                	"name": "can build a source for an Object",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/objects/{{saved.object_id}}/build?version=1",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can deploy a source to an Object",
+                	"description": "Build should be completed now",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/ota/{{saved.source_id_master}}/deploy/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "status": "201"
                         }

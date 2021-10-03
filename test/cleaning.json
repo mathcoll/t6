@@ -49,6 +49,19 @@
                     ]
                 },
                 {
+                	"name": "can delete a Source",
+                    "description": "can delete a Source",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/sources/{{saved.source_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "can delete an Object 1",
                     "description": "can delete an Object",
                     "api_calls": [
@@ -75,7 +88,7 @@
                     ]
                 },
                 {
-                	"name": "can delete a Flow",
+                	"name": "can delete a Flow 1",
                     "description": "delete a Flow",
                     "api_calls": [
                         {
@@ -88,11 +101,50 @@
                     ]
                 },
                 {
-                	"name": "can delete a Flow",
+                	"name": "can delete a Flow 2",
                     "description": "delete a Flow",
                     "api_calls": [
                         {
                         	"request": "DELETE /{{app_version}}/flows/{{saved.flow_id_float}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Flow 3",
+                    "description": "delete a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/flows/{{saved.track_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Flow 4",
+                    "description": "delete a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/flows/{{saved.track_A_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a Flow 5",
+                    "description": "delete a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/flows/{{saved.track_B_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

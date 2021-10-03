@@ -116,6 +116,7 @@
                                 "name": "My Updated Object",
                                 "position": "BedRoom",
                                 "type": "smartphone",
+                                "fqbn": "esp8266:esp8266:nodemcu:xtal=80,vt=flash,exception=legacy,ssl=all,eesz=4M2M,ip=lm2f,dbg=Disabled,lvl=None____,wipe=none,baud=115200",
                                 "user_id": "{{saved.user_id}}"
                             },
                             "save": {},
@@ -133,6 +134,20 @@
                     "api_calls": [
                         {
                         	"request": "GET /{{app_version}}/objects/{{saved.object_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a specific Object ota status",
+                    "description": "get a specific Object",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/objects/{{saved.object_id}}/ota-status",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },

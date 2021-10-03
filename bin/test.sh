@@ -9,10 +9,10 @@ jsonapitest \
 	$SCRIPT_DIR/../test/datapoints.json \
 	$SCRIPT_DIR/../test/snippets.json \
 	$SCRIPT_DIR/../test/dashboards.json \
-	$SCRIPT_DIR/../test/sources.json \
 	$SCRIPT_DIR/../test/rules.json \
 	$SCRIPT_DIR/../test/sources.json \
 	$SCRIPT_DIR/../test/exploration.json \
 	$SCRIPT_DIR/../test/admin.json \
 	$SCRIPT_DIR/../test/cleaning.json
 
+#cat $SCRIPT_DIR/../jsonapitest-results.json | jq '. | length'

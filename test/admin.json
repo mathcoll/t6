@@ -129,6 +129,20 @@
         	                }
                         }
                     ]
+                },
+                {
+                	"name": "can get t6 compatible-devices cards",
+                	"description": "List of all cards on the PWA compatible-devices screen",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/compatible-devices/",
+                            "status": 200,
+                            "assert": {
+                            	"select": "body.data",
+                            	"size": 9
+        	                }
+                        }
+                    ]
                 }
             ]
         }
