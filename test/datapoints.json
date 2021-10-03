@@ -116,7 +116,33 @@
                     ]
                 },
                 {
-                	"name": "can get a specific data from Flow",
+                	"name": "can get a specific data from Flow without declaring the retention",
+                    "description": "This should not list any measured datapoint as the Flow does not define a retention but the POST datapoints was storing to a specific retention.",
+                    "api_calls": [
+                        {
+                        	"request": "GET {{saved.data_id_full_url}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 404
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a specific data from Flow declaring a wrong retention",
+                    "description": "This should not list any measured datapoint. Data should be stored to retention1w",
+                    "api_calls": [
+                        {
+                        	"request": "GET {{saved.data_id_full_url}}?retention=unidentified_should_fallback_to_autogen",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 404
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a specific data from Flow forcing retention (from the body)",
                     "description": "get a specific data from Flow",
                     "api_calls": [
                         {
@@ -124,12 +150,15 @@
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
+                            "params": {
+                                "retention": "retention1w"
+                            },
                             "status": 200
                         }
                     ]
                 },
                 {
-                	"name": "can get a specific data from Flow forcing retention",
+                	"name": "can get a specific data from Flow forcing retention (from the query param)",
                     "description": "get a specific data from Flow",
                     "api_calls": [
                         {
@@ -566,6 +595,90 @@
 	        	                    "select": "body.data.0.attributes.fusion.primary_flow",
 	        	                    "equal": "{{saved.track_id}}"
 	        	                }
+	        	            ]
+                        }
+                    ]
+                },
+                {
+                	"name": "can publish a signed payload",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/data/{{saved.flow_id_string}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "signedPayload": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ2YWx1ZSI6IjIuIERhdGFwb2ludCBzaWduZWQsIG5vdCBjcnlwdGVkIiwidGV4dCI6InNpZ25lZCwgbm90IGNyeXB0ZWQiLCJwdWJsaXNoIjoidHJ1ZSIsInNhdmUiOnRydWUsInVuaXQiOiIiLCJtcXR0X3RvcGljIjoiIiwibGF0aXR1ZGUiOiIzOS44MDAzMjciLCJsb25naXR1ZGUiOiI2LjM0MzUzMCIsIm9iamVjdF9pZCI6ImRjODlhYjgxLWVlY2ItNDVlOS05ZTEyLWUzYjcxZWE3ZjA0NCJ9.7WcMCIyshtJU_sJ2eZbhLIuEVE44wbZoL-lumyNIOqw",
+                                "object_id": "{{saved.object_id}}"
+                            },
+                            "status": 200,
+                            "assert": [
+	                            {
+	        	                    "select": "body.data.0.attributes.value",
+	        	                    "equal": "2. Datapoint signed, not crypted"
+	        	                }
+	        	            ]
+                        }
+                    ]
+                },
+                {
+                	"name": "can update a Flow to force signature",
+                    "description": "update a Flow",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /v2.0.1/flows/{{saved.flow_id_string}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "data_type": "a394e18f-12bd-4c22-b9c3-74c387d1a8d",
+                                "name": "My Flow for String is UPDATED with a required signature",
+                                "objects": [
+                                    "{{saved.object_id}}"
+                                ],
+                                "unit": "",
+                                "theme": "",
+                                "retention": "retention1w",
+                                "require_signed": true,
+                                "unit_id": "c528045b-4928-45ad-83fa-4a242eb6059e"
+                            },
+                            "save": {
+                                "saved.flow_id_signature_required": "body.flow.data.id"
+                            },
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.flow.data.attributes.name",
+        	                    "equal": "My Flow for String is UPDATED with a required signature"
+        	                },{
+        	                    "select": "body.flow.data.attributes.retention",
+        	                    "equal": "retention1w"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "Verify signed payload is required",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /v2.0.1/data",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+				                "flow_id": "{{saved.flow_id_signature_required}}",
+							    "value": 111.0,
+							    "text": "",
+							    "save": true,
+                                "retention": "retention1w",
+							    "unit": "",
+							    "mqtt_topic": "test",
+							    "object_id": "{{saved.object_id}}",
+							    "publish": false
+							},
+                            "status": 412,
+                            "assert": [
 	        	            ]
                         }
                     ]

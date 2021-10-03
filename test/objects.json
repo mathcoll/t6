@@ -33,7 +33,8 @@
                                 "name": "My Object",
                                 "position": "LivingRoom",
                                 "type": "phone",
-                                "user_id": "{{saved.user_id}}"
+                                "user_id": "{{saved.user_id}}",
+                                "secret_key": "'[].Gdvj`a/'CfH9-N[<L}=W$6WtKQb5jasn/,fc%L9B^m^Gmdg<>hg+C9*o6UHyCjC`2K"
                             },
                             "save": {
                                 "saved.object_id": "body.object.data.id"
