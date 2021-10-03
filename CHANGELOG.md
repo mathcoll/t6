@@ -19,14 +19,16 @@ Types of changes
 
 ## 2021
 ### Milestone 15 - 2021-10: 
+#### Fixed
+  - [x] Fixed signature on datapoint storage
+#### Added
+
+### Milestone 14 - 2021-09: Image Preprocessing
 #### Added
   - [x] Api {get} /exploration/:flow_id/exploration is removed - was marked as deprecated for 10 months. 
   - [x] Cutom Datapoints Retention Policy on Flows
   - [x] "Requests" database Retention Policy moved from 1 week to 30 days
   - [x] Activating Monthly Activity Report by email for user calling the Api in the past 30 days (using "Requests" database)
-
-### Milestone 14 - 2021-09: Image Preprocessing
-#### Added
   - [x] Image preprocessing including Face, Age, Gender and Facial Expression recognition
 
 ### Milestone 13 - 2021-06: Sensor Data Fusion
