@@ -260,15 +260,19 @@ function verifyPrerequisites(payload, object, callback) {
 		}
 
 		if ( typeof current_flow!=="undefined" && current_flow.require_encrypted && !payload.isEncrypted ) {
+			payload.prerequisite += 1;
+			payload.errorMessage.push("chain 5", "==> Flow require encrypted payload.");
 			t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.require_encrypted);
 			t6console.debug("chain 5", ".. & Payload isEncrypted", payload.isEncrypted);
-			payload.prerequisite += 1;
+			//callback("Error: verifyPrerequisites :", payload, object, null);
 		}
 
 		if ( typeof current_flow!=="undefined" && current_flow.require_signed && !payload.isSigned ) {
+			payload.prerequisite += 1;
+			payload.errorMessage.push("chain 5", "==> Flow require signed payload.");
 			t6console.debug("chain 5", "Flow require isSigned -", current_flow.require_signed);
 			t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
-			payload.prerequisite += 1;
+			//callback("Error: verifyPrerequisites :", payload, object, null);
 		}
 
 		if( typeof payload.retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1 ) {
@@ -284,11 +288,11 @@ function verifyPrerequisites(payload, object, callback) {
 		}
 		t6console.debug("chain 5", "Retention", payload.retention);
 
-		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
+		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.", current_flow);
 		if (payload.prerequisite <= 0) {
 			callback(null, payload, object, current_flow);
 		} else {
-			payload.errorMessage.push("Payload is requiring either signature and/or encryption. "+error);
+			payload.errorMessage.push("Payload is requiring either signature and/or encryption.");
 			callback("Payload is requiring either signature and/or encryption.", payload, object, null);
 		}
 	}
@@ -659,6 +663,7 @@ async function processAllMeasures(payloads, options, res) {
 				} else {
 					t6console.debug("chain ending with error", "---------------------------------------------");
 					t6console.debug(err);
+					res.status(412).send({err: err, "id": 1, "code": 412, "message": "Precondition failed"});
 				}
 			});
 			//return result;
@@ -712,7 +717,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	var flow_id = req.params.flow_id;
 	var data_id = req.params.data_id;
 	var modifier = req.query.modifier;
-	var retention = req.query.retention;
+	var retention = typeof req.query.retention!=="undefined"?req.query.retention:req.body.retention;
 	var query;
 	var start;
 	var end;
