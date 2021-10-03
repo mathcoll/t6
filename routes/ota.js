@@ -127,11 +127,12 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 			let binFile = `${dir}/${o.id}.${packager}.${architecture}.${id}.bin`;
 			if (!fs.existsSync(dir) || !fs.existsSync(binFile)) {
 				binFileErrors.push(o.id);
+				t6console.debug("Deploy : adding to error", dir, binFile, o.id);
 				t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "failure", new Date()-start);
 			}
 		});
 		if(binFileErrors.length>0) {
-			t6console.info("binFileErrors", binFileErrors);
+			t6console.debug("binFileErrors", binFileErrors);
 			res.status(409).send(new ErrorSerializer({"id": 600, "code": 409, "message": "Build is required first", "missing_builds": binFileErrors}).serialize());
 		} else {
 			if(!req.query.dryrun || req.query.dryrun === "false") {

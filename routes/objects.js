@@ -396,6 +396,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 		object.source_version = typeof object.source_version!=="undefined"?object.source_version:0;
 		sources	= dbSources.getCollection("sources");
 		let source = sources.findOne({"$and": [{ "root_source_id": object.source_id }, {"version": parseInt(version, 10)}]});
+		t6console.debug(object.source_id, object.source_version, version, source);
 		if ( source && source.content ) {
 			// This is a temporary solution...
 			let exec = require("child_process").exec;
@@ -418,10 +419,10 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 				t6console.log("Building ino sketch using fqbn=", fqbn);
 				
 				let start = new Date();
-				t6console.log("Exec=", `${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
+				t6console.debug("Exec=", `${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
 				const child = exec(`${ota.arduino_binary_cli} --config-file ${ota.config} --fqbn ${fqbn} --verbose compile ${dir}`);
 				child.on("close", (code) => {
-					t6console.log(`child process exited with code ${code}`);
+					t6console.debug(`child process exited with code ${code}`);
 					let user = users.findOne({"id": req.user.id });
 					if (code === 0) {
 						if (user && typeof user.pushSubscription !== "undefined" ) {
@@ -450,7 +451,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 					}
 				});
 			});  
-
+			t6console.debug("Building ino sketch");
 			res.status(201).send({ "code": 201, message: "Building ino sketch", object: new ObjectSerializer(object).serialize() });
 		} else {
 			res.status(412).send(new ErrorSerializer({"id": 140, "code": 412, "message": "Source is empty or unknown version"}).serialize());
