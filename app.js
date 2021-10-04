@@ -513,7 +513,7 @@ mqttClient.on("connect", function () {
 mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split("objects/status/")[1];
 	let stat = message.toString();
-	t6console.log(sprintf("Object Status Changed: %s is %s", object, stat==="1"?"visible":"hidden"), "("+message+")");
+	t6console.info(sprintf("Object Status Changed: %s is %s", object, stat==="1"?"visible":"hidden"), "("+message+")");
 	if ( stat === "1" && t6ConnectedObjects.indexOf(object)<0 ) {
 		t6ConnectedObjects.push(object);
 	} else {
@@ -522,7 +522,7 @@ mqttClient.on("message", function (topic, message) {
 			t6ConnectedObjects.splice(i, 1);
 		}
 	}
-	t6console.log(sprintf("Connected Objects: %s", t6ConnectedObjects));
+	t6console.info(sprintf("Connected Objects: %s", t6ConnectedObjects));
 });
 global.startProcessTime = new Date()-start;
 
