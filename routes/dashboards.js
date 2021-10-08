@@ -89,7 +89,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 	var queryQ = { "user_id" : req.user.id };
 	var i = (dashboards.find(queryQ)).length;
 	if( i >= (quota[req.user.role]).dashboards ) {
-		res.status(429).send(new ErrorSerializer({"id": 329, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
+		res.status(429).send(new ErrorSerializer({"id": 1329, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
 		if ( typeof req.user.id !== "undefined" ) {
 			var dashboard_id = uuid.v4();
@@ -145,7 +145,7 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 		var dashboard = dashboards.findOne( query );
 		if ( dashboard ) {
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - dashboard.meta.revision) !== 0 ) {
-				res.status(409).send(new ErrorSerializer({"id": 339.2, "code": 409, "message": "Bad Request"}).serialize());
+				res.status(409).send(new ErrorSerializer({"id": 1330, "code": 409, "message": "Bad Request"}).serialize());
 			} else {
 				var result;
 				dashboards.chain().find({ "id": dashboard_id }).update(function(item) {
@@ -161,14 +161,14 @@ router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 					res.header("Location", "/v"+version+"/dashboards/"+dashboard_id);
 					res.status(200).send({ "code": 200, message: "Successfully updated", dashboard: new DashboardSerializer(result).serialize() });
 				} else {
-					res.status(404).send(new ErrorSerializer({"id": 340, "code": 404, "message": "Not Found"}).serialize());
+					res.status(404).send(new ErrorSerializer({"id": 1340, "code": 404, "message": "Not Found"}).serialize());
 				}
 			}
 		} else {
-			res.status(401).send(new ErrorSerializer({"id": 342, "code": 401, "message": "Forbidden ??"}).serialize());
+			res.status(401).send(new ErrorSerializer({"id": 1342, "code": 401, "message": "Forbidden ??"}).serialize());
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 340.5, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 1341, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
