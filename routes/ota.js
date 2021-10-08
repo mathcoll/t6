@@ -162,24 +162,30 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 						if (code === 0) {
 							if (user && typeof user.pushSubscription !== "undefined" ) {
 								payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"Deploy is completed on "+o.ipv4+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-								let result = t6notifications.sendPush(user.pushSubscription, payload);
-								if(result && (result.statusCode === 404 || result.statusCode === 410)) {
-									t6console.error("result", result);
-									t6console.error("Can't sendPush because of a status code Error", result.statusCode);
-									// We should remove the token from user
-									// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+								let result = t6notifications.sendPush(user, payload);
+								if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+									t6console.debug("pushSubscription", pushSubscription);
+									t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+									users.chain().find({ "id": user.id }).update(function(u) {
+										u.pushSubscription = {};
+										db_users.save();
+									});
+									t6console.debug("pushSubscription is now disabled on User", error);
 								}
 							}
 							t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "success", new Date()-start);
 						} else {
 							if (user && typeof user.pushSubscription !== "undefined" ) {
 								payload = "{\"type\": \"message\", \"title\": \"Arduino OTA Deploy\", \"body\": \"An error occured during deployment of "+o.ipv4+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-								let result = t6notifications.sendPush(user.pushSubscription, payload);
-								if(result && (result.statusCode === 404 || result.statusCode === 410)) {
-									t6console.error("result", result);
-									t6console.error("Can't sendPush because of a status code Error", result.statusCode);
-									// We should remove the token from user
-									// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+								let result = t6notifications.sendPush(user, payload);
+								if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+									t6console.debug("pushSubscription", pushSubscription);
+									t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+									users.chain().find({ "id": user.id }).update(function(u) {
+										u.pushSubscription = {};
+										db_users.save();
+									});
+									t6console.debug("pushSubscription is now disabled on User", error);
 								}
 							}
 							t6otahistory.addEvent(req.user.id, o.id, {fqbn: o.fqbn, ip: o.ipv4}, o.source_id, o.source_version, "deploy", "failure", new Date()-start);

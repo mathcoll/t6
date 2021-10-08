@@ -425,26 +425,34 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 					t6console.debug(`child process exited with code ${code}`);
 					let user = users.findOne({"id": req.user.id });
 					if (code === 0) {
-						if (user && typeof user.pushSubscription !== "undefined" ) {
+						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!=="" ) {
+							t6console.debug(user.pushSubscription);
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"Build is completed on v"+version+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-							let result = t6notifications.sendPush(user.pushSubscription, payload);
-							if(result && (result.statusCode === 404 || result.statusCode === 410)) {
-								t6console.error("result", result);
-								t6console.error("Can't sendPush because of a status code Error", result.statusCode);
-								// We should remove the token from user
-								// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+							let result = t6notifications.sendPush(user, payload);
+							if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+								t6console.debug("pushSubscription", pushSubscription);
+								t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+								users.chain().find({ "id": user.id }).update(function(u) {
+									u.pushSubscription = {};
+									db_users.save();
+								});
+								t6console.debug("pushSubscription is now disabled on User", error);
 							}
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "success", new Date()-start);
 					} else {
-						if (user && typeof user.pushSubscription !== "undefined" ) {
+						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!=="" ) {
+							t6console.debug(user.pushSubscription);
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"An error occured during build v"+version+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-							let result = t6notifications.sendPush(user.pushSubscription, payload);
-							if(result && (result.statusCode === 404 || result.statusCode === 410)) {
-								t6console.error("result", result);
-								t6console.error("Can't sendPush because of a status code Error", result.statusCode);
-								// We should remove the token from user
-								// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+							let result = t6notifications.sendPush(user, payload);
+							if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+								t6console.debug("pushSubscription", pushSubscription);
+								t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+								users.chain().find({ "id": user.id }).update(function(u) {
+									u.pushSubscription = {};
+									db_users.save();
+								});
+								t6console.debug("pushSubscription is now disabled on User", error);
 							}
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "failure", new Date()-start);

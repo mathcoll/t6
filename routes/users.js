@@ -510,12 +510,15 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 			user.pushSubscription = user.pushSubscription!==null?user.pushSubscription:{};
 			user.pushSubscription.user_id = user_id;
 			let payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-			let result = t6notifications.sendPush(user.pushSubscription, payload);
-			if(result && (result.statusCode === 404 || result.statusCode === 410)) {
-				t6console.error("result", result);
-				t6console.error("Can't sendPush because of a status code Error", result.statusCode);
-				// We should remove the token from user
-				// If the error code is fatal (404 or 410), it removes the device from the DB so it's never tried again.
+			let result = t6notifications.sendPush(user, payload);
+			if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+				t6console.debug("pushSubscription", pushSubscription);
+				t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+				users.chain().find({ "id": user_id }).update(function(u) {
+					u.pushSubscription = {};
+					db_users.save();
+				});
+				t6console.debug("pushSubscription is now disabled on User", error);
 			}
 			res.status(200).send({"status": "sent", "count": 1});
 		} else {
