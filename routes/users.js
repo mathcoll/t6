@@ -51,7 +51,7 @@ router.get("/newcomers", function (req, res) {
 		//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 		});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 819.0, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 /**
@@ -85,7 +85,7 @@ router.get("/list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetti
 		json.pageLast	= Math.ceil(json.totalcount/size);
 		res.status(200).send(new UserSerializer(json).serialize());
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 702, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 
@@ -215,7 +215,7 @@ router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 			res.status(404).send(new ErrorSerializer({"id": 16.1, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 16, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 
@@ -485,7 +485,7 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algo
 		db_users.save();
 		res.status(200).send({"status": "done", "count": users.chain().find().data().length});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden "+req.user.role+"/"+process.env.NODE_ENV}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 
@@ -525,7 +525,7 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 181, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 
@@ -548,7 +548,7 @@ router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings
 		t6notifications.sendFCM(typeof token!=="undefined"?[token]:req.body.tokens, payload);
 		res.status(200).send({"status": "sent", "count": 1});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 181, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
 
@@ -590,7 +590,7 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 			res.header("Location", "/v"+version+"/users/"+user_id);
 			res.status(200).send({ "code": 200, message: "Successfully updated", user: new UserSerializer(result).serialize() });
 		} else {
-			res.status(403).send(new ErrorSerializer({"id": 7,"code": 403, "message": "Forbidden"}).serialize());
+			res.status(401).send(new ErrorSerializer({"id": 17051, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 		}
 	}
 });
