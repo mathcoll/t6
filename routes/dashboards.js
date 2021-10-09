@@ -202,7 +202,7 @@ router.delete("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.sec
 		dbDashboards.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: dashboard_id }); // TODO: missing serializer
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 332, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 1332, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

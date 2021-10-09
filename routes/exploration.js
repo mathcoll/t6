@@ -30,7 +30,7 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 	var retention = req.query.retention;
 
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
@@ -106,13 +106,13 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 					});
 					res.status(200).send(data[0]);
 				} else {
-					res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+					res.status(404).send(new ErrorSerializer({ err: "No data found", "id": 4058, "code": 404, "message": "Not found" }).serialize());
 				}
 			}).catch((err) => {
-				res.status(500).send({ err: err, "id": 898.6, "code": 500, "message": "Internal Error" });
+				res.status(500).send(new ErrorSerializer({ err: err, "id": 4060, "code": 500, "message": "Internal Error" }).serialize());
 			});
 		} else {
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 898.7, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send(new ErrorSerializer({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" }).serialize());
 		}
 	}
 });
@@ -144,7 +144,7 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 	var retention = req.query.retention;
 
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405.2, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
@@ -207,13 +207,13 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 				} else {
 					t6console.debug(sprintf("Query: %s", query));
 					t6console.debug("sampleSkewness requires at least three data points", data);
-					res.status(412).send({ err: "No data found", "id": 8985.5, "code": 412, "message": "Not found or not enougth data" });
+					res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found or not enougth data" });
 				}
 			}).catch((err) => {
-				res.status(412).send({ err: err, "id": 8985.6, "code": 412, "message": "Precondition Failed" });
+				res.status(500).send({ err: err, "id": 4060, "code": 500, "message": "Internal Error" });
 			});
 		} else {
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 8985.7, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" });
 		}
 	}
 });
@@ -262,7 +262,7 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 	var limit = parseInt(req.query.n, 10) < 50 ? parseInt(req.query.n, 10) : 10;
 
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		var flowDT = flows.chain().find({ id: flow_id, }).limit(1);
 		var joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
@@ -297,13 +297,13 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 					t6console.log(data[0]);
 					res.status(200).send(data);
 				} else {
-					res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+					res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found" });
 				}
 			}).catch((err) => {
-				res.status(500).send({ err: err, "id": 898.6, "code": 500, "message": "Internal Error" });
+				res.status(500).send({ err: err, "id": 4060, "code": 500, "message": "Internal Error" });
 			});
 		} else {
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 898.7, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" });
 		}
 	}
 });
@@ -352,7 +352,7 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 	var end;
 
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		let where = "";
 		let group_by = "";
@@ -436,14 +436,14 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 				} else {
 					t6console.debug(sprintf("Query: %s", query));
 					t6console.debug("sampleVariance requires at least three data points", data);
-					res.status(412).send({ err: "No data found", "id": 898.5, "code": 412, "message": "Not found or not enougth data" });
+					res.status(412).send({ err: "No data found", "id": 4058, "code": 412, "message": "Not found or not enougth data" });
 				}
 			}).catch((err) => {
 				t6console.error("kernelDensityEstimation", err);
-				res.status(500).send({ err: err, "id": 898.6, "code": 500, "message": "Internal Error" });
+				res.status(500).send({ err: err, "id": 4060, "code": 500, "message": "Internal Error" });
 			});
 		} else {
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 898.7, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" });
 		}
 	}
 });
@@ -499,7 +499,7 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 	}
 
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		let where = "";
 		let group_by = "";
@@ -693,14 +693,14 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 					res.status(200).send(d3n.svgString());
 				} else {
 					t6console.debug("Loess requires at least 10 data points", queryData, queryData.length);
-					res.status(412).send({ err: "No data found", "id": 898.5, "code": 412, "message": "Not found or not enougth data" });
+					res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found or not enougth data" });
 				}
 			}).catch((err) => {
 				t6console.error("Loess", err);
-				res.status(500).send({ err: err, "id": 899.6, "code": 500, "message": "Internal Error" });
+				res.status(500).send({ err: err, "id": 4060, "code": 500, "message": "Internal Error" });
 			});
 		} else {
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 899.7, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" });
 		}
 	}
 });
@@ -743,7 +743,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 	var end;
 
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		let where = "";
 		let group_by = "";
@@ -928,15 +928,15 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					res.status(200).send(d3n.svgString());
 				} else {
 					t6console.debug("", data, data.data);
-					res.status(412).send({ err: "No data found", "id": 898.5, "code": 412, "message": "Not found or not enougth data" });
+					res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found or not enougth data" });
 				}
 			}).catch(err => {
 				t6console.error("Loess", err, queryData, queryData.length);
-				res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
+				res.status(500).send({ err: err, "id": 4060, "code": 500, "message": "Internal Error" });
 			});
 		} else {
 			t6console.error("flowDT", flowDT.data());
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 899.7, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" });
 		}
 	}
 });
@@ -1036,10 +1036,10 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
 				res.setHeader("content-type", "application/json");
 				res.status(200).send(graphData);
 			} else {
-				res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+				res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found" });
 			}
 		}).catch((err) => {
-			res.status(500).send({ err: err, "id": 898, "code": 500, "message": "Internal Error" });
+			res.status(500).send({ err: err, "id": 4060, "code": 500, "message": "Internal Error" });
 		});
 	}
 });
@@ -1114,7 +1114,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 	let _labels = { xAxis: typeof req.query.xAxis!=="undefined" ? req.query.xAxis : "", yAxis: typeof req.query.yAxis!=="undefined" ? req.query.yAxis : "" };
 	let _svgStyles = "";
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		let where = "";
 		let group_by = "";
@@ -1250,11 +1250,11 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 					res.status(200).send(d3n.svgString());
 				} else {
 					t6console.debug("", queryData, queryData.data);
-					res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+					res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found" });
 				}
 			});
 		} else {
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 898.5, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" });
 		}
 	}
 });
@@ -1295,7 +1295,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 		.box:hover { fill: ${_hoverColor}; }
 	`;
 	if (!flow_id) {
-		res.status(405).send(new ErrorSerializer({ "id": 56, "code": 405, "message": "Method Not Allowed" }).serialize());
+		res.status(405).send(new ErrorSerializer({ "id": 4056, "code": 405, "message": "Method Not Allowed" }).serialize());
 	} else {
 		let where = "";
 
@@ -1462,11 +1462,11 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 					res.status(200).send(d3n.svgString());
 				} else {
 					t6console.debug("", queryData, queryData.data);
-					res.status(404).send({ err: "No data found", "id": 898.5, "code": 404, "message": "Not found" });
+					res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found" });
 				}
 			});
 		} else {
-			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 898.5, "code": 412, "message": "Precondition Failed" });
+			res.status(412).send({ err: `Datatype ${dt} is not compatible`, "id": 4059, "code": 412, "message": "Precondition Failed" });
 		}
 	}
 });
@@ -1517,7 +1517,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
-	res.status(404).send(new ErrorSerializer({ "id": 9955959595, "code": 404, "message": "Deprecated Api" }).serialize());
+	res.status(410).send(new ErrorSerializer({ "id": 4057, "code": 410, "message": "Gone" }).serialize());
 });
 
 module.exports = router;

@@ -67,7 +67,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 		res.header("Location", "/v"+version+"/datatypes/"+newDatatype.id);
 		res.status(201).send({ "code": 201, message: "Created", unit: new DataTypeSerializer(newDatatype).serialize() }, 201);
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 49, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 3049, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -114,7 +114,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 		res.header("Location", "/v"+version+"/datatypes/"+datatype_id);
 		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new DataTypeSerializer(result).serialize() });
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 50, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 3050, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -142,10 +142,10 @@ router.delete("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secr
 			db_datatypes.save();
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: datatype_id }); // TODO: missing serializer
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 51, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 3051, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 52, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 3052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 

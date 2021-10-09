@@ -723,7 +723,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	var end;
 	
 	if ( !flow_id ) {
-		res.status(405).send(new ErrorSerializer({"id": 56, "code": 405, "message": "Method Not Allowed"}).serialize());
+		res.status(405).send(new ErrorSerializer({"id": 2056, "code": 405, "message": "Method Not Allowed"}).serialize());
 	} else {
 		let where = "";
 		if ( data_id ) {
@@ -805,14 +805,12 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				} else {
 					rp = influxSettings.retentionPolicies.data[0];
 					t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
-					res.status(412).send(new ErrorSerializer({"id": 899.41, "code": 412, "message": "Retention Policy not valid"}).serialize());
+					res.status(412).send(new ErrorSerializer({"id": 2057, "code": 412, "message": "Precondition Failed"}).serialize());
 					return;
 				}
 			} else {
 				rp = influxSettings.retentionPolicies.data[0];
 				t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
-				//res.status(412).send(new ErrorSerializer({"id": 899.42, "code": 412, "message": "Retention Policy not valid"}).serialize());
-				//return;
 			}
 		}
 		
@@ -851,10 +849,10 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				res.status(200).send(new DataSerializer(data).serialize());
 			} else {
 				t6console.debug(query);
-				res.status(404).send({err: "No data found", "id": 899.5, "code": 404, "message": "Not found"});
+				res.status(404).send(new ErrorSerializer({err: "No data found", "id": 2058, "code": 404, "message": "Not found"}).serialize());
 			}
 		}).catch((err) => {
-			res.status(500).send({err: err, "id": 899, "code": 500, "message": "Internal Error"});
+			res.status(500).send(new ErrorSerializer({err: err, "id": 2059, "code": 500, "message": "Internal Error"}).serialize());
 		});
 	}
 });
@@ -914,7 +912,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 	}).catch((err) => {
 		t6console.error("Error on processAllMeasures: ", err);
 		t6console.debug("Precondition failed");
-		res.status(412).send({err: err, "id": 999, "code": 412, "message": "Precondition failed"});
+		res.status(412).send(new ErrorSerializer({err: err, "id": 2060, "code": 412, "message": "Precondition failed"}).serialize());
 	});
 });
 
