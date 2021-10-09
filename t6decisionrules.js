@@ -299,16 +299,13 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			} else if ( event.type === "sms" ) {
 				// TODO
 			} else if ( event.type === "httpWebhook" ) {
-				if ( typeof event.params.body === "string" ) {
-					event.params.body = stringformat(event.params.body, payload);
-				}
 				let options = {
 					url: event.params.url,
 					port: event.params.port,
 					method: event.params.method,
 					strictSSL: event.params.strictSSL,
 					headers: event.params.headers?event.params.headers:{"Content-Type": "application/json"},
-					body: JSON.stringify(event.params.body)
+					body: typeof event.params.body==="string"?JSON.stringify(stringformat(event.params.body, payload)):JSON.stringify(event.params.body)
 				};
 				options.url = options.url.replace(/^\s*|\s*$/g, "");
 				request(options,
@@ -321,7 +318,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 							return console.error("HTTP failed: ", error, options.url, statusCode, body);
 						}
 						
-						t6console.log("success", options.url, statusCode, body);
+						t6console.debug("success", options.url, statusCode, body);
 					}
 				);
 			} else if ( event.type === "Ifttt" || event.type === "ifttt" ) {
@@ -356,11 +353,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				request(options, function (error, response, body) {
 						var statusCode = typeof response!=="undefined"?response.statusCode:null;
 						body = body || null;
-						t6console.log("Request sent - Server responded with:" + statusCode);
+						t6console.debug("Request sent - Server responded with:" + statusCode);
 						if ( error ) {
 							return t6console.error("HTTP failed: ", error, options.url, statusCode, body);
 						}
-						t6console.log("success" + options.url + statusCode + body);
+						t6console.debug("success" + options.url + statusCode + body);
 					}
 				);
 			} else if ( event.type === "serial" ) {
