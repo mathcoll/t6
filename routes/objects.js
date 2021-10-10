@@ -19,7 +19,6 @@ var sources;
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
- * @apiUse 405
  * @apiUse 429
  * @apiUse 500
  */
@@ -40,10 +39,10 @@ router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secr
 			ui.object_id = object.id;
 			res.status(200).send(new UISerializer(ui).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 1271, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 9271, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 1272, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -73,10 +72,10 @@ router.get("/(:object_id([0-9a-z\-]+))/show", expressJwt({secret: jwtsettings.se
 			res.set("Content-Type", "text/html; charset=utf-8");
 			res.status(200).render("object-ui", {object: object, ui: JSON.stringify(ui.ui)});
 		} else {
-			res.status(404).render("404", { "id": 1271, "code": 404, "error": "Not Found", err: {"stack": "", "status": "404"}});
+			res.status(404).render("404", { "id": 9271, "code": 404, "error": "Not Found", err: {"stack": "", "status": "404"}});
 		}
 	} else {
-		res.status(404).render("404", { "id": 1272, "code": 404, "error": "Not Found", err: {"stack": "", "status": "404"}});
+		res.status(404).render("404", { "id": 9272, "code": 404, "error": "Not Found", err: {"stack": "", "status": "404"}});
 	}
 });
 
@@ -119,7 +118,7 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
 		qr.make();
 		res.status(200).send({"data": qr.createImgTag(typenumber)});
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 127, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -167,7 +166,7 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 	if ( json && json.length>0 ) {
 		res.status(200).send(new ObjectSerializer(json).serialize());
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601.1, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -212,7 +211,7 @@ router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwts
 
 		res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "port": ota.defaultPort, "fqbn": object.fqbn, "source_id": object.source_id, "objectExpectedVersion": object.source_version, "sourceLatestVersion": source.latest_version, "buildVersions": buildVersions });
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601.2, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -251,7 +250,7 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtset
 			}
 		});
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 601.3, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9273, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -363,7 +362,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
 			res.status(412).send(new ErrorSerializer({"id": 186, "code": 412, "message": "Source not match: Precondition Failed"}).serialize());
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 187, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -467,7 +466,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 	} else if ( !object.source_id ) {
 		res.status(412).send(new ErrorSerializer({"id": 141, "code": 412, "message": "Source is required"}).serialize());
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 142, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -625,7 +624,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 				res.header("Location", "/v"+version+"/objects/"+object_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", object: new ObjectSerializer(result).serialize() });
 			} else {
-				res.status(404).send(new ErrorSerializer({"id": 144, "code": 404, "message": "Not Found"}).serialize());
+				res.status(404).send(new ErrorSerializer({"id": 9332, "code": 404, "message": "Not Found"}).serialize());
 			}
 		}
 	} else {
@@ -661,7 +660,7 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 		db_objects.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: object_id }); // TODO: missing serializer
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 131, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 9332, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -717,7 +716,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 				res.status(404).send(new ErrorSerializer({"id": 120, "code": 404, "message": "Not Found"}).serialize());
 			}
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 121, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 9332, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
 		res.status(403).send(new ErrorSerializer({"id": 122, "code": 403, "message": "Forbidden"}).serialize());

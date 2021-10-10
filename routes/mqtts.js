@@ -16,10 +16,6 @@ var MqttSerializer = require("../serializers/mqtt");
  * @apiBody {String} [name] 
  * 
  * @apiUse 200
- * @apiUse 401
- * @apiUse 404
- * @apiUse 405
- * @apiUse 429
  * @apiUse 500
  */
 router.get("/?(:mqtt_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {

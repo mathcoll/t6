@@ -14,8 +14,6 @@ var ErrorSerializer = require("../serializers/error");
  * @apiParam {string} [taskType] Task type
  * 
  * @apiUse 200
- * @apiUse 401
- * @apiUse 404
  * @apiUse 500
  */
 router.get("/?(:job_id([0-9a-z\-]+))?/?(:taskType([0-9a-zA-Z\-]+))?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
@@ -36,12 +34,14 @@ router.get("/?(:job_id([0-9a-z\-]+))?/?(:taskType([0-9a-zA-Z\-]+))?/?", expressJ
  * @apiParam {uuid-v4} [job_id] Job Id
  * 
  * @apiUse 201
+ * @apiUse 401
+ * @apiUse 404
  * @apiUse 500
  */
 router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var job_id = req.params.job_id;
 	let limit;
-	if(typeof job_id!=="undefined") {
+	if ( typeof job_id!=="undefined" && job_id!==null && job_id!=="null" ) {
 		let query = {
 			"$and": [
 					{ "user_id" : req.user.id },
@@ -53,15 +53,15 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
 			let fuse = t6preprocessor.fuse(job);
 			res.status(201).send({ "code": 201, message: "Successfully started", job_id: job.job_id, fuse: fuse });
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 8825, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 5058, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
 		limit = typeof req.body.limit!=="undefined"?req.body.limit:10;
 		if ( req.user.role === "admin" ) {
 			t6jobs.start(limit);
-			res.status(200).send({ "code": 201, message: "Successfully started" });
+			res.status(201).send({ "code": 201, message: "Successfully started", job_id: job.job_id });
 		} else {
-			res.status(401).send(new ErrorSerializer({"id": 8824, "code": 401, "message": "Unauthorized"}).serialize());
+			res.status(401).send(new ErrorSerializer({"id": 5059, "code": 401, "message": "Unauthorized"}).serialize());
 		}
 	}
 });
@@ -75,7 +75,8 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
  * @apiUse Auth
  * @apiParam {uuid-v4} [job_id] Job Id
  * 
- * @apiUse 201
+ * @apiUse 200
+ * @apiUse 404
  * @apiUse 500
  */
 router.delete("/(:job_id([0-9a-z\-*]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
@@ -91,10 +92,10 @@ router.delete("/(:job_id([0-9a-z\-*]+))", expressJwt({secret: jwtsettings.secret
 			query["$and"].push({ "user_id" : req.user.id });
 		}
 		jobs.chain().find(query).remove();
-		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: job_id }); // TODO: missing serializer
+		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: job_id });
 		db_jobs.saveDatabase();
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 8825.2, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 5058, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

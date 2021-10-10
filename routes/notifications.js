@@ -121,7 +121,9 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
  * @apiPermission AuthAdmin
  * 
  * @apiUse 200
+ * @apiUse 401
  * @apiUse 403
+ * @apiUse 500
  */
 router.get("/mail/preview/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let template = req.query.template;
@@ -151,12 +153,12 @@ router.get("/mail/preview/", expressJwt({secret: jwtsettings.secret, algorithms:
 			if(!err) {
 				res.status(200).send(html);
 			} else {
-				res.status(500).send(new ErrorSerializer({"id": 18.1, "code": 403, "message": "Error rendering a newsletter"}).serialize());
+				res.status(500).send(new ErrorSerializer({"id": 8053, "code": 500, "message": "Error rendering a newsletter"}).serialize());
 				t6console.error("Error rendering a newsletter", err);
 			}
 		});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18.2, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -185,7 +187,7 @@ router.get("/list/:mode(subscribed|unsubscribed)", expressJwt({secret: jwtsettin
 		var user = users.findOne( { id: user_id } );
 		res.status(200).send({subscription: mode==="subscribed"?user.subscription:undefined, unsubscription: mode==="unsubscribed"?user.unsubscription:undefined, unsubscription_token: user.unsubscription_token });
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(403).send(new ErrorSerializer({"id": 8054, "code": 403, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -198,6 +200,7 @@ router.get("/list/:mode(subscribed|unsubscribed)", expressJwt({secret: jwtsettin
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -255,10 +258,10 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
 			});
 			res.status(202).send(new UserSerializer(json).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -271,6 +274,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -332,10 +336,10 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 			});
 			res.status(202).send(new UserSerializer(json).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 /**
@@ -347,6 +351,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -359,6 +364,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -417,10 +423,10 @@ router.get("/subscribers/:type(newsletter|monthlyreport|reminder|changePassword|
 				res.status(200).send({"subscribers": recipients.length});
 			}
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -433,6 +439,7 @@ router.get("/subscribers/:type(newsletter|monthlyreport|reminder|changePassword|
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -489,11 +496,11 @@ router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, 
 				res.status(202).send(new UserSerializer(recipients).serialize());
 				//t6console.debug("recipients 2", recipients);
 			} else {
-				res.status(404).send(new ErrorSerializer({"id": 23, "code": 404, "message": "Not Found"}).serialize());
+				res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 			}
 		});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 24, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -506,6 +513,7 @@ router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, 
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -526,10 +534,10 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
 			planNewsletter(req, res, recipients, `newsletters/${template}`, subject, "newsletter");
 			res.status(202).send(new UserSerializer(recipients).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 22, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 23, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -542,6 +550,7 @@ router.post("/mail/newsletter/plan", expressJwt({secret: jwtsettings.secret, alg
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -556,10 +565,10 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
 			let response = sendNewsletter(newsletters, dryrun, recurring, req.user.id, limit, 0);
 			res.status(202).send({"response": response});
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 18.2, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -572,6 +581,7 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -586,10 +596,10 @@ router.post("/mail/monthlyreport/send", expressJwt({secret: jwtsettings.secret, 
 			let response = sendNewsletter(reports, dryrun, recurring, req.user.id, limit, 0);
 			res.status(202).send({"response": response});
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 18.2, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -608,6 +618,7 @@ router.post("/mail/monthlyreport/send", expressJwt({secret: jwtsettings.secret, 
  * @apiBody {String} [badge] Notification badge
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -631,10 +642,10 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
 			t6console.debug(body, title, options);
 			res.status(202).send(new UserSerializer(recipients).serialize());
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 21, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 18, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -652,6 +663,7 @@ router.post("/push/plan", expressJwt({secret: jwtsettings.secret, algorithms: jw
  * @apiBody {String} [recurring] 
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -666,10 +678,10 @@ router.post("/push/send", expressJwt({secret: jwtsettings.secret, algorithms: jw
 			let response = sendPush(pushers, dryrun, recurring, req.user.id, limit, 0);
 			res.status(202).send({"response": response});
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 18.3, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 19.3, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -682,6 +694,7 @@ router.post("/push/send", expressJwt({secret: jwtsettings.secret, algorithms: jw
  * @apiPermission AuthAdmin
  * 
  * @apiUse 202
+ * @apiUse 401
  * @apiUse 403
  * @apiUse 404
  */
@@ -690,7 +703,7 @@ router.post("/mail/newsletter/stop", expressJwt({secret: jwtsettings.secret, alg
 		clearTimeout(timer);
 		res.status(202).send({"response": "timer is stopped"});
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 20, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
