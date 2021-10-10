@@ -297,7 +297,16 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				};
 				t6mailer.sendMail(envelope);
 			} else if ( event.type === "sms" ) {
-				// TODO
+				if(event.params.to) {
+					const clientTwilio = new twilio(twilioSettings.accountSid, twilioSettings.authToken);
+					clientTwilio.messages
+						.create({
+							body: event.params.body?stringformat(event.params.body, payload):`Sms from t6; value: ${value}`,
+							to: event.params.to, // Text this number
+							from: twilioSettings.from, // From a valid Twilio number
+						})
+						.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
+				}
 			} else if ( event.type === "httpWebhook" ) {
 				let options = {
 					url: event.params.url,

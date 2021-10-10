@@ -68,6 +68,7 @@ global.sprintf			= require("sprintf-js").sprintf;
 global.strength			= require("strength");
 global.stringformat		= require("string-format");
 global.SunCalc			= require("suncalc");
+global.twilio			= require("twilio");
 global.util				= require("util");
 global.useragent		= require("useragent");
 global.validator		= require("validator");
