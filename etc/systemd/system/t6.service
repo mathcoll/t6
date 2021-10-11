@@ -1,0 +1,15 @@
+[Unit]
+Description=t6 is a "Data-first" IoT platform to connect physical Objects with time-series DB and perform Data Analysis.
+After=network.target
+
+[Service]
+ExecStart=/home/username/.nvm/versions/node/v15.4.0/bin/node app.js
+Restart=always
+User=mathieu
+Group=users
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=development
+WorkingDirectory=/home/username/t6/
+
+[Install]
+WantedBy=multi-user.target
