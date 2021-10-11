@@ -16,7 +16,7 @@
     "url": "https://github.com/mathcoll/t6/issues"
   },
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "node app.js",
     "test": "snyk test && ./bin/test.sh",
     "check-security": "nsp check",
     "snyk-protect": "snyk protect",

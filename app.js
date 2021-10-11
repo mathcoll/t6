@@ -382,8 +382,15 @@ var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
 var jobs			= require("./routes/jobs");
 app					= express();
+app.set("port", process.env.PORT);
+app.listen(process.env.PORT, () => {
+	t6events.add("t6App", "start", "self", t6BuildVersion);
+	t6console.log("App is instanciated.");
+	t6console.log(`${appName} started / listening to ${baseUrl_https}.`);
+})
+
 routesLoadEndTime = new Date();
-t6console.info(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
+t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
 
 var CrossDomain = function(req, res, next) {
 	if (req.method === "OPTIONS") {
@@ -407,7 +414,6 @@ var CrossDomain = function(req, res, next) {
 		next();
 	}
 };
-
 app.use(CrossDomain);
 app.enable("trust proxy");
 app.use(compression());
@@ -444,7 +450,6 @@ app.use("/v"+version+"/exploration", exploration);
 app.use("/v"+version+"/jobs", jobs);
 app.use("/news", news);
 app.use("/", pwa);
-t6console.info("App is instanciated.");
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -496,9 +501,6 @@ if (app.get("env") === "development") {
 		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 }
-
-t6events.add("t6App", "start", "self", t6BuildVersion);
-t6console.log(`${appName} started / listening to ${process.env.BASE_URL_HTTPS}.`);
 
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {

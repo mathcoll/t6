@@ -1,8 +1,11 @@
 /* General settings */
-version				= "2.0.1";
-appName				= process.env.NAME;
-baseUrl				= process.env.BASE_URL;
-baseUrlCdn			= "//cdn.domain.tld"; // Your CDN base domain name, if any. You can use Cloudflare for instance.
+process.env.PORT                = "3000";
+process.env.NODE_ENV            = "development";
+version                         = "2.0.1";
+appName                         = "t6";
+baseUrl                         = "http://127.0.0.1:3000";
+baseUrl_https                   = "http://127.0.0.1:3000";
+baseUrlCdn						= "//cdn.domain.tld"; // Your CDN base domain name, if any. You can use Cloudflare for instance.
 
 /* Mqtt settings */
 mqttHost			= "localhost"; // Your Mqtt server host
