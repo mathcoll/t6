@@ -30,7 +30,7 @@ t6events.add = function(where, what, who, client_id=null, params=null) {
 			if(err) {
 				t6console.error("t6events.add: Error", err);
 			} else {
-				t6console.debug("t6events.add: Fine");
+				t6console.debug("t6events.add: Ok");
 				return true;
 			}
 			t6console.debug({"tags": tags, "fields": fields, "retention": retention});
