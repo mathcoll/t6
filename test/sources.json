@@ -180,7 +180,7 @@
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
-                            "status": "409"
+                            "status": "412"
                         }
                     ]
                 },
@@ -230,7 +230,7 @@
                 },
                 {
                 	"name": "can deploy a source to an Object",
-                	"description": "Build should be completed now",
+                	"description": "Build should be completed now ... Object IP might fail to connect to in testing process.",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/ota/{{saved.source_id_master}}/deploy/{{saved.object_id}}",

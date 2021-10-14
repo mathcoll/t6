@@ -62,7 +62,7 @@
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "assert": [],
-                            "status": "412"
+                            "status": "404"
                         }
                     ]
                 },
@@ -245,7 +245,7 @@
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "assert": [],
-                            "status": "412"
+                            "status": "404"
                         }
                     ]
                 },

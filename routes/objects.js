@@ -424,7 +424,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 					t6console.debug(`child process exited with code ${code}`);
 					let user = users.findOne({"id": req.user.id });
 					if (code === 0) {
-						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!=="" ) {
+						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!==null && user.pushSubscription.endpoint!=="" ) {
 							t6console.debug(user.pushSubscription);
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"Build is completed on v"+version+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							let result = t6notifications.sendPush(user, payload);
@@ -440,7 +440,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "success", new Date()-start);
 					} else {
-						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!=="" ) {
+						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!==null && user.pushSubscription.endpoint!=="" ) {
 							t6console.debug(user.pushSubscription);
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"An error occured during build v"+version+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							let result = t6notifications.sendPush(user, payload);
@@ -506,7 +506,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 	var i = (objects.find(queryQ)).length;
 	if( i >= (quota[req.user.role]).objects ) {
 		t6console.log("QUOTA LIMIT on Objects", req.user.role, i, (quota[req.user.role]).objects);
-		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
+		res.status(429).send(new ErrorSerializer({"id": 9329, "code": 429, "message": "Too Many Requests"}).serialize());
 	} else {
 		var newObject = {
 			id:				uuid.v4(),
@@ -620,7 +620,6 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 			}
 			if ( typeof result!=="undefined" ) {
 				db_objects.save();
-
 				res.header("Location", "/v"+version+"/objects/"+object_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", object: new ObjectSerializer(result).serialize() });
 			} else {

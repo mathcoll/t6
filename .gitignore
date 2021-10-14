@@ -65,3 +65,4 @@ decisionrules/node_modules
 /tmp/
 /TESTING/
 /.cache-require-paths.json
+/jsonapitest-results.json
