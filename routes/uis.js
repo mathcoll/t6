@@ -67,7 +67,7 @@ router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret, 
 	if ( json.length > 0 ) {
 		res.status(200).send(new UISerializer(json).serialize());
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 137, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 15271, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -91,7 +91,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 	var queryQ = { "user_id" : req.user.id };
 	var i = (uis.find(queryQ)).length;
 	if( i >= (quota[req.user.role]).uis ) {
-		res.status(429).send(new ErrorSerializer({"id": 129, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
+		res.status(429).send(new ErrorSerializer({"id": 15329, "code": 429, "message": "Too Many Requests"}).serialize());
 	} else {
 		let newUi = {"ui": req.body};
 		newUi.id = uuid.v4();
@@ -131,7 +131,7 @@ router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algor
 	var ui = uis.findOne( query );
 	if ( ui ) {
 		if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - ui.meta.revision) !== 0 ) {
-			res.status(409).send(new ErrorSerializer({"id": 143, "code": 409, "message": "Bad Request"}).serialize());
+			res.status(409).send(new ErrorSerializer({"id": 15055, "code": 409, "message": "Bad Request"}).serialize());
 		} else {
 			var result;
 			uis.chain().find({ "id": ui_id }).update(function(item) {
@@ -145,11 +145,11 @@ router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algor
 				res.header("Location", "/v"+version+"/uis/"+ui_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", ui: new UISerializer(result).serialize() });
 			} else {
-				res.status(404).send(new ErrorSerializer({"id": 144, "code": 404, "message": "Not Found"}).serialize());
+				res.status(404).send(new ErrorSerializer({"id": 15271, "code": 404, "message": "Not Found"}).serialize());
 			}
 		}
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 145, "code": 401, "message": "Forbidden ??"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 15272, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
@@ -182,7 +182,7 @@ router.delete("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 		dbUis.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: ui_id }); // TODO: missing serializer
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 131, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 15271, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

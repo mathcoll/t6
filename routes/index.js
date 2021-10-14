@@ -291,8 +291,8 @@ router.all("*", function (req, res, next) {
 			if(typeof i!=="undefined") {
 				return res.status(429).send(new ErrorSerializer({"id": 17330, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
 			} else {
-				return res.status(501).send(new ErrorSerializer({"id": 17331, "code": 501, "message": "Not Implemented - Server Error... I'm sorry"}));
 				next();
+				return res.status(501).send(new ErrorSerializer({"id": 17331, "code": 501, "message": "Not Implemented"}));
 			}
 		});
 	} else {

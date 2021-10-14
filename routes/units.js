@@ -67,7 +67,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 		res.header("Location", "/v"+version+"/units/"+new_unit.id);
 		res.status(201).send({ "code": 201, message: "Created", unit: new UnitSerializer(new_unit).serialize() }, 201);
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 18, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 16052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -110,7 +110,7 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 		res.header("Location", "/v"+version+"/units/"+unit_id);
 		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new UnitSerializer(result).serialize() });
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 19, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 16052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 
@@ -138,10 +138,10 @@ router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 			db_units.save();
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: unit_id }); // TODO: missing serializer
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 20, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 16271, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 21, "code": 401, "message": "Unauthorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 16052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
 

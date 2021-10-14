@@ -23,7 +23,8 @@ router.get("/board-listall", expressJwt({secret: jwtsettings.secret, algorithms:
 		if (!error && stdout) {
 			res.status(200).send({ "board-listall": stdout.split("\n") });
 		} else {
-			res.status(500).send(stderr + error);
+			t6console.error(stderr + error);
+			res.status(500).send(new ErrorSerializer({"id": 10001, "code": 500, "message": "Bad Request"}).serialize());
 		}
 	});
 });
@@ -46,7 +47,8 @@ router.get("/lib-list", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 		if (!error && stdout) {
 			res.status(200).send({ "lib-list": stdout.split("\n") });
 		} else {
-			res.status(500).send(stderr + error);
+			t6console.error(stderr + error);
+			res.status(500).send(new ErrorSerializer({"id": 10001, "code": 500, "message": "Bad Request"}).serialize());
 		}
 	});
 });
@@ -69,7 +71,8 @@ router.get("/core-list", expressJwt({secret: jwtsettings.secret, algorithms: jwt
 		if (!error && stdout) {
 			res.status(200).send({ "core-list": stdout.split("\n") });
 		} else {
-			res.status(500).send(stderr + error);
+			t6console.error(stderr + error);
+			res.status(500).send(new ErrorSerializer({"id": 10001, "code": 500, "message": "Bad Request"}).serialize());
 		}
 	});
 });
@@ -133,7 +136,7 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 		});
 		if(binFileErrors.length>0) {
 			t6console.debug("binFileErrors", binFileErrors);
-			res.status(409).send(new ErrorSerializer({"id": 600, "code": 409, "message": "Build is required first", "missing_builds": binFileErrors}).serialize());
+			res.status(412).send(new ErrorSerializer({"id": 10003, "code": 412, "message": "Precondition Failed", "missing_builds": binFileErrors}).serialize());
 		} else {
 			if(!req.query.dryrun || req.query.dryrun === "false") {
 				res.status(201).send({ "code": 201, message: "Deploying", deploying_to_objects: new ObjectSerializer(json).serialize() });
@@ -197,7 +200,7 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 			}
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 602, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 10002, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

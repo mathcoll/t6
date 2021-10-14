@@ -100,7 +100,7 @@ router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secr
 			res.status(200).send(new SourceSerializer(json).serialize());
 		/*}*/
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 627, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -267,10 +267,10 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 				res.header("Location", "/v"+version+"/sources/"+source_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(newSource).serialize() });
 			} else {
-				res.status(404).send(new ErrorSerializer({"id": 641.5, "code": 404, "message": "Not Found"}).serialize());
+				res.status(404).send(new ErrorSerializer({"id": 14472, "code": 404, "message": "Not Found"}).serialize());
 			}
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 640.5, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 14471, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
 		// But we still can force overwrite
@@ -294,7 +294,7 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 			res.header("Location", "/v"+version+"/sources/"+source_id);
 			res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(result).serialize() });
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 144, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 14473, "code": 404, "message": "Not Found"}).serialize());
 		}
 	}
 });
@@ -311,11 +311,11 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 router.delete("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
 	if ( !source_id ) {
-		res.status(405).send(new ErrorSerializer({"id": 636, "code": 405, "message": "Method Not Allowed"}).serialize());
+		res.status(405).send(new ErrorSerializer({"id": 14056, "code": 405, "message": "Method Not Allowed"}).serialize());
 	}
 	if ( !req.user.id ){
 		// Not Authorized because token is invalid
-		res.status(401).send(new ErrorSerializer({"id": 637, "code": 401, "message": "Not Authorized"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 14274, "code": 401, "message": "Not Authorized"}).serialize());
 	} else if ( source_id ) {
 		sources	= dbSources.getCollection("sources");
 		var query = {
@@ -330,10 +330,10 @@ router.delete("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 			dbSources.saveDatabase();
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: source_id }); // TODO: missing serializer
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 639, "code": 404, "message": "Not Found"}).serialize());
+			res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		res.status(403).send(new ErrorSerializer({"id": 640.2, "code": 403, "message": "Forbidden"}).serialize());
+		res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
 
