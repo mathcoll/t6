@@ -399,7 +399,6 @@ var CrossDomain = function(req, res, next) {
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.status(200).send("");
 	} else {
-		res.setHeader("X-Powered-By", appName+"@"+version);
 		//res.header("Access-Control-Allow-Origin", "*");
 		res.header("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
