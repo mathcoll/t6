@@ -21,7 +21,17 @@ Types of changes
 ### Milestone 15 - 2021-10: 
 #### Fixed
   - [x] Fixed signature on datapoint storage
+  - [x] Fix pushNotification and error handling
+  - [x] t6 stabilization
+  
+#### Changed
+  - [x] 22cc04e398f9a33c8375a7bf243328fcf1c518e4 News start service using systemd instead of /etc/init.d
+
+#### Security
+  - [x] 39bcfeef34006ae60be383bf46e8709c77934a51 disable HTTP header "x-powered-by"
+  
 #### Added
+  - [x] Twilio Proof Of Concept ; not yet fully functionnal
 
 ### Milestone 14 - 2021-09: Image Preprocessing
 #### Added
