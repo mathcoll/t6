@@ -25,10 +25,10 @@ Types of changes
   - [x] t6 stabilization
   
 #### Changed
-  - [x] 22cc04e398f9a33c8375a7bf243328fcf1c518e4 News start service using systemd instead of /etc/init.d
+  - [x] [22cc04e](https://github.com/mathcoll/t6/commit/22cc04e398f9a33c8375a7bf243328fcf1c518e4) News start service using systemd instead of /etc/init.d
 
 #### Security
-  - [x] 39bcfeef34006ae60be383bf46e8709c77934a51 disable HTTP header "x-powered-by"
+  - [x] [39bcfee](https://github.com/mathcoll/t6/commit/39bcfeef34006ae60be383bf46e8709c77934a51) disable HTTP header "x-powered-by"
   
 #### Added
   - [x] Twilio Proof Of Concept ; not yet fully functionnal
@@ -49,7 +49,7 @@ Types of changes
   - [x] Timed buffer on preprocessor to fuse and combine multiple measurements together
   - [x] Payload value transformation/sanitization/convertion using a preprocessor when measurement is sent
 #### On hold
-  - [ ] Customize Ttl on each Flows
+  - [ ] Customize Ttl on each Flows - not completed or [buggy](https://github.com/techfort/LokiJS/issues/884). :sos:
   
 ### Milestone 12 - 2021-05: InfluxData Cloud secondary storage (as an option)
 #### Added
