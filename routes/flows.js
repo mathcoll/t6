@@ -196,7 +196,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
 					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
-				t6events.add("t6Api", "flow add", newFlow.id, req.user.id);
+				t6events.addStat("t6Api", "flow add", newFlow.id, req.user.id);
 				flows.insert(newFlow);
 				
 				res.header("Location", "/v"+version+"/flows/"+newFlow.id);
@@ -272,7 +272,6 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.mqtt_topic			= typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:item.mqtt_topic;
 						item.require_signed		= typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):str2bool(item.require_signed);
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
-						item.meta.revision		= typeof item.meta.revision==="number"?(item.meta.revision):1;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
 						item.ttl				= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.ttl, 10);
@@ -280,12 +279,10 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.retention			= typeof req.body.retention!=="undefined"?req.body.retention:item.retention;
 						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
 						result = item;
-
+					});
+					if ( typeof result!=="undefined" ) {
 						db_flows.save();
 						db_flows.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
-					});
-					if ( typeof result !== "undefined" ) {
-						res.header("Location", "/v"+version+"/flows/"+flow_id);
 						res.status(200).send({ "code": 200, message: "Successfully updated", flow: new FlowSerializer(result).serialize() });
 					} else {
 						res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize());
