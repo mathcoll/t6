@@ -14,6 +14,7 @@ t6jobs.remove = function(query, limit) {
 	return new Promise((resolve, reject) => {
 		if ( jobs.chain().find(typeof query!=="undefined"?query:{}).limit(typeof limit!=="undefined"?limit:null).remove() ) {
 			db_jobs.saveDatabase();
+			t6events.addAudit("t6App", "t6jobs.remove", query.job_id, "", {"status": 200});
 			return resolve(query.job_id);	
 		} else {
 			return reject("Can't find job to be removed.");
