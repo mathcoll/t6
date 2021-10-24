@@ -18,7 +18,6 @@ t6events.setRP = function(rp) {
 t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
-		t6console.debug("Using db_type.influxdb");
 		var tags = {rp: retention, what: what, where: where};
 		var fields = {who: typeof who!=="undefined"?who:""};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
@@ -28,14 +27,14 @@ t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 			fields: fields,
 		}], { retentionPolicy: retention }).then((err) => {
 			if(err) {
-				t6console.error("t6events.add: Error", err);
+				t6console.error("addAudit, t6events.addAudit: Error", err);
 			} else {
-				t6console.debug("t6events.add: Ok");
+				t6console.debug("addAudit, t6events.addAudit: Ok");
 				return true;
 			}
 			t6console.debug({"tags": tags, "fields": fields, "retention": retention});
 		}).catch((err) => {
-			t6console.error("Error writting event to influxDb:", err);
+			t6console.error("addAudit, Error writting event to influxDb:", err);
 		});
 	}
 }
@@ -43,9 +42,8 @@ t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 t6events.addStat = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
-		t6console.debug("Using db_type.influxdb");
 		var tags = {rp: retention, what: what, where: where};
-		var fields = {who: typeof who!=="undefined"?who:""};
+		var fields = {who: typeof who!=="undefined"?who:"", status: typeof params.status!=="undefined"?params.status:"", error_id: typeof params.error_id!=="undefined"?params.error_id:""};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 		dbWrite.writePoints([{
 			measurement: measurement,
@@ -53,14 +51,14 @@ t6events.addStat = function(where, what, who, client_id=null, params=null) {
 			fields: fields,
 		}], { retentionPolicy: retention }).then((err) => {
 			if(err) {
-				t6console.error("t6events.add: Error", err);
+				t6console.error("addStat, t6events.addStat: Error", err);
 			} else {
-				t6console.debug("t6events.add: Ok");
+				t6console.debug("addStat, t6events.addStat: Ok");
 				return true;
 			}
 			t6console.debug({"tags": tags, "fields": fields, "retention": retention});
 		}).catch((err) => {
-			t6console.error("Error writting event to influxDb:", err);
+			t6console.error("addStat, Error writting event to influxDb:", err);
 		});
 	}
 	let d = process.env.NODE_ENV==="production"?"":"debug/";
