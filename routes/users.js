@@ -46,11 +46,13 @@ router.get("/newcomers", function (req, res) {
 				u.pushSubscription = us!==null?us.pushSubscription:"";
 				u.who = us!==null?undefined:u.who;
 			});
+			t6events.addAudit("t6App", "AuthAdmin: {get} /users/newcomers", "", "", {"status": "20x", error_id: "00003"});
 			res.status(200).send(data);
 		//}).catch(err => {
 		//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 		});
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {get} /users/newcomers", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
@@ -83,8 +85,10 @@ router.get("/list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetti
 		json.pageNext	= page+1<=json.totalcount?page+1:page;
 		json.pagePrev	= page-1>0?page-1:page;
 		json.pageLast	= Math.ceil(json.totalcount/size);
+		t6events.addAudit("t6App", "AuthAdmin: {get} /users/list", "", "", {"status": "20x", error_id: "00003"});
 		res.status(200).send(new UserSerializer(json).serialize());
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {get} /users/list", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
@@ -483,8 +487,10 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algo
 			user.unsubscription_token = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ");
 		});
 		db_users.save();
+		t6events.addAudit("t6App", "AuthAdmin: {post} /users/resetAllUsersTokens", "", "", {"status": "20x", error_id: "00003"});
 		res.status(200).send({"status": "done", "count": users.chain().find().data().length});
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {post} /users/resetAllUsersTokens", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
@@ -520,11 +526,14 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 				});
 				t6console.debug("pushSubscription is now disabled on User", error);
 			}
+			t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "20x", error_id: "00003"});
 			res.status(200).send({"status": "sent", "count": 1});
 		} else {
+			t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "40x", error_id: "00004"});
 			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
@@ -546,8 +555,10 @@ router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings
 	if ( req.user.role === "admin" ) {
 		var payload = typeof req.body!=="undefined"?req.body:"{}";
 		t6notifications.sendFCM(typeof token!=="undefined"?[token]:req.body.tokens, payload);
+		t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendFCM", "", "", {"status": "20x", error_id: "00003"});
 		res.status(200).send({"status": "sent", "count": 1});
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendFCM", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });

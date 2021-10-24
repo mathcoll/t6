@@ -64,9 +64,11 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 		};
 		units.insert(new_unit);
 
+		t6events.addAudit("t6App", "AuthAdmin: {post} /units", "", "", {"status": "20x", error_id: "00003"});
 		res.header("Location", "/v"+version+"/units/"+new_unit.id);
 		res.status(201).send({ "code": 201, message: "Created", unit: new UnitSerializer(new_unit).serialize() }, 201);
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {post} /units", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 16052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
@@ -107,9 +109,11 @@ router.put("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 		);
 		db_units.save();
 
+		t6events.addAudit("t6App", "AuthAdmin: {put} /units/:unit_id", "", "", {"status": "20x", error_id: "00003"});
 		res.header("Location", "/v"+version+"/units/"+unit_id);
 		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new UnitSerializer(result).serialize() });
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {put} /units/:unit_id", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 16052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
@@ -136,11 +140,14 @@ router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 		if (u) {
 			units.remove(u);
 			db_units.save();
+			t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "20x", error_id: "00003"});
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: unit_id }); // TODO: missing serializer
 		} else {
+			t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "40x", error_id: "00004"});
 			res.status(404).send(new ErrorSerializer({"id": 16271, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "40x", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 16052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
