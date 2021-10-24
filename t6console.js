@@ -35,6 +35,7 @@ t6console.error = function(...errormessage) {
 	if ( logLevel.indexOf("ERROR") > -1 ) {
 		console.error(moment().format(logDateFormat), "[ERROR]".red, errormessage);
 	}
+	t6events.addAudit("t6App", `Error: ${errormessage}`, "", "", {"status": "50x"});
 };
 
 module.exports = t6console;
