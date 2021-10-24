@@ -38,4 +38,29 @@ t6console.error = function(...errormessage) {
 	t6events.addAudit("t6App", `Error: ${errormessage}`, "", "", {"status": "50x", error_id: "00000"});
 };
 
+t6console.critical = function(...criticalmessage) {
+	console.error(moment().format(logDateFormat), "[CRITICAL]".red, criticalmessage);
+	t6events.addAudit("t6App", `Critical error: ${criticalmessage}`, "", "", {"status": "50x", error_id: "00001"});
+	var envelope = {
+		from:		from,
+		bcc:		bcc,
+		to:			bcc,
+		user_id:	bcc,
+		subject:	`Critical Error on t6 ${app.get("env")}`,
+		text:		`${criticalmessage}`,
+		html:		`${criticalmessage}`
+	};
+	t6mailer.sendMail(envelope);
+	/*
+	const clientTwilio = new twilio(twilioSettings.accountSid, twilioSettings.authToken);
+	clientTwilio.messages
+		.create({
+			body: `Critical Error on t6 ${app.get("env")} ${criticalmessage}`,
+			to: event.params.to, // Text this number
+			from: twilioSettings.from, // From a valid Twilio number
+		})
+		.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
+	*/
+};
+
 module.exports = t6console;
