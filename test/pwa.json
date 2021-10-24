@@ -1,0 +1,113 @@
+{
+    "config": {
+        "log_path": "./jsonapitest-results.json",
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {"app_version": "v2.0.1"},
+    "suites": [
+        {
+            "name": "t6 PWA Suite",
+            "tests": [
+                {
+                	"name": "can get Single Page Application",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /",
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get applicationStart",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /applicationStart",
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get networkError",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /networkError",
+                            "assert": [],
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get index",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/index",
+                            "assert": {
+        	                    "select": "body",
+        	                    "size": 11
+        	                },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get terms",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/terms",
+                            "assert": {
+        	                    "select": "body",
+        	                    "size": 7
+        	                },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get compatible-devices",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/compatible-devices",
+                            "assert": {
+        	                    "select": "body",
+        	                    "size": 9
+        	                },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get status",
+                	"description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/status",
+                            "assert": {
+        	                    "select": "body.version",
+        	                    "equal": "2.0.1"
+        	                },
+                            "status": "200"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -229,6 +229,36 @@
                     ]
                 },
                 {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "can deploy a source to an Object",
                 	"description": "Build should be completed now ... Object IP might fail to connect to in testing process.",
                     "api_calls": [

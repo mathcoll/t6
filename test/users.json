@@ -1,0 +1,192 @@
+{
+    "config": {
+        "log_path": "./jsonapitest-results.json",
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {"app_version": "v2.0.1"},
+    "suites": [
+        {
+            "name": "t6 Users Suite",
+            "tests": [
+                {
+                	"name": "can get accessTokens",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can create accessTokens",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "memo": "This memo help me to remember this AccessToken is used for testing."
+							},
+                            "save": {
+                                "saved.accessToken": "body.accessToken.data.attributes.key"
+                            },
+                            "status": "201",
+                            "assert": {
+        	                    "select": "body.accessToken.data.attributes.memo",
+        	                    "equal": "This memo help me to remember this AccessToken is used for testing."
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get accessTokens",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 2
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can revoke an Access Token",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/users/accessTokens/{{saved.accessToken}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.removed_id",
+        	                    "equal": "{{saved.accessToken}}"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get accessTokens after the revocation",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/accessTokens",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get user active sessions",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/me/sessions",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 4
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get user from JWT claim",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/me/token",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get user",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/{{saved.user_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get user token",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/users/{{saved.user_id}}/token",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+                            "schema": {
+                              "type": "object",
+                              "properties": {
+                                "token": {"type": "string"}
+                              },
+                              "required": ["token"]
+                            }
+                          }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,75 @@
+{
+    "config": {
+        "log_path": "./jsonapitest-results.json",
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {"app_version": "v2.0.1"},
+    "suites": [
+        {
+            "name": "t6 Jobs Suite",
+            "tests": [
+                {
+                	"name": "check that the job list is empty",
+                    "description": "By default, job is an empty list ; and we shouldn't see job from other users",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/jobs",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.jobs",
+        	                    "size": 0
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "delete all jobs from current user queue",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/jobs/*",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.removed_id",
+        	                    "equal": "*"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "check that the job list is empty after deletion",
+                    "description": "",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/jobs",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.jobs",
+        	                    "size": 0
+        	                }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
