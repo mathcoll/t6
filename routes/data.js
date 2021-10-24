@@ -556,13 +556,13 @@ function saveToCloud(payload, fields, current_flow, callback) {
 				.then(() => {
 					t6console.debug("chain 10", "Wrote to influxDbCloud");
 					//t6console.log("chain 10", point);
-					t6events.add("t6App", "Wrote to influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id});
+					t6events.addStat("t6App", "Wrote to influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id});
 					callback(null, {payload, fields, current_flow});
 				})
 				.catch((e) => {
 					t6console.error("chain 10", "Write Error on influxDbCloud");
 					t6console.error("chain 10", "Error:", e);
-					t6events.add("t6App", "Write Error on influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id, "error": e});
+					t6events.addStat("t6App", "Write Error on influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id, "error": e});
 					callback(e, {payload, fields, current_flow});
 				});
 		} // end valid token
@@ -640,7 +640,7 @@ async function processAllMeasures(payloads, options, res) {
 					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
 					measure.location = `/v${version}/flows/${payload.flow_id}/${measure.id}`;
 
-					t6events.add("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
+					t6events.addStat("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
 					result.push(measure);
 					if(result.length === payloads.length) {
 						let response = result;

@@ -15,7 +15,32 @@ t6events.setRP = function(rp) {
 	retention = rp;
 };
 
-t6events.add = function(where, what, who, client_id=null, params=null) {
+t6events.addAudit = function(where, what, who, client_id=null, params=null) {
+	where = where + ":" + process.env.NODE_ENV;
+	if ( db_type.influxdb ) {
+		t6console.debug("Using db_type.influxdb");
+		var tags = {rp: retention, what: what, where: where};
+		var fields = {who: typeof who!=="undefined"?who:""};
+		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+		dbWrite.writePoints([{
+			measurement: measurement,
+			tags: tags,
+			fields: fields,
+		}], { retentionPolicy: retention }).then((err) => {
+			if(err) {
+				t6console.error("t6events.add: Error", err);
+			} else {
+				t6console.debug("t6events.add: Ok");
+				return true;
+			}
+			t6console.debug({"tags": tags, "fields": fields, "retention": retention});
+		}).catch((err) => {
+			t6console.error("Error writting event to influxDb:", err);
+		});
+	}
+}
+
+t6events.addStat = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
 		t6console.debug("Using db_type.influxdb");

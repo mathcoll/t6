@@ -18,18 +18,23 @@ Types of changes
 ------------
 
 ## 2021
+### Milestone 16 - 2021-11: 
+#### Fixed
+#### Changed
+  - [x] autogen.events contains importants application logs
+  - [x] quota4w.requests contains users api calls for statistical purpose ; wirth a monthly retention. This timeseries is used for the monthly report
+
+#### Added
+
 ### Milestone 15 - 2021-10: 
 #### Fixed
   - [x] Fixed signature on datapoint storage
   - [x] Fix pushNotification and error handling
-  - [x] t6 stabilization
-  
+  - [x] t6 stabilization  
 #### Changed
   - [x] [22cc04e](https://github.com/mathcoll/t6/commit/22cc04e398f9a33c8375a7bf243328fcf1c518e4) News start service using systemd instead of /etc/init.d
-
 #### Security
   - [x] [39bcfee](https://github.com/mathcoll/t6/commit/39bcfeef34006ae60be383bf46e8709c77934a51) disable HTTP header "x-powered-by"
-  
 #### Added
   - [x] Twilio Proof Of Concept ; not yet fully functionnal
 

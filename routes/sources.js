@@ -183,7 +183,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 			content:	content,
 			password:	typeof req.body.password!=="undefined"?req.body.password:"",
 		};
-		t6events.add("t6Api", "source add", newSource.id, req.user.id);
+		t6events.addStat("t6Api", "source add", newSource.id, req.user.id);
 		sources.insert(newSource);
 		//t6console.log(sources);
 		
@@ -262,7 +262,7 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 			if (typeof result!=="undefined") {
 				dbSources.save();
 				sources.insert(newSource);
-				t6events.add("t6Api", "source add child", newSource.id, req.user.id);
+				t6events.addStat("t6Api", "source add child", newSource.id, req.user.id);
 
 				res.header("Location", "/v"+version+"/sources/"+source_id);
 				res.status(200).send({ "code": 200, message: "Successfully updated", source: new SourceSerializer(newSource).serialize() });

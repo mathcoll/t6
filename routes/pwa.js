@@ -72,7 +72,7 @@ router.get("/mail/:mail/unsubscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token(
 				moment: moment,
 			});
 		}
-		t6events.add("t6App", "unsubscribe", typeof result!=="undefined"?result.id:"??"+mail, typeof result!=="undefined"?result.id:"??"+mail, {"list": list});
+		t6events.addStat("t6App", "unsubscribe", typeof result!=="undefined"?result.id:"??"+mail, typeof result!=="undefined"?result.id:"??"+mail, {"list": list});
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 11271, "code": 404, "message": "Not Found"}).serialize());
 	}
@@ -126,7 +126,7 @@ router.get("/mail/:mail/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0
 				moment: moment,
 			});
 		}
-		t6events.add("t6App", "subscribe", typeof result!=="undefined"?result.id:"??"+mail, typeof result!=="undefined"?result.id:"??"+mail, {"list": list});
+		t6events.addStat("t6App", "subscribe", typeof result!=="undefined"?result.id:"??"+mail, typeof result!=="undefined"?result.id:"??"+mail, {"list": list});
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 11271, "code": 404, "message": "Not Found"}).serialize());
 	}

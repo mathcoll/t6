@@ -534,7 +534,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				newObject.parameters.push({ name: typeof param.name!=="undefined"?param.name:uuid.v4(), value: typeof param.value!=="undefined"?param.value:"" , type: typeof param.type!=="undefined"?param.type:"String"});
 			});
 		}
-		t6events.add("t6Api", "object add", newObject.id, req.user.id);
+		t6events.addStat("t6Api", "object add", newObject.id, req.user.id);
 		objects.insert(newObject);
 		//t6console.log(newObject);
 		

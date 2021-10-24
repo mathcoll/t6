@@ -107,7 +107,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				active: 	typeof req.body.active!=="undefined"?req.body.active:true,
 				rule:		typeof req.body.rule!=="undefined"?req.body.rule:{},
 			};
-			t6events.add("t6Api", "rule add", newRule.id, req.user.id);
+			t6events.addStat("t6Api", "rule add", newRule.id, req.user.id);
 			rules.insert(newRule);
 			//t6console.log(rules);
 			

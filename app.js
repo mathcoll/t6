@@ -384,7 +384,7 @@ var jobs			= require("./routes/jobs");
 app					= express();
 app.set("port", process.env.PORT);
 app.listen(process.env.PORT, () => {
-	t6events.add("t6App", "start", "self", t6BuildVersion);
+	t6events.addStat("t6App", "start", "self", t6BuildVersion);
 	t6console.log("App is instanciated.");
 	t6console.log(`${appName} started / listening to ${baseUrl_https}.`);
 })
@@ -480,7 +480,7 @@ if (app.get("env") === "development") {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack });
 		}
 		t6console.debug("Error - app.js", err.status, err.name, err);
-		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
+		t6events.addStat("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 } else {
 	app.use(function(err, req, res, next) {
@@ -497,7 +497,7 @@ if (app.get("env") === "development") {
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message });
 		}
 		t6console.debug("Error - app.js", err.status, err.name, err);
-		t6events.add("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
+		t6events.addStat("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
 	});
 }
 

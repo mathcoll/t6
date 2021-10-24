@@ -248,7 +248,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		
 		engine.on("success", function(event, almanac, ruleResult) {
 			t6console.debug(sprintf("onSuccess", event, almanac, ruleResult));
-			t6events.add("t6App", `Matching_EventType_${event.type}`, user_id, user_id, {"type": event.type, "user_id": user_id, "rule_id": event.params.rule_id});
+			t6events.addStat("t6App", `Matching_EventType_${event.type}`, user_id, user_id, {"type": event.type, "user_id": user_id, "rule_id": event.params.rule_id});
 			t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 			if ( !payload.mqtt_topic ) {
 				if ( event.params.mqtt_topic ) {
