@@ -67,7 +67,7 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
 });
 
 /**
- * @api {post} /jobs/:job_id Delete a job
+ * @api {delete} /jobs/:job_id Delete a job
  * @apiName Delete a job
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
