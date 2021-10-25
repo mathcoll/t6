@@ -518,7 +518,6 @@ router.post("/authenticate", function (req, res) {
 				checkForTooManyFailure(req, res, email);
 				t6events.addAudit("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.11});
 				t6events.addStat("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.11});
-				t6console.error("Auth Error", user.id, {"status": 403, "error_id": 102.11});
 				return res.status(403).send(new ErrorSerializer({"id": 17150, "code": 403, "message": "Forbidden"}).serialize());
 			}
 		} else {
@@ -621,7 +620,6 @@ router.post("/authenticate", function (req, res) {
 		} else {
 			t6events.addAudit("t6App", "POST_authenticate", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
 			t6events.addStat("t6App", "POST_authenticate", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
-			t6console.error("Auth Error", req.body.key, email, {"status": 403, "error_id": 102.32});
 			return res.status(403).send(new ErrorSerializer({"id": 17350, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( typeof req.body.refresh_token!=="undefined" && req.body.refresh_token!=="" && req.body.grant_type === "refresh_token" ) {
@@ -712,13 +710,11 @@ router.post("/authenticate", function (req, res) {
 		} else {
 			t6events.addAudit("t6App", "POST_authenticate", user_id, user_id, {"status": 403, "error_id": 102.43});
 			t6events.addStat("t6App", "POST_authenticate", user_id, user_id, {"status": 403, "error_id": 102.43});
-			t6console.error("Auth Error", user_id, {"status": 403, "error_id": 102.43});
 			return res.status(403).send(new ErrorSerializer({"id": 17450, "code": 403, "message": "Invalid Refresh Token"}).serialize());
 		}
 	} else {
 		t6events.addAudit("t6App", "POST_authenticate", null, null, {"status": 400, "error_id": 102.33});
 		t6events.addStat("t6App", "POST_authenticate", null, null, {"status": 400, "error_id": 102.33});
-		t6console.error("Auth Error", {"status": 403, "error_id": 102.33});
 		return res.status(400).send(new ErrorSerializer({"id": 17550, "code": 400, "message": "Required param grant_type and/or username+password needs to be defined"}).serialize());
 	}
 });

@@ -35,12 +35,12 @@ t6console.error = function(...errormessage) {
 	if ( logLevel.indexOf("ERROR") > -1 ) {
 		console.error(moment().format(logDateFormat), "[ERROR]".red, errormessage);
 	}
-	t6events.addAudit("t6App", `Error: ${errormessage}`, "", "", {"status": "50x", error_id: "00000"});
+	t6events.addAudit("t6App", `t6console.error: ${errormessage}`, "", "", {"status": "50x", error_id: "00000"});
 };
 
 t6console.critical = function(...criticalmessage) {
 	console.error(moment().format(logDateFormat), "[CRITICAL]".red, criticalmessage);
-	t6events.addAudit("t6App", `Critical error: ${criticalmessage}`, "", "", {"status": "50x", error_id: "00001"});
+	t6events.addAudit("t6App", `t6console.critical: ${criticalmessage}`, "", "", {"status": "50x", error_id: "00001"});
 	var envelope = {
 		from:		from,
 		bcc:		bcc,
