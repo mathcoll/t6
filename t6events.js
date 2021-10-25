@@ -19,7 +19,7 @@ t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	if ( db_type.influxdb ) {
 		var tags = {rp: retention, what: what, where: where};
-		var fields = {who: typeof who!=="undefined"?who:""};
+		var fields = {who: typeof who!=="undefined"?who:"", status: (params!==null && typeof params.status!=="undefined")?params.status:"", error_id: (params!==null && typeof params.error_id!=="undefined")?params.error_id:""};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 		dbWrite.writePoints([{
 			measurement: measurement,
@@ -41,26 +41,6 @@ t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 
 t6events.addStat = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
-	if ( db_type.influxdb ) {
-		var tags = {rp: retention, what: what, where: where};
-		var fields = {who: typeof who!=="undefined"?who:"", status: (params!==null && typeof params.status!=="undefined")?params.status:"", error_id: (params!==null && typeof params.error_id!=="undefined")?params.error_id:""};
-		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
-		dbWrite.writePoints([{
-			measurement: measurement,
-			tags: tags,
-			fields: fields,
-		}], { retentionPolicy: retention }).then((err) => {
-			if(err) {
-				t6console.error("addStat, t6events.addStat: Error", err);
-			} else {
-				t6console.debug("addStat, t6events.addStat: Ok");
-				return true;
-			}
-			t6console.debug({"tags": tags, "fields": fields, "retention": retention});
-		}).catch((err) => {
-			t6console.error("addStat, Error writting event to influxDb:", err);
-		});
-	}
 	let d = process.env.NODE_ENV==="production"?"":"debug/";
 	if(client_id!==null) {
 		let user_id = typeof who!=="undefined"?who:null;
