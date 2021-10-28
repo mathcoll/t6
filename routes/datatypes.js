@@ -64,11 +64,11 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 		};
 		datatypes.insert(newDatatype);
 
-		t6events.addAudit("t6App", "AuthAdmin: {post} /datatypes Add DataType", "", "", {"status": "20x", error_id: "00003"});
+		t6events.addAudit("t6App", "AuthAdmin: {post} /datatypes Add DataType", "", "", {"status": "200", error_id: "00003"});
 		res.header("Location", "/v"+version+"/datatypes/"+newDatatype.id);
 		res.status(201).send({ "code": 201, message: "Created", unit: new DataTypeSerializer(newDatatype).serialize() }, 201);
 	} else {
-		t6events.addAudit("t6App", "AuthAdmin: {post} /datatypes Add DataType", "", "", {"status": "40x", error_id: "00004"});
+		t6events.addAudit("t6App", "AuthAdmin: {post} /datatypes Add DataType", "", "", {"status": "400", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 3049, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
@@ -113,11 +113,11 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 		);
 		db_datatypes.save();
 		
-		t6events.addAudit("t6App", "AuthAdmin: {put} /datatypes/:datatype_id", "", "", {"status": "20x", error_id: "00003"});
+		t6events.addAudit("t6App", "AuthAdmin: {put} /datatypes/:datatype_id", "", "", {"status": "200", error_id: "00003"});
 		res.header("Location", "/v"+version+"/datatypes/"+datatype_id);
 		res.status(200).send({ "code": 200, message: "Successfully updated", unit: new DataTypeSerializer(result).serialize() });
 	} else {
-		t6events.addAudit("t6App", "AuthAdmin: {put} /datatypes/:datatype_id", "", "", {"status": "40x", error_id: "00004"});
+		t6events.addAudit("t6App", "AuthAdmin: {put} /datatypes/:datatype_id", "", "", {"status": "400", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 3050, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });
@@ -144,14 +144,14 @@ router.delete("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secr
 		if (d) {
 			datatypes.remove(d);
 			db_datatypes.save();
-			t6events.addAudit("t6App", "AuthAdmin: {delete} /datatypes/:datatype_id", "", "", {"status": "20x", error_id: "00003"});
+			t6events.addAudit("t6App", "AuthAdmin: {delete} /datatypes/:datatype_id", "", "", {"status": "200", error_id: "00003"});
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: datatype_id }); // TODO: missing serializer
 		} else {
-			t6events.addAudit("t6App", "AuthAdmin: {delete} /datatypes/:datatype_id", "", "", {"status": "40x", error_id: "00004"});
+			t6events.addAudit("t6App", "AuthAdmin: {delete} /datatypes/:datatype_id", "", "", {"status": "400", error_id: "00004"});
 			res.status(404).send(new ErrorSerializer({"id": 3051, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		t6events.addAudit("t6App", "AuthAdmin: {delete} /datatypes/:datatype_id", "", "", {"status": "40x", error_id: "00004"});
+		t6events.addAudit("t6App", "AuthAdmin: {delete} /datatypes/:datatype_id", "", "", {"status": "400", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 3052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });

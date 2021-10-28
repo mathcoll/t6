@@ -387,10 +387,10 @@ router.delete("/tokens/all", function (req, res) {
 			tokens.remove(expired);
 			db_tokens.save();
 		}
-		t6events.addAudit("t6App", "AuthAdmin: {delete} /tokens/all", "", "", {"status": "20x", error_id: "00003"});
+		t6events.addAudit("t6App", "AuthAdmin: {delete} /tokens/all", "", "", {"status": "200", error_id: "00003"});
 		return res.status(201).json( {status: "ok", "cleaned": expired.length} );
 	} else {
-		t6events.addAudit("t6App", "AuthAdmin: {delete} /tokens/all", "", "", {"status": "40x", error_id: "00004"});
+		t6events.addAudit("t6App", "AuthAdmin: {delete} /tokens/all", "", "", {"status": "400", error_id: "00004"});
 		return res.status(403).send(new ErrorSerializer({"id": 17050, "code": 403, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });

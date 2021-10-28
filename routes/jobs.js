@@ -59,10 +59,10 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
 		limit = typeof req.body.limit!=="undefined"?req.body.limit:10;
 		if ( req.user.role === "admin" ) {
 			t6jobs.start(limit);
-			t6events.addAudit("t6App", "AuthAdmin: {post} /jobs/:job_id?/start", "", "", {"status": "20x", error_id: "00003"});
+			t6events.addAudit("t6App", "AuthAdmin: {post} /jobs/:job_id?/start", "", "", {"status": "200", error_id: "00003"});
 			res.status(201).send({ "code": 201, message: "Successfully started", job_id: job.job_id });
 		} else {
-			t6events.addAudit("t6App", "AuthAdmin: {post} /jobs/:job_id?/start", "", "", {"status": "40x", error_id: "00004"});
+			t6events.addAudit("t6App", "AuthAdmin: {post} /jobs/:job_id?/start", "", "", {"status": "400", error_id: "00004"});
 			res.status(401).send(new ErrorSerializer({"id": 5059, "code": 401, "message": "Unauthorized"}).serialize());
 		}
 	}
