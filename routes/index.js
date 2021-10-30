@@ -239,8 +239,8 @@ router.all("*", function (req, res, next) {
 		}
 		let i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
-		let query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 4w) LIMIT 1`;
-		t6console.debug("Query to count requests in the past 4w", query);
+		let query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 1w) LIMIT 1`;
+		t6console.debug("Query to count requests in the past 1w", query);
 		dbInfluxDB.query(query).then((data) => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
@@ -432,9 +432,9 @@ router.post("/authenticate", function (req, res) {
 		var queryU = { "$and": [ { "email": email } ] };
 		//t6console.debug(queryU);
 		var user = users.findOne(queryU);
-		user.quotausage = undefined;
-		user.data = undefined;
 		if ( user && typeof user.password!=="undefined" ) {
+			user.quotausage = undefined;
+			user.data = undefined;
 			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
 				var geo = geoip.lookup(req.ip);
 				if ( typeof user.location === "undefined" || user.location === null ) {
@@ -755,11 +755,11 @@ router.post("/refresh", function (req, res) {
 		return res.status(403).send(new ErrorSerializer({"id": 17850, "code": 403, "message": "Forbidden or Token Expired"}));
 	} else {
 		let user = users.findOne({ "id": myToken.user_id });
-		user.quotausage = undefined;
-		user.data = undefined;
 		if ( !user ) {
 			return res.status(403).send(new ErrorSerializer({"id": 17851, "code": 403, "message": "Forbidden or Token Expired"}));
 		} else {
+			user.quotausage = undefined;
+			user.data = undefined;
 			var payload = JSON.parse(JSON.stringify(user));
 			payload.permissions = undefined;
 			payload.token = undefined;
