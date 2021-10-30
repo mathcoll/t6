@@ -1,6 +1,7 @@
 "use strict";
 var express = require("express");
 var router = express.Router();
+var ErrorSerializer = require("../serializers/error");
 const fsP = require("fs").promises;
 
 async function walk(dir, fileList = []) {
@@ -25,11 +26,17 @@ router.get("/", function(req, res) {
 });
 
 router.get("/:file", function(req, res) {
-	var file = req.params.file;
-	res.render(path.join(__dirname, "../views/emails/newsletters/", file), {
-		currentUrl: req.path,
-		moment: moment,
-		user: {"firstName": "", "lastName": ""},
+	var file = path.join(__dirname, "../views/emails/newsletters/", req.params.file);
+	fs.chmod(file, 0o600 , (err) => {
+		if (!err) {
+			res.render(file, {
+				currentUrl: req.path,
+				moment: moment,
+				user: {"firstName": "", "lastName": ""},
+			});
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 7055, "code": 404, "message": "Not Found"}).serialize());
+		}
 	});
 });
 
