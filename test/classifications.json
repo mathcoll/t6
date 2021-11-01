@@ -1,0 +1,154 @@
+{
+    "config": {
+        "log_path": "./jsonapitest-results.json",
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {"app_version": "v2.0.1"},
+    "suites": [
+        {
+            "name": "t6 Classifications Suite",
+            "tests": [
+                {
+                	"name": "can create a first category",
+                	"description": "can create a first category",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/classifications/categories/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "Walking",
+							    "color": "",
+							    "description": ""
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.category_id1": "body.category.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a second category",
+                	"description": "can create a second category",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/classifications/categories/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "Walking Slowly",
+							    "color": "",
+							    "description": ""
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.category_id2": "body.category.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can create a third category",
+                	"description": "can create a third category",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/classifications/categories/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "Running",
+							    "color": "",
+							    "description": ""
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.category_id3": "body.category.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can edit a category",
+                	"description": "can edit a Rule",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /{{app_version}}/classifications/categories/{{saved.category_id1}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "Walking fast",
+							    "color": ""
+							},
+                            "assert": [],
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a category",
+                	"description": "can delete a Rule",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/classifications/categories/{{saved.category_id1}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a category",
+                	"description": "can delete a Rule",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/classifications/categories/{{saved.category_id2}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete a category",
+                	"description": "can delete a Rule",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/classifications/categories/{{saved.category_id3}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

@@ -310,6 +310,18 @@ var initDbDatatypes = function() {
 		t6console.log(db_datatypes.getCollection("datatypes").count(), "resources in datatypes collection.");
 	}
 };
+var initDbCategories = function() {
+	if ( db_categories === null ) {
+		t6console.error("db categories is failing");
+	}
+	if ( db_categories.getCollection("categories") === null ) {
+		t6console.error("- Collection categories is created");
+		db_categories.addCollection("categories");
+	} else {
+		global.categories = db_categories.getCollection("categories");
+		t6console.log(db_categories.getCollection("categories").count(), "resources in categories collection.");
+	}
+};
 
 t6console.info("Setting correct permission on Databases...");
 let dbs = [
@@ -350,6 +362,7 @@ global.db_access_tokens = new loki(path.join(__dirname, "data", `t6db-accessToke
 global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
 global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
 global.db_rules = new loki(path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
+global.db_categories = new loki(path.join(__dirname, "data", `t6db-categories__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbCategories});
 
 dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
 dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
@@ -381,6 +394,7 @@ var uis				= require("./routes/uis");
 var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
 var jobs			= require("./routes/jobs");
+var classifications	= require("./routes/classifications");
 app					= express();
 app.set("port", process.env.PORT);
 app.listen(process.env.PORT, () => {
@@ -447,6 +461,7 @@ app.use("/v"+version+"/sources", sources);
 app.use("/v"+version+"/uis", uis);
 app.use("/v"+version+"/exploration", exploration);
 app.use("/v"+version+"/jobs", jobs);
+app.use("/v"+version+"/classifications", classifications);
 app.use("/news", news);
 app.use("/", pwa);
 
