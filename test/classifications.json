@@ -104,6 +104,27 @@
                     ]
                 },
                 {
+                	"name": "can add an annotation",
+                	"description": "can add an annotation",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/classifications/annotations/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                            "from_ts": "2021-11-03T20:31:26+01:00",
+                            "to_ts": "2021-11-03T19:49:26+01:00",
+                            "flow_id": "{{saved.flow_id_string}}",
+                            "category_id": "{{saved.category_id1}}"
+							},
+                            "assert": [],
+                            "save": {},
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
                 	"name": "can delete a category",
                 	"description": "can delete a Rule",
                     "api_calls": [
