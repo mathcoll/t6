@@ -1,7 +1,8 @@
 "use strict";
 var express = require("express");
 var router = express.Router();
-var ClassificationSerializer = require("../serializers/classification");
+var CategorySerializer = require("../serializers/category");
+var AnnotationSerializer = require("../serializers/annotation");
 var ErrorSerializer = require("../serializers/error");
 var categories;
 
@@ -28,7 +29,7 @@ router.get("/categories/(:category_id([0-9a-z\-]+))?", expressJwt({secret: jwtse
 	var page = typeof req.query.page!=="undefined"?req.query.page:1;
 	page = page>0?page:1;
 	var offset = Math.ceil(size*(page-1));
-	categories	= db_categories.getCollection("categories");
+	categories	= db_classifications.getCollection("categories");
 	var query;
 	if ( typeof category_id !== "undefined" ) {
 		query = {
@@ -64,7 +65,7 @@ router.get("/categories/(:category_id([0-9a-z\-]+))?", expressJwt({secret: jwtse
 	json.pageNext = json.pageSelf<json.pageLast?Math.ceil(json.pageSelf)+1:undefined;
 	json = json.length>0?json:[];
 
-	res.status(200).send(new ClassificationSerializer(json).serialize());
+	res.status(200).send(new CategorySerializer(json).serialize());
 });
 
 /**
@@ -83,7 +84,7 @@ router.get("/categories/(:category_id([0-9a-z\-]+))?", expressJwt({secret: jwtse
  * @apiUse 429
  */
 router.post("/categories/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	categories	= db_categories.getCollection("categories");
+	categories	= db_classifications.getCollection("categories");
 	/* Check for quota limitation */
 	var queryR = { "user_id" : req.user.id };
 	var i = (categories.find(queryR)).length;
@@ -103,7 +104,7 @@ router.post("/categories/?", expressJwt({secret: jwtsettings.secret, algorithms:
 			categories.insert(newCategory);
 			
 			res.header("Location", "/v"+version+"/categories/"+newCategory.id);
-			res.status(201).send({ "code": 201, message: "Created", category: new ClassificationSerializer(newCategory).serialize() });
+			res.status(201).send({ "code": 201, message: "Created", category: new CategorySerializer(newCategory).serialize() });
 		}
 	}
 });
@@ -133,7 +134,7 @@ router.post("/categories/?", expressJwt({secret: jwtsettings.secret, algorithms:
 router.put("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var category_id = req.params.category_id;
 	if ( category_id ) {
-		categories	= db_categories.getCollection("categories");
+		categories	= db_classifications.getCollection("categories");
 		var query = {
 			"$and": [
 					{ "id": category_id },
@@ -153,10 +154,10 @@ router.put("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtsetti
 					result = item;
 				});
 				if ( typeof result !== "undefined" ) {
-					db_categories.save();
+					db_classifications.save();
 
 					res.header("Location", "/v"+version+"/categories/"+category_id);
-					res.status(200).send({ "code": 200, message: "Successfully updated", category: new ClassificationSerializer(result).serialize() });
+					res.status(200).send({ "code": 200, message: "Successfully updated", category: new CategorySerializer(result).serialize() });
 				} else {
 					res.status(404).send(new ErrorSerializer({"id": 18273, "code": 404, "message": "Not Found"}).serialize());
 				}
@@ -184,7 +185,7 @@ router.put("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtsetti
  */
 router.delete("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var category_id = req.params.category_id;
-	categories	= db_categories.getCollection("categories");
+	categories	= db_classifications.getCollection("categories");
 	var query = {
 		"$and": [
 			{ "user_id" : req.user.id, }, // delete only category from current user
@@ -194,10 +195,42 @@ router.delete("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtse
 	var c = categories.find(query);
 	if ( c.length > 0 ) {
 		categories.remove(c);
-		db_categories.saveDatabase();
+		db_classifications.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: category_id }); // TODO: missing serializer
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 532, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+
+router.post("/annotations/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	annotations	= db_classifications.getCollection("annotations");
+	let from_ts;
+	let to_ts;
+	if(moment(req.body.from_ts).isBefore(req.body.to_ts)) {
+		from_ts = moment(req.body.from_ts).format("YYYY-MM-DDTHH:mm:ssZ");
+		to_ts = moment(req.body.to_ts).format("YYYY-MM-DDTHH:mm:ssZ");
+	} else {
+		from_ts = moment(req.body.to_ts).format("YYYY-MM-DDTHH:mm:ssZ");
+		to_ts = moment(req.body.from_ts).format("YYYY-MM-DDTHH:mm:ssZ");
+	}
+	if ( typeof req.user.id!=="undefined" && typeof req.body.flow_id!=="undefined" && typeof req.body.category_id!=="undefined" && from_ts && to_ts ) {
+		var annotation_id = uuid.v4();
+		var newAnnotation = {
+			id:			annotation_id,
+			user_id:	req.user.id,
+			from_ts:	from_ts,
+			to_ts:		to_ts,
+			flow_id:	req.body.flow_id,
+			category_id:req.body.category_id,
+		};
+		t6events.addStat("t6Api", "annotation add", newAnnotation.id, req.user.id);
+		annotations.insert(newAnnotation);
+
+		res.header("Location", "/v"+version+"/annotations/"+newAnnotation.id);
+		res.status(201).send({ "code": 201, message: "Created", annotation: new AnnotationSerializer(newAnnotation).serialize() });
+	} else {
+		res.status(409).send(new ErrorSerializer({"id": 18001, "code": 409, "message": "Bad Request"}).serialize());
 	}
 });
 

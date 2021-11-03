@@ -1,9 +1,9 @@
 "use strict";
 var JSONAPISerializer = require("jsonapi-serializer").Serializer;
 
-function ClassificationSerializer(categories) {
+function CategorySerializer(categories) {
 	this.serialize = function() {
-		return new JSONAPISerializer("classification", {
+		return new JSONAPISerializer("category", {
 			keyForAttribute: "underscore_case",
 			attributes : [ "name", "color", "description", "meta" ],
 			topLevelLinks : {
@@ -16,15 +16,11 @@ function ClassificationSerializer(categories) {
 			dataLinks : {
 			},
 			objects: {
-				attributes : [ "object_id" ],
-				dataLinks: {
-					self: function (flow) {
-						return sprintf("%s/v%s/objects/%s", baseUrl_https, version, flow.object_id);
-					}
-				}
+				attributes : [],
+				dataLinks: {}
 			}
 		}).serialize(categories);
 	};
 }
 
-module.exports = ClassificationSerializer;
+module.exports = CategorySerializer;

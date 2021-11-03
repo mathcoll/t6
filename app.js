@@ -310,16 +310,23 @@ var initDbDatatypes = function() {
 		t6console.log(db_datatypes.getCollection("datatypes").count(), "resources in datatypes collection.");
 	}
 };
-var initDbCategories = function() {
-	if ( db_categories === null ) {
-		t6console.error("db categories is failing");
+var initDbClassifications = function() {
+	if ( db_classifications === null ) {
+		t6console.error("db classifications is failing");
 	}
-	if ( db_categories.getCollection("categories") === null ) {
+	if ( db_classifications.getCollection("categories") === null ) {
 		t6console.error("- Collection categories is created");
-		db_categories.addCollection("categories");
+		db_classifications.addCollection("categories");
 	} else {
-		global.categories = db_categories.getCollection("categories");
-		t6console.log(db_categories.getCollection("categories").count(), "resources in categories collection.");
+		global.categories = db_classifications.getCollection("categories");
+		t6console.log(db_classifications.getCollection("categories").count(), "resources in categories collection.");
+	}
+	if ( db_classifications.getCollection("annotations") === null ) {
+		t6console.error("- Collection annotations is created");
+		db_classifications.addCollection("annotations");
+	} else {
+		global.annotations = db_classifications.getCollection("annotations");
+		t6console.log(db_classifications.getCollection("annotations").count(), "resources in annotations collection.");
 	}
 };
 
@@ -342,6 +349,7 @@ let dbs = [
 	path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`),
 ];
 dbs.forEach((file) => {
 	fs.chmod(file, 0o600 , (err) => {
@@ -362,7 +370,7 @@ global.db_access_tokens = new loki(path.join(__dirname, "data", `t6db-accessToke
 global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
 global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
 global.db_rules = new loki(path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
-global.db_categories = new loki(path.join(__dirname, "data", `t6db-categories__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbCategories});
+global.db_classifications = new loki(path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbClassifications});
 
 dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
 dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
