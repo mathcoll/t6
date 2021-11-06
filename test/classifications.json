@@ -50,7 +50,7 @@
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
-							    "name": "Walking Slowly",
+							    "name": "Running fast",
 							    "color": "",
 							    "description": ""
 							},
@@ -72,9 +72,9 @@
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
-							    "name": "Running",
-							    "color": "",
-							    "description": ""
+							    "name": "Sentiment is Positive",
+							    "color": "#00ff00",
+							    "description": "Positive Sentiment"
 							},
                             "assert": [],
                             "save": {
@@ -86,7 +86,7 @@
                 },
                 {
                 	"name": "can edit a category",
-                	"description": "can edit a Rule",
+                	"description": "can edit a category",
                     "api_calls": [
                         {
                         	"request": "PUT /{{app_version}}/classifications/categories/{{saved.category_id1}}",
@@ -94,7 +94,7 @@
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
-							    "name": "Walking fast",
+							    "name": "Walking slowly",
 							    "color": ""
 							},
                             "assert": [],
@@ -121,51 +121,6 @@
                             "assert": [],
                             "save": {},
                             "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "can delete a category",
-                	"description": "can delete a Rule",
-                    "api_calls": [
-                        {
-                        	"request": "DELETE /{{app_version}}/classifications/categories/{{saved.category_id1}}",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer_token}}"
-                            },
-                            "assert": [],
-                            "save": {},
-                            "status": "200"
-                        }
-                    ]
-                },
-                {
-                	"name": "can delete a category",
-                	"description": "can delete a Rule",
-                    "api_calls": [
-                        {
-                        	"request": "DELETE /{{app_version}}/classifications/categories/{{saved.category_id2}}",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer_token}}"
-                            },
-                            "assert": [],
-                            "save": {},
-                            "status": "200"
-                        }
-                    ]
-                },
-                {
-                	"name": "can delete a category",
-                	"description": "can delete a Rule",
-                    "api_calls": [
-                        {
-                        	"request": "DELETE /{{app_version}}/classifications/categories/{{saved.category_id3}}",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer_token}}"
-                            },
-                            "assert": [],
-                            "save": {},
-                            "status": "200"
                         }
                     ]
                 }

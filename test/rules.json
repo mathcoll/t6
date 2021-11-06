@@ -19,7 +19,57 @@
             "name": "t6 Rules Suite",
             "tests": [
                 {
-                	"name": "can create a Rule",
+                	"name": "can create a Rule for a sentiment analysis and trigger an annootation",
+                	"description": "can create a Rule",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/rules",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+							    "name": "test Rule for data annotation",
+							    "user_id": "{{saved.user_id}}",
+							    "rule": {
+							        "conditions": {
+							            "all": [
+							                {
+							                    "fact": "environment",
+							                    "operator": "equal",
+							                    "value": "development"
+							                },
+							                {
+							                    "fact": "flow",
+							                    "operator": "equal",
+							                    "value": "{{saved.flow_id_sentiment}}"
+							                },
+							                {
+							                    "fact": "value",
+							                    "operator": "sentimentScoreLessThanInclusive",
+							                    "value": "50"
+							                }
+							            ]
+							        },
+							        "event": {
+							            "type": "annotate",
+							            "params": {
+							                "category_id": "{{saved.category_id3}}"
+							            }
+							        },
+							        "priority": 1
+							    },
+							    "active": true
+							},
+                            "assert": [],
+                            "save": {
+                                "saved.rule_id_annotation": "body.rule.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "cannot create a Rule because of quota limit",
                 	"description": "can create a Rule",
                     "api_calls": [
                         {
@@ -62,10 +112,8 @@
 							    "active": true
 							},
                             "assert": [],
-                            "save": {
-                                "saved.rule_id": "body.rule.data.id"
-                            },
-                            "status": "201"
+                            "save": {},
+                            "status": "429"
                         }
                     ]
                 }
