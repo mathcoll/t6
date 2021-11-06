@@ -307,6 +307,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						})
 						.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
 				}
+			} else if ( event.type === "annotate" ) {
+				if(typeof event.params.category_id!=="undefined") {
+					let from_ts = payload.time;
+					let to_ts = payload.time;
+					let newAnnotation = annotate(payload.user_id?payload.user_id:"", from_ts, to_ts, event.params.category_id, payload.flow);
+				}
 			} else if ( event.type === "httpWebhook" ) {
 				let options = {
 					url: event.params.url,
@@ -320,13 +326,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				request(options,
 					function (error, response, body) {
 						var statusCode = response ? response.statusCode : null;
-								body = body || null;
-								t6console.debug("Request sent - Server responded with:", statusCode);
-						
+						body = body || null;
+						t6console.debug("Request sent - Server responded with:", statusCode);
 						if ( error ) {
 							return console.error("HTTP failed: ", error, options.url, statusCode, body);
 						}
-						
 						t6console.debug("success", options.url, statusCode, body);
 					}
 				);

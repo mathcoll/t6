@@ -202,9 +202,23 @@ router.delete("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtse
 	}
 });
 
+function annotate(user_id, from_ts, to_ts, flow_id, category_id) {
+	annotations	= db_classifications.getCollection("annotations");
+	let annotation_id = uuid.v4();
+	let newAnnotation = {
+		id:			annotation_id,
+		user_id:	user_id,
+		from_ts:	from_ts,
+		to_ts:		to_ts,
+		flow_id:	flow_id,
+		category_id:category_id,
+	};
+	t6events.addStat("t6Api", "annotation add", newAnnotation.id, user_id);
+	annotations.insert(newAnnotation);
+	return newAnnotation;
+} 
 
 router.post("/annotations/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	annotations	= db_classifications.getCollection("annotations");
 	let from_ts;
 	let to_ts;
 	if(moment(req.body.from_ts).isBefore(req.body.to_ts)) {
@@ -215,18 +229,7 @@ router.post("/annotations/?", expressJwt({secret: jwtsettings.secret, algorithms
 		to_ts = moment(req.body.from_ts).format("YYYY-MM-DDTHH:mm:ssZ");
 	}
 	if ( typeof req.user.id!=="undefined" && typeof req.body.flow_id!=="undefined" && typeof req.body.category_id!=="undefined" && from_ts && to_ts ) {
-		var annotation_id = uuid.v4();
-		var newAnnotation = {
-			id:			annotation_id,
-			user_id:	req.user.id,
-			from_ts:	from_ts,
-			to_ts:		to_ts,
-			flow_id:	req.body.flow_id,
-			category_id:req.body.category_id,
-		};
-		t6events.addStat("t6Api", "annotation add", newAnnotation.id, req.user.id);
-		annotations.insert(newAnnotation);
-
+		let newAnnotation = annotate(req.user.id, from_ts, to_ts, req.body.category_id, req.body.flow_id);
 		res.header("Location", "/v"+version+"/annotations/"+newAnnotation.id);
 		res.status(201).send({ "code": 201, message: "Created", annotation: new AnnotationSerializer(newAnnotation).serialize() });
 	} else {
