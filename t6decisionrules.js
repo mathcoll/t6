@@ -308,10 +308,12 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
 				}
 			} else if ( event.type === "annotate" ) {
+				t6console.debug("annotate event", event);
 				if(typeof event.params.category_id!=="undefined") {
 					let from_ts = payload.time;
 					let to_ts = payload.time;
 					let newAnnotation = annotate(payload.user_id?payload.user_id:"", from_ts, to_ts, event.params.category_id, payload.flow);
+					t6console.debug("annotate done", newAnnotation);
 				}
 			} else if ( event.type === "httpWebhook" ) {
 				let options = {

@@ -13,6 +13,22 @@ global.session			= require("express-session");
 global.FileStore		= require("session-file-store")(session);
 global.firebaseAdmin	= require("firebase-admin");
 
+annotate = function(user_id, from_ts, to_ts, flow_id, category_id) {
+	annotations	= db_classifications.getCollection("annotations");
+	let annotation_id = uuid.v4();
+	let newAnnotation = {
+		id:			annotation_id,
+		user_id:	user_id,
+		from_ts:	from_ts,
+		to_ts:		to_ts,
+		flow_id:	flow_id,
+		category_id:category_id,
+	};
+	t6events.addStat("t6Api", "annotation add", newAnnotation.id, user_id);
+	annotations.insert(newAnnotation);
+	return newAnnotation;
+}
+
 /* Environment settings */
 require(`./data/settings-${os.hostname()}.js`);
 global.VERSION			= require("./package.json").version;

@@ -202,22 +202,6 @@ router.delete("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtse
 	}
 });
 
-function annotate(user_id, from_ts, to_ts, flow_id, category_id) {
-	annotations	= db_classifications.getCollection("annotations");
-	let annotation_id = uuid.v4();
-	let newAnnotation = {
-		id:			annotation_id,
-		user_id:	user_id,
-		from_ts:	from_ts,
-		to_ts:		to_ts,
-		flow_id:	flow_id,
-		category_id:category_id,
-	};
-	t6events.addStat("t6Api", "annotation add", newAnnotation.id, user_id);
-	annotations.insert(newAnnotation);
-	return newAnnotation;
-} 
-
 router.post("/annotations/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let from_ts;
 	let to_ts;
