@@ -308,12 +308,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
 				}
 			} else if ( event.type === "annotate" ) {
-				t6console.debug("annotate event", event);
 				if(typeof event.params.category_id!=="undefined") {
-					let from_ts = payload.time;
-					let to_ts = payload.time;
-					let newAnnotation = annotate(payload.user_id?payload.user_id:"", from_ts, to_ts, event.params.category_id, payload.flow);
-					t6console.debug("annotate done", newAnnotation);
+					let newAnnotation = annotate(payload.user_id?payload.user_id:"", payload.dtepoch, payload.dtepoch, payload.flow, event.params.category_id);
+					t6events.addStat("t6App", `Annotation added ${newAnnotation.id}`, user_id, user_id, {"user_id": user_id, "rule_id": event.params.rule_id});
 				}
 			} else if ( event.type === "httpWebhook" ) {
 				let options = {
