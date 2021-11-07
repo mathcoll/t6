@@ -45,8 +45,8 @@
 							                },
 							                {
 							                    "fact": "value",
-							                    "operator": "sentimentScoreLessThanInclusive",
-							                    "value": "50"
+							                    "operator": "sentimentScoreGreaterThanInclusive",
+							                    "value": "5"
 							                }
 							            ]
 							        },
