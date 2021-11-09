@@ -19,8 +19,8 @@ annotate = function(user_id, from_ts, to_ts, flow_id, category_id) {
 	let newAnnotation = {
 		id:			annotation_id,
 		user_id:	user_id,
-		from_ts:	from_ts,
-		to_ts:		to_ts,
+		from_ts:	parseInt(from_ts, 10),
+		to_ts:		parseInt(to_ts, 10),
 		flow_id:	flow_id,
 		category_id:category_id,
 	};
