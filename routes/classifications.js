@@ -205,14 +205,16 @@ router.delete("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtse
 router.post("/annotations/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let from_ts;
 	let to_ts;
-	if(moment(req.body.from_ts).isBefore(req.body.to_ts)) {
-		from_ts = moment(req.body.from_ts).format("YYYY-MM-DDTHH:mm:ssZ");
-		to_ts = moment(req.body.to_ts).format("YYYY-MM-DDTHH:mm:ssZ");
-	} else {
-		from_ts = moment(req.body.to_ts).format("YYYY-MM-DDTHH:mm:ssZ");
-		to_ts = moment(req.body.from_ts).format("YYYY-MM-DDTHH:mm:ssZ");
+	if(req.body.from_ts && req.body.to_ts) {
+		if (moment(req.body.from_ts).isBefore(req.body.to_ts)) {
+			from_ts = moment(req.body.from_ts).format("x")*1000;
+			to_ts = moment(req.body.to_ts).format("x")*1000;
+		} else {
+			from_ts = moment(req.body.to_ts).format("x")*1000;
+			to_ts = moment(req.body.from_ts).format("x")*1000;
+		}
 	}
-	if ( typeof req.user.id!=="undefined" && typeof req.body.flow_id!=="undefined" && typeof req.body.category_id!=="undefined" && from_ts && to_ts ) {
+	if ( typeof req.user.id!=="undefined" && typeof req.body.flow_id!=="undefined" && typeof req.body.category_id!=="undefined" && from_ts!==null && to_ts!==null ) {
 		let newAnnotation = annotate(req.user.id, from_ts, to_ts, req.body.category_id, req.body.flow_id);
 		res.header("Location", "/v"+version+"/annotations/"+newAnnotation.id);
 		res.status(201).send({ "code": 201, message: "Created", annotation: new AnnotationSerializer(newAnnotation).serialize() });

@@ -309,7 +309,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			} else if ( event.type === "annotate" ) {
 				if(typeof event.params.category_id!=="undefined") {
-					let newAnnotation = annotate(payload.user_id?payload.user_id:"", payload.dtepoch, payload.dtepoch, payload.flow, event.params.category_id);
+					let newAnnotation = annotate(payload.user_id?payload.user_id:"", payload.dtepoch*1000, payload.dtepoch*1000, payload.flow, event.params.category_id);
 					t6events.addStat("t6App", `Annotation added ${newAnnotation.id}`, user_id, user_id, {"user_id": user_id, "rule_id": event.params.rule_id});
 				}
 			} else if ( event.type === "httpWebhook" ) {
