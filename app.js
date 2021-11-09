@@ -13,6 +13,22 @@ global.session			= require("express-session");
 global.FileStore		= require("session-file-store")(session);
 global.firebaseAdmin	= require("firebase-admin");
 
+annotate = function(user_id, from_ts, to_ts, flow_id, category_id) {
+	annotations	= db_classifications.getCollection("annotations");
+	let annotation_id = uuid.v4();
+	let newAnnotation = {
+		id:			annotation_id,
+		user_id:	user_id,
+		from_ts:	parseInt(from_ts, 10),
+		to_ts:		parseInt(to_ts, 10),
+		flow_id:	flow_id,
+		category_id:category_id,
+	};
+	t6events.addStat("t6Api", "annotation add", newAnnotation.id, user_id);
+	annotations.insert(newAnnotation);
+	return newAnnotation;
+}
+
 /* Environment settings */
 require(`./data/settings-${os.hostname()}.js`);
 global.VERSION			= require("./package.json").version;
@@ -310,6 +326,25 @@ var initDbDatatypes = function() {
 		t6console.log(db_datatypes.getCollection("datatypes").count(), "resources in datatypes collection.");
 	}
 };
+var initDbClassifications = function() {
+	if ( db_classifications === null ) {
+		t6console.error("db classifications is failing");
+	}
+	if ( db_classifications.getCollection("categories") === null ) {
+		t6console.error("- Collection categories is created");
+		db_classifications.addCollection("categories");
+	} else {
+		global.categories = db_classifications.getCollection("categories");
+		t6console.log(db_classifications.getCollection("categories").count(), "resources in categories collection.");
+	}
+	if ( db_classifications.getCollection("annotations") === null ) {
+		t6console.error("- Collection annotations is created");
+		db_classifications.addCollection("annotations");
+	} else {
+		global.annotations = db_classifications.getCollection("annotations");
+		t6console.log(db_classifications.getCollection("annotations").count(), "resources in annotations collection.");
+	}
+};
 
 t6console.info("Setting correct permission on Databases...");
 let dbs = [
@@ -330,6 +365,7 @@ let dbs = [
 	path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`),
 ];
 dbs.forEach((file) => {
 	fs.chmod(file, 0o600 , (err) => {
@@ -350,6 +386,7 @@ global.db_access_tokens = new loki(path.join(__dirname, "data", `t6db-accessToke
 global.db_units = new loki(path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUnits});
 global.db_datatypes = new loki(path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDatatypes});
 global.db_rules = new loki(path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbRules});
+global.db_classifications = new loki(path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbClassifications});
 
 dbSnippets = new loki(path.join(__dirname, "data", `snippets-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbSnippets});
 dbDashboards = new loki(path.join(__dirname, "data", `dashboards-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbDashboards});
@@ -381,6 +418,7 @@ var uis				= require("./routes/uis");
 var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
 var jobs			= require("./routes/jobs");
+var classifications	= require("./routes/classifications");
 app					= express();
 app.set("port", process.env.PORT);
 app.listen(process.env.PORT, () => {
@@ -447,6 +485,7 @@ app.use("/v"+version+"/sources", sources);
 app.use("/v"+version+"/uis", uis);
 app.use("/v"+version+"/exploration", exploration);
 app.use("/v"+version+"/jobs", jobs);
+app.use("/v"+version+"/classifications", classifications);
 app.use("/news", news);
 app.use("/", pwa);
 

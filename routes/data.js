@@ -821,10 +821,21 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		dbInfluxDB.query(query).then((data) => {
 			if ( data.length > 0 ) {
 				data.map(function(d) {
-					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);
+					let query = {
+						"$and": [
+							{ "user_id" : req.user.id, },
+							{ "flow_id" : flow_id, },
+							{ "from_ts" : {"$gte": moment(d.time).format("x")*1000}, },
+							{ "to_ts" : {"$lte": moment(d.time).format("x")*1000}, },
+						],
+					};
+					let a = annotations.findOne(query);
+					t6console.debug("Looking for a category:", moment(d.time).format("x")*1000, "find a=", a);
+					d.retention = rp;
 					d.timestamp = Date.parse(d.time);
 					d.time = Date.parse(d.time);
-					d.retention = rp;
+					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);
+					d.category_id = (a!==null && typeof a.category_id!=="undefined")?a.category_id:undefined;
 				});
 				data.title = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].left)!==null )?((join.data())[0].left).name:"";
 				data.unit = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).format:""; // TODO : not consistent with POST
@@ -852,6 +863,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 				res.status(404).send(new ErrorSerializer({err: "No data found", "id": 2058, "code": 404, "message": "Not found"}).serialize());
 			}
 		}).catch((err) => {
+			t6console.error(err);
 			res.status(500).send(new ErrorSerializer({err: err, "id": 2059, "code": 500, "message": "Internal Error"}).serialize());
 		});
 	}

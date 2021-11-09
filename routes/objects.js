@@ -424,7 +424,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 					t6console.debug(`child process exited with code ${code}`);
 					let user = users.findOne({"id": req.user.id });
 					if (code === 0) {
-						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!==null && user.pushSubscription.endpoint!=="" ) {
+						if (user && typeof user.pushSubscription !== "undefined"  && user.pushSubscription!==null && typeof user.pushSubscription.endpoint !== "undefined" && user.pushSubscription.endpoint!==null && user.pushSubscription.endpoint!=="" ) {
 							t6console.debug(user.pushSubscription);
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"Build is completed on v"+version+".\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							let result = t6notifications.sendPush(user, payload);

@@ -42,6 +42,26 @@
                     ]
                 },
                 {
+                	"name": "can create a Flow for a sentiment analysis",
+                    "description": "create a Flow for that User",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/flows",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "name": "My sentiment analysis",
+                                "unit": "String"
+                            },
+                            "save": {
+                                "saved.flow_id_sentiment": "body.flow.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
                 	"name": "can create a Float Flow",
                     "description": "create a Float Flow",
                     "api_calls": [
@@ -183,23 +203,6 @@
                             },
                             "status": 201,
                             "assert": []
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a Flow out of quota",
-                    "description": "create a Flow",
-                    "api_calls": [
-                        {
-                        	"request": "POST /{{app_version}}/flows",
-                            "headers": {
-                                "Authorization": "Bearer {{saved.bearer_token}}"
-                            },
-                            "params": {
-                                "name": "My Flow out of quota",
-                                "unit": "String"
-                            },
-                            "status": "429"
                         }
                     ]
                 }

@@ -17,6 +17,7 @@ t6events.setRP = function(rp) {
 
 t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
+	//TODO : make sure 'what' does not contains multiple lines
 	if ( db_type.influxdb ) {
 		var tags = {rp: retention, what: JSON.parse(JSON.stringify(what)), where: where};
 		var fields = {who: typeof who!=="undefined"?who:"", status: parseFloat((params!==null && typeof params.status!=="undefined")?params.status:""), error_id: ((params!==null && typeof params.error_id!=="undefined")?params.error_id:"").toString()};

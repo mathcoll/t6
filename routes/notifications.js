@@ -29,6 +29,9 @@ async function planNewsletter(req, res, recipients, template, subject, taskType)
 						text: "Html email client is required",
 						html: html
 					};
+					if(taskType === "monthlyreport") {
+						mailOptions.bcc = from;
+					}
 					t6jobs.add({taskType: taskType, time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {mailOptions}});
 					resolve();
 				} else {
@@ -615,14 +618,14 @@ router.post("/mail/monthlyreport/send", expressJwt({secret: jwtsettings.secret, 
 		t6console.debug("reports : ", reports);
 		if(reports.length > 0) {
 			let response = sendNewsletter(reports, dryrun, recurring, req.user.id, limit, 0);
-			t6events.addAudit("t6App", "AuthAdmin: post} /notifications/mail/monthlyreport/send", "", "", {"status": "200", error_id: "00003"});
+			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/mail/monthlyreport/send", "", "", {"status": "200", error_id: "00003"});
 			res.status(202).send({"response": response});
 		} else {
-			t6events.addAudit("t6App", "AuthAdmin: post} /notifications/mail/monthlyreport/send", "", "", {"status": "400", error_id: "00004"});
+			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/mail/monthlyreport/send", "", "", {"status": "400", error_id: "00004"});
 			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		t6events.addAudit("t6App", "AuthAdmin: post} /notifications/mail/monthlyreport/send", "", "", {"status": "400", error_id: "00004"});
+		t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/mail/monthlyreport/send", "", "", {"status": "400", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });
