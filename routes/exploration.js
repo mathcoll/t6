@@ -17,6 +17,8 @@ function gaussian_pdf(x, mean, sigma) {
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID to explore
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
@@ -128,6 +130,8 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiParam {uuid-v4} flow_id Flow ID to explore
  * @apiParam {Float} [x] raw score x
  * @apiParam {Float} expectedValue Expected value of the population mean
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiSuccess {Float} skewness Skewness
  * @apiSuccess {Float} z_score zScore
  * @apiSuccess {String} t_test tTest of the x value
@@ -228,6 +232,8 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
  * 
  * @apiParam {uuid-v4} flow_id Flow ID to explore
  * @apiParam {Integer} n Number of rows
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
@@ -318,8 +324,8 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
  * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
  * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
@@ -458,8 +464,8 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
  * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
  * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
@@ -714,8 +720,8 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
  * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
  * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
@@ -950,8 +956,8 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
  * @apiUse Auth
  * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
  * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
  * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
@@ -1087,6 +1093,8 @@ router.get("/outliers/?", expressJwt({ secret: jwtsettings.secret, algorithms: j
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * 
  * @apiUse 200
  * @apiUse 404
@@ -1266,6 +1274,8 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * 
  * @apiUse 200
  * @apiUse 404
@@ -1487,8 +1497,8 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
  * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
  * @apiParam {Number} [page] Page offset
- * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
  * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
  * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause

@@ -23,8 +23,12 @@ Types of changes
 #### Changed
   - [x] autogen.events contains importants application logs
   - [x] quota4w.requests contains users api calls for statistical purpose ; wirth a monthly retention. This timeseries is used for the monthly report
+  - [x] 2021-11-14 : moved `session_id` from tag to ̀field in `requests` measurement.
 
 #### Added
+  - [x] Data labeling and annotation: collection and Api for Categories
+  - [x] Data labeling and annotation: collection and Api for Annotations
+  - [x] Data labeling and annotation: `Rule Engine` can prorammatically annotate datapoints based on rule trigger
 
 ### Milestone 15 - 2021-10: 
 #### Fixed

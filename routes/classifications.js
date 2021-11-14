@@ -202,6 +202,22 @@ router.delete("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtse
 	}
 });
 
+
+/**
+ * @api {post} /classifications/annotations/ Add an annotation to a Flow
+ * @apiName Add an annotation to a Flow
+ * @apiGroup 11. Classification
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [category_id] Category Id to be deleted
+ * @apiParam {String} [from_ts] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [to_ts] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 404
+ */
 router.post("/annotations/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let from_ts;
 	let to_ts;
