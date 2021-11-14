@@ -258,7 +258,6 @@ router.all("*", function (req, res, next) {
 					let tags = {
 						rp: rp,
 						user_id: typeof req.user.id!=="undefined"?req.user.id:o.user_id,
-						session_id: typeof o.session_id!=="undefined"?o.session_id:null,
 						verb: o.verb,
 						environment: process.env.NODE_ENV,
 						ip: (req.headers["x-forwarded-for"] || req.connection.remoteAddress || "").split(",")[0].trim()
@@ -266,7 +265,7 @@ router.all("*", function (req, res, next) {
 					if (o.query!=="") {
 						tags.query = o.query;
 					}
-					let fields = {url: o.url, durationInMilliseconds: getDurationInMilliseconds(req.startTime),};
+					let fields = {url: o.url, durationInMilliseconds: getDurationInMilliseconds(req.startTime),session_id: typeof o.session_id!=="undefined"?o.session_id:null,};
 
 					req.session.cookie.secure = true;
 					req.session.user_id = req.user.id;
@@ -300,12 +299,11 @@ router.all("*", function (req, res, next) {
 		var tags = {
 			rp: rp,
 			user_id: "anonymous",
-			session_id: typeof o.session_id!=="undefined"?o.session_id:null,
 			verb: o.verb,
 			environment: process.env.NODE_ENV,
 			ip: (req.headers["x-forwarded-for"] || req.connection.remoteAddress || "").split(",")[0].trim()
 		};
-		var fields = {url: o.url};
+		var fields = {url: o.url,session_id: typeof o.session_id!=="undefined"?o.session_id:null,};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 		dbWrite.writePoints([{
 			measurement: "requests",
