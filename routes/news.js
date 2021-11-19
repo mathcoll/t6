@@ -25,16 +25,24 @@ router.get("/", function(req, res) {
 	});
 });
 
-router.get("/:file", function(req, res) {
-	var file = path.join(__dirname, "../views/emails/newsletters/", req.params.file);
+router.get("(/newsletters)?/:file", function(req, res) {
+	let file;
+	let tpl = req.params.file;
+	if ( (tpl).match(/newsletters/g) > -1 ) {
+		file = path.join(__dirname, "../views/emails/newsletters/", tpl+".pug");
+	} else {
+		file = path.join(__dirname, "../views/emails/", tpl+".pug");
+	}
 	fs.chmod(file, 0o600 , (err) => {
 		if (!err) {
 			res.render(file, {
 				currentUrl: req.path,
 				moment: moment,
+				tpl: tpl,
 				user: {"firstName": "", "lastName": ""},
 			});
 		} else {
+			t6console.debug("Error", err);
 			res.status(404).send(new ErrorSerializer({"id": 7055, "code": 404, "message": "Not Found"}).serialize());
 		}
 	});
