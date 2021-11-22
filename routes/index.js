@@ -222,7 +222,7 @@ router.all("*", function (req, res, next) {
 		query:		(Object.keys(req.query).length > 0)?JSON.stringify(req.query):"",
 		date:		moment().format("x")
 	};
-	if ( !req.user && req.headers.authorization ) {
+	if ( !req.user && req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null" ) {
 		jwt.verify(req.headers.authorization.split(" ")[1], jwtsettings.secret, function(err, decodedPayload) {
 			if(err) {
 				t6console.debug("User can't be determined:", err);
@@ -232,7 +232,7 @@ router.all("*", function (req, res, next) {
 			}
 		});
 	}
-	if ( req.user && req.headers.authorization ) {
+	if ( req.user && req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null" ) {
 		var limit = req.user!==null?(quota[req.user.role]).calls:-1;
 		if (req.user !== null && req.user.role  !== null ) {
 			res.header("X-RateLimit-Limit", limit);
