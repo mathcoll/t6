@@ -509,19 +509,19 @@ router.post("/authenticate", function (req, res) {
 				}
 
 				var refresh_token = user.id + "." + refreshPayload;
-				t6events.addAudit("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
-				t6events.addStat("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
+				t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
+				t6events.addStat("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
 				return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 			} else {
 				checkForTooManyFailure(req, res, email);
-				t6events.addAudit("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.11});
-				t6events.addStat("t6App", "POST_authenticate", user.id, user.id, {"status": 403, "error_id": 102.11});
+				t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 403, "error_id": 102.11});
+				t6events.addStat("t6App", "POST_authenticate password", user.id, user.id, {"status": 403, "error_id": 102.11});
 				return res.status(403).send(new ErrorSerializer({"id": 17150, "code": 403, "message": "Forbidden"}).serialize());
 			}
 		} else {
 			t6console.debug("No user found or no password set yet.");
-			t6events.addAudit("t6App", "POST_authenticate", email, email, {"status": 403, "error_id": 102.21});
-			t6events.addStat("t6App", "POST_authenticate", email, email, {"status": 403, "error_id": 102.21});
+			t6events.addAudit("t6App", "POST_authenticate password", email, email, {"status": 403, "error_id": 102.21});
+			t6events.addStat("t6App", "POST_authenticate password", email, email, {"status": 403, "error_id": 102.21});
 			t6console.error("Auth Error", email, req.body.username, {"status": 403, "error_id": 102.21});
 			return res.status(403).send(new ErrorSerializer({"id": 17250, "code": 403, "message": "Forbidden"}).serialize());
 		}
@@ -612,12 +612,12 @@ router.post("/authenticate", function (req, res) {
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
-			t6events.addAudit("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
-			t6events.addStat("t6App", "POST_authenticate", user.id, user.id, {"status": 200});
+			t6events.addAudit("t6App", "POST_authenticate access_token", user.id, user.id, {"status": 200});
+			t6events.addStat("t6App", "POST_authenticate access_token", user.id, user.id, {"status": 200});
 			return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			t6events.addAudit("t6App", "POST_authenticate", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
-			t6events.addStat("t6App", "POST_authenticate", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
+			t6events.addAudit("t6App", "POST_authenticate access_token", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
+			t6events.addStat("t6App", "POST_authenticate access_token", req.body.key, req.body.key, {"status": 403, "error_id": 102.32});
 			return res.status(403).send(new ErrorSerializer({"id": 17350, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( typeof req.body.refresh_token!=="undefined" && req.body.refresh_token!=="" && req.body.grant_type === "refresh_token" ) {
@@ -702,17 +702,17 @@ router.post("/authenticate", function (req, res) {
 			}
 
 			var refresh_token = user.id + "." + refreshPayload;
-			t6events.addAudit("t6App", "POST_authenticate", user_id, user_id, {"status": 200});
-			t6events.addStat("t6App", "POST_authenticate", user_id, user_id, {"status": 200});
+			t6events.addAudit("t6App", "POST_authenticate refresh_token", user_id, user_id, {"status": 200});
+			t6events.addStat("t6App", "POST_authenticate refresh_token", user_id, user_id, {"status": 200});
 			return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 		} else {
-			t6events.addAudit("t6App", "POST_authenticate", user_id, user_id, {"status": 403, "error_id": 102.43});
-			t6events.addStat("t6App", "POST_authenticate", user_id, user_id, {"status": 403, "error_id": 102.43});
+			t6events.addAudit("t6App", "POST_authenticate refresh_token", user_id, user_id, {"status": 403, "error_id": 102.43});
+			t6events.addStat("t6App", "POST_authenticate refresh_token", user_id, user_id, {"status": 403, "error_id": 102.43});
 			return res.status(403).send(new ErrorSerializer({"id": 17450, "code": 403, "message": "Invalid Refresh Token"}).serialize());
 		}
 	} else {
-		t6events.addAudit("t6App", "POST_authenticate", null, null, {"status": 400, "error_id": 102.33});
-		t6events.addStat("t6App", "POST_authenticate", null, null, {"status": 400, "error_id": 102.33});
+		t6events.addAudit("t6App", "POST_authenticate refresh_token", null, null, {"status": 400, "error_id": 102.33});
+		t6events.addStat("t6App", "POST_authenticate refresh_token", null, null, {"status": 400, "error_id": 102.33});
 		return res.status(400).send(new ErrorSerializer({"id": 17550, "code": 400, "message": "Required param grant_type and/or username+password needs to be defined"}).serialize());
 	}
 });
