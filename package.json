@@ -100,7 +100,7 @@
     "twilio": "^3.69.0",
     "useragent": "^2.3.0",
     "uuid": "^8.3.2",
-    "validator": "^13.6.0",
+    "validator": "^13.7.0",
     "web-push": "^3.4.5"
   },
   "readmeFilename": "README.md",
