@@ -250,7 +250,7 @@ router.all("*", function (req, res, next) {
 			res.header("Cache-Control", "no-cache, max-age=360, private, must-revalidate, proxy-revalidate");
 			if( (req.user && i >= limit) ) {
 				t6events.addAudit("t6Api", "api 429", typeof req.user.id!=="undefined"?req.user.id:o.user_id, typeof req.user.id!=="undefined"?req.user.id:o.user_id);
-				return res.status(429).send(new ErrorSerializer({"id": 17329, "code": 429, "message": "Too Many Requests"}));
+				res.status(429).send(new ErrorSerializer({"id": 17329, "code": 429, "message": "Too Many Requests"}));
 				//return;
 			} else {
 				res.on("close", () => {
@@ -288,10 +288,11 @@ router.all("*", function (req, res, next) {
 		}).catch((err) => {
 			t6console.error("ERROR", err);
 			if(typeof i!=="undefined") {
-				return res.status(429).send(new ErrorSerializer({"id": 17330, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
+				t6console.error("429 ", i, err);
+				res.status(429).send(new ErrorSerializer({"id": 17330, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
 			} else {
 				next();
-				return res.status(501).send(new ErrorSerializer({"id": 17331, "code": 501, "message": "Not Implemented"}));
+				//return res.status(501).send(new ErrorSerializer({"id": 17331, "code": 501, "message": "Not Implemented"}));
 			}
 		});
 	} else {
@@ -817,7 +818,7 @@ router.get("/status", function(req, res, next) {
 		status: "running",
 		mqttInfo: mqttInfo,
 		appName: process.env.NAME,
-		started_at: moment(process.env.STARTED*1000).format("DD/MM/Y H:mm:s"),
+		started_at: moment(appStarted).format("DD/MM/Y H:mm:s"),
 		moduleLoadTime: moduleLoadEndTime-moduleLoadTime,
 		startProcessTime: startProcessTime,
 	};
