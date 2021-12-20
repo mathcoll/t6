@@ -96,6 +96,7 @@
     "string-format": "^2.0.0",
     "striptags": "^3.2.0",
     "suncalc": "^1.8.0",
+    "topparser": "^1.0.3",
     "twilio": "^3.69.0",
     "useragent": "^2.3.0",
     "uuid": "^8.3.2",

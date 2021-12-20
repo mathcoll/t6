@@ -33,6 +33,7 @@ annotate = function(user_id, from_ts, to_ts, flow_id, category_id) {
 require(`./data/settings-${os.hostname()}.js`);
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
+global.appStarted		= start;
 global.t6BuildVersion	= require("./t6BuildVersion.json").t6BuildVersion;
 global.t6BuildDate		= require("./t6BuildVersion.json").t6BuildDate;
 global.t6decisionrules	= require("./t6decisionrules");
@@ -84,6 +85,7 @@ global.sprintf			= require("sprintf-js").sprintf;
 global.strength			= require("strength");
 global.stringformat		= require("string-format");
 global.SunCalc			= require("suncalc");
+global.topparser		= require("topparser");
 global.twilio			= require("twilio");
 global.util				= require("util");
 global.useragent		= require("useragent");
@@ -533,6 +535,33 @@ if (app.get("env") === "development") {
 			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" });
 		} else {
 			t6console.critical(`Uncatch Error on ${app.get("env")}: ${err.message}`, err.status, err.name, err);
+			t6console.error(`Uncatch Error on ${app.get("env")}: ${err.message}`, err.status, err.name, err.stack, req.body, req);
+			var options={
+            //  pid_limit:10,//limit number of included pids in list (default: unlimited)
+            //  pid_filter:(proc)=>{return proc.user=="root"?proc:null},// filtering the pid list (for example: include only pid with user == root) (default: null)
+              pid_sort:(a,b)=>{return a.cpu-b.cpu},// sorting pid list by cpu usage (default)
+            }
+		    topparser.start();
+		
+		    //then data is available
+		    topparser.on("data",data=>{
+		        t6console.error(JSON.stringify(data,0,2));
+		    })
+		
+		    //if some error happens
+		    topparser.on("error",error=>{
+		        t6console.error(error);
+		    })
+		
+		    //if topparser exit
+		    topparser.on("close",code=>{
+		        t6console.error(code);
+		    })
+		
+		    //kill topparser after 10 seconds, for example
+		    setTimeout(()=>{
+		        topparser.stop();
+		    },5000);
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message });
 		}
 		t6events.addStat("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
