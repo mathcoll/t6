@@ -82,6 +82,7 @@ global.serialport		= require("serialport");
 global.favicon			= require("serve-favicon");
 global.statistics		= require("simple-statistics");
 global.sprintf			= require("sprintf-js").sprintf;
+global.slayer			= require("slayer");
 global.strength			= require("strength");
 global.stringformat		= require("string-format");
 global.SunCalc			= require("suncalc");
@@ -304,6 +305,18 @@ var initDbTokens = function() {
 		t6console.log(db_tokens.getCollection("tokens").count(), "resources in tokens collection.");
 	}
 };
+var initDbStories = function() {
+	if ( db_stories === null ) {
+		t6console.error("db stories is failing");
+	}
+	if ( db_stories.getCollection("stories") === null ) {
+		t6console.error("- Collection stories is created");
+		db_stories.addCollection("stories");
+	} else {
+		global.stories = db_stories.getCollection("stories");
+		t6console.log(db_stories.getCollection("stories").count(), "resources in stories collection.");
+	}
+};
 var initDbUnits = function() {
 	if ( db_units === null ) {
 		t6console.error("db units is failing");
@@ -368,6 +381,7 @@ let dbs = [
 	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
 	path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`),
+	path.join(__dirname, "data", `t6db-stories__${os.hostname()}.json`),
 ];
 dbs.forEach((file) => {
 	fs.chmod(file, 0o600 , (err) => {
@@ -396,6 +410,7 @@ dbSources = new loki(path.join(__dirname, "data", `sources-${os.hostname()}.json
 dbOtaHistory = new loki(path.join(__dirname, "data", `otahistory-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbOtaHistory});
 dbUis = new loki(path.join(__dirname, "data", `uis-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUis});
 db_jobs = new loki(path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbJobs});
+db_stories = new loki(path.join(__dirname, "data", `t6db-stories__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbStories});
 dbFusionBuffer = new loki(path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFusionBuffer});
 
 t6console.info("Loading routes...");
@@ -416,6 +431,7 @@ var notifications	= require("./routes/notifications");
 var ifttt			= require("./routes/ifttt");
 var ota				= require("./routes/ota");
 var sources			= require("./routes/sources");
+var stories			= require("./routes/stories");
 var uis				= require("./routes/uis");
 var news			= require("./routes/news");
 var exploration		= require("./routes/exploration");
@@ -484,6 +500,7 @@ app.use("/v"+version+"/notifications", notifications);
 app.use("/v"+version+"/ifttt", ifttt);
 app.use("/v"+version+"/ota", ota);
 app.use("/v"+version+"/sources", sources);
+app.use("/v"+version+"/stories", stories);
 app.use("/v"+version+"/uis", uis);
 app.use("/v"+version+"/exploration", exploration);
 app.use("/v"+version+"/jobs", jobs);
