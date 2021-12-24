@@ -96,9 +96,9 @@ router.get("/:story_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret, 
 					insights.retention = retention;
 					insights.flow_id = flow_id;
 					t6console.debug("Adding firstData to insights", 0);
-					(insights).push({title: "First DataPoint in range", text: "", type: "firstData", unit: unit, time: data[0].time, timestamp: Date.parse(data[0].time), value: data[0].value});
+					(insights).push({title: "First DataPoint in range", text: `It has a value of ${sprintf(unit, data[0].value)}`, type: "firstData", unit: unit, time: data[0].time, timestamp: Date.parse(data[0].time), value: data[0].value});
 					t6console.debug("Adding lastData to insights", (data.length-1));
-					(insights).push({title: "Last DataPoint in range", text: "", type: "lastData", unit: unit, time: data[(data.length-1)].time, timestamp: Date.parse(data[(data.length-1)].time), value: data[(data.length-1)].value});
+					(insights).push({title: "Last DataPoint in range", text: `It has a value of ${sprintf(unit, data[(data.length-1)].value)}`, type: "lastData", unit: unit, time: data[(data.length-1)].time, timestamp: Date.parse(data[(data.length-1)].time), value: data[(data.length-1)].value});
 	
 					slayer()
 					.y(item => item.value)
@@ -131,6 +131,13 @@ router.get("/:story_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret, 
  * @apiName Create a new story
  * @apiGroup 12. Stories
  * @apiVersion 2.0.1
+ * 
+ * @apiParam {uuid-v4} story_id Story Id
+ * @apiBody {uuid-v4} [flow_id] Flow Id
+ * @apiBody {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {String} [retention] Retention Policy to get data from
+ * 
  * 
  * @apiUse Auth
  * 
@@ -168,6 +175,72 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 		} else {
 			res.status(412).send(new ErrorSerializer({"id": 121212122, "code": 412, "message": "Precondition failed"}).serialize()); // TEMP Error code !!
 		}
+	}
+});
+
+/**
+ * @api {put} /stories/:story_id Edit a Story
+ * @apiName Edit a Story
+ * @apiGroup 12. Stories
+ * @apiVersion 2.0.1
+ * 
+ * @apiParam {uuid-v4} story_id Story Id
+ * @apiBody {uuid-v4} [flow_id] Flow Id
+ * @apiBody {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {String} [retention] Retention Policy to get data from
+ * 
+ * @apiUse 200
+ * @apiUse 400
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 409
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.put("/:story_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let story_id = req.params.story_id;
+	if ( story_id ) {
+		let query = {
+			"$and": [
+					{ "id": story_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		let story = stories.findOne( query );
+		if ( story ) {
+			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - story.meta.revision) !== 0 ) {
+				res.status(409).send(new ErrorSerializer({"id": 4055, "code": 409, "message": "Bad Request"}).serialize()); // TEMP Error code !!
+			} else {
+				let result;
+				stories.chain().find({ "id": story_id }).update(function(item) {
+					if ( typeof req.body.retention!=="undefined" ) {
+						if ( (influxSettings.retentionPolicies.data).indexOf(req.body.retention)===-1 ) {
+							t6console.debug("Defaulting Retention from setting (req.body.retention is invalid)", req.body.retention);
+							req.body.retention = influxSettings.retentionPolicies.data[0];
+						}
+					}
+					item.flow_id		= typeof req.body.flow_id!=="undefined"?req.body.flow_id:item.flow_id;
+					item.start		= typeof req.body.start!=="undefined"?req.body.start:item.start;
+					item.end			= typeof req.body.end!=="undefined"?req.body.end:item.end;
+					item.retention	= typeof req.body.retention!=="undefined"?req.body.retention:item.retention;
+					result = item;
+				});
+				if ( typeof result!=="undefined" ) {
+					db_stories.save();
+					db_stories.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
+					res.status(200).send({ "code": 200, message: "Successfully updated", flow: new InsightSerializer(result).serialize() });
+				} else {
+					res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize()); // TEMP Error code !!
+				}
+			}
+		} else {
+			res.status(401).send(new ErrorSerializer({"id": 4053, "code": 401, "message": "Forbidden ??"}).serialize()); // TEMP Error code !!
+		}
+	} else {
+		res.status(412).send(new ErrorSerializer({"id": 4054, "code": 412, "message": "Precondition Failed"}).serialize()); // TEMP Error code !!
 	}
 });
 
