@@ -75,6 +75,7 @@ global.mqtt				= require("mqtt");
 global.nodeunits		= require("node-units");
 global.uuid				= require("uuid");
 global.nodemailer		= require("nodemailer");
+global.outlier			= require("outlier");
 global.qrCode			= require("qrcode-npm");
 global.request			= require("request");
 global.Sentiment		= require("sentiment");

@@ -5,7 +5,7 @@ var InsightSerializer = require("../serializers/insight");
 var ErrorSerializer = require("../serializers/error");
 
 /**
- * @api {get} /stories/:story_id/ Get insights from a story
+ * @api {get} /stories/:story_id/insights Get insights from a story
  * @apiName Get insights from a story
  * @apiGroup 12. Stories
  * @apiVersion 2.0.1
@@ -15,10 +15,10 @@ var ErrorSerializer = require("../serializers/error");
  * @apiUse 403
  * @apiUse 500
  */
-router.get("/:story_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
+router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let story_id = req.params.story_id;
 	let query = { "user_id": req.user.id };
-	
+
 	if ( !story_id || typeof story_id === "undefined" ) {
 		res.status(405).send(new ErrorSerializer({"id": 2056111, "code": 405, "message": "Method Not Allowed"}).serialize()); // TEMP Error code !!
 	} else {
@@ -89,6 +89,10 @@ router.get("/:story_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret, 
 			dbInfluxDB.query(query).then((data) => {
 				if ( data.length > 0 ) {
 					let insights = [];
+					let values = [];
+					data.map(function(d) {
+						values.push(d.value);
+					});
 					insights.created = story.meta.created;
 					insights.name = name;
 					insights.start = start;
@@ -99,16 +103,26 @@ router.get("/:story_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secret, 
 					(insights).push({title: "First DataPoint in range", text: `It has a value of ${sprintf(unit, data[0].value)}`, type: "firstData", unit: unit, time: data[0].time, timestamp: Date.parse(data[0].time), value: data[0].value});
 					t6console.debug("Adding lastData to insights", (data.length-1));
 					(insights).push({title: "Last DataPoint in range", text: `It has a value of ${sprintf(unit, data[(data.length-1)].value)}`, type: "lastData", unit: unit, time: data[(data.length-1)].time, timestamp: Date.parse(data[(data.length-1)].time), value: data[(data.length-1)].value});
-	
+
+					let ol = outlier(values).findOutliers();
+					ol = [...new Set(ol)];
+					//t6console.debug(ol);
+					ol.map(function(d) {
+						let val = data[(values.indexOf(d))];
+						//t6console.debug( "Found index OL : ", values.indexOf(d), val );
+						(insights).push({title: "Outlier detected", text: `It has a value of ${sprintf(unit, val.value)}`, type: "outlier", unit: unit, time: val.time, timestamp: Date.parse(val.time), value: val.value});
+					});
+
 					slayer()
 					.y(item => item.value)
 					.fromArray(data)
 					.then(peaks => {
 						t6console.debug("PEAKS", peaks);
 						peaks.map(function(i) {
-							t6console.debug("Adding Peak to insights", i.x);
+							//t6console.debug("Adding Peak to insights", i.x, i.y);
 							(insights).push({title: "Peak detected", text: "", type: "peak", unit: unit, time: data[i.x].time, timestamp: Date.parse(data[i.x].time), value: data[i.x].value});
 						});
+					
 						res.status(200).send(new InsightSerializer(insights).serialize());
 					});
 				} else {
