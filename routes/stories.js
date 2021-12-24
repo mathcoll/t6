@@ -20,7 +20,7 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
 	let query = { "user_id": req.user.id };
 
 	if ( !story_id || typeof story_id === "undefined" ) {
-		res.status(405).send(new ErrorSerializer({"id": 2056111, "code": 405, "message": "Method Not Allowed"}).serialize()); // TEMP Error code !!
+		res.status(405).send(new ErrorSerializer({"id": 18056, "code": 405, "message": "Method Not Allowed"}).serialize());
 	} else {
 		query = {
 			"$and": [
@@ -73,7 +73,7 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
 					} else {
 						rp = influxSettings.retentionPolicies.data[0];
 						t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
-						res.status(412).send(new ErrorSerializer({"id": 2057, "code": 412, "message": "Precondition Failed"}).serialize());
+						res.status(412).send(new ErrorSerializer({"id": 18057, "code": 412, "message": "Precondition Failed"}).serialize());
 						return;
 					}
 				} else {
@@ -120,21 +120,21 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
 						t6console.debug("PEAKS", peaks);
 						peaks.map(function(i) {
 							//t6console.debug("Adding Peak to insights", i.x, i.y);
-							(insights).push({title: "Peak detected", text: "", type: "peak", unit: unit, time: data[i.x].time, timestamp: Date.parse(data[i.x].time), value: data[i.x].value});
+							(insights).push({title: "Peak detected", text: `It has a value of ${sprintf(unit, data[i.x].value)}`, type: "peak", unit: unit, time: data[i.x].time, timestamp: Date.parse(data[i.x].time), value: data[i.x].value});
 						});
 					
 						res.status(200).send(new InsightSerializer(insights).serialize());
 					});
 				} else {
 					t6console.debug(query);
-					res.status(404).send(new ErrorSerializer({err: "No data found", "id": 2058, "code": 404, "message": "Not found"}).serialize()); // TEMP Error code !!
+					res.status(404).send(new ErrorSerializer({err: "No data found", "id": 18058, "code": 404, "message": "Not found"}).serialize());
 				}
 			}).catch((err) => {
 				t6console.error(err);
-				res.status(500).send(new ErrorSerializer({err: err, "id": 2059, "code": 500, "message": "Internal Error"}).serialize()); // TEMP Error code !!
+				res.status(500).send(new ErrorSerializer({err: err, "id": 18059, "code": 500, "message": "Internal Error"}).serialize());
 			});
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 2056222, "code": 404, "message": "Not Found"}).serialize()); // TEMP Error code !!
+			res.status(404).send(new ErrorSerializer({"id": 18056, "code": 404, "message": "Not Found"}).serialize());
 		}
 	}
 });
@@ -163,7 +163,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 	var queryQ = { "user_id" : req.user.id };
 	var i = (stories.find(queryQ)).length;
 	if( i >= (quota[req.user.role]).stories ) {
-		res.status(429).send(new ErrorSerializer({"id": 4057, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize()); // TEMP Error code !!
+		res.status(429).send(new ErrorSerializer({"id": 18057, "code": 429, "message": "Too Many Requests: Over Quota!"}).serialize());
 	} else {
 		if ( typeof req.body.flow_id !== "undefined" ) {
 			var story_id = uuid.v4();
@@ -187,7 +187,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 			res.header("Location", "/v"+version+"/stories/"+newStory.id);
 			res.status(201).send({ "code": 201, message: "Created", story: new InsightSerializer(newStory).serialize() });
 		} else {
-			res.status(412).send(new ErrorSerializer({"id": 121212122, "code": 412, "message": "Precondition failed"}).serialize()); // TEMP Error code !!
+			res.status(412).send(new ErrorSerializer({"id": 18057, "code": 412, "message": "Precondition failed"}).serialize());
 		}
 	}
 });
@@ -226,7 +226,7 @@ router.put("/:story_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 		let story = stories.findOne( query );
 		if ( story ) {
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - story.meta.revision) !== 0 ) {
-				res.status(409).send(new ErrorSerializer({"id": 4055, "code": 409, "message": "Bad Request"}).serialize()); // TEMP Error code !!
+				res.status(409).send(new ErrorSerializer({"id": 18055, "code": 409, "message": "Bad Request"}).serialize());
 			} else {
 				let result;
 				stories.chain().find({ "id": story_id }).update(function(item) {
@@ -247,14 +247,14 @@ router.put("/:story_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					db_stories.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
 					res.status(200).send({ "code": 200, message: "Successfully updated", flow: new InsightSerializer(result).serialize() });
 				} else {
-					res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize()); // TEMP Error code !!
+					res.status(404).send(new ErrorSerializer({"id": 18051, "code": 404, "message": "Not Found"}).serialize());
 				}
 			}
 		} else {
-			res.status(401).send(new ErrorSerializer({"id": 4053, "code": 401, "message": "Forbidden ??"}).serialize()); // TEMP Error code !!
+			res.status(401).send(new ErrorSerializer({"id": 18053, "code": 401, "message": "Forbidden ??"}).serialize());
 		}
 	} else {
-		res.status(412).send(new ErrorSerializer({"id": 4054, "code": 412, "message": "Precondition Failed"}).serialize()); // TEMP Error code !!
+		res.status(412).send(new ErrorSerializer({"id": 18054, "code": 412, "message": "Precondition Failed"}).serialize());
 	}
 });
 
@@ -285,7 +285,7 @@ router.delete("/:story_id([0-9a-z\-]+)/?", expressJwt({secret: jwtsettings.secre
 		db_stories.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: story_id }); // TODO: missing serializer
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 18051, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
