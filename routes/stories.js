@@ -2,7 +2,59 @@
 var express = require("express");
 var router = express.Router();
 var InsightSerializer = require("../serializers/insight");
+var StorySerializer = require("../serializers/story");
 var ErrorSerializer = require("../serializers/error");
+
+/**
+ * @api {get} /stories/:story_id Get stories
+ * @apiName Get stories
+ * @apiGroup 12. Stories
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [story_id] Story Id
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 500
+ */
+router.get("/:story_id([0-9a-z\-]+)?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
+	let story_id = req.params.story_id;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20; // TODO WTF: should be "limit" !!
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
+	if ( typeof req.user !== "undefined" && typeof req.user.id !== "undefined" ) {
+		var query;
+		if ( typeof story_id !== "undefined" ) {
+			query = {
+			"$and": [
+					{ "id": story_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		} else {
+			query = { "user_id" : req.user.id };
+		}
+		let story = stories.chain().find(query).offset(offset).limit(size).data();
+
+		var total = stories.find(query).length;
+		story.size = size;
+		story.pageSelf = page;
+		story.pageFirst = 1;
+		story.pagePrev = story.pageSelf>story.pageFirst?Math.ceil(story.pageSelf)-1:story.pageFirst;
+		story.pageLast = Math.ceil(total/size);
+		story.pageNext = story.pageSelf<story.pageLast?Math.ceil(story.pageSelf)+1:undefined;
+		if (story && story[0]) {
+			res.status(200).send(new StorySerializer(story).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 18051, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(401).send(new ErrorSerializer({"id": 18052, "code": 401, "message": "Unauthorized"}).serialize());
+	}
+});
 
 /**
  * @api {get} /stories/:story_id/insights Get insights from a story
@@ -152,7 +204,6 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
  * @apiBody {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {String} [retention] Retention Policy to get data from
  * 
- * 
  * @apiUse Auth
  * 
  * @apiUse 201
@@ -183,9 +234,9 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 			};
 			t6events.addStat("t6Api", "story add", newStory.id, req.user.id);
 			stories.insert(newStory);
-			
+
 			res.header("Location", "/v"+version+"/stories/"+newStory.id);
-			res.status(201).send({ "code": 201, message: "Created", story: new InsightSerializer(newStory).serialize() });
+			res.status(201).send({ "code": 201, message: "Created", story: new StorySerializer(newStory).serialize() });
 		} else {
 			res.status(412).send(new ErrorSerializer({"id": 18057, "code": 412, "message": "Precondition failed"}).serialize());
 		}
@@ -245,7 +296,7 @@ router.put("/:story_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 				if ( typeof result!=="undefined" ) {
 					db_stories.save();
 					db_stories.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
-					res.status(200).send({ "code": 200, message: "Successfully updated", flow: new InsightSerializer(result).serialize() });
+					res.status(200).send({ "code": 200, message: "Successfully updated", story: new StorySerializer(result).serialize() });
 				} else {
 					res.status(404).send(new ErrorSerializer({"id": 18051, "code": 404, "message": "Not Found"}).serialize());
 				}
