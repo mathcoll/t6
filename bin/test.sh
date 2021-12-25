@@ -13,6 +13,7 @@ jsonapitest \
 	$SCRIPT_DIR/../test/snippets.json \
 	$SCRIPT_DIR/../test/dashboards.json \
 	$SCRIPT_DIR/../test/sources.json \
+	$SCRIPT_DIR/../test/stories.json \
 	$SCRIPT_DIR/../test/exploration.json \
 	$SCRIPT_DIR/../test/admin.json \
 	$SCRIPT_DIR/../test/jobs.json \

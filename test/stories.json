@@ -1,0 +1,106 @@
+{
+    "config": {
+        "log_path": "./jsonapitest-results.json",
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {"app_version": "v2.0.1"},
+    "suites": [
+        {
+            "name": "t6 Stories Suite",
+            "tests": [
+                {
+                	"name": "can create a Story",
+                    "description": "create a Story",
+                    "api_calls": [
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "request": "POST /{{app_version}}/stories",
+                            "params": {
+                                "flow_id": "{{saved.flow_id_string}}",
+                                "start": "2011-12-12 00:00:00",
+                                "end": "2021-12-22 00:00:00",
+                                "retention": "autogen"
+                            },
+                            "save": {
+                                "saved.story_id": "body.story.data.id"
+                            },
+                            "status": "201",
+                            "assert": [{
+        	                    "select": "body.message",
+        	                    "equal": "Created"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can update a Story",
+                    "description": "update a Story",
+                    "api_calls": [
+                        {
+                        	"request": "PUT /{{app_version}}/stories/{{saved.story_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "flow_id": "{{saved.flow_id_string}}",
+                                "start": "2021-12-12 00:00:00",
+                                "end": "2021-12-22 00:00:00",
+                                "retention": "autogen"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": [{
+        	                    "select": "body.message",
+        	                    "equal": "Successfully updated"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a specific Story",
+                    "description": "get a specific Story",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/stories/{{saved.story_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get an Stories list",
+                    "description": "get a Stories list",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/stories/",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

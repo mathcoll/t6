@@ -250,6 +250,21 @@
                     ]
                 },
                 {
+                	"name": "can delete a story",
+                	"description": "can delete a story",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/stories/{{saved.story_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "can delete a rule",
                 	"description": "can delete a rule",
                     "api_calls": [
