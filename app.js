@@ -315,7 +315,7 @@ var initDbStories = function() {
 		db_stories.addCollection("stories");
 	} else {
 		global.stories = db_stories.getCollection("stories");
-		t6console.log(db_stories.getCollection("stories").count(), "resources in stories collection.");
+		t6console.log(db_stories.getCollection("stories").count(), "resources in Stories collection.");
 	}
 };
 var initDbUnits = function() {
