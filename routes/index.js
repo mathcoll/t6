@@ -400,7 +400,7 @@ router.delete("/tokens/all", function (req, res) {
  * @apiDescription The authenticate endpoint provide an access token which is multiple use but expiring within 5 minutes.
  * Once it has expired an access_token can be refreshed to extend duration or you can generate a new one from this authenticate endpoint.
  * Several Authentification process are handled: using your personnal credentials, using a Key+Secret Access long life Token (which can be revoked) 
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiBody (Body) {String="password","refresh_token","access_token"} grant_type="password" Grant type is the method to authenticate using your own credentials, using a pair of Key/Secret or refreshing a Bearer token before it expires.
@@ -723,7 +723,7 @@ router.post("/authenticate", function (req, res) {
  * @apiName Refresh a JWT Token
  * @apiDescription This endpoint allows you to extend access_token expiration date. The extension is the same (5 minutes) as the authenticate endpoint.
  * 
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiHeader {String} Authorization Bearer &lt;Token&gt;
@@ -802,7 +802,7 @@ router.post("/refresh", function (req, res) {
 /**
  * @api {get} /status Get API Status
  * @apiName Get API Status
- * @apiGroup General
+ * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -877,7 +877,7 @@ router.get("/status", function(req, res, next) {
 /**
  * @api {get} /index Get Index Cards
  * @apiName Get Index Cards
- * @apiGroup General
+ * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -891,7 +891,7 @@ router.get("/index", function(req, res, next) {
 /**
  * @api {get} /terms Get Terms and Privacy
  * @apiName Get Terms and Privacy
- * @apiGroup General
+ * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -904,7 +904,7 @@ router.get("/terms", function(req, res, next) {
 /**
  * @api {get} /compatible-devices Get compatible devices
  * @apiName Get compatible devices
- * @apiGroup General
+ * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
  * @apiUse 200
@@ -917,7 +917,7 @@ router.get("/compatible-devices", function(req, res, next) {
 /**
  * @api {get} /open-source-licenses Get open-source-licenses
  * @apiName Get open-source-licenses
- * @apiGroup General
+ * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
  * @apiUse 200

@@ -20,6 +20,7 @@
 		"aloneDisplay": false
 	},
 	"order": [
+		"0. General",
 		"0. DataPoint Measure",
 		"1. Object and User Interfaces",
 		"2. Flow",
@@ -31,7 +32,8 @@
 		"8. Administration",
 		"9. Notifications email",
 		"10. Exploratory Data Analysis EDA",
-		"User",
-		"General"
+		"11. Classification",
+		"12. Stories",
+		"13. Users"
 	]
 }

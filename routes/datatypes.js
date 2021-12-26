@@ -8,7 +8,7 @@ var ErrorSerializer = require("../serializers/error");
  * @api {get} /datatypes/:datatype_id Get DataTypes
  * @apiName Get DataTypes
  * @apiDescription t6 implement a immutable datatypes list as referential. A Full documentation is available on the [Wiki](https://github.com/mathcoll/t6/wiki/Data-Types)
- * @apiGroup General
+ * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
  * @apiParam {uuid-v4} [datatype_id] DataType ID
