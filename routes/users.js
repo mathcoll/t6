@@ -96,7 +96,7 @@ router.get("/list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetti
 /**
  * @api {get} /users/accessTokens Get accessTokens
  * @apiName Get accessTokens list from the user account
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -122,7 +122,7 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: 
 /**
  * @api {get} /users/me/sessions Get User active sessions
  * @apiName Get User active sessions
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -148,7 +148,7 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret, algorithms: j
 /**
  * @api {get} /users/me/token Get User from JWT claim
  * @apiName Get User from JWT claim
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -194,7 +194,7 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 /**
  * @api {get} /users/:user_id Get User
  * @apiName Get User
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -226,7 +226,7 @@ router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 /**
  * @api {get} /users/:user_id/token Get User Token
  * @apiName Get User Token
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -251,7 +251,7 @@ router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secre
 /**
  * @api {post} /users Create new User
  * @apiName Create new User
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiBody {String} [firstName] The User First Name
@@ -334,7 +334,7 @@ router.post("/", function (req, res) {
 /**
  * @api {post} /users/accessTokens Generate Access Tokens
  * @apiName Generate Access Tokens
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiBody {String{128}} [memo] Free memo string
@@ -381,7 +381,7 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
  * @api {post} /users/token/:token Reset a User password
  * @apiName Reset a User password
  * @apiDescription The user account corresponding to the token passed throught path parameter is upadated with the new password
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiParam {String} token Token to identify the user
@@ -421,7 +421,7 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
  * @api {post} /users/instruction Reset a password instruction
  * @apiName Reset a password instruction
  * @apiDescription This Api will send the recovery email to user passed in the email body attribute.
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiBody {String} email to identify the user account
@@ -472,7 +472,7 @@ router.post("/instruction", function (req, res) {
 /**
  * @api {post} /users/resetAllUsersTokens Reset all unsubscription tokens
  * @apiName Reset all unsubscription tokens
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission AuthAdmin
@@ -498,7 +498,7 @@ router.post("/resetAllUsersTokens", expressJwt({secret: jwtsettings.secret, algo
 /**
  * @api {post} /users/sendPush Send Push notification to user
  * @apiName Send Push notification to user
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission AuthAdmin
@@ -541,7 +541,7 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 /**
  * @api {post} /users/sendFCM Send FCM message to user
  * @apiName Send FCM message to user
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
  * @apiPermission AuthAdmin
@@ -566,7 +566,7 @@ router.post("/sendFCM/?:token([0-9a-zA-Z\-]+)?", expressJwt({secret: jwtsettings
 /**
  * @api {put} /users/:user_id Edit a User
  * @apiName Edit a User
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -609,7 +609,7 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 /**
  * @api {delete} /users/accessTokens/:key Revoke an Access Token
  * @apiName Revoke an Access Token
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -643,7 +643,7 @@ router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsetting
 /**
  * @api {delete} /users/:user_id Delete a User
  * @apiName Delete a User
- * @apiGroup User
+ * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
