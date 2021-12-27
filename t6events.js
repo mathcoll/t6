@@ -18,7 +18,7 @@ t6events.setRP = function(rp) {
 t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	//TODO : make sure 'what' does not contains multiple lines
-	if ( db_type.influxdb ) {
+	if ( db_type.influxdb && logAudit ) {
 		var tags = {rp: retention, what: what.replace(/(\r\n|\n|\r)/gm, ""), where: where};
 		var fields = {who: typeof who!=="undefined"?who:"", status: parseFloat((params!==null && typeof params.status!=="undefined")?params.status:""), error_id: ((params!==null && typeof params.error_id!=="undefined")?params.error_id:"").toString()};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
