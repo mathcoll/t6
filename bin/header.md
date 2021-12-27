@@ -1,7 +1,7 @@
 <div class="article-content">
 	<div class="article-text">
 		<div>
-			<h1>Introduction</h1>
+			<h1 class="color-primary font-weight-bold">Introduction</h1>
 			<p>
 				t6 is using Https protocols to manage your Objects, Flows and DataPoints, Dashboards and so on.<br />
 				This documentation is aiming to give technical overview ; The <a href="https://github.com/mathcoll/t6/wiki">functionnal features are explained in the Wiki.</a>
@@ -22,7 +22,7 @@
 			</p>
 		</div>
 		<div>	
-			<h1>Authentication</h1>
+			<h1 class="color-primary font-weight-bold">Authentication</h1>
 			<p>
 				To create and get a JWT Token, you must authenticate yourself on the API by using the dedicated Endpoint.<br />
 				Most API endpoint require an Authentication to identify and approve the user request. This is done by adding 
@@ -30,14 +30,14 @@
 			</p>
 		</div>
 		<div>	
-			<h1>Quota</h1>
+			<h1 class="color-primary font-weight-bold">Quota</h1>
 			<p>
 				Quota is defined during the registration process. When the limit is reached, an Http error message is sent by the API and the request is not processed:
 				<span class="label label-primary">429 Too Many Requests</span>.
 			</p>
 		</div>
 		<div>	
-			<h1>Pagination</h1>
+			<h1 class="color-primary font-weight-bold">Pagination</h1>
 			<p>
 				Pagination is using the following parameters:
 				<ul>
@@ -60,7 +60,7 @@
 			</p>
 		</div>
 		<div>
-			<h1>Http Success Statuses</h1>
+			<h1 class="color-primary font-weight-bold">Http Success Statuses</h1>
 			<table>
 				<thead>
 					<tr>
@@ -89,7 +89,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<h1>Http Error Statuses</h1>
+			<h1 class="color-primary font-weight-bold">Http Error Statuses</h1>
 			<table>
 				<thead>
 					<tr>
@@ -151,7 +151,7 @@
 			</table>
 		</div>
 		<div>	
-			<h1>t6 Architecture</h1>
+			<h1 class="color-primary font-weight-bold">t6 Architecture</h1>
 			<p>
 				<img src="https://raw.githubusercontent.com/mathcoll/t6/master/public/img/m/t6.png" class="img-responsive center-block" alt="General-structure"/>
 				<br />

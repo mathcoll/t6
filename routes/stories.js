@@ -62,6 +62,9 @@ router.get("/:story_id([0-9a-z\-]+)?/?", expressJwt({secret: jwtsettings.secret,
  * @apiGroup 12. Stories
  * @apiVersion 2.0.1
  * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [story_id] Story Id
+ * 
  * @apiUse 200
  * @apiUse 401
  * @apiUse 403
@@ -198,7 +201,7 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
  * @apiGroup 12. Stories
  * @apiVersion 2.0.1
  * 
- * @apiParam {uuid-v4} story_id Story Id
+ * @apiUse Auth
  * @apiBody {uuid-v4} [flow_id] Flow Id
  * @apiBody {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
@@ -249,7 +252,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiGroup 12. Stories
  * @apiVersion 2.0.1
  * 
- * @apiParam {uuid-v4} story_id Story Id
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [story_id] Story Id
  * @apiBody {uuid-v4} [flow_id] Flow Id
  * @apiBody {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS

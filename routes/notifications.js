@@ -355,8 +355,8 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 	}
 });
 /**
- * @api {get} /notifications/subscribers/newsletter/count Count subscribers (Newsletter or Pushs)
- * @apiName Count subscribers (Newsletter or Pushs)
+ * @api {get} /notifications/subscribers/newsletter/count Count subscribers Newsletter or Pushs
+ * @apiName Count subscribers Newsletter or Pushs
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -368,8 +368,8 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
  * @apiUse 404
  */
 /**
- * @api {get} /notifications/subscribers/newsletter/list List subscribers (Newsletter or Pushs) as csv
- * @apiName List subscribers (Newsletter or Pushs) as csv
+ * @api {get} /notifications/subscribers/newsletter/list List subscribers Newsletter or Pushs as csv
+ * @apiName List subscribers Newsletter or Pushs as csv
  * @apiGroup 9. Notifications
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
