@@ -10,6 +10,7 @@ Group=users
 Environment=PATH=/usr/bin:/usr/local/bin
 Environment=NODE_ENV=development
 WorkingDirectory=/home/username/t6/
+Environment=NAME=t6 IoT
 
 [Install]
 WantedBy=multi-user.target
