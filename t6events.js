@@ -18,7 +18,7 @@ t6events.setRP = function(rp) {
 t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	//TODO : make sure 'what' does not contains multiple lines
-	if ( db_type.influxdb && logAudit ) {
+	if ( db_type.influxdb ) {
 		var tags = {rp: retention, what: what.replace(/(\r\n|\n|\r)/gm, ""), where: where};
 		var fields = {who: typeof who!=="undefined"?who:"", status: parseFloat((params!==null && typeof params.status!=="undefined")?params.status:""), error_id: ((params!==null && typeof params.error_id!=="undefined")?params.error_id:"").toString()};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
@@ -28,12 +28,12 @@ t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 			fields: fields,
 		}], { retentionPolicy: retention }).then((err) => {
 			if(err) {
-				t6console.error("addAudit, t6events.addAudit: Error", err);
+				t6console.warning("addAudit, t6events.addAudit: Error", err);
 			} else {
 				t6console.debug("addAudit, t6events.addAudit: Ok", measurement, tags, fields);
 			}
 		}).catch((err) => {
-			t6console.error("addAudit, Error writting event to influxDb:", {measurement, fields, tags, retention}, err);
+			t6console.warning("addAudit, Error writting event to influxDb:", {measurement, fields, tags, retention}, err);
 		});
 	}
 }
