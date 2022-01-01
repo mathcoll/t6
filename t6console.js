@@ -35,12 +35,16 @@ t6console.error = function(...errormessage) {
 	if ( logLevel.indexOf("ERROR") > -1 ) {
 		console.error(moment().format(logDateFormat), "[ERROR]".red, errormessage);
 	}
-	t6events.addAudit("t6App", `t6console.error: ${errormessage}`, "", "", {"status": "500", error_id: "00000"});
+	if ( logAuditOnError ) {
+		t6events.addAudit("t6App", `t6console.error: ${errormessage}`, "", "", {"status": "500", error_id: "00000"});
+	}
 };
 
 t6console.critical = function(...criticalmessage) {
 	console.error(moment().format(logDateFormat), "[CRITICAL]".red, criticalmessage);
-	t6events.addAudit("t6App", `t6console.critical: ${criticalmessage}`, "", "", {"status": "500", error_id: "00001"});
+	if ( logAuditOnError ) {
+		t6events.addAudit("t6App", `t6console.critical: ${criticalmessage}`, "", "", {"status": "500", error_id: "00001"});
+	}
 	var envelope = {
 		from:		from,
 		bcc:		bcc,
@@ -50,17 +54,19 @@ t6console.critical = function(...criticalmessage) {
 		text:		`${criticalmessage}`,
 		html:		`${criticalmessage}`
 	};
-	t6mailer.sendMail(envelope);
-	/*
-	const clientTwilio = new twilio(twilioSettings.accountSid, twilioSettings.authToken);
-	clientTwilio.messages
-		.create({
-			body: `Critical Error on t6 ${app.get("env")} ${criticalmessage}`,
-			to: event.params.to, // Text this number
-			from: twilioSettings.from, // From a valid Twilio number
-		})
-		.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
-	*/
+	if ( sendMailOnCriticalError ) {
+		t6mailer.sendMail(envelope);
+	}
+	if ( sendTextMessageOnCriticalError ) {
+		const clientTwilio = new twilio(twilioSettings.accountSid, twilioSettings.authToken);
+		clientTwilio.messages
+			.create({
+				body: `Critical Error on t6 ${app.get("env")} ${criticalmessage}`,
+				to: event.params.to, // Text this number
+				from: twilioSettings.from, // From a valid Twilio number
+			})
+			.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
+	}
 };
 
 module.exports = t6console;
