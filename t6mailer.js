@@ -18,7 +18,7 @@ t6mailer.sendMail = (envelope) => new Promise((resolve, reject) => {
 			resolve({"status": "info", "info": info});
 		}).catch(function(err) {
 			t6events.addStat("t6App", "sendMail", envelope.user_id, envelope.user_id, {"user_id": envelope.user_id, "status": "error", "info": err});
-			t6events.addAudit("t6App", "sendMail", envelope.user_id, envelope.user_id, {"status": 500, error_id: err});
+			t6events.addAudit("t6App", "sendMail", envelope.user_id, envelope.user_id, {"status": 500, error_id: "00005"});
 			reject({"status": "error", "info": err});
 		});
 	} else {
