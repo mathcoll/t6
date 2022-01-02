@@ -46,6 +46,7 @@ global.t6otahistory		= require("./t6otahistory");
 global.t6preprocessor	= require("./t6preprocessor");
 global.t6jobs			= require("./t6jobs");
 global.t6imagesprocessing = require("./t6imagesprocessing");
+global.monitor			= require("./t6monitor");
 
 global.async			= require("async");
 global.express			= require("express");
@@ -446,6 +447,10 @@ var exploration		= require("./routes/exploration");
 var jobs			= require("./routes/jobs");
 var classifications	= require("./routes/classifications");
 app					= express();
+if(enableMonitoring) {
+	monitor(app);
+	t6console.log(`${appName} is being monitored.`);
+}
 app.set("port", process.env.PORT);
 app.listen(process.env.PORT, () => {
 	t6events.addStat("t6App", "start", "self", t6BuildVersion);

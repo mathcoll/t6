@@ -96,6 +96,35 @@ influxSettings		= {
 	}
 };
 
+/* InfluxData Monitoring https://github.com/influxdata/community-templates/tree/master/node_js */
+enableMonitoring = true;
+/* optional settings */
+/** InfluxDB URL */
+INFLUX_URL = "";
+/** InfluxDB authorization token */
+INFLUX_TOKEN = "";
+/** Organization within InfluxDB  */
+INFLUX_ORG = "";
+/** InfluxDB bucket  */
+INFLUX_BUCKET = "iot_center";
+
+// Defaults when on boarding a fresh new InfluxDB instance
+/** InfluxDB user  */
+onboarding_username = "";
+/** InfluxDB password  */
+onboarding_password = "";
+
+/** recommended interval for client's to refresh configuration in seconds */
+configuration_refresh = 3600;
+
+function logEnvironment() {
+	t6console.log(`INFLUX_URL=${INFLUX_URL}`);
+	t6console.log(`INFLUX_TOKEN=${INFLUX_TOKEN ? '***' : ''}`);
+	t6console.log(`INFLUX_ORG=${INFLUX_ORG}`);
+	t6console.log(`INFLUX_BUCKET=${INFLUX_BUCKET}`);
+}
+/* End optional settings */
+
 /* Quota settings */
 quota = {
 	"admin": {price: "99.99", currency:"€", objects: 999, flows: 999, rules: 999, tokens: 999, snippets: 999, dashboards: 999, categories: 50, uis: 999, calls: 9999999},
