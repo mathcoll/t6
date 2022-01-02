@@ -101,7 +101,8 @@ if( db_type.influxdb === true ) {
 	//var {InfluxDB} = require("@influxdata/influxdb-client"); // Should use "writeApi"
 	var {InfluxDB} = require("influx");
 	var dbStringInfluxDB	= `${influxSettings.influxdb.protocol}://${influxSettings.influxdb.host}:${influxSettings.influxdb.port}/${influxSettings.database}`;
-	dbInfluxDB		= new InfluxDB(dbStringInfluxDB);
+	//dbInfluxDB		= new InfluxDB(dbStringInfluxDB);
+	dbInfluxDB = new InfluxDB({ database: influxSettings.database, host: influxSettings.influxdb.host, port: influxSettings.influxdb.port, username: influxSettings.username, password: influxSettings.password});
 }
 if( db_type.telegraf === true ) {
 	var dbStringTelegraf	= `${influxSettings.telegraf.protocol}://${influxSettings.telegraf.host}:${influxSettings.telegraf.port}/${influxSettings.database}`;
@@ -122,13 +123,8 @@ t6console.log(`Access Logs: ${logAccessFile}`);
 t6console.log(`Error Logs: ${logErrorFile}`);
 t6console.log(`Log level: ${logLevel}`);
 t6console.log(`Environment: ${process.env.NODE_ENV}`);
-t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
-if(dbTelegraf) {
-	t6console.log(`Activated telegraf for writing: ${dbStringTelegraf}`);
-}
-if(dbInfluxDB) {
-	t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
-}
+t6console.log(dbInfluxDB._options);
+t6console.log("===========================================================");
 
 str2bool = function(v) {
 	return [true, "yes", "true", "t", "1", "y", "yeah", "on", "yup", "certainly", "uh-huh"].indexOf(v)>-1?true:false;
@@ -413,6 +409,18 @@ db_jobs = new loki(path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.jso
 db_stories = new loki(path.join(__dirname, "data", `t6db-stories__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbStories});
 dbFusionBuffer = new loki(path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFusionBuffer});
 
+if(dbTelegraf) {
+	t6console.log(`Activated telegraf for writing: ${dbStringTelegraf}`);
+}
+if(dbInfluxDB) {
+	t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
+	t6console.log("Retention Policies :");
+	t6console.log("-requests:", `${influxSettings.retentionPolicies.requests}`);
+	t6console.log("-events:", `${influxSettings.retentionPolicies.events}`);
+	t6console.log("-data:",  `${influxSettings.retentionPolicies.data}`);
+}
+t6console.log("===========================================================");
+
 t6console.info("Loading routes...");
 routesLoadTime = new Date();
 var index			= require("./routes/index");
@@ -446,6 +454,7 @@ app.listen(process.env.PORT, () => {
 })
 
 routesLoadEndTime = new Date();
+t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
 t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
 
 var CrossDomain = function(req, res, next) {
