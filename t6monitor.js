@@ -55,12 +55,6 @@ process.on('SIGTERM', onShutdown)
 module.exports = function (app) {
   app.use(
     responseTime((req, res, time) => {
-      // print out request basics
-      t6console.info(
-        `${req.method} ${req.path} ${res.statusCode} ${
-          Math.round(time * 100) / 100
-        }ms`
-      )
       // write response time to InfluxDB
       const point = new Point('express_http_server')
         .tag('uri', req.path)

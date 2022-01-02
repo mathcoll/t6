@@ -124,7 +124,6 @@ t6console.log(`Access Logs: ${logAccessFile}`);
 t6console.log(`Error Logs: ${logErrorFile}`);
 t6console.log(`Log level: ${logLevel}`);
 t6console.log(`Environment: ${process.env.NODE_ENV}`);
-t6console.log(dbInfluxDB._options);
 t6console.log("===========================================================");
 
 str2bool = function(v) {
