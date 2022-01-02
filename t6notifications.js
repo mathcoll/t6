@@ -39,8 +39,8 @@ if (firebase.admin.serviceAccountFile) {
 					}
 				});
 			} else {
-				t6console.warn(`t6notifications.sendPush disabled on ${process.env.NODE_ENV}̀`);
-				resolve({"status": "warning", "info": `t6notifications.sendPush disabled on ${process.env.NODE_ENV}̀` });
+				t6console.warn(`t6notifications.sendPush disabled on ${process.env.NODE_ENV}`);
+				resolve({"status": "warning", "info": `t6notifications.sendPush disabled on ${process.env.NODE_ENV}̀`});
 			}
 		} else {
 			t6console.warn("t6notifications.sendPush failing with no endpoint. Can't send.");
