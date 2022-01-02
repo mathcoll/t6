@@ -409,7 +409,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						t6console.debug("pushSubscription is now disabled on User", error);
 					}
 				} else {
-					t6console.error("No user or no pushSubscription found, can't sendPush");
+					t6console.error("No user or no pushSubscription found, can't sendPesh");
 				}
 			} else {
 				t6console.warn(`No matching EventType: ${event.type}`);
@@ -418,19 +418,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 		engine.run(payload);
 	}).catch((err) => {
-		var envelope = {
-			from:		from,
-			to:			bcc,
-			user_id:	payload.user_id?payload.user_id:to,
-			subject:	"dbInfluxDB ERR on decisionRule (checkRulesFromUser)",
-			text:		"Html email client is required",
-			html:		err
-		};
-		t6console.error("dbInfluxDB ERR on decisionRule (checkRulesFromUser)", err);
+		t6console.critical("dbInfluxDB ERR on decisionRule (checkRulesFromUser)", err);
 		t6console.debug("ERR on decisionRule (checkRulesFromUser) :");
 		t6console.debug("payload", payload);
-		t6console.debug("envelope", envelope);
-		t6mailer.sendMail(envelope);
 	});
 }; // t6decisionrules.checkRulesFromUser
 
