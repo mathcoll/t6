@@ -56,7 +56,7 @@ module.exports = function (app) {
   app.use(
     responseTime((req, res, time) => {
       // print out request basics
-      console.info(
+      t6console.info(
         `${req.method} ${req.path} ${res.statusCode} ${
           Math.round(time * 100) / 100
         }ms`
