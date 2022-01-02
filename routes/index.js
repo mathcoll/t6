@@ -239,9 +239,10 @@ router.all("*", function (req, res, next) {
 		}
 		let i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
-		let query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 1w) LIMIT 1`;
+		let query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 2w) LIMIT 1`;
 		t6console.debug("Query to count requests in the past 1w", query);
 		dbInfluxDB.query(query).then((data) => {
+			t6console.debug("Data to count requests in the past 1w", data);
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
 				res.header("X-RateLimit-Remaining", limit-i);
