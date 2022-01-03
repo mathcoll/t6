@@ -41,7 +41,7 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 123
+        	                    "size": 124
         	                }
                         }
                     ]
