@@ -120,6 +120,7 @@ function signatureCheck(payload, object, callback) {
 				payload.retention = typeof payload.retention!=="undefined"?payload.retention:initialPayload.retention;
 				payload.isSigned = true;
 				t6console.debug("chain 2&4", "signatureCheck", payload);
+				payload.datapoint_logs = initialPayload.datapoint_logs;
 				payload.datapoint_logs.signatureCheck = true;
 				callback(null, payload, object);
 			} else {
