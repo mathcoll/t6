@@ -870,9 +870,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 		query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, rp, flow_id, where, group_by, sorting, limit, (page-1)*limit);
 		t6console.debug("Query:", query);
 
-		t6console.error("data 0:", dbInfluxDB);
 		dbInfluxDB.query(query).then((data) => {
-			t6console.error("data 1:", data);
 			if ( data.length > 0 ) {
 				data.map(function(d) {
 					let query = {
