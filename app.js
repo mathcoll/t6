@@ -53,11 +53,12 @@ global.express			= require("express");
 global.timeout			= require("connect-timeout");
 global.morgan			= require("morgan");
 global.cookieParser		= require("cookie-parser");
+global.bcrypt			= require("bcrypt");
 global.bodyParser		= require("body-parser");
+global.imageType		= require("image-type");
 global.pug				= require("pug");
 global.compression		= require("compression");
 global.colors			= require("colors");
-global.bcrypt			= require("bcrypt");
 global.changeCase		= require("change-case");
 global.exec				= require("child_process").exec;
 global.crypto			= require("crypto");
@@ -460,7 +461,6 @@ app.listen(process.env.PORT, () => {
 routesLoadEndTime = new Date();
 t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
 t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
-
 var CrossDomain = function(req, res, next) {
 	if (req.method === "OPTIONS") {
 		//res.header("Access-Control-Allow-Origin", "*");
