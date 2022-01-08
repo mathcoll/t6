@@ -208,7 +208,7 @@ router.get("/list/:mode(subscribed|unsubscribed)", expressJwt({secret: jwtsettin
  * @apiUse 202
  * @apiUse 401
  * @apiUse 403
- * @apiUse 404
+ * @apiUse 204
  */
 router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
@@ -265,8 +265,8 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
 			t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/reminder", "", "", {"status": "200", error_id: "00003"});
 			res.status(202).send(new UserSerializer(json).serialize());
 		} else {
-			t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/reminder", "", "", {"status": "400", error_id: "00003"});
-			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
+			t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/reminder", "", "", {"status": "204", error_id: "00003"});
+			res.status(204).send(new ErrorSerializer({"id": 8055, "code": 204, "message": "No Content"}).serialize());
 		}
 	} else {
 		t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/reminder", "", "", {"status": "400", error_id: "00004"});
@@ -285,7 +285,7 @@ router.get("/mail/reminder", expressJwt({secret: jwtsettings.secret, algorithms:
  * @apiUse 202
  * @apiUse 401
  * @apiUse 403
- * @apiUse 404
+ * @apiUse 204
  */
 router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.role === "admin" ) {
@@ -346,8 +346,8 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 			t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/changePassword", "", "", {"status": "200", error_id: "00003"});
 			res.status(202).send(new UserSerializer(json).serialize());
 		} else {
-			t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/changePassword", "", "", {"status": "400", error_id: "00004"});
-			res.status(404).send(new ErrorSerializer({"id": 8055, "code": 404, "message": "Not Found"}).serialize());
+			t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/changePassword", "", "", {"status": "204", error_id: "00004"});
+			res.status(204).send(new ErrorSerializer({"id": 8055, "code": 204, "message": "No Content"}).serialize());
 		}
 	} else {
 		t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/mail/changePassword", "", "", {"status": "400", error_id: "00004"});
