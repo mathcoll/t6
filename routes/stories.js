@@ -2,6 +2,7 @@
 var express = require("express");
 var router = express.Router();
 var InsightSerializer = require("../serializers/insight");
+var MetricsSerializer = require("../serializers/metric");
 var StorySerializer = require("../serializers/story");
 var ErrorSerializer = require("../serializers/error");
 
@@ -180,6 +181,120 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
 					
 						res.status(200).send(new InsightSerializer(insights).serialize());
 					});
+				} else {
+					t6console.debug(query);
+					res.status(404).send(new ErrorSerializer({err: "No data found", "id": 18058, "code": 404, "message": "Not found"}).serialize());
+				}
+			}).catch((err) => {
+				t6console.error(err);
+				res.status(500).send(new ErrorSerializer({err: err, "id": 18059, "code": 500, "message": "Internal Error"}).serialize());
+			});
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 18056, "code": 404, "message": "Not Found"}).serialize());
+		}
+	}
+});
+
+/**
+ * @api {get} /stories/:story_id/metrics Get metrics from a story
+ * @apiName Get metrics from a story
+ * @apiGroup 12. Stories
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [story_id] Story Id
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 403
+ * @apiUse 500
+ */
+router.get("/:story_id([0-9a-z\-]+)/metrics", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
+	let story_id = req.params.story_id;
+	let query = { "user_id": req.user.id };
+
+	if ( !story_id || typeof story_id === "undefined" ) {
+		res.status(405).send(new ErrorSerializer({"id": 18056, "code": 405, "message": "Method Not Allowed"}).serialize());
+	} else {
+		query = {
+			"$and": [
+					{ "id": story_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		let story = (stories.chain().find(query).data())[0];
+		if(typeof story !== "undefined") {
+			let start = story.start;
+			let end = story.end;
+			let retention = story.retention;
+			let flow_id = story.flow_id;
+			let where = "";
+			if ( typeof start !== "undefined" ) {
+				if(!isNaN(start) && parseInt(start, 10)) {
+					if ( start.toString().length === 10 ) { start = start*1e9; }
+					else if ( start.toString().length === 13 ) { start = start*1e6; }
+					else if ( start.toString().length === 16 ) { start = start*1e3; }
+					where += sprintf(" AND time>=%s", parseInt(start, 10));
+				} else {
+					where += sprintf(" AND time>='%s'", start.toString());
+				}
+			}	
+			if ( typeof end !== "undefined" ) {
+				if(!isNaN(end) && parseInt(end, 10)) {
+					if ( end.toString().length === 10 ) { end = end*1e9; }
+					else if ( end.toString().length === 13 ) { end = end*1e6; }
+					else if ( nd.toString().length === 16 ) { end = end*1e3; }
+					where += sprintf(" AND time<=%s", parseInt(end, 10));
+				} else {
+					where += sprintf(" AND time<='%s'", end.toString());
+				}
+			}
+			let flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
+			let join = flow.eqJoin(units.chain(), "unit", "id");
+	
+			let flowDT = flows.chain().find({id: flow_id,}).limit(1);
+			let joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
+			let datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
+			let fields = getFieldsFromDatatype(datatype, false, false);
+			let unit = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).format:"";
+			let name = (((flowDT.data())[0]).left).name;
+	
+			let rp = typeof retention!=="undefined"?retention:"autogen";
+			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+				if ( typeof flow!=="undefined" && flow.retention ) {
+					if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+						rp = flow.retention;
+					} else {
+						rp = influxSettings.retentionPolicies.data[0];
+						t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+						res.status(412).send(new ErrorSerializer({"id": 18057, "code": 412, "message": "Precondition Failed"}).serialize());
+						return;
+					}
+				} else {
+					rp = influxSettings.retentionPolicies.data[0];
+					t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+				}
+			}
+
+			t6console.debug("Retention is valid:", rp);
+			query = `SELECT FIRST(${fields}), LAST(${fields}), MEAN(${fields}), MEDIAN(${fields}), MODE(${fields}), MIN(${fields}), MAX(${fields}), SPREAD(${fields}), STDDEV(${fields}), COUNT(${fields}), COUNT(DISTINCT(${fields})) as ctdistinct FROM ${rp}.data WHERE flow_id='${flow_id}' ${where} ORDER BY time ASC`;
+			t6console.debug("Query:", query);
+	
+			dbInfluxDB.query(query).then((data) => {
+				if ( data.length > 0 ) {
+					let metrics = [];
+					metrics.push({name: "first", title: "The first value in range", value: data[0].first});
+					metrics.push({name: "last", title: "The last value in range", value: data[0].last});
+					metrics.push({name: "mean", title: "The mean", value: data[0].mean});
+					metrics.push({name: "median", title: "The median", value: data[0].median});
+					metrics.push({name: "mode", title: "Mode", value: data[0].mode});
+					metrics.push({name: "min", title: "The min value in range", value: data[0].min});
+					metrics.push({name: "max", title: "The max value in range", value: data[0].max});
+					metrics.push({name: "spread", title: "Data spread", value: data[0].spread});
+					metrics.push({name: "stddev", title: "Standart Deviation", value: data[0].stddev});
+					metrics.push({name: "count", title: "Number of values", value: data[0].count});
+					metrics.push({name: "ctdistinct", title: "Number of distinct values", value: data[0].ctdistinct});
+					res.status(200).send(new MetricsSerializer(metrics).serialize());
 				} else {
 					t6console.debug(query);
 					res.status(404).send(new ErrorSerializer({err: "No data found", "id": 18058, "code": 404, "message": "Not found"}).serialize());
