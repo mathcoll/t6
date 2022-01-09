@@ -181,11 +181,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.anomalyDetection = {};
 			let lr = statistics.linearRegression(indexesValuesFromDb);
 			p.anomalyDetection.predicted = Math.abs(lr.m)+lr.b;
-			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
+			p.anomalyDetection.diff = factValue - p.anomalyDetection.predicted;
 			p.anomalyDetection.threashold = jsonValue;
 			p.anomalyDetection.allvalues = valuesFromDb;
 			
-			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.anomalyDetection.diff >= p.anomalyDetection.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && Math.abs(p.anomalyDetection.diff) >= p.anomalyDetection.threashold ) {
 				//t6console.debug("anomalyGreaterThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
 				return true;
 			} else {
@@ -199,10 +199,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			p.anomalyDetection = {};
 			let lr = statistics.linearRegression(indexesValuesFromDb);
 			p.anomalyDetection.predicted = Math.abs(lr.m)+lr.b;
-			p.anomalyDetection.diff = Math.abs(p.anomalyDetection.predicted - factValue);
+			p.anomalyDetection.diff = factValue - p.anomalyDetection.predicted;
 			p.anomalyDetection.threashold = jsonValue;
 			p.anomalyDetection.allvalues = valuesFromDb;
-			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.anomalyDetection.diff <= p.anomalyDetection.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && Math.abs(p.anomalyDetection.diff) <= p.anomalyDetection.threashold ) {
 				//t6console.debug("anomalyLessThanInclusive DETECTED", { "predicted": p.anomalyDetection.predicted, "value": factValue, "threashold": p.anomalyDetection.threashold, "diff": p.anomalyDetection.diff });
 				return true;
 			} else {
@@ -215,9 +215,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			t6console.debug("addOperator changeGreaterThanInclusive", factValue, jsonValue);
 			p.diffFromPrevious = {};
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
-			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
+			p.diffFromPrevious.diff = factValue - p.diffFromPrevious.previous;
 			p.diffFromPrevious.threashold = jsonValue;
-			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.diffFromPrevious.diff >= p.diffFromPrevious.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && Math.abs(p.diffFromPrevious.diff) >= p.diffFromPrevious.threashold ) {
 				//t6console.debug("changeGreaterThanInclusive DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
 				return true;
 			} else {
@@ -230,9 +230,9 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 			t6console.debug("addOperator changeLessThanInclusive", factValue, jsonValue);
 			p.diffFromPrevious = {};
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
-			p.diffFromPrevious.diff = Math.abs(p.diffFromPrevious.previous - factValue);
+			p.diffFromPrevious.diff = factValue - p.diffFromPrevious.previous;
 			p.diffFromPrevious.threashold = jsonValue;
-			if ( Number.parseFloat(factValue).toString() !== "NaN" && p.diffFromPrevious.diff <= p.diffFromPrevious.threashold ) {
+			if ( Number.parseFloat(factValue).toString() !== "NaN" && Math.abs(p.diffFromPrevious.diff) <= p.diffFromPrevious.threashold ) {
 				//t6console.debug("changeLessThanInclusive DETECTED", { "previous": p.diffFromPrevious.previous, "value": factValue, "threashold": p.diffFromPrevious.threashold, "diff": p.diffFromPrevious.diff });
 				return true;
 			} else {
