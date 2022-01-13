@@ -119,7 +119,7 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
 			let datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
 			let fields = getFieldsFromDatatype(datatype, true, true);
 			let unit = ( typeof (join.data())[0]!=="undefined" && ((join.data())[0].right)!==null )?((join.data())[0].right).format:"";
-			let name = (((flowDT.data())[0]).left).name;
+			let flow_name = (((flowDT.data())[0]).left).name;
 	
 			let rp = typeof retention!=="undefined"?retention:"autogen";
 			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
@@ -150,7 +150,8 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
 						values.push(d.value);
 					});
 					insights.created = story.meta.created;
-					insights.name = name;
+					insights.name = story.name;
+					insights.flow_name = flow_name;
 					insights.start = start;
 					insights.end = end;
 					insights.retention = retention;
@@ -318,6 +319,7 @@ router.get("/:story_id([0-9a-z\-]+)/metrics", expressJwt({secret: jwtsettings.se
  * 
  * @apiUse Auth
  * @apiBody {uuid-v4} [flow_id] Flow Id
+ * @apiBody {String} [name] Story name
  * @apiBody {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {String} [retention] Retention Policy to get data from
@@ -348,6 +350,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				flow_id		: req.body.flow_id,
 				start		: typeof req.body.start!=="undefined"?req.body.start:new Date(),
 				end			: typeof req.body.end!=="undefined"?req.body.end:null,
+				name		: typeof req.body.name!=="undefined"?req.body.name:null,
 				retention	: req.body.retention
 			};
 			t6events.addStat("t6Api", "story add", newStory.id, req.user.id);
@@ -370,6 +373,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse Auth
  * @apiParam {uuid-v4} [story_id] Story Id
  * @apiBody {uuid-v4} [flow_id] Flow Id
+ * @apiBody {String} [name] Story name
  * @apiBody {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {String} [retention] Retention Policy to get data from
@@ -406,10 +410,11 @@ router.put("/:story_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 							req.body.retention = influxSettings.retentionPolicies.data[0];
 						}
 					}
-					item.flow_id		= typeof req.body.flow_id!=="undefined"?req.body.flow_id:item.flow_id;
+					item.flow_id	= typeof req.body.flow_id!=="undefined"?req.body.flow_id:item.flow_id;
 					item.start		= typeof req.body.start!=="undefined"?req.body.start:item.start;
-					item.end			= typeof req.body.end!=="undefined"?req.body.end:item.end;
+					item.end		= typeof req.body.end!=="undefined"?req.body.end:item.end;
 					item.retention	= typeof req.body.retention!=="undefined"?req.body.retention:item.retention;
+					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					result = item;
 				});
 				if ( typeof result!=="undefined" ) {

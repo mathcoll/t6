@@ -11,6 +11,7 @@ function InsightSerializer(insights) {
 				"meta": {
 					"created": insights.created,
 					"name": insights.name,
+					"flow_name": insights.flow_name,
 					"start": insights.start,
 					"end": insights.end,
 					"retention": insights.retention,

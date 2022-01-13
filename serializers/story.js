@@ -5,7 +5,7 @@ function StorySerializer(stories) {
 	this.serialize = function() {
 		return new JSONAPISerializer("stories", {
 			keyForAttribute: "underscore_case",
-			attributes : [ "user_id", "flow_id", "start", "end", "retention" ],
+			attributes : [ "user_id", "flow_id", "name", "start", "end", "retention" ],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/stories", baseUrl_https, version),
 			}
