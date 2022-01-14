@@ -292,7 +292,7 @@ router.get("/:story_id([0-9a-z\-]+)/metrics", expressJwt({secret: jwtsettings.se
 					metrics.push({name: "min", title: "The min value in range", value: data[0].min});
 					metrics.push({name: "max", title: "The max value in range", value: data[0].max});
 					metrics.push({name: "spread", title: "Data spread", value: data[0].spread});
-					metrics.push({name: "stddev", title: "Standart Deviation", value: data[0].stddev});
+					metrics.push({name: "stddev", title: "Standard Deviation", value: data[0].stddev});
 					metrics.push({name: "count", title: "Number of values", value: data[0].count});
 					metrics.push({name: "ctdistinct", title: "Number of distinct values", value: data[0].ctdistinct});
 					res.status(200).send(new MetricsSerializer(metrics).serialize());

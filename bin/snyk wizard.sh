@@ -2,7 +2,8 @@
 
 npm update snyk
 snyk wizard
-npm i --package-lock-only
+# following line commented on 13.01.2022
+#npm i --package-lock-only
 npm audit
 
 npm outdated

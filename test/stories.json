@@ -57,13 +57,17 @@
                                 "flow_id": "{{saved.flow_id_string}}",
                                 "start": "2021-12-12 00:00:00",
                                 "end": "2021-12-22 00:00:00",
-                                "retention": "autogen"
+                                "retention": "autogen",
+                                "name": "The New Name"
                             },
                             "save": {},
                             "status": "200",
                             "assert": [{
         	                    "select": "body.message",
         	                    "equal": "Successfully updated"
+        	                },{
+        	                    "select": "body.story.data.attributes.name",
+        	                    "equal": "The New Name"
         	                }]
                         }
                     ]
