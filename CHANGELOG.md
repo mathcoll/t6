@@ -17,6 +17,19 @@ Types of changes
 
 ------------
 
+## 2022
+### Milestone 17 - 2022-01: 
+#### Added
+  - [x] Monitoring using dashboard from influxData.
+  - [x] Add `Stories` resources available for POST, GET, PUT, DELETE
+
+#### Fixed
+  - [x] Payload image detection. The image identification was only made by a simple base64 string, the current implementation is using a dedicated package to image-type.
+
+#### Changed
+  - [x] Returns a 204 status code when Admin emails does not need to send message to any recipient.
+  - [x] Decision Rule: Display a relative diff on email instead of a absolute value
+
 ## 2021
 ### Milestone 16 - 2021-11: 
 #### Fixed
