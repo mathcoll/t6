@@ -463,6 +463,7 @@ router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, 
 		let subject = "t6 monthly activity report";
 		let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
 		let influxQuery = `SELECT top(monthly_usage, user_id, 10) FROM (SELECT count(url) as monthly_usage FROM ${rp}.requests WHERE user_id!='anonymous' AND time > now() - 4w GROUP BY user_id)`;
+		//SELECT top(monthly_usage, user_id, 10), monthly_usage, count, meanDurationInMilliseconds, spreadDurationInMilliseconds FROM (SELECT count(url) as monthly_usage, COUNT(url), MEAN(durationInMilliseconds) as meanDurationInMilliseconds, SPREAD(durationInMilliseconds) as spreadDurationInMilliseconds FROM quota4w.requests WHERE user_id!='anonymous' AND time > now() - 4w GROUP BY user_id)
 		//t6console.debug("get all actives users from influxDb", influxQuery);
 		// get all actives users
 		dbInfluxDB.query(influxQuery).then((activesUsers) => {
