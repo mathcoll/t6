@@ -33,10 +33,7 @@ var filesToCache = [
 	"https://cdn.internetcollaboratif.info/img/m/icons/icon-180x180.png",
 	"https://cdn.internetcollaboratif.info/img/arduinobuild-icon.png",
 	"https://cdn.internetcollaboratif.info/fonts/Material-Icons.woff2",
-	"https://fonts.googleapis.com/icon?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext",
-	"https://unpkg.com/leaflet@1.6.0/dist/leaflet.css",
-	"https://unpkg.com/leaflet@1.6.0/dist/leaflet.js",
-	"https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"
+	"https://fonts.googleapis.com/icon?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext"
 ];
 let isOnline = true;
 function refresh(response) {
