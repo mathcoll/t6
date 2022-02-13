@@ -34,12 +34,12 @@ echo ""
 
 echo 2. PWA Javascript T6-VENDOR minify:
 ../node_modules/uglify-js/bin/uglifyjs \
-	../public/js/vendor/material/material.js \
+	../public/js/vendor/material/material-1.3.0.js \
 	../public/js/vendor/mdl/mdl-selectfield.min.js \
-	../public/js/vendor/moment/moment.min-2.24.0.js \
-	../public/js/vendor/OpenLayers/ol-4.6.5.min.js \
-	../public/js/vendor/Chart/Chart-min-2.9.3.js \
-	../public/js/vendor/Leaflet/leaflet-min-1.6.0.js \
+	../public/js/vendor/moment/moment-2.29.1.min.js \
+	../public/js/vendor/OpenLayers/ol-6.12.0.min.js \
+	../public/js/vendor/Chart/Chart-3.7.1-min.js \
+	../public/js/vendor/Leaflet/leaflet-1.7.1.min.js \
 	--compress \
 	--mangle \
 	--stats \
@@ -50,11 +50,11 @@ echo ""
 
 echo 3. PWA Stylesheet minify: 
 uglifycss \
-	../public/css/vendor/material/material.css \
+	../public/css/vendor/material/material-1.3.0.css \
 	../public/css/vendor/material/material.brown-blue.min-1.3.0.css \
 	../public/css/t6app.css \
-	../public/css/vendor/OpenLayers/ol-4.6.5.css \
-	../public/css/vendor/Leaflet/leaflet-1.6.0.css \
+	../public/css/vendor/OpenLayers/ol-6.12.0.min.css \
+	../public/css/vendor/Leaflet/leaflet-1.7.1.css \
 	> ../public/css/t6app.min.css
 echo Completed
 echo ""
