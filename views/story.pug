@@ -1,0 +1,75 @@
+doctype html
+head
+  meta(charset='UTF-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1')
+  link(rel='stylesheet' href='/css/t6stories.css')
+  link(rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons')
+  title t6 Story
+header#header.cd-main-header.text-center.flex.flex-column.flex-center t6 Story
+nav
+  .nav-wrapper
+    a.brand-logo(href=baseUrl_https)
+      img(src='data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=' title='t6 Logo')
+      |  t6 IoT
+    span &nbsp;&gt;&nbsp;
+    span.title
+    ul.right
+      li
+        a(href='#metrics')
+          span.material-icons grade
+          |  Key Metrics
+      li
+        a(href='#plots')
+          span.material-icons show_chart
+          |  Plots
+      li
+        a(href='#begining')
+          span.material-icons play_arrow
+          |  Timeline
+      li
+        a(href='#end')
+          span.material-icons last_page
+          |  End
+section#metrics.cd-metrics.js-cd-metrics
+  h1.link Key Metrics
+  .grid.gap-sm
+    #root_metrics.container.cd-metrics__container.grid
+section#plots.cd-plots.js-cd-plots
+  h1.link Plots
+  .grid.gap-sm
+    #root_plots.container.cd-plots__container
+section#begining.cd-timeline.js-cd-timeline
+  h1.link Timeline
+  span.cd-timeline(style='width:100%;margin:auto;display: inline-block;text-align: center;')
+    span.title
+    |  begins here
+  .cd-timeline__img(style='margin: auto;')
+    a(href='#root_timeline')
+      span.material-icons arrow_downward
+  #root_timeline.container.cd-timeline__container
+section#end.cd-timeline(style='background: hsl(var(--cd-color-2-h), var(--cd-color-2-s), calc(var(--cd-color-2-l)*1.05));')
+  .cd-timeline__img(style='margin: auto;')
+    a(href='#root_timeline')
+      span.material-icons highlight_off
+  span.cd-timeline(style='width:100%;margin:auto;display: inline-block;text-align: center;') Story ends here
+footer.cd-main-footer.text-center.flex.flex-column.flex-center
+  p
+    | &copy; 
+    a.white(href=baseUrl_https) t6 IoT from InternetCollaboratif.info
+script.
+  let displayed = 0;
+  var header = document.getElementById("header");
+  var root_metrics = document.getElementById("root_metrics");
+  var root_timeline = document.getElementById("root_timeline");
+  let authInProcess = false;
+  let bearer = localStorage.getItem("bearer");
+  let refresh_token = localStorage.getItem("refresh_token");
+  let refreshTokenExp = localStorage.getItem("refreshTokenExp");
+  let version = "2.0.1";
+  let t6Url = "#{baseUrl_https}";
+  let t6Api = `${t6Url}/v${version}`;
+  let story = "#{story.id}";
+  let size = 1;
+  let width = document.body.clientWidth - 50;
+  
+script(src='/js/t6stories.js')

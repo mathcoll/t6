@@ -25,6 +25,16 @@ router.get("/networkError", function(req, res) {
 	});
 });
 
+router.get("/stories/?:story_id([0-9a-zA-Z\-]+)?", function(req, res) {
+	var story_id = req.params.story_id;
+	res.render("story", {
+		currentUrl: req.path,
+		baseUrl_https: baseUrl_https,
+		user: req.session.user,
+		story: {id: story_id}
+	});
+});
+
 /**
  * @api {get} /mail/:mail/unsubscribe/:list/:unsubscription_token/ Unsubscribe from a Notification list
  * @apiName Unsubscribe from a Notification list

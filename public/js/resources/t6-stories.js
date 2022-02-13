@@ -7,7 +7,7 @@ app.resources.stories = {
 		} else {
 			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 			var body = {
-				flow_id: myForm.querySelector("input[id='FlowId']").value,
+				flow_id: myForm.querySelector("select[id='FlowId']").value,
 				name: myForm.querySelector("input[id='Name']").value,
 				retention: myForm.querySelector("select[name='Retention']").value,
 				start: myForm.querySelector("input[id='Start']").value,
@@ -41,7 +41,7 @@ app.resources.stories = {
 	onAdd: function(evt) {
 		var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
 		var body = {
-			flow_id: myForm.querySelector("input[id='FlowId']").value,
+			flow_id: myForm.querySelector("select[id='FlowId']").value,
 			name: myForm.querySelector("input[id='Name']").value,
 			retention: myForm.querySelector("select[name='Retention']").value,
 			start: myForm.querySelector("input[id='Start']").value,
@@ -129,11 +129,25 @@ app.resources.stories = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+story.id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, "meta.revision", story.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.flows, "Flow", story.attributes.flow_id, {type: "text", id: "FlowId", isEdit: isEdit, pattern: app.patterns.uuidv4, error:""});
+					if ( localStorage.getItem("flows") !== "null" ) {
+						var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+							return {value: flow.name, name: flow.id};
+						});
+						node += app.getField(app.icons.flows, "Flow", story.attributes.flow_id, {type: "select", id: "FlowId", isEdit: true, options: flows });
+					} else {
+						app.getFlows();
+						node += app.getField(app.icons.flows, "Flow (you should add some flows first)", "", {type: "select", id: "FlowId", isEdit: true, options: {} });
+					}
 					node += app.getField(app.icons.name, "Name", story.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 					node += app.getField(app.icons.retention, "Retention", story.attributes.retention, {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions});
 					node += app.getField(app.icons.date, "Start date", story.attributes.start, {type: "text", id: "Start", isEdit: isEdit, pattern: app.patterns.date, error:"Date must be valid"});
 					node += app.getField(app.icons.date, "End date", story.attributes.end, {type: "text", id: "End", isEdit: isEdit, pattern: app.patterns.date, error:"Date must be valid"});
+					node += "	</div>";
+					node += "</section>";
+
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<a href=\"/stories/"+id+"\" target=\"_blank\">Read the full story</a>";
 					node += "	</div>";
 					node += "</section>";
 					
@@ -196,11 +210,25 @@ app.resources.stories = {
 					node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+story.id+"\">";
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, "meta.revision", story.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
-					node += app.getField(app.icons.flows, "Flow Id", story.attributes.flow_id, {type: "text", id: "FlowId", isEdit: isEdit, pattern: app.patterns.uuidv4, error:""});
+					if ( localStorage.getItem("flows") !== "null" ) {
+						var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+							return {value: flow.name, name: flow.id};
+						});
+						node += app.getField(app.icons.flows, "Flow", story.attributes.flow_id, {type: "select", id: "FlowId", isEdit: true, options: flows });
+					} else {
+						app.getFlows();
+						node += app.getField(app.icons.flows, "Flow (you should add some flows first)", story.attributes.flow_id, {type: "select", id: "FlowId", isEdit: true, options: {} });
+					}
 					node += app.getField(app.icons.name, "Name", story.attributes.name, {type: "text", id: "Name", isEdit: isEdit, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 					node += app.getField(app.icons.retention, "Retention", story.attributes.retention!==undefined?story.attributes.retention:"Default", {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions });
 					node += app.getField(app.icons.date, "Start date", story.attributes.start, {type: "text", id: "Start", isEdit: isEdit, pattern: app.patterns.date, error:"Date must be valid"});
 					node += app.getField(app.icons.date, "End date", story.attributes.end, {type: "text", id: "End", isEdit: isEdit, pattern: app.patterns.date, error:"Date must be valid"});
+					node += "	</div>";
+					node += "</section>";
+
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += "		<a href=\"/stories/"+id+"\" target=\"_blank\">Read the full story</a>";
 					node += "	</div>";
 					node += "</section>";
 					
@@ -288,7 +316,15 @@ app.resources.stories = {
 
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+story.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
-		node += app.getField(app.icons.flows, "Flow Id", typeof story.attributes.flow_id!=="undefined"?story.attributes.flow_id:"", {type: "text", id: "FlowId", isEdit: true, pattern: app.patterns.uuidv4, error:""});
+		if ( localStorage.getItem("flows") !== "null" ) {
+			var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+				return {value: flow.name, name: flow.id};
+			});
+			node += app.getField(app.icons.flows, "Flow", story.attributes.flow_id, {type: "select", id: "FlowId", isEdit: true, options: flows });
+		} else {
+			app.getFlows();
+			node += app.getField(app.icons.flows, "Flow (you should add some flows first)", "", {type: "select", id: "FlowId", isEdit: true, options: {} });
+		}
 		node += app.getField(app.icons.name, "Name", typeof story.attributes.name!=="undefined"?story.attributes.name:"", {type: "text", id: "Name", isEdit: true, pattern: app.patterns.name, error:"Name should be set and more than 3 chars length."});
 		node += app.getField(app.icons.retention, "Retention", story.attributes.retention!==undefined?story.attributes.retention:"Default", {type: "select", id: "Retention", isEdit: true, options: app.allRetentions });
 		node += app.getField(app.icons.date, "Start date", typeof story.attributes.start!=="undefined"?story.attributes.start:"", {type: "text", id: "Start", isEdit: true, pattern: app.patterns.date, error:"Date must be valid"});
