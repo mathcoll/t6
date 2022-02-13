@@ -16,6 +16,7 @@ echo 1. PWA Javascript T6 minify:
 	../public/js/resources/t6-rules.js \
 	../public/js/resources/t6-mqtts.js \
 	../public/js/resources/t6-sources.js \
+	../public/js/resources/t6-stories.js \
 	../public/js/resources/snippets/valueDisplay.js \
 	../public/js/resources/snippets/graphDisplay.js \
 	../public/js/resources/snippets/flowGraph.js \
