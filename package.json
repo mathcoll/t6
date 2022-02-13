@@ -56,7 +56,7 @@
     "express-jwt": "^6.1.0",
     "express-session": "^1.17.2",
     "firebase-admin": "^10.0.1",
-    "follow-redirects": "^1.14.7",
+    "follow-redirects": "^1.14.8",
     "fs-extra": "^10.0.0",
     "geodist": "^0.2.1",
     "geoip-lite": "^1.4.3",
