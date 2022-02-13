@@ -32,8 +32,8 @@ var app = {
 	cookieconsent: 30,
 	refreshExpiresInSeconds: 280000,
 	toastDuration: 3000,
-	itemsSize: { objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15, sources: 15 },
-	itemsPage: { objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1, sources: 1, },
+	itemsSize: { objects: 15, flows: 15, snippets: 15, dashboards: 15, mqtts: 15, rules: 15, sources: 15, stories: 15, tokens: 15 },
+	itemsPage: { objects: 1, flows: 1, snippets: 1, dashboards: 1, mqtts: 1, rules: 1, sources: 1, stories: 1, tokens: 1 },
 	currentSection: "index",
 	tawktoid: "58852788bcf30e71ac141187",
 	gtm: "GTM-PH7923",
@@ -73,6 +73,8 @@ var app = {
 		"source_add": "Add Source to t6",
 		"settings": "t6 Settings",
 		"signin": "Signin to t6",
+		"story": "t6 Story %s",
+		"stories": "t6 Stories",
 		"login": "Signin to t6",
 		"signup": "Signup to t6",
 		"forgot-password": "Forgot your t6 password?",
@@ -121,6 +123,7 @@ var app = {
 		"settings": "settings",
 		"snippets": "widgets",
 		"status": "favorite",
+		"stories": "play_arrow",
 		"terms": "business_center",
 		"track": "call_merge",
 		"ttl": "timer",
@@ -191,6 +194,7 @@ var app = {
 		mqtt: { id: "", attributes: { name: "" } },
 		source: { id: "", attributes: { name: "" } },
 		rule: { id: '', active: true, attributes: { name: '', priority: 1, event: { type: "email", conditions: '{"all":[ { "fact":"environment", "operator":"equal", "value":"production" }]}', parameters: "{}" } } },
+		story: { id: "", attributes: { name: "" } },
 	},
 	offlineCard: {},
 	patterns: {
@@ -825,6 +829,16 @@ var touchStartPoint, touchMovePoint;
 			editSourceObject: document.querySelectorAll('#source section button.object_edit_btn'),
 			deploySourceObject: document.querySelectorAll('#source section button.object_deploy_btn, #object section button.object_deploy_btn'),
 			buildSourceObject: document.querySelectorAll('#source section button.object_build_btn, #object section button.object_build_btn'),
+
+			deleteStory: document.querySelectorAll('#stories .delete-button'),
+			editStory: document.querySelectorAll('#stories .edit-button'),
+			createStory: document.querySelector('#stories button#createStory'),
+			addStory: document.querySelector('#story_add section.fixedActionButtons button.add-button'),
+			addStoryBack: document.querySelector('#story_add section.fixedActionButtons button.back-button'),
+			backStory: document.querySelector('#story section.fixedActionButtons button.back-button'),
+			saveStory: document.querySelector('#story section.fixedActionButtons button.save-button'),
+			listStory: document.querySelector('#story section.fixedActionButtons button.list-button'),
+			editStory2: document.querySelector('#story section.fixedActionButtons button.edit-button'),
 		};
 	};
 
@@ -877,6 +891,10 @@ var touchStartPoint, touchMovePoint;
 			drawerObfuscatorElement: document.getElementsByClassName('mdl-layout__obfuscator')[0],
 			menuItems: document.querySelectorAll('.mdl-layout__drawer nav a.mdl-navigation__link'),
 			menuTabItems: document.querySelectorAll('.mdl-layout__tab-bar a.mdl-navigation__link.mdl-layout__tab'),
+
+			stories: document.querySelector('section#stories'),
+			story: document.querySelector('section#story'),
+			story_add: document.querySelector('section#story_add'),
 		}
 	};
 
@@ -1071,6 +1089,20 @@ var touchStartPoint, touchMovePoint;
 					app.resources.sources.display(params['id'], false, false, false);
 				}
 			}
+		} else if (section === 'story') {
+			var urlParams = new URLSearchParams(url);
+			var params = {};
+			if (Array.from(urlParams).length > -1) {
+				for (let p of urlParams) {
+					var n = p[0];
+					params[n] = p[1];
+				}
+				if (params['id'] == "") {
+					app.setSection('stories'); // TODO, recursive?
+				} else if (params['id']) {
+					app.resources.stories.display(params['id'], false, false, false);
+				}
+			}
 		} else if (section === 'object_add') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			app.resources.objects.displayAdd(app.defaultResources.object, true, false, false);
@@ -1092,6 +1124,9 @@ var touchStartPoint, touchMovePoint;
 		} else if (section === 'source_add') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			app.resources.sources.displayAdd(app.defaultResources.source, true, false, false);
+		} else if (section === 'story_add') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.resources.stories.displayAdd(app.defaultResources.story, true, false, false);
 		} else if (section === 'profile') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			(app.containers.profile).querySelector('.page-content').innerHTML = "";
@@ -1236,6 +1271,15 @@ var touchStartPoint, touchMovePoint;
 						let item = event.currentTarget.parentNode.parentNode;
 						item.classList.add('is-hover');
 						app.resources.sources.display(item.dataset.id, false, false, false);
+						event.preventDefault();
+					});
+				});
+			} else if (type == 'stories' && (items[i]) !== undefined && (items[i]).childElementCount > -1 && (items[i]).getAttribute('data-type') == type) {
+				(items[i]).querySelectorAll("div.mdl-card__title, div.mdl-list__item--three-line").forEach(div => {
+					div.addEventListener("click", (event) => {
+						let item = event.currentTarget.parentNode.parentNode;
+						item.classList.add('is-hover');
+						app.resources.stories.display(item.dataset.id, false, false, false);
 						event.preventDefault();
 					});
 				});
@@ -1557,6 +1601,51 @@ var touchStartPoint, touchMovePoint;
 			for (var s = 0; s < app.buttons.editRule.length; s++) {
 				app.buttons.editRule[s].addEventListener('click', function(evt) {
 					app.resources.rules.display(evt.currentTarget.dataset.id, false, true, false);
+					evt.preventDefault();
+				});
+			}
+		} else if (type === "stories") {
+			for (var d = 0; d < app.buttons.deleteStory.length; d++) {
+				app.buttons.deleteStory[d].addEventListener('click', function(evt) {
+					dialog.querySelector('h3').innerHTML = '<i class="material-icons md-48">' + app.icons.delete_question + '</i> Delete story';
+					dialog.querySelector('.mdl-dialog__content').innerHTML = '<p>Do you really want to delete \"' + evt.target.parentNode.dataset.name + '\"? This action will remove all reference to the Story in t6.</p>';
+					dialog.querySelector('.mdl-dialog__actions').innerHTML = '<button class="mdl-button btn danger yes-button">Yes</button> <button class="mdl-button cancel-button">No, Cancel</button>';
+
+					app.showModal();
+					var myId = evt.target.parentNode.dataset.id;
+					evt.preventDefault();
+
+					dialog.querySelector('.cancel-button').addEventListener('click', function(e) {
+						app.hideModal();
+						evt.preventDefault();
+					});
+					dialog.querySelector('.yes-button').addEventListener('click', function(e) {
+						app.hideModal();
+						var myHeaders = new Headers();
+						myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
+						myHeaders.append("Content-Type", "application/json");
+						var myInit = { method: 'DELETE', headers: myHeaders };
+						var url = `${app.baseUrl}/${app.api_version}/stories/${myId}`;
+						fetch(url, myInit)
+							.then(
+								app.fetchStatusHandler
+							).then(function(fetchResponse) {
+								return fetchResponse.json();
+							})
+							.then(function(response) {
+								document.querySelector('[data-id="' + myId + '"]').classList.add('removed');
+								toast('Story has been deleted.', { timeout: app.toastDuration, type: "done" });
+							})
+							.catch(function(error) {
+								toast('Story has not been deleted.', { timeout: app.toastDuration, type: "error" });
+							});
+						evt.preventDefault();
+					});
+				});
+			}
+			for (var s = 0; s < app.buttons.editStory.length; s++) {
+				app.buttons.editStory[s].addEventListener('click', function(evt) {
+					app.resources.stories.display(evt.currentTarget.dataset.id, false, true, false);
 					evt.preventDefault();
 				});
 			}
@@ -1910,7 +1999,7 @@ var touchStartPoint, touchMovePoint;
 
 	app.fetchItemsPaginated = function(type, filter, page, size) {
 		let promise = new Promise((resolve, reject) => {
-			if (type !== "objects" && type !== "flows" && type !== "dashboards" && type !== "snippets" && type !== "rules" && type !== "mqtts" && type !== "sources") {
+			if (type !== "objects" && type !== "flows" && type !== "dashboards" && type !== "snippets" && type !== "rules" && type !== "mqtts" && type !== "sources" && type !== "stories") {
 				resolve();
 				return false;
 			}
@@ -2046,6 +2135,22 @@ var touchStartPoint, touchMovePoint;
 				var title = 'My Sources';
 				if (app.isLogged) defaultCard = { title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any source yet.', action: { id: 'source_add', label: '<i class=\'material-icons\'>add</i>Add my first Source' }, className: "mdl-grid mdl-cell mdl-cell--12-col" };
 				else defaultCard = { title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', className: "mdl-grid mdl-cell mdl-cell--12-col" }; // ,
+
+			} else if (type == 'stories') {
+				var container = (app.containers.stories).querySelector('.page-content');
+				var url = `${app.baseUrl}/${app.api_version}/stories`;
+				if (page || size) {
+					url += '?';
+					if (page !== undefined) {
+						url += 'page=' + page + '&';
+					}
+					if (size !== undefined) {
+						url += 'size=' + size + '&';
+					}
+				}
+				var title = 'My stories';
+				if (app.isLogged) defaultCard = { title: title, titlecolor: '#ffffff', description: 'Hey, it looks you don\'t have any story yet.', action: { id: 'story_add', label: '<i class=\'material-icons\'>add</i>Add my first story' }, className: "mdl-grid mdl-cell mdl-cell--12-col" };
+				else defaultCard = { title: 'Stories', titlecolor: '#ffffff', description: 'Discover your data through auto generated stories', className: "mdl-grid mdl-cell mdl-cell--12-col" }; // ,
 
 			} else if (type == 'tokens') {
 				var container = (app.containers.tokens).querySelector('.page-content');
@@ -2719,6 +2824,10 @@ var touchStartPoint, touchMovePoint;
 			fabs.push({id: "createSource", icon: "add", tooltip: "Add a new source"});
 			container = (app.containers.sources).querySelector('.page-content');
 		}
+		if (type === 'stories') {
+			fabs.push({id: "createStory", icon: "add", tooltip: "Add a new story"});
+			container = (app.containers.stories).querySelector('.page-content');
+		}
 		if (type === 'exploration') {
 			fabs.push({id: "exploreFlows", icon: app.icons.exploration, tooltip: "Explore"});
 			container = (app.containers.exploration).querySelector('.page-content');
@@ -2783,6 +2892,9 @@ var touchStartPoint, touchMovePoint;
 			}
 			if (app.buttons.createSource) {
 				app.buttons.createSource.addEventListener("click", function(evt) { app.setSection("source_add"); evt.preventDefault(); }, false);
+			}
+			if (app.buttons.createStory) {
+				app.buttons.createStory.addEventListener("click", function(evt) { app.setSection("story_add"); evt.preventDefault(); }, false);
 			}
 		}
 	};
@@ -3456,6 +3568,8 @@ var touchStartPoint, touchMovePoint;
 						app.displayAddMqtt(app.defaultResources.mqtt);
 					} else if (window.location.hash && window.location.hash.substr(1) === 'source_add') {
 						app.displayAddSource(app.defaultResources.source);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'story_add') {
+						app.displayAddStory(app.defaultResources.story);
 					} else if (window.location.hash && window.location.hash.substr(1) !== 'login') {
 						app.setSection(window.location.hash.substr(1));
 					} else {
@@ -3990,7 +4104,6 @@ var touchStartPoint, touchMovePoint;
 			explorationNode += "	</div>";
 			explorationNode += "</section>";
 			
-			
 			explorationNode += app.getSubtitle('TimeSeries decomposition');
 			explorationNode += "<section class='mdl-grid mdl-cell--12-col'>";
 			explorationNode += "	<div class='mdl-cell--12-col mdl-card mdl-shadow--2dp'>";
@@ -4093,6 +4206,10 @@ var touchStartPoint, touchMovePoint;
 			(app.containers.sources).querySelector('.page-content').innerHTML = app.getCard({ title: 'Code Source', titlecolor: '#ffffff', description: 'Deploy Arduino source Over The Air.', action: { id: 'login', label: 'Sign-In' }, secondaryaction: { id: 'signup', label: 'Create an account' } });
 			app.displayLoginForm((app.containers.sources).querySelector('.page-content'));
 		}
+		if (app.containers.stories) {
+			(app.containers.stories).querySelector('.page-content').innerHTML = app.getCard({ title: 'Stories', titlecolor: '#ffffff', description: 'Discover your data through auto generated stories', action: { id: 'login', label: 'Sign-In' }, secondaryaction: { id: 'signup', label: 'Create an account' } });
+			app.displayLoginForm((app.containers.sources).querySelector('.page-content'));
+		}
 
 		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
 		for (var i = 0; i < updated.length; i++) {
@@ -4124,6 +4241,8 @@ var touchStartPoint, touchMovePoint;
 		if (app.containers.mqtt) { (app.containers.mqtt).querySelector('.page-content').innerHTML = ''; }
 		if (app.containers.sources) { (app.containers.sources).querySelector('.page-content').innerHTML = ''; }
 		if (app.containers.source) { (app.containers.source).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.stories) { (app.containers.stories).querySelector('.page-content').innerHTML = ''; }
+		if (app.containers.story) { (app.containers.story).querySelector('.page-content').innerHTML = ''; }
 		if (app.containers.objectsMaps) { (app.containers.objectsMaps).querySelector('.page-content').innerHTML = ''; }
 	};
 
@@ -4328,6 +4447,8 @@ var touchStartPoint, touchMovePoint;
 				app.setSection('mqtts');
 			} else if (currentPage === 'sources') {
 				app.setSection('sources');
+			} else if (currentPage === 'stories') {
+				app.setSection('stories');
 			} else {
 				app.setSection(currentPage);
 			}

@@ -128,14 +128,14 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link.mdl-layout__tab(href='#flows', for='flows')
             i.material-icons settings_input_component
             |  Flows
-          a.mdl-navigation__link.mdl-layout__tab(href='#dashboards', for='dashboards')
-            i.material-icons dashboard
-            |  Dashboards
           a.mdl-navigation__link.mdl-layout__tab(href='#exploration', for='exploration')
             i.material-icons explore
             |  Data Exploration&nbsp;
             .mdl-chip.verysmall(style='background: #f0f0f0;font-size: .5em;padding: 10px 3px;height: 20px;line-height: 0px;')
               | beta
+          a.mdl-navigation__link.mdl-layout__tab(href='#dashboards', for='dashboards')
+            i.material-icons dashboard
+            |  Dashboards
           a.mdl-navigation__link.mdl-layout__tab(href='#snippets', for='snippets')
             i.material-icons widgets
             |  Snippets
@@ -145,6 +145,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link.mdl-layout__tab(href='#sources', for='sources')
             i.arduino-icon.build  
             |  Sources
+          a.mdl-navigation__link.mdl-layout__tab(href='#stories', for='stories')
+            i.material-icons play_arrow  
+            |  Stories&nbsp;
+            .mdl-chip.verysmall(style='background: #f0f0f0;font-size: .5em;padding: 10px 3px;height: 20px;line-height: 0px;')
+              | beta
 
       #drawer.mdl-layout__drawer
         div.side-nav__header#currentUserBackground
@@ -161,14 +166,14 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link(href='#flows')
             i.material-icons settings_input_component
             |  Flows
-          a.mdl-navigation__link(href='#dashboards')
-            i.material-icons dashboard
-            |  Dashboards
           a.mdl-navigation__link(href='#exploration')
             i.material-icons explore
             |  Data Exploration&nbsp;
             .mdl-chip.verysmall(style='background: #f0f0f0;font-size: .5em;padding: 10px 3px;height: 20px;line-height: 0px;')
               | beta
+          a.mdl-navigation__link(href='#dashboards')
+            i.material-icons dashboard
+            |  Dashboards
           a.mdl-navigation__link(href='#snippets')
             i.material-icons widgets
             |  Snippets
@@ -178,6 +183,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
           a.mdl-navigation__link(href='#sources')
             i.arduino-icon.build  
             |  Sources
+          a.mdl-navigation__link(href='#stories')
+            i.material-icons play_arrow  
+            |  Stories&nbsp;
+            .mdl-chip.verysmall(style='background: #f0f0f0;font-size: .5em;padding: 10px 3px;height: 20px;line-height: 0px;')
+              | beta
           span.mdl-menu__item--full-bleed-divider 
           a.mdl-navigation__link(href='#settings')
             i.material-icons settings
@@ -777,6 +787,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-mqtts.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-rules.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-sources.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-stories.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/valueDisplay.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/graphDisplay.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/flowGraph.js')

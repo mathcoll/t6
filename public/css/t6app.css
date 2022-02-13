@@ -489,6 +489,8 @@ div[data-type="snippets"].removed,
 div[data-type="rules"].removed,
 div[data-type="mqtts"].removed,
 div[data-type="sources"].removed,
+div[data-type="stories"].removed,
+div[data-type="tokens"].removed,
 section[data-type="linkedObject"].removed {
   visibility: collapse;
   opacity: 0;
