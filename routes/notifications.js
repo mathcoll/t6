@@ -80,8 +80,8 @@ function sendPush(pushers, dryrun, recurring, user_id, limit, cpt=0) {
 	return (!dryrun || dryrun === false)?{"status": `Sending push to ${limit} recipients.`}:{"status": `Simulating push to ${limit} recipients.`};
 }
 
-function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
-	t6console.debug("sendNewsletter: GO ", newsletters.length, "limit", limit, "cpt", cpt);
+function sendNewsletter(newsletters, taskType, dryrun, recurring, user_id, limit, cpt=0) {
+	t6console.debug("sendNewsletter: GO ", taskType,  newsletters.length, "limit", limit, "cpt", cpt);
 	newsletters.map(function(newsletter) {
 		t6console.debug(newsletter.metadata.mailOptions.to);
 		/* Send a newsletter to each subscribers */
@@ -98,7 +98,7 @@ function sendNewsletter(newsletters, dryrun, recurring, user_id, limit, cpt=0) {
 				cpt++;
 				if(Number.isInteger(recurring) && cpt<limit) {
 					timer = setTimeout(function() {
-						sendNewsletter(t6jobs.get({"taskType": "newsletter", user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
+						sendNewsletter(t6jobs.get({"taskType": taskType, user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
 					}, recurring);
 					t6console.debug(`Scheduling another task to send Newsletter in ${recurring}ms (cpt=${cpt}<${limit}).`);
 				} else {
@@ -584,7 +584,7 @@ router.post("/mail/newsletter/send", expressJwt({secret: jwtsettings.secret, alg
 		let newsletters = t6jobs.get({taskType: "newsletter", user_id: req.user.id}, recurring!==null?1:limit);
 		t6console.debug("newsletters : ", newsletters);
 		if(newsletters.length > 0) {
-			let response = sendNewsletter(newsletters, dryrun, recurring, req.user.id, limit, 0);
+			let response = sendNewsletter(newsletters, "newsletter", dryrun, recurring, req.user.id, limit, 0);
 			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/mail/newsletter/send", "", "", {"status": "200", error_id: "00003"});
 			res.status(202).send({"response": response});
 		} else {
@@ -618,7 +618,7 @@ router.post("/mail/monthlyreport/send", expressJwt({secret: jwtsettings.secret, 
 		let reports = t6jobs.get({taskType: "monthlyreport", user_id: req.user.id}, recurring!==null?1:limit);
 		t6console.debug("reports : ", reports);
 		if(reports.length > 0) {
-			let response = sendNewsletter(reports, dryrun, recurring, req.user.id, limit, 0);
+			let response = sendNewsletter(reports, "monthlyreport", dryrun, recurring, req.user.id, limit, 0);
 			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/mail/monthlyreport/send", "", "", {"status": "200", error_id: "00003"});
 			res.status(202).send({"response": response});
 		} else {
