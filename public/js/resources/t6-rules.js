@@ -312,7 +312,7 @@ app.resources.rules = {
 	},
 	displayAdd: function(rule, isAdd, isEdit, isPublic) {
 		history.pushState( {section: "rule_add" }, window.location.hash.substr(1), "#rule_add" );
-		app.initNewSection("ruled_add");
+		app.initNewSection("rule_add");
 		var node = "";
 		node = "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+rule.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
