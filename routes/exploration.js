@@ -1254,6 +1254,7 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 						.attr("class", "line")
 						.attr("d", lineChart);
 
+					res.setHeader("X-latest-time", data[0].date);
 					res.setHeader("content-type", "image/svg+xml");
 					res.status(200).send(d3n.svgString());
 				} else {

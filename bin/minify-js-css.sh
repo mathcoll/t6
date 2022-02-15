@@ -38,7 +38,6 @@ echo 2. PWA Javascript T6-VENDOR minify:
 	../public/js/vendor/mdl/mdl-selectfield.min.js \
 	../public/js/vendor/moment/moment-2.29.1.min.js \
 	../public/js/vendor/OpenLayers/ol-6.12.0.min.js \
-	../public/js/vendor/Chart/Chart-3.7.1-min.js \
 	../public/js/vendor/Leaflet/leaflet-1.7.1.min.js \
 	--compress \
 	--mangle \
