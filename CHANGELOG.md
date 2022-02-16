@@ -18,6 +18,23 @@ Types of changes
 ------------
 
 ## 2022
+### Milestone 18 - 2022-02: 
+#### Added
+  - [x] Added screens to list, add, and edit `Stories`
+  - [x] Added `Stories` display linked from the resource in App UI
+
+#### Fixed
+  - [x] Fixed monthly Report notification batch reccuring
+  - [x] Fixed Flow display UI using the new Api endpoint for exploration/line
+  
+#### Changed
+  - [x] Remove Chartjs library and use svg output instead
+  - [x] Updated Open Layers library
+  - [x] Updated Leaflet library
+  - [x] Updated Material Design Lite library
+  - [x] Updated Moment library
+  - [x] Updated node dependncies for @vladmandic/face-api apidoc canvas firebase-admin follow-redirects influx mqtt npm suncalc twilio
+  
 ### Milestone 17 - 2022-01: 
 #### Added
   - [x] Monitoring using dashboard from influxData.
