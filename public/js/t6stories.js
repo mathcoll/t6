@@ -7,10 +7,10 @@
 		this.contents = this.element.getElementsByClassName("cd-timeline__content");
 		this.offset = 0.8;
 		this.hideBlocks();
-	};
+	}
 
 	VerticalTimeline.prototype.hideBlocks = function() {
-		if ( !"classList" in document.documentElement ) {
+		if ( !("classList" in document.documentElement) ) {
 			return; // no animation on older browsers
 		}
 		//hide timeline blocks which are outside the viewport
@@ -26,7 +26,7 @@
 	};
 
 	VerticalTimeline.prototype.showBlocks = function() {
-		if ( ! "classList" in document.documentElement ) {
+		if ( !("classList" in document.documentElement) ) {
 			return;
 		}
 		var self = this;
@@ -41,6 +41,13 @@
 				}
 			})(i);
 		}
+	};
+
+	function checkTimelineScroll() {
+		verticalTimelinesArray.forEach(function(timeline){
+			timeline.showBlocks();
+		});
+		scrolling = false;
 	};
 
 	var verticalTimelines = document.getElementsByClassName("js-cd-timeline"),
@@ -61,20 +68,7 @@
 			}
 		});
 	}
-
-	function checkTimelineScroll() {
-		verticalTimelinesArray.forEach(function(timeline){
-			timeline.showBlocks();
-		});
-		scrolling = false;
-	};
 })();
-
-
-
-
-
-
 
 let optionsJson = {
 	mode: "cors",
@@ -97,7 +91,7 @@ var toHHMMSS = function (value) {
 	var days = Math.floor(((seconds % 31536000) % 2628000) / 86400);
 	var hours = Math.floor((((seconds % 31536000) % 2628000) % 86400) / 3600);
 	var minutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
-	var seconds = Math.floor(((((seconds % 31536000) % 86400) % 3600) % 60) / 60);
+	seconds = Math.floor(((((seconds % 31536000) % 86400) % 3600) % 60) / 60);
 	if (hours < 10) {hours = "0" + hours;}
 	if (minutes < 10) {minutes = "0" + minutes;}
 	if (seconds < 10) {seconds = "0" + seconds;}
@@ -107,13 +101,13 @@ var toHHMMSS = function (value) {
 		(hours > 0 ? `${hours} hours ` : "") +
 		(minutes > 0 ? `${minutes} minutes ` : "") +
 		(seconds > 0 ? `${seconds} seconds` : "");
-}
+};
 var sprintf = function (format, ...args) {let i = 0; return format.replace(/%s/g, () => args[i++]);};
 var formatTime = function (time) {let date = new Date(time); return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;};
 var H1 = function (attrs) {
 	document.title = attrs.value;
 	header.insertAdjacentHTML("beforeend", `<h1>${attrs.value}</h1>`);
-	[...document.querySelectorAll(".title")].map((n) => n.insertAdjacentHTML("beforeend", attrs.value))
+	[...document.querySelectorAll(".title")].map((n) => n.insertAdjacentHTML("beforeend", attrs.value));
 }
 var Headers = function (attrs) {
 	header.insertAdjacentHTML("beforeend", `<p class="margin-top-sm">${attrs.value}</p>`);
@@ -261,7 +255,7 @@ fetch(`${t6Api}/stories/${story}/insights`, optionsJson).then((response) => {
 		Boxplot({title: "Boxplot", flow_id: insights.links.meta.flow_id, start: insights.links.meta.start,end: insights.links.meta.end});
 		frequencyDistribution({title: "Frequency Distribution", flow_id: insights.links.meta.flow_id, start: insights.links.meta.start,end: insights.links.meta.end});
 
-		(insights.data).map(item => {
+		(insights.data).map((item) => {
 			if(item.type === "insights") {
 				let insight = item.attributes;
 				if (insight.type === "firstData" || insight.type === "lastData") {
@@ -293,7 +287,7 @@ fetch(`${t6Api}/stories/${story}/metrics`, optionsJson).then((response) => {
 			return response.json();
 		}
 	}).then((metrics) => {
-		(metrics.data).map(item => {
+		(metrics.data).map((item) => {
 			if(item.type === "metrics") {
 				let metric = item.attributes;
 				keyMetric({title: metric.title, icon: "grade", text: `${metric.value}`});
@@ -322,7 +316,7 @@ fetch(`${t6Api}/stories/${story}/gaps`, optionsJson).then((response) => {
 			return response.json();
 		}
 	}).then((gaps) => {
-		(gaps.data).map(item => {
+		(gaps.data).map((item) => {
 			if(item.type === "gaps") {
 				let gap = item.attributes;
 				gapCard({missing_values: gap.gap, gap_duration: gap.gap_duration, icon: "grade", date: formatTime(gap.timestamp)});
@@ -359,7 +353,7 @@ function Auth(refresh_token) {
 					return response.json();
 				}
 			}).then((auth) => {
-				bearer = auth.token;;
+				bearer = auth.token;
 				refresh_token = auth.refresh_token;
 				refreshTokenExp = auth.refreshTokenExp;
 			}).catch((error) => {

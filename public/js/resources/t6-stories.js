@@ -130,7 +130,7 @@ app.resources.stories = {
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, "meta.revision", story.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
 					if ( localStorage.getItem("flows") !== "null" ) {
-						var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+						let flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
 							return {value: flow.name, name: flow.id};
 						});
 						node += app.getField(app.icons.flows, "Flow", story.attributes.flow_id, {type: "select", id: "FlowId", isEdit: true, options: flows });
@@ -211,7 +211,7 @@ app.resources.stories = {
 					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 					node += app.getField(null, "meta.revision", story.attributes.meta.revision, {type: "hidden", id: "meta.revision", pattern: app.patterns.meta_revision});
 					if ( localStorage.getItem("flows") !== "null" ) {
-						var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+						let flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
 							return {value: flow.name, name: flow.id};
 						});
 						node += app.getField(app.icons.flows, "Flow", story.attributes.flow_id, {type: "select", id: "FlowId", isEdit: true, options: flows });
@@ -317,7 +317,7 @@ app.resources.stories = {
 		node += "<section class=\"mdl-grid mdl-cell--12-col\" data-id=\""+story.id+"\">";
 		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
 		if ( localStorage.getItem("flows") !== "null" ) {
-			var flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
+			let flows = JSON.parse(localStorage.getItem("flows")).map(function(flow) {
 				return {value: flow.name, name: flow.id};
 			});
 			node += app.getField(app.icons.flows, "Flow", story.attributes.flow_id, {type: "select", id: "FlowId", isEdit: true, options: flows });
