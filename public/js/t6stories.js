@@ -43,16 +43,15 @@
 		}
 	};
 
+	let verticalTimelines = document.getElementsByClassName("js-cd-timeline");
+	let verticalTimelinesArray = [];
+	let scrolling = false;
 	function checkTimelineScroll() {
 		verticalTimelinesArray.forEach(function(timeline){
 			timeline.showBlocks();
 		});
 		scrolling = false;
 	};
-
-	var verticalTimelines = document.getElementsByClassName("js-cd-timeline"),
-		verticalTimelinesArray = [],
-		scrolling = false;
 	if( verticalTimelines.length > 0 ) {
 		for( var i = 0; i < verticalTimelines.length; i++) {
 			(function(i){
