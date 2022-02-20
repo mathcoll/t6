@@ -107,10 +107,10 @@ var H1 = function (attrs) {
 	document.title = attrs.value;
 	header.insertAdjacentHTML("beforeend", `<h1>${attrs.value}</h1>`);
 	[...document.querySelectorAll(".title")].map((n) => n.insertAdjacentHTML("beforeend", attrs.value));
-}
+};
 var Headers = function (attrs) {
 	header.insertAdjacentHTML("beforeend", `<p class="margin-top-sm">${attrs.value}</p>`);
-}
+};
 var Insight = function (attrs) {
 	root_timeline.insertAdjacentHTML("beforeend", `
 		<div class="cd-timeline__block">
@@ -125,7 +125,7 @@ var Insight = function (attrs) {
 				</div>
 			</div>
 		</div>`);
-}
+};
 var gapCard = function (attrs) {
 	root_timeline.insertAdjacentHTML("beforeend", `
 		<div class="cd-timeline__block">
@@ -140,7 +140,7 @@ var gapCard = function (attrs) {
 				</div>
 			</div>
 		</div>`);
-}
+};
 var PlotLine = function (attrs) {
 	fetch(`${t6Api}/exploration/line?flow_id=${attrs.flow_id}&start=${attrs.start}&end=${attrs.end}&limit=100000&width=${width}&height=300&xAxis=Values`, optionsSvg).then((response) => {
 			if (response.status === 401) {
@@ -163,7 +163,7 @@ var PlotLine = function (attrs) {
 			console.log("An error occured (PlotLine)");
 			console.log(error);
 		});
-}
+};
 var Boxplot = function (attrs) {
 	fetch(`${t6Api}/exploration/boxplot?flow_id=${attrs.flow_id}&start=${attrs.start}&end=${attrs.end}&limit=100000&width=${width}&height=300&xAxis=Values`, optionsSvg).then((response) => {
 			if (response.status === 401) {
@@ -186,7 +186,7 @@ var Boxplot = function (attrs) {
 			console.log("An error occured (Boxplot)");
 			console.log(error);
 		});
-}
+};
 
 // frequencyDistribution
 var frequencyDistribution = function (attrs) {
@@ -211,7 +211,7 @@ var frequencyDistribution = function (attrs) {
 			console.log("An error occured (frequencyDistribution)");
 			console.log(error);
 		});
-}
+};
 
 //keyMetric
 var keyMetric = function (attrs) {
@@ -223,7 +223,7 @@ var keyMetric = function (attrs) {
 			<h2 class="text-md">${attrs.title}</h2>
 			<p class="color-contrast-medium line-height-md margin-y-xs big">${typeof attrs.text !== "undefined" ? attrs.text : ""}</p>
 		</div>`);
-}
+};
 
 // Insights
 fetch(`${t6Api}/stories/${story}/insights`, optionsJson).then((response) => {
