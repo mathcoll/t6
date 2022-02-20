@@ -426,12 +426,12 @@ router.delete("/tokens/all", function (req, res) {
 router.post("/authenticate", function (req, res) {
 	let meta = { pushSubscription : req.body.pushSubscription};
 	if ( (req.body.username !== "" && req.body.password !== "") && (!req.body.grant_type || req.body.grant_type === "password") ) {
-		var email = req.body.username;
-		var password = req.body.password;
+		let email = req.body.username;
+		let password = req.body.password;
 
-		var queryU = { "$and": [ { "email": email } ] };
+		let queryU = { "$and": [ { "email": email } ] };
 		//t6console.debug(queryU);
-		var user = users.findOne(queryU);
+		let user = users.findOne(queryU);
 		if ( user && typeof user.password!=="undefined" ) {
 			user.quotausage = undefined;
 			user.data = undefined;
@@ -442,9 +442,9 @@ router.post("/authenticate", function (req, res) {
 				}
 				/* pushSubscription */
 				if ( typeof meta.pushSubscription !== "undefined" ) {
-					var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+					let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 					meta.user_id = user.id;
-					timeoutNotification = setTimeout(sendNotification, 5000, meta, payload);
+					timeoutNotification = setTimeout(sendNotification, 5000, meta, payloadMessage);
 					user.pushSubscription = meta.pushSubscription;
 				}
 				users.update(user);
@@ -453,7 +453,7 @@ router.post("/authenticate", function (req, res) {
 				req.session.cookie.secure = true;
 				req.session.cookie.user_id = user.id;
 
-				var payload = JSON.parse(JSON.stringify(user));
+				let payload = JSON.parse(JSON.stringify(user));
 				payload.unsubscription = user.unsubscription;
 				payload.permissions = undefined;
 				payload.token = undefined;
@@ -528,24 +528,24 @@ router.post("/authenticate", function (req, res) {
 			return res.status(403).send(new ErrorSerializer({"id": 17250, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( ( req.body.key && req.body.secret ) && req.body.grant_type === "access_token" ) {
-		var queryT = {
+		let queryT = {
 		"$and": [
 					{ "key": req.body.key },
 					{ "secret": req.body.secret },
 				]
 		};
-		var u = access_tokens.findOne(queryT);
+		let u = access_tokens.findOne(queryT);
 		if ( u && typeof u.user_id !== "undefined" ) {
-			var user = users.findOne({id: u.user_id});
-			var geo = geoip.lookup(req.ip);
+			let user = users.findOne({id: u.user_id});
+			let geo = geoip.lookup(req.ip);
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			/* pushSubscription */
 			if ( typeof meta.pushSubscription !== "undefined" ) {
-				var payload = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+				let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 				meta.user_id = user.id;
-				timeoutNotification = setTimeout(sendNotification, 5000, meta, payload);
+				timeoutNotification = setTimeout(sendNotification, 5000, meta, payloadMessage);
 				user.pushSubscription = meta.pushSubscription;
 			}
 			//users.update(user);
@@ -557,7 +557,7 @@ router.post("/authenticate", function (req, res) {
 			users.update(user);
 			db_users.save();
 
-			var payload = JSON.parse(JSON.stringify(user));
+			let payload = JSON.parse(JSON.stringify(user));
 			payload.permissions = undefined;
 			payload.token = undefined;
 			payload.password = undefined;
@@ -586,12 +586,12 @@ router.post("/authenticate", function (req, res) {
 				payload.quotausage = undefined;
 				payload.data = undefined;
 			}
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			let token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
-			var refreshPayload = crypto.randomBytes(40).toString("hex");
-			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
+			let refreshPayload = crypto.randomBytes(40).toString("hex");
+			let refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
-			var agent = useragent.parse(req.headers["user-agent"]);
+			let agent = useragent.parse(req.headers["user-agent"]);
 			let t = {
 					user_id: user.id,
 					refresh_token: refreshPayload,
@@ -607,13 +607,13 @@ router.post("/authenticate", function (req, res) {
 					"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
 			};
 			tokens.insert(t);
-			var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+			let expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 			if ( expired ) {
 				tokens.remove(expired);
 				db_tokens.save();
 			}
 
-			var refresh_token = user.id + "." + refreshPayload;
+			let refresh_token = user.id + "." + refreshPayload;
 			t6events.addAudit("t6App", "POST_authenticate access_token", user.id, user.id, {"status": 200});
 			t6events.addStat("t6App", "POST_authenticate access_token", user.id, user.id, {"status": 200});
 			return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
@@ -623,10 +623,10 @@ router.post("/authenticate", function (req, res) {
 			return res.status(403).send(new ErrorSerializer({"id": 17350, "code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else if ( typeof req.body.refresh_token!=="undefined" && req.body.refresh_token!=="" && req.body.grant_type === "refresh_token" ) {
-		var user_id = req.body.refresh_token.split(".")[0];
-		var token = req.body.refresh_token.split(".")[1];
+		let user_id = req.body.refresh_token.split(".")[0];
+		let token = req.body.refresh_token.split(".")[1];
 
-		var queryT = {
+		let queryT = {
 			"$and": [
 						{ "user_id": user_id },
 						{ "refresh_token": token },
@@ -635,15 +635,15 @@ router.post("/authenticate", function (req, res) {
 		};
 		if ( user_id && token && tokens.findOne(queryT) ) {
 			// Sign a new token
-			var user = users.findOne({ "id": user_id });
-			var geo = geoip.lookup(req.ip);
+			let user = users.findOne({ "id": user_id });
+			let geo = geoip.lookup(req.ip);
 			if ( typeof user.location === "undefined" || user.location === null ) {
 				user.location = {geo: geo, ip: req.ip,};
 			}
 			users.update(user);
 			db_users.save();
 
-			var payload = JSON.parse(JSON.stringify(user));
+			let payload = JSON.parse(JSON.stringify(user));
 			payload.permissions = undefined;
 			payload.token = undefined;
 			payload.password = undefined;
@@ -669,11 +669,11 @@ router.post("/authenticate", function (req, res) {
 				payload.quotausage = undefined;
 				payload.data = undefined;
 			}
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-			var refreshPayload = crypto.randomBytes(40).toString("hex");
-			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
+			let token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			let refreshPayload = crypto.randomBytes(40).toString("hex");
+			let refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
-			var agent = useragent.parse(req.headers["user-agent"]);
+			let agent = useragent.parse(req.headers["user-agent"]);
 			let t = {
 					user_id: user.id,
 					refresh_token: refreshPayload,
@@ -697,13 +697,13 @@ router.post("/authenticate", function (req, res) {
 				]
 			};
 			tokens.findAndRemove(tQ);
-			var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+			let expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
 			if ( expired ) {
 				tokens.remove(expired);
 				db_tokens.save();
 			}
 
-			var refresh_token = user.id + "." + refreshPayload;
+			let refresh_token = user.id + "." + refreshPayload;
 			t6events.addAudit("t6App", "POST_authenticate refresh_token", user_id, user_id, {"status": 200});
 			t6events.addStat("t6App", "POST_authenticate refresh_token", user_id, user_id, {"status": 200});
 			return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
