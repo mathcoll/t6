@@ -18,7 +18,7 @@ Types of changes
 ------------
 
 ## 2022
-### Milestone 18 - 2022-02: 
+### Milestone 18 - 2022-02
 #### Added
   - [x] Added screens to list, add, and edit `Stories`
   - [x] Added `Stories` display linked from the resource in App UI
@@ -35,7 +35,7 @@ Types of changes
   - [x] Updated Moment library
   - [x] Updated node dependncies for @vladmandic/face-api apidoc canvas firebase-admin follow-redirects influx mqtt npm suncalc twilio
   
-### Milestone 17 - 2022-01: 
+### Milestone 17 - 2022-01
 #### Added
   - [x] Monitoring using dashboard from influxData.
   - [x] Add `Stories` resources available for POST, GET, PUT, DELETE
@@ -48,7 +48,7 @@ Types of changes
   - [x] Decision Rule: Display a relative diff on email instead of a absolute value
 
 ## 2021
-### Milestone 16 - 2021-11: 
+### Milestone 16 - 2021-11
 #### Fixed
 #### Changed
   - [x] autogen.events contains importants application logs
@@ -60,7 +60,7 @@ Types of changes
   - [x] Data labeling and annotation: collection and Api for Annotations
   - [x] Data labeling and annotation: `Rule Engine` can prorammatically annotate datapoints based on rule trigger
 
-### Milestone 15 - 2021-10: 
+### Milestone 15 - 2021-10
 #### Fixed
   - [x] Fixed signature on datapoint storage
   - [x] Fix pushNotification and error handling
