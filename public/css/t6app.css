@@ -124,7 +124,7 @@ code.nostyle br {
 
 /* Home - Hall of fame */
 #hof {
-  color: rgb(121,85,72,1);
+  color: rgb(121, 85, 72, 1);
 }
 #hof-container .carousel-item {
   width: 100%;
@@ -310,13 +310,13 @@ li.delete-button:hover {
   background-color: #e74c3c !important;
   color: #fff !important;
 }
-.mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
-  font-size: 12px !important;
-  color: #0009;
-}
 .mdl-list__item-sub-title {
   line-height: 12px;
   line-height: 28px;
+}
+.mdl-list__item--two-line .mdl-list__item-primary-content .mdl-list__item-sub-title {
+  font-size: 12px !important;
+  color: #0009;
 }
 span.mdl-list__item-sub-title {
   user-select: text;
@@ -499,12 +499,12 @@ section[data-type="linkedObject"].removed {
 }
 .is-outdated {
   background-color: gray !important;
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255, 255, 255, .5) 15px, rgba(255, 255, 255, .5) 35px) !important;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255, 255, 255, 0.5) 15px, rgba(255, 255, 255, 0.5) 35px) !important;
   color: #7d2020 !important;
 }
 section:not("#exploration") .is-disabled {
   background-color: gray;
-  background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255, 255, 255, .5) 15px, rgba(255, 255, 255, .5) 35px);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 15px, rgba(255, 255, 255, 0.5) 15px, rgba(255, 255, 255, 0.5) 35px);
 }
 .is-hover {
   -moz-transform: scale(0.99);
@@ -564,7 +564,7 @@ div .heading {
 div.valuedisplay hr {
   display: block;
   border-top: 1px solid #815786;
-  margin: .7em 0;
+  margin: 0.7em 0;
 }
 
 div.valuedisplay .snippet-value,
@@ -758,9 +758,6 @@ div.mdl-list__item .mdl-list__item-secondary-content:only-child {
   position: relative;
   margin: 5px 0;
   border-radius: 8px;
-}
-.mdl-card__title {
-  border-radius: 8px 8px 0 0;
 }
 .mdl-card__date {
   font-size: 1rem;
@@ -1224,6 +1221,7 @@ div[data-action='nothing'] .mdl-card__title h3.mdl-card__title-text {
 }
 .mdl-card__title {
   border-width: thick;
+  border-radius: 8px 8px 0 0;
   background: #795548;
   padding: 5px 10px;
 }
@@ -1265,7 +1263,6 @@ form.notifications > div.mdl-shadow--2dp img,
 form.forgotpassword > div.mdl-shadow--2dp img,
 form.resetpassword > div.mdl-shadow--2dp img {
   max-width: 500px;
-  margin-top: 80px;
   border-radius: 50%;
   height: 130px;
   width: 130px;
@@ -1770,7 +1767,7 @@ svg.footer:after {
   font-size: 16px !important;
   font-weight: 600 !important;
 }
-@media screen and (max-width:1024px) {
+@media screen and (max-width: 1024px) {
   .mdl-layout__tab-bar {
   padding: 0 0 0 40px;
   width: calc(100% - 30px) !important;
@@ -1888,7 +1885,7 @@ input#signup\.lastName {
   padding-right: 7px;
 }
 
-.mdl-selectfield__box>.mdl-selectfield__arrow-down__container {
+.mdl-selectfield__box > .mdl-selectfield__arrow-down__container {
   position: absolute;
   margin-top: 8px;
   right: 8px;
@@ -1903,7 +1900,7 @@ input#signup\.lastName {
   padding-right: 7px;
 }
 
-.mdl-selectfield__box>.mdl-selectfield__arrow-down__container .mdl-selectfield__arrow-down {
+.mdl-selectfield__box > .mdl-selectfield__arrow-down__container .mdl-selectfield__arrow-down {
   display: block;
   width: 0;
   height: 0;
@@ -1913,11 +1910,11 @@ input#signup\.lastName {
   border-top: 5px solid rgba(0, 0, 0, 0.26);
 }
 
-.mdl-selectfield.is-invalid .mdl-selectfield__box>.mdl-selectfield__arrow-down__container .mdl-selectfield__arrow-down {
+.mdl-selectfield.is-invalid .mdl-selectfield__box > .mdl-selectfield__arrow-down__container .mdl-selectfield__arrow-down {
   border-top-color: rgb(213, 0, 0);
 }
 
-.mdl-selectfield.is-focused .mdl-selectfield__box>.mdl-selectfield__arrow-down__container {
+.mdl-selectfield.is-focused .mdl-selectfield__box > .mdl-selectfield__arrow-down__container {
   visibility: hidden;
 }
 
@@ -1983,7 +1980,7 @@ input#signup\.lastName {
   list-style: none;
 }
 
-.mdl-selectfield__list-option-box ul>li {
+.mdl-selectfield__list-option-box ul > li {
   font-size: 16px;
   color: rgba(33, 33, 33, 0.87);
   line-height: 19px;
@@ -1995,12 +1992,12 @@ input#signup\.lastName {
   box-sizing: content-box;
 }
 
-.mdl-selectfield__list-option-box ul>li:hover,
-.mdl-selectfield__list-option-box ul>li.is-selected {
-  background-color: #f8f8f8
+.mdl-selectfield__list-option-box ul > li:hover,
+.mdl-selectfield__list-option-box ul > li.is-selected {
+  background-color: #f8f8f8;
 }
 
-.mdl-selectfield__list-option-box ul>li.is-disabled {
+.mdl-selectfield__list-option-box ul > li.is-disabled {
   color: rgba(0, 0, 0, 0.26);
   background-color: rgb(255, 255, 255);
   cursor: default;
@@ -2068,7 +2065,7 @@ input ~ .mdl-checkbox__label {
   padding-left: 0 !important;
 }
 
-/*cookieconsent*/
+/* cookieconsent */
 #cookieconsent {
   background-color: rgb(238, 238, 238);
   z-index: 999999;
