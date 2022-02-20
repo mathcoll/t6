@@ -51,7 +51,7 @@
 			timeline.showBlocks();
 		});
 		scrolling = false;
-	};
+	}
 	if( verticalTimelines.length > 0 ) {
 		for( var i = 0; i < verticalTimelines.length; i++) {
 			(function(i){
