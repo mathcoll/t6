@@ -119,7 +119,7 @@ configuration_refresh = 3600;
 
 function logEnvironment() {
 	t6console.log(`INFLUX_URL=${INFLUX_URL}`);
-	t6console.log(`INFLUX_TOKEN=${INFLUX_TOKEN ? '***' : ''}`);
+	t6console.log(`INFLUX_TOKEN=${INFLUX_TOKEN ? "***" : ""}`);
 	t6console.log(`INFLUX_ORG=${INFLUX_ORG}`);
 	t6console.log(`INFLUX_BUCKET=${INFLUX_BUCKET}`);
 }
