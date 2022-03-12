@@ -133,6 +133,89 @@ router.get("/:flow_id([0-9a-z\-]+)/track", expressJwt({secret: jwtsettings.secre
 });
 
 /**
+ * @api {get} /flows/:flow_id/categories Get Classification Categories from a Flow
+ * @apiName Get Classification Categories from a Flow
+ * @apiGroup 2. Flow
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [flow_id] Flow Id which is selected as a track on other Flows
+ * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * 
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 405
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/:flow_id([0-9a-z\-]+)/categories", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var flow_id = req.params.flow_id;
+	var size = typeof req.query.size!=="undefined"?req.query.size:20; // TODO WTF: should be "limit" !!
+	var page = typeof req.query.page!=="undefined"?req.query.page:1;
+	page = page>0?page:1;
+	var offset = Math.ceil(size*(page-1));
+	
+	let where = "";
+	let start = typeof req.query.start!=="undefined"?req.query.start:"";
+	let end = typeof req.query.end!=="undefined"?req.query.end:"";
+	if (typeof req.query.start !== "undefined") {
+		if (!isNaN(req.query.start) && parseInt(req.query.start, 10)) {
+			if (req.query.start.toString().length === 10) { start = req.query.start * 1e9; }
+			else if (req.query.start.toString().length === 13) { start = req.query.start * 1e6; }
+			else if (req.query.start.toString().length === 16) { start = req.query.start * 1e3; }
+			where += sprintf(" AND time>=%s", parseInt(start, 10));
+		} else {
+			where += sprintf(" AND time>='%s'", req.query.start.toString());
+		}
+	}
+	if (typeof req.query.end !== "undefined") {
+		if (!isNaN(req.query.end) && parseInt(req.query.end, 10)) {
+			if (req.query.end.toString().length === 10) { end = req.query.end * 1e9; }
+			else if (req.query.end.toString().length === 13) { end = req.query.end * 1e6; }
+			else if (req.query.end.toString().length === 16) { end = req.query.end * 1e3; }
+			where += sprintf(" AND time<=%s", parseInt(end, 10));
+		} else {
+			where += sprintf(" AND time<='%s'", req.query.end.toString());
+		}
+	}
+	if (where === "") {
+		where = "AND time > now()-52w";// TODO : performance issue ; make the max to 1Y
+	}
+		
+	if ( typeof req.user !== "undefined" && typeof req.user.id !== "undefined" ) {
+		let query = { "user_id": req.user.id };
+		if ( typeof flow_id !== "undefined" ) {
+			query = {
+			"$and": [
+					{ "track_id": flow_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		}
+		let flow = flows.chain().find(query).offset(offset).limit(size).data();
+
+		var total = flows.find(query).length;
+		flow.size = size;
+		flow.pageSelf = page;
+		flow.pageFirst = 1;
+		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
+		flow.pageLast = Math.ceil(total/size);
+		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
+		if (flow && flow[0]) {
+			flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
+			res.status(200).send(new FlowSerializer(flow).serialize());
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(401).send(new ErrorSerializer({"id": 4052, "code": 401, "message": "Unauthorized"}).serialize());
+	}
+});
+
+
+/**
  * @api {post} /flows Create new Flow
  * @apiName Create new Flow
  * @apiGroup 2. Flow
