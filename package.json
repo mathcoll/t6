@@ -18,7 +18,6 @@
   "scripts": {
     "start": "node app.js",
     "test": "snyk test && ./bin/test.sh",
-    "check-security": "nsp check",
     "snyk-protect": "snyk protect",
     "prepublish": "npm -v",
     "prepare": "npm run snyk-protect"
@@ -83,7 +82,6 @@
     "node-units": "^0.1.7",
     "nodemailer": "^6.7.2",
     "npm": "^8.5.4",
-    "nsp": "^3.2.1",
     "outlier": "^0.0.1",
     "passgen": "^1.1.0",
     "path": "^0.12.7",
