@@ -421,9 +421,10 @@ body {
 }
 .mdl-chip .grippy::before {
   content: '.';
-  text-shadow: 0  0 #000, 0  5px #000, 0  10px #000, 0  15px #000, 0  20px #000,
-     5px  0 #000, 5px  5px #000, 5px  10px #000, 5px  15px #000, 5px  20px #000,
-     10px 0 #000, 10px 5px #000, 10px 10px #000, 10px 15px #000, 10px 20px #000;
+  text-shadow:
+    0  0 #000, 0  5px #000, 0  10px #000, 0  15px #000, 0  20px #000,
+    5px  0 #000, 5px  5px #000, 5px  10px #000, 5px  15px #000, 5px  20px #000,
+    10px 0 #000, 10px 5px #000, 10px 10px #000, 10px 15px #000, 10px 20px #000;
 }
 .mdl-chip .close,
 .mdl-chip .edit {
@@ -1757,7 +1758,10 @@ svg.footer:after {
   color: #fff !important;
   display: block !important;
 }
-.mdl-list__item { color: inherit !important; line-height: 2 !important; }
+.mdl-list__item {
+  color: inherit !important;
+  line-height: 2 !important;
+}
 .mdl-layout__title,
 .mdl-layout-title {
   color: #fff;
