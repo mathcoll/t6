@@ -8,7 +8,7 @@ var uis;
 /**
  * @api {get} /uis/:ui_id Get UIs
  * @apiName Get UIs
- * @apiGroup 1. Object
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -74,7 +74,7 @@ router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret, 
 /**
  * @api {post} /uis Create new UI
  * @apiName Create new UI
- * @apiGroup 1. Object
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -106,7 +106,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 /**
  * @api {put} /uis/:ui_id Edit a UI
  * @apiName Edit a UI
- * @apiGroup 1. Object
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
@@ -156,7 +156,7 @@ router.put("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algor
 /**
  * @api {delete} /uis/:ui_id Delete a UI
  * @apiName Delete a UI
- * @apiGroup 1. Object
+ * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
