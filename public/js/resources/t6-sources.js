@@ -15,8 +15,8 @@ app.resources.sources = {
 			var myHeaders = new Headers();
 			myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 			myHeaders.append("Content-Type", "application/json");
-			var myInit = { method: "PUT", headers: myHeaders, body: JSON.stringify(body) };
-			var url = app.baseUrl+"/"+app.api_version+"/sources/"+source_id;
+			let myInit = { method: "PUT", headers: myHeaders, body: JSON.stringify(body) };
+			let url = app.baseUrl+"/"+app.api_version+"/sources/"+source_id;
 			fetch(url, myInit)
 			.then(
 				app.fetchStatusHandler
@@ -48,8 +48,8 @@ app.resources.sources = {
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: "POST", headers: myHeaders, body: JSON.stringify(body) };
-		var url = app.baseUrl+"/"+app.api_version+"/sources/";
+		let myInit = { method: "POST", headers: myHeaders, body: JSON.stringify(body) };
+		let url = app.baseUrl+"/"+app.api_version+"/sources/";
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -74,8 +74,8 @@ app.resources.sources = {
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: "GET", headers: myHeaders };
-		var url = app.baseUrl+"/"+app.api_version+"/ota/"+id;
+		let myInit = { method: "GET", headers: myHeaders };
+		let url = app.baseUrl+"/"+app.api_version+"/ota/"+id;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -90,8 +90,8 @@ app.resources.sources = {
 					var myHeaders = new Headers();
 					myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 					myHeaders.append("Content-Type", "application/json");
-					var myInit = { method: "POST", headers: myHeaders };
-					var url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/build";
+					let myInit = { method: "POST", headers: myHeaders };
+					let url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/build";
 					fetch(url, myInit)
 					.then(
 						app.fetchStatusHandler
@@ -112,8 +112,8 @@ app.resources.sources = {
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: "POST", headers: myHeaders };
-		var url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/unlink/"+source_id;
+		let myInit = { method: "POST", headers: myHeaders };
+		let url = app.baseUrl+"/"+app.api_version+"/objects/"+object_id+"/unlink/"+source_id;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -131,9 +131,9 @@ app.resources.sources = {
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: "POST", headers: myHeaders };
-		var o = object_id!==null?"/"+object_id:"";
-		var url = app.baseUrl+"/"+app.api_version+"/ota/"+id+"/deploy"+o;
+		let myInit = { method: "POST", headers: myHeaders };
+		let o = object_id!==null?"/"+object_id:"";
+		let url = app.baseUrl+"/"+app.api_version+"/ota/"+id+"/deploy"+o;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -158,8 +158,8 @@ app.resources.sources = {
 		var myHeaders = new Headers();
 		myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 		myHeaders.append("Content-Type", "application/json");
-		var myInit = { method: "GET", headers: myHeaders };
-		var url = app.baseUrl+"/"+app.api_version+"/sources/"+id;
+		let myInit = { method: "GET", headers: myHeaders };
+		let url = app.baseUrl+"/"+app.api_version+"/sources/"+id;
 		fetch(url, myInit)
 		.then(
 			app.fetchStatusHandler
@@ -247,8 +247,8 @@ app.resources.sources = {
 				var myHeaders = new Headers();
 				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 				myHeaders.append("Content-Type", "application/json");
-				var myInit = { method: "GET", headers: myHeaders };
-				var url = app.baseUrl+"/"+app.api_version+"/sources/"+source.id+"/child";
+				let myInit = { method: "GET", headers: myHeaders };
+				let url = app.baseUrl+"/"+app.api_version+"/sources/"+source.id+"/child";
 				fetch(url, myInit)
 				.then(
 					app.fetchStatusHandler
@@ -294,8 +294,8 @@ app.resources.sources = {
 				var myHeaders = new Headers();
 				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 				myHeaders.append("Content-Type", "application/json");
-				var myInit = { method: "GET", headers: myHeaders };
-				var url = app.baseUrl+"/"+app.api_version+"/ota/"+source.id+"?ota-status=true";
+				let myInit = { method: "GET", headers: myHeaders };
+				let url = app.baseUrl+"/"+app.api_version+"/ota/"+source.id+"?ota-status=true";
 				fetch(url, myInit)
 				.then(
 					app.fetchStatusHandler
