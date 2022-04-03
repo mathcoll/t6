@@ -294,8 +294,8 @@ app.resources.sources = {
 				var myHeaders = new Headers();
 				myHeaders.append("Authorization", "Bearer "+localStorage.getItem("bearer"));
 				myHeaders.append("Content-Type", "application/json");
-				let myInit = { method: "GET", headers: myHeaders };
-				let url = app.baseUrl+"/"+app.api_version+"/ota/"+source.id+"?ota-status=true";
+				myInit = { method: "GET", headers: myHeaders };
+				url = app.baseUrl+"/"+app.api_version+"/ota/"+source.id+"?ota-status=true";
 				fetch(url, myInit)
 				.then(
 					app.fetchStatusHandler
