@@ -98,7 +98,7 @@ function sendNewsletter(newsletters, taskType, dryrun, recurring, user_id, limit
 				cpt++;
 				if(Number.isInteger(recurring) && cpt<limit) {
 					timer = setTimeout(function() {
-						sendNewsletter(t6jobs.get({"taskType": taskType, user_id: user_id}, recurring!==null?1:limit), dryrun, recurring, user_id, limit, cpt);
+						sendNewsletter(t6jobs.get({"taskType": taskType, user_id: user_id}, recurring!==null?1:limit), taskType, dryrun, recurring, user_id, limit, cpt);
 					}, recurring);
 					t6console.debug(`Scheduling another task to send Newsletter in ${recurring}ms (cpt=${cpt}<${limit}).`);
 				} else {
