@@ -44,7 +44,7 @@ Sample nodeMCU and Arduino scripts are available in the [sensors repository](htt
 ## t6 API first: Live, eat, and breathe the API-first lifestyle of t6
 Detailed [Api documentation](https://doc.internetcollaboratif.info) will help you to connect your sensors to _t6_.
 Installing _t6_ on your own server is easy, follow the [installation guide](https://github.com/mathcoll/t6/wiki/Installing-t6) on Wiki page.
-More detailed explanation on [![wiki](https://img.shields.io/badge/t6-Wiki%20documentation-orange)](https://github.com/mathcoll/t6/wiki) is also readable on Wiki page.
+More detailed explanation on [![wiki](https://img.shields.io/badge/t6%20documentation-orange)](https://www.internetcollaboratif.info/features/) is also available.
 
 ## t6 Android Application
 _t6_ is available on the [Android Google Play Store](https://play.google.com/store/apps/details?id=info.internetcollaboratif.api) for free.
