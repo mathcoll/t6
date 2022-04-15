@@ -6,7 +6,7 @@
     "diskusage": "^0.1.4",
     "exec": "^0.2.1",
     "minimist": "^1.2.6",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "request": "^2.88.2",
     "speedtest-net": "^1.6.2",
     "sprintf-js": "^1.0.3",
