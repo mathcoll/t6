@@ -1059,7 +1059,7 @@ router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwt
  * 
  */
 router.get("/trend/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
-	
+	res.status(404).send({ err: "Not implemented yet", "id": 0, "code": 404, "message": "This endpoint is not completed" });
 });
 
 /**
@@ -1071,7 +1071,7 @@ router.get("/trend/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
  * 
  */
 router.get("/seasonality/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
-	
+	res.status(404).send({ err: "Not implemented yet", "id": 0, "code": 404, "message": "This endpoint is not completed" });
 });
 
 /**
@@ -1083,7 +1083,7 @@ router.get("/seasonality/?", expressJwt({ secret: jwtsettings.secret, algorithms
  * 
  */
 router.get("/outliers/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
-	
+	res.status(404).send({ err: "Not implemented yet", "id": 0, "code": 404, "message": "This endpoint is not completed" });
 });
 
 /**

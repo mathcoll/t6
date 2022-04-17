@@ -329,11 +329,11 @@ function preprocessor(payload, fields, current_flow, callback) {
 	t6console.debug("chain 6", "Will force sanitization to:", payload.datatype);
 	preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
 	t6preprocessor.preprocessor(current_flow, payload, preprocessor).then((result) => {
-		t6console.debug("chain 6", "Preprocessor got the result value :-)", result);
 		payload = result.payload;
 		preprocessor = result.preprocessor;
 		payload.preprocessor = result.preprocessor;
 		fields = result.fields;
+		t6console.debug("chain 6", "Preprocessor got the result value :-)", result);
 		if(payload.sanitizedValue) {
 			payload.value = payload.sanitizedValue;
 		}
@@ -615,7 +615,7 @@ function saveToCloud(payload, fields, current_flow, callback) {
 		payload.datapoint_logs.saveToCloud = false;
 		callback(null, {payload, fields, current_flow});
 	}
-}
+};
 async function processAllMeasures(payloads, options, res) {
 	await new Promise((resolve, reject) => {
 		t6console.debug("processAllMeasures in a chain");
@@ -671,7 +671,7 @@ async function processAllMeasures(payloads, options, res) {
 								}
 							});
 						}
-					}
+					};
 					measure.parent = payload.flow_id;
 					measure.self = payload.flow_id;
 					measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
