@@ -48,10 +48,10 @@ class MaterialLightParser {
 		return `<span class="mdl-badge" data-badge="${b.data}">${b.body}</span>`;
 	}
 	createRow(r) {
-		return `<div class="mdl-grid mdl-cell--12-col">${this.parse(r)}</div>`;
+		return `${this.parse(r)}`;
 	}
 	createColumn(c) {
-		return `<div class="mdl-cell--${c.width}-col">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
+		return `<div class="mdl-grid mdl-cell--${c.width}-col">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
 	}
 	createSlider(s) {
 		return `
@@ -112,8 +112,10 @@ class MaterialLightParser {
 		if (s.slider) {
 			S += this.createSlider(s.slider);
 		}
-		if (s.switch) {
-			S += this.createSwitch(s.switch);
+		if (s.switches) {
+			for (const sw of s.switches) {
+				S += this.createSwitch(sw);
+			}
 		}
 		if (s.lists) {
 			for (let i in s.lists) {
@@ -123,7 +125,13 @@ class MaterialLightParser {
 		return S;
 	}
 	showSnackbar(snack) {
-		document.querySelector("#snackbar").MaterialSnackbar.showSnackbar(snack);
+		document.querySelector("#snackbar div.mdl-snackbar__text").innerText = snack.message;
+		document.querySelector("#snackbar button.mdl-snackbar__action").innerText = snack.actionText;
+		document.querySelector("#snackbar").classList.add("mdl-snackbar--active");
+		(document.querySelector("#snackbar button.mdl-snackbar__action")).addEventListener("click", function(evt) {
+				document.querySelector("#snackbar").classList.remove("mdl-snackbar--active");
+				evt.preventDefault();
+		}, {passive: false});
 	}
 	showSensorValue(id, value) {
 		document.querySelector("#"+id).textContent = value;
@@ -159,11 +167,13 @@ let actionate = () => {
 	for (var i in buttons) {
 		if ( (buttons[i]).childElementCount > -1 ) {
 			(buttons[i]).addEventListener("click", function(evt) {
-				let action = evt.currentTarget.dataset.action;
-				let trigger = evt.currentTarget.dataset.trigger;
-				req.open("GET", "/"+action, true);
-				req.send();
-				evt.preventDefault();
+					let action = evt.currentTarget.dataset.action;
+					if (typeof action !=="undefined" ) {
+						let trigger = evt.currentTarget.dataset.trigger;
+						req.open("GET", "/"+action, true);
+						req.send();
+						evt.preventDefault();
+					}
 			}, {passive: false});
 		}
 	}
