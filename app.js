@@ -550,6 +550,7 @@ if (app.get("env") === "development") {
 			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token "+err.message, "stack": err.stack });
 		} else {
 			t6console.critical(`Uncatch Error on ${app.get("env")}: ${err.message}`, err.status, err.name, err);
+			t6console.error(`Uncatch Error on ${app.get("env")}: ${err.message}`, err.status, err.name, err.stack, req.body, req);
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message, "stack": err.stack });
 		}
 		t6events.addStat("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
@@ -566,7 +567,6 @@ if (app.get("env") === "development") {
 			res.status(401).send({ "code": err.status, "error": "Unauthorized: invalid token" });
 		} else {
 			t6console.critical(`Uncatch Error on ${app.get("env")}: ${err.message}`, err.status, err.name, err);
-			t6console.error(`Uncatch Error on ${app.get("env")}: ${err.message}`, err.status, err.name, err.stack, req.body, req);
 			res.status(err.status || 500).send({ "code": err.status, "error": err.message });
 		}
 		t6events.addStat("t6App", `Error ${err.status} ${err.name}`, "self", t6BuildVersion);
