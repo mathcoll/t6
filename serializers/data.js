@@ -3,7 +3,7 @@ var JSONAPISerializer = require("jsonapi-serializer").Serializer;
 
 function DataSerializer(data) {
 	this.serialize = function() {
-		return new JSONAPISerializer("data", {
+		return new JSONAPISerializer("datapoint", {
 			keyForAttribute: "underscore_case",
 			attributes : [ "time", "timestamp", "value", "preprocessor", "fusion", "category_id", "retention" ],
 			topLevelLinks : {
