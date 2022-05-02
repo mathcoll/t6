@@ -153,9 +153,9 @@
 		<div>	
 			<h1 class="color-primary font-weight-bold">t6 Architecture</h1>
 			<p>
-				<img src="https://raw.githubusercontent.com/mathcoll/t6/master/public/img/m/t6.png" class="img-responsive center-block" alt="General-structure"/>
+				<img src="//raw.githubusercontent.com/mathcoll/t6/master/public/img/m/t6.png" class="img-responsive center-block" alt="General-structure"/>
 				<br />
-				<a href="https://github.com/mathcoll/t6/wiki">More details on t6 features in the Wiki.</a>
+				<a href="//www.internetcollaboratif.info/features">More details on t6 features in the Wiki.</a>
 			</p>
 		</div>
 	</div>
