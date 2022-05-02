@@ -22,9 +22,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
     link(rel='icon', type="image/png", sizes='16x16', href=baseUrlCdn + '/img/m/icons/icon-16x16.png')
     link(rel='mask-icon', color="#795548", href=baseUrlCdn + '/img/m/icons/safari-pinned-tab.svg')
     if process.env.NODE_ENV === 'development'
-      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/thirdparty/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel="stylesheet", href="/css/vendor/Leaflet/leaflet-1.7.1.css")
+      link(rel="stylesheet", href="/css/thirdparty/Leaflet/leaflet-1.7.1.css")
     else
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
     link(rel='manifest', href='/manifest.json')
@@ -663,11 +663,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
 
       if process.env.NODE_ENV === 'development'
         //- THIRD PARTS
-        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/material/material-1.3.0.min.js')
-        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/mdl/mdl-selectfield.min.js')
-        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/moment/moment-2.29.1.min.js')
-        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/OpenLayers/ol-6.12.0.min.js')
-        script(type='application/javascript', src=baseUrlCdn + '/js/vendor/Leaflet/leaflet-1.7.1.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/thirdparty/material/material-1.3.0.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/thirdparty/mdl/mdl-selectfield.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/thirdparty/moment/moment-2.29.1.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/thirdparty/OpenLayers/ol-6.12.0.min.js')
+        script(type='application/javascript', src=baseUrlCdn + '/js/thirdparty/Leaflet/leaflet-1.7.1.min.js')
         //- T6
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-main.js?build=' + t6BuildVersion)
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/t6-objects.js')
@@ -686,7 +686,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/cardChart.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/resources/snippets/sparkline.js')
       else
-        script(type='application/javascript', src=baseUrlCdn + '/js/vendor.min.js?build=' + t6BuildVersion)
+        script(type='application/javascript', src=baseUrlCdn + '/js/thirdparty.min.js?build=' + t6BuildVersion)
         script(type='application/javascript', src=baseUrlCdn + '/js/t6app-min.js?build=' + t6BuildVersion)
       if trackings.ggads
         script(src='//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', async='')

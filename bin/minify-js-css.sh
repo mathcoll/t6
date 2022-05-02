@@ -32,35 +32,35 @@ echo 1. PWA Javascript T6 minify:
 echo Completed
 echo ""
 
-echo 2. PWA Javascript T6-VENDOR minify:
+echo 2. PWA Javascript T6-third-party minify:
 ../node_modules/uglify-js/bin/uglifyjs \
-	../public/js/vendor/material/material-1.3.0.js \
-	../public/js/vendor/mdl/mdl-selectfield.min.js \
-	../public/js/vendor/moment/moment-2.29.1.min.js \
-	../public/js/vendor/OpenLayers/ol-6.12.0.min.js \
-	../public/js/vendor/Leaflet/leaflet-1.7.1.min.js \
+	../public/js/thirdparty/material/material-1.3.0.js \
+	../public/js/thirdparty/mdl/mdl-selectfield.min.js \
+	../public/js/thirdparty/moment/moment-2.29.1.min.js \
+	../public/js/thirdparty/OpenLayers/ol-6.12.0.min.js \
+	../public/js/thirdparty/Leaflet/leaflet-1.7.1.min.js \
 	--compress \
 	--mangle \
 	--stats \
-	-o ../public/js/vendor.min.js \
-	--source-map "filename=vendor.min.js.map,url=vendor.min.js.map,includeSources=true"
+	-o ../public/js/thirdparty.min.js \
+	--source-map "filename=thirdparty.min.js.map,url=thirdparty.min.js.map,includeSources=true"
 echo Completed
 echo ""
 
 echo 3. PWA Stylesheet minify: 
 uglifycss \
-	../public/css/vendor/material/material-1.3.0.css \
-	../public/css/vendor/material/material.brown-blue.min-1.3.0.css \
+	../public/css/thirdparty/material/material-1.3.0.css \
+	../public/css/thirdparty/material/material.brown-blue.min-1.3.0.css \
 	../public/css/t6app.css \
-	../public/css/vendor/OpenLayers/ol-6.12.0.min.css \
-	../public/css/vendor/Leaflet/leaflet-1.7.1.css \
+	../public/css/thirdparty/OpenLayers/ol-6.12.0.min.css \
+	../public/css/thirdparty/Leaflet/leaflet-1.7.1.css \
 	> ../public/css/t6app.min.css
 echo Completed
 echo ""
 
 echo 4. Documentation Javascript minify:
 ../node_modules/uglify-js/bin/uglifyjs \
-	../public/js/vendor/jquery/jquery-3.3.1.min.js \
+	../public/js/thirdparty/jquery/jquery-3.3.1.min.js \
 	../public/js/t6.js \
 	--compress \
 	--mangle \
@@ -71,7 +71,7 @@ echo ""
 
 echo 5. Documentation Stylesheet minify:
 uglifycss \
-	../public/css/vendor/bootstrap/bootstrap.css \
+	../public/css/thirdparty/bootstrap/bootstrap.css \
 	../public/css/t6.css \
 	> ../public/css/t6.min.css
 echo Completed
@@ -79,8 +79,8 @@ echo ""
 
 echo 6. PWA Javascript T6-SHOW minify:
 ../node_modules/uglify-js/bin/uglifyjs \
-	../public/js/vendor/material/material.js \
-	../public/js/vendor/mdl/mdl-selectfield.min.js \
+	../public/js/thirdparty/material/material.js \
+	../public/js/thirdparty/mdl/mdl-selectfield.min.js \
 	../public/js/t6show.js \
 	--compress \
 	--mangle \
