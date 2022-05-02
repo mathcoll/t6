@@ -2834,7 +2834,7 @@ var touchStartPoint, touchMovePoint;
 		}
 		if (container && fabs.length > -1) {
 			let fabClass = app.getSetting('settings.fab_position') !== null ? app.getSetting('settings.fab_position') : "fab__bottom";
-			fabClass += app.getSetting('settings.isLtr') === "true" ? " pull-right" : " pull-left";
+			fabClass += app.getSetting('settings.isLtr') === "false" ? " pull-left" : " pull-right";
 			let tooltipClass = app.getSetting('settings.isLtr') === "true" ? "mdl-tooltip--left" : "mdl-tooltip--right";
 			let fab = `<div class="mdl-button--fab_flinger-container ${fabClass}">`;
 			fabs.map(function(button) {
@@ -2859,6 +2859,10 @@ var touchStartPoint, touchMovePoint;
 			fab += "	<span class='mdl-layout-spacer'></span>";
 			fab += "</div>";
 			//}
+			var fb = container.getElementsByClassName("mdl-button--fab_flinger-container");
+			if( fb[0] ) {
+				 fb[0].remove();
+			}
 			container.innerHTML += fab;
 			componentHandler.upgradeDom();
 
@@ -2916,7 +2920,6 @@ var touchStartPoint, touchMovePoint;
 		let sel_line = myForm.querySelector("#switch-ExplorationLine").parentNode.classList.contains("is-checked");
 		let sel_loess = myForm.querySelector("#switch-ExplorationLoess").parentNode.classList.contains("is-checked");
 		let sel_trend = myForm.querySelector("#switch-ExplorationTrend").parentNode.classList.contains("is-checked");
-		
 		
 		if (!(sel_summary || sel_head || sel_tail || sel_boxplot || sel_frequency || sel_line || sel_loess || sel_trend )) {
 			toast("Please select at least one output.", { timeout: app.toastDuration, type: "error" });
