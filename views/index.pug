@@ -98,18 +98,18 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   input#filter-exp.mdl-textfield__input(type='text', name='name', placeholder='Filter by name')
 
           nav.mdl-navigation.mdl-layout--large-screen-only
-            a.mdl-navigation__link.featuresButton(href='#features')
+            a.mdl-navigation__link.featuresButton(href='//www.internetcollaboratif.info/features/')
               i.material-icons fact_check
               |  t6 Features
-            a.mdl-navigation__link.statusButton(href='#status')
-              i.material-icons favorite
-              |  API Status
-            a.mdl-navigation__link.docsButton(href='#docs')
-              i.material-icons code
-              |  API first
             a.mdl-navigation__link.termsButton(href='#terms')
               i.material-icons business_center
               |  Privacy & Terms
+            a.mdl-navigation__link.statusButton(href='#status')
+              i.material-icons favorite
+              |  API Status
+            a.mdl-navigation__link.docsButton(href='//doc.internetcollaboratif.info/')
+              i.material-icons code
+              |  API doc
             a.mdl-navigation__link(href='//github.com/mathcoll/t6', target='_blank', rel='noopener')
               i.material-icons link
               |  GitHub
@@ -202,17 +202,17 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
       .setting_menu
         ul.mdl-menu.mdl-menu--bottom-right.mdl-js-menu.mdl-js-ripple-effect(for='menu')
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.featuresButton
-            a.mdl-navigation__link(href='#features')
+            a.mdl-navigation__link(href='//www.internetcollaboratif.info/features/')
               i.material-icons fact_check
               |  t6 Features
+          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.docsButton
+            a.mdl-navigation__link(href='//doc.internetcollaboratif.info')
+              i.material-icons code
+              |  API first
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.statusButton
             a.mdl-navigation__link(href='#status')
               i.material-icons favorite
               |  API Status
-          li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.docsButton
-            a.mdl-navigation__link(href='#docs')
-              i.material-icons code
-              |  API first
           li.mdl-js-ripple-effect.mdl-menu__item.mdl-layout--small-screen-only.termsButton
             a.mdl-navigation__link(href='#terms')
               i.material-icons business_center
@@ -257,7 +257,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                 a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="http://github.com/mathcoll/t6") Fork t6 on Github
               article.carousel-item.mdl-shadow--2dp
                 p Objects (any device, sensors, chipsets, devices...) collect data from Sensors and POST them to t6 using the encrypted + signed payload.
-                a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="#docs") Explore t6 documentation
+                a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="//www.internetcollaboratif.info") Explore t6 documentation
               article.carousel-item.mdl-shadow--2dp
                 p Do any actions you need, once facts match conditions (Email, Mqtt, webhook notification...) &mdash; rule based events.
                 a.mdl-button.mdl-js-button.mdl-js-ripple-effect(href="//doc.internetcollaboratif.info") Explore t6 documentation
@@ -336,13 +336,11 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                   li
                   li
                   li
-                    a(href="https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=badge&utm_campaign=badge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1") Google Play Application
+                    a(href="//play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=badge&utm_campaign=badge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1") Google Play Application
               li IoT Api
                 ul
                   li
                     a(href="/#status") Api Status
-                  li
-                    a(href="/#docs") Developer
                   li
                     a(href="//doc.internetcollaboratif.info") Api Explorer
                   li
@@ -631,113 +629,6 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
                       | Sign In
               div.mdl-layout-spacer
 
-        //- Docs
-        section#docs.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='9')
-          .mdl-grid.mdl-cell--12-col
-            h2.mdl-card__title-text.mdl-subheader-content Api first documentation: Live, eat, and breathe the API-first lifestyle of t6.
-
-          .page-content.mdl-grid.mdl-grid--no-spacing
-            section.mdl-grid.mdl-cell--12-col
-              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  i.material-icons code
-                  h3.mdl-card__title-text Physical World
-                div.mdl-card__supporting-text.no-padding Physical World are composed by your sensors and actuators. Physical Objects require a virtual Object in t6 and then, they could add Data to Flows. Sample nodeMCU and Arduino scripts are available in the 
-                  a(href='//github.com/mathcoll/t6/tree/master/sensors', target='_blank', rel='noopener') sensors repositories.
-                div.mdl-card__supporting-text.no-padding An additional script can be  runned periodically (crontab rule necessary) and performe the required action from the settings:
-                  br/
-                  span.code $> nodejs sensor.js --run "{{sensor_id}}" > /dev/null 2>&1
-                div.mdl-card__supporting-text.no-padding This kind of Virtual sensors are capable of getting direct data from a linux bash command (e.g. Getting HDD temperature: '/usr/sbin/hddtemp -u C -n -q /dev/sda')
-                div.mdl-card__supporting-text.no-padding Physical Objects require a "virtual" Object declared on t6 before adding DataPoints to Flows. Meaning a Flow container help the Api to find your data and graph them on the Snippets.
-                  
-            section.mdl-grid.mdl-cell--12-col
-              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  i.material-icons code
-                  h3.mdl-card__title-text Technical documentation
-                div.mdl-card__supporting-text.no-padding 
-                  | Api first in a Rest api ; including security (JWT tokens) and quotas. It contains dedicated endpoint to easily manipulate your resources: Objects, Flows, Dashboards, Snippets & Rules.
-                  p
-                    a.mdl-button.mdl-js-button(href="//doc.internetcollaboratif.info", target='_blank', rel='noopener') Explore the full Api documentation
-                      i.material-icons chevron_right
-
-            section.mdl-grid.mdl-cell--12-col
-              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  i.material-icons code
-                  h3.mdl-card__title-text Resources available on t6
-                div.mdl-card__supporting-text.no-padding 
-                  ol.mdl-list(style="margin:0;padding:0px;line-height:24px;")
-                    li.mdl-list__item-primary-content
-                      div
-                        i.material-icons.md-24 devices_other
-                        h4 Objects, sensors and actuators
-                        div Objects are virtual items dedicated to push data to flows. Objects are defined for each Users.
-                        div Objects in t6 are the virtual nodes of your physical devices. They are sending values from their embedded sensors to the Flows. Common cardinality is 1:1; but you can setup multiple Flows for the same Object (a DHT11 sensor handle 'temperature' and 'humidity' for instance). Additionally, you can set a Flow to be feed from multiple Objects.
-                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Object") More details
-                      div.mdl-layout-spacer &nbsp;
-
-                    li.mdl-list__item-primary-content
-                      div
-                        i.material-icons.md-24 settings_input_component
-                        h4 Flows & DataPoints
-                        div Flows are datastore to save time/values (DataPoints). Each Object can POST data to multiple Flows. Flows are defined for each Users and are having permissions.
-                        div Communication becomes easy in the platform with Timestamped values. Flows allows to retrieve and classify data.
-                        div Objects are sending their Data to Flow-containers using the API.
-                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Flow") More details
-                      div.mdl-layout-spacer &nbsp;
-
-                    li.mdl-list__item-primary-content
-                      div
-                        i.material-icons.md-24 dashboard
-                        h4 Dashboards to graph, draw, and monitor
-                        div Dashboard includes one or many Snippets to visualize your data. You can create as many dashboards as you like.
-                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Dashboard") More details
-                      div.mdl-layout-spacer &nbsp;
-
-                    li.mdl-list__item-primary-content
-                      div
-                        i.material-icons.md-24 widgets
-                        h4 Snippets
-                        div Snippets refers to small component containing a dashboard. Multiple variety are available and the library aim to growth regularly.
-                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Snippet") More details
-                      div.mdl-layout-spacer &nbsp;
-
-                    li.mdl-list__item-primary-content
-                      div
-                        i.material-icons.md-24 call_split
-                        h4 Rules, to Alert and Notify
-                        div Decision-Rule is the event-based engine that trigger Actions following matching Conditions. Engine is watching for fact matching conditions on payloads coming from datapoint POST, and handle Action(s) according to rules.
-                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Decision-Rule") More details
-                      div.mdl-layout-spacer &nbsp;
-
-                    li.mdl-list__item-primary-content
-                      div
-                        i.material-icons.md-24 volume_down
-                        h4 Mqtt, to communicate
-                        div 
-                        a.mdl-button.mdl-js-button(href="https://github.com/mathcoll/t6/wiki/Mqtt-Topic") More details
-                      div.mdl-layout-spacer &nbsp;
-
-            section.mdl-grid.mdl-cell--12-col
-              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  i.material-icons code
-                  h3.mdl-card__title-text General Structure and scenario
-                div.mdl-card__supporting-text.no-padding 
-                  img.lazyloading.img-responsive(src=baseUrlCdn+"/img/m/placeholder.png", data-src="//raw.githubusercontent.com/mathcoll/t6/master/public/img/m/t6.png", alt="t6 General structure")
-
-            section.mdl-grid.mdl-cell--12-col
-              div.mdl-cell--12-col.mdl-card.mdl-shadow--2dp
-                div.mdl-card__title
-                  i.material-icons code
-                  h3.mdl-card__title-text Technical documentation
-                div.mdl-card__supporting-text.no-padding 
-                  | Api first in a Rest api ; including security (JWT tokens) and quotas. It contains dedicated endpoint to easily manipulate your resources: Objects, Flows, Dashboards, Snippets & Rules.
-                  p
-                    a.mdl-button.mdl-js-button(href="//doc.internetcollaboratif.info", target='_blank', rel='noopener') Explore the full Api documentation
-                      i.material-icons chevron_right
-
         //- View users-list
         section#users-list.mdl-tabs__panel.mdl-layout__tab-panel.is-inactive(role='heading', aria-level='10')
           .mdl-grid.mdl-cell--12-col
@@ -771,7 +662,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn, t6Buil
               a(href='#', id='cookieconsent.agree') Got it!
 
       if process.env.NODE_ENV === 'development'
-        //- VENDOR
+        //- THIRD PARTS
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/material/material-1.3.0.min.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/mdl/mdl-selectfield.min.js')
         script(type='application/javascript', src=baseUrlCdn + '/js/vendor/moment/moment-2.29.1.min.js')
