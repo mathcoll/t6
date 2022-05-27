@@ -2724,52 +2724,6 @@ var touchStartPoint, touchMovePoint;
 		}
 	};
 
-	app.fetchIndex = function() {
-		var node = "";
-		var container = app.containers.index!==null?(app.containers.index).querySelector('.page-content'):null;
-		//app.containers.spinner.removeAttribute('hidden');
-		//app.containers.spinner.classList.remove('hidden');
-		if (!localStorage.getItem('index')) {
-			var myHeaders = new Headers();
-			myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
-			myHeaders.append("Content-Type", "application/json");
-			var myInit = { method: 'GET', headers: myHeaders };
-			var url = `${app.baseUrl}/${app.api_version}/index`;
-
-			fetch(url, myInit)
-				.then(
-					app.fetchStatusHandler
-				).then(function(fetchResponse) {
-					return fetchResponse.json();
-				})
-				.then(function(response) {
-					for (var i = 0; i < (response).length; i++) {
-						node += app.getCard(response[i]);
-					}
-					localStorage.setItem('index', JSON.stringify(response));
-					container.innerHTML = node;
-					app.imageLazyLoading();
-					app.containers.spinner.setAttribute('hidden', true);
-					app.containers.spinner.classList.add('hidden');
-				})
-				.catch(function(error) {
-					container.innerHTML = app.getCard({ image: app.baseUrlCdn + '/img/opl_img2.webp', title: 'Oops, something has not been loaded correctly..', titlecolor: '#ffffff', description: 'We are sorry, the content cannot be loaded, please try again later, there might a temporary network outage. :-)' });
-					app.displayLoginForm(container);
-					if (localStorage.getItem("settings.debug") == "true") {
-						toast('fetchIndex error out...' + error, { timeout: app.toastDuration, type: "error" });
-					}
-				});
-		} else {
-			var index = JSON.parse(localStorage.getItem('index'));
-			for (var i = 0; i < index.length; i++) {
-				node += app.getCard(index[i]);
-			}
-			if(container!==null) {
-				container.innerHTML = node;
-			}
-		}
-	};
-
 	app.showAddFAB = function(type) {
 		let container;
 		let fabs = new Array();
@@ -4672,7 +4626,6 @@ var touchStartPoint, touchMovePoint;
 
 			app.refreshContainers();
 			app.managePage();
-			app.fetchIndex('index');
 			app.setInteractiveLinks();
 			app.refreshButtonsSelectors();
 			app.imageLazyLoading();
