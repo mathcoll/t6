@@ -434,15 +434,6 @@ var touchStartPoint, touchMovePoint;
 		if (evt) evt.preventDefault();
 	};
 
-	app.onFeaturesButtonClick = function(evt) {
-		if (navigator.onLine) {
-			app.setSection('features');
-		} else {
-			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
-		}
-		if (evt) evt.preventDefault();
-	};
-
 	app.onSettingsButtonClick = function(evt) {
 		if (navigator.onLine) {
 			app.setSection('settings');
@@ -455,16 +446,6 @@ var touchStartPoint, touchMovePoint;
 	app.onDocsButtonClick = function(evt) {
 		if (navigator.onLine) {
 			app.setSection('docs');
-		} else {
-			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
-		}
-		if (evt) evt.preventDefault();
-	};
-
-	app.onTermsButtonClick = function(evt) {
-		if (navigator.onLine) {
-			app.getTerms();
-			app.setSection('terms');
 		} else {
 			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
@@ -743,10 +724,8 @@ var touchStartPoint, touchMovePoint;
 
 			menuTabBar: document.querySelectorAll('.mdl-layout__tab-bar a'),
 			status: document.querySelectorAll('.statusButton'),
-			features: document.querySelectorAll('.featuresButton'),
 			settings: document.querySelectorAll('.settingsButton'),
 			docs: document.querySelectorAll('.docsButton'),
-			terms: document.querySelectorAll('.termsButton'),
 			notifications: document.querySelectorAll('form.notifications input.mdl-checkbox__input'),
 
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
@@ -4407,9 +4386,7 @@ var touchStartPoint, touchMovePoint;
 		var currentPage = localStorage.getItem("currentPage");
 		if (window.location.hash) {
 			currentPage = window.location.hash.substr(1);
-			if (currentPage === 'terms') {
-				app.onTermsButtonClick();
-			} else if (currentPage === 'compatible-devices') {
+			if (currentPage === 'compatible-devices') {
 				app.getCompatibleDevices();
 				app.setSection('compatible-devices');
 			} else if (currentPage === 'openSourceLicenses') {
@@ -4541,12 +4518,6 @@ var touchStartPoint, touchMovePoint;
 				app.buttons.status[i].addEventListener('click', app.onStatusButtonClick, false);
 			}
 		};
-		for (var i in app.buttons.features) {
-			if (app.buttons.features[i].childElementCount > -1) {
-				app.buttons.features[i].removeEventListener('click', app.onFeaturesButtonClick, false);
-				app.buttons.features[i].addEventListener('click', app.onFeaturesButtonClick, false);
-			}
-		};
 		for (var i in app.buttons.settings) {
 			if (app.buttons.settings[i].childElementCount > -1) {
 				app.buttons.settings[i].removeEventListener('click', app.onSettingsButtonClick, false);
@@ -4559,12 +4530,6 @@ var touchStartPoint, touchMovePoint;
 				app.buttons.docs[i].addEventListener('click', app.onDocsButtonClick, false);
 			}
 		}
-		for (var i in app.buttons.terms) {
-			if (app.buttons.terms[i].childElementCount > -1) {
-				app.buttons.terms[i].removeEventListener('click', app.onTermsButtonClick, false);
-				app.buttons.terms[i].addEventListener('click', app.onTermsButtonClick, false);
-			}
-		};
 		// Search
 		if (document.getElementById('search-exp')) {
 			document.getElementById('search-exp').addEventListener('keypress', function(e) {
