@@ -23,8 +23,8 @@ apidoc \
 	-o /home/mathieu/Projets/2019/internetcollaboratif.info/doc/docs/ \
 	--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/apidoc-master/ \
 	--config /home/mathieu/Projets/2019/internetcollaboratif.info/t6/bin/apidoc.json \
+#	-d \
 #	-v \
-	-d
 	
 	
 	
