@@ -4107,6 +4107,8 @@ var touchStartPoint, touchMovePoint;
 														<i class="material-icons">${app.icons.history}</i>
 														<span>${(typeof flow!=="undefined" && flow.name)?flow.name:"Undefined Flow"}</span>
 														<span style="padding: 0 1em">-</span>
+														<span style="padding: 0 1em">(ttl: ${flow.ttl})</span>
+														<span style="padding: 0 1em">-</span>
 														<span>${moment(hist.attributes.time).format(app.date_format)}</span>
 														<h3 class="mdl-card__title-text secondary-content">${sprintf(unit.format, hist.attributes.value)}</h3>
 													</div>
