@@ -445,15 +445,6 @@ var touchStartPoint, touchMovePoint;
 		if (evt) evt.preventDefault();
 	};
 
-	app.onDocsButtonClick = function(evt) {
-		if (navigator.onLine) {
-			app.setSection('docs');
-		} else {
-			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
-		}
-		if (evt) evt.preventDefault();
-	};
-
 	app.setSignupAction = function() {
 		for (var i in app.buttons.user_create) {
 			if (app.buttons.user_create[i].childElementCount > -1) {
@@ -4100,7 +4091,7 @@ var touchStartPoint, touchMovePoint;
 							let flow_id = ((hist.id).split("/"))[0];
 							let flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
 							let unit = JSON.parse(localStorage.getItem("units")).find(unit => flow.unit === unit.name);
-							//console.log(flow);
+							unit.format = typeof unit.format!=="undefined"?unit.format:"%s";
 							historyNode += `<div class="mdl-grid mdl-cell mdl-cell--12-col" data-action="view" data-id="">
 												<div class="mdl-card mdl-shadow--2dp">
 													<div class="mdl-card__title">
@@ -4409,8 +4400,6 @@ var touchStartPoint, touchMovePoint;
 			} else if (currentPage === 'objects-maps') {
 				//app.getObjectsMaps();
 				app.setSection('objects-maps');
-			} else if (currentPage === 'docs') {
-				app.onDocsButtonClick();
 			} else if (currentPage === 'status') {
 				app.onStatusButtonClick();
 			} else if (currentPage === 'settings') {
@@ -4538,12 +4527,6 @@ var touchStartPoint, touchMovePoint;
 				app.buttons.settings[i].addEventListener('click', app.onSettingsButtonClick, false);
 			}
 		};
-		for (var i in app.buttons.docs) {
-			if (app.buttons.docs[i].childElementCount > -1) {
-				app.buttons.docs[i].removeEventListener('click', app.onDocsButtonClick, false);
-				app.buttons.docs[i].addEventListener('click', app.onDocsButtonClick, false);
-			}
-		}
 		// Search
 		if (document.getElementById('search-exp')) {
 			document.getElementById('search-exp').addEventListener('keypress', function(e) {
