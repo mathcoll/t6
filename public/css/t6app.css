@@ -1563,7 +1563,8 @@ dialog .mdl-dialog__title {
   vertical-align: middle;
   width: 42px;
 }
-.collection .collection-item.avatar .secondary-content {
+.collection .collection-item.avatar .secondary-content,
+h3.mdl-card__title-text.secondary-content {
   position: absolute;
   right: 16px;
   top: 16px;

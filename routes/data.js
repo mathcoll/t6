@@ -724,6 +724,116 @@ async function processAllMeasures(payloads, options, res) {
 	});
 }
 
+
+/**
+ * @api {get} /data/? Get all DataPoints
+ * @apiName Get all DataPoints
+ * @apiGroup 0. DataPoint Measure
+ * @apiVersion 2.0.1
+ *
+ * @apiUse Auth
+ * 
+ * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
+ * @apiParam {Number} [page] Page offset
+ * @apiParam {String} [retention] Retention Policy to get data from
+ * @apiUse 200
+ * @apiUse 429
+ * @apiUse 500
+ */
+router.get("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var retention = typeof req.query.retention!=="undefined"?req.query.retention:req.body.retention;
+	var sorting = req.query.order==="asc"?"ASC":(req.query.sort==="asc"?"ASC":"DESC"); // TODO: so if req.query.order = "desc", it will be overwritten !!
+	var page = parseInt(req.query.page, 10);
+	if (isNaN(page) || page < 1) {
+		page = 1;
+	}
+	var limit = parseInt(req.query.limit, 10);
+	if (isNaN(limit)) {
+		limit = 10;
+	} else if (limit > 5000) {
+		limit = 5000;
+	} else if (limit < 1) {
+		limit = 1;
+	}
+
+	let rp = typeof retention!=="undefined"?retention:"autogen";
+	if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+		if ( typeof flow!=="undefined" && flow.retention ) {
+			if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+				rp = flow.retention;
+			} else {
+				rp = influxSettings.retentionPolicies.data[0];
+				t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+				res.status(412).send(new ErrorSerializer({"id": 2057, "code": 412, "message": "Precondition Failed"}).serialize());
+				return;
+			}
+		} else {
+			rp = influxSettings.retentionPolicies.data[0];
+			t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+		}
+	}
+	t6console.debug("Retention is valid:", rp);
+	//fields = getFieldsFromDatatype(datatype, false);
+	let fields = "valueFloat as value, flow_id";
+	let query = sprintf("SELECT %s FROM %s.data WHERE user_id='%s' ORDER BY time %s LIMIT %s OFFSET %s", fields, rp, req.user.id, sorting, limit, (page-1)*limit);
+	t6console.debug("Query:", query);
+
+	dbInfluxDB.query(query).then((data) => {
+		if ( data.length > 0 ) {
+			data.map(function(d) {
+				let flow = flows.chain().find({ "id" : { "$aeq" : d.flow_id } }).limit(1);
+				let join = flow.eqJoin(units.chain(), "unit", "id");
+			
+				let flowDT = flows.chain().find({id: d.flow_id,}).limit(1);
+				let joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
+				let datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
+				let query = {
+					"$and": [
+						{ "user_id" : req.user.id, },
+						{ "flow_id" : d.flow_id, },
+						{ "from_ts" : {"$gte": moment(d.time).format("x")*1000}, },
+						{ "to_ts" : {"$lte": moment(d.time).format("x")*1000}, },
+					],
+				};
+				let a = annotations.findOne(query);
+				t6console.debug("Looking for a category:", moment(d.time).format("x")*1000, "find a=", a);
+				d.retention = rp;
+				d.timestamp = Date.parse(d.time);
+				d.time = Date.parse(d.time);
+				d.id = sprintf("%s/%s", d.flow_id, moment(d.time).format("x")*1000);
+				d.category_id = (a!==null && typeof a.category_id!=="undefined")?a.category_id:undefined;
+			});
+			data.title = "*";
+			data.unit = "*";
+			data.unit_format = "*";
+			data.unit_id = "*";
+			data.mqtt_topic = "*";
+			data.ttl = "*";
+			data.flow_id = "*";
+			data.pageSelf = page;
+			data.pageNext = page+1;
+			data.pagePrev = page-1;
+			data.sort = typeof req.query.sort!=="undefined"?req.query.sort:"asc";
+			let total = 9999999999999;//TODO, we should get total from influxdb
+			data.pageLast = Math.ceil(total/limit);
+			data.limit = limit;
+
+			data.group = undefined;
+			data.groupRows = undefined;
+			data.groupsTagsKeys = undefined;
+			data.groups = undefined;
+
+			res.status(200).send(new DataSerializer(data).serialize());
+		} else {
+			t6console.debug(query);
+			res.status(404).send(new ErrorSerializer({err: "No data found", "id": 2058, "code": 404, "message": "Not found"}).serialize());
+		}
+	}).catch((err) => {
+		t6console.error("id=2059", err);
+		res.status(500).send(new ErrorSerializer({err: err, "id": 2059, "code": 500, "message": "Internal Error"}).serialize());
+	});
+});
+
 /**
  * @api {get} /data/:flow_id/:data_id? Get DataPoints
  * @apiName Get DataPoints

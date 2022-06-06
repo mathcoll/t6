@@ -59,6 +59,7 @@ var app = {
 		"dashboard": "t6 Dashboard %s",
 		"dashboards": "t6 Dashboards",
 		"dashboard_add": "Add Dashboard to t6",
+		"history": "Data History",
 		"snippet": "t6 Snippet %s",
 		"snippets": "t6 Snippets",
 		"snippet_add": "Add Snippet to t6",
@@ -108,6 +109,7 @@ var app = {
 		"edit": "edit",
 		"exploration": "explore",
 		"flows": "settings_input_component",
+		"history": "bolt",
 		"icon": "label_outline",
 		"link_off": "link_off",
 		"login": "email",
@@ -835,6 +837,7 @@ var touchStartPoint, touchMovePoint;
 			compatibleDevices: document.querySelector('section#compatible-devices'),
 			openSourceLicenses: document.querySelector('section#openSourceLicenses'),
 			objectsMaps: document.querySelector('section#objects-maps'),
+			history: document.querySelector('section#history'),
 
 			objects: document.querySelector('section#objects'),
 			object: document.querySelector('section#object'),
@@ -1082,6 +1085,9 @@ var touchStartPoint, touchMovePoint;
 					app.resources.stories.display(params['id'], false, false, false);
 				}
 			}
+		} else if (section === 'history') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.getHistory();
 		} else if (section === 'object_add') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			app.resources.objects.displayAdd(app.defaultResources.object, true, false, false);
@@ -1133,6 +1139,8 @@ var touchStartPoint, touchMovePoint;
 			if (typeof firebase !== "undefined") {
 				firebase.analytics().logEvent('manage_notifications');
 			}
+		} else if (section === 'history') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 		} else if (section === 'exploration') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 		} else {
@@ -2733,6 +2741,7 @@ var touchStartPoint, touchMovePoint;
 			container = (app.containers.objects).querySelector('.page-content');
 		}
 		if (type === 'flows') {
+			fabs.push({id: "DataHistory", icon: app.icons.history, tooltip: "Data History"});
 			fabs.push({id: "DataExploration", icon: app.icons.exploration, tooltip: "Data Exploration"});
 			fabs.push({id: "createFlow", icon: "add", tooltip: "Add a new flow"});
 			container = (app.containers.flows).querySelector('.page-content');
@@ -2808,6 +2817,9 @@ var touchStartPoint, touchMovePoint;
 			}
 			if (document.getElementById("DataExploration")) {
 				document.getElementById("DataExploration").addEventListener("click", function(evt) { app.setSection("exploration"); evt.preventDefault(); }, false);
+			}
+			if (document.getElementById("DataHistory")) {
+				document.getElementById("DataHistory").addEventListener("click", function(evt) { app.setSection("history"); evt.preventDefault(); }, false);
 			}
 			if (app.buttons.createObject) {
 				app.buttons.createObject.addEventListener("click", function(evt) { app.setSection("object_add"); evt.preventDefault(); }, false);
@@ -4060,6 +4072,50 @@ var touchStartPoint, touchMovePoint;
 				app.addChipTo("flowsChips", { name: name, id: id, type: "flows" });
 				evt.preventDefault();
 			}, false);
+		}
+		app.containers.spinner.setAttribute('hidden', true);
+	};
+	
+	app.getHistory = function() {
+		app.containers.spinner.removeAttribute('hidden');
+		app.containers.spinner.classList.remove('hidden');
+		if (app.isLogged) {
+			let historyNode = "";
+			(app.containers.history).querySelector('.page-content').innerHTML = historyNode; // reset
+		
+			var myHeaders = new Headers();
+			myHeaders.append("Authorization", "Bearer " + localStorage.getItem('bearer'));
+			myHeaders.append("Content-Type", "application/json");
+			var myInit = { method: 'GET', headers: myHeaders };
+			var url = `${app.baseUrl}/${app.api_version}/data/?limit=50`;
+			fetch(url, myInit)
+				.then(
+					app.fetchStatusHandler
+				).then(function(fetchResponse) {
+					return fetchResponse.json();
+				})
+				.then(function(response) {
+					if (response.data) {
+						(response.data).map(function(hist) {
+							let flow_id = ((hist.id).split("/"))[0];
+							let flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
+							historyNode += `<div class="mdl-grid mdl-cell mdl-cell--12-col" data-action="view" data-id="">
+												<div class="mdl-card mdl-shadow--2dp">
+													<div class="mdl-card__title">
+														<i class="material-icons">${app.icons.history}</i>
+														<span>${(typeof flow!=="undefined" && flow.name)?flow.name:"Undefined Flow"}</span>
+														<span style="padding: 0 1em">-</span>
+														<span>${moment(hist.attributes.time).format(app.date_format)}</span>
+														<h3 class="mdl-card__title-text secondary-content">${hist.attributes.value}</h3>
+													</div>
+												</div>
+											</div>`;
+	
+						});
+						(app.containers.history).querySelector('.page-content').innerHTML += historyNode;
+					}
+				});
+				componentHandler.upgradeDom();
 		}
 		app.containers.spinner.setAttribute('hidden', true);
 	};
