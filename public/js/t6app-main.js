@@ -4091,7 +4091,12 @@ var touchStartPoint, touchMovePoint;
 							let flow_id = ((hist.id).split("/"))[0];
 							let flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
 							let unit = JSON.parse(localStorage.getItem("units")).find(unit => flow.unit === unit.name);
-							unit.format = typeof unit.format!=="undefined"?unit.format:"%s";
+							if ( typeof unit!=="undefined" ) {
+								unit.format = typeof unit.format!=="undefined"?unit.format:"%s";
+							} else {
+								unit = {format: "%s"}
+							}
+							
 							historyNode += `<div class="mdl-grid mdl-cell mdl-cell--12-col" data-action="view" data-id="">
 												<div class="mdl-card mdl-shadow--2dp">
 													<div class="mdl-card__title">
