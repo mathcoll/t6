@@ -1743,7 +1743,7 @@ var touchStartPoint, touchMovePoint;
 					if (response.data) {
 						for (var i = 0; i < (response.data).length; i++) {
 							var f = response.data[i];
-							app.flows.push({ id: f.id, name: f.attributes.name, type: 'flows' });
+							app.flows.push({ id: f.id, name: f.attributes.name, ttl: f.attributes.ttl, unit: f.attributes.unit, type: 'flows' });
 						}
 						localStorage.setItem('flows', JSON.stringify(app.flows));
 					}
@@ -4099,6 +4099,8 @@ var touchStartPoint, touchMovePoint;
 						(response.data).map(function(hist) {
 							let flow_id = ((hist.id).split("/"))[0];
 							let flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
+							let unit = JSON.parse(localStorage.getItem("units")).find(unit => flow.unit === unit.name);
+							//console.log(flow);
 							historyNode += `<div class="mdl-grid mdl-cell mdl-cell--12-col" data-action="view" data-id="">
 												<div class="mdl-card mdl-shadow--2dp">
 													<div class="mdl-card__title">
@@ -4106,7 +4108,7 @@ var touchStartPoint, touchMovePoint;
 														<span>${(typeof flow!=="undefined" && flow.name)?flow.name:"Undefined Flow"}</span>
 														<span style="padding: 0 1em">-</span>
 														<span>${moment(hist.attributes.time).format(app.date_format)}</span>
-														<h3 class="mdl-card__title-text secondary-content">${hist.attributes.value}</h3>
+														<h3 class="mdl-card__title-text secondary-content">${sprintf(unit.format, hist.attributes.value)}</h3>
 													</div>
 												</div>
 											</div>`;

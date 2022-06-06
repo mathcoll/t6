@@ -101,7 +101,7 @@ app.resources.flows = {
 			if ( JSON.parse(localStorage.getItem("flows")) !== "null" && JSON.parse(localStorage.getItem("flows")).length > -1 ) {
 				flowsList = JSON.parse(localStorage.getItem("flows"));
 			}
-			flowsList.push({id: response.flow.data.id, name:response.flow.data.attributes.name, type: response.flow.data.type});
+			flowsList.push({id: response.flow.data.id, name:response.flow.data.attributes.name, ttl:response.flow.data.attributes.ttl, unit:response.flow.data.attributes.unit, type: response.flow.data.type});
 			localStorage.setItem("flows", JSON.stringify(flowsList));
 			toast("Flow has been added.", {timeout:3000, type: "done"});
 		})
@@ -115,7 +115,7 @@ app.resources.flows = {
 		app.flows = [];
 		flowsList.filter(function(fl) {
 			if( fl.id != flow_id ) {
-				app.flows.push( {id: fl.id, name:fl.name, type: fl.type} );
+				app.flows.push( {id: fl.id, name:fl.name,  ttl:fl.ttl,  unit:fl.unit, type: fl.type} );
 			}
 		});
 		localStorage.setItem("flows", JSON.stringify(app.flows));
