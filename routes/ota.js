@@ -15,7 +15,6 @@ var sources;
  * 
  * @apiUse 201
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/board-listall", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	// This is a temporary solution...
@@ -39,7 +38,6 @@ router.get("/board-listall", expressJwt({secret: jwtsettings.secret, algorithms:
  * 
  * @apiUse 201
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/lib-list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	// This is a temporary solution...
@@ -63,7 +61,6 @@ router.get("/lib-list", expressJwt({secret: jwtsettings.secret, algorithms: jwts
  * 
  * @apiUse 201
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/core-list", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	// This is a temporary solution...
@@ -91,7 +88,6 @@ router.get("/core-list", expressJwt({secret: jwtsettings.secret, algorithms: jwt
  * @apiUse 201
  * @apiUse 404
  * @apiUse 429
- * @apiUse 500
  */
 router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
@@ -216,7 +212,6 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
  * @apiUse 201
  * @apiUse 404
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;

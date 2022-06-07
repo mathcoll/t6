@@ -18,7 +18,6 @@ var ErrorSerializer = require("../serializers/error");
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -94,7 +93,6 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)/track", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -148,7 +146,6 @@ router.get("/:flow_id([0-9a-z\-]+)/track", expressJwt({secret: jwtsettings.secre
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)/categories", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -319,7 +316,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 405
  * @apiUse 409
  * @apiUse 429
- * @apiUse 500
  */
 router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let flow_id = req.params.flow_id;

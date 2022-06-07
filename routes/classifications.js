@@ -20,7 +20,6 @@ var categories;
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/categories/(:category_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var category_id = req.params.category_id;
@@ -129,7 +128,6 @@ router.post("/categories/?", expressJwt({secret: jwtsettings.secret, algorithms:
  * @apiUse 405
  * @apiUse 409
  * @apiUse 429
- * @apiUse 500
  */
 router.put("/categories/:category_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var category_id = req.params.category_id;

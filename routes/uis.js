@@ -20,7 +20,6 @@ var uis;
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:ui_id([0-9a-z\-]+))?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var ui_id = req.params.ui_id;

@@ -14,7 +14,6 @@ var ErrorSerializer = require("../serializers/error");
  * @apiParam {string} [taskType] Task type
  * 
  * @apiUse 200
- * @apiUse 500
  */
 router.get("/?(:job_id([0-9a-z\-]+))?/?(:taskType([0-9a-zA-Z\-]+))?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let job_id = typeof req.params.job_id!=="undefined"?req.params.job_id:null;
@@ -36,7 +35,6 @@ router.get("/?(:job_id([0-9a-z\-]+))?/?(:taskType([0-9a-zA-Z\-]+))?/?", expressJ
  * @apiUse 201
  * @apiUse 401
  * @apiUse 404
- * @apiUse 500
  */
 router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var job_id = req.params.job_id;
@@ -79,7 +77,6 @@ router.post("/?(:job_id([0-9a-z\-]+))?/start", expressJwt({secret: jwtsettings.s
  * 
  * @apiUse 200
  * @apiUse 404
- * @apiUse 500
  */
 router.delete("/(:job_id([0-9a-z\-*]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let job_id = req.params.job_id;

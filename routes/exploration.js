@@ -25,7 +25,6 @@ function gaussian_pdf(x, mean, sigma) {
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
@@ -141,7 +140,6 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
@@ -240,7 +238,6 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 
 /**
@@ -259,7 +256,6 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var sorting = req.params.sorting === "head" ? "ASC" : (req.params.sorting === "tail" ? "DESC" : "ASC");
@@ -341,7 +337,6 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var d3nBar = require("d3node-barchart"); // TODO : it should be an histogram !
@@ -483,7 +478,6 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
@@ -736,7 +730,6 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
@@ -967,7 +960,6 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/export/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	var flow_id = req.query.flow_id;
@@ -1529,7 +1521,6 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtsettings.algorithms }), function(req, res) {
 	res.status(410).send(new ErrorSerializer({ "id": 4057, "code": 410, "message": "Gone" }).serialize());

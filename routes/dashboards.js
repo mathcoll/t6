@@ -20,7 +20,6 @@ var dashboards;
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/?(:dashboard_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var dashboard_id = req.params.dashboard_id;
@@ -130,7 +129,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 405
  * @apiUse 409
  * @apiUse 429
- * @apiUse 500
  */
 router.put("/:dashboard_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var dashboard_id = req.params.dashboard_id;

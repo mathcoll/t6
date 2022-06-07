@@ -728,6 +728,7 @@ async function processAllMeasures(payloads, options, res) {
 /**
  * @api {get} /data/? Get all DataPoints
  * @apiName Get all DataPoints
+ * @apiDescription List all latest datapoints stored in the server. This endpoint give ability to see the recent datapoints history and to identify expired (ttl) datapoints.
  * @apiGroup 0. DataPoint Measure
  * @apiVersion 2.0.1
  *
@@ -738,7 +739,6 @@ async function processAllMeasures(payloads, options, res) {
  * @apiParam {String} [retention] Retention Policy to get data from
  * @apiUse 200
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var retention = typeof req.query.retention!=="undefined"?req.query.retention:req.body.retention;
@@ -874,7 +874,6 @@ router.get("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var flow_id = req.params.flow_id;
@@ -1071,7 +1070,6 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
 	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body).slice(0, 3); // only process 3 first measures from payload and ignore the others

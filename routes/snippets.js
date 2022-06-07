@@ -19,7 +19,6 @@ var snippets;
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var snippet_id = req.params.snippet_id;
@@ -135,7 +134,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 405
  * @apiUse 409
  * @apiUse 429
- * @apiUse 500
  */
 router.put("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var snippet_id = req.params.snippet_id;

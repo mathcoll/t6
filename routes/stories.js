@@ -19,7 +19,6 @@ var ErrorSerializer = require("../serializers/error");
  * @apiUse 200
  * @apiUse 401
  * @apiUse 403
- * @apiUse 500
  */
 router.get("/:story_id([0-9a-z\-]+)?/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let story_id = req.params.story_id;
@@ -70,7 +69,6 @@ router.get("/:story_id([0-9a-z\-]+)?/?", expressJwt({secret: jwtsettings.secret,
  * @apiUse 200
  * @apiUse 401
  * @apiUse 403
- * @apiUse 500
  */
 router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let story_id = req.params.story_id;
@@ -209,7 +207,6 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
  * @apiUse 200
  * @apiUse 401
  * @apiUse 403
- * @apiUse 500
  */
 router.get("/:story_id([0-9a-z\-]+)/metrics", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let story_id = req.params.story_id;
@@ -326,7 +323,6 @@ router.get("/:story_id([0-9a-z\-]+)/metrics", expressJwt({secret: jwtsettings.se
  * @apiUse 200
  * @apiUse 401
  * @apiUse 403
- * @apiUse 500
  */
 router.get("/:story_id([0-9a-z\-]+)/gaps", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let story_id = req.params.story_id;
@@ -509,7 +505,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 405
  * @apiUse 409
  * @apiUse 429
- * @apiUse 500
  */
 router.put("/:story_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let story_id = req.params.story_id;

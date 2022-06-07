@@ -129,7 +129,6 @@ router.get("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms: 
  * 
  * @apiUse 200
  * @apiUse 403
- * @apiUse 500
  */
 router.get("/me/sessions", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if ( req.user.id ) {
@@ -157,7 +156,6 @@ router.get("/me/sessions", expressJwt({secret: jwtsettings.secret, algorithms: j
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	if (typeof req.user!=="undefined") {
@@ -205,7 +203,6 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwts
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
@@ -237,7 +234,6 @@ router.get("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:user_id([0-9a-z\-]+)/token", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var user_id = req.params.user_id;
@@ -429,7 +425,6 @@ router.post("/token/:token([0-9a-zA-Z\.]+)", function (req, res) {
  * @apiUse 200
  * @apiUse 404
  * @apiUse 412
- * @apiUse 500
  */
 router.post("/instruction", function (req, res) {
 	if ( !(req.body.email && escape(req.body.email).match(new RegExp(/^([a-zA-Z0-9_\-\.+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.+)|(([a-zA-Z0-9\-]+\.+)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)))) {

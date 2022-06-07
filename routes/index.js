@@ -421,7 +421,6 @@ router.delete("/tokens/all", function (req, res) {
  * @apiUse 400
  * @apiUse 401
  * @apiUse 403
- * @apiUse 500
  */
 router.post("/authenticate", function (req, res) {
 	let meta = { pushSubscription : req.body.pushSubscription};

@@ -20,7 +20,6 @@ var rules;
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/?(:rule_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;
@@ -137,7 +136,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 405
  * @apiUse 409
  * @apiUse 429
- * @apiUse 500
  */
 router.put("/:rule_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var rule_id = req.params.rule_id;

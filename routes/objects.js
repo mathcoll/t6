@@ -20,7 +20,6 @@ var sources;
  * @apiUse 401
  * @apiUse 404
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
@@ -95,7 +94,6 @@ router.get("/(:object_id([0-9a-z\-]+))/show", expressJwt({secret: jwtsettings.se
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlevel)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
@@ -137,7 +135,6 @@ router.get("/(:object_id([0-9a-z\-]+))/qrcode/(:typenumber)/(:errorcorrectionlev
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
 	var object_id = req.params.object_id;
@@ -181,7 +178,6 @@ router.get("/(:object_id([0-9a-z\-]+))?/public", function (req, res) {
  * 
  * @apiUse 201
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
@@ -226,7 +222,6 @@ router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwts
  * 
  * @apiUse 201
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
@@ -269,7 +264,6 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtset
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
@@ -337,7 +331,6 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiUse 201
  * @apiUse 412
  * @apiUse 429
- * @apiUse 500
  */
 router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;

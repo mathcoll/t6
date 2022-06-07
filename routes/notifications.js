@@ -126,7 +126,6 @@ function sendNewsletter(newsletters, taskType, dryrun, recurring, user_id, limit
  * @apiUse 200
  * @apiUse 401
  * @apiUse 403
- * @apiUse 500
  */
 router.get("/mail/preview/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function(req, res) {
 	let template = req.query.template;

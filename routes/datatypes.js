@@ -7,7 +7,7 @@ var ErrorSerializer = require("../serializers/error");
 /**
  * @api {get} /datatypes/:datatype_id Get DataTypes
  * @apiName Get DataTypes
- * @apiDescription t6 implement a immutable datatypes list as referential. A Full documentation is available on the [Wiki](https://github.com/mathcoll/t6/wiki/Data-Types)
+ * @apiDescription t6 implement a immutable datatypes list as referential. A Full documentation is available on the [functionnal documentation](https://www.internetcollaboratif.info/features/data-types/)
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
@@ -16,7 +16,6 @@ var ErrorSerializer = require("../serializers/error");
  * @apiUse 401
  * @apiUse 404
  * @apiUse 405
- * @apiUse 500
  */
 router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 	var datatype_id = req.params.datatype_id;
@@ -33,6 +32,7 @@ router.get("/(:datatype_id([0-9a-z\-]+))?", function (req, res) {
 /**
  * @api {post} /datatypes Add DataType
  * @apiName Add DataType
+ * @apiDescription t6 administrators can add datatypes using this endpoint. A Full documentation is available on the [functionnal documentation](https://www.internetcollaboratif.info/features/data-types/)
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -76,6 +76,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 /**
  * @api {put} /datatypes/:datatype_id Edit a DataType
  * @apiName Edit a DataType
+ * @apiDescription A Full documentation is available on the [functionnal documentation](https://www.internetcollaboratif.info/features/data-types/)
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin
@@ -125,6 +126,7 @@ router.put("/:datatype_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 /**
  * @api {delete} /datatypes/:datatype_id Delete a DataType
  * @apiName Delete a DataType
+ * @apiDescription Deletion of datatypes is not reversible. No change will be made to Flows using the removed datatype. A Full documentation is available on the [functionnal documentation](https://www.internetcollaboratif.info/features/data-types/)
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1
  * @apiUse AuthAdmin

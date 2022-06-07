@@ -20,7 +20,6 @@ var sources;
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
@@ -118,7 +117,6 @@ router.get("/?(:source_id([0-9a-z\-]+))?/?(:version([0-9]+))?", expressJwt({secr
  * @apiUse 401
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.get("/:source_id([0-9a-z\-]+)/child", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
@@ -212,7 +210,6 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 404
  * @apiUse 405
  * @apiUse 429
- * @apiUse 500
  */
 router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var parent_source_id = req.params.source_id;
