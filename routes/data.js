@@ -932,6 +932,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 
 		let flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
 		let join = flow.eqJoin(units.chain(), "unit", "id");
+		flow = (flow.data())[0].left;
 
 		let flowDT = flows.chain().find({id: flow_id,}).limit(1);
 		let joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");

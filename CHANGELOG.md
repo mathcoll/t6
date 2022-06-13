@@ -17,6 +17,10 @@ Types of changes
 ------------
 
 ## 2022
+### Milestone 19 - 2022-
+**Fixed**
+  - [x] Fixed default retention policy from the flow on GET /data/$flow_id Endpoint
+
 ### Milestone 18 - 2022-02
 **Added**
   - [x] Added screens to list, add, and edit `Stories`
