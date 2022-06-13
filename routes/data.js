@@ -857,7 +857,7 @@ router.get("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiParam {String} [yAxis] Label value in Y axis
  * @apiParam {Integer} [width] output width of SVG chart
  * @apiParam {Integer} [height] output height of SVG chart
- * @apiParam {String} [retention] Retention Policy to get data from
+ * @apiParam {String} [retention] Retention Policy to get data from, if undefined or invalid, the retention from the flow will be used
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -932,7 +932,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 
 		let flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
 		let join = flow.eqJoin(units.chain(), "unit", "id");
-		flow = (flow.data())[0].left;
+		flow = typeof (flow.data())[0]!=="undefined"?(flow.data())[0].left:undefined;
 
 		let flowDT = flows.chain().find({id: flow_id,}).limit(1);
 		let joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
@@ -996,7 +996,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 					t6console.debug("Looking for a category:", moment(d.time).format("x")*1000, "find a=", a);
 					d.retention = rp;
 					d.timestamp = Date.parse(d.time);
-					d.time = Date.parse(d.time);
+					d.time = moment(d.time).format("x")*1000;
 					d.id = sprintf("%s/%s", flow_id, moment(d.time).format("x")*1000);
 					d.category_id = (a!==null && typeof a.category_id!=="undefined")?a.category_id:undefined;
 				});

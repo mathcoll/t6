@@ -118,14 +118,35 @@
                 },
                 {
                 	"name": "can get a specific data from Flow without declaring the retention",
-                    "description": "This should not list any measured datapoint as the Flow does not define a retention but the POST datapoints was storing to a specific retention.",
+                    "description": "This should list measured datapoint as defined by default on the Flow (retention1w)",
                     "api_calls": [
                         {
                         	"request": "GET {{saved.data_id_full_url}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
-                            "status": 404
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data.0.attributes.retention",
+        	                    "equal": "retention1w"
+        	                }
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a specific data from Flow declaring an invalid retention",
+                    "description": "This should not list any measured datapoint. Data should be stored to retention1w",
+                    "api_calls": [
+                        {
+                        	"request": "GET {{saved.data_id_full_url}}?retention=unidentified_should_fallback_to_retention1w",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data.0.attributes.retention",
+        	                    "equal": "retention1w"
+        	                }
                         }
                     ]
                 },
@@ -134,7 +155,7 @@
                     "description": "This should not list any measured datapoint. Data should be stored to retention1w",
                     "api_calls": [
                         {
-                        	"request": "GET {{saved.data_id_full_url}}?retention=unidentified_should_fallback_to_autogen",
+                        	"request": "GET {{saved.data_id_full_url}}?retention=retention1y",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
