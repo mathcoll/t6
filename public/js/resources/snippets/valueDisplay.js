@@ -28,10 +28,9 @@ var snippet = {
 			return fetchResponse.json();
 		}).then(function(response) {
 			var id = response.data[0].attributes.id;
-			var time = response.data[0].attributes.time;
+			var time = response.data[0].attributes.time/1000;
 			var unit = typeof response.links.unit_format!=="undefined"?response.links.unit_format:"%s";
 			var ttl = typeof response.links.ttl!=="undefined"?response.links.ttl:3600;
-			console.log("DEBUG", ttl);
 			var value = [];
 			for (var i=0; i<limit-1; i++) {
 				var cur = i;
@@ -52,7 +51,8 @@ var snippet = {
 				}
 				document.getElementById("snippet-value"+prev+"-"+params.id).innerHTML = value[prev];
 			}
-			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true);}, 2000);
+			app.refreshFromNow("snippet-time-"+params.id, time, true);
+			setInterval(function() {app.refreshFromNow("snippet-time-"+params.id, time, true);}, 10000);
 		}).catch(function (error) {
 			if ( localStorage.getItem("settings.debug") === "true" ) {
 				toast("getSnippet Inside error..." + error, {timeout:3000, type: "error"});
