@@ -9,6 +9,7 @@ Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/C
 ![GitHub commit activity](https://img.shields.io/badge/test%20average%20response%20time-643ms-brightgreen)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/mathcoll/t6)
 ![GitHub contributors](https://img.shields.io/github/contributors/mathcoll/t6)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/3264e669-05d6-4032-bdc2-28b3fc270f71/deploy-status)](https://app.netlify.com/sites/t6iot/deploys)
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/3d45972dd53246f58ba82a6f75483116)](https://www.codacy.com/gh/mathcoll/t6/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=mathcoll/t6&amp;utm_campaign=Badge_Grade)
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5210/badge)](https://bestpractices.coreinfrastructure.org/projects/5210)

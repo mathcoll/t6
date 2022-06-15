@@ -614,7 +614,7 @@ function saveToCloud(payload, fields, current_flow, callback) {
 		t6console.debug("chain 10", "Not customized to save to Cloud");
 		payload.datapoint_logs.saveToCloud = false;
 		callback(null, {payload, fields, current_flow});
-	}
+	};
 };
 async function processAllMeasures(payloads, options, res) {
 	await new Promise((resolve, reject) => {

@@ -2194,7 +2194,7 @@ var touchStartPoint, touchMovePoint;
 								} else if (type == 'flows') {
 									app.flows = [];
 									(response.data).map(function(flow) {
-										app.flows.push({ id: flow.id, name: flow.attributes.name, type: flow.attributes.type });
+										app.flows.push({ id: flow.id, name: flow.attributes.name, ttl: flow.attributes.ttl, unit: flow.attributes.unit, type: flow.attributes.type });
 									});
 									localStorage.setItem('flows', JSON.stringify(app.flows));
 								}
@@ -3088,7 +3088,7 @@ var touchStartPoint, touchMovePoint;
 					myHeaders.append("Authorization", "Bearer " + localStorage.getItem("bearer"));
 					myHeaders.append("Content-Type", "application/json");
 					var myInit = { method: "GET", headers: myHeaders };
-					var url = `${app.baseUrl}/${app.api_version}/exploration/${my_flow_id}/exploration?graphType=kernelDensityEstimation&select=mean&group=30d&width=${app.getWidth(64)}&height=250&xAxis=Distribution${start}${end}`;
+					var url = `${app.baseUrl}/${app.api_version}/exploration/kernelDensityEstimation?flow_id=${my_flow_id}&select=mean&group=30d&width=${app.getWidth(64)}&height=250&xAxis=Distribution${start}${end}`;
 					fetch(url, myInit)
 						.then(
 							app.fetchStatusHandler
@@ -4090,13 +4090,12 @@ var touchStartPoint, touchMovePoint;
 						(response.data).map(function(hist) {
 							let flow_id = ((hist.id).split("/"))[0];
 							let flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
-							let unit = JSON.parse(localStorage.getItem("units")).find(unit => flow.unit === unit.name);
-							if ( typeof unit!=="undefined" ) {
+							let unit = JSON.parse(localStorage.getItem("units")).find(u => flow.unit === u.name);
+							if ( flow.unit && typeof unit!=="undefined" ) {
 								unit.format = typeof unit.format!=="undefined"?unit.format:"%s";
 							} else {
 								unit = {format: "%s"}
 							}
-							
 							historyNode += `<div class="mdl-grid mdl-cell mdl-cell--12-col" data-action="view" data-id="">
 												<div class="mdl-card mdl-shadow--2dp">
 													<div class="mdl-card__title">
