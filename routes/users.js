@@ -167,7 +167,7 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 					"User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/44.0"
 				}
 			};
-			request(options, function(error, response, body) {
+			request(options, function(error, response, body) { //TODO DEPRECATED PACKAGE
 				if ( !error && response.statusCode !== 404 ) {
 					req.user.gravatar = JSON.parse(body);
 				} else {

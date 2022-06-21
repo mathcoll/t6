@@ -80,7 +80,7 @@ global.uuid				= require("uuid");
 global.nodemailer		= require("nodemailer");
 global.outlier			= require("outlier");
 global.qrCode			= require("qrcode-npm");
-global.request			= require("request");
+global.request			= require("request"); //TODO DEPRECATED PACKAGE
 global.Sentiment		= require("sentiment");
 global.serialport		= require("serialport");
 global.favicon			= require("serve-favicon");
@@ -536,7 +536,7 @@ app.use(function(req, res, next) {
 });
 
 if ( logLevel.indexOf("INFO") > -1 ) {
-	request.debug = true;
+	request.debug = true; //TODO DEPRECATED PACKAGE
 }
 if (app.get("env") === "development") {
 	app.use(function(err, req, res, next) {

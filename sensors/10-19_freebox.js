@@ -1,7 +1,7 @@
 "use strict";
 var exec		= require('exec');
 var moment		= require('moment');
-var request		= require('request');
+var request		= require('request'); //TODO DEPRECATED PACKAGE
 
 var bearer		= 'GFlWfiCrebUZLSAbvn.SElHPXthdKDdFIWuM..INsPLBEtYpXntZwpBYXvKrE.xg'; // until 28/3/2018 à 13:12:50
 var api			= 'http://127.0.0.1:3000/v2.0.1/data/';
@@ -14,7 +14,7 @@ var timestamp	= moment().format('x');
 function send(api, flow_id, value, timestamp, publish, save, unit, mqtt_topic) {
 	var body = {flow_id: flow_id, value:value, timestamp: timestamp, publish: publish, save: save, unit: unit, mqtt_topic: mqtt_topic};
 	//console.log(body);
-	request({
+	request({ //TODO DEPRECATED PACKAGE
 		url: api,
 		method: 'POST',
 		json: true,
@@ -29,7 +29,7 @@ function send(api, flow_id, value, timestamp, publish, save, unit, mqtt_topic) {
 	});
 };
 
-var get = request.get('http://mafreebox.freebox.fr/pub/fbx_info.txt').on('response', function (response) {
+var get = request.get('http://mafreebox.freebox.fr/pub/fbx_info.txt').on('response', function (response) { //TODO DEPRECATED PACKAGE
 	response.on('data', function (chunk) {
 		var br = (chunk.toString()).match( /bit ATM +([0-9]+) kb\/s +([0-9]+) kb\/s/im );
 		if ( br && br.length > -1 ) {

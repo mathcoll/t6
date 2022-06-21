@@ -2,7 +2,7 @@
 
 "use strict";
 var exec		= require("exec");
-var request		= require("request");
+var request		= require("request"); //TODO DEPRECATED PACKAGE
 var sprintf		= require("sprintf-js").sprintf;
 
 // http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20geo.places%20where%20text%3D%22my_city%22&format=xml
@@ -12,7 +12,7 @@ var url = sprintf("http://query.yahooapis.com/v1/public/yql?q=select item from w
 
 function FtoC(temp) {return Math.round((temp - 32) / (9 / 5));}
 
-request({
+request({ //TODO DEPRECATED PACKAGE
 	url: url,
 	method: "GET",
 	json: true,

@@ -322,7 +322,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					body: typeof event.params.body==="string"?JSON.stringify(stringformat(event.params.body, payload)):JSON.stringify(event.params.body)
 				};
 				options.url = options.url.replace(/^\s*|\s*$/g, "");
-				request(options,
+				request(options, //TODO DEPRECATED PACKAGE
 					function (error, response, body) {
 						var statusCode = response ? response.statusCode : null;
 						body = body || null;
@@ -362,7 +362,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					},
 					body: JSON.stringify(body)
 				};
-				request(options, function (error, response, body) {
+				request(options, function (error, response, body) { //TODO DEPRECATED PACKAGE
 						var statusCode = typeof response!=="undefined"?response.statusCode:null;
 						body = body || null;
 						t6console.debug("Request sent - Server responded with:" + statusCode);

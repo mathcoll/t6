@@ -1,7 +1,7 @@
 "use strict";
 var exec		= require("exec");
 var moment		= require("moment");
-var request		= require("request");
+var request		= require("request");  //TODO DEPRECATED PACKAGE
 var exec		= require("child_process").exec;
 var sprintf		= require("sprintf-js").sprintf;
 var path		= require("path");
@@ -33,7 +33,7 @@ if ( config.exec ) {
 			console.log("exec error: " + error + stderr);
 			process.exit(1);
 		} else if( stdout ) {
-			request({
+			request({ //TODO DEPRECATED PACKAGE
 				url: config.api+"authenticate",
 				method: "POST",
 				json: true,
@@ -48,7 +48,7 @@ if ( config.exec ) {
 					bearer = body.token!==undefined?body.token:null;
 					if ( bearer && !error ) {
 						var body = {value: stdout, timestamp: timestamp, object_id: config.object_id, publish: config.publish, save: config.save, unit: config.unit, mqtt_topic: config.mqtt_topic, text: config.text, };
-						request({
+						request({ //TODO DEPRECATED PACKAGE
 							url: config.api+"data/"+config.flow_id,
 							method: "POST",
 							json: true,
@@ -78,7 +78,7 @@ if ( config.exec ) {
 		}
 	});
 } else if( config.postDataPoint === false ) {
-	request({
+	request({ //TODO DEPRECATED PACKAGE
 		url: config.api+"authenticate",
 		method: "POST",
 		json: true,
@@ -91,7 +91,7 @@ if ( config.exec ) {
 	}, function (error, response, body) {
 		bearer = body!==undefined?body.token:null;
 		if ( bearer && !error ) {
-			request({
+			request({ //TODO DEPRECATED PACKAGE
 				url: config.api_endpoint,
 				method: config.api_verb,
 				json: true,
