@@ -162,12 +162,15 @@ router.get("/me/token", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 		var json;
 		if (typeof req.user.mail_hash!=="undefined") {
 			var options = {
-				url: "https://en.gravatar.com/" + req.user.mail_hash + ".json",
+				url: `https://en.gravatar.com/${req.user.mail_hash}.json`,
+				method: "GET",
+				port: 443,
 				headers: {
 					"User-Agent": "Mozilla/5.0 Gecko/20100101 Firefox/44.0"
-				}
+				},
+				enableTrace: https_enableTrace
 			};
-			request(options, function(error, response, body) { //TODO DEPRECATED PACKAGE
+			https.request(options, function(error, response, body) {
 				if ( !error && response.statusCode !== 404 ) {
 					req.user.gravatar = JSON.parse(body);
 				} else {

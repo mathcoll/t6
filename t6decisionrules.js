@@ -349,9 +349,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				};
 				let options = {
 					url: ifttt.realtimeApi.url,
-					port: ifttt.realtimeApi.port,
 					method: "POST",
-					strictSSL: true,
+					port: ifttt.realtimeApi.port,
 					headers: {
 						"IFTTT-Service-Key": ifttt.serviceKey,
 						"Accept": "application/json",
@@ -362,7 +361,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 					},
 					body: JSON.stringify(body)
 				};
-				request(options, function (error, response, body) { //TODO DEPRECATED PACKAGE
+				https.request(options, function (error, response, body) { //TODO DEPRECATED PACKAGE
 						var statusCode = typeof response!=="undefined"?response.statusCode:null;
 						body = body || null;
 						t6console.debug("Request sent - Server responded with:" + statusCode);

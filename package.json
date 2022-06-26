@@ -89,7 +89,6 @@
     "pug": "^3.0.2",
     "qrcode-npm": "0.0.3",
     "rebuild": "^0.1.2",
-    "request": "^2.88.2",
     "response-time": "^2.3.2",
     "sentiment": "^5.0.2",
     "serialport": "^10.4.0",

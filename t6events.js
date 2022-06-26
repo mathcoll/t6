@@ -51,6 +51,7 @@ t6events.addStat = function(where, what, who, client_id=null, params=null) {
 		
 		var options = {
 			method: "POST",
+			port: 443,
 			url: `https://www.google-analytics.com/${d}mp/collect?v=2&firebase_app_id=${trackings.firebaseConfig.server.appId}&measurement_id=${trackings.firebaseConfig.server.measurementId}&api_secret=${trackings.firebaseConfig.server.api_secret}`,
 			body: JSON.stringify({
 				"user_id": user_id,
@@ -60,9 +61,10 @@ t6events.addStat = function(where, what, who, client_id=null, params=null) {
 					name: what.replace(/[^a-zA-Z]/g,"_"),
 					params: params,
 				}]
-			})
+			}),
+			enableTrace: https_enableTrace
 		};
-		request(options, function(error, response, body) { //TODO DEPRECATED PACKAGE
+		https.request(options, function(error, response, body) {
 			if ( !error && typeof response!=="undefined" && typeof response.statusCode!=="undefined" && response.statusCode !== 404 ) {
 				t6console.info(`GA4 Event "${what.replace(/[^a-zA-Z]/g,"_")}" on measurement_id: ${trackings.firebaseConfig.server.measurementId}`);
 				t6console.info("GA4 user_id:", user_id);

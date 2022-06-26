@@ -31,6 +31,11 @@ annotate = function(user_id, from_ts, to_ts, flow_id, category_id) {
 
 /* Environment settings */
 require(`./data/settings-${os.hostname()}.js`);
+global.https_enableTrace = false;
+if ( logLevel.indexOf("INFO") > -1 ) {
+	https_enableTrace = true;
+
+}
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
 global.appStarted		= start;
@@ -67,6 +72,12 @@ var { expressjwt: jwt } = require("express-jwt");
 global.expressJwt = jwt;
 global.geodist			= require("geodist");
 global.geoip			= require("geoip-lite");
+global.https			= require("https");
+https.globalAgent.secureProtocol = "SSLv3_method"; // TLSv1_1_method, TLSv1_2_method, SSLv3_method
+https.globalAgent.options.securityOptions = "SSLv3_method"; // TLSv1_1_method, TLSv1_2_method, SSLv3_method
+https.globalAgent.options.rejectUnauthorized = false;
+https.globalAgent.options.enableTrace = https_enableTrace;
+https.globalAgent.options.strictSSL = false;
 global.jwt				= require("jsonwebtoken");
 global.nmap				= require("libnmap");
 global.Loess			= require("loess");
@@ -80,7 +91,6 @@ global.uuid				= require("uuid");
 global.nodemailer		= require("nodemailer");
 global.outlier			= require("outlier");
 global.qrCode			= require("qrcode-npm");
-global.request			= require("request"); //TODO DEPRECATED PACKAGE
 global.Sentiment		= require("sentiment");
 global.serialport		= require("serialport");
 global.favicon			= require("serve-favicon");
@@ -535,9 +545,6 @@ app.use(function(req, res, next) {
 	//next(err);
 });
 
-if ( logLevel.indexOf("INFO") > -1 ) {
-	request.debug = true; //TODO DEPRECATED PACKAGE
-}
 if (app.get("env") === "development") {
 	app.use(function(err, req, res, next) {
 		if (err.name === "UnauthorizedError") {
