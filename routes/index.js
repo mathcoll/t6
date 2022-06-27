@@ -234,15 +234,13 @@ router.all("*", function (req, res, next) {
 	}
 	if ( req.user && req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null" ) {
 		var limit = req.user!==null?(quota[req.user.role]).calls:-1;
-		if (req.user !== null && req.user.role  !== null ) {
+		if (req.user !== null && req.user.role !== null ) {
 			res.header("X-RateLimit-Limit", limit);
 		}
 		let i;
 		let user_id = typeof req.user.id!=="undefined"?req.user.id:o.user_id;
 		let query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 2w) LIMIT 1`;
-		t6console.debug("Query to count requests in the past 1w", query);
 		dbInfluxDB.query(query).then((data) => {
-			t6console.debug("Data to count requests in the past 1w", data);
 			i = typeof data[0]!=="undefined"?data[0].count:0;
 			if ( limit-i > 0 ) {
 				res.header("X-RateLimit-Remaining", limit-i);
@@ -288,10 +286,14 @@ router.all("*", function (req, res, next) {
 			}
 		}).catch((err) => {
 			t6console.error("ERROR", err);
+			t6console.error("Query to count requests in the past 2w", query);
+			t6console.error("Role", req.user.role);
+			t6console.error("Limit", limit);
 			if(typeof i!=="undefined") {
 				t6console.error("429 ", i, err);
 				res.status(429).send(new ErrorSerializer({"id": 17330, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
 			} else {
+				t6console.error("Error, i is undefined", i, err);
 				next();
 				//return res.status(501).send(new ErrorSerializer({"id": 17331, "code": 501, "message": "Not Implemented"}));
 			}
