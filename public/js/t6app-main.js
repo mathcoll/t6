@@ -4090,8 +4090,8 @@ var touchStartPoint, touchMovePoint;
 						(response.data).map(function(hist) {
 							let flow_id = ((hist.id).split("/"))[0];
 							let flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
-							let unit = JSON.parse(localStorage.getItem("units")).find(u => flow.unit === u.name);
-							if ( flow.unit && typeof unit!=="undefined" ) {
+							let unit = typeof flow!=="undefined" ? JSON.parse(localStorage.getItem("units")).find(u => flow.unit === u.name) : {format: "%S"};
+							if ( typeof flow!=="undefined" && flow.unit && typeof unit!=="undefined" ) {
 								unit.format = typeof unit.format!=="undefined"?unit.format:"%s";
 							} else {
 								unit = {format: "%s"}
@@ -4102,7 +4102,7 @@ var touchStartPoint, touchMovePoint;
 														<i class="material-icons">${app.icons.history}</i>
 														<span>${(typeof flow!=="undefined" && flow.name)?flow.name:"Undefined Flow"}</span>
 														<span style="padding: 0 1em">-</span>
-														<span style="padding: 0 1em">(ttl: ${flow.ttl})</span>
+														<span style="padding: 0 1em">(ttl: ${typeof flow.ttl!="undefined"?flow.ttl:"?"})</span>
 														<span style="padding: 0 1em">-</span>
 														<span>${moment(hist.attributes.time).format(app.date_format)}</span>
 														<h3 class="mdl-card__title-text secondary-content">${sprintf(unit.format, hist.attributes.value)}</h3>
