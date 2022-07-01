@@ -54,7 +54,7 @@
     "express-http-proxy": "^1.6.3",
     "express-jwt": "^7.7.2",
     "express-session": "^1.17.3",
-    "firebase-admin": "^10.2.0",
+    "firebase-admin": "^11.0.0",
     "follow-redirects": "^1.15.0",
     "fs-extra": "^10.1.0",
     "geodist": "^0.2.1",
