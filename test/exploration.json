@@ -35,6 +35,16 @@
                     ]
                 },
                 {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "can get Summary exploration on a compatible Float Flow",
                 	"description": "can get Summary exploration from a float",
                     "api_calls": [

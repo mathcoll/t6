@@ -180,6 +180,16 @@
                     ]
                 },
                 {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/10",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "can get a specific data from Flow forcing retention (from the query param)",
                     "description": "get a specific data from Flow",
                     "api_calls": [
