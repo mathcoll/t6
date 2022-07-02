@@ -842,6 +842,7 @@ router.get("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  *
  * @apiUse Auth
  * 
+ * @apiParam {uuid-v4} data_id DataPoint Id
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
  * @apiParam {uuid-v4} [flow_id] Datapoint ID
  * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
@@ -852,7 +853,6 @@ router.get("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
  * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
  * @apiParam {String} [dateFormat] See momentJs documentation to foarmat date displays
- * @apiParam {String="bar","line","pie","voronoi"} graphType Type of graph
  * @apiParam {String} [xAxis] Label value in X axis
  * @apiParam {String} [yAxis] Label value in Y axis
  * @apiParam {Integer} [width] output width of SVG chart
