@@ -20,7 +20,7 @@
     "test": "snyk test && ./bin/test.sh",
     "snyk-protect": "snyk protect",
     "prepublish": "npm -v",
-    "prepare": "npm run snyk-protect"
+    "prepare": "./bin/deliver.sh -m"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.26.0",
