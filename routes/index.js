@@ -242,7 +242,7 @@ router.all("*", function (req, res, next) {
 		let query = `SELECT count(url) FROM ${rp}.requests WHERE (user_id='${user_id}') AND (time>now() - 2w) LIMIT 1`;
 		dbInfluxDB.query(query).then((data) => {
 			i = typeof data[0]!=="undefined"?data[0].count:0;
-			if ( limit-i > 0 ) {
+			if ( limit-i > 0 && !res.headersSent ) {
 				res.header("X-RateLimit-Remaining", limit-i);
 				//res.header("X-RateLimit-Reset", "");
 			}
@@ -292,6 +292,7 @@ router.all("*", function (req, res, next) {
 			if(typeof i!=="undefined") {
 				t6console.error("429 ", i, err);
 				res.status(429).send(new ErrorSerializer({"id": 17330, "code": 429, "message": "Too Many Requests; or we can't perform your request."}));
+				next();
 			} else {
 				t6console.error("Error, i is undefined", i, err);
 				next();

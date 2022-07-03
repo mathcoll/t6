@@ -21,7 +21,8 @@
     "snyk-protect": "snyk protect",
     "prepublish": "npm -v",
     "prepare": "./bin/deliver.sh -m",
-    "apidoc": "./bin/deliver.sh -a"
+    "apidoc": "./bin/deliver.sh -a",
+    "deliver": "./bin/deliver.sh -marbfsc"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.26.0",
