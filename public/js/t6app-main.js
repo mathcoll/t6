@@ -4089,7 +4089,9 @@ var touchStartPoint, touchMovePoint;
 					if (response.data) {
 						(response.data).map(function(hist) {
 							let flow_id = ((hist.id).split("/"))[0];
-							let flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
+							let flow;
+							flow = JSON.parse(localStorage.getItem("flows")).find(flow => flow.id === flow_id);
+							flow = typeof flow!="undefined"?flow:{};
 							let unit = typeof flow!=="undefined" ? JSON.parse(localStorage.getItem("units")).find(u => flow.unit === u.name) : {format: "%S"};
 							if ( typeof flow!=="undefined" && flow.unit && typeof unit!=="undefined" ) {
 								unit.format = typeof unit.format!=="undefined"?unit.format:"%s";
