@@ -689,8 +689,8 @@ async function processAllMeasures(payloads, options, res) {
 					measure.mqtt_topic = payload.mqtt_topic;
 					measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
 					measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
-					measure.preprocessor = (typeof current_flow!=="undefined" && current_flow!==null)?payload.preprocessor:undefined;
-					measure.fusion = typeof payload.preprocessor!=="undefined"?payload.preprocessor:undefined;
+					measure.preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:undefined;
+					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
 					measure.location = `/v${version}/flows/${payload.flow_id}/${measure.id}`;
 
 					t6events.addStat("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
