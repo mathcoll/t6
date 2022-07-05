@@ -231,6 +231,44 @@
                     ]
                 },
                 {
+                	"name": "can Sanitize according to a Datatype",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/data",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+								"flow_id": "{{saved.flow_id_float}}",
+							    "value": "     10\n",
+							    "text": "Est enim accusantium nesciunt accusamus non.",
+							    "save": false,
+							    "unit": "",
+							    "mqtt_topic": "test",
+							    "publish": "false",
+							    "latitude": "53.5057",
+							    "longitude": "-83.2966",
+							    "datatype_id": "e7dbdc23-5fa8-4083-b3ec-bb99c08a2a35",
+							    "preprocessor": [
+							        {
+							            "name": "sanitize",
+							            "datatype": "float"
+							        }
+							    ]
+							},
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.data.0.attributes.value",
+        	                    "equal": 10
+        	                },{
+        	                    "select": "body.data.0.attributes.preprocessor.status",
+        	                    "equal": ["completed", "completed"]
+        	                }]
+                        }
+                    ]
+                },
+                {
                 	"name": "can publish data transform > capitalCase",
                     "description": "publish data to Flow",
                     "api_calls": [

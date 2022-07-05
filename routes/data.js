@@ -223,7 +223,7 @@ function verifyPrerequisites(payload, object, callback) {
 		let current_flow = (fDatatypes.data())[0]; // Warning TODO, current_flow can be unset when user posting to fake flow_id, in such case we should take the data_type from payload
 		let joinDatatypes, joinUnits;
 
-		if(typeof payload.datatype_id!=="undefined" && payload.datatype_id!=="") { 
+		if(typeof payload.datatype_id!=="undefined" && payload.datatype_id!=="") {
 			let dt = (datatypes.chain().find({id: ""+payload.datatype_id,}).limit(1)).data()[0];
 			payload.datatype = (typeof payload.datatype_id!=="undefined" && typeof dt!=="undefined")?dt.name:"string";
 			t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from payload`);
