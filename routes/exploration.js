@@ -9,16 +9,16 @@ function gaussian_pdf(x, mean, sigma) {
 }
 
 /**
- * @api {get} /exploration/summary Explore summary
+ * @api {get} /exploration/summary?flow_id=:flow_id&start=:start&end:end Explore summary
  * @apiName Explore summary 
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID to explore
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {uuid-v4} flow_id Flow ID to explore
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
@@ -119,18 +119,18 @@ router.get("/summary/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 });
 
 /**
- * @api {get} /exploration/normality Explore for normality
+ * @api {get} /exploration/normality?flow_id=:flow_id&start=:start&end:end Explore for normality
  * @apiName Explore for normality
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID to explore
- * @apiParam {Float} [x] raw score x
- * @apiParam {Float} expectedValue Expected value of the population mean
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {uuid-v4} flow_id Flow ID to explore
+ * @apiQuery {Float} [x] raw score x
+ * @apiQuery {Float} expectedValue Expected value of the population mean
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiSuccess {Float} skewness Skewness
  * @apiSuccess {Float} z_score zScore
  * @apiSuccess {String} t_test tTest of the x value
@@ -221,17 +221,17 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
 });
 
 /**
- * @api {get} /exploration/head Explore the first n rows
+ * @api {get} /exploration/head?flow_id=:flow_id&n=:n Explore the first n rows
  * @apiName Explore the first n rows
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID to explore
- * @apiParam {Integer} n Number of rows
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {uuid-v4} flow_id Flow ID to explore
+ * @apiQuery {Integer} n Number of Datapoints
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
@@ -241,15 +241,16 @@ router.get("/normality/?", expressJwt({ secret: jwtsettings.secret, algorithms: 
  */
 
 /**
- * @api {get} /exploration/tail Explore the last n rows
+ * @api {get} /exploration/tail?flow_id=:flow_id&n=:n Explore the last n rows
  * @apiName Explore the last n rows
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID to explore
- * @apiParam {Integer} n Number of rows
+ * @apiQuery {uuid-v4} flow_id Flow ID to explore
+ * @apiQuery {Integer} n Number of Datapoints
+ * @apiQuery {String} retention Retention policy
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
@@ -311,7 +312,7 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
 });
 
 /**
- * @api {get} /exploration/kernelDensityEstimation Explore Distribution KDE
+ * @api {get} /exploration/kernelDensityEstimation?flow_id=:flow_id&start=:start&end=:end Explore Distribution KDE
  * @apiName Explore Distribution KDE
  * @apiDescription Explore Distribution Kernel Density Estimation
  * @apiGroup 10. Exploratory Data Analysis EDA
@@ -319,17 +320,17 @@ router.get("/:sorting(head|tail)/?", expressJwt({ secret: jwtsettings.secret, al
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
- * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
- * @apiParam {String} [xAxis] Label value in X axis
- * @apiParam {String} [yAxis] Label value in Y axis
- * @apiParam {Integer} [width] output width of SVG chart
- * @apiParam {Integer} [height] output height of SVG chart
- * @apiParam {Integer} [ticks=10] Ticks
+ * @apiQuery {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {Number{1-5000}} [limit] Set the number of expected resources.
+ * @apiQuery {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
+ * @apiQuery {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
+ * @apiQuery {String} [xAxis] Label value in X axis
+ * @apiQuery {String} [yAxis] Label value in Y axis
+ * @apiQuery {Integer} [width] output width of SVG chart
+ * @apiQuery {Integer} [height] output height of SVG chart
+ * @apiQuery {Integer} [ticks=10] Ticks
  * @apiSuccess {Svg} Svg image file
  * @apiUse 200
  * @apiUse 401
@@ -450,7 +451,7 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
 });
 
 /**
- * @api {get} /exploration/loess Explore LOESS
+ * @api {get} /exploration/loess?flow_id=:flow_id&start=:start&end=:end Explore LOESS
  * @apiName Explore LOESS
  * @apiDescription Explore  LOcally Estimated Scatterplot Smoothing
  * @apiGroup 10. Exploratory Data Analysis EDA
@@ -458,19 +459,19 @@ router.get("/kernelDensityEstimation/?", expressJwt({ secret: jwtsettings.secret
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
- * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
- * @apiParam {String} [xAxis] Label value in X axis
- * @apiParam {String} [yAxis] Label value in Y axis
- * @apiParam {String} [span="0.75"] 0 to inf, default 0.75
- * @apiParam {String=0,1} [band=0] 0 to 1, default 0
- * @apiParam {String="constant","linear","quadratic"} [degree="quadratic"] Lower degree fitting function computes faster.
- * @apiParam {Integer} [width] output width of SVG chart
- * @apiParam {Integer} [height] output height of SVG chart
+ * @apiQuery {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {Number{1-5000}} [limit] Set the number of expected resources.
+ * @apiQuery {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
+ * @apiQuery {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
+ * @apiQuery {String} [xAxis] Label value in X axis
+ * @apiQuery {String} [yAxis] Label value in Y axis
+ * @apiQuery {String} [span="0.75"] 0 to inf, default 0.75
+ * @apiQuery {String=0,1} [band=0] 0 to 1, default 0
+ * @apiQuery {String="constant","linear","quadratic"} [degree="quadratic"] Lower degree fitting function computes faster.
+ * @apiQuery {Integer} [width] output width of SVG chart
+ * @apiQuery {Integer} [height] output height of SVG chart
  * @apiSuccess {Svg} Svg image file
  * @apiUse 200
  * @apiUse 401
@@ -706,23 +707,23 @@ router.get("/loess/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwts
 });
 
 /**
- * @api {get} /exploration/frequencyDistribution Explore Frequency Distribution
+ * @api {get} /exploration/frequencyDistribution?flow_id=:flow_id&start=:start&end=:end Explore Frequency Distribution
  * @apiName Explore Frequency Distribution
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
- * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
- * @apiParam {String} [xAxis] Label value in X axis
- * @apiParam {String} [yAxis] Label value in Y axis
- * @apiParam {Integer} [width] output width of SVG chart
- * @apiParam {Integer} [height] output height of SVG chart
+ * @apiQuery {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {Number{1-5000}} [limit] Set the number of expected resources.
+ * @apiQuery {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
+ * @apiQuery {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
+ * @apiQuery {String} [xAxis] Label value in X axis
+ * @apiQuery {String} [yAxis] Label value in Y axis
+ * @apiQuery {Integer} [width] output width of SVG chart
+ * @apiQuery {Integer} [height] output height of SVG chart
  * @apiSuccess {Svg} Svg image file
  * @apiUse 200
  * @apiUse 401
@@ -941,19 +942,19 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 });
 
 /**
- * @api {get} /exploration/export Export rough data as json array
+ * @api {get} /exploration/export?flow_id=:flow_id&start=:start&end=:end Export rough data as json array
  * @apiName Export rough data as json array
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
  * 
- * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
- * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
+ * @apiQuery {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {Number{1-5000}} [limit] Set the number of expected resources.
+ * @apiQuery {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
+ * @apiQuery {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
  * @apiSuccess {Svg} Svg image file
  * @apiUse 200
  * @apiUse 401
@@ -1079,14 +1080,16 @@ router.get("/outliers/?", expressJwt({ secret: jwtsettings.secret, algorithms: j
 });
 
 /**
- * @api {get} /exploration/line Get Explore Plot line
+ * @api {get} /exploration/line?start=:start&end=:end Get Explore Plot line
  * @apiName Get Explore Plot line
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * 
+ * @apiQuery {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * 
  * @apiUse 200
  * @apiUse 404
@@ -1265,14 +1268,16 @@ router.get("/line/?", expressJwt({ secret: jwtsettings.secret, algorithms: jwtse
 });
 
 /**
- * @api {get} /exploration/boxplot Explore Boxplot
+ * @api {get} /exploration/boxplot?flow_id=:flow_id&start=:start&end=:end Explore Boxplot
  * @apiName Explore Boxplot
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * 
+ * @apiQuery {uuid-v4} flow_id Flow ID you want to get data from
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * 
  * @apiUse 200
  * @apiUse 404
@@ -1480,7 +1485,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
 
 
 /**
- * @api {get} /exploration/:flow_id/exploration Explore Flows
+ * @api {get} /exploration/:flow_id/exploration?flow_id=:flow_id Explore Flows
  * @apiName Explore Flows
  * @apiGroup 10. Exploratory Data Analysis EDA
  * @apiVersion 2.0.1
@@ -1488,24 +1493,22 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  *
  * @apiUse Auth
  * 
- * @apiUse 200
- * @apiUse 404
- * 
  * @apiParam {uuid-v4} flow_id Flow ID you want to get data from
- * @apiParam {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
- * @apiParam {Number} [page] Page offset
- * @apiParam {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
- * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
- * @apiParam {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
- * @apiParam {String} [dateFormat] See momentJs documentation to foarmat date displays
- * @apiParam {String="bar","line","pie","voronoi"} graphType Type of graph
- * @apiParam {String} [xAxis] Label value in X axis
- * @apiParam {String} [yAxis] Label value in Y axis
- * @apiParam {Integer} [width] output width of SVG chart
- * @apiParam {Integer} [height] output height of SVG chart
- * @apiParam {Integer} [ticks=10] Ticks
+ * @apiQuery {String} [sort=desc] Set to sorting order, the value can be either "asc" or ascending or "desc" for descending.
+ * @apiQuery {Number} [page] Page offset
+ * @apiQuery {String} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {String} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiQuery {Number{1-5000}} [limit] Set the number of expected resources.
+ * @apiQuery {String="min","max","first","last","sum","count"} [select] Modifier function to modify the results
+ * @apiQuery {String="10ns, 100µ, 3600ms, 3600s, 1m, 3h, 4d, 2w, 365d"} [group] Group By Clause
+ * @apiQuery {String} [dateFormat] See momentJs documentation to foarmat date displays
+ * @apiQuery {String="bar","line","pie","voronoi"} graphType Type of graph
+ * @apiQuery {String} [xAxis] Label value in X axis
+ * @apiQuery {String} [yAxis] Label value in Y axis
+ * @apiQuery {String} [graphType] Type of graph
+ * @apiQuery {Integer} [width] output width of SVG chart
+ * @apiQuery {Integer} [height] output height of SVG chart
+ * @apiQuery {Integer} [ticks=10] Ticks
  * @apiSuccess {Object[]} data DataPoint from the Flow
  * @apiSuccess {Object[]} data Data point Object
  * @apiSuccess {String} data.type Data point Type
@@ -1516,6 +1519,7 @@ router.get("/boxplot/?", expressJwt({ secret: jwtsettings.secret, algorithms: jw
  * @apiSuccess {Number} data.attributes.time Time of Data point 
  * @apiSuccess {Number} data.attributes.timestamp Unix Timestamp of Data point 
  * @apiSuccess {String} data.attributes.value Value of Data point
+ * 
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404

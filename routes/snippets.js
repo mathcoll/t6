@@ -71,6 +71,7 @@ router.get("/(:snippet_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secre
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * 
  * @apiParam {String} [name=unamed] Snippet Name
  * @apiBody {String} [type] Snippet Type
  * @apiBody {String} [icon] Snippet Icon
@@ -119,6 +120,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * 
+ * @apiParam {uuid-v4} [snippet_id] Snippet Id
  * @apiBody {String} [name=unamed] Snippet Name
  * @apiBody {String} [type] Snippet Type
  * @apiBody {String} [icon] Snippet Icon

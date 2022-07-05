@@ -20,7 +20,9 @@
     "test": "snyk test && ./bin/test.sh",
     "snyk-protect": "snyk protect",
     "prepublish": "npm -v",
-    "prepare": "npm run snyk-protect"
+    "prepare": "./bin/deliver.sh -m",
+    "apidoc": "./bin/deliver.sh -a",
+    "deliver": "./bin/deliver.sh -marbfsc"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.26.0",
@@ -54,7 +56,7 @@
     "express-http-proxy": "^1.6.3",
     "express-jwt": "^7.7.2",
     "express-session": "^1.17.3",
-    "firebase-admin": "^10.2.0",
+    "firebase-admin": "^11.0.0",
     "follow-redirects": "^1.15.0",
     "fs-extra": "^10.1.0",
     "geodist": "^0.2.1",
@@ -63,7 +65,7 @@
     "has": "^1.0.3",
     "image-type": "^4.1.0",
     "influx": "^5.9.3",
-    "jsdom": "^9.12.0",
+    "jsdom": "^16.5.0",
     "json-rules-engine": "^6.1.2",
     "json-schema": "^0.4.0",
     "jsonapi-serializer": "^3.6.7",

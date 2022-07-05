@@ -14,6 +14,7 @@ var sources;
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * 
  * @apiParam {uuid-v4} object_id Object Id
  * 
  * @apiUse 200
@@ -51,6 +52,7 @@ router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secr
  * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
+ * @apiParam {uuid-v4} object_id Object Id
  * @apiUse 200
  */
 router.get("/(:object_id([0-9a-z\-]+))/show", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
@@ -250,14 +252,15 @@ router.get("/(:object_id([0-9a-z\-]+))/ota-status/?", expressJwt({secret: jwtset
 });
 
 /**
- * @api {get} /objects/ Get Objects
+ * @api {get} /objects/:object_id?name=:name Get Objects
  * @apiName Get Objects
  * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} object_id Object Id
- * @apiParam {String} [name] Object Name you want to search for; this is using an case-insensitive regexp
+ * 
+ * @apiParam {uuid-v4} [object_id] Object Id
+ * @apiQuery {String} [name] Object Name you want to search for; this is using an case-insensitive regexp
  * 
  * @apiUse 200
  * @apiUse 401
@@ -325,6 +328,7 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * 
  * @apiParam {uuid-v4} [object_id] Object Id
  * @apiParam {uuid-v4} [source_id] Source Id
  * 
@@ -470,6 +474,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * 
  * @apiBody {String} [name=unamed] Object Name
  * @apiBody {String} [type=default] Object Type, to customize icon on the List
  * @apiBody {String{1024}} [description] Object Description
@@ -543,6 +548,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * 
  * @apiParam {uuid-v4} [object_id] Object Id
  * @apiBody {String} [name] Object Name
  * @apiBody {String} [type] Object Type, to customize icon on the List
@@ -631,6 +637,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ *
  * @apiParam {uuid-v4} object_id Object Id to be deleted
  * 
  * @apiUse 200
@@ -663,8 +670,9 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ *
  * @apiParam {uuid-v4} object_id Object Id
- * @apiBody {String} pName Custom Parameter Name
+ * @apiParam {String} pName Custom Parameter Name
  * @apiBody {String} value Custom Parameter Value
  * 
  * @apiUse 201
@@ -722,6 +730,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ *
  * @apiParam {uuid-v4} object_id Object Id
  * @apiParam {String} pName Customer Parameter Name
  * 

@@ -116,7 +116,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} flow_id Dashboard Id
+ * @apiParam {uuid-v4} dashboard_id Dashboard Id
  * @apiBody {String} [name=unamed] Dashboard Name
  * @apiBody {String} [description="the previous value before edition"] Dashboard Description
  * @apiBody {String[]} [snippets="the previous value before edition"] List of Snippets Ids
