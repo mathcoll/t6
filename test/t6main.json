@@ -4,7 +4,7 @@
         "defaults": {
             "api_call": {
                 "request": {
-                    "base_url": "http://127.0.0.1:3000",
+                    "base_url": "https://127.0.0.1:443",
                     "headers": {
                         "Accept": "application/json",
                         "Content-Type": "application/json"

@@ -72,6 +72,7 @@ var { expressjwt: jwt } = require("express-jwt");
 global.expressJwt = jwt;
 global.geodist			= require("geodist");
 global.geoip			= require("geoip-lite");
+global.http				= require("http");
 global.https			= require("https");
 https.globalAgent.secureProtocol = "SSLv3_method"; // TLSv1_1_method, TLSv1_2_method, SSLv3_method
 https.globalAgent.options.securityOptions = "SSLv3_method"; // TLSv1_1_method, TLSv1_2_method, SSLv3_method
@@ -458,17 +459,24 @@ var exploration		= require("./routes/exploration");
 var jobs			= require("./routes/jobs");
 var classifications	= require("./routes/classifications");
 app					= express();
+http.createServer(app).listen(process.env.PORT);
+var options = {
+	key: fs.readFileSync('/media/Documents/Projets/2019/internetcollaboratif.info/t6/data/certificates/ssl/key.pem'),
+	cert: fs.readFileSync('/media/Documents/Projets/2019/internetcollaboratif.info/t6/data/certificates/ssl/cert.pem'),
+};
+https.createServer(options, app).listen(8443);
 if(enableMonitoring) {
 	monitor(app);
 	t6console.log(`${appName} is being monitored.`);
 }
+/*
 app.set("port", process.env.PORT);
 app.listen(process.env.PORT, () => {
 	t6events.addStat("t6App", "start", "self", t6BuildVersion);
 	t6console.log("App is instanciated.");
 	t6console.log(`${appName} started / listening to ${baseUrl_https}.`);
 })
-
+*/
 routesLoadEndTime = new Date();
 t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
 t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
