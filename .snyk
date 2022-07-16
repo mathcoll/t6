@@ -171,9 +171,6 @@ ignore:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2021-03-01T15:36:25.042Z'
-      d3node-output > svg2png:
-        reason: None given
-        expires: '2022-08-01T13:09:39.318Z'
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2022-08-01T13:09:39.318Z'
@@ -192,19 +189,16 @@ ignore:
     - d3node-output > svg2png:
         reason: None given
         expires: '2022-06-25T10:47:10.648Z'
+    - d3node-output > svg2png:
+        reason: None given
+        expires: '2022-08-01T13:09:39.318Z'
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
         expires: '2021-03-01T15:36:25.044Z'
-      d3node-output > svg2png > yargs > yargs-parser:
-        reason: None given
-        expires: '2022-08-01T13:09:39.318Z'
     - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
-      d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
-        reason: None given
-        expires: '2022-08-01T13:09:39.318Z'
     - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-10-19T20:34:03.175Z'
@@ -217,6 +211,12 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
         expires: '2022-06-25T10:47:10.648Z'
+    - d3node-output > svg2png > yargs > yargs-parser:
+        reason: None given
+        expires: '2022-08-01T13:09:39.318Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
+        reason: None given
+        expires: '2022-08-01T13:09:39.318Z'
   'npm:content-type-parser:20170905':
     - d3-node > jsdom > content-type-parser:
         reason: None given
@@ -1026,75 +1026,39 @@ ignore:
     - npm > cli-columns > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.162Z'
-      d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - npm > columnify > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex':
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - nsp > cli-table2 > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - nsp > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > string-width > strip-ansi > ansi-regex':
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - npm > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - nsp > yargs > cliui > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex':
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - bcrypt > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - canvas > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - npm > node-gyp > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - nsp > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.164Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-08-01T13:09:39.314Z'
     - d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.164Z'
@@ -1389,6 +1353,42 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2022-06-25T10:47:10.646Z'
+    - d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex':
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > string-width > strip-ansi > ansi-regex':
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-08-01T13:09:39.314Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
