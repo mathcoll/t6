@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "node app.js",
-    "test": "snyk test && ./bin/test.sh",
+    "test": "./bin/test.sh",
     "snyk-protect": "snyk protect",
     "prepublish": "npm -v",
     "prepare": "./bin/deliver.sh -m",
@@ -77,7 +77,7 @@
     "lokijs": "^1.5.12",
     "md5": "^2.3.0",
     "minimist": "^1.2.6",
-    "moment": "^2.29.3",
+    "moment": "^2.29.4",
     "morgan": "^1.10.0",
     "mqtt": "^4.3.7",
     "netmask": "^2.0.2",
