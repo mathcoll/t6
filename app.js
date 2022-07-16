@@ -420,6 +420,7 @@ if(dbInfluxDB) {
 	t6console.log("-requests:", `${influxSettings.retentionPolicies.requests}`);
 	t6console.log("-events:", `${influxSettings.retentionPolicies.events}`);
 	t6console.log("-data:",  `${influxSettings.retentionPolicies.data}`);
+	dbInfluxDB.getDatabaseNames().then(name => { t6console.log("Databases: ", name); });
 }
 t6console.log("===========================================================");
 
