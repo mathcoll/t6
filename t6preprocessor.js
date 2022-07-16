@@ -210,6 +210,9 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 						case "snakeCase":
 							payload.value = changeCase.snakeCase(payload.value.toString(), {stripRegexp: /[^A-Z0-9@]/gi});
 							break;
+						case "replace":
+							payload.value = (payload.value.toString()).replace(new RegExp(decodeURI(pp.pattern), "i"), pp.replacer);
+							break;
 						default:
 							errorMode=1;
 							break;
