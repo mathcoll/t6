@@ -307,6 +307,48 @@
                     ]
                 },
                 {
+                	"name": "can transform string based on regexp",
+                    "description": "publish data to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/data",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+								"flow_id": "{{saved.flow_id_string}}",
+							    "value": "John Smith",
+							    "text": "",
+							    "save": false,
+							    "unit": "",
+							    "mqtt_topic": "test",
+							    "publish": "false",
+							    "datatype_id": "a394e18f-12bd-4c22-b9c3-74c387d1a8db",
+							    "preprocessor": [
+								    {
+							            "name": "transform",
+							            "mode": "replace",
+							            "pattern": "(\\w+)\\s(\\w+)",
+							            "replacer": "$2 (Jr.), $1"
+							        },
+							        {
+							            "name": "sanitize",
+							            "datatype": "string"
+							        }
+							    ]
+							},
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.data.0.attributes.value",
+        	                    "equal": "Smith (Jr.), John"
+        	                },{
+        	                    "select": "body.data.0.attributes.preprocessor.status",
+        	                    "equal": ["completed", "completed"]
+        	                }]
+                        }
+                    ]
+                },
+                {
                 	"name": "can publish data transform > capitalCase",
                     "description": "publish data to Flow",
                     "api_calls": [
