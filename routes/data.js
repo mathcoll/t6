@@ -334,8 +334,11 @@ function preprocessor(payload, fields, current_flow, callback) {
 		payload.preprocessor = result.preprocessor;
 		fields = result.fields;
 		t6console.debug("chain 6", "Preprocessor got the result value :-)", result);
-		if(payload.sanitizedValue) {
+		if(typeof payload.sanitizedValue!=="undefined" && payload.sanitizedValue!==null) {
 			payload.value = payload.sanitizedValue;
+			t6console.debug("chain 6", " sanitizedValue is set, using its value");
+		} else {
+			t6console.debug("chain 6", "sanitizedValue is not set");
 		}
 		if(payload.needRedacted) {
 			payload.preprocessor.map(function(pp) {

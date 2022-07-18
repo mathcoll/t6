@@ -124,7 +124,7 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 								fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
 								break;
 						}
-						pp.message = `Converted to ${pp.datatype}.`;
+						pp.message = `Sanitized to ${pp.datatype}.`;
 					} else {
 						fields[0] = {time:""+time, valueString: payload.value,};
 						pp.message = "Not datatype to convert to. Default to String.";
