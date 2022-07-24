@@ -343,7 +343,7 @@
         	                    "equal": "Smith (Jr.), John"
         	                },{
         	                    "select": "body.data.0.attributes.preprocessor.status",
-        	                    "equal": ["completed", "completed"]
+        	                    "equal": ["completed", "completed", "completed"]
         	                }]
                         }
                     ]
