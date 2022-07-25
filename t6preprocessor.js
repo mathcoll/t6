@@ -30,7 +30,7 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 	return new Promise((resolve, reject) => {
 		let fields = [];
 		let errorMode=false;
-		listPreprocessor.map(function(pp) {
+		listPreprocessor.map(async function(pp) {
 			pp.initialValue = payload.value;
 			t6console.debug("chain 6", "Entering Preprocessor function for", pp.name, pp.datatype);
 			switch(pp.name) {
@@ -116,7 +116,7 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 								fields[0] = {time:""+time, valueString: payload.sanitizedValue,};
 								break;
 							case "time":
-								payload.sanitizedValue = payload.value ;
+								payload.sanitizedValue = payload.value;
 								fields[0] = {time:""+time, valueTime: payload.sanitizedValue,};
 								break;
 							default:
@@ -227,12 +227,13 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 							case "faceExpressionRecognition":
 								t6imagesprocessing.faceExpressionRecognition(payload.img, `${ip.image_dir}/${payload.user_id}/${payload.flow_id}`, payload.timestamp, ".png", payload.save)
 								.then((response) => {
-									pp.expressions = response.expressions;
+									pp.expressions = typeof response.expressions!=="undefined"?response.expressions:"";
 									let max = ( Object.entries(pp.expressions).sort((prev, next) => prev[1] - next[1]) ).pop();
 									pp.recognizedValue = max[0];
 									pp.expressionValue = max[1];
 									pp.initialValue = `${payload.timestamp}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
-									t6console.debug("Setting Aidc = true and setting value to", pp.recognizedValue);
+									pp.isAidcValue = true;
+									t6console.debug("t6imagesprocessing: Setting Aidc = true and setting value to", pp.recognizedValue);
 									payload.value = pp.recognizedValue;
 									payload.isAidcValue = true;
 									resolve(pp);
@@ -244,7 +245,8 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 								.then((response) => {
 									pp.recognizedValue = response.gender;
 									pp.initialValue = `${payload.timestamp}-faceExpressionRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
-									t6console.debug("Setting Aidc = true and setting value to", pp.recognizedValue);
+									pp.isAidcValue = true;
+									t6console.debug("t6imagesprocessing: Setting Aidc = true and setting value to", pp.recognizedValue);
 									payload.value = pp.recognizedValue;
 									payload.isAidcValue = true;
 									resolve(pp);
@@ -256,7 +258,8 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 								.then((response) => {
 									pp.recognizedValue = Math.round(response.age);
 									pp.initialValue = `${payload.timestamp}-ageRecognition.png`; // TEMPORARY TEMPORARY TEMPORARY TEMPORARY
-									t6console.debug("Setting Aidc = true and setting value to", pp.recognizedValue);
+									pp.isAidcValue = true;
+									t6console.debug("t6imagesprocessing: Setting Aidc = true and setting value to", pp.recognizedValue);
 									payload.value = pp.recognizedValue;
 									payload.isAidcValue = true;
 									resolve(pp);

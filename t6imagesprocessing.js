@@ -9,7 +9,7 @@ faceapi.nets.faceLandmark68Net.loadFromDisk(`${ip.models_dir}/weights`);
 faceapi.nets.ageGenderNet.loadFromDisk(`${ip.models_dir}/weights`);
 faceapi.nets.faceExpressionNet.loadFromDisk(`${ip.models_dir}/weights`);
 
-t6imagesprocessing.ageAndGenderRecognition = function(img, dir, filename, ext, save=false) {
+t6imagesprocessing.ageAndGenderRecognition = async function(img, dir, filename, ext, save=false) {
 	return new Promise((resolve, reject) => {
 		faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions())
 			.withFaceLandmarks()
@@ -25,19 +25,19 @@ t6imagesprocessing.ageAndGenderRecognition = function(img, dir, filename, ext, s
 					faceapi.draw.drawFaceExpressions(out, results);
 					fs.writeFile(path.join(dir, `${filename}-ageAndGenderRecognition${ext}`), out.toBuffer("image/png"), function(err) {
 						if(err) {
-							t6console.error("Can't save image to storage:", err);
+							t6console.error("t6imagesprocessing: Can't save image to storage:", err);
 						} else {
-							t6console.debug("ageAndGenderRecognition", "Successfully wrote image file to storage");
+							t6console.debug("t6imagesprocessing: ageAndGenderRecognition", "Successfully wrote image file to storage");
 						}
 					});
 				} else {
-					t6console.debug("No saving image.");
+					t6console.debug("t6imagesprocessing: No saving image.");
 				}
 			});
 	});
 };
 
-t6imagesprocessing.faceExpressionRecognition = function(img, dir, filename, ext, save=false) {
+t6imagesprocessing.faceExpressionRecognition = async function(img, dir, filename, ext, save=false) {
 	return new Promise((resolve, reject) => {
 		faceapi.detectAllFaces(img, new faceapi.TinyFaceDetectorOptions())
 			.withFaceLandmarks()
@@ -52,13 +52,13 @@ t6imagesprocessing.faceExpressionRecognition = function(img, dir, filename, ext,
 					faceapi.draw.drawFaceExpressions(out, results);
 					fs.writeFile(path.join(dir, `${filename}-faceExpressionRecognition${ext}`), out.toBuffer("image/png"), function(err) {
 						if(err) {
-							t6console.error("Can't save image to storage:", err);
+							t6console.error("t6imagesprocessing: Can't save image to storage:", err);
 						} else {
-							t6console.debug("faceExpressionRecognition", "Successfully wrote image file to storage");
+							t6console.debug("t6imagesprocessing: faceExpressionRecognition", "Successfully wrote image file to storage");
 						}
 					});
 				} else {
-					t6console.debug("No saving image.");
+					t6console.debug("t6imagesprocessing: No saving image.");
 				}
 			});
 	});

@@ -34,7 +34,7 @@ function getObjectKey(payload, user_id) {
 		}
 	});
 }
-function preparePayload(payload, options, callback) {
+function preparePayload(payload, options, chainOrder, callback) {
 	t6console.debug("chain 1", "preparePayload");
 	payload = getJson(payload);
 	let object;
@@ -63,20 +63,23 @@ function preparePayload(payload, options, callback) {
 				payload = ok.payload;
 				object = ok.object;
 				payload.datapoint_logs = {preparePayload : true};
-				callback(null, payload, object);
+				chainOrder.push("preparePayload");
+				callback(null, payload, object, chainOrder);
 			})
 			.catch((error) => { 
 				t6console.debug("chain 1", "Error inside preparePayload > getObjectKey", error);
 				payload.errorMessage.push("Couldn't get secret key from Object. "+error);
 				payload.datapoint_logs = {preparePayload : "err"};
-				callback(null, payload, undefined);
+				chainOrder.push("preparePayload");
+				callback(null, payload, undefined, chainOrder);
 			});
 	} else {
 		payload.datapoint_logs = {preparePayload : false};
-		callback(null, payload, undefined);
+		chainOrder.push("preparePayload");
+		callback(null, payload, undefined, chainOrder);
 	}
 }
-function signatureCheck(payload, object, callback) {
+function signatureCheck(payload, object, chainOrder, callback) {
 	t6console.debug("chain 2&4", "signatureCheck");
 	let initialPayload = {
 		flow_id: payload.flow_id,
@@ -122,21 +125,24 @@ function signatureCheck(payload, object, callback) {
 				t6console.debug("chain 2&4", "signatureCheck", payload);
 				payload.datapoint_logs = initialPayload.datapoint_logs;
 				payload.datapoint_logs.signatureCheck = true;
-				callback(null, payload, object);
+				chainOrder.push("signatureCheck");
+				callback(null, payload, object, chainOrder);
 			} else {
 				t6console.error("chain 2&4", "Error: Can't verify signature.");
 				payload.isSigned = false;
 				payload.datapoint_logs.signatureCheck = "err";
-				callback(null, payload, object);
+				chainOrder.push("signatureCheck");
+				callback(null, payload, object, chainOrder);
 			}
 		});
 	} else {
 		t6console.debug("chain 2&4", "Is payload really signed?");
 		payload.datapoint_logs.signatureCheck = false;
-		callback(null ,payload, object);
+		chainOrder.push("signatureCheck");
+		callback(null ,payload, object, chainOrder);
 	}
 }
-function decrypt(payload, object, callback) {
+function decrypt(payload, object, chainOrder, callback) {
 	t6console.debug("chain 3", "decrypt");
 	let initialPayload = {
 		flow_id: payload.flow_id,
@@ -189,33 +195,38 @@ function decrypt(payload, object, callback) {
 			t6console.debug("chain 3", "decryptedPayload", payload);
 			payload.datapoint_logs = initialPayload.datapoint_logs;
 			payload.datapoint_logs.decrypt = true;
-			callback(null, payload, object);
+			chainOrder.push("decrypt");
+			callback(null, payload, object, chainOrder);
 		} else {
 			t6console.error("chain 3", "Object is not available or does not contains any secret key.");
 			payload.errorMessage.push("Object is not available or does not contains any secret key.");
 			payload.isEncrypted = false;
 			payload.datapoint_logs.decrypt = "err";
-			callback(null, payload, object);
+			chainOrder.push("decrypt");
+			callback(null, payload, object, chainOrder);
 		}
 	} else {
 		t6console.debug("chain 3", "Look like the payload is not encrypted.");
 		payload.datapoint_logs = initialPayload.datapoint_logs;
 		payload.datapoint_logs.decrypt = false;
-		callback(null, payload, object);
+		chainOrder.push("decrypt");
+		callback(null, payload, object, chainOrder);
 	}
 }
-function verifyPrerequisites(payload, object, callback) {
+function verifyPrerequisites(payload, object, chainOrder, callback) {
 	t6console.debug("chain 5", "verifyPrerequisites");
 	payload.prerequisite = 0;
 	if ( !payload.value ) {
 		t6console.error("chain 5", "Error: verifyPrerequisites : no value.");
 		payload.datapoint_logs.verifyPrerequisites = "err";
-		callback("Error: verifyPrerequisites : no value.", payload, object, null);
+		chainOrder.push("verifyPrerequisites");
+		callback("Error: verifyPrerequisites : no value.", payload, object, null, chainOrder);
 	}
 	if ( !payload.flow_id || typeof payload.flow_id==="undefined" || payload.flow_id===null ) {
 		t6console.error("chain 5", "Error: verifyPrerequisites : no flow_id.");
 		payload.datapoint_logs.verifyPrerequisites = "err";
-		callback("Error: verifyPrerequisites : no flow_id.", payload, object, null);
+		chainOrder.push("verifyPrerequisites");
+		callback("Error: verifyPrerequisites : no flow_id.", payload, object, null, chainOrder);
 	} else {
 		payload.datapoint_logs.verifyPrerequisites = true;
 		let fDatatypes = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
@@ -310,19 +321,22 @@ function verifyPrerequisites(payload, object, callback) {
 		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.", current_flow);
 		if (payload.prerequisite <= 0) {
 			payload.datapoint_logs.verifyPrerequisites = true;
-			callback(null, payload, object, current_flow);
+			chainOrder.push("verifyPrerequisites");
+			callback(null, payload, object, current_flow, chainOrder);
 		} else {
 			payload.errorMessage.push("Payload is requiring either signature and/or encryption.");
 			payload.datapoint_logs.verifyPrerequisites = true;
-			callback("Payload is requiring either signature and/or encryption.", payload, object, null);
+			chainOrder.push("verifyPrerequisites");
+			callback("Payload is requiring either signature and/or encryption.", payload, object, null, chainOrder);
 		}
 	}
 }
-function preprocessor(payload, fields, current_flow, callback) {
+function preprocessor(payload, fields, current_flow, chainOrder, callback) {
 	t6console.debug("chain 6", "preprocessor");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.preprocessor = "err";
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("preprocessor");
+		callback(null, payload, fields, current_flow, chainOrder);
 	}
 	let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined"&&current_flow.preprocessor!=="")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
 	preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
@@ -336,9 +350,15 @@ function preprocessor(payload, fields, current_flow, callback) {
 		t6console.debug("chain 6", "Preprocessor got the result value :-)", result);
 		if(typeof payload.sanitizedValue!=="undefined" && payload.sanitizedValue!==null) {
 			payload.value = payload.sanitizedValue;
-			t6console.debug("chain 6", " sanitizedValue is set, using its value");
+			t6console.debug("chain 6", "sanitizedValue is set, using its value");
 		} else {
 			t6console.debug("chain 6", "sanitizedValue is not set");
+		}
+		if(typeof payload.isAidcValue===true) {
+			payload.value = payload.sanitizedValue;
+			t6console.debug("chain 6", " isAidcValue is set, using its value");
+		} else {
+			t6console.debug("chain 6", "isAidcValue is not set", payload);
 		}
 		if(payload.needRedacted) {
 			payload.preprocessor.map(function(pp) {
@@ -353,14 +373,16 @@ function preprocessor(payload, fields, current_flow, callback) {
 			t6console.debug("chain 6", "Preprocessor accepted value.");
 		}
 		payload.datapoint_logs.preprocessor = true;
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("preprocessor");
+		callback(null, payload, fields, current_flow, chainOrder);
 	});
 }
-function fusion(payload, fields, current_flow, callback) {
+function fusion(payload, fields, current_flow, chainOrder, callback) {
 	t6console.debug("chain 7", "fusion", payload);
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.fusion = "err";
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("fusion");
+		callback(null, payload, fields, current_flow, chainOrder);
 	}
 	if ( dataFusion.activated === true ) {
 		payload.fusion = typeof payload.fusion!=="undefined"?payload.fusion:{};
@@ -445,22 +467,25 @@ function fusion(payload, fields, current_flow, callback) {
 			t6console.debug("chain 7", "fusionTime", moment(fusionTime).format(logDateFormat));
 			payload.flow_id = track_id;
 			payload.datapoint_logs.fusion = true;
-			callback(null, payload, fields, current_flow);
+		chainOrder.push("fusion");
+			callback(null, payload, fields, current_flow, chainOrder);
 		} else {
 			payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes ; or no track on Flow/payload.");
 			payload.fusion.error_tracks = errorTracks;
 			payload.datapoint_logs.fusion = false;
-			callback(null, payload, fields, current_flow);
+		chainOrder.push("fusion");
+			callback(null, payload, fields, current_flow, chainOrder);
 		}
 		// Clean expired buffer
 		let size = t6preprocessor.clearExpiredMeasurement();
 		size>0?payload.fusion.messages.push(`${size} expired measurements - cleaned from buffer.`):null;
 	} else {
 		payload.datapoint_logs.fusion = false;
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("fusion");
+		callback(null, payload, fields, current_flow, chainOrder);
 	}
 }
-function ruleEngine(payload, fields, current_flow, callback) {
+function ruleEngine(payload, fields, current_flow, chainOrder, callback) {
 	t6console.debug("chain 8", "ruleEngine", payload);
 	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true; // TODO : to be cleaned
 	if ( publish === true ) {														 // TODO : to be cleaned
@@ -487,19 +512,22 @@ function ruleEngine(payload, fields, current_flow, callback) {
 		payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
 		t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic);
 		payload.datapoint_logs.ruleEngine = true;
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("ruleEngine");
+		callback(null, payload, fields, current_flow, chainOrder);
 	} else {
 		t6console.debug("chain 8", "Not Publishing to Rule Engine");
 		payload.datapoint_logs.ruleEngine = false;
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("ruleEngine");
+		callback(null, payload, fields, current_flow, chainOrder);
 	} // end publish
 }
-function saveToLocal(payload, fields, current_flow, callback) {
+function saveToLocal(payload, fields, current_flow, chainOrder, callback) {
 	t6console.debug("chain 9", "saveToLocal", payload);
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToLocal = "err";
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("saveToLocal");
+		callback(null, payload, fields, current_flow, chainOrder);
 	}
 	if ( save === true ) {
 		let rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
@@ -534,32 +562,38 @@ function saveToLocal(payload, fields, current_flow, callback) {
 				if (err) {
 					t6console.error({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
 					payload.datapoint_logs.saveToLocal = "err";
-					callback(null, payload, fields, current_flow);
+					chainOrder.push("saveToLocal");
+					callback(null, payload, fields, current_flow, chainOrder);
 				} else {
 					payload.datapoint_logs.saveToLocal = true;
-					callback(null, payload, fields, current_flow);
+					chainOrder.push("saveToLocal");
+					callback(null, payload, fields, current_flow, chainOrder);
 				}
 			}).catch((err) => {
 				t6console.error("chain 9", {"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
 				payload.datapoint_logs.saveToLocal = "err";
-				callback(null, payload, fields, current_flow);
+				chainOrder.push("saveToLocal");
+				callback(null, payload, fields, current_flow, chainOrder);
 			});
 		} else {
 			t6console.debug("chain 9", "Missconfiguration on saving to influxdb timeseries");
 			payload.datapoint_logs.saveToLocal = false;
-			callback(null, payload, fields, current_flow);
+			chainOrder.push("saveToLocal");
+			callback(null, payload, fields, current_flow, chainOrder);
 		}
 	} else {
 		t6console.debug("chain 9", "Save is Disabled on payload.");
 		payload.datapoint_logs.saveToLocal = false;
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("saveToLocal");
+		callback(null, payload, fields, current_flow, chainOrder);
 	} // end save
 }
-function saveToCloud(payload, fields, current_flow, callback) {
+function saveToCloud(payload, fields, current_flow, chainOrder, callback) {
 	t6console.debug("chain 10", "saveToCloud", payload);
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToCloud = "err";
-		callback(null, payload, fields, current_flow);
+		chainOrder.push("saveToCloud");
+		callback(null, payload, fields, current_flow, chainOrder);
 	}
 	if ((typeof current_flow!=="undefined" && typeof current_flow.influx_db_cloud!=="undefined") || typeof payload.influx_db_cloud!=="undefined") {
 		const {InfluxDB} = require("@influxdata/influxdb-client");
@@ -597,26 +631,30 @@ function saveToCloud(payload, fields, current_flow, callback) {
 					//t6console.log("chain 10", point);
 					t6events.addStat("t6App", "Wrote to influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id});
 					payload.datapoint_logs.saveToCloud = true;
-					callback(null, {payload, fields, current_flow});
+					chainOrder.push("saveToCloud");
+					callback(null, {payload, fields, current_flow, chainOrder});
 				})
 				.catch((e) => {
 					t6console.error("chain 10", "Write Error on influxDbCloud");
 					t6console.error("chain 10", "Error:", e);
 					t6events.addStat("t6App", "Write Error on influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id, "error": e});
 					payload.datapoint_logs.saveToCloud = "err";
-					callback(e, {payload, fields, current_flow});
+					chainOrder.push("saveToCloud");
+					callback(e, {payload, fields, current_flow, chainOrder});
 				});
 		} // end valid token
 		else {
 			t6console.debug("chain 10", "Can't save to Cloud ; missing credentials.");
 			payload.datapoint_logs.saveToCloud = false;
-			callback(null, {payload, fields, current_flow});
+			chainOrder.push("saveToCloud");
+			callback(null, {payload, fields, current_flow, chainOrder});
 		}
 	} // end saveToCloud
 	else {
 		t6console.debug("chain 10", "Not customized to save to Cloud");
 		payload.datapoint_logs.saveToCloud = false;
-		callback(null, {payload, fields, current_flow});
+		chainOrder.push("saveToCloud");
+		callback(null, {payload, fields, current_flow, chainOrder});
 	};
 };
 async function processAllMeasures(payloads, options, res) {
@@ -624,9 +662,10 @@ async function processAllMeasures(payloads, options, res) {
 		t6console.debug("processAllMeasures in a chain");
 		let result = [];
 		payloads.map(async function(p) {
-			t6console.debug("--------", "chaining the measure", result.length+1, "--------");
+			let chainOrder = [];
+			t6console.debug("--------", "chaining", result.length+1 +"measures.");
 			async.waterfall([
-				async.apply(preparePayload, p, options), //(outputPayload, options),
+				async.apply(preparePayload, p, options, chainOrder), //(outputPayload, options),
 				signatureCheck, //(pp.payload, pp.object),
 				decrypt, //(sc1.payload, sc1.object),
 				signatureCheck, //(dy.payload, dy.object),
@@ -638,21 +677,12 @@ async function processAllMeasures(payloads, options, res) {
 				saveToCloud, //(s2l.payload, s2l.fields, s2l.current_flow),
 			], function (err, s2c) {
 				if( s2c && !err ) {
-					t6console.debug("chain ending", "---------------------------------------------");
 					let measure = s2c.fields;
 					let payload = s2c.payload;
-
-					t6console.debug("chain ending", "----value----------------"+payload.value);
-					t6console.debug("chain ending", "----flow_id--------------"+payload.flow_id);
-					t6console.debug("chain ending", "----preparePayload-------"+payload.datapoint_logs.preparePayload);
-					t6console.debug("chain ending", "----signatureCheck-------"+payload.datapoint_logs.signatureCheck);
-					t6console.debug("chain ending", "----decrypt--------------"+payload.datapoint_logs.decrypt);
-					t6console.debug("chain ending", "----verifyPrerequisites--"+payload.datapoint_logs.verifyPrerequisites);
-					t6console.debug("chain ending", "----preprocessor---------"+payload.datapoint_logs.preprocessor);
-					t6console.debug("chain ending", "----fusion---------------"+payload.datapoint_logs.fusion);
-					t6console.debug("chain ending", "----ruleEngine-----------"+payload.datapoint_logs.ruleEngine);
-					t6console.debug("chain ending", "----saveToLocal----------"+payload.datapoint_logs.saveToLocal);
-					t6console.debug("chain ending", "----saveToCloud----------"+payload.datapoint_logs.saveToCloud);
+					chainOrder.map((chain, index) => {
+						t6console.debug("chain end", index, chain, payload.datapoint_logs[chain], payload.value.length);
+					});
+					t6console.debug("chain end", "---------------------------------------------");
 
 					let current_flow = s2c.current_flow;
 					if (payload.datatype==="image" || typeof payload.img!=="undefined") {
@@ -713,7 +743,7 @@ async function processAllMeasures(payloads, options, res) {
 						response.pageFirst = 1;
 						response.limit = 20;
 						response.sort = "asc";
-						t6console.debug(`Finished processing all ${payload.length} measurements`);
+						t6console.debug(`chain Finished processing ${result.length} measurement(s)`);
 						res.status(200).send(new DataSerializer(response).serialize());
 					}
 				} else {
