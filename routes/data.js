@@ -331,6 +331,9 @@ function verifyPrerequisites(payload, object, chainOrder, callback) {
 		}
 	}
 }
+
+
+//const preprocessor = async (payload, fields, current_flow, chainOrder, callback) => {
 function preprocessor(payload, fields, current_flow, chainOrder, callback) {
 	t6console.debug("chain 6", "preprocessor");
 	if(!payload || current_flow===null) {
