@@ -345,12 +345,16 @@ function preprocessor(payload, fields, current_flow, chainOrder, callback) {
 	preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 	t6console.debug("chain 6", "Will force sanitization to:", payload.datatype);
 	preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
-	t6preprocessor.preprocessor(current_flow, payload, preprocessor).then((result) => {
+	
+	Promise.all(
+		preprocessor.map( (pp) => t6preprocessor.preprocessor(current_flow, payload, pp) )
+	).then((result) => {
+		t6console.debug("chain 6", "payload value before returning result:", result);
 		payload = result.payload;
 		preprocessor = result.preprocessor;
 		payload.preprocessor = result.preprocessor;
 		fields = result.fields;
-		t6console.debug("chain 6", "Preprocessor got the result value :-)", result);
+		t6console.debug("chain 6", "Preprocessor got the result value :-)");
 		if(typeof payload.sanitizedValue!=="undefined" && payload.sanitizedValue!==null) {
 			payload.value = payload.sanitizedValue;
 			t6console.debug("chain 6", "sanitizedValue is set, using its value");
@@ -361,7 +365,7 @@ function preprocessor(payload, fields, current_flow, chainOrder, callback) {
 			payload.value = payload.sanitizedValue;
 			t6console.debug("chain 6", " isAidcValue is set, using its value");
 		} else {
-			t6console.debug("chain 6", "isAidcValue is not set", payload);
+			t6console.debug("chain 6", "isAidcValue is not set");
 		}
 		if(payload.needRedacted) {
 			payload.preprocessor.map(function(pp) {
@@ -377,11 +381,12 @@ function preprocessor(payload, fields, current_flow, chainOrder, callback) {
 		}
 		payload.datapoint_logs.preprocessor = true;
 		chainOrder.push("preprocessor");
-		callback(null, payload, fields, current_flow, chainOrder);
+		t6console.debug("chain 6", "Preprocessor going to callback function.");
+		callback(null, payload, fields, current_flow, chainOrder)
 	});
 }
 function fusion(payload, fields, current_flow, chainOrder, callback) {
-	t6console.debug("chain 7", "fusion", payload);
+	t6console.debug("chain 7", "fusion");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.fusion = "err";
 		chainOrder.push("fusion");
@@ -489,7 +494,7 @@ function fusion(payload, fields, current_flow, chainOrder, callback) {
 	}
 }
 function ruleEngine(payload, fields, current_flow, chainOrder, callback) {
-	t6console.debug("chain 8", "ruleEngine", payload);
+	t6console.debug("chain 8", "ruleEngine");
 	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true; // TODO : to be cleaned
 	if ( publish === true ) {														 // TODO : to be cleaned
 		t6console.debug("chain 8", "Publishing to Rule Engine");
@@ -525,7 +530,7 @@ function ruleEngine(payload, fields, current_flow, chainOrder, callback) {
 	} // end publish
 }
 function saveToLocal(payload, fields, current_flow, chainOrder, callback) {
-	t6console.debug("chain 9", "saveToLocal", payload);
+	t6console.debug("chain 9", "saveToLocal");
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToLocal = "err";
@@ -592,7 +597,7 @@ function saveToLocal(payload, fields, current_flow, chainOrder, callback) {
 	} // end save
 }
 function saveToCloud(payload, fields, current_flow, chainOrder, callback) {
-	t6console.debug("chain 10", "saveToCloud", payload);
+	t6console.debug("chain 10", "saveToCloud");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToCloud = "err";
 		chainOrder.push("saveToCloud");
@@ -748,6 +753,7 @@ async function processAllMeasures(payloads, options, res) {
 						response.sort = "asc";
 						t6console.debug(`chain Finished processing ${result.length} measurement(s)`);
 						res.status(200).send(new DataSerializer(response).serialize());
+						t6console.debug(`sent response to req with value length: ${response[0].value.length}`);
 					}
 				} else {
 					t6console.debug("chain ending with error", "---------------------------------------------");
