@@ -344,7 +344,7 @@ t6preprocessor.preprocessor = async function(flow, payload, listPreprocessor) {
 				pp.message = typeof flow!=="undefined"?"No Preprocessor found.":"No Preprocessor and no Flow."
 				resolve( {payload, fields, preprocessor: listPreprocessor} );
 				break;
-		};
+		}
 		pp.status = "completed";
 		t6console.debug("chain 6", `pp ${pp.name} ${pp.status}`);
 	});
