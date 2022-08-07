@@ -771,7 +771,6 @@ async function processAllMeasures(payloads, options) {
 						};
 						t6events.addStat("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
 						t6console.debug("payloads size ---> ", payloads.length);
-						
 						payload.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
 						payload.publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):null;
 						payload.flow_id = payload.flow_id;
@@ -782,7 +781,6 @@ async function processAllMeasures(payloads, options) {
 						payload.id = payload.time*1; //*1e6;
 						payload.time = payload.time*1; //*1e6;
 						payload.timestamp = payload.time*1; //*1e6;
-
 						return (payload);
 					} else {
 						t6console.debug("chain ending with error", "---------------------------------------------");
