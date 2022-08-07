@@ -26,12 +26,15 @@ t6imagesprocessing.ageAndGenderRecognition = async function(img, dir, filename, 
 					fs.writeFile(path.join(dir, `${filename}-ageAndGenderRecognition${ext}`), out.toBuffer("image/png"), function(err) {
 						if(err) {
 							t6console.error("t6imagesprocessing: Can't save image to storage:", err);
+							reject();
 						} else {
 							t6console.debug("t6imagesprocessing: ageAndGenderRecognition", "Successfully wrote image file to storage");
+							resolve();
 						}
 					});
 				} else {
 					t6console.debug("t6imagesprocessing: No saving image.");
+					reject();
 				}
 			});
 	});
@@ -53,12 +56,15 @@ t6imagesprocessing.faceExpressionRecognition = async function(img, dir, filename
 					fs.writeFile(path.join(dir, `${filename}-faceExpressionRecognition${ext}`), out.toBuffer("image/png"), function(err) {
 						if(err) {
 							t6console.error("t6imagesprocessing: Can't save image to storage:", err);
+							reject();
 						} else {
 							t6console.debug("t6imagesprocessing: faceExpressionRecognition", "Successfully wrote image file to storage");
+							resolve();
 						}
 					});
 				} else {
 					t6console.debug("t6imagesprocessing: No saving image.");
+					reject();
 				}
 			});
 	});

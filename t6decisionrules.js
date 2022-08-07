@@ -212,7 +212,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("changeGreaterThanInclusive", (factValue, jsonValue) => {
-			t6console.debug("addOperator changeGreaterThanInclusive", factValue, jsonValue);
+			t6console.debug(`addOperator changeGreaterThanInclusive ${factValue} >= ${jsonValue} ?`);
 			p.diffFromPrevious = {};
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
 			p.diffFromPrevious.diff = factValue - p.diffFromPrevious.previous;
@@ -227,7 +227,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 		});
 
 		engine.addOperator("changeLessThanInclusive", (factValue, jsonValue) => {
-			t6console.debug("addOperator changeLessThanInclusive", factValue, jsonValue);
+			t6console.debug(`addOperator changeLessThanInclusive ${factValue} <= ${jsonValue} ?`);
 			p.diffFromPrevious = {};
 			p.diffFromPrevious.previous = valuesFromDb.slice(-1);
 			p.diffFromPrevious.diff = factValue - p.diffFromPrevious.previous;

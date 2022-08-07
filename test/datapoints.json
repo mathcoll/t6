@@ -682,13 +682,20 @@
 							    "track_id": "{{saved.track_id}}",
 							    "fusion": {
 							        "algorithm": "average"
-							    }
+							    },
+							    "preprocessor": [
+							        {
+							            "name": "sanitize",
+							            "datatype": "float"
+							        }
+							    ]
 							},
                             "status": 200,
-                            "assert": {
-        	                    "select": "body.data.0.attributes.value",
-        	                    "equal": 10.0
-        	                }
+                            "assert": [{
+        	                        "select": "body.data.0.attributes.value",
+        	                        "equal": 10.0
+        	                    }
+	        	            ]
                         }
                     ]
                 },
@@ -713,7 +720,13 @@
 							    "track_id": "{{saved.track_id}}",
 							    "fusion": {
 							        "algorithm": "average_weighted"
-							    }
+							    },
+							    "preprocessor": [
+							        {
+							            "name": "sanitize",
+							            "datatype": "float"
+							        }
+							    ]
 							},
                             "status": 200,
                             "assert": [
@@ -744,6 +757,10 @@
 	                            {
 	        	                    "select": "body.data.0.attributes.fusion.primary_flow",
 	        	                    "equal": "{{saved.track_id}}"
+	        	                },
+	                            {
+	        	                    "select": "body.data.0.attributes.retention",
+	        	                    "equal": "retention1w"
 	        	                }
 	        	            ]
                         }

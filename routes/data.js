@@ -34,7 +34,10 @@ function getObjectKey(payload, user_id) {
 		}
 	});
 }
-function preparePayload(payload, options, chainOrder, callback) {
+let preparePayload = function(resolve, reject) {
+	let payload = this.payload;
+	let chainOrder = this.chainOrder;
+	let options = this.options;
 	t6console.debug("chain 1", "preparePayload");
 	payload = getJson(payload);
 	let object;
@@ -64,22 +67,25 @@ function preparePayload(payload, options, chainOrder, callback) {
 				object = ok.object;
 				payload.datapoint_logs = {preparePayload : true};
 				chainOrder.push("preparePayload");
-				callback(null, payload, object, chainOrder);
+				resolve({payload, object, chainOrder});
 			})
 			.catch((error) => { 
 				t6console.debug("chain 1", "Error inside preparePayload > getObjectKey", error);
 				payload.errorMessage.push("Couldn't get secret key from Object. "+error);
 				payload.datapoint_logs = {preparePayload : "err"};
 				chainOrder.push("preparePayload");
-				callback(null, payload, undefined, chainOrder);
+				resolve({payload, chainOrder});
 			});
 	} else {
 		payload.datapoint_logs = {preparePayload : false};
 		chainOrder.push("preparePayload");
-		callback(null, payload, undefined, chainOrder);
+		resolve({payload, chainOrder});
 	}
 }
-function signatureCheck(payload, object, chainOrder, callback) {
+let signatureCheck = function(resolve, reject) {
+	let payload = this.payload;
+	let object = this.object;
+	let chainOrder = this.chainOrder;
 	t6console.debug("chain 2&4", "signatureCheck");
 	let initialPayload = {
 		flow_id: payload.flow_id,
@@ -126,23 +132,26 @@ function signatureCheck(payload, object, chainOrder, callback) {
 				payload.datapoint_logs = initialPayload.datapoint_logs;
 				payload.datapoint_logs.signatureCheck = true;
 				chainOrder.push("signatureCheck");
-				callback(null, payload, object, chainOrder);
+				resolve({payload, object, chainOrder});
 			} else {
 				t6console.error("chain 2&4", "Error: Can't verify signature.");
 				payload.isSigned = false;
 				payload.datapoint_logs.signatureCheck = "err";
 				chainOrder.push("signatureCheck");
-				callback(null, payload, object, chainOrder);
+				resolve({payload, object, chainOrder});
 			}
 		});
 	} else {
 		t6console.debug("chain 2&4", "Is payload really signed?");
 		payload.datapoint_logs.signatureCheck = false;
 		chainOrder.push("signatureCheck");
-		callback(null ,payload, object, chainOrder);
+		resolve({payload, object, chainOrder});
 	}
 }
-function decrypt(payload, object, chainOrder, callback) {
+let decrypt = function(resolve, reject) {
+	let payload = this.payload;
+	let object = this.object;
+	let chainOrder = this.chainOrder;
 	t6console.debug("chain 3", "decrypt");
 	let initialPayload = {
 		flow_id: payload.flow_id,
@@ -196,37 +205,42 @@ function decrypt(payload, object, chainOrder, callback) {
 			payload.datapoint_logs = initialPayload.datapoint_logs;
 			payload.datapoint_logs.decrypt = true;
 			chainOrder.push("decrypt");
-			callback(null, payload, object, chainOrder);
+			resolve({payload, object, chainOrder});
 		} else {
 			t6console.error("chain 3", "Object is not available or does not contains any secret key.");
 			payload.errorMessage.push("Object is not available or does not contains any secret key.");
 			payload.isEncrypted = false;
 			payload.datapoint_logs.decrypt = "err";
 			chainOrder.push("decrypt");
-			callback(null, payload, object, chainOrder);
+			resolve({payload, object, chainOrder});
 		}
 	} else {
 		t6console.debug("chain 3", "Look like the payload is not encrypted.");
 		payload.datapoint_logs = initialPayload.datapoint_logs;
 		payload.datapoint_logs.decrypt = false;
 		chainOrder.push("decrypt");
-		callback(null, payload, object, chainOrder);
+		resolve({payload, object, chainOrder});
 	}
 }
-function verifyPrerequisites(payload, object, chainOrder, callback) {
+let verifyPrerequisites = function(resolve, reject) {
+	let payload = this.payload;
+	let object = this.object;
+	let chainOrder = this.chainOrder;
 	t6console.debug("chain 5", "verifyPrerequisites");
 	payload.prerequisite = 0;
 	if ( !payload.value ) {
 		t6console.error("chain 5", "Error: verifyPrerequisites : no value.");
 		payload.datapoint_logs.verifyPrerequisites = "err";
 		chainOrder.push("verifyPrerequisites");
-		callback("Error: verifyPrerequisites : no value.", payload, object, null, chainOrder);
+		//resolve("Error: verifyPrerequisites : no value.", payload, object, null, chainOrder);
+		reject({payload, object, chainOrder});
 	}
 	if ( !payload.flow_id || typeof payload.flow_id==="undefined" || payload.flow_id===null ) {
 		t6console.error("chain 5", "Error: verifyPrerequisites : no flow_id.");
 		payload.datapoint_logs.verifyPrerequisites = "err";
 		chainOrder.push("verifyPrerequisites");
-		callback("Error: verifyPrerequisites : no flow_id.", payload, object, null, chainOrder);
+		//resolve("Error: verifyPrerequisites : no flow_id.", payload, object, null, chainOrder);
+		reject({payload, object, chainOrder});
 	} else {
 		payload.datapoint_logs.verifyPrerequisites = true;
 		let fDatatypes = flows.chain().find({id: ""+payload.flow_id, user_id: payload.user_id,}).limit(1);
@@ -294,7 +308,7 @@ function verifyPrerequisites(payload, object, chainOrder, callback) {
 			payload.errorMessage.push("chain 5", "==> Flow require encrypted payload.");
 			t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.require_encrypted);
 			t6console.debug("chain 5", ".. & Payload isEncrypted", payload.isEncrypted);
-			//callback("Error: verifyPrerequisites :", payload, object, null);
+			//resolve("Error: verifyPrerequisites :", payload, object, null);
 		}
 
 		if ( typeof current_flow!=="undefined" && current_flow.require_signed && !payload.isSigned ) {
@@ -302,7 +316,7 @@ function verifyPrerequisites(payload, object, chainOrder, callback) {
 			payload.errorMessage.push("chain 5", "==> Flow require signed payload.");
 			t6console.debug("chain 5", "Flow require isSigned -", current_flow.require_signed);
 			t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
-			//callback("Error: verifyPrerequisites :", payload, object, null);
+			//resolve("Error: verifyPrerequisites :", payload, object, null);
 		}
 
 		if( typeof payload.retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(payload.retention)===-1 ) {
@@ -317,55 +331,72 @@ function verifyPrerequisites(payload, object, chainOrder, callback) {
 			}
 		}
 		t6console.debug("chain 5", "Retention", payload.retention);
-
-		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.", current_flow);
+		t6console.debug("chain 5", "current_flow", current_flow);
+		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
 		if (payload.prerequisite <= 0) {
 			payload.datapoint_logs.verifyPrerequisites = true;
 			chainOrder.push("verifyPrerequisites");
-			callback(null, payload, object, current_flow, chainOrder);
+			resolve({payload, object, current_flow, chainOrder});
 		} else {
 			payload.errorMessage.push("Payload is requiring either signature and/or encryption.");
 			payload.datapoint_logs.verifyPrerequisites = true;
 			chainOrder.push("verifyPrerequisites");
-			callback("Payload is requiring either signature and/or encryption.", payload, object, null, chainOrder);
+			reject({});
 		}
 	}
 }
 
-
-//const preprocessor = async (payload, fields, current_flow, chainOrder, callback) => {
-function preprocessor(payload, fields, current_flow, chainOrder, callback) {
+let preprocessor = async function(resolve, reject) {
+	let payload = this.payload;
+	let chainOrder = this.chainOrder;
+	let current_flow = this.current_flow;
 	t6console.debug("chain 6", "preprocessor");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.preprocessor = "err";
 		chainOrder.push("preprocessor");
-		callback(null, payload, fields, current_flow, chainOrder);
+		resolve({payload, fields, current_flow, chainOrder});
 	}
 	let preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:((typeof current_flow!=="undefined"&&typeof current_flow.preprocessor!=="undefined"&&current_flow.preprocessor!=="")?JSON.parse(JSON.stringify(current_flow.preprocessor)):[]);
 	preprocessor = Array.isArray(preprocessor)===false?[preprocessor]:preprocessor;
 	t6console.debug("chain 6", "Will force sanitization to:", payload.datatype);
 	preprocessor.push({"name": "sanitize", "datatype": payload.datatype});
-	
-	Promise.all(
-		preprocessor.map( (pp) => t6preprocessor.preprocessor(current_flow, payload, pp) )
-	).then((result) => {
-		t6console.debug("chain 6", "payload value before returning result:", result);
-		payload = result.payload;
-		preprocessor = result.preprocessor;
-		payload.preprocessor = result.preprocessor;
-		fields = result.fields;
-		t6console.debug("chain 6", "Preprocessor got the result value :-)");
-		if(typeof payload.sanitizedValue!=="undefined" && payload.sanitizedValue!==null) {
+
+	let preprocessorsMap = preprocessor.map( async (pp, index) => {
+		return new Promise((resolve, reject) => {
+			t6console.debug("chain 6", "preprocessorsPromises mapping", index);
+			//t6console.debug("chain 6", "preprocessorsPromises pp", pp);
+			//t6console.debug("chain 6", "preprocessorsPromises payload.value.length", payload.value.length);
+			t6preprocessor.preprocessor(current_flow, payload, pp).then( async (t6pp) => {
+				//t6console.debug("chain 6", "preprocessorsPromises t6pp", t6pp);
+				resolve( {payload: t6pp.payload, fields: t6pp.fields, preprocessor: t6pp.preprocessor} );
+			});
+		});
+	});
+	await Promise.all(preprocessorsMap).then((prom) => {
+		//t6console.debug("chain 6", "preprocessorsPromises ----payload----", payload);
+		//t6console.debug("chain 6", "preprocessorsPromises ----fields----", fields);
+		//t6console.debug("chain 6", "preprocessorsPromises ----preprocessor----", preprocessor);
+		//t6console.debug("chain 6", "preprocessorsPromises ----prom----", prom);
+		//t6console.debug("chain 6", "preprocessorsPromises shift", prom.shift().payload);
+		//t6console.debug("chain 6", "preprocessorsPromises pop", prom.pop().payload);
+		let pop = prom.pop();
+		let shift = prom.shift();
+		let fields = pop.fields;
+		payload = typeof shift!=="undefined"?shift.payload:pop.payload;
+		t6console.debug("chain 6", "Preprocessor got all promises :-)");
+		//t6console.debug("chain 6", "fields", fields);
+
+		if((typeof payload.preprocessor!=="undefined" && !payload.preprocessor.recognizedValue) && typeof payload.sanitizedValue!=="undefined" && payload.sanitizedValue!==null) {
 			payload.value = payload.sanitizedValue;
 			t6console.debug("chain 6", "sanitizedValue is set, using its value");
 		} else {
 			t6console.debug("chain 6", "sanitizedValue is not set");
 		}
-		if(typeof payload.isAidcValue===true) {
-			payload.value = payload.sanitizedValue;
-			t6console.debug("chain 6", " isAidcValue is set, using its value");
+		if(payload.isAidcValue===true && payload.recognizedValue) {
+			payload.value = typeof payload.recognizedValue!=="undefined"?payload.recognizedValue:payload.value;
+			t6console.debug("chain 6", "AidcValue>recognizedValue is set, using its value");
 		} else {
-			t6console.debug("chain 6", "isAidcValue is not set");
+			t6console.error("chain 6", "FAILURE, AidcValue/recognizedValue have not been received");
 		}
 		if(payload.needRedacted) {
 			payload.preprocessor.map(function(pp) {
@@ -373,6 +404,7 @@ function preprocessor(payload, fields, current_flow, chainOrder, callback) {
 				pp.transformedValue = "**REDACTED**";
 			});
 		}
+
 		if(payload.isRejected) {
 			payload.save = false;
 			t6console.debug("chain 6", "Preprocessor rejected value.");
@@ -381,16 +413,20 @@ function preprocessor(payload, fields, current_flow, chainOrder, callback) {
 		}
 		payload.datapoint_logs.preprocessor = true;
 		chainOrder.push("preprocessor");
-		t6console.debug("chain 6", "Preprocessor going to callback function.");
-		callback(null, payload, fields, current_flow, chainOrder)
+		t6console.debug("chain 6", "Preprocessor going to callback function.", payload.value);
+		resolve({payload, fields, current_flow, chainOrder});
 	});
 }
-function fusion(payload, fields, current_flow, chainOrder, callback) {
+let fusion = function(resolve, reject) {
+	let payload = this.payload;
+	let chainOrder = this.chainOrder;
+	let fields = this.fields;
+	let current_flow = this.current_flow;
 	t6console.debug("chain 7", "fusion");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.fusion = "err";
 		chainOrder.push("fusion");
-		callback(null, payload, fields, current_flow, chainOrder);
+		reject({payload, fields, current_flow, chainOrder});
 	}
 	if ( dataFusion.activated === true ) {
 		payload.fusion = typeof payload.fusion!=="undefined"?payload.fusion:{};
@@ -404,7 +440,7 @@ function fusion(payload, fields, current_flow, chainOrder, callback) {
 			"flow_id": typeof current_flow!=="undefined"?current_flow.id:"unknown",
 			"track_id": track_id,
 			"user_id": typeof current_flow!=="undefined"?current_flow.user_id:"unknown",
-			"sanitizedValue": payload.sanitizedValue,
+			"sanitizedValue": payload.value,
 			"latitude": payload.latitude,
 			"longitude": payload.longitude,
 			"time": parseInt(payload.time, 10),
@@ -475,14 +511,14 @@ function fusion(payload, fields, current_flow, chainOrder, callback) {
 			t6console.debug("chain 7", "fusionTime", moment(fusionTime).format(logDateFormat));
 			payload.flow_id = track_id;
 			payload.datapoint_logs.fusion = true;
-		chainOrder.push("fusion");
-			callback(null, payload, fields, current_flow, chainOrder);
+			chainOrder.push("fusion");
+			resolve({payload, fields, current_flow, chainOrder});
 		} else {
 			payload.fusion.messages.push("Fusion not processed; missing measurements on some tracks ; or incompatible datatypes ; or no track on Flow/payload.");
 			payload.fusion.error_tracks = errorTracks;
 			payload.datapoint_logs.fusion = false;
-		chainOrder.push("fusion");
-			callback(null, payload, fields, current_flow, chainOrder);
+			chainOrder.push("fusion");
+			resolve({payload, fields, current_flow, chainOrder});
 		}
 		// Clean expired buffer
 		let size = t6preprocessor.clearExpiredMeasurement();
@@ -490,10 +526,14 @@ function fusion(payload, fields, current_flow, chainOrder, callback) {
 	} else {
 		payload.datapoint_logs.fusion = false;
 		chainOrder.push("fusion");
-		callback(null, payload, fields, current_flow, chainOrder);
+		resolve({payload, fields, current_flow, chainOrder});
 	}
 }
-function ruleEngine(payload, fields, current_flow, chainOrder, callback) {
+let ruleEngine = function(resolve, reject) {
+	let payload = this.payload;
+	let chainOrder = this.chainOrder;
+	let fields = this.fields;
+	let current_flow = this.current_flow;
 	t6console.debug("chain 8", "ruleEngine");
 	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true; // TODO : to be cleaned
 	if ( publish === true ) {														 // TODO : to be cleaned
@@ -521,21 +561,25 @@ function ruleEngine(payload, fields, current_flow, chainOrder, callback) {
 		t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic);
 		payload.datapoint_logs.ruleEngine = true;
 		chainOrder.push("ruleEngine");
-		callback(null, payload, fields, current_flow, chainOrder);
+		resolve({payload, fields, current_flow, chainOrder});
 	} else {
 		t6console.debug("chain 8", "Not Publishing to Rule Engine");
 		payload.datapoint_logs.ruleEngine = false;
 		chainOrder.push("ruleEngine");
-		callback(null, payload, fields, current_flow, chainOrder);
+		resolve({payload, fields, current_flow, chainOrder});
 	} // end publish
 }
-function saveToLocal(payload, fields, current_flow, chainOrder, callback) {
+let saveToLocal = function(resolve, reject) {
+	let payload = this.payload;
+	let chainOrder = this.chainOrder;
+	let fields = this.fields;
+	let current_flow = this.current_flow;
 	t6console.debug("chain 9", "saveToLocal");
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToLocal = "err";
 		chainOrder.push("saveToLocal");
-		callback(null, payload, fields, current_flow, chainOrder);
+		resolve({payload, fields, current_flow, chainOrder});
 	}
 	if ( save === true ) {
 		let rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
@@ -571,37 +615,41 @@ function saveToLocal(payload, fields, current_flow, chainOrder, callback) {
 					t6console.error({"message": "Error on writePoints to influxDb", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
 					payload.datapoint_logs.saveToLocal = "err";
 					chainOrder.push("saveToLocal");
-					callback(null, payload, fields, current_flow, chainOrder);
+					resolve({payload, fields, current_flow, chainOrder});
 				} else {
 					payload.datapoint_logs.saveToLocal = true;
 					chainOrder.push("saveToLocal");
-					callback(null, payload, fields, current_flow, chainOrder);
+					resolve({payload, fields, current_flow, chainOrder});
 				}
 			}).catch((err) => {
 				t6console.error("chain 9", {"message": "Error catched on writting to influxDb - in data.js", "err": err, "tags": tags, "fields": fields[0], "timestamp": payload.timestamp});
 				payload.datapoint_logs.saveToLocal = "err";
 				chainOrder.push("saveToLocal");
-				callback(null, payload, fields, current_flow, chainOrder);
+				resolve({payload, fields, current_flow, chainOrder});
 			});
 		} else {
 			t6console.debug("chain 9", "Missconfiguration on saving to influxdb timeseries");
 			payload.datapoint_logs.saveToLocal = false;
 			chainOrder.push("saveToLocal");
-			callback(null, payload, fields, current_flow, chainOrder);
+			resolve({payload, fields, current_flow, chainOrder});
 		}
 	} else {
 		t6console.debug("chain 9", "Save is Disabled on payload.");
 		payload.datapoint_logs.saveToLocal = false;
 		chainOrder.push("saveToLocal");
-		callback(null, payload, fields, current_flow, chainOrder);
+		resolve({payload, fields, current_flow, chainOrder});
 	} // end save
 }
-function saveToCloud(payload, fields, current_flow, chainOrder, callback) {
+let saveToCloud = function(resolve, reject) {
+	let payload = this.payload;
+	let chainOrder = this.chainOrder;
+	let fields = this.fields;
+	let current_flow = this.current_flow;
 	t6console.debug("chain 10", "saveToCloud");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToCloud = "err";
 		chainOrder.push("saveToCloud");
-		callback(null, payload, fields, current_flow, chainOrder);
+		resolve({payload, fields, current_flow, chainOrder});
 	}
 	if ((typeof current_flow!=="undefined" && typeof current_flow.influx_db_cloud!=="undefined") || typeof payload.influx_db_cloud!=="undefined") {
 		const {InfluxDB} = require("@influxdata/influxdb-client");
@@ -640,7 +688,7 @@ function saveToCloud(payload, fields, current_flow, chainOrder, callback) {
 					t6events.addStat("t6App", "Wrote to influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id});
 					payload.datapoint_logs.saveToCloud = true;
 					chainOrder.push("saveToCloud");
-					callback(null, {payload, fields, current_flow, chainOrder});
+					resolve({payload, fields, current_flow, chainOrder});
 				})
 				.catch((e) => {
 					t6console.error("chain 10", "Write Error on influxDbCloud");
@@ -648,122 +696,104 @@ function saveToCloud(payload, fields, current_flow, chainOrder, callback) {
 					t6events.addStat("t6App", "Write Error on influxDbCloud", payload.user_id, payload.user_id, {"user_id": payload.user_id, "error": e});
 					payload.datapoint_logs.saveToCloud = "err";
 					chainOrder.push("saveToCloud");
-					callback(e, {payload, fields, current_flow, chainOrder});
+					resolve({payload, fields, current_flow, chainOrder});
 				});
 		} // end valid token
 		else {
 			t6console.debug("chain 10", "Can't save to Cloud ; missing credentials.");
 			payload.datapoint_logs.saveToCloud = false;
 			chainOrder.push("saveToCloud");
-			callback(null, {payload, fields, current_flow, chainOrder});
+			resolve({payload, fields, current_flow, chainOrder});
 		}
 	} // end saveToCloud
 	else {
 		t6console.debug("chain 10", "Not customized to save to Cloud");
 		payload.datapoint_logs.saveToCloud = false;
 		chainOrder.push("saveToCloud");
-		callback(null, {payload, fields, current_flow, chainOrder});
+		resolve({payload, fields, current_flow, chainOrder});
 	};
 };
-async function processAllMeasures(payloads, options, res) {
-	await new Promise((resolve, reject) => {
+async function processAllMeasures(payloads, options) {
+	//return new Promise((resolve, reject) => {
 		t6console.debug("processAllMeasures in a chain");
-		let result = [];
-		payloads.map(async function(p) {
-			let chainOrder = [];
-			t6console.debug("--------", "chaining", result.length+1 +"measures.");
-			async.waterfall([
-				async.apply(preparePayload, p, options, chainOrder), //(outputPayload, options),
-				signatureCheck, //(pp.payload, pp.object),
-				decrypt, //(sc1.payload, sc1.object),
-				signatureCheck, //(dy.payload, dy.object),
-				verifyPrerequisites, //(sc2.payload, sc2.object),
-				preprocessor, //(vp.payload, {}, vp.current_flow),
-				fusion, //(ppor.payload, ppor.fields, ppor.current_flow),
-				ruleEngine, //(fu.payload, fu.fields, fu.current_flow),
-				saveToLocal, //(re.payload, re.fields, re.current_flow),
-				saveToCloud, //(s2l.payload, s2l.fields, s2l.current_flow),
-			], function (err, s2c) {
-				if( s2c && !err ) {
-					let measure = s2c.fields;
-					let payload = s2c.payload;
-					chainOrder.map((chain, index) => {
-						t6console.debug("chain end", index, chain, payload.datapoint_logs[chain], payload.value.length);
-					});
-					t6console.debug("chain end", "---------------------------------------------");
+		t6console.debug("--------", "total of", payloads.length, "measures.");
 
-					let current_flow = s2c.current_flow;
-					if (payload.datatype==="image" || typeof payload.img!=="undefined") {
-						if (payload.save===false) {
-							fs.readdir(`${ip.image_dir}/`, (files) => {
-								if(files!==null) {
-									for (let i=0, len=files.length; i<len;i++) {
-										let match = files[i].match(/`${payload.timestamp}.*.png`/);
-										if(match !== null) {
-											fs.unlink(match[0], (err) => {
-												if (err) {
-													t6console.error(err);
-												} else {
-													t6console.debug("Successfully removed image file from storage as 'save' is disabled.");
-												}
-											});
+		let ret = await Promise.all(
+			payloads.map(async (current_payload, index) => {
+				let chainOrder = [];
+				t6console.debug("--------", "chaining measure index", index);
+				return await new Promise(preparePayload.bind({payload: current_payload, options, chainOrder})).then((result) => {
+					return new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(decrypt.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(verifyPrerequisites.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(preprocessor.bind({payload: result.payload, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(fusion.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(ruleEngine.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(saveToLocal.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then((result) => {
+					return new Promise(saveToCloud.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then((chainResult) => {
+					if( chainResult ) {
+						//let r = [];
+						let payload			= chainResult.payload;
+						let current_flow	= chainResult.current_flow;
+						chainOrder.map((chain, index) => {
+							t6console.debug("chain end", index, chain, payload.datapoint_logs[chain], payload.value.length);
+						});
+						t6console.debug("chain end", "---------------------------------------------");
+						if (payload.datatype==="image" || typeof payload.img!=="undefined") {
+							if (payload.save===false) {
+								fs.readdir(`${ip.image_dir}/`, (files) => {
+									if(files!==null) {
+										for (let i=0, len=files.length; i<len;i++) {
+											let match = files[i].match(/`${payload.timestamp}.*.png`/);
+											if(match !== null) {
+												fs.unlink(match[0], (err) => {
+													if (err) {
+														t6console.error(err);
+													} else {
+														t6console.debug("Successfully removed image file from storage as 'save' is disabled.");
+													}
+												});
+											}
 										}
 									}
-								}
-							});
-						}
-					};
-					measure.parent = payload.flow_id;
-					measure.self = payload.flow_id;
-					measure.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
-					measure.publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):null;
-					measure.flow_id = payload.flow_id;
-					measure.datatype = payload.datatype;
-					measure.datatype_id = payload.datatype_id;
-					measure.unit = payload.unit;
-					measure.unit_id = payload.unit_id;
-					measure.id = payload.time*1e6;
-					measure.time = payload.time*1e6;
-					measure.timestamp = payload.time*1e6;
-					measure.value = payload.value;
-					measure.retention = payload.retention;
-					measure.mqtt_topic = payload.mqtt_topic;
-					measure.title = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.title:undefined;
-					measure.ttl = (typeof current_flow!=="undefined" && current_flow!==null)?current_flow.ttl:undefined;
-					measure.preprocessor = typeof payload.preprocessor!=="undefined"?payload.preprocessor:undefined;
-					measure.fusion = typeof payload.fusion!=="undefined"?payload.fusion:undefined;
-					measure.location = `/v${version}/flows/${payload.flow_id}/${measure.id}`;
+								});
+							}
+						};
+						t6events.addStat("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
+						t6console.debug("payloads size ---> ", payloads.length);
+						
+						payload.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
+						payload.publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):null;
+						payload.flow_id = payload.flow_id;
+						payload.datatype = payload.datatype;
+						payload.datatype_id = payload.datatype_id;
+						payload.unit = payload.unit;
+						payload.unit_id = payload.unit_id;
+						payload.id = payload.time*1; //*1e6;
+						payload.time = payload.time*1; //*1e6;
+						payload.timestamp = payload.time*1; //*1e6;
 
-					t6events.addStat("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
-					result.push(measure);
-					if(result.length === payloads.length) {
-						let response = result;
-						res.header("Location", response[0].location); // hum ...
-						response.parent = response[0].parent; // hum ...
-						response.flow_id = response[0].flow_id; // hum ...
-						response.datatype= response[0].datatype; // hum ...
-						response.datatype_id= response[0].datatype_id; // hum ...
-						response.unit = response[0].unit; // hum ...
-						response.unit_id = response[0].unit_id; // hum ...
-						response.title = response[0].title; // hum ...
-						response.ttl = response[0].ttl; // hum ...
-						response.pageSelf = 1;
-						response.pageFirst = 1;
-						response.limit = 20;
-						response.sort = "asc";
-						t6console.debug(`chain Finished processing ${result.length} measurement(s)`);
-						res.status(200).send(new DataSerializer(response).serialize());
-						t6console.debug(`sent response to req with value length: ${response[0].value.length}`);
+						return (payload);
+					} else {
+						t6console.debug("chain ending with error", "---------------------------------------------");
+						t6console.debug(err);
+						return ("Precondition failed");
 					}
-				} else {
-					t6console.debug("chain ending with error", "---------------------------------------------");
-					t6console.debug(err);
-					res.status(412).send({err: err, "id": 1, "code": 412, "message": "Precondition failed"});
-				}
-			});
-			//return result;
-		});
-	});
+				});
+			})
+		);
+		return ret;
+	//});
 }
 
 
@@ -1123,11 +1153,24 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 	options.user_id		 = typeof req.user.id!=="undefined"?req.user.id:null;
 	options.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload!=="undefined" && typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
 
-	processAllMeasures(payloadArray, options, res).then( (payload) => {
-		t6console.debug("processAllMeasures Completed");
+	processAllMeasures(payloadArray, options).then( (payload) => {
+		res.header("Location", `/v${version}/flows/${payload[0].flow_id}/${payload[0].id}`); // hum ...
+		payload.parent		= payload[0].flow_id; // hum ...
+		payload.flow_id		= payload[0].flow_id; // hum ...
+		payload.datatype	= payload[0].datatype; // hum ...
+		payload.datatype_id	= payload[0].datatype_id; // hum ...
+		payload.unit		= payload[0].unit; // hum ...
+		payload.unit_id		= payload[0].unit_id; // hum ...
+		payload.title		= payload[0].title; // hum ...
+		payload.ttl			= payload[0].ttl; // hum ...
+		payload.pageSelf	= 1;
+		payload.pageFirst	= 1;
+		payload.limit		= 20;
+		payload.sort		= "asc";
+		res.status(200).send(new DataSerializer(payload).serialize());
+		t6console.debug(`processAllMeasures Completed with ${payload.length} measurement(s)`);
 	}).catch((err) => {
 		t6console.error("Error on processAllMeasures: ", err);
-		t6console.debug("Precondition failed");
 		res.status(412).send(new ErrorSerializer({err: err, "id": 2060, "code": 412, "message": "Precondition failed"}).serialize());
 	});
 });
