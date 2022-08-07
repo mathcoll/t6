@@ -458,7 +458,7 @@ app.listen(process.env.PORT, () => {
 	t6events.addStat("t6App", "start", "self", t6BuildVersion);
 	t6console.log("App is instanciated.");
 	t6console.log(`${appName} started / listening to ${baseUrl_https}.`);
-})
+});
 
 routesLoadEndTime = new Date();
 t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
