@@ -48,7 +48,6 @@ global.t6jobs			= require("./t6jobs");
 global.t6imagesprocessing = require("./t6imagesprocessing");
 global.monitor			= require("./t6monitor");
 
-global.async			= require("async");
 global.express			= require("express");
 global.timeout			= require("connect-timeout");
 global.morgan			= require("morgan");
