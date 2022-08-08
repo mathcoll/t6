@@ -396,7 +396,7 @@ let preprocessor = async function(resolve, reject) {
 			payload.value = typeof payload.recognizedValue!=="undefined"?payload.recognizedValue:payload.value;
 			t6console.debug("chain 6", "AidcValue>recognizedValue is set, using its value");
 		} else {
-			t6console.error("chain 6", "FAILURE, AidcValue/recognizedValue have not been received");
+			t6console.debug("chain 6", "FAILURE, AidcValue/recognizedValue have not been received");
 		}
 		if(payload.needRedacted) {
 			payload.preprocessor.map(function(pp) {
