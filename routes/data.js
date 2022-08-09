@@ -386,11 +386,14 @@ let preprocessor = async function(resolve, reject) {
 		t6console.debug("chain 6", "Preprocessor got all promises :-)");
 		//t6console.debug("chain 6", "fields", fields);
 
-		if((typeof payload.preprocessor!=="undefined" && !payload.preprocessor.recognizedValue) && typeof payload.sanitizedValue!=="undefined" && payload.sanitizedValue!==null) {
-			payload.value = payload.sanitizedValue;
-			t6console.debug("chain 6", "sanitizedValue is set, using its value");
+		if( typeof payload.preprocessor!=="undefined" && typeof payload.preprocessor.recognizedValue!=="undefined" && payload.preprocessor.recognizedValue!==null ) {
+			payload.value = payload.preprocessor.recognizedValue;
+			t6console.debug("chain 6", "recognizedValue is set, using its value");
 		} else {
-			t6console.debug("chain 6", "sanitizedValue is not set");
+			if( typeof payload.sanitizedValue!=="undefined" && payload.sanitizedValue!==null ) {
+				payload.value = payload.sanitizedValue;
+				t6console.debug("chain 6", "sanitizedValue is set, using its value");
+			}
 		}
 		if(payload.isAidcValue===true && payload.recognizedValue) {
 			payload.value = typeof payload.recognizedValue!=="undefined"?payload.recognizedValue:payload.value;
