@@ -62,7 +62,7 @@
     "geoip-lite": "^1.4.5",
     "graceful-fs": "^4.2.10",
     "has": "^1.0.3",
-    "image-type": "^5.0.0",
+    "image-type": "^4.1.0",
     "influx": "^5.9.3",
     "jsdom": "^16.5.0",
     "json-rules-engine": "^6.1.2",
