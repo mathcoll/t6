@@ -60,8 +60,10 @@ if ( config.exec ) {
 							},
 							body: body
 						}, function (error, response, body){
-							console.log(response.headers.location);
-							console.log(response.body);
+							console.log("error", error);
+							console.log("body", body);
+							console.log("response.headers.location", response.headers.location);
+							console.log("response.body", response.body);
 						});
 					} else {
 						console.log("JWT error: " + bearer);

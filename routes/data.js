@@ -15,6 +15,7 @@ function getJson(v) {
 }
 function getObjectKey(payload, user_id) {
 	return new Promise((resolve, reject) => {
+		payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
 		if ( typeof payload.object_id !== "undefined" ) {
 			t6console.debug("getObjectKey", payload.object_id);
 			let query = { "$and": [ { "user_id" : user_id }, { "id" : payload.object_id }, ] };
