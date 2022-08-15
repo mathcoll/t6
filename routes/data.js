@@ -42,7 +42,7 @@ let preparePayload = function(resolve, reject) {
 	payload = getJson(payload);
 	let object;
 	payload.timestamp	 = (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
-	if ( payload.timestamp.toString().length <= 10 ) { payload.timestamp = moment(time*1000).format("x"); }
+	if ( payload.timestamp.toString().length <= 10 ) { payload.timestamp = moment(payload.timestamp*1000).format("x"); }
 	payload.time		 = payload.timestamp;
 	payload.errorMessage = options.errorMessage;
 	payload.user_id		 = options.user_id;
@@ -1105,6 +1105,16 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 	}
 });
 
+let slicePayloads = function(payloadArray, options) {
+	if( payloadArray.length > options.datapointPayloadLimit ) {
+		payloadArray = payloadArray.slice(0, options.datapointPayloadLimit);
+		t6console.debug(`Sliced to ${options.datapointPayloadLimit} measurement(s), having ${payloadArray.length} now`);
+	} else {
+		t6console.debug(`Keeping all ${payloadArray.length} measurement(s)`);
+	}
+	return (payloadArray);
+}
+
 /**
  * @api {post} /data/:flow_id Create a DataPoint
  * @apiName Create a DataPoint
@@ -1146,14 +1156,14 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
  * @apiUse 429
  */
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
-	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body).slice(0, 3); // only process 3 first measures from payload and ignore the others
+	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body);
+	let options = {};
+	options.user_id = typeof req.user.id!=="undefined"?req.user.id:null;
+	options.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload!=="undefined" && typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
+	options.datapointPayloadLimit = (quota[req.user.role]).datapointPayloadLimit;
 	t6console.debug(`Called POST datapoints with ${payloadArray.length} measurement(s)`);
 
-	let options = {};
-	options.errorMessage = req.body.length>3?["Maximum payload reach. Some payload will be ignored"]:[];
-	options.user_id		 = typeof req.user.id!=="undefined"?req.user.id:null;
-	options.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload!=="undefined" && typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
-
+	payloadArray = slicePayloads(payloadArray, options);
 	processAllMeasures(payloadArray, options).then( (payload) => {
 		res.header("Location", `/v${version}/flows/${payload[0].flow_id}/${payload[0].id}`); // hum ...
 		payload.parent		= payload[0].flow_id; // hum ...
