@@ -232,7 +232,13 @@ router.all("*", function (req, res, next) {
 			}
 		});
 	}
-	if ( req.user && req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null" ) {
+	if ( 
+		req.user &&
+		(
+			(req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null") ||
+			(req.headers["x-api-key"] && req.headers["x-api-secret"])
+		)
+	) {
 		var limit = req.user!==null?(quota[req.user.role]).calls:-1;
 		if (req.user !== null && req.user.role !== null ) {
 			res.header("X-RateLimit-Limit", limit);

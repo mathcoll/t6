@@ -1156,9 +1156,37 @@ let slicePayloads = function(payloadArray, options) {
  * @apiUse 412
  * @apiUse 429
  */
-router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res, next) {
+router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms, getToken: function getToken(req) {
+	if ( req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer" ) {
+		return req.headers.authorization.split(" ")[1];
+	} else if( req.headers["x-api-key"] && req.headers["x-api-secret"] ) {
+		let queryT = {
+		"$and": [
+					{ "key": req.headers["x-api-key"] },
+					{ "secret": req.headers["x-api-secret"] },
+				]
+		};
+		let u = access_tokens.findOne(queryT);
+		if ( u && typeof u.user_id !== "undefined" ) {
+			let user = users.findOne({id: u.user_id});
+			let payload = JSON.parse(JSON.stringify(user));
+			payload.permissions = undefined;
+			payload.token = undefined;
+			payload.password = undefined;
+			payload.gravatar = undefined;
+			payload.meta = undefined;
+			payload.$loki = undefined;
+			payload.token_type = "Bearer";
+			payload.scope = "ClientApi";
+			payload.sub = "/users/"+user.id;
+			req.user = payload;
+			return jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+		}
+	}
+	return null;
+} }), function (req, res, next) {
 	let payloadArray = (Array.isArray(req.body)===false?[req.body]:req.body);
-	let options = {};
+	let options = {errorMessage: []};
 	options.user_id = typeof req.user.id!=="undefined"?req.user.id:null;
 	options.flow_id = typeof req.params.flow_id!=="undefined"?req.params.flow_id:(typeof req.body.flow_id!=="undefined"?req.body.flow_id:(typeof payload!=="undefined" && typeof payload.flow_id!=="undefined"?payload.flow_id:undefined));
 	options.datapointPayloadLimit = (quota[req.user.role]).datapointPayloadLimit;
