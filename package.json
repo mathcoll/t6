@@ -17,6 +17,7 @@
   },
   "scripts": {
     "start": "node app.js",
+    "start-debug": "DEBUG=express:* node app.js",
     "test": "./bin/test.sh",
     "snyk-protect": "snyk protect",
     "prepublish": "npm -v",
