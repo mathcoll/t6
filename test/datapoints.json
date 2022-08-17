@@ -23,6 +23,7 @@
                     "description": "post datapoint to Flow",
                     "api_calls": [
                         {
+							"it": "can post a datapoint to Float Flow",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -46,14 +47,9 @@
         	                    "select": "body.data",
         	                    "size": 1
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can post datapoint to Flow",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can post another datapoint to Float Flow",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -95,6 +91,7 @@
                     "description": "post datapoint to Flow",
                     "api_calls": [
                         {
+							"it": "can post datapoint to Flow on a specific retention policy",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -136,6 +133,7 @@
                     "description": "post datapoint to Flow",
                     "api_calls": [
                         {
+							"it": "can post datapoint to Float Flow and using Api-Key + Api-secret",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "x-api-key": "{{saved.accessTokenKey}}",
@@ -177,6 +175,7 @@
                     "description": "This should list measured datapoint as defined by default on the Flow (retention1w)",
                     "api_calls": [
                         {
+							"it": "can get a specific data from Flow without declaring the retention",
                         	"request": "GET {{saved.data_id_full_url}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -186,14 +185,9 @@
         	                    "select": "body.data.0.attributes.retention",
         	                    "equal": "retention1w"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get a specific data from Flow declaring an invalid retention",
-                    "description": "This should not list any measured datapoint. Data should be stored to retention1w",
-                    "api_calls": [
+                        },
                         {
+							"it": "can get a specific data from Flow declaring an invalid retention",
                         	"request": "GET {{saved.data_id_full_url}}?retention=unidentified_should_fallback_to_retention1w",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -203,14 +197,9 @@
         	                    "select": "body.data.0.attributes.retention",
         	                    "equal": "retention1w"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get a specific data from Flow declaring a wrong retention",
-                    "description": "This should not list any measured datapoint. Data should be stored to retention1w",
-                    "api_calls": [
+                        },
                         {
+							"it": "can get a specific data from Flow declaring a wrong retention",
                         	"request": "GET {{saved.data_id_full_url}}?retention=retention1y",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -234,6 +223,7 @@
                     "description": "get a specific data from Flow",
                     "api_calls": [
                         {
+							"it": "can get a specific data from Flow forcing retention (from the body)",
                         	"request": "GET {{saved.data_id_full_url}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -250,7 +240,7 @@
                     "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
                     "api_calls": [
                         {
-                            "request": "GET https://postman-echo.com/delay/10",
+                            "request": "GET https://postman-echo.com/delay/5",
                             "status": "200"
                         }
                     ]
@@ -260,19 +250,15 @@
                     "description": "get a specific data from Flow",
                     "api_calls": [
                         {
+							"it": "can get a specific data from Flow forcing retention (from the query param)",
                         	"request": "GET {{saved.data_id_full_url}}?retention={{saved.retention}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "status": 200
-                        }
-                    ]
-                },
-                {
-                	"name": "can post datapoint 1. DataPoint not signed, not crypted",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can post datapoint 1. DataPoint not signed, not crypted",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -301,6 +287,7 @@
                     "description": "post datapoint to Flow",
                     "api_calls": [
                         {
+							"it": "can Sanitize according to a Datatype",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -331,14 +318,9 @@
         	                    "select": "body.data.0.attributes.preprocessor.status",
         	                    "equal": ["completed", "completed"]
         	                }]
-                        }
-                    ]
-                },
-                {
-                	"name": "can Sanitize according to a Datatype",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can Sanitize according to a Datatype",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -369,14 +351,9 @@
         	                    "select": "body.data.0.attributes.preprocessor.status",
         	                    "equal": ["completed", "completed"]
         	                }]
-                        }
-                    ]
-                },
-                {
-                	"name": "can transform string based on regexp",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can transform string based on regexp",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -411,14 +388,9 @@
         	                    "select": "body.data.0.attributes.preprocessor.status",
         	                    "equal": ["completed", "completed", "completed"]
         	                }]
-                        }
-                    ]
-                },
-                {
-                	"name": "can post datapoint transform > capitalCase",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can post datapoint transform > capitalCase",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -445,14 +417,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": "Quia Nisi Et"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can post datapoint transform > camelCase",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can post datapoint transform > camelCase",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -479,14 +446,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": "omnisNisiQuamQuosQuaeratIpsamExEt"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can post datapoint transform > headerCase",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can post datapoint transform > headerCase",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -513,14 +475,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": "Usb-Cyan-Mozilla-5-0--Windows--U--Windows-Nt-6-0--Apple-Web-Kit-537-1-0--Khtml--Like-Gecko--Chrome-18-0-878-0-Safari-537-1-0-Garth"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can convert time minutes > secondes",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can convert time minutes > secondes",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -549,14 +506,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": 60
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can Validate Boolean",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can Validate Boolean",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -581,14 +533,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": 100.123456
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can process multiple preprocessor",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can process multiple preprocessor",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -625,14 +572,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": "TEST.EMAIL@DOMAIN.COM"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can identify facial expression on image (AIDC)",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can identify facial expression on image (AIDC)",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -658,14 +600,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": "sad"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can identify facial expression on image (AIDC)",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can identify facial expression on image (AIDC)",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -691,14 +628,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": 40
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can identify facial expression on image (AIDC)",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can identify facial expression on image (AIDC)",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -724,14 +656,9 @@
         	                    "select": "body.data.0.attributes.value",
         	                    "equal": "male"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can send data to a Fusion Track A",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can send data to a Fusion Track A",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -762,14 +689,9 @@
         	                        "equal": 10.0
         	                    }
 	        	            ]
-                        }
-                    ]
-                },
-                {
-                	"name": "can send data to a Fusion Track B",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can send data to a Fusion Track B",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -829,14 +751,9 @@
 	        	                    "equal": "retention1w"
 	        	                }
 	        	            ]
-                        }
-                    ]
-                },
-                {
-                	"name": "can publish a signed payload",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can publish a signed payload",
                         	"request": "POST /{{app_version}}/data/{{saved.flow_id_string}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -852,14 +769,9 @@
 	        	                    "equal": "2. Datapoint signed, not crypted"
 	        	                }
 	        	            ]
-                        }
-                    ]
-                },
-                {
-                	"name": "can update a Flow to force signature",
-                    "description": "update a Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can update a Flow to force signature",
                         	"request": "PUT /{{app_version}}/flows/{{saved.flow_id_string}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -887,14 +799,9 @@
         	                    "select": "body.flow.data.attributes.retention",
         	                    "equal": "retention1w"
         	                }]
-                        }
-                    ]
-                },
-                {
-                	"name": "Verify signed payload is required",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can verify signed payload is required",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -913,14 +820,9 @@
                             "status": 412,
                             "assert": [
 	        	            ]
-                        }
-                    ]
-                },
-                {
-                	"name": "Verify sentiment rule is adding annotation",
-                    "description": "post datapoint to Flow",
-                    "api_calls": [
+                        },
                         {
+							"it": "can verify sentiment rule is adding annotation",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"

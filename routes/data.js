@@ -1182,6 +1182,9 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			req.user = payload;
 			return jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 		}
+		// TODO : Rate limit is not checked here ! 
+		//res.header("X-RateLimit-Limit", limit);
+		//res.header("X-RateLimit-Remaining", limit-i);
 	}
 	return null;
 } }), function (req, res, next) {
