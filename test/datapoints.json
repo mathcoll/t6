@@ -19,8 +19,8 @@
             "name": "t6 Datapoints Suite",
             "tests": [
                 {
-                	"name": "can publish data to Float Flow",
-                    "description": "publish data to Flow",
+                	"name": "can post datapoint to Float Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -50,8 +50,8 @@
                     ]
                 },
                 {
-                	"name": "can publish data to Flow",
-                    "description": "publish data to Flow",
+                	"name": "can post datapoint to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -81,8 +81,18 @@
                     ]
                 },
                 {
-                	"name": "can publish data to Flow on a specific retention policy",
-                    "description": "publish data to Flow",
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/2",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can post datapoint to Flow on a specific retention policy",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -99,10 +109,15 @@
                                 "retention": "retention1w"
                             },
                             "status": 200,
-                            "assert": {
+                            "assert": [{
         	                    "select": "body.data",
         	                    "size": 1
-        	                }
+        	                  },
+        	                  {
+        	                    "select": "body.data.0.attributes.retention",
+        	                    "equal": "retention1w"
+        	                  }
+        	                ]
                         }
                     ]
                 },
@@ -111,7 +126,48 @@
                     "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
                     "api_calls": [
                         {
-                            "request": "GET https://postman-echo.com/delay/10",
+                            "request": "GET https://postman-echo.com/delay/2",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can post datapoint to Float Flow and using Api-Key + Api-secret",
+                    "description": "post datapoint to Flow",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/data",
+                            "headers": {
+                                "x-api-key": "{{saved.accessTokenKey}}",
+                                "x-api-secret": "{{saved.accessTokenSecret}}"
+                            },
+                            "params": {
+                                "flow_id": "{{saved.flow_id_float}}",
+                                "mqtt_topic": "couleurs/test",
+                                "publish": true,
+                                "save": true,
+                                "value": 123.456,
+                                "text": "Float Value",
+                                "retention": "{{saved.retention_float}}",
+                                "datatype_id": "e7dbdc23-5fa8-4083-b3ec-bb99c08a2a35"
+                            },
+                            "save": {
+                            },
+                            "status": 200,
+                            "assert": [{
+        	                    "select": "body.data",
+        	                    "size": 1
+        	                  }
+        	                ]
+                        }
+                    ]
+                },
+                {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/2",
                             "status": "200"
                         }
                     ]
@@ -164,6 +220,16 @@
                     ]
                 },
                 {
+                	"name": "DELAY",
+                    "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
+                    "api_calls": [
+                        {
+                            "request": "GET https://postman-echo.com/delay/2",
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "can get a specific data from Flow forcing retention (from the body)",
                     "description": "get a specific data from Flow",
                     "api_calls": [
@@ -203,8 +269,8 @@
                     ]
                 },
                 {
-                	"name": "can publish data 1. DataPoint not signed, not crypted",
-                    "description": "publish data to Flow",
+                	"name": "can post datapoint 1. DataPoint not signed, not crypted",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -232,7 +298,7 @@
                 },
                 {
                 	"name": "can Sanitize according to a Datatype",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -270,7 +336,7 @@
                 },
                 {
                 	"name": "can Sanitize according to a Datatype",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -308,7 +374,7 @@
                 },
                 {
                 	"name": "can transform string based on regexp",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -349,8 +415,8 @@
                     ]
                 },
                 {
-                	"name": "can publish data transform > capitalCase",
-                    "description": "publish data to Flow",
+                	"name": "can post datapoint transform > capitalCase",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -383,8 +449,8 @@
                     ]
                 },
                 {
-                	"name": "can publish data transform > camelCase",
-                    "description": "publish data to Flow",
+                	"name": "can post datapoint transform > camelCase",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -417,8 +483,8 @@
                     ]
                 },
                 {
-                	"name": "can publish data transform > headerCase",
-                    "description": "publish data to Flow",
+                	"name": "can post datapoint transform > headerCase",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -452,7 +518,7 @@
                 },
                 {
                 	"name": "can convert time minutes > secondes",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -488,7 +554,7 @@
                 },
                 {
                 	"name": "can Validate Boolean",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -520,7 +586,7 @@
                 },
                 {
                 	"name": "can process multiple preprocessor",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -564,7 +630,7 @@
                 },
                 {
                 	"name": "can identify facial expression on image (AIDC)",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -597,7 +663,7 @@
                 },
                 {
                 	"name": "can identify facial expression on image (AIDC)",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -630,7 +696,7 @@
                 },
                 {
                 	"name": "can identify facial expression on image (AIDC)",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -663,7 +729,7 @@
                 },
                 {
                 	"name": "can send data to a Fusion Track A",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -701,7 +767,7 @@
                 },
                 {
                 	"name": "can send data to a Fusion Track B",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -768,7 +834,7 @@
                 },
                 {
                 	"name": "can publish a signed payload",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data/{{saved.flow_id_string}}",
@@ -826,7 +892,7 @@
                 },
                 {
                 	"name": "Verify signed payload is required",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
@@ -852,7 +918,7 @@
                 },
                 {
                 	"name": "Verify sentiment rule is adding annotation",
-                    "description": "publish data to Flow",
+                    "description": "post datapoint to Flow",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/data",
