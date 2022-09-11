@@ -62,6 +62,15 @@ const getDurationInMilliseconds = (start) => {
  */
 
 /**
+ * @apiDefine 203
+ * @apiSuccess 203 Non-Authoritative Information
+ * @apiSuccessExample {json} 203 Non-Authoritative Information
+ *     HTTP/1.1 203 Non-Authoritative Information
+ *     {
+ *     }
+ */
+
+/**
  * @apiDefine 204
  * @apiSuccess 204 No Content on response
  * @apiSuccessExample {json} 204 No Content
