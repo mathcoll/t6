@@ -6,13 +6,6 @@ var DataSerializer = require("../serializers/data");
 var ErrorSerializer = require("../serializers/error");
 let encoding = "utf8";
 
-function getJson(v) {
-	try {
-		return JSON.parse(v);
-	} catch (e) {
-		return v;
-	}
-}
 function getObjectKey(payload, user_id) {
 	return new Promise((resolve, reject) => {
 		payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
