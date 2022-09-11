@@ -23,7 +23,7 @@
     "prepublish": "npm -v",
     "prepare": "./bin/deliver.sh -m",
     "apidoc": "./bin/deliver.sh -a",
-    "deliver": "./bin/deliver.sh -marbfsc"
+    "deliver": "./bin/deliver.sh -marbfs"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.26.0",
@@ -110,7 +110,8 @@
     "useragent": "^2.3.0",
     "uuid": "^8.3.2",
     "validator": "^13.7.0",
-    "web-push": "^3.5.0"
+    "web-push": "^3.5.0",
+    "ws": "^8.8.1"
   },
   "readmeFilename": "README.md",
   "devDependencies": {
