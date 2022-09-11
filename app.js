@@ -94,6 +94,7 @@ global.util				= require("util");
 global.useragent		= require("useragent");
 global.validator		= require("validator");
 global.webpush			= require("web-push");
+global.WebSocketServer	= require("ws").WebSocketServer;
 global.algorithm		= "aes-256-cbc";
 global.t6events.setMeasurement("events");
 global.t6events.setRP(typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen");
@@ -431,7 +432,7 @@ var dashboards		= require("./routes/dashboards");
 var snippets		= require("./routes/snippets");
 var rules			= require("./routes/rules");
 var mqtts			= require("./routes/mqtts");
-var users			= require("./routes/users");
+var usersRoute		= require("./routes/users");
 var data			= require("./routes/data");
 var flows			= require("./routes/flows");
 var units			= require("./routes/units");
@@ -457,6 +458,101 @@ app.listen(process.env.PORT, () => {
 	t6events.addStat("t6App", "start", "self", t6BuildVersion);
 	t6console.log("App is instanciated.");
 	t6console.log(`${appName} started / listening to ${baseUrl_https}.`);
+});
+
+const wsClients = new Map();
+const wss = new WebSocketServer({
+	port: 4000,
+	perMessageDeflate: {
+		zlibDeflateOptions: {
+			// See zlib defaults.
+			chunkSize: 1024,
+			memLevel: 7,
+			level: 3
+		},
+		zlibInflateOptions: {
+			chunkSize: 10 * 1024
+		},
+		// Other options settable:
+		clientNoContextTakeover: true, // Defaults to negotiated value.
+		serverNoContextTakeover: true, // Defaults to negotiated value.
+		serverMaxWindowBits: 10, // Defaults to negotiated value.
+		// Below options specified as default values.
+		concurrencyLimit: 10, // Limits zlib concurrency for perf.
+		threshold: 1024 // Size (in bytes) below which messages
+		// should not be compressed if context takeover is disabled.
+	},
+	verifyClient: (info, callback) => {
+		t6console.log(`verifyClient headers authorization`, info.req.headers.authorization);
+		let authHeader;
+		try {
+			authHeader = info.req.headers.authorization;
+		} catch (error) {
+			callback(false, 203 ,"Non-Authoritative Information");
+			return;
+		}
+		if (typeof authHeader!=="undefined") {
+			let credentials = atob(authHeader.split(" ")[1])?.split(":");
+			let key = credentials[0];
+			let secret = credentials[1];
+			let queryT = {
+			"$and": [
+						{ "key": key },
+						{ "secret": secret },
+					]
+			};
+			let u = access_tokens.findOne(queryT);
+			if ( u && typeof u.user_id !== "undefined" ) {
+				let user = users.findOne({id: u.user_id});
+				let payload = JSON.parse(JSON.stringify(user));
+				payload.permissions = undefined;
+				payload.token = undefined;
+				payload.password = undefined;
+				payload.gravatar = undefined;
+				payload.meta = undefined;
+				payload.$loki = undefined;
+				payload.token_type = "Bearer";
+				payload.scope = "ClientSockets";
+				payload.sub = "/users/"+user.id;
+				callback(true, 200, "OK");
+			} else {
+				callback(false, 401, "Not Authorized");
+			}
+		} else {
+			callback(false, 401, "Not Authorized");
+		}
+	}
+});
+wss.on("connection", function connection(ws, req) {
+	let id = uuid.v4();
+	wsClients.set(ws, { id: id, webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} }); //
+	t6console.log(`Welcoming ${id}`);
+	ws.send(`Welcome ${id}`);
+
+	ws.on("close", () => {
+		let metadata = wsClients.get(ws);
+		t6console.log(`Closing ${metadata.id}`);
+		wsClients.delete(ws);
+	});
+	ws.on("message", (message) => {
+		let metadata = wsClients.get(ws);
+		message = getJson( message.toString("utf-8") );
+		t6console.log(`Message`, message);
+		t6console.log(`Message H`, req.headers["sec-websocket-key"]);
+
+		if ((typeof message === "object")) {
+			if(message.command === "broadcast") {
+				wss.clients.forEach(function each(client) {
+					ws.send(`Hello ${metadata.id}, I have understood your command.`);
+					client.send(message.text);
+				});
+			} else if(message.command === "nothing") {
+				ws.send(`Hello ${metadata.id}, I will do nothing with your command.`);
+			}
+		} else {
+			t6console.log(`Received message ${message} from user ${metadata.id}`);
+		}
+	});
 });
 
 routesLoadEndTime = new Date();
@@ -502,7 +598,7 @@ app.use(express.static(path.join(__dirname, "/public"), staticOptions));
 app.use(express.static(path.join(__dirname, "/docs"), staticOptions));
 app.use("/.well-known", express.static(path.join(__dirname, "/.well-known"), staticOptions));
 app.use("/v"+version, index);
-app.use("/v"+version+"/users", users);
+app.use("/v"+version+"/users", usersRoute);
 app.use("/v"+version+"/objects", objects);
 app.use("/v"+version+"/dashboards", dashboards);
 app.use("/v"+version+"/rules", rules);
@@ -601,6 +697,14 @@ mqttClient.on("message", function (topic, message) {
 	t6console.info(sprintf("Connected Objects: %s", t6ConnectedObjects));
 });
 global.startProcessTime = new Date()-start;
+
+global.getJson = function(v) {
+	try {
+		return JSON.parse(v);
+	} catch (e) {
+		return v;
+	}
+}
 
 global.getFieldsFromDatatype = function(datatype, asValue, includeTime=true) {
 	let fields = "";
