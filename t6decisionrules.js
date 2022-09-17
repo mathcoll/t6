@@ -409,7 +409,33 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						t6console.debug("pushSubscription is now disabled on User", error);
 					}
 				} else {
-					t6console.error("No user or no pushSubscription found, can't sendPesh");
+					t6console.error("No user or no pushSubscription found, can't sendPush");
+				}
+			} else if ( event.type === "sockets" ) {
+				let destObject_id = typeof payload.object_id!=="undefined"?payload.object_id:(typeof event.params.destObject_id!=="undefined"?event.params.destObject_id:undefined);
+				let socketPayload = typeof event.params.socketPayload!=="undefined"?stringformat(event.params.socketPayload, payload):{};
+				if ( typeof payload.text !== "undefined" && payload.text !== null ) {
+					socketPayload = stringformat(payload.text.text, payload);
+				}
+				if ( typeof payload.object_id!=="undefined" ) {
+					socketPayload.object_id = payload.object_id;
+					if( typeof user_id!=="undefined" ) {
+						t6console.debug("Looking for object_id:", payload.object_id, user_id);
+						let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
+						t6console.debug("Found object:", object);
+						wss.clients.forEach(function each(client) {
+							t6console.debug("Client:", client);
+							let current = wsClients.get(client);
+							if(current.object_id === object.id) {
+								client.send(JSON.stringify(socketPayload));
+								t6console.debug("current.object_id", current.object_id);
+								t6console.debug("socketPayload", socketPayload);
+							} else {
+								t6console.debug("Not the correct Client object_id:", current.object_id, "!==", object.object_id);
+							}
+						});
+					}
+					
 				}
 			} else {
 				t6console.warn(`No matching EventType: ${event.type}`);
