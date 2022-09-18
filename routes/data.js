@@ -102,7 +102,7 @@ let signatureCheck = function(resolve, reject) {
 	object = typeof object!=="undefined"?object:{};
 	object.secret_key = typeof object.secret_key!=="undefined"?object.secret_key:jwtsettings.secret;
 	if ( typeof payload!=="undefined" && payload.signedPayload && object.secret_key ) {
-		jwt.verify(payload.signedPayload, object.secret_key, function(err, decodedPayload) {
+		jsonwebtoken.verify(payload.signedPayload, object.secret_key, function(err, decodedPayload) {
 			payload.datapoint_logs = initialPayload.datapoint_logs;
 			if ( decodedPayload && !err ) {
 				payload = getJson(decodedPayload!==""?decodedPayload:payload);
@@ -1173,7 +1173,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 			payload.scope = "ClientApi";
 			payload.sub = "/users/"+user.id;
 			req.user = payload;
-			return jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			return jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 		}
 		// TODO : Rate limit is not checked here ! 
 		//res.header("X-RateLimit-Limit", limit);

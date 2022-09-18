@@ -66,7 +66,7 @@ var { expressjwt: jwt } = require("express-jwt");
 global.expressJwt = jwt;
 global.geodist			= require("geodist");
 global.geoip			= require("geoip-lite");
-global.jwt				= require("jsonwebtoken");
+global.jsonwebtoken		= require("jsonwebtoken");
 global.nmap				= require("libnmap");
 global.Loess			= require("loess");
 global.loki				= require("lokijs");
@@ -426,29 +426,29 @@ t6console.log("===========================================================");
 
 t6console.info("Loading routes...");
 routesLoadTime = new Date();
-var index			= require("./routes/index");
-var objects			= require("./routes/objects");
-var dashboards		= require("./routes/dashboards");
-var snippets		= require("./routes/snippets");
-var rules			= require("./routes/rules");
-var mqtts			= require("./routes/mqtts");
-var usersRoute		= require("./routes/users");
-var data			= require("./routes/data");
-var flows			= require("./routes/flows");
-var units			= require("./routes/units");
-var datatypes		= require("./routes/datatypes");
-var pwa				= require("./routes/pwa");
-var notifications	= require("./routes/notifications");
-var ifttt			= require("./routes/ifttt");
-var ota				= require("./routes/ota");
-var sources			= require("./routes/sources");
-var stories			= require("./routes/stories");
-var uis				= require("./routes/uis");
-var news			= require("./routes/news");
-var exploration		= require("./routes/exploration");
-var jobs			= require("./routes/jobs");
-var classifications	= require("./routes/classifications");
-app					= express();
+var indexRoute				= require("./routes/index");
+var objectsRoute			= require("./routes/objects");
+var dashboardsRoute			= require("./routes/dashboards");
+var snippetsRoute			= require("./routes/snippets");
+var rulesRoute				= require("./routes/rules");
+var mqttsRoute				= require("./routes/mqtts");
+var usersRoute				= require("./routes/users");
+var dataRoute				= require("./routes/data");
+var flowsRoute				= require("./routes/flows");
+var unitsRoute				= require("./routes/units");
+var datatypesRoute			= require("./routes/datatypes");
+var pwaRoute				= require("./routes/pwa");
+var notificationsRoute		= require("./routes/notifications");
+var iftttRoute				= require("./routes/ifttt");
+var otaRoute				= require("./routes/ota");
+var sourcesRoute			= require("./routes/sources");
+var storiesRoute			= require("./routes/stories");
+var uisRoute				= require("./routes/uis");
+var newsRoute				= require("./routes/news");
+var explorationRoute		= require("./routes/exploration");
+var jobsRoute				= require("./routes/jobs");
+var classificationsRoute	= require("./routes/classifications");
+app							= express();
 if(enableMonitoring) {
 	monitor(app);
 	t6console.log(`${appName} is being monitored.`);
@@ -568,14 +568,30 @@ wss.on("connection", (ws, req) => {
 					ws.send("OK");
 					break;
 				case "claimObject":
-					//if(signature is correct based on database signature secret on object) {
-						metadata = wsClients.get(ws);
-						metadata.object_id = message.object_id;
-						wsClients.set(ws, metadata);
-						ws.send("OK");
-					//} else {
-						//ws.send("NOK, Not Authorized");
-					//}
+					let query = { "$and": [ { "user_id" : req.user_id }, { "id" : message.object_id }, ] };
+					t6console.debug("Searching for Objects: ", query["$and"][0]);
+					let object = objects.findOne(query);
+					if( message.object_id && object && typeof object.secret_key!=="undefined" && object.secret_key!==null  && object.secret_key!=="" ) {
+						t6console.debug("Found key from Object");
+						jsonwebtoken.verify(""+message.signature, object.secret_key, (error, unsignedObject_id) => {
+							if(!error && unsignedObject_id.object_id===message.object_id) {
+								t6console.debug("Signature is valid - Claim accepted");
+								metadata = wsClients.get(ws);
+								metadata.object_id = message.object_id;
+								wsClients.set(ws, metadata);
+								ws.send("OK Accepted");
+							} else {
+								t6console.debug("Error", error);
+								t6console.debug("unsignedObject_id", unsignedObject_id.object_id);
+								t6console.debug("message.object_id", message.object_id);
+								t6console.debug("Signature is invalid - Claim rejected");
+								ws.send("NOK, Not Authorized, invalid signature");
+							}
+						});
+					} else {
+						t6console.debug("No Secret Key available on Object or Object is not yours or Object does not have a valid signature key.");
+						ws.send("NOK, Not Authorized");
+					}
 					break;
 				case "getUA":
 					metadata = wsClients.get(ws);
@@ -677,28 +693,28 @@ app.use(session(sessionSettings));
 app.use(express.static(path.join(__dirname, "/public"), staticOptions));
 app.use(express.static(path.join(__dirname, "/docs"), staticOptions));
 app.use("/.well-known", express.static(path.join(__dirname, "/.well-known"), staticOptions));
-app.use("/v"+version, index);
+app.use("/v"+version, indexRoute);
 app.use("/v"+version+"/users", usersRoute);
-app.use("/v"+version+"/objects", objects);
-app.use("/v"+version+"/dashboards", dashboards);
-app.use("/v"+version+"/rules", rules);
-app.use("/v"+version+"/mqtts", mqtts);
-app.use("/v"+version+"/snippets", snippets);
-app.use("/v"+version+"/flows", flows);
-app.use("/v"+version+"/data", data);
-app.use("/v"+version+"/units", units);
-app.use("/v"+version+"/datatypes", datatypes);
-app.use("/v"+version+"/notifications", notifications);
-app.use("/v"+version+"/ifttt", ifttt);
-app.use("/v"+version+"/ota", ota);
-app.use("/v"+version+"/sources", sources);
-app.use("/v"+version+"/stories", stories);
-app.use("/v"+version+"/uis", uis);
-app.use("/v"+version+"/exploration", exploration);
-app.use("/v"+version+"/jobs", jobs);
-app.use("/v"+version+"/classifications", classifications);
-app.use("/news", news);
-app.use("/", pwa);
+app.use("/v"+version+"/objects", objectsRoute);
+app.use("/v"+version+"/dashboards", dashboardsRoute);
+app.use("/v"+version+"/rules", rulesRoute);
+app.use("/v"+version+"/mqtts", mqttsRoute);
+app.use("/v"+version+"/snippets", snippetsRoute);
+app.use("/v"+version+"/flows", flowsRoute);
+app.use("/v"+version+"/data", dataRoute);
+app.use("/v"+version+"/units", unitsRoute);
+app.use("/v"+version+"/datatypes", datatypesRoute);
+app.use("/v"+version+"/notifications", notificationsRoute);
+app.use("/v"+version+"/ifttt", iftttRoute);
+app.use("/v"+version+"/ota", otaRoute);
+app.use("/v"+version+"/sources", sourcesRoute);
+app.use("/v"+version+"/stories", storiesRoute);
+app.use("/v"+version+"/uis", uisRoute);
+app.use("/v"+version+"/exploration", explorationRoute);
+app.use("/v"+version+"/jobs", jobsRoute);
+app.use("/v"+version+"/classifications", classificationsRoute);
+app.use("/news", newsRoute);
+app.use("/", pwaRoute);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

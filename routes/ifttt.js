@@ -259,7 +259,7 @@ router.get("/v1/user/info", function (req, res) {
 	if ( bearer === result.data.accessToken ) {
 		res.status(200).send(resultUser);
 	} else {
-		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
+		jsonwebtoken.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if ( !err && decoded ) {
 				res.status(200).send({
 					data: {
@@ -315,7 +315,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 		}
 
 	} else if(bearer) {
-		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
+		jsonwebtoken.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if( !err && decoded ) {
 				let queryU = { "id": decoded.id };
 				t6console.debug(queryU);
@@ -366,7 +366,7 @@ router.delete("/v1/triggers/eventTrigger/trigger_identity/:trigger_identity([0-9
 	if ( bearer && bearer === result.data.accessToken ) {
 		res.status(201).send( {} ); // FAKE MODE
 	} else {
-		jwt.verify(bearer, jwtsettings.secret, function(err, decoded) {
+		jsonwebtoken.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if( !err && decoded ) {
 				let queryU = { "$and": [
 					{ "id": decoded.id },

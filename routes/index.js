@@ -232,7 +232,7 @@ router.all("*", function (req, res, next) {
 		date:		moment().format("x")
 	};
 	if ( !req.user && req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null" ) {
-		jwt.verify(req.headers.authorization.split(" ")[1], jwtsettings.secret, function(err, decodedPayload) {
+		jsonwebtoken.verify(req.headers.authorization.split(" ")[1], jwtsettings.secret, function(err, decodedPayload) {
 			if(err) {
 				t6console.debug("User can't be determined:", err);
 			} else {
@@ -500,7 +500,7 @@ router.post("/authenticate", function (req, res) {
 					payload.quotausage = undefined;
 					payload.data = undefined;
 				}
-				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+				var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 				var refreshPayload = crypto.randomBytes(40).toString("hex");
 				var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
@@ -603,7 +603,7 @@ router.post("/authenticate", function (req, res) {
 				payload.quotausage = undefined;
 				payload.data = undefined;
 			}
-			let token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			let token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 			let refreshPayload = crypto.randomBytes(40).toString("hex");
 			let refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
@@ -686,7 +686,7 @@ router.post("/authenticate", function (req, res) {
 				payload.quotausage = undefined;
 				payload.data = undefined;
 			}
-			let token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			let token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 			let refreshPayload = crypto.randomBytes(40).toString("hex");
 			let refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
 
@@ -803,7 +803,7 @@ router.post("/refresh", function (req, res) {
 				payload.quotausage = undefined;
 				payload.data = undefined;
 			}
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+			var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
 			// Add the refresh token to the list
 			tokens	= db_tokens.getCollection("tokens");
