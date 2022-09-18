@@ -334,6 +334,7 @@ router.post("/", function (req, res) {
  * @apiVersion 2.0.1
  * 
  * @apiBody {String{128}} [memo] Free memo string
+ * @apiBody {String{2}} [duration="1d","1w","1M","1y"] Duration
  * 
  * @apiUse Auth
  * @apiUse 201
@@ -346,12 +347,16 @@ router.post("/accessTokens", expressJwt({secret: jwtsettings.secret, algorithms:
 		if ( !req.user.id ) {
 			res.status(412).send(new ErrorSerializer({"id": 203,"code": 412, "message": "Precondition Failed"}).serialize());
 		} else {
+			let expiration = moment().add(1, "days").format("x");
+			if( typeof req.body.duration!=="undefined" && (["1d","1w","1M","1y"]).indexOf(req.body.duration)!==-1 ) {
+				expiration = moment().add(parseInt((req.body.duration).substring(0, 1), 10), (req.body.duration).substring(1, 2)).format("x");
+			}
 			var new_token = {
 				user_id:			req.user.id,
 				key:				passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ."),
 				secret:				passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ."),
 				memo:				(req.body.memo).substring(0, 128),
-				expiration:			moment().add(24, "hours").format("x"),
+				expiration:			expiration,
 			};
 			access_tokens.insert(new_token);
 			db_access_tokens.save();
