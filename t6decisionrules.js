@@ -415,10 +415,10 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				let destObject_id = typeof payload.object_id!=="undefined"?payload.object_id:(typeof event.params.destObject_id!=="undefined"?event.params.destObject_id:undefined);
 				let socketPayload = typeof event.params.socketPayload!=="undefined"?stringformat(event.params.socketPayload, payload):{};
 				if ( typeof payload.text !== "undefined" && payload.text !== null ) {
-					socketPayload = stringformat(payload.text.text, payload);
+					socketPayload = stringformat(JSON.stringify(payload.text.payload), payload);
 				}
 				if ( typeof payload.object_id!=="undefined" ) {
-					socketPayload.object_id = payload.object_id;
+					//socketPayload.object_id = payload.object_id;
 					if( typeof user_id!=="undefined" ) {
 						t6console.debug("Looking for object_id:", payload.object_id, user_id);
 						let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
