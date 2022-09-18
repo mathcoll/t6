@@ -602,7 +602,7 @@
         	                }
                         },
                         {
-							"it": "can identify facial expression on image (AIDC)",
+							"it": "can identify age on image (AIDC)",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -626,11 +626,11 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data.0.attributes.value",
-        	                    "equal": 40
+        	                    "equal": 37
         	                }
                         },
                         {
-							"it": "can identify facial expression on image (AIDC)",
+							"it": "can identify gender on image (AIDC)",
                         	"request": "POST /{{app_version}}/data",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"

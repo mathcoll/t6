@@ -6,7 +6,7 @@ Please referes to [CONTRIBUTING.md](https://github.com/mathcoll/t6/blob/master/C
 
 ![Stable version](https://img.shields.io/badge/version-2.0.1-blue)
 ![GitHub commit activity](https://img.shields.io/badge/tests%20succeeded-150-brightgreen)
-![GitHub commit activity](https://img.shields.io/badge/test%20average%20response%20time-689ms-brightgreen)
+![GitHub commit activity](https://img.shields.io/badge/test%20average%20response%20time-708ms-brightgreen)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/mathcoll/t6)
 ![GitHub contributors](https://img.shields.io/github/contributors/mathcoll/t6)
 [![Netlify Status](https://api.netlify.com/api/v1/badges/3264e669-05d6-4032-bdc2-28b3fc270f71/deploy-status)](https://app.netlify.com/sites/t6iot/deploys)
