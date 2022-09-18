@@ -460,8 +460,8 @@ app.listen(process.env.PORT, () => {
 	t6console.log(`${appName} started / listening to ${baseUrl_https}.`);
 });
 
-const wsClients = new Map();
-const wss = new WebSocketServer({
+global.wsClients = new Map();
+global.wss = new WebSocketServer({
 	port: 4000,
 	perMessageDeflate: {
 		zlibDeflateOptions: {
@@ -483,74 +483,147 @@ const wss = new WebSocketServer({
 		// should not be compressed if context takeover is disabled.
 	},
 	verifyClient: (info, callback) => {
-		t6console.log(`verifyClient headers authorization`, info.req.headers.authorization);
-		let authHeader;
-		try {
-			authHeader = info.req.headers.authorization;
-		} catch (error) {
-			callback(false, 203 ,"Non-Authoritative Information");
-			return;
-		}
-		if (typeof authHeader!=="undefined") {
-			let credentials = atob(authHeader.split(" ")[1])?.split(":");
-			let key = credentials[0];
-			let secret = credentials[1];
-			let queryT = {
-			"$and": [
-						{ "key": key },
-						{ "secret": secret },
-					]
-			};
-			let u = access_tokens.findOne(queryT);
-			if ( u && typeof u.user_id !== "undefined" ) {
-				let user = users.findOne({id: u.user_id});
-				let payload = JSON.parse(JSON.stringify(user));
-				payload.permissions = undefined;
-				payload.token = undefined;
-				payload.password = undefined;
-				payload.gravatar = undefined;
-				payload.meta = undefined;
-				payload.$loki = undefined;
-				payload.token_type = "Bearer";
-				payload.scope = "ClientSockets";
-				payload.sub = "/users/"+user.id;
-				callback(true, 200, "OK");
-			} else {
-				callback(false, 401, "Not Authorized");
-			}
+		if ( false ) {
+			info.req.user_id = "44800701-d6de-48f7-9577-4b3ea1fab81a";
+			callback(true, 200, "OK, Hardcoded user_id for debug");
 		} else {
-			callback(false, 401, "Not Authorized");
+			t6console.log(`verifyClient headers`, info.req.headers);
+			t6console.log(`verifyClient headers authorization`, info.req.headers.authorization);
+			let authHeader;
+			try {
+				authHeader = info.req.headers.authorization;
+			} catch (error) {
+				info.req.user_id = null;
+				callback(false, 203 ,"Non-Authoritative Information");
+				return;
+			}
+			if (typeof authHeader!=="undefined") {
+				let credentials = atob(authHeader.split(" ")[1])?.split(":");
+				let key = credentials[0];
+				let secret = credentials[1];
+				let queryT = {
+				"$and": [
+							{ "key": key },
+							{ "secret": secret },
+						]
+				};
+				let u = access_tokens.findOne(queryT);
+				if ( u && typeof u.user_id !== "undefined" ) {
+					let user = users.findOne({id: u.user_id});
+					t6console.debug(`verifyClient headers OK`, u.user_id);
+					info.req.user_id = u.user_id;
+					callback(true, 200, "OK, ", u.user_id);
+					t6events.addAudit("t6App", "Socket_authenticate key:secret", u.user_id, req.headers["sec-websocket-key"], {"status": 200});
+				} else {
+					t6console.debug(`verifyClient headers NOK1`);
+					info.req.user_id = null;
+					callback(false, 401, "Not Authorized");
+					t6events.addAudit("t6App", "Socket_authenticate key:secret", "anonymous", req.headers["sec-websocket-key"], {"status": 401});
+				}
+			} else {
+				t6console.debug(`verifyClient headers NOK2`);
+				info.req.user_id = null;
+				callback(false, 401, "Not Authorized");
+				t6events.addAudit("t6App", "Socket_authenticate unknown", "anonymous", req.headers["sec-websocket-key"], {"status": 401});
+			}
 		}
 	}
 });
 wss.on("connection", function connection(ws, req) {
 	let id = uuid.v4();
-	wsClients.set(ws, { id: id, webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} }); //
-	t6console.log(`Welcoming ${id}`);
-	ws.send(`Welcome ${id}`);
+	wsClients.set(ws, { id: id, user_id: req.user_id, webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} });
+	t6console.debug(`Welcoming socket_id: ${id}`);
+	ws.send(`Welcome socket_id: ${id}`);
+	t6events.addStat("t6App", "Socket welcoming", req.user_id, id, {"status": 200});
 
 	ws.on("close", () => {
 		let metadata = wsClients.get(ws);
-		t6console.log(`Closing ${metadata.id}`);
+		t6console.debug(`Closing ${metadata.id}`);
 		wsClients.delete(ws);
+		t6events.addStat("t6App", "Socket closing", req.user_id, metadata.id, {"status": 200});
 	});
 	ws.on("message", (message) => {
 		let metadata = wsClients.get(ws);
+		t6events.addStat("t6App", "Socket messaging", req.user_id, metadata.id, {"status": 200});
 		message = getJson( message.toString("utf-8") );
-		t6console.log(`Message`, message);
-		t6console.log(`Message H`, req.headers["sec-websocket-key"]);
+		//t6console.debug(`Message`, message);
 
-		if ((typeof message === "object")) {
-			if(message.command === "broadcast") {
-				wss.clients.forEach(function each(client) {
-					ws.send(`Hello ${metadata.id}, I have understood your command.`);
-					client.send(message.text);
-				});
-			} else if(message.command === "nothing") {
-				ws.send(`Hello ${metadata.id}, I will do nothing with your command.`);
+		if (typeof message === "object") {
+			t6console.debug(`Received ws object from socket_id: ${metadata.id}:`, message);
+			switch(message.command) {
+				case "unicast":
+					if(typeof message.object_id!=="undefined" && message.object_id!==null) {
+						wss.clients.forEach(function each(client) {
+							let current = wsClients.get(client);
+							if(current.object_id === message.object_id) {
+								client.send(JSON.stringify(message.payload));
+								ws.send(`Unicasted to object_id: ${current.object_id}`);
+							}
+						});
+					} else {
+						ws.send("NOK");
+					}
+					break;
+				case "broadcast":
+					// Broadcast only to the same user as the claimed object
+					wss.clients.forEach(function each(client) {
+						let current = wsClients.get(client);
+						if(current.user_id === req.user_id) {
+							client.send(JSON.stringify(message.payload));
+							ws.send(`Broadcasted (filtered on user_id ${req.user_id}) to object_id: ${current.object_id}`);
+						}
+					});
+					ws.send("OK");
+					break;
+				case "claimObject":
+					//if(signature is correct based on database signature secret on object) {
+						metadata = wsClients.get(ws);
+						metadata.object_id = message.object_id;
+						wsClients.set(ws, metadata);
+						ws.send("OK");
+					//} else {
+						//ws.send("NOK, Not Authorized");
+					//}
+					break;
+				case "getUA":
+					metadata = wsClients.get(ws);
+					ws.send(metadata.webSocket.ua);
+					break;
+				case "getKey":
+					metadata = wsClients.get(ws);
+					ws.send(metadata.webSocket.key);
+					break;
+				case "getObject":
+					metadata = wsClients.get(ws);
+					if(typeof metadata.object_id!=="undefined") {
+						ws.send(metadata.object_id);
+					} else {
+						ws.send("undefined");
+					}
+					break;
+				case "getUser":
+					metadata = wsClients.get(ws);
+					if(typeof metadata.user_id!=="undefined") {
+						ws.send(metadata.user_id);
+					} else {
+						ws.send("undefined");
+					}
+					break;
+				case "help":
+					ws.send(`Hello ${metadata.id}, welcome to t6 IoT sockets command interface.`);
+					ws.send(`Here are the commands :`);
+					ws.send(`- broadcast: to cast a message to any connected Object from your user account.`);
+					ws.send(`- unicast: to cast a message to a specif Object you own.`);
+					ws.send(`- claimObject: to Claim the id of a specific Object.`);
+					ws.send(`- getObject: to get the id of an Object claimed to server.`);
+					ws.send(`- getUser: to get the user_id of an Object claimed to server.`);
+					ws.send(`- getUA: to get the user-agent of an Object.`);
+					break;
+				default:
+					break;
 			}
 		} else {
-			t6console.log(`Received message ${message} from user ${metadata.id}`);
+			t6console.debug(`Received message ${message} from socket_id ${metadata.id}`);
 		}
 	});
 });
