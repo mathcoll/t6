@@ -457,8 +457,12 @@ app.set("port", process.env.PORT);
 app.listen(process.env.PORT, () => {
 	t6events.addStat("t6App", "start", "self", t6BuildVersion);
 	t6console.log("App is instanciated.");
-	t6console.log(`${appName} started / listening to ${baseUrl_https}.`);
+	t6console.log(`${appName} http(s) listening to ${baseUrl_https}.`);
 });
+
+routesLoadEndTime = new Date();
+t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
+t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
 
 global.wsClients = new Map();
 global.wss = new WebSocketServer({
@@ -483,53 +487,42 @@ global.wss = new WebSocketServer({
 		// should not be compressed if context takeover is disabled.
 	},
 	verifyClient: (info, callback) => {
-		if ( false ) {
-			info.req.user_id = "44800701-d6de-48f7-9577-4b3ea1fab81a";
-			callback(true, 200, "OK, Hardcoded user_id for debug");
-		} else {
-			t6console.log(`verifyClient headers`, info.req.headers);
-			t6console.log(`verifyClient headers authorization`, info.req.headers.authorization);
-			let authHeader;
-			try {
-				authHeader = info.req.headers.authorization;
-			} catch (error) {
-				info.req.user_id = null;
-				callback(false, 203 ,"Non-Authoritative Information");
-				return;
-			}
-			if (typeof authHeader!=="undefined") {
-				let credentials = atob(authHeader.split(" ")[1])?.split(":");
-				let key = credentials[0];
-				let secret = credentials[1];
-				let queryT = {
-				"$and": [
-							{ "key": key },
-							{ "secret": secret },
-						]
-				};
-				let u = access_tokens.findOne(queryT);
-				if ( u && typeof u.user_id !== "undefined" ) {
-					let user = users.findOne({id: u.user_id});
-					t6console.debug(`verifyClient headers OK`, u.user_id);
-					info.req.user_id = u.user_id;
-					callback(true, 200, "OK, ", u.user_id);
-					t6events.addAudit("t6App", "Socket_authenticate key:secret", u.user_id, req.headers["sec-websocket-key"], {"status": 200});
-				} else {
-					t6console.debug(`verifyClient headers NOK1`);
-					info.req.user_id = null;
-					callback(false, 401, "Not Authorized");
-					t6events.addAudit("t6App", "Socket_authenticate key:secret", "anonymous", req.headers["sec-websocket-key"], {"status": 401});
-				}
+		t6console.debug(`verifyClient headers`, info.req.headers);
+		let authHeader;
+		try {
+			authHeader = info.req.headers.authorization;
+		} catch (error) {
+			info.req.user_id = null;
+			callback(false, 203 ,"Non-Authoritative Information");
+			return;
+		}
+		if (typeof authHeader!=="undefined") {
+			let credentials = atob(authHeader.split(" ")[1])?.split(":");
+			let key = credentials[0];
+			let secret = credentials[1];
+			let queryT = {
+			"$and": [
+						{ "key": key },
+						{ "secret": secret },
+					]
+			};
+			let u = access_tokens.findOne(queryT);
+			if ( u && typeof u.user_id !== "undefined" ) {
+				let user = users.findOne({id: u.user_id});
+				t6console.debug(`verifyClient headers OK`, u.user_id);
+				info.req.user_id = u.user_id;
+				callback(true, 200, "OK, ", u.user_id);
+				t6events.addAudit("t6App", "Socket_authenticate key:secret", u.user_id, info.req.headers["sec-websocket-key"], {"status": 200});
 			} else {
-				t6console.debug(`verifyClient headers NOK2`);
+				t6console.debug(`verifyClient headers NOK1`);
 				info.req.user_id = null;
 				callback(false, 401, "Not Authorized");
-				t6events.addAudit("t6App", "Socket_authenticate unknown", "anonymous", req.headers["sec-websocket-key"], {"status": 401});
+				t6events.addAudit("t6App", "Socket_authenticate key:secret", "anonymous", info.req.headers["sec-websocket-key"], {"status": 401, "error_id": 444402});
 			}
 		}
 	}
 });
-wss.on("connection", function connection(ws, req) {
+wss.on("connection", (ws, req) => {
 	let id = uuid.v4();
 	wsClients.set(ws, { id: id, user_id: req.user_id, webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} });
 	t6console.debug(`Welcoming socket_id: ${id}`);
@@ -546,10 +539,9 @@ wss.on("connection", function connection(ws, req) {
 		let metadata = wsClients.get(ws);
 		t6events.addStat("t6App", "Socket messaging", req.user_id, metadata.id, {"status": 200});
 		message = getJson( message.toString("utf-8") );
-		//t6console.debug(`Message`, message);
 
 		if (typeof message === "object") {
-			t6console.debug(`Received ws object from socket_id: ${metadata.id}:`, message);
+			t6console.debug(`Received command "${message.command}" from socket_id: ${metadata.id}`);
 			switch(message.command) {
 				case "unicast":
 					if(typeof message.object_id!=="undefined" && message.object_id!==null) {
@@ -627,10 +619,25 @@ wss.on("connection", function connection(ws, req) {
 		}
 	});
 });
+wss.on("upgrade", (request, socket, head) => {
+	authenticate(request, function next(err, client) {
+		t6console.debug(err);
+		t6console.debug(client);
+		if (err || !client) {
+			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+			socket.destroy();
+			return;
+		}
+		wss.handleUpgrade(request, socket, head, function done(ws) {
+			wss.emit('connection', ws, request, client);
+		});
+	});
+});
+wss.onerror = () => {
+	t6console.error(`${appName} wsError.`);
+};
+t6console.log(`${appName} ws(s) listening to ${baseUrl_https}:4000.`);
 
-routesLoadEndTime = new Date();
-t6console.log(`Modules load time: ${moduleLoadEndTime-moduleLoadTime}ms`);
-t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
 var CrossDomain = function(req, res, next) {
 	if (req.method === "OPTIONS") {
 		//res.header("Access-Control-Allow-Origin", req.header("origin") || "*");
