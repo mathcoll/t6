@@ -23,7 +23,7 @@
     "prepublish": "npm -v",
     "prepare": "./bin/deliver.sh -m",
     "apidoc": "./bin/deliver.sh -a",
-    "deliver": "./bin/deliver.sh -marbfs"
+    "deliver": "./bin/deliver.sh -rbfs"
   },
   "dependencies": {
     "@influxdata/influxdb-client": "^1.26.0",
