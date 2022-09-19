@@ -17,7 +17,18 @@ Types of changes
 ------------
 
 ## 2022
-### Milestone 19 - 2022-
+### Milestone 20 - 2022-09
+**Fixed**
+  - [x] Fixed conflicting names on variables
+  - [x] Fixed bug on getObjectKey
+  
+**Added**
+  - [x] Add webSocket server on t6
+  - [x] Add webSocket trigger to Rule Engine
+  - [x] Allow Api-Key+Api-secret headers on datapoint post when adding a measurement
+  - [x] Allow accessTokens to customize duration "1d","1w","1M","1y"
+
+### Milestone 19 - 2022-08
 **Fixed**
   - [x] Fixed default retention policy from the flow on GET /data/$flow_id Endpoint
 
