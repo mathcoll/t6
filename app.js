@@ -574,7 +574,7 @@ wss.on("connection", (ws, req) => {
 					if( message.object_id && object && typeof object.secret_key!=="undefined" && object.secret_key!==null  && object.secret_key!=="" ) {
 						t6console.debug("Found key from Object");
 						jsonwebtoken.verify(""+message.signature, object.secret_key, (error, unsignedObject_id) => {
-							if(!error && unsignedObject_id.object_id===message.object_id) {
+							if(!error && unsignedObject_id && unsignedObject_id.object_id===message.object_id) {
 								t6console.debug("Signature is valid - Claim accepted");
 								metadata = wsClients.get(ws);
 								metadata.object_id = message.object_id;
