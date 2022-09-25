@@ -57,17 +57,21 @@ class MaterialLightParser {
 	}
 	createSlider(s) {
 		return `
-		<div class="mdl-grid mdl-cell--${s.width}-col">
-			<label for="${s.id}">${s.label}</label>
+		<label for="${s.id}" class="mdl-slider">
+			<div class="mdl-slider__label">${s.label}</div>
+			<span class="switchLabels">${s.min}</span>
 			<input class="mdl-slider mdl-js-slider" type="range" id="${s.id}" min="${parseInt(s.min, 10)}" max="${parseInt(s.max, 10)}" value="${parseInt(s.value, 10)}" step="${parseInt(s.step, 10)}" data-action="${s.action}">
-		</div>`;
+			<span class="sliderLabels" style="right: 20px;">${s.max}</span>
+		</label>`;
 	}
 	createSwitch(s) {
 		let value = s.defaultState==="checked"?s.valueChecked:s.valueUnchecked;
 		return `
 		<label for="${s.id}" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" data-action="${s.action}" data-valuechecked="${s.valueChecked}" data-valueunchecked="${s.valueUnchecked}">
+			<div class="mdl-switch__label">${s.label}</div>
+			<span class="switchLabels">${s.labelUnchecked}</span>
 			<input type="checkbox" id="${s.id}" class="mdl-switch__input" ${s.defaultState==="checked"?"checked":""}>
-			<span class="mdl-switch__label">${s.label}</span>
+			<span class="switchLabels" style="right: 0;position: absolute;">${s.labelChecked}</span>
 		</label>`;
 	}
 	createSnack() {
@@ -179,7 +183,7 @@ req.onreadystatechange = function() {
 	if (this.readyState == 4 && (this.status == 200 || this.status == 201)) {
 		let json = JSON.parse(req.responseText);
 		if(json.status === "ok" || json.status === "UNDERSTOOD") {
-			if(json.sensorValue) {
+			if(json.value) {
 				document.querySelector("#sensorValue").classList.add("is-not-visible");
 				document.querySelector("#sensorValue").classList.remove("is-visible");
 				ml.showSensorValue("sensorValue", json.sensorValue); // TODO: hardcoded
@@ -208,8 +212,28 @@ let actionate = () => {
 					let action = evt.currentTarget.dataset.action;
 					if (typeof action !=="undefined" ) {
 						let trigger = evt.currentTarget.dataset.trigger;
-						req.open("GET", action.format(), true);
-						req.send();
+						fetch(action.format())
+						.then((response) => {
+							response.json().then(function(json) {
+								if(json.status === "OK" || json.status === "UNDERSTOOD") {
+									if(json.value) {
+										document.querySelector("#"+trigger).classList.add("is-not-visible");
+										document.querySelector("#"+trigger).classList.remove("is-visible");
+										ml.showSensorValue(trigger, json.value);
+										document.querySelector("#"+trigger).classList.remove("is-not-visible");
+										document.querySelector("#"+trigger).classList.add("is-visible");
+									} else {
+										let snack = {
+											message: json.snack,
+											timeout: 2000,
+											actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
+											actionText: "Dismiss"
+										};
+										ml.showSnackbar(snack);
+									}
+								}
+							});
+						});
 						evt.preventDefault();
 					}
 			}, {passive: false});
@@ -314,5 +338,5 @@ let askPermission = function() {
 	});
 };
 
-askPermission();
-subscribeUserToPush();
+//askPermission();
+//subscribeUserToPush();
