@@ -42,27 +42,31 @@ class MaterialLightParser {
 		return out;
 	}
 	createText(t) {
-		return `<div class="mdl-textfield mdl-js-textfield ${t.class}" id="${t.id}">${t.body}</div>`;
+		return `<div class="mdl-textfield mdl-js-textfield mdl-grid mdl-cell--${t.width}-col ${t.class}" id="${t.id}">${t.text}</div>`;
 	}
 	createBadge(b) {
-		return `<span class="mdl-badge" data-badge="${b.data}">${b.body}</span>`;
+		return `<span class="mdl-badge" data-badge="${b.data}">${b.text}</span>`;
 	}
 	createRow(r) {
-		return `${this.parse(r)}`;
+		return `<div class="mdl-grid mdl-cell--${r.width}-col" id="row_${r.row_id}">
+		${this.parse(r)}
+		</div>`;
 	}
 	createColumn(c) {
-		return `<div class="mdl-grid mdl-cell--${c.width}-col">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
+		return `<div class="mdl-grid mdl-cell--${c.width}-col" id="col_${c.col_id}">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
 	}
 	createSlider(s) {
 		return `
-		<p style="width:100%">
-			<input class="mdl-slider mdl-js-slider" type="${s.type}" id="${s.id}" min="${parseInt(s.min, 10)}" max="${parseInt(s.max, 10)}" value="${parseInt(s.value, 10)}" step="${parseInt(s.step, 10)}">
-		</p>`;
+		<div class="mdl-grid mdl-cell--${s.width}-col">
+			<label for="${s.id}">${s.label}</label>
+			<input class="mdl-slider mdl-js-slider" type="range" id="${s.id}" min="${parseInt(s.min, 10)}" max="${parseInt(s.max, 10)}" value="${parseInt(s.value, 10)}" step="${parseInt(s.step, 10)}" data-action="${s.action}">
+		</div>`;
 	}
 	createSwitch(s) {
+		let value = s.defaultState==="checked"?s.valueChecked:s.valueUnchecked;
 		return `
-		<label for="${s.id}" class="mdl-switch mdl-js-switch mdl-js-ripple-effect">
-			<input type="checkbox" id="${s.id}" class="mdl-switch__input" ${s.checked===true?"checked":""}>
+		<label for="${s.id}" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" data-action="${s.action}" data-valuechecked="${s.valueChecked}" data-valueunchecked="${s.valueUnchecked}">
+			<input type="checkbox" id="${s.id}" class="mdl-switch__input" ${s.defaultState==="checked"?"checked":""}>
 			<span class="mdl-switch__label">${s.label}</span>
 		</label>`;
 	}
@@ -74,52 +78,83 @@ class MaterialLightParser {
 	}
 	parse(s) {
 		let S = "";
-		if (s.rows) {
-			for (const row of s.rows) {
-				S += this.createRow(row);
+		if (typeof s!=="undefined") {
+
+			/* Cannot have multiple */
+			if (s.title) {
+				document.title = s.title;
 			}
-		}
-		if (s.columns) {
-			for (const column of s.columns) {
-				S += this.createColumn(column);
+			if (s.rows) {
+				for (const row of s.rows) {
+					S += this.createRow(row);
+				}
 			}
-		}
-		if (s.buttons) {
-			for (const button of s.buttons) {
-				S += this.createButton(button);
+			if (s.columns) {
+				for (const column of s.columns) {
+					S += this.createColumn(column);
+				}
 			}
-		}
-		if (s.images) {
-			for (const image of s.images) {
-				S += this.createImage(image);
+			if (s.cards) {
+				for (const card of s.cards) {
+					S += this.createCard(card);
+				}
 			}
-		}
-		if (s.texts) {
-			for (const text of s.texts) {
-				S += this.createText(text);
+			if (s.lists) {
+				for (let i in s.lists) {
+					S += this.createList(i, s.lists[i]);
+				}
 			}
-		}
-		if (s.cards) {
-			for (const card of s.cards) {
-				S += this.createCard(card);
+
+			/* Can have multiple */
+			if (s.buttons) {
+				for (const button of s.buttons) {
+					S += this.createButton(button);
+				}
 			}
-		}
-		if (s.badges) {
-			for (const badge of s.badges) {
-				S += this.createBadge(badge);
+			if (s.images) {
+				for (const image of s.images) {
+					S += this.createImage(image);
+				}
 			}
-		}
-		if (s.slider) {
-			S += this.createSlider(s.slider);
-		}
-		if (s.switches) {
-			for (const sw of s.switches) {
-				S += this.createSwitch(sw);
+			if (s.texts) {
+				for (const text of s.texts) {
+					S += this.createText(text);
+				}
 			}
-		}
-		if (s.lists) {
-			for (let i in s.lists) {
-				S += this.createList(i, s.lists[i]);
+			if (s.badges) {
+				for (const badge of s.badges) {
+					S += this.createBadge(badge);
+				}
+			}
+			if (s.sliders) {
+				for (const slider of s.sliders) {
+					S += this.createSlider(slider);
+				}
+			}
+			if (s.switches) {
+				for (const switche of s.switches) {
+					S += this.createSwitch(switche);
+				}
+			}
+
+			/* Singletons */
+			if (s.button) {
+				S += this.createButton(s.button);
+			}
+			if (s.image) {
+				S += this.createImage(s.image);
+			}
+			if (s.text) {
+				S += this.createText(s.text);
+			}
+			if (s.badge) {
+				S += this.createBadge(s.badge);
+			}
+			if (s.slider) {
+				S += this.createSlider(s.slider);
+			}
+			if (s.switche) {
+				S += this.createSwitch(s.switche);
 			}
 		}
 		return S;
@@ -162,6 +197,9 @@ req.onreadystatechange = function() {
 		}
 	}
 };
+String.prototype.format = function() {
+	return [...arguments].reduce((p,c) => p.replace(/%s/,c), this);
+};
 let actionate = () => {
 	let buttons = document.querySelectorAll("button");
 	for (var i in buttons) {
@@ -170,7 +208,7 @@ let actionate = () => {
 					let action = evt.currentTarget.dataset.action;
 					if (typeof action !=="undefined" ) {
 						let trigger = evt.currentTarget.dataset.trigger;
-						req.open("GET", "/"+action, true);
+						req.open("GET", action.format(), true);
 						req.send();
 						evt.preventDefault();
 					}
@@ -181,8 +219,9 @@ let actionate = () => {
 	for (var i in switches) {
 		if ( (switches[i]).childElementCount > -1 ) {
 			(switches[i]).addEventListener("change", function(evt) {
-				let value = evt.currentTarget.classList.contains("is-checked")===true?"true":"false";
-				req.open("GET", "/"+value, true);
+				let value = evt.currentTarget.classList.contains("is-checked")===true?evt.currentTarget.dataset.valuechecked:evt.currentTarget.dataset.valueunchecked;
+				let action = evt.currentTarget.dataset.action;
+				req.open("GET", action.format(value), true);
 				req.send();
 				evt.preventDefault();
 			}, {passive: false});
@@ -192,8 +231,9 @@ let actionate = () => {
 	for (var i in sliders) {
 		if ( (sliders[i]).childElementCount > -1 ) {
 			(sliders[i]).addEventListener("change", function(evt) {
+				let action = evt.currentTarget.dataset.action;
 				let value = evt.currentTarget.MaterialSlider.element_.value;
-				req.open("GET", "/setLight?value="+value, true);
+				req.open("GET", action.format(value), true);
 				req.send();
 				evt.preventDefault();
 			}, {passive: false});
@@ -203,14 +243,6 @@ let actionate = () => {
 let materializeLight = (inputJson) => {
 	return ml.parse(inputJson) + ml.createSnack();
 };
-
-
-
-
-
-
-
-
 
 let registerServiceWorker = function() {
 	return navigator.serviceWorker.register("/sw.js", { scope: "/" })
