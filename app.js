@@ -466,7 +466,7 @@ t6console.log(`Routes loaded in ${routesLoadEndTime-routesLoadTime}ms.`);
 
 global.wsClients = new Map();
 global.wss = new WebSocketServer({
-	port: 4000,
+	port: socketsPort,
 	perMessageDeflate: {
 		zlibDeflateOptions: {
 			// See zlib defaults.
@@ -496,7 +496,7 @@ global.wss = new WebSocketServer({
 			callback(false, 203 ,"Non-Authoritative Information");
 			return;
 		}
-		if (typeof authHeader!=="undefined") {
+		if (typeof authHeader!=="undefined" && authHeader?.split(" ")) {
 			let credentials = atob(authHeader.split(" ")[1])?.split(":");
 			let key = credentials[0];
 			let secret = credentials[1];
@@ -652,7 +652,7 @@ wss.on("upgrade", (request, socket, head) => {
 wss.onerror = () => {
 	t6console.error(`${appName} wsError.`);
 };
-t6console.log(`${appName} ws(s) listening to ${baseUrl_https}:4000.`);
+t6console.log(`${appName} ws(s) listening to ${socketsScheme}${socketsHost}:${socketsPort}.`);
 
 var CrossDomain = function(req, res, next) {
 	if (req.method === "OPTIONS") {

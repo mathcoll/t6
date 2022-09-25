@@ -7,6 +7,11 @@ baseUrl                         = "http://127.0.0.1:3000";
 baseUrl_https                   = "http://127.0.0.1:3000";
 baseUrlCdn						= "//cdn.domain.tld"; // Your CDN base domain name, if any. You can use Cloudflare for instance.
 
+/* Sockets settings */
+socketsHost						= "localhost";
+socketsPort						= 4000;
+socketsScheme					= "ws://";
+
 /* Mqtt settings */
 mqttHost			= "localhost"; // Your Mqtt server host
 mqttPort			= 1883; // Your Mqtt server port
