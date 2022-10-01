@@ -413,23 +413,30 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				}
 			} else if ( event.type === "sockets" ) {
 				let destObject_id = typeof payload.object_id!=="undefined"?payload.object_id:(typeof event.params.destObject_id!=="undefined"?event.params.destObject_id:undefined);
+				
+				t6console.debug("socketPayload INIT", event.params.socketPayload);
+				event.params.socketPayload = JSON.stringify(event.params.socketPayload);
+				event.params.socketPayload = (event.params.socketPayload).substring(1, (event.params.socketPayload).length-1);
+				t6console.debug("socketPayload stringify", event.params.socketPayload);
 				let socketPayload = typeof event.params.socketPayload!=="undefined"?stringformat(event.params.socketPayload, payload):{};
-				if ( typeof payload.text !== "undefined" && payload.text !== null ) {
-					socketPayload = stringformat(JSON.stringify(payload.text.payload), payload);
-				}
+				socketPayload = "{"+socketPayload+"}";
+				t6console.debug("socketPayload formatted", socketPayload);
+				//t6console.debug("socketPayload AFTER", JSON.stringify(socketPayload));
+
 				if ( typeof payload.object_id!=="undefined" ) {
 					//socketPayload.object_id = payload.object_id;
 					if( typeof user_id!=="undefined" ) {
 						t6console.debug("Looking for object_id:", payload.object_id, user_id);
 						let object = objects.findOne({ "$and": [ { "user_id": { "$eq": user_id } }, { "id": { "$eq": payload.object_id } }, ]});
-						t6console.debug("Found object:", object);
+						//t6console.debug("Found object:", object);
 						wss.clients.forEach(function each(client) {
-							t6console.debug("Client:", client);
+							//t6console.debug("Client:", client);
 							let current = wsClients.get(client);
 							if(current.object_id === object.id) {
-								client.send(JSON.stringify(socketPayload));
 								t6console.debug("current.object_id", current.object_id);
 								t6console.debug("socketPayload", socketPayload);
+								//client.send(JSON.stringify(socketPayload));
+								client.send(socketPayload);
 							} else {
 								t6console.debug("Not the correct Client object_id:", current.object_id, "!==", object.object_id);
 							}
