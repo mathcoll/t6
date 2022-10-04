@@ -68,7 +68,12 @@ class MaterialLightParser {
 		let value = s.defaultState==="checked"?s.valueChecked:s.valueUnchecked;
 		return `
 		<label for="${s.id}" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" data-action="${s.action}" data-valuechecked="${s.valueChecked}" data-valueunchecked="${s.valueUnchecked}">
-			<div class="mdl-switch__label">${s.label}</div>
+			<div class="mdl-switch__label">
+				${s.label}
+				<span class="mode"></span>
+				<span class="type"></span>
+				<span class="value"></span>
+			</div>
 			<span class="switchLabels">${s.labelUnchecked}</span>
 			<input type="checkbox" id="${s.id}" class="mdl-switch__input" ${s.defaultState==="checked"?"checked":""}>
 			<span class="switchLabels" style="right: 0;position: absolute;">${s.labelChecked}</span>
@@ -215,6 +220,18 @@ let actionate = () => {
 						fetch(action.format())
 						.then((response) => {
 							response.json().then(function(json) {
+								if(typeof json.pins!=="undefined" && json.pins.length>-1) {
+									(json.pins).map(function(pin) {
+										if(pin[Object.keys(pin)].value === "1") {
+											document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
+										} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
+											document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
+										}
+										document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
+										document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
+										document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
+									});
+								}
 								if(json.status === "OK" || json.status === "UNDERSTOOD") {
 									if(json.value) {
 										document.querySelector("#"+trigger).classList.add("is-not-visible");
