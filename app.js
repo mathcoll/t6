@@ -640,12 +640,12 @@ wss.on("upgrade", (request, socket, head) => {
 		t6console.debug(err);
 		t6console.debug(client);
 		if (err || !client) {
-			socket.write('HTTP/1.1 401 Unauthorized\r\n\r\n');
+			socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
 			socket.destroy();
 			return;
 		}
 		wss.handleUpgrade(request, socket, head, function done(ws) {
-			wss.emit('connection', ws, request, client);
+			wss.emit("connection", ws, request, client);
 		});
 	});
 });
