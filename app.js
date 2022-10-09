@@ -528,16 +528,19 @@ wss.on("connection", (ws, req) => {
 	t6console.debug(`Welcoming socket_id: ${id}`);
 	ws.send(`Welcome socket_id: ${id}`);
 	t6events.addStat("t6App", "Socket welcoming", req.user_id, id, {"status": 200});
+	t6mqtt.publish(null, mqttSockets+"/"+id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket welcome`, "environment": process.env.NODE_ENV}), false);
 
 	ws.on("close", () => {
 		let metadata = wsClients.get(ws);
 		t6console.debug(`Closing ${metadata.id}`);
 		wsClients.delete(ws);
 		t6events.addStat("t6App", "Socket closing", req.user_id, metadata.id, {"status": 200});
+		t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket close`, "environment": process.env.NODE_ENV}), false);
 	});
 	ws.on("message", (message) => {
 		let metadata = wsClients.get(ws);
 		t6events.addStat("t6App", "Socket messaging", req.user_id, metadata.id, {"status": 200});
+		t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket message`, "environment": process.env.NODE_ENV}), false);
 		message = getJson( message.toString("utf-8") );
 
 		if (typeof message === "object") {
@@ -569,28 +572,34 @@ wss.on("connection", (ws, req) => {
 					break;
 				case "claimObject":
 					let query = { "$and": [ { "user_id" : req.user_id }, { "id" : message.object_id }, ] };
-					t6console.debug("Searching for Objects: ", query["$and"][0]);
+					//t6console.debug("Searching for Objects: ", query["$and"][0]);
+					//t6console.debug("Searching for Objects: ", query["$and"][1]);
 					let object = objects.findOne(query);
 					if( message.object_id && object && typeof object.secret_key!=="undefined" && object.secret_key!==null  && object.secret_key!=="" ) {
-						t6console.debug("Found key from Object");
-						jsonwebtoken.verify(""+message.signature, object.secret_key, (error, unsignedObject_id) => {
+						t6console.debug("Found key from Object", message.object_id);
+						t6console.debug("Verifying signature", message.signature);
+						jsonwebtoken.verify(String(message.signature), object.secret_key, (error, unsignedObject_id) => {
 							if(!error && unsignedObject_id && unsignedObject_id.object_id===message.object_id) {
+								//t6console.debug(object);
 								t6console.debug("Signature is valid - Claim accepted");
 								metadata = wsClients.get(ws);
 								metadata.object_id = message.object_id;
 								wsClients.set(ws, metadata);
-								ws.send("OK Accepted");
+								ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id, "pin": "", "value": ""})); // Arduino require pin and value
+								t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
 							} else {
 								t6console.debug("Error", error);
 								t6console.debug("unsignedObject_id", unsignedObject_id.object_id);
 								t6console.debug("message.object_id", message.object_id);
 								t6console.debug("Signature is invalid - Claim rejected");
-								ws.send("NOK, Not Authorized, invalid signature");
+								ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "Not Authorized, invalid signature", "object_id": null, "socket_id": metadata.id, "pin": "", "value": ""})); // Arduino require pin and value
+								t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim rejected object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
 							}
 						});
 					} else {
 						t6console.debug("No Secret Key available on Object or Object is not yours or Object does not have a valid signature key.");
-						ws.send("NOK, Not Authorized");
+						ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "Not Authorized, invalid signature", "object_id": null, "socket_id": metadata.id, "pin": "", "value": ""})); // Arduino require pin and value
+						t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim rejected object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
 					}
 					break;
 				case "getUA":

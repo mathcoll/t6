@@ -437,6 +437,7 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 								t6console.debug("socketPayload", socketPayload);
 								//client.send(JSON.stringify(socketPayload));
 								client.send(socketPayload);
+								t6mqtt.publish(null, mqttSockets, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": socketPayload, "environment": process.env.NODE_ENV}), false);
 							} else {
 								t6console.debug("Not the correct Client object_id:", current.object_id, "!==", object.object_id);
 							}
