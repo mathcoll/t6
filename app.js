@@ -527,6 +527,7 @@ wss.on("connection", (ws, req) => {
 	wsClients.set(ws, { id: id, user_id: req.user_id, webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} });
 	t6console.debug(`Welcoming socket_id: ${id}`);
 	ws.send(`Welcome socket_id: ${id}`);
+	ws.send(JSON.stringify({"arduinoCommand": "claimRequest", "socket_id": id, "pin": "", "value": ""})); // Arduino require pin and value
 	t6events.addStat("t6App", "Socket welcoming", req.user_id, id, {"status": 200});
 	t6mqtt.publish(null, mqttSockets+"/"+id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket welcome`, "environment": process.env.NODE_ENV}), false);
 
@@ -577,7 +578,7 @@ wss.on("connection", (ws, req) => {
 					let object = objects.findOne(query);
 					if( message.object_id && object && typeof object.secret_key!=="undefined" && object.secret_key!==null  && object.secret_key!=="" ) {
 						t6console.debug("Found key from Object", message.object_id);
-						t6console.debug("Verifying signature", message.signature);
+						//t6console.debug("Verifying signature", message.signature);
 						jsonwebtoken.verify(String(message.signature), object.secret_key, (error, unsignedObject_id) => {
 							if(!error && unsignedObject_id && unsignedObject_id.object_id===message.object_id) {
 								//t6console.debug(object);
