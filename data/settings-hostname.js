@@ -17,6 +17,7 @@ mqttHost			= "localhost"; // Your Mqtt server host
 mqttPort			= 1883; // Your Mqtt server port
 mqttRoot			= "t6/"+os.hostname()+"/"; // Mqtt root, this is used to have a generic topic
 mqttInfo			= mqttRoot+"api"; // Mqtt topic for t6 api
+mqttObjectStatus	= "objects/status/"; // Mqtt topic for t6 objects statuses
 mqttSockets			= mqttRoot+"sockets"; // Mqtt topic for t6 sockets infos
 
 /* Session settings */
