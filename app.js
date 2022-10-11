@@ -550,21 +550,21 @@ wss.on("connection", (ws, req) => {
 				case "subscribe":
 					metadata = wsClients.get(ws);
 					(metadata.channels).push(message.channel);
-					ws.send(JSON.stringify({"channels": metadata.channels}));
+					ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 					wsClients.set(ws, metadata);
 					break;
 				case "unsubscribe":
 					metadata = wsClients.get(ws);
 					(metadata.channels) = (metadata.channels).filter((chan) => chan !== message.channel);
-					ws.send(JSON.stringify({"channels": metadata.channels}));
+					ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 					wsClients.set(ws, metadata);
 					break;
 				case "getSubscription":
 					metadata = wsClients.get(ws);
 					if(typeof metadata.channels!=="undefined") {
-						ws.send(JSON.stringify({"channels": metadata.channels}));
+						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 					} else {
-						ws.send(JSON.stringify({"channels": undefined}));
+						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": undefined}));
 					}
 					break;
 				case "unicast":
