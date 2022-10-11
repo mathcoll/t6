@@ -524,7 +524,7 @@ global.wss = new WebSocketServer({
 });
 wss.on("connection", (ws, req) => {
 	let id = uuid.v4();
-	wsClients.set(ws, { id: id, user_id: req.user_id, webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} });
+	wsClients.set(ws, { id: id, user_id: req.user_id, "channels": [], webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} });
 	t6console.debug(`Welcoming socket_id: ${id}`);
 	ws.send(`Welcome socket_id: ${id}`);
 	ws.send(JSON.stringify({"arduinoCommand": "claimRequest", "socket_id": id, "pin": "", "value": ""})); // Arduino require pin and value
@@ -547,6 +547,26 @@ wss.on("connection", (ws, req) => {
 		if (typeof message === "object") {
 			t6console.debug(`Received command "${message.command}" from socket_id: ${metadata.id}`);
 			switch(message.command) {
+				case "subscribe":
+					metadata = wsClients.get(ws);
+					(metadata.channels).push(message.channel);
+					ws.send(JSON.stringify({"channels": metadata.channels}));
+					wsClients.set(ws, metadata);
+					break;
+				case "unsubscribe":
+					metadata = wsClients.get(ws);
+					(metadata.channels) = (metadata.channels).filter((chan) => chan !== message.channel);
+					ws.send(JSON.stringify({"channels": metadata.channels}));
+					wsClients.set(ws, metadata);
+					break;
+				case "getSubscription":
+					metadata = wsClients.get(ws);
+					if(typeof metadata.channels!=="undefined") {
+						ws.send(JSON.stringify({"channels": metadata.channels}));
+					} else {
+						ws.send(JSON.stringify({"channels": undefined}));
+					}
+					break;
 				case "unicast":
 					if(typeof message.object_id!=="undefined" && message.object_id!==null) {
 						wss.clients.forEach(function each(client) {
@@ -605,7 +625,11 @@ wss.on("connection", (ws, req) => {
 					break;
 				case "getUA":
 					metadata = wsClients.get(ws);
-					ws.send(metadata.webSocket.ua);
+					if(typeof metadata.webSocket.ua!=="undefined") {
+						ws.send(metadata.webSocket.ua);
+					} else {
+						ws.send("undefined");
+					}
 					break;
 				case "getKey":
 					metadata = wsClients.get(ws);
