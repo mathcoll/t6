@@ -817,13 +817,13 @@ mqttClient.on("connect", function () {
 	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
 	t6console.log("===========================================================");
 	t6console.log(`Connected to Mqtt broker on ${mqttHost}:${mqttPort}`);
-	t6console.log(`-Mqtt root: ${mqttRoot}`);
-	t6console.log(`-Mqtt infos: ${mqttInfo}`);
-	t6console.log(`-Mqtt objects statuses: ${mqttObjectStatus}`);
-	t6console.log(`-Mqtt sockets: ${mqttSockets}`);
+	t6console.log(`-Mqtt root: "${mqttRoot}"`);
+	t6console.log(`-Mqtt infos: "${mqttInfo}"`);
+	t6console.log(`-Mqtt objects statuses: "${mqttObjectStatus}"`);
+	t6console.log(`-Mqtt sockets: "${mqttSockets}"`);
 	mqttClient.subscribe(mqttObjectStatus+"#", function (err) {
 		if (!err) {
-			t6console.log(`Subscribed to Mqtt topic "${mqttObjectStatus}s/#"`);
+			t6console.log(`Subscribed to Mqtt topic "${mqttObjectStatus}#"`);
 		}
 	});
 	t6console.log("===========================================================");
