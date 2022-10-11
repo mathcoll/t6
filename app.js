@@ -591,6 +591,17 @@ wss.on("connection", (ws, req) => {
 					});
 					ws.send("OK");
 					break;
+				case "multicast":
+					// Broadcast only to the same user as the claimed object
+					wss.clients.forEach(function each(client) {
+						let current = wsClients.get(client);
+						if(current.user_id === req.user_id && (current.channels).indexOf(message.channel) > -1 ) {
+							client.send(JSON.stringify(message.payload));
+							ws.send(`Multicasted (filtered on user_id ${req.user_id}) and channel "${message.channel}" to object_id: ${current.object_id}`);
+						}
+					});
+					ws.send("OK");
+					break;
 				case "claimObject":
 					let query = { "$and": [ { "user_id" : req.user_id }, { "id" : message.object_id }, ] };
 					//t6console.debug("Searching for Objects: ", query["$and"][0]);
