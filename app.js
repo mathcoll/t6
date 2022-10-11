@@ -592,7 +592,7 @@ wss.on("connection", (ws, req) => {
 					ws.send("OK");
 					break;
 				case "multicast":
-					// Broadcast only to the same user as the claimed object
+					// Multicasted only to the same user as the claimed object and to the Objacts that subscribed to the specified channel
 					wss.clients.forEach(function each(client) {
 						let current = wsClients.get(client);
 						if(current.user_id === req.user_id && (current.channels).indexOf(message.channel) > -1 ) {
