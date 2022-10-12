@@ -549,7 +549,7 @@ wss.on("connection", (ws, req) => {
 			switch(message.command) {
 				case "subscribe":
 					metadata = wsClients.get(ws);
-					(metadata.channels).push(message.channel);
+					(metadata.channels).indexOf(message.channel) === -1?(metadata.channels).push(message.channel):t6console.log("Already subscribed to channel");
 					ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 					wsClients.set(ws, metadata);
 					break;
