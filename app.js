@@ -48,6 +48,7 @@ global.t6jobs			= require("./t6jobs");
 global.t6imagesprocessing = require("./t6imagesprocessing");
 global.monitor			= require("./t6monitor");
 
+global.url				= require("node:url");
 global.express			= require("express");
 global.timeout			= require("connect-timeout");
 global.morgan			= require("morgan");
@@ -488,16 +489,29 @@ global.wss = new WebSocketServer({
 	},
 	verifyClient: (info, callback) => {
 		t6console.debug(`verifyClient headers`, info.req.headers);
+		t6console.debug(`verifyClient url`, info.req.url);
 		let authHeader;
+		let basic_token;
+		let credentials;
 		try {
 			authHeader = info.req.headers.authorization;
+			basic_token = url.parse(info.req.url, true).query.BASIC_TOKEN;
+			t6console.debug(`authHeader: ${authHeader}`);
+			t6console.debug(`basic_token: ${basic_token}`);
 		} catch (error) {
 			info.req.user_id = null;
+			t6console.debug(`verifyClient error`, error);
 			callback(false, 203 ,"Non-Authoritative Information");
 			return;
 		}
 		if (typeof authHeader!=="undefined" && authHeader?.split(" ")) {
-			let credentials = atob(authHeader.split(" ")[1])?.split(":");
+			credentials = atob(authHeader.split(" ")[1])?.split(":");
+		} else if(typeof basic_token!=="undefined") {
+			credentials = basic_token?.split(":");
+		} else {
+			callback(false, 401 ,"Non-Authoritative Information");
+		}
+		if ( typeof credentials!=="undefined" ) {
 			let key = credentials[0];
 			let secret = credentials[1];
 			let queryT = {
@@ -532,8 +546,8 @@ wss.on("connection", (ws, req) => {
 	let id = uuid.v4();
 	wsClients.set(ws, { id: id, user_id: req.user_id, "channels": [], webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} });
 	t6console.debug(`Welcoming socket_id: ${id}`);
-	ws.send(`Welcome socket_id: ${id}`);
-	ws.send(JSON.stringify({"arduinoCommand": "claimRequest", "socket_id": id, "pin": "", "value": ""})); // Arduino require pin and value
+	ws.send(JSON.stringify({"arduinoCommand": "info", "message": `Welcome socket_id: ${id}`}));
+	ws.send(JSON.stringify({"arduinoCommand": "claimRequest", "socket_id": id}));
 	t6events.addStat("t6App", "Socket welcoming", req.user_id, id, {"status": 200});
 	t6mqtt.publish(null, mqttSockets+"/"+id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket welcome`, "environment": process.env.NODE_ENV}), false);
 
@@ -613,6 +627,18 @@ wss.on("connection", (ws, req) => {
 					});
 					ws.send("OK");
 					break;
+				case "claimUI":
+					if( message.ui_id ) {
+						t6console.debug("No signature check - Claim auto-accepted");
+						metadata = wsClients.get(ws);
+						metadata.ui_id = message.ui_id;
+						wsClients.set(ws, metadata);
+						ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "ui_id": metadata.ui_id, "socket_id": metadata.id}));
+						t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted ui_id ${metadata.ui_id}`, "environment": process.env.NODE_ENV}), false);
+						t6ConnectedObjects.push(metadata.ui_id);
+						t6console.debug(`Object/UI Status Changed: ${metadata.ui_id} is visible`);
+					}
+					break;
 				case "claimObject":
 					let query = { "$and": [ { "user_id" : req.user_id }, { "id" : message.object_id }, ] };
 					//t6console.debug("Searching for Objects: ", query["$and"][0]);
@@ -628,7 +654,7 @@ wss.on("connection", (ws, req) => {
 								metadata = wsClients.get(ws);
 								metadata.object_id = message.object_id;
 								wsClients.set(ws, metadata);
-								ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id, "pin": "", "value": ""})); // Arduino require pin and value
+								ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id}));
 								t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
 								t6ConnectedObjects.push(metadata.object_id);
 								t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
@@ -637,13 +663,13 @@ wss.on("connection", (ws, req) => {
 								t6console.debug("unsignedObject_id", unsignedObject_id.object_id);
 								t6console.debug("message.object_id", message.object_id);
 								t6console.debug("Signature is invalid - Claim rejected");
-								ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "Not Authorized, invalid signature", "object_id": null, "socket_id": metadata.id, "pin": "", "value": ""})); // Arduino require pin and value
+								ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "Not Authorized, invalid signature", "object_id": null, "socket_id": metadata.id}));
 								t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim rejected object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
 							}
 						});
 					} else {
 						t6console.debug("No Secret Key available on Object or Object is not yours or Object does not have a valid signature key.");
-						ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "Not Authorized, invalid signature", "object_id": null, "socket_id": metadata.id, "pin": "", "value": ""})); // Arduino require pin and value
+						ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "Not Authorized, invalid signature", "object_id": null, "socket_id": metadata.id}));
 						t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim rejected object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
 					}
 					break;
