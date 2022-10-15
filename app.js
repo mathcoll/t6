@@ -533,6 +533,11 @@ wss.on("connection", (ws, req) => {
 
 	ws.on("close", () => {
 		let metadata = wsClients.get(ws);
+		let i = t6ConnectedObjects.indexOf(metadata.object_id);
+		if (i > -1) {
+			t6ConnectedObjects.splice(i, 1);
+			t6console.debug(`Object Status Changed: ${metadata.object_id} is hidden`);
+		}
 		t6console.debug(`Closing ${metadata.id}`);
 		wsClients.delete(ws);
 		t6events.addStat("t6App", "Socket closing", req.user_id, metadata.id, {"status": 200});
@@ -619,6 +624,8 @@ wss.on("connection", (ws, req) => {
 								wsClients.set(ws, metadata);
 								ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id, "pin": "", "value": ""})); // Arduino require pin and value
 								t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
+								t6ConnectedObjects.push(metadata.object_id);
+								t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
 							} else {
 								t6console.debug("Error", error);
 								t6console.debug("unsignedObject_id", unsignedObject_id.object_id);
