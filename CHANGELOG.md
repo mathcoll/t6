@@ -17,11 +17,24 @@ Types of changes
 ------------
 
 ## 2022
+### Milestone 21 - 2022-10
+**Added**
+  - [x] webSocket claim object using a signed payload
+  - [x] webSocket client can suscribe and unsubscribe to custom channels
+  - [x] webSocket multicast command using channel subscription on sockets
+  - [x] webSocket allows `audioOutput` as command to interface with Arduino TTS
+  - [x] webSocket claimed Objects are identified as "connected" in t6 UI the same way they are from the mqtt dedicated topic
+  
+**Changed**
+  - [x] Mqtt topic settings customizable from environment file
+  - [x] webSocket welcoming message is returning a claimRequest to the client
+  - [x] webSocket on t6 Rule must be a json payload instead of a String - they still can contains `{value}` to substitute current datapoint value
+
 ### Milestone 20 - 2022-09
 **Fixed**
   - [x] Fixed conflicting names on variables
   - [x] Fixed bug on getObjectKey
-  
+
 **Added**
   - [x] Add webSocket server on t6
   - [x] Add webSocket trigger to Rule Engine
@@ -40,14 +53,16 @@ Types of changes
 **Fixed**
   - [x] Fixed monthly Report notification batch reccuring
   - [x] Fixed Flow display UI using the new Api endpoint for exploration/line
-  
+
 **Changed**
   - [x] Remove Chartjs library and use svg output instead
   - [x] Updated Open Layers library
   - [x] Updated Leaflet library
   - [x] Updated Material Design Lite library
   - [x] Updated Moment library
-  - [x] Updated node dependncies for @vladmandic/face-api apidoc canvas firebase-admin follow-redirects influx mqtt npm suncalc twilio
+
+**Security**
+  - [x] Updated node dependencies for @vladmandic/face-api apidoc canvas firebase-admin follow-redirects influx mqtt npm suncalc twilio
   
 ### Milestone 17 - 2022-01
 **Added**
@@ -63,8 +78,6 @@ Types of changes
 
 ## 2021
 ### Milestone 16 - 2021-11
-**Fixed**
-
 **Changed**
   - [x] autogen.events contains importants application logs
   - [x] quota4w.requests contains users api calls for statistical purpose ; wirth a monthly retention. This timeseries is used for the monthly report
