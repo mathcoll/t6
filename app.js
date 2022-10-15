@@ -707,6 +707,7 @@ wss.on("connection", (ws, req) => {
 					ws.send(`- broadcast: to cast a message to any connected Object from your user account.`);
 					ws.send(`- unicast: to cast a message to a specif Object you own.`);
 					ws.send(`- claimObject: to Claim the id of a specific Object.`);
+					ws.send(`- claimUi: to Claim the id of current UI.`);
 					ws.send(`- getObject: to get the id of an Object claimed to server.`);
 					ws.send(`- getUser: to get the user_id of an Object claimed to server.`);
 					ws.send(`- getUA: to get the user-agent of an Object.`);
