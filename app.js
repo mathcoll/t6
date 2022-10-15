@@ -509,10 +509,16 @@ global.wss = new WebSocketServer({
 			let u = access_tokens.findOne(queryT);
 			if ( u && typeof u.user_id !== "undefined" ) {
 				let user = users.findOne({id: u.user_id});
-				t6console.debug(`verifyClient headers OK`, u.user_id);
-				info.req.user_id = u.user_id;
-				callback(true, 200, "OK, ", u.user_id);
-				t6events.addAudit("t6App", "Socket_authenticate key:secret", u.user_id, info.req.headers["sec-websocket-key"], {"status": 200});
+				if (user.id) {
+					t6console.debug(`verifyClient headers OK`, u.user_id);
+					info.req.user_id = u.user_id;
+					callback(true, 200, "OK");
+					t6events.addAudit("t6App", "Socket_authenticate key:secret", u.user_id, info.req.headers["sec-websocket-key"], {"status": 200});
+				} else {
+					info.req.user_id = null;
+					callback(false, 401, "Not Authorized");
+					t6events.addAudit("t6App", "Socket_authenticate key:secret", "anonymous", info.req.headers["sec-websocket-key"], {"status": 401, "error_id": 444403});
+				}
 			} else {
 				t6console.debug(`verifyClient headers NOK1`);
 				info.req.user_id = null;
@@ -597,7 +603,7 @@ wss.on("connection", (ws, req) => {
 					ws.send("OK");
 					break;
 				case "multicast":
-					// Multicasted only to the same user as the claimed object and to the Objacts that subscribed to the specified channel
+					// Multicasted only to the same user as the claimed object and to the Objects that subscribed to the specified channel
 					wss.clients.forEach(function each(client) {
 						let current = wsClients.get(client);
 						if(current.user_id === req.user_id && (current.channels).indexOf(message.channel) > -1 ) {
