@@ -4,10 +4,19 @@ let applicationServerKey = "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1G
 
 class MaterialLightParser {
 	createButton(b) {
-		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>`;
+		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>`;
 	}
 	createImage(i) {
 		return `<img src="${i.src}" alt="${i.alt}" />`;
+	}
+	createHeaderLink(l) {
+		return `<a class="mdl-navigation__link  ${typeof l.class!=="undefined"?l.class:""}" href="${l.link}">${l.name}</a>`;
+	}
+	createTabContent(tc) {
+		return `<a class="mdl-tabs__tab ${tc.class}" href="#${tc.id}">${tc.name}</a>`;
+	}
+	createPanelContent(pc) {
+		return `<section class="mdl-tabs__panel mdl-grid mdl-cell--${typeof pc.width!=="undefined"?pc.width:"12"}-col ${typeof pc.class!=="undefined"?pc.class:""}" id="${pc.id}">${this.parse(pc.body)}</section>`;
 	}
 	createCard(c) {
 		let out = `
@@ -25,20 +34,21 @@ class MaterialLightParser {
 		out += "</div></div>";
 		return out;
 	}
-	createList(i, l) {
-		let out = i===0?`<ul class="mdl-list">${this.parse(l)}`:"";
-		out += `<li class="mdl-list__item mdl-cell--${l.width}-col"><span class="mdl-list__item-primary-content">`;
+	createList(l) {
+		let out = "";
+		out += `<li class="mdl-list__item mdl-cell--${l.width}-col">`;
+		out += `<span class="mdl-list__item-primary-content">`;
 		if (l.icon) {
 			out += `<i class="material-icons mdl-list__item-icon">${l.icon}</i>`;
 		}
-		if (typeof (l.item)==="object") {
-			out += this.parse(l.item);
+		console.log(l);
+		if (typeof (l)==="object") {
+			out += this.parse(l);
 			out += "</span></li>";
 		} else {
 			out += l.item;
 			out += "</span></li>";
 		}
-		out += i===0?"</ul>":"";
 		return out;
 	}
 	createText(t) {
@@ -48,9 +58,7 @@ class MaterialLightParser {
 		return `<span class="mdl-badge" data-badge="${b.data}">${b.text}</span>`;
 	}
 	createRow(r) {
-		return `<div class="mdl-grid mdl-cell--${r.width}-col" id="row_${r.row_id}">
-		${this.parse(r)}
-		</div>`;
+		return `<div class="mdl-grid mdl-cell--${r.width}-col" id="row_${r.row_id}">${this.parse(r)}</div>`;
 	}
 	createColumn(c) {
 		return `<div class="mdl-grid mdl-cell--${c.width}-col" id="col_${c.col_id}">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
@@ -85,6 +93,86 @@ class MaterialLightParser {
 			<button class="mdl-snackbar__action" type="button"></button>
 		</div>`;
 	}
+	createDrawer(d) {
+		return `<div class="mdl-layout__drawer" aria-hidden="true">
+			<span class="mdl-layout-title">${d.title}</span>
+			<nav class="mdl-navigation">
+				  <a class="mdl-navigation__link" href="">Link</a>
+				  <a class="mdl-navigation__link" href="">Link</a>
+				  <a class="mdl-navigation__link" href="">Link</a>
+				  <a class="mdl-navigation__link" href="">Link</a>
+			</nav>
+		</div>`;
+	}
+	createHeader(h) {
+		let out = "";
+		out += `<header class="mdl-layout__header mdl-layout__header --waterfall">`;
+			//out += `<div aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>`;
+			out += `<div class="mdl-layout__header-row">
+				<span class="mdl-layout-title-----">${h.drawer.title}</span>
+				<div class="mdl-layout-spacer"></div>
+			
+			<nav class="mdl-navigation">`;
+			for (const link of h.links) {
+				out += this.createHeaderLink(link);
+			}
+		out += `</nav>`;
+		out += `</div></header>`;
+		out += this.createDrawer(h.drawer);
+		return out;
+	}
+	createFooter(f) {
+		return `<footer class="mdl-mega-footer">
+  <div class="mdl-mega-footer__middle-section">
+    <div class="mdl-mega-footer__drop-down-section">
+      <input class="mdl-mega-footer__heading-checkbox" type="checkbox" checked>
+      <h1 class="mdl-mega-footer__heading">Features</h1>
+      <ul class="mdl-mega-footer__link-list">
+        <li><a href="#">About</a></li>
+        <li><a href="#">Terms</a></li>
+        <li><a href="#">Partners</a></li>
+        <li><a href="#">Updates</a></li>
+      </ul>
+    </div>
+    <div class="mdl-mega-footer__drop-down-section">
+      <input class="mdl-mega-footer__heading-checkbox" type="checkbox" checked>
+      <h1 class="mdl-mega-footer__heading">Details</h1>
+      <ul class="mdl-mega-footer__link-list">
+        <li><a href="#">Specs</a></li>
+        <li><a href="#">Tools</a></li>
+        <li><a href="#">Resources</a></li>
+      </ul>
+    </div>
+    <div class="mdl-mega-footer__drop-down-section">
+      <input class="mdl-mega-footer__heading-checkbox" type="checkbox" checked>
+      <h1 class="mdl-mega-footer__heading">Technology</h1>
+      <ul class="mdl-mega-footer__link-list">
+        <li><a href="#">How it works</a></li>
+        <li><a href="#">Patterns</a></li>
+        <li><a href="#">Usage</a></li>
+        <li><a href="#">Products</a></li>
+        <li><a href="#">Contracts</a></li>
+      </ul>
+    </div>
+    <div class="mdl-mega-footer__drop-down-section">
+      <input class="mdl-mega-footer__heading-checkbox" type="checkbox" checked>
+      <h1 class="mdl-mega-footer__heading">FAQ</h1>
+      <ul class="mdl-mega-footer__link-list">
+        <li><a href="#">Questions</a></li>
+        <li><a href="#">Answers</a></li>
+        <li><a href="#">Contact us</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="mdl-mega-footer__bottom-section">
+    <div class="mdl-logo">Title</div>
+    <ul class="mdl-mega-footer__link-list">
+      <li><a href="#">Help</a></li>
+      <li><a href="#">Privacy & Terms</a></li>
+    </ul>
+  </div>
+</footer>`;
+	}
 	parse(s) {
 		let S = "";
 		if (typeof s!=="undefined") {
@@ -93,10 +181,30 @@ class MaterialLightParser {
 			if (s.title) {
 				document.title = s.title;
 			}
+			if (s.header) {
+				S += this.createHeader(s.header);
+			}
+			if (s.drawer) {
+				S += this.createDrawer(s.drawer);
+			}
 			if (s.rows) {
+				S += `<main class="mdl-layout__content-----">`;
 				for (const row of s.rows) {
 					S += this.createRow(row);
 				}
+				S += `</main>`;
+			}
+			if (s.tab_contents) {
+				S += `<main class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">`;
+					S += `<nav class="mdl-tabs__tab-bar">`;
+					for (const tab of s.tab_contents) {
+						S += this.createTabContent(tab);
+					}
+					S += `</nav>`;
+				for (const panel of s.tab_contents) {
+					S += this.createPanelContent(panel);
+				}
+				S += `</main>`;
 			}
 			if (s.columns) {
 				for (const column of s.columns) {
@@ -109,9 +217,14 @@ class MaterialLightParser {
 				}
 			}
 			if (s.lists) {
-				for (let i in s.lists) {
-					S += this.createList(i, s.lists[i]);
+				S += `<ul class="mdl-list">`;
+				for (const list in s.lists) {
+					S += this.createList(s.lists[list]);
 				}
+				S += `</ul>`;
+			}
+			if (s.footer) {
+				S += this.createFooter(s.footer);
 			}
 
 			/* Can have multiple */
@@ -209,7 +322,11 @@ req.onreadystatechange = function() {
 String.prototype.format = function() {
 	return [...arguments].reduce((p,c) => p.replace(/%s/,c), this);
 };
+
 let actionate = () => {
+	if(typeof componentHandler!=="undefined") {
+		componentHandler.upgradeDom();
+	}
 	let buttons = document.querySelectorAll("button");
 	for (var i in buttons) {
 		if ( (buttons[i]).childElementCount > -1 ) {
