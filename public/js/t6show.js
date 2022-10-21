@@ -4,23 +4,47 @@ let applicationServerKey = "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1G
 
 class MaterialLightParser {
 	createButton(b) {
-		return `<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>`;
+		let uuid = typeof b.id!=="undefined"?b.id:b.trigger;
+		return `
+		<label for="${uuid}" class="mdl-list__item mdl-js-ripple-effect">
+			<div class="mdl-button__label">
+				<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" id="${uuid}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>
+			</div>
+		</label>`;
 	}
 	createImage(i) {
 		return `<img src="${i.src}" alt="${i.alt}" />`;
 	}
 	createHeaderLink(l) {
-		return `<a class="mdl-navigation__link  ${typeof l.class!=="undefined"?l.class:""}" href="${l.link}">${l.name}</a>`;
+		let out = "";
+		if(typeof l.spacer!=="undefined") {
+			out += `<div class="mdl-menu__item">&nbsp;</div>`;
+		} else {
+			out += `<a class="mdl-navigation__link  ${typeof l.class!=="undefined"?l.class:""}" href="${l.link}">`;
+			out += `<span class="mdl-list__item-primary-content">`;
+			if (l.icon) {
+				out += `<i class="material-icons mdl-list__item-icon">${l.icon}</i>`;
+			}
+			out += `${l.name}</span></a>`;
+		}
+		return out;
 	}
 	createTabContent(tc) {
-		return `<a class="mdl-tabs__tab ${tc.class}" href="#${tc.id}">${tc.name}</a>`;
+		let out = "";
+		out += `<a class="mdl-tabs__tab ${tc.class}" href="#${tc.id}">`;
+		if (tc.icon) {
+			out += `<i class="material-icons mdl-list__item-icon">${tc.icon}</i>`;
+		}
+		out += tc.name;
+		out += `</a>`;
+		return out;
 	}
 	createPanelContent(pc) {
 		return `<section class="mdl-tabs__panel mdl-grid mdl-cell--${typeof pc.width!=="undefined"?pc.width:"12"}-col ${typeof pc.class!=="undefined"?pc.class:""}" id="${pc.id}">${this.parse(pc.body)}</section>`;
 	}
 	createCard(c) {
 		let out = `
-		<div class="mdl-grid mdl-cell--${c.width}-col">
+		<div class="mdl-grid mdl-cell--${typeof c.width!=="undefined"?c.width:"12"}-col">
 			<div class="mdl-card mdl-shadow--2dp">
 				<div class="mdl-card__title">
 					<h3 class="mdl-card__title-text">${c.title}</h3>
@@ -29,22 +53,25 @@ class MaterialLightParser {
 			out += `<div class="mdl-list__item--three-line small-padding mdl-card--expand">
 						<span class="mdl-list__item-sub-title">${this.parse(c.body)}</span>
 					</div>`;
-		} 
-		out += typeof c.actions!=="undefined"?`<div class="mdl-card__actions mdl-card--border">${this.parse(c.actions)}</div>`:"";
+		}
+		out += (typeof c.actions!=="undefined" && Object.keys(c.actions).length!==0)?`<div class="mdl-card__actions mdl-card--border">${this.parse(c.actions)}</div>`:"";
 		out += "</div></div>";
 		return out;
 	}
 	createList(l) {
 		let out = "";
-		out += `<li class="mdl-list__item mdl-cell--${l.width}-col">`;
+		out += `<li class="mdl-list__item mdl-cell--${typeof l.width!=="undefined"?l.width:"12"}-col">`;
 		out += `<span class="mdl-list__item-primary-content">`;
 		if (l.icon) {
 			out += `<i class="material-icons mdl-list__item-icon">${l.icon}</i>`;
 		}
-		console.log(l);
 		if (typeof (l)==="object") {
 			out += this.parse(l);
-			out += "</span></li>";
+			out += "</span>";
+			if (l.label) {
+				out += `<span id="${typeof l.label_id!=="undefined"?l.label_id:""}">${l.label}</span>`;
+			}
+			out += "</li>";
 		} else {
 			out += l.item;
 			out += "</span></li>";
@@ -52,16 +79,22 @@ class MaterialLightParser {
 		return out;
 	}
 	createText(t) {
-		return `<div class="mdl-textfield mdl-js-textfield mdl-grid mdl-cell--${t.width}-col ${t.class}" id="${t.id}">${t.text}</div>`;
+		return `<div class="mdl-textfield mdl-js-textfield mdl-grid mdl-cell--${typeof t.width!=="undefined"?t.width:"12"}-col ${t.class}" id="${t.id}">${t.text}</div>`;
 	}
 	createBadge(b) {
 		return `<span class="mdl-badge" data-badge="${b.data}">${b.text}</span>`;
 	}
 	createRow(r) {
-		return `<div class="mdl-grid mdl-cell--${r.width}-col" id="row_${r.row_id}">${this.parse(r)}</div>`;
+		return `<div class="mdl-grid mdl-cell--${typeof r.width!=="undefined"?r.width:"12"}-col" id="row_${r.row_id}">${this.parse(r)}</div>`;
 	}
 	createColumn(c) {
-		return `<div class="mdl-grid mdl-cell--${c.width}-col" id="col_${c.col_id}">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
+		return `<div class="mdl-grid mdl-cell--${typeof c.width!=="undefined"?c.width:"12"}-col" id="col_${c.col_id}">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
+	}
+	createInput(i) {
+		return `<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+			<input class="mdl-textfield__input" type="text" id="sample3">
+			<label class="mdl-textfield__label" for="sample3">Text...</label>
+		</div>`;
 	}
 	createSlider(s) {
 		return `
@@ -75,7 +108,7 @@ class MaterialLightParser {
 	createSwitch(s) {
 		let value = s.defaultState==="checked"?s.valueChecked:s.valueUnchecked;
 		return `
-		<label for="${s.id}" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" data-action="${s.action}" data-valuechecked="${s.valueChecked}" data-valueunchecked="${s.valueUnchecked}">
+		<label for="${s.id}" class="mdl-list__item mdl-switch mdl-js-switch mdl-js-ripple-effect" data-action="${s.action}" data-valuechecked="${s.valueChecked}" data-valueunchecked="${s.valueUnchecked}">
 			<div class="mdl-switch__label">
 				${s.label}
 				<span class="mode"></span>
@@ -94,22 +127,24 @@ class MaterialLightParser {
 		</div>`;
 	}
 	createDrawer(d) {
-		return `<div class="mdl-layout__drawer" aria-hidden="true">
+		let out = "";
+		out += `<div class="mdl-layout__drawer" aria-hidden="true">
 			<span class="mdl-layout-title">${d.title}</span>
-			<nav class="mdl-navigation">
-				  <a class="mdl-navigation__link" href="">Link</a>
-				  <a class="mdl-navigation__link" href="">Link</a>
-				  <a class="mdl-navigation__link" href="">Link</a>
-				  <a class="mdl-navigation__link" href="">Link</a>
-			</nav>
-		</div>`;
+			<nav class="mdl-navigation mdl-list__item">`;
+			for (const link of d.links) {
+				out += this.createHeaderLink(link);
+			}
+		out += typeof d.text!=="undefined"?this.createText(d.text):"";
+		out += `<div class="mdl-menu__item">&nbsp;</div>`;
+		out += "</nav></div>";
+		return out;
 	}
 	createHeader(h) {
 		let out = "";
-		out += `<header class="mdl-layout__header mdl-layout__header --waterfall">`;
+		out += `<header class="mdl-layout__header ${typeof h.class!=="undefined"?h.class:"mdl-layout__header--waterfall"}">`;
 			//out += `<div aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>`;
 			out += `<div class="mdl-layout__header-row">
-				<span class="mdl-layout-title-----">${h.drawer.title}</span>
+				<span class="">${h.drawer.title}</span>
 				<div class="mdl-layout-spacer"></div>
 			
 			<nav class="mdl-navigation">`;
@@ -216,6 +251,11 @@ class MaterialLightParser {
 					S += this.createCard(card);
 				}
 			}
+			if (s.inputs) {
+				for (const input of s.inputs) {
+					S += this.createInput(input);
+				}
+			}
 			if (s.lists) {
 				S += `<ul class="mdl-list">`;
 				for (const list in s.lists) {
@@ -275,6 +315,9 @@ class MaterialLightParser {
 			if (s.slider) {
 				S += this.createSlider(s.slider);
 			}
+			if (s.input) {
+				S += this.createInput(s.input);
+			}
 			if (s.switche) {
 				S += this.createSwitch(s.switche);
 			}
@@ -294,9 +337,9 @@ class MaterialLightParser {
 		document.querySelector("#"+id).textContent = value;
 	}
 }
+
 let ml = new MaterialLightParser();
 let req = new XMLHttpRequest();
-
 req.onreadystatechange = function() {
 	if (this.readyState == 4 && (this.status == 200 || this.status == 201)) {
 		let json = JSON.parse(req.responseText);
@@ -321,6 +364,18 @@ req.onreadystatechange = function() {
 };
 String.prototype.format = function() {
 	return [...arguments].reduce((p,c) => p.replace(/%s/,c), this);
+};
+
+let uuid = function() {
+	var uuid = "", i, random;
+	for (i = 0; i < 32; i++) {
+		random = Math.random() * 16 | 0;
+		if (i == 8 || i == 12 || i == 16 || i == 20) {
+			uuid += "-";
+		}
+		uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+	}
+	return uuid;
 };
 
 let actionate = () => {
@@ -401,17 +456,29 @@ let actionate = () => {
 let materializeLight = (inputJson) => {
 	return ml.parse(inputJson) + ml.createSnack();
 };
-let uuid = function() {
-	var uuid = "", i, random;
-	for (i = 0; i < 32; i++) {
-		random = Math.random() * 16 | 0;
-		if (i == 8 || i == 12 || i == 16 || i == 20) {
-			uuid += "-";
-		}
-		uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
-	}
-	return uuid;
-};
+document.onreadystatechange = function () {
+	document.getElementById("app").innerHTML = materializeLight(ui);
+	actionate();
+	fetch("/getValues?pin=0,1,2,3,4,5,6,7,8,9", {mode: "no-cors"})
+		.then((res) => res.json())
+		.then((values) => {
+			if(typeof values.pins!=="undefined" && values.pins.length>-1) {
+				(values.pins).map(function(pin, index) {
+					if(document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement && document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch) {
+						if(pin[Object.keys(pin)].value === "1") {
+							document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
+						} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
+							document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
+						}
+					}
+					document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
+					document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
+					document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
+				});
+			}
+		});
+}
+
 let registerServiceWorker = function() {
 	return navigator.serviceWorker.register("/sw.js", { scope: "/" })
 	.then(function(registration) {
@@ -482,5 +549,5 @@ let askPermission = function() {
 	});
 };
 
-//askPermission();
-//subscribeUserToPush();
+askPermission();
+subscribeUserToPush();
