@@ -84,6 +84,7 @@ echo 6. PWA Javascript T6-SHOW minify:
 	../public/js/t6show.js \
 	--compress \
 	--mangle \
+	-b max_line_len=200,beautify=false \
 	--stats \
 	-o ../public/js/t6show-min.js \
 	--source-map "filename=t6show-min.js.map,url=t6show-min.js.map,includeSources=true"
