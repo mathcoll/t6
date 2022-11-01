@@ -29,13 +29,13 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                       span(style="margin: auto 0;") &nbsp;Authorization for #{user.firstName} #{user.lastName}
                   .mdl-list__item--three-line.small-padding This application would like to have authorization to access your data.
                   span.mdl-list__item-sub-title
-                  if scope
-                    ul
-                      each val in scope.split(" ")
-                        if SCOPE_DESCRIPTIONS[val.trim()]
-                          li
-                            strong= val.trim()
-                            | &nbsp;-&nbsp;#{SCOPE_DESCRIPTIONS[val.trim()]}
+                    if scope
+                      ul
+                        each val in (scope || "").split(" ")
+                          if SCOPE_DESCRIPTIONS[val.trim()]
+                            li
+                              strong= val.trim()
+                              | &nbsp;-&nbsp;#{SCOPE_DESCRIPTIONS[val.trim()]}
                     input(type="hidden", name="state", value=state)
                     input(type="hidden", name="code", value=code)
                   .mdl-card__actions.mdl-card--border
@@ -43,11 +43,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
                     span.pull-right.mdl-card__menuaction
                       button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(type="button", onClick="document.location.href='../v1/user/destroy-session'")
                         i.material-icons update
-                        label Logout
+                        label Sign Out
                       span &nbsp;
-                      button.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(type="submit")
-                        i.material-icons update
-                        label Authorize
+                      input.mdl-button.mdl-button--colored.mdl-js-button.mdl-js-ripple-effect(type="submit", value="Authorize")
         else
           b Note: You should connect first
           hr

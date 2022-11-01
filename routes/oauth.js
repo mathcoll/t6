@@ -1,6 +1,11 @@
 "use strict";
 var express = require("express");
 var router = express.Router();
+let SCOPE_DESCRIPTIONS = {
+	"ifttt": "Event when Datapoint is posted to t6.",
+	"email": "User email.",
+	"ghome": "."
+};
 
 function getUuid() {
 	return uuid.v4();
@@ -63,9 +68,6 @@ router.get("/OAuth2/authorize", function (req, res) {
 	let scope = req.query.scope;
 	let state = req.query.state;
 	let application_name = req.query.application_name;
-	let SCOPE_DESCRIPTIONS = {
-		"ifttt": "Event when Datapoint is posted to t6.",
-	};
 	if ( client_id === ifttt.serviceClientId && req.session.user_id ) {
 		var queryU = { "id": req.session.user_id };
 		var user = users.findOne(queryU);
@@ -86,7 +88,7 @@ router.get("/OAuth2/authorize", function (req, res) {
 			payload.scope = "Application";
 			payload.sub = "/users/"+user.id;
 
-			var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("x") });
+			var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("x") });
 			var new_token = {
 				user_id:			user.id,
 				key:				code,
@@ -95,8 +97,8 @@ router.get("/OAuth2/authorize", function (req, res) {
 				// or maybe it should be the "code" above ????
 				expiration:			moment().add(24, "years").format("x"),
 			};
-			tokens.insert(new_token);
-			var tokens	= dbTokens.getCollection("tokens");
+			access_tokens.insert(new_token);
+			var tokens	= db_access_tokens.getCollection("accesstokens");
 			var expired = tokens.find(
 				{ "$and": [
 					{ "expiration" : { "$lt": moment().format("x") } },
@@ -105,9 +107,9 @@ router.get("/OAuth2/authorize", function (req, res) {
 			);
 			if ( expired ) {
 				tokens.remove(expired);
-				db.save();
+				db_access_tokens.save();
 			}
-			db.save();
+			db_access_tokens.save();
 			
 			res.render("authorization", {
 				response_type: response_type,
@@ -134,9 +136,6 @@ router.post("/OAuth2/authorize", function (req, res) {
 	let scope = req.query.scope;
 	let state = req.query.state;
 	let application_name = req.query.application_name;
-	let SCOPE_DESCRIPTIONS = {
-		"ifttt": "Event when Datapoint is posted to t6.",
-	};
 	if ( (req.body.Username && req.body.Password) && (!req.body.grant_type || req.body.grant_type === "password") ) {
 		var email = req.body.Username;
 		var password = req.body.Password;
@@ -162,7 +161,7 @@ router.post("/OAuth2/authorize", function (req, res) {
 				payload.scope = "Application";
 				payload.sub = "/users/"+user.id;
 
-				var token = jwt.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("x") });
+				var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: moment().add(24, "years").format("x") });
 				var new_token = {
 					user_id:			user.id,
 					key:				code,
@@ -171,8 +170,8 @@ router.post("/OAuth2/authorize", function (req, res) {
 					// or maybe it should be the "code" above ????
 					expiration:			moment().add(24, "years").format("x"),
 				};
-				tokens.insert(new_token);
-				var tokens	= dbTokens.getCollection("tokens");
+				access_tokens.insert(new_token);
+				var tokens	= db_access_tokens.getCollection("accesstokens");
 				var expired = tokens.find(
 					{ "$and": [
 						{ "expiration" : { "$lt": moment().format("x") } },
@@ -180,11 +179,10 @@ router.post("/OAuth2/authorize", function (req, res) {
 					]}
 				);
 				if ( expired ) {
-					tokens.remove(expired);
-					db.save();
+					access_tokens.remove(expired);
+					db_access_tokens.save();
 				}
-				db.save();
-				
+				db_access_tokens.save();
 				res.render("authorization", {
 					response_type: response_type,
 					redirect_uri: redirect_uri,
@@ -216,7 +214,7 @@ router.post("/OAuth2/token", function(req, res) {
 	var queryU = { "iftttCode": code };
 	var user = users.findOne(queryU);
 	if ( user && client_secret === ifttt.serviceSecret && client_id === ifttt.serviceClientId ) {
-		var tokens	= dbTokens.getCollection("tokens");
+		var tokens	= db_access_tokens.getCollection("accesstokens");
 		var queryT = { "$and": [
 			{ "user_id" : user.id },
 			{ "key": code },
@@ -234,7 +232,7 @@ router.post("/OAuth2/token", function(req, res) {
 	}
 });
 
-router.get("/v1/status", function (req, res) {
+router.get("/ifttt/v1/status", function (req, res) {
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
 	if ( ChannelKey === ServiceKey && ChannelKey === ifttt.serviceKey ) {
@@ -244,13 +242,13 @@ router.get("/v1/status", function (req, res) {
 	}
 });
 
-router.get("/v1/user/destroy-session", function (req, res) {
+router.get("/ifttt/v1/user/destroy-session", function (req, res) {
 	req.session.destroy(function(err) {
 		res.redirect(req.header("Referer") || "/");
 	});
 });
 
-router.get("/v1/user/info", function (req, res) {
+router.get("/ifttt/v1/user/info", function (req, res) {
 	let authorization = req.headers["authorization"];
 	let bearer;
 	if ( authorization ) {
@@ -275,7 +273,7 @@ router.get("/v1/user/info", function (req, res) {
 	}
 });
 
-router.post("/v1/test/setup", function (req, res) {
+router.post("/ifttt/v1/test/setup", function (req, res) {
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
 	if ( ChannelKey == ServiceKey && ChannelKey === ifttt.serviceKey ) {
@@ -285,7 +283,7 @@ router.post("/v1/test/setup", function (req, res) {
 	}
 });
 
-router.post("/v1/triggers/eventTrigger", function (req, res) {
+router.post("/ifttt/v1/triggers/eventTrigger", function (req, res) {
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
 	let authorization = req.headers["authorization"];
@@ -357,7 +355,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 	}
 });
 
-router.delete("/v1/triggers/eventTrigger/trigger_identity/:trigger_identity([0-9a-z\-]+)", function (req, res) {
+router.delete("/ifttt/v1/triggers/eventTrigger/trigger_identity/:trigger_identity([0-9a-z\-]+)", function (req, res) {
 	let authorization = req.headers["authorization"];
 	let bearer;
 	if ( authorization ) {
