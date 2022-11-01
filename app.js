@@ -488,8 +488,8 @@ global.wss = new WebSocketServer({
 		// should not be compressed if context takeover is disabled.
 	},
 	verifyClient: (info, callback) => {
-		t6console.debug(`verifyClient headers`, info.req.headers);
-		t6console.debug(`verifyClient url`, info.req.url);
+		t6console.debug("verifyClient headers", info.req.headers);
+		t6console.debug("verifyClient url", info.req.url);
 		let authHeader;
 		let basic_token;
 		let credentials;
@@ -500,7 +500,7 @@ global.wss = new WebSocketServer({
 			t6console.debug(`basic_token: ${basic_token}`);
 		} catch (error) {
 			info.req.user_id = null;
-			t6console.debug(`verifyClient error`, error);
+			t6console.debug("verifyClient error", error);
 			callback(false, 203 ,"Non-Authoritative Information");
 			return;
 		}
@@ -534,7 +534,7 @@ global.wss = new WebSocketServer({
 					t6events.addAudit("t6App", "Socket_authenticate key:secret", "anonymous", info.req.headers["sec-websocket-key"], {"status": 401, "error_id": 444403});
 				}
 			} else {
-				t6console.debug(`verifyClient headers NOK1`);
+				t6console.debug("verifyClient headers NOK1");
 				info.req.user_id = null;
 				callback(false, 401, "Not Authorized");
 				t6events.addAudit("t6App", "Socket_authenticate key:secret", "anonymous", info.req.headers["sec-websocket-key"], {"status": 401, "error_id": 444402});
@@ -549,7 +549,7 @@ wss.on("connection", (ws, req) => {
 	ws.send(JSON.stringify({"arduinoCommand": "info", "message": `Welcome socket_id: ${id}`}));
 	ws.send(JSON.stringify({"arduinoCommand": "claimRequest", "socket_id": id}));
 	t6events.addStat("t6App", "Socket welcoming", req.user_id, id, {"status": 200});
-	t6mqtt.publish(null, mqttSockets+"/"+id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket welcome`, "environment": process.env.NODE_ENV}), false);
+	t6mqtt.publish(null, `${mqttSockets}/${id}`, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Socket welcome", "environment": process.env.NODE_ENV}), false);
 
 	ws.on("close", () => {
 		let metadata = wsClients.get(ws);
@@ -566,7 +566,7 @@ wss.on("connection", (ws, req) => {
 	ws.on("message", (message) => {
 		let metadata = wsClients.get(ws);
 		t6events.addStat("t6App", "Socket messaging", req.user_id, metadata.id, {"status": 200});
-		t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket message`, "environment": process.env.NODE_ENV}), false);
+		t6mqtt.publish(null, `${mqttSockets}/${metadata.id}`, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Socket message", "environment": process.env.NODE_ENV}), false);
 		message = getJson( message.toString("utf-8") );
 
 		if (typeof message === "object") {
@@ -703,14 +703,14 @@ wss.on("connection", (ws, req) => {
 					break;
 				case "help":
 					ws.send(`Hello ${metadata.id}, welcome to t6 IoT sockets command interface.`);
-					ws.send(`Here are the commands :`);
-					ws.send(`- broadcast: to cast a message to any connected Object from your user account.`);
-					ws.send(`- unicast: to cast a message to a specif Object you own.`);
-					ws.send(`- claimObject: to Claim the id of a specific Object.`);
-					ws.send(`- claimUi: to Claim the id of current UI.`);
-					ws.send(`- getObject: to get the id of an Object claimed to server.`);
-					ws.send(`- getUser: to get the user_id of an Object claimed to server.`);
-					ws.send(`- getUA: to get the user-agent of an Object.`);
+					ws.send("Here are the commands :");
+					ws.send("- broadcast: to cast a message to any connected Object from your user account.");
+					ws.send("- unicast: to cast a message to a specif Object you own.");
+					ws.send("- claimObject: to Claim the id of a specific Object.");
+					ws.send("- claimUi: to Claim the id of current UI.");
+					ws.send("- getObject: to get the id of an Object claimed to server.");
+					ws.send("- getUser: to get the user_id of an Object claimed to server.");
+					ws.send("- getUA: to get the user-agent of an Object.");
 					break;
 				default:
 					break;
@@ -761,8 +761,8 @@ var CrossDomain = function(req, res, next) {
 	}
 };
 app.use(CrossDomain);
-app.use(express.json({limit: '50mb'}));
-app.use(express.urlencoded({extended: true, limit: '50mb'}));
+app.use(express.json({limit: "50mb"}));
+app.use(express.urlencoded({extended: true, limit: "50mb"}));
 app.enable("trust proxy");
 app.use(compression());
 app.use(morgan(logFormat, {stream: fs.createWriteStream(logAccessFile, {flags: "a"})}));
