@@ -930,7 +930,7 @@ router.get("/frequencyDistribution/?", expressJwt({ secret: jwtsettings.secret, 
 					t6console.debug("", data, data.data);
 					res.status(404).send({ err: "No data found", "id": 4058, "code": 404, "message": "Not found or not enougth data" });
 				}
-			}).catch(err => {
+			}).catch((err) => {
 				t6console.error("Loess", err, queryData, queryData.length);
 				res.status(500).send({ err: err, "id": 4060, "code": 500, "message": "Internal Error" });
 			});

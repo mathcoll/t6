@@ -170,9 +170,9 @@ router.get("/:story_id([0-9a-z\-]+)/insights", expressJwt({secret: jwtsettings.s
 					});
 
 					slayer()
-					.y(item => item.value)
+					.y((item) => item.value)
 					.fromArray(data)
-					.then(peaks => {
+					.then((peaks) => {
 						t6console.debug("PEAKS", peaks);
 						peaks.map(function(i) {
 							//t6console.debug("Adding Peak to insights", i.x, i.y);
