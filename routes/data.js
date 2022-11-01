@@ -708,7 +708,7 @@ let saveToCloud = function(resolve, reject) {
 		payload.datapoint_logs.saveToCloud = false;
 		chainOrder.push("saveToCloud");
 		resolve({payload, fields, current_flow, chainOrder});
-	};
+	}
 };
 async function processAllMeasures(payloads, options) {
 	//return new Promise((resolve, reject) => {

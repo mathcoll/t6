@@ -38,16 +38,16 @@ t6imagesprocessing.ageAndGenderRecognition = async function(img, dir, filename, 
 					}
 				} else {
 					t6console.debug("t6imagesprocessing/ageAndGenderRecognition: No result.", results);
-					resolve({age: 0, gender: 0});
+					resolve({age: 0, gender: 0});
 				}
 			})
 			.catch((err) => {
 				t6console.error("t6imagesprocessing/ageAndGenderRecognition: Error1", err);
-				resolve({age: 0, gender: 0});
+				resolve({age: 0, gender: 0});
 			});
 		} else {
 			t6console.error("t6imagesprocessing/ageAndGenderRecognition: Error2", "Not an Image");
-			resolve({age: 0, gender: 0});
+			resolve({age: 0, gender: 0});
 		}
 	});
 };
@@ -79,16 +79,16 @@ t6imagesprocessing.faceExpressionRecognition = async function(img, dir, filename
 					}
 				} else {
 					t6console.debug("t6imagesprocessing/faceExpressionRecognition: No result.");
-					resolve({expressions: {neutral: 0, happy: 0, sad: 0, angry: 0, fearful: 0, disgusted: 0, surprised: 0}});
+					resolve({expressions: {neutral: 0, happy: 0, sad: 0, angry: 0, fearful: 0, disgusted: 0, surprised: 0}});
 				}
 			})
 			.catch((err) => {
 				t6console.error("t6imagesprocessing/faceExpressionRecognition: Error1", err);
-				resolve({expressions: {neutral: 0, happy: 0, sad: 0, angry: 0, fearful: 0, disgusted: 0, surprised: 0}});
+				resolve({expressions: {neutral: 0, happy: 0, sad: 0, angry: 0, fearful: 0, disgusted: 0, surprised: 0}});
 			});
 		} else {
 			t6console.error("t6imagesprocessing/faceExpressionRecognition: Error2", "Not an Image");
-			resolve({expressions: {neutral: 0, happy: 0, sad: 0, angry: 0, fearful: 0, disgusted: 0, surprised: 0}});
+			resolve({expressions: {neutral: 0, happy: 0, sad: 0, angry: 0, fearful: 0, disgusted: 0, surprised: 0}});
 		}
 	});
 };
