@@ -242,7 +242,7 @@ router.get("/ifttt/v1/status", function (req, res) {
 	}
 });
 
-router.get("/ifttt/v1/user/destroy-session", function (req, res) {
+router.get("/OAuth2/destroy-session", function (req, res) {
 	req.session.destroy(function(err) {
 		res.redirect(req.header("Referer") || "/");
 	});

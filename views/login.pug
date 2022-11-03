@@ -6,9 +6,9 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
     meta(charset='utf-8')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     if process.env.NODE_ENV === 'development'
-      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/thirdparty/material/material.brown-blue.min-1.3.0.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
-      link(rel='stylesheet', href=baseUrlCdn + '/css/vendor/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
+      link(rel='stylesheet', href=baseUrlCdn + '/css/thirdparty/OpenLayers/ol-4.6.5.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
     else
       link(rel='stylesheet', href=baseUrlCdn + '/css/t6app.min.css', type='text/css', data-integrity='', data-crossorigin='anonymous')
 
@@ -16,8 +16,8 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
     noscript
       iframe(src="//www.googletagmanager.com/ns.html?id="+trackings.gtm, height="0", width="0", style="display:none;visibility:hidden")
 
-    main.mdl-layout__content
-      section.mdl-grid.mdl-cell--6-col
+    main.mdl-grid.mdl-layout__content
+      section.mdl-cell--12-col
         form(name="login", action="", method="post", style="width: 100%;")
           .page-content.mdl-card.mdl-grid.mdl-grid--no-spacing
             .mdl-grid.mdl-cell--12-col(data-action="view")
