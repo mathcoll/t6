@@ -23,13 +23,13 @@ function getDataItem(delay, userId) {
 	let user_id = typeof userId!=="undefined"?userId:getUuid();
 	let dataItem = {
 		"meta": {
-			"id": getUuid(),
-			"timestamp": getTs()-3600*delay
+			"id": getTs()-3600*delay,
+			"timestamp": parseInt(moment((getTs()-3600*delay)/1000).format("x"), 10)
 		},
 		"user_id": user_id,
 		"environment": process.env.NODE_ENV,
 		"dtepoch": getTs(),
-		"value": getUuid(),
+		"value": "Fake data "+getUuid(),
 		"flow": getUuid(),
 		"datetime": getIsoDate()
 	};
@@ -289,11 +289,20 @@ router.post("/ifttt/v1/triggers/eventTrigger", function (req, res) {
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
 	let authorization = req.headers["authorization"];
+	let retention = typeof req.body?.triggerFields?.retention!=="undefined"?req.body.triggerFields.retention:"autogen";
+	let limit = typeof req.body.limit!=="undefined"?parseInt(req.body.limit, 10):50;
+	let flow_id = req.body?.triggerFields?.flow;
+	let where = "";
+	let group_by = "";
+	let sorting = "DESC";
+	let page = 1;
+
 	let bearer;
 	if ( authorization ) {
 		bearer = authorization.split(" ")[1];
 	}
 	if ( (bearer && bearer === result.data.accessToken) || (ChannelKey === ServiceKey && ChannelKey === ifttt.serviceKey) ) {
+		t6console.debug("Use case 1");
 		let resultT = {
 			data:[],
 			eventTrigger: result.data.samples.triggers.eventTrigger
@@ -315,44 +324,82 @@ router.post("/ifttt/v1/triggers/eventTrigger", function (req, res) {
 		}
 
 	} else if(bearer) {
+		t6console.debug("Use case 2");
 		jsonwebtoken.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if( !err && decoded ) {
 				let queryU = { "id": decoded.id };
 				t6console.debug(queryU);
 				let user = users.findOne(queryU);
-				user.iftttTrigger_identity = req.body.trigger_identity;
-				let resultSuccess = {
-					data:[
-						{
-							"meta": {
-								"id": user.id,
-								"timestamp": getTs()
-							},
-							"user_id": user.id,
-							"environment": process.env.NODE_ENV,
-							"dtepoch": getTs(),
-							"value": getUuid(),
-							"flow": getUuid(),
-							"datetime": getIsoDate()
+				let eventTriggers = [];
+				if (isNaN(limit)) {
+					limit = 50;
+				} else if (limit > 5000) {
+					limit = 5000;
+				} else if (limit < 1) {
+					limit = 1;
+				}
+				/* Duplicate code for testing */
+					let flow = flows.chain().find({ "id" : { "$aeq" : flow_id } }).limit(1);
+					let join = flow.eqJoin(units.chain(), "unit", "id");
+					flow = typeof (flow.data())[0]!=="undefined"?(flow.data())[0].left:undefined;
+
+					let flowDT = flows.chain().find({id: flow_id,}).limit(1);
+					let joinDT = flowDT.eqJoin(datatypes.chain(), "data_type", "id");
+					let datatype = typeof (joinDT.data())[0]!=="undefined"?(joinDT.data())[0].right.name:null;
+					let fields;
+					fields = getFieldsFromDatatype(datatype, true, true);
+
+					let rp = typeof retention!=="undefined"?retention:"autogen";
+					if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+						if ( typeof flow!=="undefined" && flow.retention ) {
+							if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+								rp = flow.retention;
+							} else {
+								rp = influxSettings.retentionPolicies.data[0];
+								t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+								res.status(412).send(new ErrorSerializer({"id": 2057, "code": 412, "message": "Precondition Failed"}).serialize());
+								return;
+							}
+						} else {
+							rp = influxSettings.retentionPolicies.data[0];
+							t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
 						}
-					],
-					eventTrigger: {
-						user_id: user.id,
-						environment: process.env.NODE_ENV,
-						dtepoch: getTs(),
-						value: "1234 FAKE",
-						flow: "FAKE flow",
-						datetime: getIsoDate()
 					}
-				};
-				t6console.log(JSON.stringify(req.body, null, 2));
-				t6console.log(JSON.stringify(resultSuccess, null, 2));
-				res.status(200).send( resultSuccess );
+
+					t6console.debug("Retention is valid:", rp);
+					let query = sprintf("SELECT %s FROM %s.data WHERE flow_id='%s' %s %s ORDER BY time %s LIMIT %s OFFSET %s", fields, rp, flow_id, where, group_by, sorting, limit, (page-1)*limit);
+					t6console.debug("Query to get latest results on Db:", query);
+
+					dbInfluxDB.query(query).then((data) => {
+						if ( data.length > 0 ) {
+							data.map(function(d) {
+								eventTriggers.push({
+									user_id: user.id,
+									environment: process.env.NODE_ENV,
+									dtepoch: Date.parse(d.time),
+									value: d.value,
+									flow: flow_id,
+									datetime: moment(d.time).toISOString(),
+									meta: {
+										"id": Date.parse(d.time),
+										"timestamp": moment(d.time).format("x")/1000
+									}
+								});
+							});
+						}
+						let resultSuccess = { "data": eventTriggers };
+						t6console.debug("Requested:", JSON.stringify(req.body, null, 2));
+						t6console.debug("Result:", JSON.stringify(resultSuccess, null, 2));
+						res.status(200).send( resultSuccess );
+					});
+				/* Duplicate code for testing */
+				user.iftttTrigger_identity = req.body.trigger_identity; // What for ?
 			} else {
 				res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });
 			}
 		});
 	} else {
+		t6console.debug("Use case 3");
 		res.status(401).send({ "errors": [ {"message": "Not Authorized"} ] });
 	}
 });
@@ -369,8 +416,7 @@ router.delete("/ifttt/v1/triggers/eventTrigger/trigger_identity/:trigger_identit
 		jsonwebtoken.verify(bearer, jwtsettings.secret, function(err, decoded) {
 			if( !err && decoded ) {
 				let queryU = { "$and": [
-					{ "id": decoded.id },
-					{ "iftttTrigger_identity": req.params.trigger_identity },
+					{ "id": decoded.id }
 				]};
 				let user = users.findOne(queryU);
 				user.iftttCode = null;
