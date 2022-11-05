@@ -233,8 +233,15 @@ router.all("*", function (req, res, next) {
 	};
 	if ( !req.user && req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null" ) {
 		jsonwebtoken.verify(req.headers.authorization.split(" ")[1], jwtsettings.secret, function(err, decodedPayload) {
-			if(err) {
+			if(req.headers.authorization.split(" ")[0]==="Bearer" && err) {
 				t6console.debug("User can't be determined:", err);
+			} else if(req.headers.authorization.split(" ")[0]==="Basic") {
+				let credentials = atob(req.headers.authorization.split(" ")[1])?.split(":");
+				if(credentials[0]===ifttt.serviceClientId) {
+					req.user = {"name": "ifttt", "role": "oauth2"};
+				} else {
+					t6console.debug("User is valid on Basic auth but we can't identify it'.");
+				}
 			} else {
 				req.user = decodedPayload;
 				t6console.debug("User is valid on jwt.");

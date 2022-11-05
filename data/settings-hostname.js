@@ -137,7 +137,8 @@ quota = {
 	"admin": {price: "99.99", currency:"€", objects: 999, flows: 999, rules: 999, tokens: 999, snippets: 999, dashboards: 999, categories: 50, uis: 999, stories: 999, calls: 9999999, datapointPayloadLimit: 999},
 	"user": {price: "2.99", currency:"€", objects: 5, flows: 8, rules: 8, tokens: 8, snippets: 3, dashboards: 9, categories: 20, uis: 9, stories: 999, calls: 9999, datapointPayloadLimit: 3},
 	"free": {price: "0.00", currency:"€", objects: 2, flows: 8, rules: 1, tokens: 1, snippets: 2, dashboards: 1, categories: 20, uis: 2, stories: 999, calls: 9999, datapointPayloadLimit: 3},
-	"automatedtest": {price: "0.00", currency:"€", objects: 9999, flows: 9999, rules: 9999, tokens: 9999, snippets: 9999, dashboards: 9999, uis: 9999, stories: 999, calls: 9999, datapointPayloadLimit: 999}
+	"automatedtest": {price: "0.00", currency:"€", objects: 9999, flows: 9999, rules: 9999, tokens: 9999, snippets: 9999, dashboards: 9999, uis: 9999, stories: 999, calls: 9999, datapointPayloadLimit: 999},
+	"oauth2": {price: "0.00", currency:"€", objects: 9999, flows: 9999, rules: 9999, tokens: 9999, snippets: 9999, dashboards: 9999, uis: 9999, stories: 999, calls: 9999, datapointPayloadLimit: 999}
 };
 
 /* Localization settings */

@@ -18,7 +18,7 @@ html.ltr(lang='en', data-api-version=version, data-baseUrlCdn=baseUrlCdn)
 
     main.mdl-grid.mdl-layout__content
       section.mdl-cell--12-col
-        form(name="login", action="", method="post", style="width: 100%;")
+        form(name="login", action="authorize?redirect_uri="+redirect_uri, method="post", style="width: 100%;")
           .page-content.mdl-card.mdl-grid.mdl-grid--no-spacing
             .mdl-grid.mdl-cell--12-col(data-action="view")
               .mdl-card.mdl-shadow--2dp

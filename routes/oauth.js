@@ -35,7 +35,6 @@ function getDataItem(delay, userId) {
 	};
 	return dataItem;
 }
-
 let result = {
 	data: {
 		accessToken: "b29a71b4c58c22af116578a6be6402d2",
@@ -125,7 +124,7 @@ router.get("/OAuth2/authorize", function (req, res) {
 			res.status(403).send({ "errors": {"message": ["Invalid user_id"]} });
 		}
 	} else {
-		res.render("login", {});
+		res.render("login", {redirect_uri: redirect_uri});
 	}
 });
 
@@ -147,7 +146,11 @@ router.post("/OAuth2/authorize", function (req, res) {
 				req.session.user_id = user.id;
 				// Add the code to the connected user
 				let code = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.");
-				user.iftttCode = code; // We add the unic token to the user
+				user.iftttCode = code; // We add the unique token to the user
+				t6console.debug("User.id", user.id);
+				t6console.debug("user.iftttCode", user.iftttCode);
+				db_users.save();
+				// Is is necessary to store token on the user db ? or can wen only store it to access_tokens ?
 
 				var payload = JSON.parse(JSON.stringify(user));
 				payload.unsubscription = user.unsubscription;
@@ -166,8 +169,7 @@ router.post("/OAuth2/authorize", function (req, res) {
 					user_id:			user.id,
 					key:				code,
 					bearer:				token,
-					memo:				"Ifttt No-end Bearer Token", // Not sure this is compatible nor necessary
-					// or maybe it should be the "code" above ????
+					memo:				"Ifttt very long life Bearer Token",
 					expiration:			moment().add(24, "years").format("x"),
 				};
 				access_tokens.insert(new_token);
@@ -213,7 +215,7 @@ router.post("/OAuth2/token", function(req, res) {
 
 	var queryU = { "iftttCode": code };
 	var user = users.findOne(queryU);
-	if ( user && client_secret === ifttt.serviceSecret && client_id === ifttt.serviceClientId ) {
+	if ( user && client_id === ifttt.serviceClientId ) { // && client_secret === ifttt.serviceSecret
 		var tokens	= db_access_tokens.getCollection("accesstokens");
 		var queryT = { "$and": [
 			{ "user_id" : user.id },
