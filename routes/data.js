@@ -339,7 +339,6 @@ let verifyPrerequisites = function(resolve, reject) {
 		}
 	}
 }
-
 let preprocessor = async function(resolve, reject) {
 	let payload = this.payload;
 	let chainOrder = this.chainOrder;
@@ -971,7 +970,7 @@ router.get("/:flow_id([0-9a-z\-]+)/?(:data_id([0-9a-z\-]+))?", expressJwt({secre
 			} else {
 				where += sprintf(" AND time>='%s'", req.query.start.toString());
 			}
-		}	
+		}
 		if ( typeof req.query.end !== "undefined" ) {
 			if(!isNaN(req.query.end) && parseInt(req.query.end, 10)) {
 				if ( req.query.end.toString().length === 10 ) { end = req.query.end*1e9; }
