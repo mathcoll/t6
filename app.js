@@ -120,6 +120,9 @@ process.stdout.write = process.stderr.write = error.write.bind(error);
 process.on("uncaughtException", function(err) {
 	t6console.error((err && err.stack) ? err.stack : err);
 });
+t6console.log("===========================================================");
+t6console.log(`============================ ${appName} ===========================`);
+t6console.log("===========================================================");
 t6console.log(`Starting ${appName} v${VERSION}`);
 t6console.log(`Node: v${process.versions.node}`);
 t6console.log(`Build: v${t6BuildVersion}`);
@@ -390,9 +393,10 @@ dbs.forEach((file) => {
 	});
 });
 
-t6console.info("Initializing Databases...");
 dbLoadTime = new Date();
-
+t6console.log("===========================================================");
+t6console.log("================== Initializing Databases...===============");
+t6console.log("===========================================================");
 global.db_objects = new loki(path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbObjects});
 global.db_flows = new loki(path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFlows});
 global.db_users = new loki(path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbUsers});
@@ -411,22 +415,30 @@ dbUis = new loki(path.join(__dirname, "data", `uis-${os.hostname()}.json`), {aut
 db_jobs = new loki(path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbJobs});
 db_stories = new loki(path.join(__dirname, "data", `t6db-stories__${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbStories});
 dbFusionBuffer = new loki(path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`), {autoload: true, autosave: true, autoloadCallback: initDbFusionBuffer});
+t6console.log("===========================================================");
 
 if(dbTelegraf) {
 	t6console.log(`Activated telegraf for writing: ${dbStringTelegraf}`);
 }
 if(dbInfluxDB) {
-	t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
-	t6console.log("Retention Policies :");
-	t6console.log("-requests:", `${influxSettings.retentionPolicies.requests}`);
-	t6console.log("-events:", `${influxSettings.retentionPolicies.events}`);
-	t6console.log("-data:",  `${influxSettings.retentionPolicies.data}`);
-	dbInfluxDB.getDatabaseNames().then((name) => { t6console.log("Databases: ", name); });
+	dbInfluxDB.getDatabaseNames().then((name) => {
+		t6console.log("===========================================================");
+		t6console.log("========================== influxdb =======================");
+		t6console.log("===========================================================");
+		t6console.log(`Activated influxdb for reading: ${dbStringInfluxDB}`);
+		t6console.log("influxdb Databases: ", name);
+		t6console.log("influxdb Retention Policies :");
+		t6console.log("-requests:", `${influxSettings.retentionPolicies.requests}`);
+		t6console.log("-events:", `${influxSettings.retentionPolicies.events}`);
+		t6console.log("-data:",  `${influxSettings.retentionPolicies.data}`);
+		t6console.log("===========================================================");
+	});
 }
-t6console.log("===========================================================");
 
-t6console.info("Loading routes...");
 routesLoadTime = new Date();
+t6console.log("===========================================================");
+t6console.log("===================== Loading routes... ===================");
+t6console.log("===========================================================");
 var indexRoute				= require("./routes/index");
 var objectsRoute			= require("./routes/objects");
 var dashboardsRoute			= require("./routes/dashboards");
@@ -706,6 +718,7 @@ wss.on("connection", (ws, req) => {
 					ws.send(`Hello ${metadata.id}, welcome to t6 IoT sockets command interface.`);
 					ws.send("Here are the commands :");
 					ws.send("- broadcast: to cast a message to any connected Object from your user account.");
+					ws.send("- multicast: to cast a message to both connected Object to the same user as the claimed object, and to the Objects that subscribed to the specified channel.");
 					ws.send("- unicast: to cast a message to a specif Object you own.");
 					ws.send("- claimObject: to Claim the id of a specific Object.");
 					ws.send("- claimUi: to Claim the id of current UI.");
@@ -742,12 +755,10 @@ t6console.log(`${appName} ws(s) listening to ${socketsScheme}${socketsHost}:${so
 
 var CrossDomain = function(req, res, next) {
 	if (req.method === "OPTIONS") {
-		//res.header("Access-Control-Allow-Origin", req.header("origin") || "*");
 		res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.status(200).send("");
 	} else {
-		//res.header("Access-Control-Allow-Origin", req.header("origin") || "*");
 		res.header("Set-Cookie", "HttpOnly;Secure;SameSite=Strict");
 		res.header("Access-Control-Allow-Headers", "Origin, Content-Type, Authorization, Content-Length, X-Requested-With");
 		res.header("Feature-Policy", "accelerometer: 'none'; unsized-media: 'none'; ambient-light-sensor: 'self'; camera: 'none'; encrypted-media: 'none'; fullscreen: 'self'; geolocation: 'self'; gyroscope: 'none'; magnetometer: 'none'; picture-in-picture: 'self'; microphone: 'none'; sync-xhr: 'self'; usb: 'none'; vr: 'none'");
@@ -755,7 +766,7 @@ var CrossDomain = function(req, res, next) {
 		res.header("Strict-Transport-Security", "max-age=5184000; includeSubDomains");
 		res.header("X-Frame-Options", "SAMEORIGIN");
 		res.header("X-Content-Type-Options", "nosniff");
-		if (req.url.match(/^\/(css|js|img|font|woff2)\/.+/)) {
+		if (req.url.match(/^\/(css|js|img|font|woff2|ttf|ico|map|txt|gz|svg|webp)\/.+/)) {
 			res.setHeader("Cache-Control", `public, max-age=${30*24*3600}`);
 		}
 		next();
@@ -857,18 +868,21 @@ if (app.get("env") === "development") {
 mqttClient = mqtt.connect({ port: mqttPort, host: mqttHost, keepalive: 10000 });
 mqttClient.on("connect", function () {
 	t6mqtt.publish(null, mqttInfo, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Hello mqtt, "+appName+" just have started. :-)", "environment": process.env.NODE_ENV}), false);
-	t6console.log("===========================================================");
-	t6console.log(`Connected to Mqtt broker on ${mqttHost}:${mqttPort}`);
-	t6console.log(`-Mqtt root: "${mqttRoot}"`);
-	t6console.log(`-Mqtt infos: "${mqttInfo}"`);
-	t6console.log(`-Mqtt objects statuses: "${mqttObjectStatus}"`);
-	t6console.log(`-Mqtt sockets: "${mqttSockets}"`);
 	mqttClient.subscribe(mqttObjectStatus+"#", function (err) {
 		if (!err) {
+			t6console.log("===========================================================");
+			t6console.log("============================ Mqtt =========================");
+			t6console.log("===========================================================");
+			t6console.log(`Connected to Mqtt broker on ${mqttHost}:${mqttPort}`);
 			t6console.log(`Subscribed to Mqtt topic "${mqttObjectStatus}#"`);
+			t6console.log("Mqtt settings:");
+			t6console.log(`-Mqtt root: "${mqttRoot}"`);
+			t6console.log(`-Mqtt infos: "${mqttInfo}"`);
+			t6console.log(`-Mqtt objects statuses: "${mqttObjectStatus}"`);
+			t6console.log(`-Mqtt sockets: "${mqttSockets}"`);
+			t6console.log("===========================================================");
 		}
 	});
-	t6console.log("===========================================================");
 });
 mqttClient.on("message", function (topic, message) {
 	let object = topic.toString().split(mqttObjectStatus)[1];
@@ -934,6 +948,6 @@ global.getFieldsFromDatatype = function(datatype, asValue, includeTime=true) {
 	}
 	return fields;
 };
-t6console.log(sprintf("Start process duration: %ss.", (startProcessTime)/1000));
+t6console.log(`Start process duration: ${(startProcessTime)/1000}s.`);
 t6console.log("===========================================================");
 module.exports = app;
