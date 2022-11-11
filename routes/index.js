@@ -952,4 +952,5 @@ router.get("/open-source-licenses", function(req, res, next) {
 	res.status(200).render("open-source-licenses-json");
 });
 
+t6console.log(`Route ${path.basename(__filename)} loaded`);
 module.exports = router;

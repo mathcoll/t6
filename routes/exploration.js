@@ -1530,4 +1530,5 @@ router.get("/:flow_id([0-9a-z\-]+)/exploration/?", expressJwt({ secret: jwtsetti
 	res.status(410).send(new ErrorSerializer({ "id": 4057, "code": 410, "message": "Gone" }).serialize());
 });
 
+t6console.log(`Route ${path.basename(__filename)} loaded`);
 module.exports = router;

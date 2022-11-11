@@ -237,4 +237,5 @@ router.post("/annotations/?", expressJwt({secret: jwtsettings.secret, algorithms
 	}
 });
 
+t6console.log(`Route ${path.basename(__filename)} loaded`);
 module.exports = router;

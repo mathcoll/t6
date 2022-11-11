@@ -408,4 +408,5 @@ router.delete("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 	}
 });
 
+t6console.log(`Route ${path.basename(__filename)} loaded`);
 module.exports = router;

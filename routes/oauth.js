@@ -187,4 +187,5 @@ router.get("/destroy-session", function (req, res) {
 	});
 });
 
+t6console.log(`Route ${path.basename(__filename)} loaded`);
 module.exports = router;

@@ -142,4 +142,5 @@ router.get("/mail/:mail/subscribe/:list([0-9a-zA-Z\-]+)/:unsubscription_token([0
 	}
 });
 
+t6console.log(`Route ${path.basename(__filename)} loaded`);
 module.exports = router;
