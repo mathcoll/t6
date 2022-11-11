@@ -62,6 +62,19 @@
                     ]
                 },
                 {
+                	"name": "can delete a Source",
+                    "description": "can delete a Source",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/sources/{{saved.source_id_master}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "can delete an Object 1",
                     "description": "can delete an Object",
                     "api_calls": [
