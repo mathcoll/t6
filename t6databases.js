@@ -8,15 +8,13 @@ this.db.getCollection('collName').on('update', onChange);
 this.db.getCollection('collName').on('delete', onChange);
 */
 t6databases.onLoad = async function(data) {
-	//let dbFile = data.substring(data.lastIndexOf("/")+1);
 	if(resources.length == loadedResources.length) {
-		t6console.info("resources", resources);
-		t6console.info("loadedResources", loadedResources);
-
 		t6console.log("");
 		t6console.log("===========================================================");
 		t6console.log("================== Initializing Databases... ==============");
 		t6console.log("===========================================================");
+		t6console.info("resources", resources);
+		t6console.info("loadedResources", loadedResources);
 		t6console.log("-", objects.count(), "objects");
 		t6console.log("-", flows.count(), "flows");
 		t6console.log("-", rules.count(), "rules");
@@ -40,6 +38,35 @@ t6databases.onLoad = async function(data) {
 
 t6databases.init = async function() {
 	global.dbLoadTime = new Date();
+	t6console.info("Setting correct permission on Databases...");
+	let dbs = [
+		path.join(__dirname, "data", `db-${os.hostname()}.json`),
+		path.join(__dirname, "data", `snippets-${os.hostname()}.json`),
+		path.join(__dirname, "data", `dashboards-${os.hostname()}.json`),
+		path.join(__dirname, "data", `sources-${os.hostname()}.json`),
+		path.join(__dirname, "data", `otahistory-${os.hostname()}.json`),
+		path.join(__dirname, "data", `uis-${os.hostname()}.json`),
+		path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`),
+		
+		path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-stories__${os.hostname()}.json`),
+	];
+	dbs.forEach((file) => {
+		fs.chmod(file, 0o600 , (err) => {
+			if(err) {
+				t6console.warn(`- ${file} ${err ? "can't be chmoded" : "is 0600 now."}`);
+			}
+		});
+	});
 
 	global.db_objects = new loki(
 		path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),

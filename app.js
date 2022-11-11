@@ -97,6 +97,7 @@ global.t6preprocessor	= require("./t6preprocessor");
 global.t6jobs			= require("./t6jobs");
 global.t6imagesprocessing = require("./t6imagesprocessing");
 global.t6websockets		= require("./t6websockets");
+global.t6databases		= require("./t6databases");
 global.monitor			= require("./t6monitor");
 
 global.url				= require("node:url");
@@ -148,13 +149,6 @@ global.validator		= require("validator");
 global.webpush			= require("web-push");
 global.WebSocketServer	= require("ws").WebSocketServer;
 global.algorithm		= "aes-256-cbc";
-
-
-
-global.t6databases		= require("./t6databases");
-
-
-
 global.t6events.setMeasurement("events");
 global.t6events.setRP(typeof influxSettings.retentionPolicies.events!=="undefined"?influxSettings.retentionPolicies.events:"autogen");
 global.t6mailer.setBcc(bcc);
@@ -191,43 +185,8 @@ t6console.log(`Error Logs: ${logErrorFile}`);
 t6console.log(`Log level: ${logLevel}`);
 t6console.log(`Environment: ${process.env.NODE_ENV}`);
 
-
-
-t6console.info("Setting correct permission on Databases...");
-let dbs = [
-	path.join(__dirname, "data", `db-${os.hostname()}.json`),
-	path.join(__dirname, "data", `snippets-${os.hostname()}.json`),
-	path.join(__dirname, "data", `dashboards-${os.hostname()}.json`),
-	path.join(__dirname, "data", `sources-${os.hostname()}.json`),
-	path.join(__dirname, "data", `otahistory-${os.hostname()}.json`),
-	path.join(__dirname, "data", `uis-${os.hostname()}.json`),
-	path.join(__dirname, "data", `fusion-buffer-${os.hostname()}.json`),
-	
-	path.join(__dirname, "data", `t6db-accessTokens__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-datatypes__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-flows__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-jobs__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-objects__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`),
-	path.join(__dirname, "data", `t6db-stories__${os.hostname()}.json`),
-];
-dbs.forEach((file) => {
-	fs.chmod(file, 0o600 , (err) => {
-		if(err) {
-			t6console.warn(`- ${file} ${err ? "can't be chmoded" : "is 0600 now."}`);
-		}
-	});
-});
-
 t6databases.init();
 
-if(dbTelegraf) {
-	t6console.log(`Activated telegraf for writing: ${dbStringTelegraf}`);
-}
 if(dbInfluxDB) {
 	dbInfluxDB.getDatabaseNames().then((name) => {
 		t6console.log("");
@@ -241,6 +200,9 @@ if(dbInfluxDB) {
 		t6console.log("-events:", `${influxSettings.retentionPolicies.events}`);
 		t6console.log("-data:",  `${influxSettings.retentionPolicies.data}`);
 	});
+}
+if(dbTelegraf) {
+	t6console.log(`Activated telegraf for writing: ${dbStringTelegraf}`);
 }
 
 routesLoadTime = new Date();
@@ -408,5 +370,4 @@ global.t6websockets.init();
 global.startProcessTime = new Date()-start;
 
 t6console.log(`Start process duration: ${(startProcessTime)/1000}s.`);
-t6console.log("===========================================================");
 module.exports = app;
