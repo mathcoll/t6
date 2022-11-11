@@ -40,7 +40,7 @@ t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 
 t6events.addStat = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
-	let d = process.env.NODE_ENV==="production"?"":"debug/";
+	let d = (logLevel.indexOf("DEBUG")>-1)?"debug/":"";
 	if(client_id!==null) {
 		let user_id = typeof who!=="undefined"?who:null;
 		client_id = typeof client_id!=="undefined"?client_id:"";
@@ -70,7 +70,7 @@ t6events.addStat = function(where, what, who, client_id=null, params=null) {
 				t6console.info("GA4 environnment:", where);
 				t6console.info("GA4 params:", params);
 				t6console.info("GA4 statusCode:", response.statusCode);
-				if (d==="debug/") { t6console.log("GA4 body:", body); }
+				if (d==="debug/") { t6console.debug("GA4 body:", body); }
 			} else {
 				t6console.error("GA4 Error:", error, typeof response!=="undefined"?response.statusCode:"response is undefined or 404.", options);
 			}
