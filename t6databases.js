@@ -13,28 +13,31 @@ t6databases.onLoad = async function(data) {
 		t6console.log("===========================================================");
 		t6console.log("================== Initializing Databases... ==============");
 		t6console.log("===========================================================");
-		t6console.info("resources", resources);
-		t6console.info("loadedResources", loadedResources);
-		t6console.log("-", objects.count(), "objects");
-		t6console.log("-", flows.count(), "flows");
-		t6console.log("-", rules.count(), "rules");
-		t6console.log("-", snippets.count(), "snippets");
-		t6console.log("-", tokens.count(), "tokens");
-		t6console.log("-", access_tokens.count(), "access tokens");
-		t6console.log("-", users.count(), "users");
-		t6console.log("-", units.count(), "units");
-		t6console.log("-", datatypes.count(), "datatypes");
-		t6console.log("-", categories.count(), "categories");
-		t6console.log("-", annotations.count(), "annotations");
-		t6console.log("-", dashboards.count(), "dashboards");
-		t6console.log("-", sources.count(), "sources");
-		t6console.log("-", OtaHistory.count(), "otaHistory");
-		t6console.log("-", uis.count(), "uis");
-		t6console.log("-", jobs.count(), "jobs");
-		t6console.log("-", stories.count(), "stories");
-		t6console.log("-", measures.count(), "fusionBuffer measures");
+		t6console.info("resources"		.padEnd(25), resources);
+		t6console.info("loadedResources".padEnd(25), loadedResources);
+		t6console.log( t6databases.getCount("objects", objects) );
+		t6console.log( t6databases.getCount("flows", flows) );
+		t6console.log( t6databases.getCount("rules", rules) );
+		t6console.log( t6databases.getCount("snippets", snippets) );
+		t6console.log( t6databases.getCount("tokens", tokens) );
+		t6console.log( t6databases.getCount("access tokens", access_tokens) );
+		t6console.log( t6databases.getCount("users", users) );
+		t6console.log( t6databases.getCount("units", units) );
+		t6console.log( t6databases.getCount("datatypes", datatypes) );
+		t6console.log( t6databases.getCount("categories", categories) );
+		t6console.log( t6databases.getCount("annotations", annotations) );
+		t6console.log( t6databases.getCount("dashboards", dashboards) );
+		t6console.log( t6databases.getCount("sources", sources) );
+		t6console.log( t6databases.getCount("otaHistory", OtaHistory) );
+		t6console.log( t6databases.getCount("uis", uis) );
+		t6console.log( t6databases.getCount("jobs", jobs) );
+		t6console.log( t6databases.getCount("stories", stories) );
+		t6console.log( t6databases.getCount("fusionBuffer measures", measures) );
 	}
 }
+t6databases.getCount = function(name, collection) {
+	return ("-"+name+":").padEnd(25) + collection.count();
+};
 
 t6databases.init = async function() {
 	global.dbLoadTime = new Date();
