@@ -23,6 +23,7 @@
                     "description": "create a Flow for that User",
                     "api_calls": [
                         {
+		                	"it": "can create a Flow for that User",
                         	"request": "POST /{{app_version}}/flows",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -38,14 +39,9 @@
                                 "saved.flow_id_string": "body.flow.data.id"
                             },
                             "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a Flow for a sentiment analysis",
-                    "description": "create a Flow for that User",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can create a Flow for a sentiment analysis",
                         	"request": "POST /{{app_version}}/flows",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -58,14 +54,9 @@
                                 "saved.flow_id_sentiment": "body.flow.data.id"
                             },
                             "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a Float Flow",
-                    "description": "create a Float Flow",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can create a Float Flow",
                         	"request": "POST /{{app_version}}/flows",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -83,14 +74,9 @@
                                 "saved.retention_float": "body.flow.data.attributes.retention"
                             },
                             "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "can update a Flow",
-                    "description": "update a Flow",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can update a Flow",
                         	"request": "PUT /{{app_version}}/flows/{{saved.flow_id_string}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -114,14 +100,9 @@
         	                    "select": "body.flow.data.attributes.retention",
         	                    "equal": "retention1w"
         	                }]
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a Fusion Track",
-                    "description": "",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can create a Fusion Track",
                         	"request": "POST /{{app_version}}/flows/",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -143,14 +124,9 @@
                             },
                             "status": 201,
                             "assert": []
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a Track A",
-                    "description": "",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can create a Track A",
                         	"request": "POST /{{app_version}}/flows/",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
@@ -173,14 +149,9 @@
                             },
                             "status": 201,
                             "assert": []
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a Track B",
-                    "description": "",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can create a Track B",
                         	"request": "POST /{{app_version}}/flows/",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"

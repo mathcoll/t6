@@ -37,14 +37,9 @@
                                 "saved.dashboard_id": "body.dashboard.data.id"
                             },
                             "status": "201"
-                        }
-                    ]
-                },
-                {
-                	"name": "can get All Dashboards",
-                    "description": "get All Dashboards",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can get All Dashboards",
                         	"request": "GET /{{app_version}}/dashboards",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"

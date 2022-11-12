@@ -19,122 +19,83 @@
             "name": "t6 Admin Suite",
             "tests": [
                 {
-                	"name": "can get all DataTypes",
-                	"description": "Get all Datatypes",
+                	"name": "Retrieve all generic information",
+                	"description": "Get all generic information",
                     "api_calls": [
                         {
+							"it": "can get all Datatypes",
                         	"request": "GET /{{app_version}}/datatypes",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
         	                    "size": 9
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get all Units",
-                	"description": "get all Units",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can get all Units",
                         	"request": "GET /{{app_version}}/units",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
         	                    "size": 125
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get some Units using a filtered type 'Volumes'",
-                	"description": "get Units using a filter",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can search Units using a filtered type 'Volumes'",
                         	"request": "GET /{{app_version}}/units?type=Volume",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
         	                    "size": 13
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get some Units using a filtered type 'Units'",
-                	"description": "get Units using a filter",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can search Units using a filtered type 'Units'",
                         	"request": "GET /{{app_version}}/units?type=Température",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
         	                    "size": 4
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get some Units using a filtered type 'Paper Quantity'",
-                	"description": "get Units using a filter",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can get some Units using a filtered type 'Paper Quantity'",
                         	"request": "GET /{{app_version}}/units?type=Paper%20Quantity",
                             "status": 200,
                             "assert": {
         	                    "select": "body.data",
         	                    "size": 1
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get t6 server status",
-                	"description": "Server Status return basic informations",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can get t6 server status",
                         	"request": "GET /{{app_version}}/status",
                             "status": 200,
                             "assert": {
                             	"select": "body.status",
                             	"equal": "running"
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get t6 pwa index cards",
-                	"description": "List of all cards on the PWA home screen",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can get t6 pwa index cards",
                         	"request": "GET /{{app_version}}/index",
                             "status": 200,
                             "assert": {
                             	"select": "body.data",
                             	"size": 11
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get t6 terms cards",
-                	"description": "List of all cards on the PWA Term&Conditions screen",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can get t6 terms cards",
                         	"request": "GET /{{app_version}}/terms",
                             "status": 200,
                             "assert": {
                             	"select": "body.data",
                             	"size": 7
         	                }
-                        }
-                    ]
-                },
-                {
-                	"name": "can get t6 compatible-devices cards",
-                	"description": "List of all cards on the PWA compatible-devices screen",
-                    "api_calls": [
+                        },
                         {
+		                	"it": "can get t6 compatible-devices cards",
                         	"request": "GET /{{app_version}}/compatible-devices/",
                             "status": 200,
                             "assert": {
