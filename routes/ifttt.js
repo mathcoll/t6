@@ -61,9 +61,10 @@ let resultUser = {
 };
 
 router.get("/v1/status", function (req, res) {
+	let cfg = oauth2.find(({ name }) => name === "ifttt").config;
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
-	if ( ChannelKey === ServiceKey && ChannelKey === ifttt.serviceKey ) {
+	if ( ChannelKey === ServiceKey && ChannelKey === cfg.serviceKey ) {
 		res.status(200).send(result);
 	} else {
 		res.status(401).send({ "errors": [{"message": "Not Authorized"}] });
@@ -102,9 +103,10 @@ router.get("/v1/user/info", function (req, res) {
 });
 
 router.post("/v1/test/setup", function (req, res) {
+	let cfg = oauth2.find(({ name }) => name === "ifttt").config;
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
-	if ( ChannelKey == ServiceKey && ChannelKey === ifttt.serviceKey ) {
+	if ( ChannelKey == ServiceKey && ChannelKey === cfg.serviceKey ) {
 		res.status(200).send(result);
 	} else {
 		res.status(401).send({ "errors": [{"message": "Not Authorized"}] });
@@ -112,6 +114,7 @@ router.post("/v1/test/setup", function (req, res) {
 });
 
 router.post("/v1/triggers/eventTrigger", function (req, res) {
+	let cfg = oauth2.find(({ name }) => name === "ifttt").config;
 	let ChannelKey = req.headers["ifttt-channel-key"];
 	let ServiceKey = req.headers["ifttt-service-key"];
 	let authorization = req.headers["authorization"];
@@ -127,7 +130,7 @@ router.post("/v1/triggers/eventTrigger", function (req, res) {
 	if ( authorization ) {
 		bearer = authorization.split(" ")[1];
 	}
-	if ( (bearer && bearer === result.data.accessToken) || (ChannelKey === ServiceKey && ChannelKey === ifttt.serviceKey) ) {
+	if ( (bearer && bearer === result.data.accessToken) || (ChannelKey === ServiceKey && ChannelKey === cfg.serviceKey) ) {
 		t6console.debug("Use case 1");
 		let resultT = {
 			data:[],

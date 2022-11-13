@@ -7,6 +7,9 @@ let SCOPE_DESCRIPTIONS = {
 	"ghome": "."
 };
 
+//oauth2.find(({ name }) => name === "oauth").config
+//oauth2.find(({ config }) => config.serviceClientId === "secret_service_id");
+
 router.get("/authorize", function (req, res) {
 	let client_id = req.query.client_id;
 	let response_type = req.query.response_type;
@@ -14,7 +17,7 @@ router.get("/authorize", function (req, res) {
 	let scope = req.query.scope;
 	let state = req.query.state;
 	let application_name = req.query.application_name;
-	if ( client_id === ifttt.serviceClientId && req.session.user_id ) {
+	if ( oauth2.find(({ config }) => config.serviceClientId === client_id) && req.session.user_id ) {
 		var queryU = { "id": req.session.user_id };
 		var user = users.findOne(queryU);
 		if ( user ) {
@@ -162,7 +165,7 @@ router.post("/token", function(req, res) {
 
 	var queryU = { "iftttCode": code };
 	var user = users.findOne(queryU);
-	if ( user && client_id === ifttt.serviceClientId ) { // && client_secret === ifttt.serviceSecret
+	if ( user && oauth2.find(({ config }) => config.serviceClientId === client_id) ) {
 		var tokens	= db_access_tokens.getCollection("accesstokens");
 		var queryT = { "$and": [
 			{ "user_id" : user.id },

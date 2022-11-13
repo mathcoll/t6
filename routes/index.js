@@ -237,11 +237,19 @@ router.all("*", function (req, res, next) {
 				t6console.debug("User can't be determined:", err);
 			} else if(req.headers.authorization.split(" ")[0]==="Basic") {
 				let credentials = atob(req.headers.authorization.split(" ")[1])?.split(":");
-				if(credentials[0]===ifttt.serviceClientId) {
-					req.user = {"name": "ifttt", "role": "oauth2"};
-				} else {
-					t6console.debug("User is valid on Basic auth but we can't identify it'.");
+				switch(credentials[0]) {
+					case oauth2.find(({ name }) => name === "ifttt").config.serviceClientId:
+						req.user = {"name": "ifttt", "role": "oauth2"};
+						break;
+					case oauth2.find(({ name }) => name === "auth0").config.serviceClientId:
+						req.user = {"name": "auth0", "role": "oauth2"};
+						break;
+					default:
+						req.user = null;
+						t6console.debug("User is valid on Basic auth but we can't identify it'.");
+						break;
 				}
+				t6console.debug("User is valid on Basic auth", req.user);
 			} else {
 				req.user = decodedPayload;
 				t6console.debug("User is valid on jwt.");
