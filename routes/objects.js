@@ -773,5 +773,5 @@ router.get("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
 	}
 });
 
-t6console.log(`Route ${path.basename(__filename)} loaded`);
+t6console.log(`Route ${path.basename(__filename)} loaded`.padEnd(59));
 module.exports = router;

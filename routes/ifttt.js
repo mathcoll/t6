@@ -259,5 +259,5 @@ router.delete("/v1/triggers/eventTrigger/trigger_identity/:trigger_identity([0-9
 	}
 });
 
-t6console.log(`Route ${path.basename(__filename)} loaded`);
+t6console.log(`Route ${path.basename(__filename)} loaded`.padEnd(59));
 module.exports = router;

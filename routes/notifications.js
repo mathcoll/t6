@@ -742,5 +742,5 @@ router.post("/mail/newsletter/stop", expressJwt({secret: jwtsettings.secret, alg
 	}
 });
 
-t6console.log(`Route ${path.basename(__filename)} loaded`);
+t6console.log(`Route ${path.basename(__filename)} loaded`.padEnd(59));
 module.exports = router;
