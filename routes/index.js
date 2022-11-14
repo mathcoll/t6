@@ -514,6 +514,16 @@ router.post("/authenticate", function (req, res) {
 					payload.newsletter = undefined;
 					payload.quotausage = undefined;
 					payload.data = undefined;
+					payload.changePasswordMail = undefined;
+					payload.mail_hash = undefined;
+					payload.update_date = undefined;
+					payload.subscription_date = undefined;
+					payload.scope = undefined;
+					payload.firstName = undefined;
+					payload.lastName = undefined;
+					payload.iss = undefined;
+					payload.sub = undefined;
+					payload.token_type = undefined;
 				}
 				var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
 
