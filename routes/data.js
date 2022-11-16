@@ -1149,7 +1149,7 @@ let slicePayloads = function(payloadArray, options) {
  * @apiUse 429
  */
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms, getToken: function getToken(req) {
-	if ( req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer" ) {
+	if ( req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer" && req.headers.authorization.split(" ")[1] !== "" ) {
 		return req.headers.authorization.split(" ")[1];
 	} else if( req.headers["x-api-key"] && req.headers["x-api-secret"] ) {
 		let queryT = {
