@@ -15,28 +15,28 @@ t6databases.onLoad = async function(data) {
 		t6console.log("===========================================================");
 		t6console.info("resources"		.padEnd(25), resources);
 		t6console.info("loadedResources".padEnd(25), loadedResources);
-		t6console.log( t6databases.getCount("objects", objects) );
-		t6console.log( t6databases.getCount("flows", flows) );
-		t6console.log( t6databases.getCount("rules", rules) );
-		t6console.log( t6databases.getCount("snippets", snippets) );
-		t6console.log( t6databases.getCount("tokens", tokens) );
-		t6console.log( t6databases.getCount("access tokens", access_tokens) );
-		t6console.log( t6databases.getCount("users", users) );
-		t6console.log( t6databases.getCount("units", units) );
-		t6console.log( t6databases.getCount("datatypes", datatypes) );
-		t6console.log( t6databases.getCount("categories", categories) );
-		t6console.log( t6databases.getCount("annotations", annotations) );
-		t6console.log( t6databases.getCount("dashboards", dashboards) );
-		t6console.log( t6databases.getCount("sources", sources) );
-		t6console.log( t6databases.getCount("otaHistory", OtaHistory) );
-		t6console.log( t6databases.getCount("uis", uis) );
-		t6console.log( t6databases.getCount("jobs", jobs) );
-		t6console.log( t6databases.getCount("stories", stories) );
-		t6console.log( t6databases.getCount("fusionBuffer measures", measures) );
+		t6console.log( t6databases.getCount("objects", objects).padEnd(59) );
+		t6console.log( t6databases.getCount("flows", flows).padEnd(59) );
+		t6console.log( t6databases.getCount("rules", rules).padEnd(59) );
+		t6console.log( t6databases.getCount("snippets", snippets).padEnd(59) );
+		t6console.log( t6databases.getCount("tokens", tokens).padEnd(59) );
+		t6console.log( t6databases.getCount("access tokens", access_tokens).padEnd(59) );
+		t6console.log( t6databases.getCount("users", users).padEnd(59) );
+		t6console.log( t6databases.getCount("units", units).padEnd(59) );
+		t6console.log( t6databases.getCount("datatypes", datatypes).padEnd(59) );
+		t6console.log( t6databases.getCount("categories", categories).padEnd(59) );
+		t6console.log( t6databases.getCount("annotations", annotations).padEnd(59) );
+		t6console.log( t6databases.getCount("dashboards", dashboards).padEnd(59) );
+		t6console.log( t6databases.getCount("sources", sources).padEnd(59) );
+		t6console.log( t6databases.getCount("otaHistory", OtaHistory).padEnd(59) );
+		t6console.log( t6databases.getCount("uis", uis).padEnd(59) );
+		t6console.log( t6databases.getCount("jobs", jobs).padEnd(59) );
+		t6console.log( t6databases.getCount("stories", stories).padEnd(59) );
+		t6console.log( t6databases.getCount("fusionBuffer measures", measures).padEnd(59) );
 	}
 }
 t6databases.getCount = function(name, collection) {
-	return ("-"+name+":").padEnd(25) + collection.count();
+	return ("-"+name).padEnd(25) + ":" + collection.count();
 };
 
 t6databases.init = async function() {
