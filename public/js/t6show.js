@@ -6,11 +6,13 @@ class MaterialLightParser {
 	createButton(b) {
 		let uuid = typeof b.id!=="undefined"?b.id:b.trigger;
 		return `
-		<label for="${uuid}" class="mdl-list__item mdl-js-ripple-effect">
-			<div class="mdl-button__label">
-				<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" id="${uuid}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>
-			</div>
-		</label>`;
+		<div>
+			<label for="${uuid}" class="mdl-list__item mdl-js-ripple-effect">
+				<div class="mdl-button__label">
+					<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" id="${uuid}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>
+				</div>
+			</label>
+		</div>`;
 	}
 	createImage(i) {
 		return `<img src="${i.src}" alt="${i.alt}" />`;
@@ -60,22 +62,23 @@ class MaterialLightParser {
 	}
 	createList(l) {
 		let out = "";
-		out += `<li class="mdl-list__item mdl-cell--${typeof l.width!=="undefined"?l.width:"12"}-col">`;
-		out += `<span class="mdl-list__item-primary-content">`;
+		out += `<li class="mdl-list__item mdl-cell--${typeof l.width!=="undefined"?l.width:"12"}-col mdl-list__item--three-line">`;
+		out += `	<span class="mdl-list__item-primary-content">`;
 		if (l.icon) {
-			out += `<i class="material-icons mdl-list__item-icon">${l.icon}</i>`;
+			out += `<i class="material-icons mdl-list__item-avatar">${l.icon}</i>`;
 		}
-		if (typeof (l)==="object") {
-			out += this.parse(l);
-			out += "</span>";
-			if (l.label) {
-				out += `<span id="${typeof l.label_id!=="undefined"?l.label_id:""}">${l.label}</span>`;
-			}
-			out += "</li>";
-		} else {
-			out += l.item;
-			out += "</span></li>";
+		if (l.label) {
+			out += `<span>${l.label}</span>`;
 		}
+		if (l.body || l.body_id) {
+			out += `<span class="mdl-list__item-text-body" id="${typeof l.body_id!=="undefined"?l.body_id:""}">${l.body}</span>`;
+		}
+		out += `	</span>`;
+		out += `	<span class="mdl-list__item-secondary-content">`;
+		out += this.parse(l);
+		//out += `		<a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">star</i></a>`;
+		out += `	</span>`;
+		out += `	</li>`;
 		return out;
 	}
 	createText(t) {
@@ -108,14 +111,13 @@ class MaterialLightParser {
 	createSwitch(s) {
 		let value = s.defaultState==="checked"?s.valueChecked:s.valueUnchecked;
 		return `
-		<label for="${s.id}" class="mdl-list__item mdl-switch mdl-js-switch mdl-js-ripple-effect" data-action="${s.action}" data-valuechecked="${s.valueChecked}" data-valueunchecked="${s.valueUnchecked}">
+		<label for="${s.id}" class="mdl-list__item mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-list__item-secondary-action" data-action="${s.action}" data-valuechecked="${s.valueChecked}" data-valueunchecked="${s.valueUnchecked}">
 			<div class="mdl-switch__label">
-				${s.label}
-				<span class="mode"></span>
+				<div class="mode"></div>
 				<span class="type"></span>
 				<span class="value"></span>
 			</div>
-			<span class="switchLabels">${s.labelUnchecked}</span>
+			<span class="switchLabels" style="left: 0;position: absolute;">${s.labelUnchecked}</span>
 			<input type="checkbox" id="${s.id}" class="mdl-switch__input" ${s.defaultState==="checked"?"checked":""}>
 			<span class="switchLabels" style="right: 0;position: absolute;">${s.labelChecked}</span>
 		</label>`;
@@ -228,6 +230,13 @@ class MaterialLightParser {
 				}
 				S += `</ul>`;
 			}
+			if (s.lists2) {
+				S += `<ul class="mdl-list">`;
+				for (const list in s.lists2) {
+					S += this.createList2(s.lists2[list]);
+				}
+				S += `</ul>`;
+			}
 			if (s.footer) {
 				S += this.createFooter(s.footer);
 			}
@@ -261,6 +270,11 @@ class MaterialLightParser {
 			if (s.switches) {
 				for (const switche of s.switches) {
 					S += this.createSwitch(switche);
+				}
+			}
+			if (s.switches2) {
+				for (const switche of s.switches2) {
+					S += this.createSwitch2(switche);
 				}
 			}
 
@@ -424,7 +438,7 @@ let materializeLight = (inputJson) => {
 document.onreadystatechange = function () {
 	document.getElementById("app").innerHTML = materializeLight(ui);
 	actionate();
-	fetch("/getValues?pin=0,1,2,3,4,5,6,7,8,9", {mode: "no-cors"})
+	fetch("/getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39", {mode: "no-cors"})
 		.then((res) => res.json())
 		.then((values) => {
 			if(typeof values.pins!=="undefined" && values.pins.length>-1) {
@@ -436,9 +450,11 @@ document.onreadystatechange = function () {
 							document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
 						}
 					}
-					document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
-					document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
-					document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
+					if(typeof document.getElementById(Object.keys(pin))!=="undefined" && document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement) {
+						document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = typeof pin[Object.keys(pin)].mode?pin[Object.keys(pin)].mode:"";
+						document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = typeof pin[Object.keys(pin)].type?pin[Object.keys(pin)].type:"";
+						document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = typeof pin[Object.keys(pin)].value?pin[Object.keys(pin)].value:"";
+					}
 				});
 			}
 		});
@@ -514,5 +530,7 @@ let askPermission = function() {
 	});
 };
 
-askPermission();
-subscribeUserToPush();
+if (location.protocol === "https:") {
+	askPermission();
+	subscribeUserToPush();
+}

@@ -329,30 +329,30 @@ this.tabBar_.scrollLeft<this.tabBar_.scrollWidth-this.tabBar_.offsetWidth?p.clas
 }.bind(this),this.Constant_.RESIZE_TIMEOUT)}.bind(this);window.addEventListener("resize",C),
 this.tabBar_.classList.contains(this.CssClasses_.JS_RIPPLE_EFFECT)&&this.tabBar_.classList.add(this.CssClasses_.RIPPLE_IGNORE_EVENTS)
 ;for(var E=this.tabBar_.querySelectorAll("."+this.CssClasses_.TAB),L=this.content_.querySelectorAll("."+this.CssClasses_.PANEL),f=0;f<E.length;f++)new b(E[f],E,L,this)}
-this.element_.classList.add(this.CssClasses_.IS_UPGRADED)}},window.MaterialLayoutTab=b,e.register({constructor:f,classAsString:"MaterialLayout",cssClass:"mdl-js-layout"});var I=function(e){
-this.element_=e,this.init()};window.MaterialDataTable=I,I.prototype.Constant_={},I.prototype.CssClasses_={DATA_TABLE:"mdl-data-table",SELECTABLE:"mdl-data-table--selectable",
-SELECT_ELEMENT:"mdl-data-table__select",IS_SELECTED:"is-selected",IS_UPGRADED:"is-upgraded"},I.prototype.selectRow_=function(e,t,s){return t?function(){
+this.element_.classList.add(this.CssClasses_.IS_UPGRADED)}},window.MaterialLayoutTab=b,e.register({constructor:f,classAsString:"MaterialLayout",cssClass:"mdl-js-layout"});var y=function(e){
+this.element_=e,this.init()};window.MaterialDataTable=y,y.prototype.Constant_={},y.prototype.CssClasses_={DATA_TABLE:"mdl-data-table",SELECTABLE:"mdl-data-table--selectable",
+SELECT_ELEMENT:"mdl-data-table__select",IS_SELECTED:"is-selected",IS_UPGRADED:"is-upgraded"},y.prototype.selectRow_=function(e,t,s){return t?function(){
 e.checked?t.classList.add(this.CssClasses_.IS_SELECTED):t.classList.remove(this.CssClasses_.IS_SELECTED)}.bind(this):s?function(){var t
 ;if(e.checked)for(t=0;t<s.length;t++)s[t].querySelector("td").querySelector(".mdl-checkbox").MaterialCheckbox.check(),
 s[t].classList.add(this.CssClasses_.IS_SELECTED);else for(t=0;t<s.length;t++)s[t].querySelector("td").querySelector(".mdl-checkbox").MaterialCheckbox.uncheck(),
-s[t].classList.remove(this.CssClasses_.IS_SELECTED)}.bind(this):void 0},I.prototype.createCheckbox_=function(t,s){
+s[t].classList.remove(this.CssClasses_.IS_SELECTED)}.bind(this):void 0},y.prototype.createCheckbox_=function(t,s){
 var i=document.createElement("label"),n=["mdl-checkbox","mdl-js-checkbox","mdl-js-ripple-effect",this.CssClasses_.SELECT_ELEMENT];i.className=n.join(" ");var a=document.createElement("input")
 ;return a.type="checkbox",a.classList.add("mdl-checkbox__input"),t?(a.checked=t.classList.contains(this.CssClasses_.IS_SELECTED),
-a.addEventListener("change",this.selectRow_(a,t))):s&&a.addEventListener("change",this.selectRow_(a,null,s)),i.appendChild(a),e.upgradeElement(i,"MaterialCheckbox"),i},I.prototype.init=function(){
+a.addEventListener("change",this.selectRow_(a,t))):s&&a.addEventListener("change",this.selectRow_(a,null,s)),i.appendChild(a),e.upgradeElement(i,"MaterialCheckbox"),i},y.prototype.init=function(){
 if(this.element_){
 var e=this.element_.querySelector("th"),t=Array.prototype.slice.call(this.element_.querySelectorAll("tbody tr")),s=Array.prototype.slice.call(this.element_.querySelectorAll("tfoot tr")),i=t.concat(s)
 ;if(this.element_.classList.contains(this.CssClasses_.SELECTABLE)){var n=document.createElement("th"),a=this.createCheckbox_(null,i);n.appendChild(a),e.parentElement.insertBefore(n,e)
 ;for(var l=0;l<i.length;l++){var o=i[l].querySelector("td");if(o){var r=document.createElement("td");if("TBODY"===i[l].parentNode.nodeName.toUpperCase()){var d=this.createCheckbox_(i[l])
-;r.appendChild(d)}i[l].insertBefore(r,o)}}this.element_.classList.add(this.CssClasses_.IS_UPGRADED)}}},e.register({constructor:I,classAsString:"MaterialDataTable",cssClass:"mdl-js-data-table"})
-;var y=function(e){this.element_=e,this.init()};window.MaterialRipple=y,y.prototype.Constant_={INITIAL_SCALE:"scale(0.0001, 0.0001)",INITIAL_SIZE:"1px",INITIAL_OPACITY:"0.4",FINAL_OPACITY:"0",
-FINAL_SCALE:""},y.prototype.CssClasses_={RIPPLE_CENTER:"mdl-ripple--center",RIPPLE_EFFECT_IGNORE_EVENTS:"mdl-js-ripple-effect--ignore-events",RIPPLE:"mdl-ripple",IS_ANIMATING:"is-animating",
-IS_VISIBLE:"is-visible"},y.prototype.downHandler_=function(e){if(!this.rippleElement_.style.width&&!this.rippleElement_.style.height){var t=this.element_.getBoundingClientRect()
+;r.appendChild(d)}i[l].insertBefore(r,o)}}this.element_.classList.add(this.CssClasses_.IS_UPGRADED)}}},e.register({constructor:y,classAsString:"MaterialDataTable",cssClass:"mdl-js-data-table"})
+;var I=function(e){this.element_=e,this.init()};window.MaterialRipple=I,I.prototype.Constant_={INITIAL_SCALE:"scale(0.0001, 0.0001)",INITIAL_SIZE:"1px",INITIAL_OPACITY:"0.4",FINAL_OPACITY:"0",
+FINAL_SCALE:""},I.prototype.CssClasses_={RIPPLE_CENTER:"mdl-ripple--center",RIPPLE_EFFECT_IGNORE_EVENTS:"mdl-js-ripple-effect--ignore-events",RIPPLE:"mdl-ripple",IS_ANIMATING:"is-animating",
+IS_VISIBLE:"is-visible"},I.prototype.downHandler_=function(e){if(!this.rippleElement_.style.width&&!this.rippleElement_.style.height){var t=this.element_.getBoundingClientRect()
 ;this.boundHeight=t.height,this.boundWidth=t.width,this.rippleSize_=2*Math.sqrt(t.width*t.width+t.height*t.height)+2,this.rippleElement_.style.width=this.rippleSize_+"px",
 this.rippleElement_.style.height=this.rippleSize_+"px"}if(this.rippleElement_.classList.add(this.CssClasses_.IS_VISIBLE),"mousedown"===e.type&&this.ignoringMouseDown_)this.ignoringMouseDown_=!1;else{
 if("touchstart"===e.type&&(this.ignoringMouseDown_=!0),this.getFrameCount()>0)return;this.setFrameCount(1);var s,i,n=e.currentTarget.getBoundingClientRect()
 ;if(0===e.clientX&&0===e.clientY)s=Math.round(n.width/2),i=Math.round(n.height/2);else{var a=void 0!==e.clientX?e.clientX:e.touches[0].clientX,l=void 0!==e.clientY?e.clientY:e.touches[0].clientY
-;s=Math.round(a-n.left),i=Math.round(l-n.top)}this.setRippleXY(s,i),this.setRippleStyles(!0),window.requestAnimationFrame(this.animFrameHandler.bind(this))}},y.prototype.upHandler_=function(e){
-e&&2!==e.detail&&window.setTimeout(function(){this.rippleElement_.classList.remove(this.CssClasses_.IS_VISIBLE)}.bind(this),0)},y.prototype.init=function(){if(this.element_){
+;s=Math.round(a-n.left),i=Math.round(l-n.top)}this.setRippleXY(s,i),this.setRippleStyles(!0),window.requestAnimationFrame(this.animFrameHandler.bind(this))}},I.prototype.upHandler_=function(e){
+e&&2!==e.detail&&window.setTimeout(function(){this.rippleElement_.classList.remove(this.CssClasses_.IS_VISIBLE)}.bind(this),0)},I.prototype.init=function(){if(this.element_){
 var e=this.element_.classList.contains(this.CssClasses_.RIPPLE_CENTER)
 ;this.element_.classList.contains(this.CssClasses_.RIPPLE_EFFECT_IGNORE_EVENTS)||(this.rippleElement_=this.element_.querySelector("."+this.CssClasses_.RIPPLE),this.frameCount_=0,this.rippleSize_=0,
 this.x_=0,this.y_=0,this.ignoringMouseDown_=!1,this.boundDownHandler=this.downHandler_.bind(this),this.element_.addEventListener("mousedown",this.boundDownHandler),
@@ -363,7 +363,7 @@ this.x_=e,this.y_=t},this.setRippleStyles=function(t){if(null!==this.rippleEleme
 this.Constant_.INITIAL_SIZE):(i=this.Constant_.FINAL_SCALE,this.rippleSize_+"px",e&&(n="translate("+this.boundWidth/2+"px, "+this.boundHeight/2+"px)")),s="translate(-50%, -50%) "+n+i,
 this.rippleElement_.style.webkitTransform=s,this.rippleElement_.style.msTransform=s,this.rippleElement_.style.transform=s,
 t?this.rippleElement_.classList.remove(this.CssClasses_.IS_ANIMATING):this.rippleElement_.classList.add(this.CssClasses_.IS_ANIMATING)}},this.animFrameHandler=function(){
-this.frameCount_-- >0?window.requestAnimationFrame(this.animFrameHandler.bind(this)):this.setRippleStyles(!1)})}},e.register({constructor:y,classAsString:"MaterialRipple",
+this.frameCount_-- >0?window.requestAnimationFrame(this.animFrameHandler.bind(this)):this.setRippleStyles(!1)})}},e.register({constructor:I,classAsString:"MaterialRipple",
 cssClass:"mdl-js-ripple-effect",widget:!1})}(),function(){"use strict";var e=function(e){this.element_=e,this.setDefaults_(),this.init()};window.MaterialSelectfield=e,e.prototype.CssClasses_={
 LABEL:"mdl-selectfield__label",SELECT:"mdl-selectfield__select",SELECTED_BOX:"mdl-selectfield__box",SELECTED_BOX_VALUE:"mdl-selectfield__box-value",LIST_OPTION_BOX:"mdl-selectfield__list-option-box",
 IS_DIRTY:"is-dirty",IS_FOCUSED:"is-focused",IS_DISABLED:"is-disabled",IS_INVALID:"is-invalid",IS_UPGRADED:"is-upgraded",IS_SELECTED:"is-selected"},e.prototype.Keycodes_={ENTER:13,ESCAPE:27,SPACE:32,
@@ -425,7 +425,7 @@ this.listOptionBox_&&this.element_.removeChild(this.listOptionBox_),this.selecte
 this.select_.style.opacity="1",this.select_.style.zIndex="inherit",this.observer_&&this.observer_.disconnect()},e.prototype.mdlDowngrade=e.prototype.mdlDowngrade_,
 e.prototype.mdlDowngrade=e.prototype.mdlDowngrade,componentHandler.register({constructor:e,classAsString:"MaterialSelectfield",cssClass:"mdl-js-selectfield",widget:!0})}();"use strict"
 ;let applicationServerKey="BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1Gt2zrKknJQX91a8RR87w8KGP_1gDSy8x6U7s";class MaterialLightParser{createButton(e){let t=void 0!==e.id?e.id:e.trigger
-;return`\n\t\t<label for="${t}" class="mdl-list__item mdl-js-ripple-effect">\n\t\t\t<div class="mdl-button__label">\n\t\t\t\t<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${void 0!==e.class?e.class:""}" id="${t}" value="${e.value}" data-action="${e.action}" data-trigger="${e.trigger}">${e.label}</button>\n\t\t\t</div>\n\t\t</label>`
+;return`\n\t\t<div>\n\t\t\t<label for="${t}" class="mdl-list__item mdl-js-ripple-effect">\n\t\t\t\t<div class="mdl-button__label">\n\t\t\t\t\t<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${void 0!==e.class?e.class:""}" id="${t}" value="${e.value}" data-action="${e.action}" data-trigger="${e.trigger}">${e.label}</button>\n\t\t\t\t</div>\n\t\t\t</label>\n\t\t</div>`
 }createImage(e){return`<img src="${e.src}" alt="${e.alt}" />`}createHeaderLink(e){let t=""
 ;return void 0!==e.spacer?t+='<div class="mdl-menu__item">&nbsp;</div>':(t+=`<a class="mdl-navigation__link  ${void 0!==e.class?e.class:""}" href="${e.link}">`,
 t+='<span class="mdl-list__item-primary-content">',e.icon&&(t+=`<i class="material-icons mdl-list__item-icon">${e.icon}</i>`),t+=`${e.name}</span></a>`),t}createTabContent(e){let t=""
@@ -434,9 +434,10 @@ return`<section class="mdl-tabs__panel mdl-grid mdl-cell--${void 0!==e.width?e.w
 let t=`\n\t\t<div class="mdl-grid mdl-cell--${void 0!==e.width?e.width:"12"}-col">\n\t\t\t<div class="mdl-card mdl-shadow--2dp">\n\t\t\t\t<div class="mdl-card__title">\n\t\t\t\t\t<h3 class="mdl-card__title-text">${e.title}</h3>\n\t\t\t\t</div>`
 ;return e.body&&(t+=`<div class="mdl-list__item--three-line small-padding mdl-card--expand">\n\t\t\t\t\t\t<span class="mdl-list__item-sub-title">${this.parse(e.body)}</span>\n\t\t\t\t\t</div>`),
 t+=void 0!==e.actions&&0!==Object.keys(e.actions).length?`<div class="mdl-card__actions mdl-card--border">${this.parse(e.actions)}</div>`:"",t+="</div></div>"}createList(e){let t=""
-;return t+=`<li class="mdl-list__item mdl-cell--${void 0!==e.width?e.width:"12"}-col">`,t+='<span class="mdl-list__item-primary-content">',
-e.icon&&(t+=`<i class="material-icons mdl-list__item-icon">${e.icon}</i>`),"object"==typeof e?(t+=this.parse(e),t+="</span>",
-e.label&&(t+=`<span id="${void 0!==e.label_id?e.label_id:""}">${e.label}</span>`),t+="</li>"):(t+=e.item,t+="</span></li>"),t}createText(e){
+;return t+=`<li class="mdl-list__item mdl-cell--${void 0!==e.width?e.width:"12"}-col mdl-list__item--three-line">`,t+='\t<span class="mdl-list__item-primary-content">',
+e.icon&&(t+=`<i class="material-icons mdl-list__item-avatar">${e.icon}</i>`),e.label&&(t+=`<span>${e.label}</span>`),
+(e.body||e.body_id)&&(t+=`<span class="mdl-list__item-text-body" id="${void 0!==e.body_id?e.body_id:""}">${e.body}</span>`),t+="\t</span>",t+='\t<span class="mdl-list__item-secondary-content">',
+t+=this.parse(e),t+="\t</span>",t+="\t</li>"}createText(e){
 return`<div class="mdl-textfield mdl-js-textfield mdl-grid mdl-cell--${void 0!==e.width?e.width:"12"}-col ${e.class}" id="${e.id}">${e.text}</div>`}createBadge(e){
 return`<span class="mdl-badge" data-badge="${e.data}">${e.text}</span>`}createRow(e){
 return`<div class="mdl-grid mdl-cell--${void 0!==e.width?e.width:"12"}-col" id="row_${e.row_id}">${this.parse(e)}</div>`}createColumn(e){
@@ -445,7 +446,7 @@ return'<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label"
 }createSlider(e){
 return`\n\t\t<label for="${e.id}" class="mdl-slider">\n\t\t\t<div class="mdl-slider__label">${e.label}</div>\n\t\t\t<span class="switchLabels">${e.min}</span>\n\t\t\t<input class="mdl-slider mdl-js-slider" type="range" id="${e.id}" min="${parseInt(e.min,10)}" max="${parseInt(e.max,10)}" value="${parseInt(e.value,10)}" step="${parseInt(e.step,10)}" data-action="${e.action}">\n\t\t\t<span class="sliderLabels" style="right: 20px;">${e.max}</span>\n\t\t</label>`
 }createSwitch(e){"checked"===e.defaultState?e.valueChecked:e.valueUnchecked
-;return`\n\t\t<label for="${e.id}" class="mdl-list__item mdl-switch mdl-js-switch mdl-js-ripple-effect" data-action="${e.action}" data-valuechecked="${e.valueChecked}" data-valueunchecked="${e.valueUnchecked}">\n\t\t\t<div class="mdl-switch__label">\n\t\t\t\t${e.label}\n\t\t\t\t<span class="mode"></span>\n\t\t\t\t<span class="type"></span>\n\t\t\t\t<span class="value"></span>\n\t\t\t</div>\n\t\t\t<span class="switchLabels">${e.labelUnchecked}</span>\n\t\t\t<input type="checkbox" id="${e.id}" class="mdl-switch__input" ${"checked"===e.defaultState?"checked":""}>\n\t\t\t<span class="switchLabels" style="right: 0;position: absolute;">${e.labelChecked}</span>\n\t\t</label>`
+;return`\n\t\t<label for="${e.id}" class="mdl-list__item mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-list__item-secondary-action" data-action="${e.action}" data-valuechecked="${e.valueChecked}" data-valueunchecked="${e.valueUnchecked}">\n\t\t\t<div class="mdl-switch__label">\n\t\t\t\t<div class="mode"></div>\n\t\t\t\t<span class="type"></span>\n\t\t\t\t<span class="value"></span>\n\t\t\t</div>\n\t\t\t<span class="switchLabels" style="left: 0;position: absolute;">${e.labelUnchecked}</span>\n\t\t\t<input type="checkbox" id="${e.id}" class="mdl-switch__input" ${"checked"===e.defaultState?"checked":""}>\n\t\t\t<span class="switchLabels" style="right: 0;position: absolute;">${e.labelChecked}</span>\n\t\t</label>`
 }createSnack(){
 return'<div id="snackbar" class="mdl-js-snackbar mdl-snackbar">\n\t\t\t<div class="mdl-snackbar__text"></div>\n\t\t\t<button class="mdl-snackbar__action" type="button"></button>\n\t\t</div>'}
 createDrawer(e){let t="";t+=`<div class="mdl-layout__drawer" aria-hidden="true">\n\t\t\t<span class="mdl-layout-title">${e.title}</span>\n\t\t\t<nav class="mdl-navigation mdl-list__item">`
@@ -459,11 +460,12 @@ t+=`<div class="mdl-mega-footer__drop-down-section">\n\t\t\t\t<h1 class="mdl-meg
 e.header&&(t+=this.createHeader(e.header)),e.drawer&&(t+=this.createDrawer(e.drawer)),e.rows){t+='<main class="mdl-layout__content-----">';for(const s of e.rows)t+=this.createRow(s);t+="</main>"}
 if(e.tab_contents){t+='<main class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">',t+='<nav class="mdl-tabs__tab-bar">';for(const s of e.tab_contents)t+=this.createTabContent(s);t+="</nav>"
 ;for(const s of e.tab_contents)t+=this.createPanelContent(s);t+="</main>"}if(e.columns)for(const s of e.columns)t+=this.createColumn(s);if(e.cards)for(const s of e.cards)t+=this.createCard(s)
-;if(e.inputs)for(const s of e.inputs)t+=this.createInput(s);if(e.lists){t+='<ul class="mdl-list">';for(const s in e.lists)t+=this.createList(e.lists[s]);t+="</ul>"}
-if(e.footer&&(t+=this.createFooter(e.footer)),e.buttons)for(const s of e.buttons)t+=this.createButton(s);if(e.images)for(const s of e.images)t+=this.createImage(s)
-;if(e.texts)for(const s of e.texts)t+=this.createText(s);if(e.badges)for(const s of e.badges)t+=this.createBadge(s);if(e.sliders)for(const s of e.sliders)t+=this.createSlider(s)
-;if(e.switches)for(const s of e.switches)t+=this.createSwitch(s);e.button&&(t+=this.createButton(e.button)),e.image&&(t+=this.createImage(e.image)),e.text&&(t+=this.createText(e.text)),
-e.badge&&(t+=this.createBadge(e.badge)),e.slider&&(t+=this.createSlider(e.slider)),e.input&&(t+=this.createInput(e.input)),e.switche&&(t+=this.createSwitch(e.switche))}return t}showSnackbar(e){
+;if(e.inputs)for(const s of e.inputs)t+=this.createInput(s);if(e.lists){t+='<ul class="mdl-list">';for(const s in e.lists)t+=this.createList(e.lists[s]);t+="</ul>"}if(e.lists2){
+t+='<ul class="mdl-list">';for(const s in e.lists2)t+=this.createList2(e.lists2[s]);t+="</ul>"}if(e.footer&&(t+=this.createFooter(e.footer)),e.buttons)for(const s of e.buttons)t+=this.createButton(s)
+;if(e.images)for(const s of e.images)t+=this.createImage(s);if(e.texts)for(const s of e.texts)t+=this.createText(s);if(e.badges)for(const s of e.badges)t+=this.createBadge(s)
+;if(e.sliders)for(const s of e.sliders)t+=this.createSlider(s);if(e.switches)for(const s of e.switches)t+=this.createSwitch(s);if(e.switches2)for(const s of e.switches2)t+=this.createSwitch2(s)
+;e.button&&(t+=this.createButton(e.button)),e.image&&(t+=this.createImage(e.image)),e.text&&(t+=this.createText(e.text)),e.badge&&(t+=this.createBadge(e.badge)),
+e.slider&&(t+=this.createSlider(e.slider)),e.input&&(t+=this.createInput(e.input)),e.switche&&(t+=this.createSwitch(e.switche))}return t}showSnackbar(e){
 document.querySelector("#snackbar div.mdl-snackbar__text").innerText=e.message,document.querySelector("#snackbar button.mdl-snackbar__action").innerText=e.actionText,
 document.querySelector("#snackbar").classList.add("mdl-snackbar--active"),document.querySelector("#snackbar button.mdl-snackbar__action").addEventListener("click",function(e){
 document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"),e.preventDefault()},{passive:!1})}showSensorValue(e,t){document.querySelector("#"+e).textContent=t}}
@@ -487,12 +489,14 @@ let t=!0===e.currentTarget.classList.contains("is-checked")?e.currentTarget.data
 req.send(),e.preventDefault()},{passive:!1});let i=document.querySelectorAll("input.mdl-slider");for(var t in i)i[t].childElementCount>-1&&i[t].addEventListener("change",function(e){
 let t=e.currentTarget.dataset.action,s=e.currentTarget.MaterialSlider.element_.value;req.open("GET",t.format(s),!0),req.send(),e.preventDefault()},{passive:!1})
 },materializeLight=e=>ml.parse(e)+ml.createSnack();document.onreadystatechange=function(){document.getElementById("app").innerHTML=materializeLight(ui),actionate(),
-fetch("/getValues?pin=0,1,2,3,4,5,6,7,8,9",{mode:"no-cors"}).then(e=>e.json()).then(e=>{void 0!==e.pins&&e.pins.length>-1&&e.pins.map(function(e,t){
+fetch("/getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39",{mode:"no-cors"}).then(e=>e.json()).then(e=>{
+void 0!==e.pins&&e.pins.length>-1&&e.pins.map(function(e,t){
 document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement&&document.getElementById(Object.keys(e)).parentElement.MaterialSwitch&&("1"===e[Object.keys(e)].value?document.getElementById(Object.keys(e)).parentElement.MaterialSwitch.on():"0"===e[Object.keys(e)].value&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement.MaterialSwitch.off()),
-document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .mode").textContent=e[Object.keys(e)].mode,
-document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .type").textContent=e[Object.keys(e)].type,
-document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .value").textContent=e[Object.keys(e)].value})})};let registerServiceWorker=function(){
-return navigator.serviceWorker.register("/sw.js",{scope:"/"}).then(function(e){return"true"===localStorage.getItem("settings.debug")&&console.log("[ServiceWorker] Registered with scope:",e.scope),
+void 0!==document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement&&(document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .mode").textContent=(e[Object.keys(e)].mode,
+e[Object.keys(e)].mode),document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .type").textContent=(e[Object.keys(e)].type,e[Object.keys(e)].type),
+document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .value").textContent=(e[Object.keys(e)].value,e[Object.keys(e)].value))})})}
+;let registerServiceWorker=function(){return navigator.serviceWorker.register("/sw.js",{scope:"/"}).then(function(e){
+return"true"===localStorage.getItem("settings.debug")&&console.log("[ServiceWorker] Registered with scope:",e.scope),
 "object"==typeof firebase&&"undefined"!=typeof firebase||"object"==typeof firebase.apps||"number"==typeof firebase.apps.length||firebase.initializeApp(firebaseConfig),
 firebase.messaging().useServiceWorker(e),console.log("[pushSubscription]",firebase.messaging().getToken()),firebase.analytics(),e}).catch(function(e){console.log("[ServiceWorker] error occured..."+e)
 })},urlBase64ToUint8Array=function(e){const t=(e+"=".repeat((4-e.length%4)%4)).replace(/\-/g,"+").replace(/_/g,"/"),s=window.atob(t),i=new Uint8Array(s.length)
@@ -501,5 +505,5 @@ applicationServerKey:urlBase64ToUint8Array(applicationServerKey)};return!!e&&e.p
 ;return t&&t.keys&&(localStorage.setItem("settings.pushSubscription.endpoint",t.endpoint),localStorage.setItem("settings.pushSubscription.keys.p256dh",t.keys.p256dh),
 localStorage.setItem("settings.pushSubscription.keys.auth",t.keys.auth)),console.log("[pushSubscription]",t),e}).catch(function(e){console.log("[pushSubscription]","subscribeUserToPush"+e)})
 },askPermission=function(){return new Promise(function(e,t){const s=Notification.requestPermission(function(t){e(t)});s&&s.then(e,t)}).then(function(e){
-if("granted"!==e)throw new Error("We weren't granted permission.")})};askPermission(),subscribeUserToPush();
+if("granted"!==e)throw new Error("We weren't granted permission.")})};"https:"===location.protocol&&(askPermission(),subscribeUserToPush());
 //# sourceMappingURL=t6show-min.js.map
