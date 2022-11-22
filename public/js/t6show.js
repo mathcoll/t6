@@ -74,7 +74,7 @@ class MaterialLightParser {
 			out += `<span class="mdl-list__item-text-body" id="${typeof l.body_id!=="undefined"?l.body_id:""}">${l.body}</span>`;
 		}
 		out += `	</span>`;
-		out += `	<span class="mdl-list__item-secondary-content">`;
+		out += `	<span class="mdl-list__item-secondary-content mdl-grid mdl-cell--4-col">`;
 		out += this.parse(l);
 		//out += `		<a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">star</i></a>`;
 		out += `	</span>`;
@@ -95,17 +95,22 @@ class MaterialLightParser {
 	}
 	createInput(i) {
 		return `<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-			<input class="mdl-textfield__input" type="text" id="sample3">
-			<label class="mdl-textfield__label" for="sample3">Text...</label>
+			<input class="mdl-textfield__input" type="text" id="${i.id}" placeholder="${i.placeholder}" ${i.pattern!==""?"pattern=\""+i.pattern+"\"":""}>
+			<label class="mdl-textfield__label" for="${i.id}">${i.label}</label>
 		</div>`;
 	}
 	createSlider(s) {
 		return `
 		<label for="${s.id}" class="mdl-slider">
 			<div class="mdl-slider__label">${s.label}</div>
-			<span class="switchLabels">${s.min}</span>
-			<input class="mdl-slider mdl-js-slider" type="range" id="${s.id}" min="${parseInt(s.min, 10)}" max="${parseInt(s.max, 10)}" value="${parseInt(s.value, 10)}" step="${parseInt(s.step, 10)}" data-action="${s.action}">
-			<span class="sliderLabels" style="right: 20px;">${s.max}</span>
+			<div class="mdl-chip">
+				<span class="mdl-chip__text" id="label_${s.id}"></span>
+			</div>
+			<div>
+				<span class="switchLabels">${s.min}</span>
+				<input class="mdl-slider mdl-js-slider" type="${typeof s.type!=="undefined"?s.type:"range"}" id="${s.id}" min="${parseInt(s.min, 10)}" max="${parseInt(s.max, 10)}" value="${parseInt(s.value, 10)}" step="${parseInt(s.step, 10)}" data-action="${s.action}" data-label_id="label_${s.id}" data-unit="${s.unit?s.unit:"%s"}">
+				<span class="sliderLabels" style="right: 20px;">${s.max}</span>
+			</div>
 		</label>`;
 	}
 	createSwitch(s) {
@@ -117,9 +122,11 @@ class MaterialLightParser {
 				<span class="type"></span>
 				<span class="value"></span>
 			</div>
-			<span class="switchLabels" style="left: 0;position: absolute;">${s.labelUnchecked}</span>
-			<input type="checkbox" id="${s.id}" class="mdl-switch__input" ${s.defaultState==="checked"?"checked":""}>
-			<span class="switchLabels" style="right: 0;position: absolute;">${s.labelChecked}</span>
+			<div class="mdl-grid mdl-cell--12-col">
+				<span class="switchLabels" style="left: 0;position: absolute;">${s.labelUnchecked}</span>
+				<input type="checkbox" id="${s.id}" class="mdl-switch__input" ${s.defaultState==="checked"?"checked":""}>
+				<span class="switchLabels" style="right: 0;position: absolute;">${s.labelChecked}</span>
+			</div>
 		</label>`;
 	}
 	createSnack() {
@@ -230,13 +237,6 @@ class MaterialLightParser {
 				}
 				S += `</ul>`;
 			}
-			if (s.lists2) {
-				S += `<ul class="mdl-list">`;
-				for (const list in s.lists2) {
-					S += this.createList2(s.lists2[list]);
-				}
-				S += `</ul>`;
-			}
 			if (s.footer) {
 				S += this.createFooter(s.footer);
 			}
@@ -270,11 +270,6 @@ class MaterialLightParser {
 			if (s.switches) {
 				for (const switche of s.switches) {
 					S += this.createSwitch(switche);
-				}
-			}
-			if (s.switches2) {
-				for (const switche of s.switches2) {
-					S += this.createSwitch2(switche);
 				}
 			}
 
@@ -313,7 +308,7 @@ class MaterialLightParser {
 		}, {passive: false});
 	}
 	showSensorValue(id, value) {
-		document.querySelector("#"+id).textContent = value;
+		document.querySelector("#"+id).innerHTML = `<span class="mdl-chip"><span class="mdl-chip__text">${value}</span></span>`;
 	}
 }
 
@@ -322,7 +317,7 @@ let req = new XMLHttpRequest();
 req.onreadystatechange = function() {
 	if (this.readyState == 4 && (this.status == 200 || this.status == 201)) {
 		let json = JSON.parse(req.responseText);
-		if(json.status === "ok" || json.status === "UNDERSTOOD") {
+		if(json.status === "OK" || json.status === "ok" || json.status === "UNDERSTOOD") {
 			if(json.value) {
 				document.querySelector("#sensorValue").classList.add("is-not-visible");
 				document.querySelector("#sensorValue").classList.remove("is-visible");
@@ -340,6 +335,9 @@ req.onreadystatechange = function() {
 			}
 		}
 	}
+};
+req.onerror = function(url) {
+	console.error("Error fetching " + url);
 };
 String.prototype.format = function() {
 	return [...arguments].reduce((p,c) => p.replace(/%s/,c), this);
@@ -366,9 +364,10 @@ let actionate = () => {
 		if ( (buttons[i]).childElementCount > -1 ) {
 			(buttons[i]).addEventListener("click", function(evt) {
 					let action = evt.currentTarget.dataset.action;
+					let value = document.getElementById(evt.currentTarget.dataset.trigger).parentElement.MaterialTextfield.input_.value;
 					if (typeof action !=="undefined" ) {
 						let trigger = evt.currentTarget.dataset.trigger;
-						fetch(action.format())
+						fetch(action.format(value))
 						.then((response) => {
 							response.json().then(function(json) {
 								if(typeof json.pins!=="undefined" && json.pins.length>-1) {
@@ -422,6 +421,12 @@ let actionate = () => {
 	let sliders = document.querySelectorAll("input.mdl-slider");
 	for (var i in sliders) {
 		if ( (sliders[i]).childElementCount > -1 ) {
+			(sliders[i]).addEventListener("input", function(evt) {
+				let label_id = evt.currentTarget.dataset.label_id;
+				let unit = typeof evt.currentTarget.dataset.unit!=="undefined"?evt.currentTarget.dataset.unit:"%";
+				let value = evt.currentTarget.MaterialSlider.element_.value;
+				document.getElementById(label_id).textContent = unit.format(value);
+			}, {passive: false});
 			(sliders[i]).addEventListener("change", function(evt) {
 				let action = evt.currentTarget.dataset.action;
 				let value = evt.currentTarget.MaterialSlider.element_.value;
@@ -438,26 +443,26 @@ let materializeLight = (inputJson) => {
 document.onreadystatechange = function () {
 	document.getElementById("app").innerHTML = materializeLight(ui);
 	actionate();
-	fetch("/getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39", {mode: "no-cors"})
+	fetch("./getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39", {mode: "no-cors"})
 		.then((res) => res.json())
 		.then((values) => {
 			if(typeof values.pins!=="undefined" && values.pins.length>-1) {
 				(values.pins).map(function(pin, index) {
-					if(document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement && document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch) {
+					if(document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement && document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch) {
 						if(pin[Object.keys(pin)].value === "1") {
-							document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
+							document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch.on();
 						} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
-							document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
+							document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch.off();
 						}
 					}
-					if(typeof document.getElementById(Object.keys(pin))!=="undefined" && document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement) {
-						document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = typeof pin[Object.keys(pin)].mode?pin[Object.keys(pin)].mode:"";
-						document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = typeof pin[Object.keys(pin)].type?pin[Object.keys(pin)].type:"";
-						document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = typeof pin[Object.keys(pin)].value?pin[Object.keys(pin)].value:"";
+					if(typeof document.getElementById(Object.keys(pin))!=="undefined" && document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement.parentElement) {
+						document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .mode").textContent = typeof pin[Object.keys(pin)].mode?pin[Object.keys(pin)].mode:"";
+						document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .type").textContent = typeof pin[Object.keys(pin)].type?pin[Object.keys(pin)].type:"";
+						document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .value").textContent = typeof pin[Object.keys(pin)].value?pin[Object.keys(pin)].value:"";
 					}
 				});
 			}
-		});
+		})
 }
 
 let registerServiceWorker = function() {

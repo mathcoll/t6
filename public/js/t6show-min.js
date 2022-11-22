@@ -436,17 +436,17 @@ let t=`\n\t\t<div class="mdl-grid mdl-cell--${void 0!==e.width?e.width:"12"}-col
 t+=void 0!==e.actions&&0!==Object.keys(e.actions).length?`<div class="mdl-card__actions mdl-card--border">${this.parse(e.actions)}</div>`:"",t+="</div></div>"}createList(e){let t=""
 ;return t+=`<li class="mdl-list__item mdl-cell--${void 0!==e.width?e.width:"12"}-col mdl-list__item--three-line">`,t+='\t<span class="mdl-list__item-primary-content">',
 e.icon&&(t+=`<i class="material-icons mdl-list__item-avatar">${e.icon}</i>`),e.label&&(t+=`<span>${e.label}</span>`),
-(e.body||e.body_id)&&(t+=`<span class="mdl-list__item-text-body" id="${void 0!==e.body_id?e.body_id:""}">${e.body}</span>`),t+="\t</span>",t+='\t<span class="mdl-list__item-secondary-content">',
-t+=this.parse(e),t+="\t</span>",t+="\t</li>"}createText(e){
+(e.body||e.body_id)&&(t+=`<span class="mdl-list__item-text-body" id="${void 0!==e.body_id?e.body_id:""}">${e.body}</span>`),t+="\t</span>",
+t+='\t<span class="mdl-list__item-secondary-content mdl-grid mdl-cell--4-col">',t+=this.parse(e),t+="\t</span>",t+="\t</li>"}createText(e){
 return`<div class="mdl-textfield mdl-js-textfield mdl-grid mdl-cell--${void 0!==e.width?e.width:"12"}-col ${e.class}" id="${e.id}">${e.text}</div>`}createBadge(e){
 return`<span class="mdl-badge" data-badge="${e.data}">${e.text}</span>`}createRow(e){
 return`<div class="mdl-grid mdl-cell--${void 0!==e.width?e.width:"12"}-col" id="row_${e.row_id}">${this.parse(e)}</div>`}createColumn(e){
 return`<div class="mdl-grid mdl-cell--${void 0!==e.width?e.width:"12"}-col" id="col_${e.col_id}">`+(e.text?e.text:"")+this.parse(e)+"</div>"}createInput(e){
-return'<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">\n\t\t\t<input class="mdl-textfield__input" type="text" id="sample3">\n\t\t\t<label class="mdl-textfield__label" for="sample3">Text...</label>\n\t\t</div>'
+return`<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">\n\t\t\t<input class="mdl-textfield__input" type="text" id="${e.id}" placeholder="${e.placeholder}" ${""!==e.pattern?'pattern="'+e.pattern+'"':""}>\n\t\t\t<label class="mdl-textfield__label" for="${e.id}">${e.label}</label>\n\t\t</div>`
 }createSlider(e){
-return`\n\t\t<label for="${e.id}" class="mdl-slider">\n\t\t\t<div class="mdl-slider__label">${e.label}</div>\n\t\t\t<span class="switchLabels">${e.min}</span>\n\t\t\t<input class="mdl-slider mdl-js-slider" type="range" id="${e.id}" min="${parseInt(e.min,10)}" max="${parseInt(e.max,10)}" value="${parseInt(e.value,10)}" step="${parseInt(e.step,10)}" data-action="${e.action}">\n\t\t\t<span class="sliderLabels" style="right: 20px;">${e.max}</span>\n\t\t</label>`
+return`\n\t\t<label for="${e.id}" class="mdl-slider">\n\t\t\t<div class="mdl-slider__label">${e.label}</div>\n\t\t\t<div class="mdl-chip">\n\t\t\t\t<span class="mdl-chip__text" id="label_${e.id}"></span>\n\t\t\t</div>\n\t\t\t<div>\n\t\t\t\t<span class="switchLabels">${e.min}</span>\n\t\t\t\t<input class="mdl-slider mdl-js-slider" type="${void 0!==e.type?e.type:"range"}" id="${e.id}" min="${parseInt(e.min,10)}" max="${parseInt(e.max,10)}" value="${parseInt(e.value,10)}" step="${parseInt(e.step,10)}" data-action="${e.action}" data-label_id="label_${e.id}" data-unit="${e.unit?e.unit:"%s"}">\n\t\t\t\t<span class="sliderLabels" style="right: 20px;">${e.max}</span>\n\t\t\t</div>\n\t\t</label>`
 }createSwitch(e){"checked"===e.defaultState?e.valueChecked:e.valueUnchecked
-;return`\n\t\t<label for="${e.id}" class="mdl-list__item mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-list__item-secondary-action" data-action="${e.action}" data-valuechecked="${e.valueChecked}" data-valueunchecked="${e.valueUnchecked}">\n\t\t\t<div class="mdl-switch__label">\n\t\t\t\t<div class="mode"></div>\n\t\t\t\t<span class="type"></span>\n\t\t\t\t<span class="value"></span>\n\t\t\t</div>\n\t\t\t<span class="switchLabels" style="left: 0;position: absolute;">${e.labelUnchecked}</span>\n\t\t\t<input type="checkbox" id="${e.id}" class="mdl-switch__input" ${"checked"===e.defaultState?"checked":""}>\n\t\t\t<span class="switchLabels" style="right: 0;position: absolute;">${e.labelChecked}</span>\n\t\t</label>`
+;return`\n\t\t<label for="${e.id}" class="mdl-list__item mdl-switch mdl-js-switch mdl-js-ripple-effect mdl-list__item-secondary-action" data-action="${e.action}" data-valuechecked="${e.valueChecked}" data-valueunchecked="${e.valueUnchecked}">\n\t\t\t<div class="mdl-switch__label">\n\t\t\t\t<div class="mode"></div>\n\t\t\t\t<span class="type"></span>\n\t\t\t\t<span class="value"></span>\n\t\t\t</div>\n\t\t\t<div class="mdl-grid mdl-cell--12-col">\n\t\t\t\t<span class="switchLabels" style="left: 0;position: absolute;">${e.labelUnchecked}</span>\n\t\t\t\t<input type="checkbox" id="${e.id}" class="mdl-switch__input" ${"checked"===e.defaultState?"checked":""}>\n\t\t\t\t<span class="switchLabels" style="right: 0;position: absolute;">${e.labelChecked}</span>\n\t\t\t</div>\n\t\t</label>`
 }createSnack(){
 return'<div id="snackbar" class="mdl-js-snackbar mdl-snackbar">\n\t\t\t<div class="mdl-snackbar__text"></div>\n\t\t\t<button class="mdl-snackbar__action" type="button"></button>\n\t\t</div>'}
 createDrawer(e){let t="";t+=`<div class="mdl-layout__drawer" aria-hidden="true">\n\t\t\t<span class="mdl-layout-title">${e.title}</span>\n\t\t\t<nav class="mdl-navigation mdl-list__item">`
@@ -460,41 +460,45 @@ t+=`<div class="mdl-mega-footer__drop-down-section">\n\t\t\t\t<h1 class="mdl-meg
 e.header&&(t+=this.createHeader(e.header)),e.drawer&&(t+=this.createDrawer(e.drawer)),e.rows){t+='<main class="mdl-layout__content-----">';for(const s of e.rows)t+=this.createRow(s);t+="</main>"}
 if(e.tab_contents){t+='<main class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">',t+='<nav class="mdl-tabs__tab-bar">';for(const s of e.tab_contents)t+=this.createTabContent(s);t+="</nav>"
 ;for(const s of e.tab_contents)t+=this.createPanelContent(s);t+="</main>"}if(e.columns)for(const s of e.columns)t+=this.createColumn(s);if(e.cards)for(const s of e.cards)t+=this.createCard(s)
-;if(e.inputs)for(const s of e.inputs)t+=this.createInput(s);if(e.lists){t+='<ul class="mdl-list">';for(const s in e.lists)t+=this.createList(e.lists[s]);t+="</ul>"}if(e.lists2){
-t+='<ul class="mdl-list">';for(const s in e.lists2)t+=this.createList2(e.lists2[s]);t+="</ul>"}if(e.footer&&(t+=this.createFooter(e.footer)),e.buttons)for(const s of e.buttons)t+=this.createButton(s)
-;if(e.images)for(const s of e.images)t+=this.createImage(s);if(e.texts)for(const s of e.texts)t+=this.createText(s);if(e.badges)for(const s of e.badges)t+=this.createBadge(s)
-;if(e.sliders)for(const s of e.sliders)t+=this.createSlider(s);if(e.switches)for(const s of e.switches)t+=this.createSwitch(s);if(e.switches2)for(const s of e.switches2)t+=this.createSwitch2(s)
-;e.button&&(t+=this.createButton(e.button)),e.image&&(t+=this.createImage(e.image)),e.text&&(t+=this.createText(e.text)),e.badge&&(t+=this.createBadge(e.badge)),
-e.slider&&(t+=this.createSlider(e.slider)),e.input&&(t+=this.createInput(e.input)),e.switche&&(t+=this.createSwitch(e.switche))}return t}showSnackbar(e){
+;if(e.inputs)for(const s of e.inputs)t+=this.createInput(s);if(e.lists){t+='<ul class="mdl-list">';for(const s in e.lists)t+=this.createList(e.lists[s]);t+="</ul>"}
+if(e.footer&&(t+=this.createFooter(e.footer)),e.buttons)for(const s of e.buttons)t+=this.createButton(s);if(e.images)for(const s of e.images)t+=this.createImage(s)
+;if(e.texts)for(const s of e.texts)t+=this.createText(s);if(e.badges)for(const s of e.badges)t+=this.createBadge(s);if(e.sliders)for(const s of e.sliders)t+=this.createSlider(s)
+;if(e.switches)for(const s of e.switches)t+=this.createSwitch(s);e.button&&(t+=this.createButton(e.button)),e.image&&(t+=this.createImage(e.image)),e.text&&(t+=this.createText(e.text)),
+e.badge&&(t+=this.createBadge(e.badge)),e.slider&&(t+=this.createSlider(e.slider)),e.input&&(t+=this.createInput(e.input)),e.switche&&(t+=this.createSwitch(e.switche))}return t}showSnackbar(e){
 document.querySelector("#snackbar div.mdl-snackbar__text").innerText=e.message,document.querySelector("#snackbar button.mdl-snackbar__action").innerText=e.actionText,
 document.querySelector("#snackbar").classList.add("mdl-snackbar--active"),document.querySelector("#snackbar button.mdl-snackbar__action").addEventListener("click",function(e){
-document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"),e.preventDefault()},{passive:!1})}showSensorValue(e,t){document.querySelector("#"+e).textContent=t}}
-let ml=new MaterialLightParser,req=new XMLHttpRequest;req.onreadystatechange=function(){if(4==this.readyState&&(200==this.status||201==this.status)){let t=JSON.parse(req.responseText)
-;if("ok"===t.status||"UNDERSTOOD"===t.status)if(t.value)document.querySelector("#sensorValue").classList.add("is-not-visible"),document.querySelector("#sensorValue").classList.remove("is-visible"),
-ml.showSensorValue("sensorValue",t.sensorValue),document.querySelector("#sensorValue").classList.remove("is-not-visible"),document.querySelector("#sensorValue").classList.add("is-visible");else{
-var e={message:t.snack,timeout:2e3,actionHandler:function(e){document.querySelector("#snackbar").classList.remove("mdl-snackbar--active")},actionText:"Dismiss"};ml.showSnackbar(e)}}},
+document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"),e.preventDefault()},{passive:!1})}showSensorValue(e,t){
+document.querySelector("#"+e).innerHTML=`<span class="mdl-chip"><span class="mdl-chip__text">${t}</span></span>`}}let ml=new MaterialLightParser,req=new XMLHttpRequest
+;req.onreadystatechange=function(){if(4==this.readyState&&(200==this.status||201==this.status)){let t=JSON.parse(req.responseText)
+;if("OK"===t.status||"ok"===t.status||"UNDERSTOOD"===t.status)if(t.value)document.querySelector("#sensorValue").classList.add("is-not-visible"),
+document.querySelector("#sensorValue").classList.remove("is-visible"),ml.showSensorValue("sensorValue",t.sensorValue),document.querySelector("#sensorValue").classList.remove("is-not-visible"),
+document.querySelector("#sensorValue").classList.add("is-visible");else{var e={message:t.snack,timeout:2e3,actionHandler:function(e){
+document.querySelector("#snackbar").classList.remove("mdl-snackbar--active")},actionText:"Dismiss"};ml.showSnackbar(e)}}},req.onerror=function(e){console.error("Error fetching "+e)},
 String.prototype.format=function(){return[...arguments].reduce((e,t)=>e.replace(/%s/,t),this)};let uuid=function(){var e,t,s="";for(e=0;e<32;e++)t=16*Math.random()|0,
 8!=e&&12!=e&&16!=e&&20!=e||(s+="-"),s+=(12==e?4:16==e?3&t|8:t).toString(16);return s},actionate=()=>{"undefined"!=typeof componentHandler&&componentHandler.upgradeDom()
-;let e=document.querySelectorAll("button");for(var t in e)e[t].childElementCount>-1&&e[t].addEventListener("click",function(e){let t=e.currentTarget.dataset.action;if(void 0!==t){
-let s=e.currentTarget.dataset.trigger;fetch(t.format()).then(e=>{e.json().then(function(e){if(void 0!==e.pins&&e.pins.length>-1&&e.pins.map(function(e){
+;let e=document.querySelectorAll("button");for(var t in e)e[t].childElementCount>-1&&e[t].addEventListener("click",function(e){
+let t=e.currentTarget.dataset.action,s=document.getElementById(e.currentTarget.dataset.trigger).parentElement.MaterialTextfield.input_.value;if(void 0!==t){let i=e.currentTarget.dataset.trigger
+;fetch(t.format(s)).then(e=>{e.json().then(function(e){if(void 0!==e.pins&&e.pins.length>-1&&e.pins.map(function(e){
 "1"===e[Object.keys(e)].value?document.getElementById(Object.keys(e)).parentElement.MaterialSwitch.on():"0"===e[Object.keys(e)].value&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement.MaterialSwitch.off(),
 document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .mode").textContent=e[Object.keys(e)].mode,
 document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .type").textContent=e[Object.keys(e)].type,
 document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .value").textContent=e[Object.keys(e)].value}),
-"OK"===e.status||"UNDERSTOOD"===e.status)if(e.value)document.querySelector("#"+s).classList.add("is-not-visible"),document.querySelector("#"+s).classList.remove("is-visible"),
-ml.showSensorValue(s,e.value),document.querySelector("#"+s).classList.remove("is-not-visible"),document.querySelector("#"+s).classList.add("is-visible");else{let t={message:e.snack,timeout:2e3,
+"OK"===e.status||"UNDERSTOOD"===e.status)if(e.value)document.querySelector("#"+i).classList.add("is-not-visible"),document.querySelector("#"+i).classList.remove("is-visible"),
+ml.showSensorValue(i,e.value),document.querySelector("#"+i).classList.remove("is-not-visible"),document.querySelector("#"+i).classList.add("is-visible");else{let t={message:e.snack,timeout:2e3,
 actionHandler:function(e){document.querySelector("#snackbar").classList.remove("mdl-snackbar--active")},actionText:"Dismiss"};ml.showSnackbar(t)}})}),e.preventDefault()}},{passive:!1})
 ;let s=document.querySelectorAll("label.mdl-switch");for(var t in s)s[t].childElementCount>-1&&s[t].addEventListener("change",function(e){
 let t=!0===e.currentTarget.classList.contains("is-checked")?e.currentTarget.dataset.valuechecked:e.currentTarget.dataset.valueunchecked,s=e.currentTarget.dataset.action;req.open("GET",s.format(t),!0),
-req.send(),e.preventDefault()},{passive:!1});let i=document.querySelectorAll("input.mdl-slider");for(var t in i)i[t].childElementCount>-1&&i[t].addEventListener("change",function(e){
-let t=e.currentTarget.dataset.action,s=e.currentTarget.MaterialSlider.element_.value;req.open("GET",t.format(s),!0),req.send(),e.preventDefault()},{passive:!1})
-},materializeLight=e=>ml.parse(e)+ml.createSnack();document.onreadystatechange=function(){document.getElementById("app").innerHTML=materializeLight(ui),actionate(),
-fetch("/getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39",{mode:"no-cors"}).then(e=>e.json()).then(e=>{
+req.send(),e.preventDefault()},{passive:!1});let i=document.querySelectorAll("input.mdl-slider");for(var t in i)i[t].childElementCount>-1&&(i[t].addEventListener("input",function(e){
+let t=e.currentTarget.dataset.label_id,s=void 0!==e.currentTarget.dataset.unit?e.currentTarget.dataset.unit:"%",i=e.currentTarget.MaterialSlider.element_.value
+;document.getElementById(t).textContent=s.format(i)},{passive:!1}),i[t].addEventListener("change",function(e){let t=e.currentTarget.dataset.action,s=e.currentTarget.MaterialSlider.element_.value
+;req.open("GET",t.format(s),!0),req.send(),e.preventDefault()},{passive:!1}))},materializeLight=e=>ml.parse(e)+ml.createSnack();document.onreadystatechange=function(){
+document.getElementById("app").innerHTML=materializeLight(ui),
+actionate(),fetch("./getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39",{mode:"no-cors"}).then(e=>e.json()).then(e=>{
 void 0!==e.pins&&e.pins.length>-1&&e.pins.map(function(e,t){
-document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement&&document.getElementById(Object.keys(e)).parentElement.MaterialSwitch&&("1"===e[Object.keys(e)].value?document.getElementById(Object.keys(e)).parentElement.MaterialSwitch.on():"0"===e[Object.keys(e)].value&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement.MaterialSwitch.off()),
-void 0!==document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement&&(document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .mode").textContent=(e[Object.keys(e)].mode,
-e[Object.keys(e)].mode),document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .type").textContent=(e[Object.keys(e)].type,e[Object.keys(e)].type),
-document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .value").textContent=(e[Object.keys(e)].value,e[Object.keys(e)].value))})})}
+document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement&&document.getElementById(Object.keys(e)).parentElement.parentElement.MaterialSwitch&&("1"===e[Object.keys(e)].value?document.getElementById(Object.keys(e)).parentElement.parentElement.MaterialSwitch.on():"0"===e[Object.keys(e)].value&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement.parentElement.MaterialSwitch.off()),
+void 0!==document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement.parentElement&&(document.getElementById(Object.keys(e)).parentElement.parentElement.querySelector(".mdl-switch__label .mode").textContent=(e[Object.keys(e)].mode,
+e[Object.keys(e)].mode),document.getElementById(Object.keys(e)).parentElement.parentElement.querySelector(".mdl-switch__label .type").textContent=(e[Object.keys(e)].type,e[Object.keys(e)].type),
+document.getElementById(Object.keys(e)).parentElement.parentElement.querySelector(".mdl-switch__label .value").textContent=(e[Object.keys(e)].value,e[Object.keys(e)].value))})})}
 ;let registerServiceWorker=function(){return navigator.serviceWorker.register("/sw.js",{scope:"/"}).then(function(e){
 return"true"===localStorage.getItem("settings.debug")&&console.log("[ServiceWorker] Registered with scope:",e.scope),
 "object"==typeof firebase&&"undefined"!=typeof firebase||"object"==typeof firebase.apps||"number"==typeof firebase.apps.length||firebase.initializeApp(firebaseConfig),
