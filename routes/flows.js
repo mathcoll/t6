@@ -68,8 +68,10 @@ router.get("/:flow_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, al
 		flow.pagePrev = flow.pageSelf>flow.pageFirst?Math.ceil(flow.pageSelf)-1:flow.pageFirst;
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
+		flow.map(function(f) {
+			f.ttl = (typeof f.time_to_live!=="undefined" && f.time_to_live!==null)?f.time_to_live:3600;
+		});
 		if (flow && flow[0]) {
-			flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
 			res.status(200).send(new FlowSerializer(flow).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize());
@@ -120,7 +122,7 @@ router.get("/:flow_id([0-9a-z\-]+)/track", expressJwt({secret: jwtsettings.secre
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
 		if (flow && flow[0]) {
-			flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
+			flow[0].ttl = typeof flow.time_to_live!=="undefined"?flow.time_to_live:3600;
 			res.status(200).send(new FlowSerializer(flow).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize());
@@ -201,7 +203,7 @@ router.get("/:flow_id([0-9a-z\-]+)/categories", expressJwt({secret: jwtsettings.
 		flow.pageLast = Math.ceil(total/size);
 		flow.pageNext = flow.pageSelf<flow.pageLast?Math.ceil(flow.pageSelf)+1:undefined;
 		if (flow && flow[0]) {
-			flow[0].ttl = typeof flow.ttl!=="undefined"?flow.ttl:3600;
+			flow[0].ttl = typeof flow.time_to_live!=="undefined"?flow.time_to_live:3600;
 			res.status(200).send(new FlowSerializer(flow).serialize());
 		} else {
 			res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize());
@@ -272,7 +274,8 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
-					ttl:				typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):undefined,
+					time_to_live:		typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):undefined, // https://github.com/techfort/LokiJS/issues/884
+					ttl:				typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):undefined, // keep both
 					preprocessor:		typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:"",
 					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
@@ -353,7 +356,8 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
-						item.ttl				= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.ttl, 10);
+						item.time_to_live		= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.time_to_live, 10); // https://github.com/techfort/LokiJS/issues/884
+						item.ttl				= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.time_to_live, 10); // keep both
 						item.preprocessor		= typeof req.body.preprocessor!=="undefined"?req.body.preprocessor:item.preprocessor;
 						item.retention			= typeof req.body.retention!=="undefined"?req.body.retention:item.retention;
 						item.influx_db_cloud	= typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:item.influx_db_cloud;
