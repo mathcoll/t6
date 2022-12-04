@@ -5,14 +5,20 @@ let applicationServerKey = "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1G
 class MaterialLightParser {
 	createButton(b) {
 		let uuid = typeof b.id!=="undefined"?b.id:b.trigger;
-		return `
+		let out = `
 		<div>
 			<label for="${uuid}" class="mdl-list__item mdl-js-ripple-effect">
 				<div class="mdl-button__label">
-					<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" id="${uuid}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">${b.label}</button>
+					<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" id="${uuid}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">`;
+		if (b.icon) {
+			out += `<i class="material-icons mdl-list__item-icon">${b.icon}</i>`;
+		}
+		out += `
+					${b.label}</button>
 				</div>
 			</label>
 		</div>`;
+		return out;
 	}
 	createImage(i) {
 		return `<img src="${i.src}" alt="${i.alt}" />`;
@@ -301,10 +307,11 @@ class MaterialLightParser {
 	showSnackbar(snack) {
 		document.querySelector("#snackbar div.mdl-snackbar__text").innerText = snack.message;
 		document.querySelector("#snackbar button.mdl-snackbar__action").innerText = snack.actionText;
+		document.querySelector("#snackbar button.mdl-snackbar__action").removeAttribute("aria-hidden");
 		document.querySelector("#snackbar").classList.add("mdl-snackbar--active");
 		(document.querySelector("#snackbar button.mdl-snackbar__action")).addEventListener("click", function(evt) {
-				document.querySelector("#snackbar").classList.remove("mdl-snackbar--active");
-				evt.preventDefault();
+			document.querySelector("#snackbar").classList.remove("mdl-snackbar--active");
+			evt.preventDefault();
 		}, {passive: false});
 	}
 	showSensorValue(id, value) {
@@ -365,31 +372,20 @@ let actionate = () => {
 			(buttons[i]).addEventListener("click", function(evt) {
 					let action = evt.currentTarget.dataset.action;
 					let value = document.getElementById(evt.currentTarget.dataset.trigger).parentElement.MaterialTextfield.input_.value;
-					if (typeof action !=="undefined" ) {
+					if (typeof action !=="undefined" && value!=="") {
 						let trigger = evt.currentTarget.dataset.trigger;
 						fetch(action.format(value))
 						.then((response) => {
 							response.json().then(function(json) {
-								if(typeof json.pins!=="undefined" && json.pins.length>-1) {
-									(json.pins).map(function(pin) {
-										if(pin[Object.keys(pin)].value === "1") {
-											document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
-										} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
-											document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
-										}
-										document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
-										document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
-										document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
-									});
-								}
 								if(json.status === "OK" || json.status === "UNDERSTOOD") {
-									if(json.value) {
+									if(typeof json.value !== "undefined") {
 										document.querySelector("#"+trigger).classList.add("is-not-visible");
 										document.querySelector("#"+trigger).classList.remove("is-visible");
 										ml.showSensorValue(trigger, json.value);
 										document.querySelector("#"+trigger).classList.remove("is-not-visible");
 										document.querySelector("#"+trigger).classList.add("is-visible");
-									} else {
+									}
+									if(typeof json.snack !== "undefined") {
 										let snack = {
 											message: json.snack,
 											timeout: 2000,
@@ -397,6 +393,18 @@ let actionate = () => {
 											actionText: "Dismiss"
 										};
 										ml.showSnackbar(snack);
+									}
+									if(typeof json.pins!=="undefined" && json.pins.length>-1) {
+										(json.pins).map(function(pin) {
+											if(pin[Object.keys(pin)].value === "1") {
+												document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
+											} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
+												document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
+											}
+											document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
+											document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
+											document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
+										});
 									}
 								}
 							});
