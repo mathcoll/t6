@@ -118,12 +118,16 @@ t6websockets.init = async function() {
 						(metadata.channels).indexOf(message.channel) === -1?(metadata.channels).push(message.channel):t6console.log("Already subscribed to channel");
 						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 						wsClients.set(ws, metadata);
+						t6console.debug(`-> message.channel: ${message.channel}`);
+						t6console.debug(`-> metadata.channels: ${metadata.channels}`);
 						break;
 					case "unsubscribe":
 						metadata = wsClients.get(ws);
 						(metadata.channels) = (metadata.channels).filter((chan) => chan !== message.channel);
 						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 						wsClients.set(ws, metadata);
+						t6console.debug(`-> message.channel: ${message.channel}`);
+						t6console.debug(`-> metadata.channels: ${metadata.channels}`);
 						break;
 					case "getSubscription":
 						metadata = wsClients.get(ws);
