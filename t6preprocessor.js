@@ -91,7 +91,12 @@ async function performSanitize(pp, payload, fields) {
 				case "float":
 					//payload.sanitizedValue = validator.toFloat(payload.value); // https://github.com/validatorjs/validator.js/issues/1663
 					payload.sanitizedValue = parseFloat(payload.value);
-					fields[0] = {time:""+time, valueFloat: payload.sanitizedValue,};
+					if (!isNaN(payload.sanitizedValue)) {
+						fields[0] = {time:""+time, valueFloat: payload.sanitizedValue,};
+					} else {
+						payload.isRejected = true;
+						pp.message = "Value is rejected";
+					}
 					resolve(pp);
 					break;
 				case "geo":
@@ -101,7 +106,12 @@ async function performSanitize(pp, payload, fields) {
 					break;
 				case "integer":
 					payload.sanitizedValue = validator.toInt(payload.value, 10);
-					fields[0] = {time:""+time, valueInteger: payload.sanitizedValue+"i",};
+					if (!isNaN(payload.sanitizedValue)) {
+						fields[0] = {time:""+time, valueInteger: payload.sanitizedValue+"i",};
+					} else {
+						payload.isRejected = true;
+						pp.message = "Value is rejected";
+					}
 					resolve(pp);
 					break;
 				case "image":
