@@ -488,13 +488,13 @@ router.post("/mail/monthlyreport/plan", expressJwt({secret: jwtsettings.secret, 
 									});
 									r.quotausage = [
 										{ type: "objects", count: db_objects.getCollection("objects").find({"user_id": d.user_id}).length },
-										{ type: "flows", count:  db_flows.getCollection("flows").find({"user_id": d.user_id}).length },
-										{ type: "rules", count:  db_rules.getCollection("rules").find({"user_id": d.user_id}).length },
-										{ type: "snippets", count:  dbSnippets.getCollection("snippets").find({"user_id": d.user_id}).length },
-										{ type: "dashboards", count:  dbDashboards.getCollection("dashboards").find({"user_id": d.user_id}).length },
-										{ type: "sources", count:  dbSources.getCollection("sources").find({"user_id": d.user_id}).length },
-										{ type: "tokens", count:  db_tokens.getCollection("tokens").find({"user_id": d.user_id}).length },
-										{ type: "access_tokens", count:  db_access_tokens.getCollection("accesstokens").find({"user_id": d.user_id}).length },
+										{ type: "flows", count: db_flows.getCollection("flows").find({"user_id": d.user_id}).length },
+										{ type: "rules", count: db_rules.getCollection("rules").find({"user_id": d.user_id}).length },
+										{ type: "snippets", count: dbSnippets.getCollection("snippets").find({"user_id": d.user_id}).length },
+										{ type: "dashboards", count: dbDashboards.getCollection("dashboards").find({"user_id": d.user_id}).length },
+										{ type: "sources", count: dbSources.getCollection("sources").find({"user_id": d.user_id}).length },
+										{ type: "tokens", count: db_tokens.getCollection("tokens").find({"user_id": d.user_id}).length },
+										{ type: "access_tokens", count: db_access_tokens.getCollection("accesstokens").find({"user_id": d.user_id}).length },
 									];
 									planNewsletter(req, res, [r], "monthlyreport", subject, "monthlyreport");
 									recipients.push(r);
