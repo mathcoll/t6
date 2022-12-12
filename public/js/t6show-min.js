@@ -470,8 +470,9 @@ document.querySelector("#snackbar div.mdl-snackbar__text").innerText=e.message,d
 document.querySelector("#snackbar button.mdl-snackbar__action").removeAttribute("aria-hidden"),document.querySelector("#snackbar").classList.add("mdl-snackbar--active"),
 document.querySelector("#snackbar button.mdl-snackbar__action").addEventListener("click",function(e){document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"),e.preventDefault()},{
 passive:!1})}showSensorValue(e,t){document.querySelector("#"+e).innerHTML=`<span class="mdl-chip"><span class="mdl-chip__text">${t}</span></span>`}}
-let ml=new MaterialLightParser,req=new XMLHttpRequest;req.onreadystatechange=function(){if(4==this.readyState&&(200==this.status||201==this.status)){let t=JSON.parse(req.responseText)
-;if("OK"===t.status||"ok"===t.status||"UNDERSTOOD"===t.status)if(t.value)document.querySelector("#sensorValue").classList.add("is-not-visible"),
+let ml=new MaterialLightParser,req=new XMLHttpRequest;req.onreadystatechange=function(){if(4==this.readyState&&(200==this.status||201==this.status||412==this.status)){
+let t=JSON.parse(req.responseText)
+;if("NOK"===t.status||"nok"===t.status||"OK"===t.status||"ok"===t.status||"UNDERSTOOD"===t.status)if(t.value)document.querySelector("#sensorValue").classList.add("is-not-visible"),
 document.querySelector("#sensorValue").classList.remove("is-visible"),ml.showSensorValue("sensorValue",t.sensorValue),document.querySelector("#sensorValue").classList.remove("is-not-visible"),
 document.querySelector("#sensorValue").classList.add("is-visible");else{var e={message:t.snack,timeout:2e3,actionHandler:function(e){
 document.querySelector("#snackbar").classList.remove("mdl-snackbar--active")},actionText:"Dismiss"};ml.showSnackbar(e)}}},req.onerror=function(e){console.error("Error fetching "+e)},

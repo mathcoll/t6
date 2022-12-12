@@ -322,9 +322,9 @@ class MaterialLightParser {
 let ml = new MaterialLightParser();
 let req = new XMLHttpRequest();
 req.onreadystatechange = function() {
-	if (this.readyState == 4 && (this.status == 200 || this.status == 201)) {
+	if (this.readyState == 4 && (this.status == 200 || this.status == 201 || this.status == 412)) {
 		let json = JSON.parse(req.responseText);
-		if(json.status === "OK" || json.status === "ok" || json.status === "UNDERSTOOD") {
+		if(json.status === "NOK" || json.status === "nok" || json.status === "OK" || json.status === "ok" || json.status === "UNDERSTOOD") {
 			if(json.value) {
 				document.querySelector("#sensorValue").classList.add("is-not-visible");
 				document.querySelector("#sensorValue").classList.remove("is-visible");
