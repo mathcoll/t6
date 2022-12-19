@@ -1,7 +1,7 @@
 "use strict";
 
 let applicationServerKey = "BHnrqPBEjHfdNIeFK5wdj0y7i5eGM2LlPn62zxmvN8LsBTFEQk1Gt2zrKknJQX91a8RR87w8KGP_1gDSy8x6U7s";
-
+let config;
 class MaterialLightParser {
 	createButton(b) {
 		let uuid = typeof b.id!=="undefined"?b.id:b.trigger;
@@ -70,7 +70,11 @@ class MaterialLightParser {
 		<div class="mdl-grid mdl-cell--${typeof c.width!=="undefined"?c.width:"12"}-col">
 			<div class="mdl-card mdl-shadow--2dp">
 				<div class="mdl-card__title">
-					<h3 class="mdl-card__title-text">${c.title}</h3>
+					<h3 class="mdl-card__title-text">`;
+					if (c.icon) {
+						out += `<i class="material-icons mdl-list__item-icon">${c.icon}</i>`;
+					}
+		out += `	${c.title}</h3>
 				</div>`;
 		if(c.body) {
 			out += `<div class="mdl-list__item--three-line small-padding mdl-card--expand">
@@ -86,16 +90,16 @@ class MaterialLightParser {
 		out += `<li class="mdl-list__item mdl-cell--${typeof l.width!=="undefined"?l.width:"12"}-col mdl-list__item--three-line">`;
 		out += `	<span class="mdl-list__item-primary-content">`;
 		if (l.icon) {
-			out += `<i class="material-icons mdl-list__item-avatar">${l.icon}</i>`;
+			out += `<i class="material-icons ${l.class}">${l.icon}</i>`;
 		}
 		if (l.label) {
 			out += `<span>${l.label}</span>`;
 		}
 		if (l.body || l.body_id) {
-			out += `<span class="mdl-list__item-text-body" id="${typeof l.body_id!=="undefined"?l.body_id:""}"><span class="mdl-chip"><span class="mdl-chip__text">${l.body}</span></span></span>`;
+			out += `<span class="mdl-list__item-text-body mdl-grid mdl-cell--6-col" id="${typeof l.body_id!=="undefined"?l.body_id:""}"><span class="mdl-chip"><span class="mdl-chip__text">${l.body}</span></span></span>`;
 		}
 		out += `	</span>`;
-		out += `	<span class="mdl-list__item-secondary-content mdl-grid mdl-cell--4-col">`;
+		out += `	<span class="mdl-list__item-secondary-content mdl-grid mdl-cell--6-col">`;
 		out += this.parse(l);
 		//out += `		<a class="mdl-list__item-secondary-action" href="#"><i class="material-icons">star</i></a>`;
 		out += `	</span>`;
@@ -103,7 +107,14 @@ class MaterialLightParser {
 		return out;
 	}
 	createText(t) {
-		return `<div class="mdl-textfield mdl-js-textfield mdl-grid mdl-cell--${typeof t.width!=="undefined"?t.width:"12"}-col ${t.class}" id="${t.id}">${t.text}</div>`;
+		let out = "";
+		out += `<div class="mdl-textfield mdl-js-textfield mdl-grid mdl-cell--${typeof t.width!=="undefined"?t.width:"12"}-col ${t.class}" id="${t.id}">`;
+		if (t.icon) {
+			out += `<i class="material-icons">${t.icon}</i>`;
+		}
+		out += `${t.text}`;
+		out += `</div>`;
+		return out;
 	}
 	createBadge(b) {
 		return `<span class="mdl-badge" data-badge="${b.data}">${b.text}</span>`;
@@ -185,17 +196,20 @@ class MaterialLightParser {
 	createHeader(h) {
 		let out = "";
 		out += `<header class="mdl-layout__header ${typeof h.class!=="undefined"?h.class:"mdl-layout__header--waterfall"}">`;
-			//out += `<div aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>`;
+			out += `<div class="mdl-layout__drawer-button">
+						<i class="material-icons">menu</i>
+					</div>`;
 			out += `<div class="mdl-layout__header-row">
-				<span id="title">${h.drawer.title}</span>
-				<div class="mdl-layout-spacer"></div>
-			
-			<nav class="mdl-navigation">`;
+						<span id="title">${h.drawer.title}</span>
+						<div class="mdl-layout-spacer"></div>
+						<nav class="mdl-navigation">`;
 			for (const link of h.links) {
 				out += this.createHeaderLink(link);
 			}
-		out += `</nav>`;
-		out += `</div></header>`;
+			out += `	</nav>`;
+			out += `</div>
+				</header>`;
+
 		out += this.createDrawer(h.drawer);
 		return out;
 	}
@@ -216,12 +230,23 @@ class MaterialLightParser {
 		out += `</div></footer>`;
 		return out;
 	}
+	openDialog(d) {
+		return `<dialog class="mdl-dialog" id="dialog_${d.id}">
+			<h4 class="mdl-dialog__title">${d.title}</h4>
+			<div class="mdl-dialog__content">
+				<p>${d.body}</p>
+			</div>
+			<div class="mdl-dialog__actions">
+				<button type="button" class="mdl-button close">Close</button>
+			</div>
+		</dialog>`;
+	}
 	parse(s) {
 		let S = "";
 		if (typeof s!=="undefined") {
 			/* Cannot have multiple */
 			if (s.title) {
-				document.title = "%s - %s".format(typeof config.friendlyName!=="undefined"?config.friendlyName:"Unnamed", s.title);
+				document.title = "%s - %s".format(typeof config.t6.ssdp.friendlyName!=="undefined"?config.t6.ssdp.friendlyName:"Unnamed", s.title);
 			}
 			if (s.header) {
 				S += this.createHeader(s.header);
@@ -398,10 +423,58 @@ let actionate = () => {
 	if(typeof componentHandler!=="undefined") {
 		componentHandler.upgradeDom();
 	}
-	document.querySelector("#title").innerText = "%s (%s)".format(document.querySelector("#title").innerText, typeof config.friendlyName!=="undefined"?config.friendlyName:"Unnamed");
-	document.getElementById("object.t6Object_id").value = config.t6Object_id;
-	document.getElementById("websockets.wsPort").value = config.wsPort;
-	document.getElementById("websockets.wsHost").value = config.wsHost;
+	document.getElementById("app").MaterialLayout.init();
+	document.getElementById("title").innerText = "%s (%s)".format(document.querySelector("#title").innerText, typeof config.t6.ssdp.friendlyName!=="undefined"?config.t6.ssdp.friendlyName:"Unnamed");
+	document.getElementById("config.wifi.ssid").value = config.wifi.ssid;
+	document.getElementById("config.wifi.password").value = config.wifi.password;
+	document.getElementById("config.t6.t6Object_id").value = config.t6.t6Object_id;
+	document.getElementById("config.t6.t6ObjectSecretKey").value = config.t6.t6ObjectSecretKey;
+	document.getElementById("config.t6.http.localPort").value = config.t6.http.localPort;
+	document.getElementById("config.t6.ssdp.localPort").value = config.t6.ssdp.localPort;
+	document.getElementById("config.t6.ssdp.advertiseInterval").value = config.t6.ssdp.advertiseInterval;
+	document.getElementById("config.t6.ssdp.presentationURL").value = config.t6.ssdp.presentationURL;
+	document.getElementById("config.t6.ssdp.friendlyName").value = config.t6.ssdp.friendlyName;
+	document.getElementById("config.t6.ssdp.modelName").value = config.t6.ssdp.modelName;
+	document.getElementById("config.t6.ssdp.modelNumber").value = config.t6.ssdp.modelNumber;
+	document.getElementById("config.t6.ssdp.deviceType").value = config.t6.ssdp.deviceType;
+	document.getElementById("config.t6.ssdp.modelURL").value = config.t6.ssdp.modelURL;
+	document.getElementById("config.t6.ssdp.manufacturer").value = config.t6.ssdp.manufacturer;
+	document.getElementById("config.t6.ssdp.manufacturerURL").value = config.t6.ssdp.manufacturerURL;
+	document.getElementById("config.t6.websockets.host").value = config.t6.websockets.host;
+	document.getElementById("config.t6.websockets.port").value = config.t6.websockets.port;
+	document.getElementById("config.t6.websockets.path").value = config.t6.websockets.path;
+	document.getElementById("config.t6.websockets.t6wsKey").value = config.t6.websockets.t6wsKey;
+	document.getElementById("config.t6.websockets.t6wsSecret").value = config.t6.websockets.t6wsSecret;
+	document.getElementById("config.t6.websockets.messageInterval").value = config.t6.websockets.messageInterval;
+	document.getElementById("config.t6.websockets.messageIntervalOnceClaimed").value = config.t6.websockets.messageIntervalOnceClaimed;
+	document.getElementById("config.t6.websockets.reconnectInterval").value = config.t6.websockets.reconnectInterval;
+	document.getElementById("config.t6.websockets.timeoutInterval").value = config.t6.websockets.timeoutInterval;
+	document.getElementById("config.t6.websockets.disconnectAfterFailure").value = config.t6.websockets.disconnectAfterFailure;
+	if(config.t6.servicesStatus.http === true) {
+		document.getElementById("config.t6.servicesStatus.http").parentElement.parentElement.MaterialSwitch.on();
+	} else {
+		document.getElementById("config.t6.servicesStatus.http").parentElement.parentElement.MaterialSwitch.off();
+	}
+	if(config.t6.servicesStatus.audio === true) {
+		document.getElementById("config.t6.servicesStatus.audio").parentElement.parentElement.MaterialSwitch.on();
+	} else {
+		document.getElementById("config.t6.servicesStatus.audio").parentElement.parentElement.MaterialSwitch.off();
+	}
+	if(config.t6.servicesStatus.mdns === true) {
+		document.getElementById("config.t6.servicesStatus.mdns").parentElement.parentElement.MaterialSwitch.on();
+	} else {
+		document.getElementById("config.t6.servicesStatus.mdns").parentElement.parentElement.MaterialSwitch.off();
+	}
+	if(config.t6.servicesStatus.sockets === true) {
+		document.getElementById("config.t6.servicesStatus.sockets").parentElement.parentElement.MaterialSwitch.on();
+	} else {
+		document.getElementById("config.t6.servicesStatus.sockets").parentElement.parentElement.MaterialSwitch.off();
+	}
+	if(config.t6.servicesStatus.ssdp === true) {
+		document.getElementById("config.t6.servicesStatus.ssdp").parentElement.parentElement.MaterialSwitch.on();
+	} else {
+		document.getElementById("config.t6.servicesStatus.ssdp").parentElement.parentElement.MaterialSwitch.off();
+	}
 	let buttons = document.querySelectorAll("button");
 	for (var i in buttons) {
 		if ( (buttons[i]).childElementCount > -1 ) {
@@ -417,41 +490,84 @@ let actionate = () => {
 							let options = {
 								method: typeof evt.currentTarget.dataset.method!=="undefined"?evt.currentTarget.dataset.method:"POST",
 							};
-							fetch(action.format(value), options)
-							.then((response) => {
-								response.json().then(function(json) {
-									if(json.status === "OK" || json.status === "UNDERSTOOD") {
-										if(typeof json.value !== "undefined") {
-											document.querySelector("#"+trigger).classList.add("is-not-visible");
-											document.querySelector("#"+trigger).classList.remove("is-visible");
-											ml.showSensorValue(trigger, json.value);
-											document.querySelector("#"+trigger).classList.remove("is-not-visible");
-											document.querySelector("#"+trigger).classList.add("is-visible");
-										}
-										if(typeof json.snack !== "undefined") {
-											let snack = {
-												message: json.snack,
-												timeout: 2000,
-												actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
-												actionText: "Dismiss"
-											};
-											ml.showSnackbar(snack);
-										}
-										if(typeof json.pins!=="undefined" && json.pins.length>-1) {
-											(json.pins).map(function(pin) {
-												if(pin[Object.keys(pin)].value === "1") {
-													document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
-												} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
-													document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
+							if(action === "/config") {
+								switch(trigger) {
+									case "config.wifi" :
+										options.body = JSON.stringify({wifi: {ssid: document.getElementById("config.wifi.ssid").value, password: document.getElementById("config.wifi.password").value}});
+										break;
+									case "config.t6" :
+										options.body = JSON.stringify({t6: {t6Object_id: document.getElementById("config.t6.t6Object_id").value, t6ObjectSecretKey: document.getElementById("config.t6.t6ObjectSecretKey").value}});
+										break;
+									case "config.t6.http" :
+										options.body = JSON.stringify({"t6": {"http": {"localPort": document.getElementById("config.t6.http.localPort").value }, "servicesStatus": { "http": document.getElementById("config.t6.servicesStatus.http").parentElement.parentElement.querySelector(".mdl-switch__input").checked } }});
+										break;
+									case "config.t6.audio" :
+										options.body = JSON.stringify({ "t6": { "servicesStatus": { "audio": document.getElementById("config.t6.servicesStatus.audio").parentElement.parentElement.querySelector(".mdl-switch__input").checked } } });
+										break;
+									case "config.t6.mdns" :
+										options.body = JSON.stringify({ "t6": { "mdns": { "localPort": 80 }, "servicesStatus": { "mdns": document.getElementById("config.t6.servicesStatus.mdns").parentElement.parentElement.querySelector(".mdl-switch__input").checked } } });
+										break;
+									case "config.t6.ssdp" :
+										options.body = JSON.stringify({ "t6": { "ssdp": { "localPort": document.getElementById("config.t6.ssdp.localPort").value, "advertiseInterval": document.getElementById("config.t6.ssdp.advertiseInterval").value, "presentationURL": document.getElementById("config.t6.ssdp.presentationURL").value, "friendlyName": document.getElementById("config.t6.ssdp.friendlyName").value, "modelName": document.getElementById("config.t6.ssdp.modelName").value, "modelNumber": document.getElementById("config.t6.ssdp.modelNumber").value, "deviceType": document.getElementById("config.t6.ssdp.deviceType").value, "modelURL": document.getElementById("config.t6.ssdp.modelURL").value, "manufacturer": document.getElementById("config.t6.ssdp.manufacturer").value, "manufacturerURL": document.getElementById("config.t6.ssdp.manufacturerURL").value }, "servicesStatus": { "ssdp": document.getElementById("config.t6.servicesStatus.ssdp").parentElement.parentElement.querySelector(".mdl-switch__input").checked } } });
+										break;
+									case "config.t6.websockets" :
+										options.body = JSON.stringify({ "t6": { "websockets": { "host": document.getElementById("config.t6.websockets.host").value, "port": document.getElementById("config.t6.websockets.port").value, "path": document.getElementById("config.t6.websockets.path").value, "t6wsKey": document.getElementById("config.t6.websockets.t6wsKey").value, "t6wsSecret": document.getElementById("config.t6.websockets.t6wsKey").value, "expiration": 1234, "messageInterval": document.getElementById("config.t6.websockets.messageInterval").value, "messageIntervalOnceClaimed": document.getElementById("config.t6.websockets.messageIntervalOnceClaimed").value, "reconnectInterval": document.getElementById("config.t6.websockets.reconnectInterval").value, "timeoutInterval": document.getElementById("config.t6.websockets.timeoutInterval").value, "disconnectAfterFailure": document.getElementById("config.t6.websockets.disconnectAfterFailure").value }, "servicesStatus": { "sockets": true } } });
+										break;
+									default :
+										options.body = JSON.stringify({});
+										break;
+								}
+							}
+							if(action !== "") {
+								fetch(action.format(value), options)
+								.then((response) => {
+									if(action === "/description.xml") {
+										let dialog_id = uuid();
+										let xml = response.text().then(function(xml) {
+											window.document.body.insertAdjacentHTML("afterbegin", ml.openDialog({id: dialog_id, title: "SSDP Description", body: xml}));
+											let dialog = document.getElementById("dialog_"+dialog_id);
+											if (!dialog.showModal) {
+												dialogPolyfill.registerDialog(dialog);
+											}
+											dialog.showModal();
+											dialog.querySelector("button:not([disabled]).close").addEventListener("click", function() { dialog.close();dialog.remove(); });
+										});
+									} else {
+										response.json().then(function(json) {
+											if(json.status === "OK" || json.status === "UNDERSTOOD") {
+												if(typeof json.value !== "undefined") {
+													document.querySelector("#"+trigger).classList.add("is-not-visible");
+													document.querySelector("#"+trigger).classList.remove("is-visible");
+													ml.showSensorValue(trigger, json.value);
+													document.querySelector("#"+trigger).classList.remove("is-not-visible");
+													document.querySelector("#"+trigger).classList.add("is-visible");
 												}
-												document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
-												document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
-												document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
-											});
-										}
+												if(typeof json.snack !== "undefined") {
+													let snack = {
+														message: json.snack,
+														timeout: 2000,
+														actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
+														actionText: "Dismiss"
+													};
+													ml.showSnackbar(snack);
+												}
+												if(typeof json.pins!=="undefined" && json.pins.length>-1) {
+													(json.pins).map(function(pin) {
+														if(pin[Object.keys(pin)].value === "1") {
+															document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
+														} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
+															document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
+														}
+														document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
+														document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
+														document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
+													});
+												}
+											}
+										});
 									}
 								});
-							});
+							}
 							evt.preventDefault();
 						}
 					}
@@ -464,8 +580,10 @@ let actionate = () => {
 			(switches[i]).addEventListener("change", function(evt) {
 				let value = evt.currentTarget.classList.contains("is-checked")===true?evt.currentTarget.dataset.valuechecked:evt.currentTarget.dataset.valueunchecked;
 				let action = evt.currentTarget.dataset.action;
-				req.open("GET", action.format(value), true);
-				req.send();
+				if(action !== "") {
+					req.open("GET", action.format(value), true);
+					req.send();
+				}
 				evt.preventDefault();
 			}, {passive: false});
 		}
@@ -493,8 +611,13 @@ let materializeLight = (inputJson) => {
 	return ml.parse(inputJson) + ml.createSnack();
 };
 document.onreadystatechange = function () {
-	document.getElementById("app").innerHTML = materializeLight(ui);
-	actionate();
+	fetch("./config.json", {mode: "no-cors"})
+	.then((res) => res.json())
+	.then((cfg) => {
+		config = cfg;
+		document.getElementById("app").innerHTML = materializeLight(ui);
+		actionate();
+	});
 	fetch("./getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39", {mode: "no-cors"})
 		.then((res) => res.json())
 		.then((values) => {
