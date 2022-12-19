@@ -9,7 +9,7 @@ class MaterialLightParser {
 		<div>
 			<label for="${uuid}" class="mdl-list__item mdl-js-ripple-effect">
 				<div class="mdl-button__label">
-					<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" id="${uuid}" value="${b.value}" data-action="${b.action}" data-trigger="${b.trigger}">`;
+					<button class="mdl-button mdl-js-button mdl-js-ripple-effect ${typeof b.class!=="undefined"?b.class:""}" id="${uuid}" value="${b.value}" data-action="${b.action}" data-method="${b.method}" data-trigger="${b.trigger}">`;
 		if (b.icon) {
 			out += `<i class="material-icons mdl-list__item-icon">${b.icon}</i>`;
 		}
@@ -35,6 +35,21 @@ class MaterialLightParser {
 			}
 			out += `${l.name}</span></a>`;
 		}
+		return out;
+	}
+	createSection(s) {
+		let out = "";
+		out += `<section id="${s.id}" class="mdl-cell--${typeof s.width!=="undefined"?s.width:"12"}-col">`;
+		if (s.title) {
+			out += `<div class="mdl-card"><div class=""><h3 class="mdl-card__title-text">${s.title}</h3></div></div>`;
+		}
+		if (s.icon) {
+			out += `<i class="material-icons mdl-list__item-icon">${s.icon}</i>`;
+		}
+		if (s.content) {
+			out += this.parse(s.content);
+		}
+		out += `</section>`;
 		return out;
 	}
 	createTabContent(tc) {
@@ -77,7 +92,7 @@ class MaterialLightParser {
 			out += `<span>${l.label}</span>`;
 		}
 		if (l.body || l.body_id) {
-			out += `<span class="mdl-list__item-text-body" id="${typeof l.body_id!=="undefined"?l.body_id:""}">${l.body}</span>`;
+			out += `<span class="mdl-list__item-text-body" id="${typeof l.body_id!=="undefined"?l.body_id:""}"><span class="mdl-chip"><span class="mdl-chip__text">${l.body}</span></span></span>`;
 		}
 		out += `	</span>`;
 		out += `	<span class="mdl-list__item-secondary-content mdl-grid mdl-cell--4-col">`;
@@ -100,10 +115,23 @@ class MaterialLightParser {
 		return `<div class="mdl-grid mdl-cell--${typeof c.width!=="undefined"?c.width:"12"}-col" id="col_${c.col_id}">` + (c.text ? c.text : "") + this.parse(c) + "</div>";
 	}
 	createInput(i) {
-		return `<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-			<input class="mdl-textfield__input" type="text" id="${i.id}" placeholder="${i.placeholder}" ${i.pattern!==""?"pattern=\""+i.pattern+"\"":""}>
-			<label class="mdl-textfield__label" for="${i.id}">${i.label}</label>
-		</div>`;
+		let out = "";
+		out += `<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label ${i.expandable===true?"mdl-textfield--expandable":""}">`;
+		if (i.icon) {
+			out += `<i class="material-icons mdl-list__item-icon" style="position:absolute;">${i.icon}</i>`;
+		}
+		out += `<input class="mdl-textfield__input" style="padding-left:30px;" type="text" id="${i.id}" placeholder="${i.placeholder}" ${i.pattern!==""?"pattern=\""+(i.pattern)+"\"":""}>`;
+		if (i.label) {
+			out += `<label class="mdl-textfield__label" for="${i.id}">${i.label}</label>`;
+		}
+		if (i.expandable) {
+			out += `<div class="mdl-textfield__expandable-holder"><input class="mdl-textfield__input" type="text" id="${i.id}"><label class="mdl-textfield__label" for="sample-expandable">${i.label}</label></div>`;
+		}
+		if (i.error) {
+			out += `<span class="mdl-textfield__error">${i.error}</span>`;
+		}
+		out += `</div>`;
+		return out;
 	}
 	createSlider(s) {
 		return `
@@ -159,7 +187,7 @@ class MaterialLightParser {
 		out += `<header class="mdl-layout__header ${typeof h.class!=="undefined"?h.class:"mdl-layout__header--waterfall"}">`;
 			//out += `<div aria-expanded="false" role="button" tabindex="0" class="mdl-layout__drawer-button"><i class="material-icons">menu</i></div>`;
 			out += `<div class="mdl-layout__header-row">
-				<span class="">${h.drawer.title}</span>
+				<span id="title">${h.drawer.title}</span>
 				<div class="mdl-layout-spacer"></div>
 			
 			<nav class="mdl-navigation">`;
@@ -191,10 +219,9 @@ class MaterialLightParser {
 	parse(s) {
 		let S = "";
 		if (typeof s!=="undefined") {
-
 			/* Cannot have multiple */
 			if (s.title) {
-				document.title = s.title;
+				document.title = "%s - %s".format(typeof config.friendlyName!=="undefined"?config.friendlyName:"Unnamed", s.title);
 			}
 			if (s.header) {
 				S += this.createHeader(s.header);
@@ -276,6 +303,11 @@ class MaterialLightParser {
 			if (s.switches) {
 				for (const switche of s.switches) {
 					S += this.createSwitch(switche);
+				}
+			}
+			if (s.sections) {
+				for (const section of s.sections) {
+					S += this.createSection(section);
 				}
 			}
 
@@ -366,50 +398,62 @@ let actionate = () => {
 	if(typeof componentHandler!=="undefined") {
 		componentHandler.upgradeDom();
 	}
+	document.querySelector("#title").innerText = "%s (%s)".format(document.querySelector("#title").innerText, typeof config.friendlyName!=="undefined"?config.friendlyName:"Unnamed");
+	document.getElementById("object.t6Object_id").value = config.t6Object_id;
+	document.getElementById("websockets.wsPort").value = config.wsPort;
+	document.getElementById("websockets.wsHost").value = config.wsHost;
 	let buttons = document.querySelectorAll("button");
 	for (var i in buttons) {
 		if ( (buttons[i]).childElementCount > -1 ) {
 			(buttons[i]).addEventListener("click", function(evt) {
 					let action = evt.currentTarget.dataset.action;
-					let value = document.getElementById(evt.currentTarget.dataset.trigger).parentElement.MaterialTextfield.input_.value;
-					if (typeof action !=="undefined" && value!=="") {
-						let trigger = evt.currentTarget.dataset.trigger;
-						fetch(action.format(value))
-						.then((response) => {
-							response.json().then(function(json) {
-								if(json.status === "OK" || json.status === "UNDERSTOOD") {
-									if(typeof json.value !== "undefined") {
-										document.querySelector("#"+trigger).classList.add("is-not-visible");
-										document.querySelector("#"+trigger).classList.remove("is-visible");
-										ml.showSensorValue(trigger, json.value);
-										document.querySelector("#"+trigger).classList.remove("is-not-visible");
-										document.querySelector("#"+trigger).classList.add("is-visible");
+					let clicked_elt = document.getElementById(evt.currentTarget.dataset.trigger);
+					if (clicked_elt) {
+						let value = typeof clicked_elt.parentElement.MaterialTextfield!=="undefined"?clicked_elt.parentElement.MaterialTextfield.input_.value:clicked_elt.textContent;
+						// Must be an input with a non empty value ... OR not an input so value could be empty
+						let condition = ((typeof clicked_elt.parentElement.MaterialTextfield!=="undefined" && value!=="") || (typeof clicked_elt.parentElement.MaterialTextfield=="undefined"));
+						if (typeof action !=="undefined" && condition ) {
+							let trigger = evt.currentTarget.dataset.trigger;
+							let options = {
+								method: typeof evt.currentTarget.dataset.method!=="undefined"?evt.currentTarget.dataset.method:"POST",
+							};
+							fetch(action.format(value), options)
+							.then((response) => {
+								response.json().then(function(json) {
+									if(json.status === "OK" || json.status === "UNDERSTOOD") {
+										if(typeof json.value !== "undefined") {
+											document.querySelector("#"+trigger).classList.add("is-not-visible");
+											document.querySelector("#"+trigger).classList.remove("is-visible");
+											ml.showSensorValue(trigger, json.value);
+											document.querySelector("#"+trigger).classList.remove("is-not-visible");
+											document.querySelector("#"+trigger).classList.add("is-visible");
+										}
+										if(typeof json.snack !== "undefined") {
+											let snack = {
+												message: json.snack,
+												timeout: 2000,
+												actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
+												actionText: "Dismiss"
+											};
+											ml.showSnackbar(snack);
+										}
+										if(typeof json.pins!=="undefined" && json.pins.length>-1) {
+											(json.pins).map(function(pin) {
+												if(pin[Object.keys(pin)].value === "1") {
+													document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
+												} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
+													document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
+												}
+												document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
+												document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
+												document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
+											});
+										}
 									}
-									if(typeof json.snack !== "undefined") {
-										let snack = {
-											message: json.snack,
-											timeout: 2000,
-											actionHandler: function(event) { document.querySelector("#snackbar").classList.remove("mdl-snackbar--active"); },
-											actionText: "Dismiss"
-										};
-										ml.showSnackbar(snack);
-									}
-									if(typeof json.pins!=="undefined" && json.pins.length>-1) {
-										(json.pins).map(function(pin) {
-											if(pin[Object.keys(pin)].value === "1") {
-												document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.on();
-											} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
-												document.getElementById(Object.keys(pin)).parentElement.MaterialSwitch.off();
-											}
-											document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .mode").textContent = pin[Object.keys(pin)].mode;
-											document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .type").textContent = pin[Object.keys(pin)].type;
-											document.getElementById(Object.keys(pin)).parentElement.querySelector(".mdl-switch__label .value").textContent = pin[Object.keys(pin)].value;
-										});
-									}
-								}
+								});
 							});
-						});
-						evt.preventDefault();
+							evt.preventDefault();
+						}
 					}
 			}, {passive: false});
 		}
