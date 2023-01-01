@@ -186,12 +186,11 @@ t6websockets.init = async function() {
 						break;
 					case "claimObject":
 						let query = { "$and": [ { "user_id" : req.user_id }, { "id" : message.object_id }, ] };
-						//t6console.debug("Searching for Objects: ", query["$and"][0]);
-						//t6console.debug("Searching for Objects: ", query["$and"][1]);
 						let object = objects.findOne(query);
 						if( message.object_id && object && typeof object.secret_key!=="undefined" && object.secret_key!==null  && object.secret_key!=="" ) {
-							t6console.debug("Found key from Object", message.object_id);
-							//t6console.debug("Verifying signature", message.signature);
+							t6console.debug("Found key from Object", object.id);
+							//t6console.debug("secret_key", object.secret_key);
+							t6console.debug("Verifying signature", message.signature);
 							jsonwebtoken.verify(String(message.signature), object.secret_key, (error, unsignedObject_id) => {
 								if(!error && unsignedObject_id && unsignedObject_id.object_id===message.object_id) {
 									//t6console.debug(object);
@@ -205,7 +204,7 @@ t6websockets.init = async function() {
 									t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
 								} else {
 									t6console.debug("Error", error);
-									t6console.debug("unsignedObject_id", unsignedObject_id.object_id);
+									t6console.debug("unsignedObject_id", object.id);
 									t6console.debug("message.object_id", message.object_id);
 									t6console.debug("Signature is invalid - Claim rejected");
 									ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "Not Authorized, invalid signature", "object_id": null, "socket_id": metadata.id}));
@@ -246,6 +245,28 @@ t6websockets.init = async function() {
 							ws.send("undefined");
 						}
 						break;
+					case "remindMeToMeasure":
+						metadata = wsClients.get(ws);
+						if(typeof message.object_id!=="undefined" && message.object_id!==null) {
+							wss.clients.forEach(function each(client) {
+								let current = wsClients.get(client);
+								if(current.object_id === message.object_id) {
+									message.payload ={
+										"arduinoCommand": "measureRequest",
+										"measurement": message.measurement
+									};
+									setTimeout(function(payload, current) {
+										client.send(JSON.stringify(payload));
+										ws.send(`Sent scheduled measureRequest command to object_id: ${current.object_id}`);
+										t6console.debug(`Sent scheduled measureRequest command to object_id: ${current.object_id}`);
+									}, message.delay, message.payload, current);
+									t6console.debug(`setTimeout for measureRequest at ${moment().add(message.delay, "milliseconds").format(logDateFormat)}`);
+								}
+							});
+						} else {
+							ws.send("NOK");
+						}
+						break;
 					case "help":
 						ws.send(`Hello ${metadata.id}, welcome to t6 IoT sockets command interface.`);
 						ws.send("Here are the commands :");
@@ -257,6 +278,7 @@ t6websockets.init = async function() {
 						ws.send("- getObject: to get the id of an Object claimed to server.");
 						ws.send("- getUser: to get the user_id of an Object claimed to server.");
 						ws.send("- getUA: to get the user-agent of an Object.");
+						ws.send("- remindMeToMeasure: set a delayed task to call back the object for a measurement.");
 						break;
 					default:
 						break;
