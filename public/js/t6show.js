@@ -581,7 +581,7 @@ let actionate = () => {
 				let value = evt.currentTarget.classList.contains("is-checked")===true?evt.currentTarget.dataset.valuechecked:evt.currentTarget.dataset.valueunchecked;
 				let action = evt.currentTarget.dataset.action;
 				if(action !== "") {
-					req.open("GET", action.format(value), true);
+					req.open(typeof evt.currentTarget.dataset.method!=="undefined"?evt.currentTarget.dataset.method:"GET", action.format(value), true);
 					req.send();
 				}
 				evt.preventDefault();
@@ -600,7 +600,7 @@ let actionate = () => {
 			(sliders[i]).addEventListener("change", function(evt) {
 				let action = evt.currentTarget.dataset.action;
 				let value = evt.currentTarget.MaterialSlider.element_.value;
-				req.open("GET", action.format(value), true);
+				req.open(typeof evt.currentTarget.dataset.method!=="undefined"?evt.currentTarget.dataset.method:"GET", action.format(value), true);
 				req.send();
 				evt.preventDefault();
 			}, {passive: false});
@@ -610,34 +610,67 @@ let actionate = () => {
 let materializeLight = (inputJson) => {
 	return ml.parse(inputJson) + ml.createSnack();
 };
+const loadScript = (FILE_URL, async=true, type="text/javascript") => {
+	return new Promise((resolve, reject) => {
+		try {
+			const scriptEle = document.createElement("script");
+			scriptEle.type = type;
+			scriptEle.async = async;
+			scriptEle.src =FILE_URL;
+			scriptEle.addEventListener("load", (ev) => {
+				resolve({ status: true, ev: ev });
+			});
+			scriptEle.addEventListener("error", (ev) => {
+				reject({
+					status: false,
+					message: `Failed to load the script ＄{FILE_URL}`
+				});
+			});
+			document.body.appendChild(scriptEle);
+		} catch (error) {
+			reject(error);
+		}
+	});
+};
+
 document.onreadystatechange = function () {
 	fetch("./config.json", {mode: "no-cors"})
-	.then((res) => res.json())
+	.then((res) => res.json().catch(error => { console.log("Fetch Error:", error); }))
 	.then((cfg) => {
 		config = cfg;
-		document.getElementById("app").innerHTML = materializeLight(ui);
-		actionate();
+		if(typeof config!=="undefined") {
+			console.log("Config loaded successfully (1)");
+			document.getElementById("app").innerHTML = materializeLight(ui);
+			actionate();
+		}
+	})
+	.catch(error => {
+		console.log("Config loaded error:", error);
 	});
+	
 	fetch("./getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39", {mode: "no-cors"})
-		.then((res) => res.json())
-		.then((values) => {
-			if(typeof values.pins!=="undefined" && values.pins.length>-1) {
-				(values.pins).map(function(pin, index) {
-					if(document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement && document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch) {
-						if(pin[Object.keys(pin)].value === "1") {
-							document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch.on();
-						} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
-							document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch.off();
-						}
+	.then((res) => res.json())
+	.then((values) => {
+		if(typeof values.pins!=="undefined" && values.pins.length>-1) {
+			(values.pins).map(function(pin, index) {
+				if(document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement && document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch) {
+					if(pin[Object.keys(pin)].value === "1") {
+						document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch.on();
+					} else if(pin[Object.keys(pin)].value === "0" && document.getElementById(Object.keys(pin))) {
+						document.getElementById(Object.keys(pin)).parentElement.parentElement.MaterialSwitch.off();
 					}
-					if(typeof document.getElementById(Object.keys(pin))!=="undefined" && document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement.parentElement) {
-						document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .mode").textContent = typeof pin[Object.keys(pin)].mode?pin[Object.keys(pin)].mode:"";
-						document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .type").textContent = typeof pin[Object.keys(pin)].type?pin[Object.keys(pin)].type:"";
-						document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .value").textContent = typeof pin[Object.keys(pin)].value?pin[Object.keys(pin)].value:"";
-					}
-				});
-			}
-		})
+				}
+				if(typeof document.getElementById(Object.keys(pin))!=="undefined" && document.getElementById(Object.keys(pin)) && document.getElementById(Object.keys(pin)).parentElement.parentElement) {
+					document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .mode").textContent = typeof pin[Object.keys(pin)].mode?pin[Object.keys(pin)].mode:"";
+					document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .type").textContent = typeof pin[Object.keys(pin)].type?pin[Object.keys(pin)].type:"";
+					document.getElementById(Object.keys(pin)).parentElement.parentElement.querySelector(".mdl-switch__label .value").textContent = typeof pin[Object.keys(pin)].value?pin[Object.keys(pin)].value:"";
+				}
+			});
+		}
+	})
+	.catch(error => {
+		console.log("Error", error);
+	});
 }
 
 let registerServiceWorker = function() {

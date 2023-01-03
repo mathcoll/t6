@@ -546,19 +546,22 @@ document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch
 document.getElementById(Object.keys(e)).parentElement.querySelector(".mdl-switch__label .value").textContent=e[Object.keys(e)].value})}})}),e.preventDefault()}}},{passive:!1})
 ;let s=document.querySelectorAll("label.mdl-switch");for(var t in s)s[t].childElementCount>-1&&s[t].addEventListener("change",function(e){
 let t=!0===e.currentTarget.classList.contains("is-checked")?e.currentTarget.dataset.valuechecked:e.currentTarget.dataset.valueunchecked,s=e.currentTarget.dataset.action
-;""!==s&&(req.open("GET",s.format(t),!0),req.send()),e.preventDefault()},{passive:!1});let i=document.querySelectorAll("input.mdl-slider")
-;for(var t in i)i[t].childElementCount>-1&&(i[t].addEventListener("input",function(e){
+;""!==s&&(req.open(void 0!==e.currentTarget.dataset.method?e.currentTarget.dataset.method:"GET",s.format(t),!0),req.send()),e.preventDefault()},{passive:!1})
+;let i=document.querySelectorAll("input.mdl-slider");for(var t in i)i[t].childElementCount>-1&&(i[t].addEventListener("input",function(e){
 let t=e.currentTarget.dataset.label_id,s=void 0!==e.currentTarget.dataset.unit?e.currentTarget.dataset.unit:"%",i=e.currentTarget.MaterialSlider.element_.value
 ;document.getElementById(t).textContent=s.format(i)},{passive:!1}),i[t].addEventListener("change",function(e){let t=e.currentTarget.dataset.action,s=e.currentTarget.MaterialSlider.element_.value
-;req.open("GET",t.format(s),!0),req.send(),e.preventDefault()},{passive:!1}))},materializeLight=e=>ml.parse(e)+ml.createSnack();document.onreadystatechange=function(){fetch("./config.json",{
-mode:"no-cors"}).then(e=>e.json()).then(e=>{config=e,document.getElementById("app").innerHTML=materializeLight(ui),actionate()}),
+;req.open(void 0!==e.currentTarget.dataset.method?e.currentTarget.dataset.method:"GET",t.format(s),!0),req.send(),e.preventDefault()},{passive:!1}))},materializeLight=e=>ml.parse(e)+ml.createSnack()
+;const loadScript=(e,t=!0,s="text/javascript")=>new Promise((i,n)=>{try{const a=document.createElement("script");a.type=s,a.async=t,a.src=e,a.addEventListener("load",e=>{i({status:!0,ev:e})}),
+a.addEventListener("error",e=>{n({status:!1,message:"Failed to load the script ＄{FILE_URL}"})}),document.body.appendChild(a)}catch(e){n(e)}});document.onreadystatechange=function(){
+fetch("./config.json",{mode:"no-cors"}).then(e=>e.json().catch(e=>{console.log("Fetch Error:",e)})).then(e=>{void 0!==(config=e)&&(console.log("Config loaded successfully (1)"),
+document.getElementById("app").innerHTML=materializeLight(ui),actionate())}).catch(e=>{console.log("Config loaded error:",e)}),
 fetch("./getValues?pin=0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39",{mode:"no-cors"}).then(e=>e.json()).then(e=>{
 void 0!==e.pins&&e.pins.length>-1&&e.pins.map(function(e,t){
 document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement&&document.getElementById(Object.keys(e)).parentElement.parentElement.MaterialSwitch&&("1"===e[Object.keys(e)].value?document.getElementById(Object.keys(e)).parentElement.parentElement.MaterialSwitch.on():"0"===e[Object.keys(e)].value&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement.parentElement.MaterialSwitch.off()),
 void 0!==document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e))&&document.getElementById(Object.keys(e)).parentElement.parentElement&&(document.getElementById(Object.keys(e)).parentElement.parentElement.querySelector(".mdl-switch__label .mode").textContent=(e[Object.keys(e)].mode,
 e[Object.keys(e)].mode),document.getElementById(Object.keys(e)).parentElement.parentElement.querySelector(".mdl-switch__label .type").textContent=(e[Object.keys(e)].type,e[Object.keys(e)].type),
-document.getElementById(Object.keys(e)).parentElement.parentElement.querySelector(".mdl-switch__label .value").textContent=(e[Object.keys(e)].value,e[Object.keys(e)].value))})})}
-;let registerServiceWorker=function(){return navigator.serviceWorker.register("/sw.js",{scope:"/"}).then(function(e){
+document.getElementById(Object.keys(e)).parentElement.parentElement.querySelector(".mdl-switch__label .value").textContent=(e[Object.keys(e)].value,e[Object.keys(e)].value))})}).catch(e=>{
+console.log("Error",e)})};let registerServiceWorker=function(){return navigator.serviceWorker.register("/sw.js",{scope:"/"}).then(function(e){
 return"true"===localStorage.getItem("settings.debug")&&console.log("[ServiceWorker] Registered with scope:",e.scope),
 "object"==typeof firebase&&"undefined"!=typeof firebase||"object"==typeof firebase.apps||"number"==typeof firebase.apps.length||firebase.initializeApp(firebaseConfig),
 firebase.messaging().useServiceWorker(e),console.log("[pushSubscription]",firebase.messaging().getToken()),firebase.analytics(),e}).catch(function(e){console.log("[ServiceWorker] error occured..."+e)
