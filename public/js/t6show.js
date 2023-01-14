@@ -429,6 +429,9 @@ let actionate = () => {
 	document.getElementById("config.wifi.password").value = config.wifi.password;
 	document.getElementById("config.t6.t6Object_id").value = config.t6.t6Object_id;
 	document.getElementById("config.t6.t6ObjectSecretKey").value = config.t6.t6ObjectSecretKey;
+	document.getElementById("config.t6.scheme").value = config.t6.scheme;
+	document.getElementById("config.t6.host").value = config.t6.host;
+	document.getElementById("config.t6.port").value = config.t6.port;
 	document.getElementById("config.t6.http.localPort").value = config.t6.http.localPort;
 	document.getElementById("config.t6.ssdp.localPort").value = config.t6.ssdp.localPort;
 	document.getElementById("config.t6.ssdp.advertiseInterval").value = config.t6.ssdp.advertiseInterval;
@@ -496,7 +499,7 @@ let actionate = () => {
 										options.body = JSON.stringify({wifi: {ssid: document.getElementById("config.wifi.ssid").value, password: document.getElementById("config.wifi.password").value}});
 										break;
 									case "config.t6" :
-										options.body = JSON.stringify({t6: {t6Object_id: document.getElementById("config.t6.t6Object_id").value, t6ObjectSecretKey: document.getElementById("config.t6.t6ObjectSecretKey").value}});
+										options.body = JSON.stringify({t6: {t6Object_id: document.getElementById("config.t6.t6Object_id").value, t6ObjectSecretKey: document.getElementById("config.t6.t6ObjectSecretKey").value, scheme: document.getElementById("config.t6.scheme").value, host: document.getElementById("config.t6.host").value, port: document.getElementById("config.t6.port").value}});
 										break;
 									case "config.t6.http" :
 										options.body = JSON.stringify({"t6": {"http": {"localPort": document.getElementById("config.t6.http.localPort").value }, "servicesStatus": { "http": document.getElementById("config.t6.servicesStatus.http").parentElement.parentElement.querySelector(".mdl-switch__input").checked } }});

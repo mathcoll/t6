@@ -493,6 +493,7 @@ document.getElementById("app").MaterialLayout.init(),
 document.getElementById("title").innerText="%s (%s)".format(document.querySelector("#title").innerText,void 0!==config.t6.ssdp.friendlyName?config.t6.ssdp.friendlyName:"Unnamed"),
 document.getElementById("config.wifi.ssid").value=config.wifi.ssid,document.getElementById("config.wifi.password").value=config.wifi.password,
 document.getElementById("config.t6.t6Object_id").value=config.t6.t6Object_id,document.getElementById("config.t6.t6ObjectSecretKey").value=config.t6.t6ObjectSecretKey,
+document.getElementById("config.t6.scheme").value=config.t6.scheme,document.getElementById("config.t6.host").value=config.t6.host,document.getElementById("config.t6.port").value=config.t6.port,
 document.getElementById("config.t6.http.localPort").value=config.t6.http.localPort,document.getElementById("config.t6.ssdp.localPort").value=config.t6.ssdp.localPort,
 document.getElementById("config.t6.ssdp.advertiseInterval").value=config.t6.ssdp.advertiseInterval,document.getElementById("config.t6.ssdp.presentationURL").value=config.t6.ssdp.presentationURL,
 document.getElementById("config.t6.ssdp.friendlyName").value=config.t6.ssdp.friendlyName,document.getElementById("config.t6.ssdp.modelName").value=config.t6.ssdp.modelName,
@@ -516,8 +517,9 @@ let t=e.currentTarget.dataset.action,s=document.getElementById(e.currentTarget.d
 let i=void 0!==s.parentElement.MaterialTextfield?s.parentElement.MaterialTextfield.input_.value:s.textContent,n=void 0!==s.parentElement.MaterialTextfield&&""!==i||void 0===s.parentElement.MaterialTextfield
 ;if(void 0!==t&&n){let s=e.currentTarget.dataset.trigger,n={method:void 0!==e.currentTarget.dataset.method?e.currentTarget.dataset.method:"POST"};if("/config"===t)switch(s){case"config.wifi":
 n.body=JSON.stringify({wifi:{ssid:document.getElementById("config.wifi.ssid").value,password:document.getElementById("config.wifi.password").value}});break;case"config.t6":n.body=JSON.stringify({t6:{
-t6Object_id:document.getElementById("config.t6.t6Object_id").value,t6ObjectSecretKey:document.getElementById("config.t6.t6ObjectSecretKey").value}});break;case"config.t6.http":n.body=JSON.stringify({
-t6:{http:{localPort:document.getElementById("config.t6.http.localPort").value},servicesStatus:{
+t6Object_id:document.getElementById("config.t6.t6Object_id").value,t6ObjectSecretKey:document.getElementById("config.t6.t6ObjectSecretKey").value,
+scheme:document.getElementById("config.t6.scheme").value,host:document.getElementById("config.t6.host").value,port:document.getElementById("config.t6.port").value}});break;case"config.t6.http":
+n.body=JSON.stringify({t6:{http:{localPort:document.getElementById("config.t6.http.localPort").value},servicesStatus:{
 http:document.getElementById("config.t6.servicesStatus.http").parentElement.parentElement.querySelector(".mdl-switch__input").checked}}});break;case"config.t6.audio":n.body=JSON.stringify({t6:{
 servicesStatus:{audio:document.getElementById("config.t6.servicesStatus.audio").parentElement.parentElement.querySelector(".mdl-switch__input").checked}}});break;case"config.t6.mdns":
 n.body=JSON.stringify({t6:{mdns:{localPort:80},servicesStatus:{mdns:document.getElementById("config.t6.servicesStatus.mdns").parentElement.parentElement.querySelector(".mdl-switch__input").checked}}})
