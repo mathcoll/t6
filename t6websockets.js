@@ -115,19 +115,29 @@ t6websockets.init = async function() {
 				switch(message.command) {
 					case "subscribe":
 						metadata = wsClients.get(ws);
-						(metadata.channels).indexOf(message.channel) === -1?(metadata.channels).push(message.channel):t6console.log("Already subscribed to channel");
-						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
+						((message.channel).toLowerCase().split(/[\s,^!]+/)).map((chan) => {
+							if(chan !== "") {
+								t6console.debug(`-> Subscribing to ${chan}`);
+								(metadata.channels).indexOf(chan) === -1?(metadata.channels).push(chan.toLowerCase()):t6console.log(`Already subscribed to ${chan}`);
+							}
+						});
 						wsClients.set(ws, metadata);
-						t6console.debug(`-> message.channel: ${message.channel}`);
 						t6console.debug(`-> metadata.channels: ${metadata.channels}`);
+						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 						break;
 					case "unsubscribe":
 						metadata = wsClients.get(ws);
-						(metadata.channels) = (metadata.channels).filter((chan) => chan !== message.channel);
-						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
+						(message.channel).toLowerCase().split(/[\s,^!]+/).map((chan) => {
+							t6console.debug(`-> Unsubscribing from ${chan}`);
+							// removing chan from metadata.channels
+							//(metadata.channels).filter((c) => c!==chan);
+							let i = (metadata.channels).indexOf(chan);
+							if (i>-1) {
+								(metadata.channels).splice(i, 1);
+							}
+						});
 						wsClients.set(ws, metadata);
-						t6console.debug(`-> message.channel: ${message.channel}`);
-						t6console.debug(`-> metadata.channels: ${metadata.channels}`);
+						ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
 						break;
 					case "getSubscription":
 						metadata = wsClients.get(ws);
