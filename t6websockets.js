@@ -129,8 +129,6 @@ t6websockets.init = async function() {
 						metadata = wsClients.get(ws);
 						(message.channel).toLowerCase().split(/[\s,^!]+/).map((chan) => {
 							t6console.debug(`-> Unsubscribing from ${chan}`);
-							// removing chan from metadata.channels
-							//(metadata.channels).filter((c) => c!==chan);
 							let i = (metadata.channels).indexOf(chan);
 							if (i>-1) {
 								(metadata.channels).splice(i, 1);
