@@ -16,6 +16,17 @@ Types of changes
 
 ------------
 
+## 2023
+### Milestone 22 - 2023-01
+**Added**
+  - [x] webSocket allows `remindMeToMeasure` command
+
+**Fixed**
+  - [x] Ifttt trigger and oAuth2 process
+
+**Changed**
+  - [x] Improve UI for Objects
+
 ## 2022
 ### Milestone 21 - 2022-10
 **Added**

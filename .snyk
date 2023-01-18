@@ -123,10 +123,10 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - device > useragent:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -166,14 +166,11 @@ ignore:
   SNYK-JS-MATHJS-1016401:
     - loess > mathjs:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
   SNYK-JS-SVG2PNG-567041:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
-        expires: '2021-03-01T15:36:25.042Z'
-      d3node-output > svg2png:
-        reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2022-11-28T08:59:35.638Z'
@@ -198,19 +195,16 @@ ignore:
     - d3node-output > svg2png:
         reason: None given
         expires: '2022-09-07T20:27:34.433Z'
+    - d3node-output > svg2png:
+        reason: None given
+        expires: '2022-11-28T08:59:35.638Z'
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
-        expires: '2021-03-01T15:36:25.044Z'
-      d3node-output > svg2png > yargs > yargs-parser:
-        reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
-      d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
-        reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
     - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-10-19T20:34:03.175Z'
@@ -235,22 +229,28 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
         expires: '2022-09-07T20:27:34.433Z'
+    - d3node-output > svg2png > yargs > yargs-parser:
+        reason: None given
+        expires: '2022-11-28T08:59:35.638Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
+        reason: None given
+        expires: '2022-11-28T08:59:35.638Z'
   'npm:content-type-parser:20170905':
     - d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - d3node-barchart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - d3node-linechart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - d3node-piechart > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.229Z'
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2022-06-25T10:47:10.648Z'
@@ -541,187 +541,187 @@ ignore:
   SNYK-JS-D3COLOR-1076592:
     - d3-node > d3 > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-scale-chromatic > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-scale-chromatic > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-barchart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-linechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-piechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-voronoi > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-barchart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-linechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-piechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-voronoi > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.636Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.637Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
   SNYK-JS-LOCUTUS-1090597:
     - cidr-js > locutus:
         reason: None given
@@ -757,7 +757,7 @@ ignore:
   SNYK-JS-NETMASK-1089716:
     - libnmap > netmask:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
   SNYK-JS-TAR-1536528:
     - npm > libnpmpack > pacote > tar:
         reason: None given
@@ -1044,63 +1044,54 @@ ignore:
     - npm > cli-columns > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.162Z'
-      d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+      twilio > request > har-validator > chalk > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.226Z'
     - npm > columnify > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+      twilio > request > har-validator > chalk > has-ansi > ansi-regex:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
     - nsp > cli-table2 > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
-    - nsp > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
       d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
-    - npm > npmlog > gauge > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
-    - nsp > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        expires: '2023-02-17T19:02:36.227Z'
+    - nsp > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
       d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
-    - d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2021-10-19T20:34:03.163Z'
-      d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
-    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex':
+        expires: '2023-02-17T19:02:36.227Z'
+    - npm > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
       d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
-    - bcrypt > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex:
+        expires: '2023-02-17T19:02:36.227Z'
+    - nsp > yargs > cliui > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
       d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
-    - canvas > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex:
+        expires: '2023-02-17T19:02:36.227Z'
+    - d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
       d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2022-11-28T08:59:35.635Z'
+        expires: '2023-02-17T19:02:36.227Z'
+    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex':
+        reason: None given
+        expires: '2021-10-19T20:34:03.163Z'
+    - bcrypt > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2021-10-19T20:34:03.163Z'
+    - canvas > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2021-10-19T20:34:03.163Z'
     - npm > node-gyp > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
@@ -1467,10 +1458,40 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2022-09-07T20:27:34.431Z'
+    - d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2022-11-28T08:59:35.635Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
-        expires: '2022-11-28T08:59:35.638Z'
+        expires: '2023-02-17T19:02:36.228Z'
   SNYK-JS-ASYNC-2441827:
     - geoip-lite > async:
         reason: None given
@@ -1492,6 +1513,14 @@ ignore:
     - jsdom > nwsapi:
         reason: None given
         expires: '2022-08-01T13:09:39.318Z'
+  SNYK-JS-LODASHSET-1320032:
+    - express-jwt > lodash.set:
+        reason: None given
+        expires: '2023-02-17T19:02:36.228Z'
+  SNYK-JS-TAFFYDB-2992450:
+    - firebase-admin > @google-cloud/firestore > google-gax > protobufjs-cli > jsdoc > taffydb:
+        reason: None given
+        expires: '2023-02-17T19:02:36.229Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
