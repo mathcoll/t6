@@ -26,6 +26,7 @@ Types of changes
 
 **Changed**
   - [x] Improve UI for Objects
+  - [x] Packages updates jsonwebtoken@9.0.0 ws@8.12.0 twilio@3.84.1 @influxdata/influxdb-client@1.33.0 @tensorflow/tfjs-node@4.2.0 @vladmandic/face-api@1.7.8 canvas@2.11.0 nodemailer@6.9.0 npm@9.3.1 qs@6.11.0 simple-statistics@7.8.2 fs-extra@11.1.0
 
 ## 2022
 ### Milestone 21 - 2022-10
