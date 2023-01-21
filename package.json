@@ -58,7 +58,7 @@
     "express-session": "^1.17.3",
     "firebase-admin": "^11.2.0",
     "follow-redirects": "^1.15.2",
-    "fs-extra": "^10.1.0",
+    "fs-extra": "^11.1.0",
     "geodist": "^0.2.1",
     "geoip-lite": "^1.4.6",
     "graceful-fs": "^4.2.10",

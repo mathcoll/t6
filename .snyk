@@ -1044,45 +1044,36 @@ ignore:
     - npm > cli-columns > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.162Z'
-      twilio > request > har-validator > chalk > strip-ansi > ansi-regex:
+      '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex':
         reason: None given
-        expires: '2023-02-17T19:02:36.226Z'
+        expires: '2023-02-20T15:57:16.473Z'
     - npm > columnify > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      twilio > request > har-validator > chalk > has-ansi > ansi-regex:
+      bcrypt > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-02-20T15:57:16.473Z'
     - nsp > cli-table2 > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+      canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-02-20T15:57:16.473Z'
     - nsp > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+      jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-02-20T15:57:16.473Z'
     - npm > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
     - nsp > yargs > cliui > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
     - d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
     - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > strip-ansi > ansi-regex':
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
@@ -1488,6 +1479,27 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2022-11-28T08:59:35.635Z'
+    - twilio > request > har-validator > chalk > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-17T19:02:36.226Z'
+    - twilio > request > har-validator > chalk > has-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-17T19:02:36.227Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-17T19:02:36.227Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-17T19:02:36.227Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-17T19:02:36.227Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-17T19:02:36.227Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-17T19:02:36.227Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
@@ -1521,6 +1533,10 @@ ignore:
     - firebase-admin > @google-cloud/firestore > google-gax > protobufjs-cli > jsdoc > taffydb:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
+  SNYK-JS-FILETYPE-2958042:
+    - image-type > file-type:
+        reason: Breaking change !!!
+        expires: '2023-02-20T15:57:16.473Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
