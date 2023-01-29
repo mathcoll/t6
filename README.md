@@ -51,7 +51,6 @@ More detailed explanation on [![wiki](https://img.shields.io/badge/t6%20document
 ```mermaid
 graph TD;
 sequenceDiagram
-    actor User
     Object->>t6 Sockets: basic auth
     t6 Sockets-->>Object: welcome message
     t6 Sockets-->>Object: claim request
