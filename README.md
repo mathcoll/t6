@@ -49,8 +49,7 @@ More detailed explanation on [![wiki](https://img.shields.io/badge/t6%20document
 
 ## t6 schematic
 ```mermaid
-graph TD;
-sequenceDiagram
+sequenceDiagram;
     Object->>t6 Sockets: basic auth
     t6 Sockets-->>Object: welcome message
     t6 Sockets-->>Object: claim request
