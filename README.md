@@ -47,6 +47,34 @@ Detailed [Api documentation](https://doc.internetcollaboratif.info) will help yo
 Installing _t6_ on your own server is easy, follow the [installation guide](https://github.com/mathcoll/t6/wiki/Installing-t6) on Wiki page.
 More detailed explanation on [![wiki](https://img.shields.io/badge/t6%20documentation-orange)](https://www.internetcollaboratif.info/features/) is also available.
 
+## t6 schematic
+```mermaid
+graph TD;
+sequenceDiagram
+    actor User
+    Object->>t6 Sockets: basic auth
+    t6 Sockets-->>Object: welcome message
+    t6 Sockets-->>Object: claim request
+    Object->>t6 Sockets: claim Object
+    t6 Sockets-->>Object: claimed
+    loop As many as wished
+        Object->>t6 Sockets: channel subscribe
+        Object->>t6 Sockets: channel unsubscribe
+        t6 Sockets-->>Object: channels
+    end
+
+    User->>+Object: Http GET /index
+    Object-->>+User: html Ui and assets
+    User->>t6 Sockets: Http /unsubscribe
+    t6 Sockets-->>User: channels
+
+    loop Custom frequency
+        t6 Sockets->>Object: measureRequest
+        Object-->>t6 Rest Api: Http POST /api/v2.0.1/data
+        Object-->>t6 Sockets: remindMeToMeasure
+    end
+```
+
 ## t6 Android Application
 _t6_ is available on the [Android Google Play Store](https://play.google.com/store/apps/details?id=info.internetcollaboratif.api) for free.
 This Application is using exactly the same code and Api from this repository.
