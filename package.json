@@ -9,6 +9,16 @@
   "funding": {
     "url": "https://github.com/sponsors/mathcoll"
   },
+  "keywords": [
+    "api",
+    "arduino",
+    "device",
+    "internet of things",
+    "iot",
+    "mobile",
+    "rest",
+    "t6"
+  ],
   "contributors": [],
   "license": "GPL-3.0",
   "private": true,

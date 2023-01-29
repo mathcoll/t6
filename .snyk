@@ -1044,27 +1044,18 @@ ignore:
     - npm > cli-columns > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.162Z'
-      '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex':
+      d3-node > jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2023-02-20T15:57:16.473Z'
+        expires: '2023-02-22T19:09:55.474Z'
     - npm > columnify > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      bcrypt > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-02-20T15:57:16.473Z'
     - nsp > cli-table2 > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-02-20T15:57:16.473Z'
     - nsp > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-02-20T15:57:16.473Z'
     - npm > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
@@ -1500,6 +1491,18 @@ ignore:
     - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2023-02-17T19:02:36.227Z'
+    - '@tensorflow/tfjs-node > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex':
+        reason: None given
+        expires: '2023-02-20T15:57:16.473Z'
+    - bcrypt > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-20T15:57:16.473Z'
+    - canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-20T15:57:16.473Z'
+    - jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-20T15:57:16.473Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
@@ -1537,6 +1540,22 @@ ignore:
     - image-type > file-type:
         reason: Breaking change !!!
         expires: '2023-02-20T15:57:16.473Z'
+  SNYK-JS-JSONWEBTOKEN-3180020:
+    - twilio > jsonwebtoken:
+        reason: None given
+        expires: '2023-02-22T19:09:55.474Z'
+  SNYK-JS-JSONWEBTOKEN-3180022:
+    - twilio > jsonwebtoken:
+        reason: None given
+        expires: '2023-02-22T19:09:55.474Z'
+  SNYK-JS-JSONWEBTOKEN-3180024:
+    - twilio > jsonwebtoken:
+        reason: None given
+        expires: '2023-02-22T19:09:55.474Z'
+  SNYK-JS-JSONWEBTOKEN-3180026:
+    - twilio > jsonwebtoken:
+        reason: None given
+        expires: '2023-02-22T19:09:55.474Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
