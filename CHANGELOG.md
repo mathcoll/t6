@@ -19,7 +19,7 @@ Types of changes
 ## 2023
 ### Milestone 23 - 2023-0
 **Added**
-  - [x] Added OTP/2FA challenge as MVP
+  - [x] Added OTP/2FA challenge as MVP on the authenticate process ; only when grant_type=password
 
 **Fixed**
 
