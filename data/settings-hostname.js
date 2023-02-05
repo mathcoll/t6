@@ -21,7 +21,7 @@ mqttObjectStatus	= "objects/status/"; // Mqtt topic for t6 objects statuses
 mqttSockets			= mqttRoot+"sockets"; // Mqtt topic for t6 sockets infos
 
 /* Session settings */
-secret				= "gktokgortkhoktrhktrzeùfzêfzeflefz"; // Keyboard-cat
+secret				= "Whw3$=:eb/gEbcrStXz%c$cEj,.E'yF@_'9%-DcH5Q233'mF9(iVc,E=NvgAHu2-ZR,_?[,s+k%n@v[SJs(w:cT%k#?ycQC'N/)_CQP$P;3R:=E3.CZ-Z"; // Keyboard-cat
 sessionDuration		= 3600*24*10; // Cookie session duration, 10 days
 store				= new FileStore({ttl: sessionDuration, path: "/path/to/sessions"}); // Force session folder as absolute path in settings
 sessionSettings		= { store: store, secret: secret, cookie: { maxAge: (sessionDuration*1000) }, resave: true, saveUninitialized: true };
@@ -32,7 +32,7 @@ staticOptions		= { etag: true, maxAge: 10*24*3600*1000 }; // 10 Days
 jwtsettings = {
 	expiresInSeconds: 5*60, // JWT session duration in seconds, it should be short: 5 minutes
 	refreshExpiresInSeconds: 60*60*24, // JWT session duration in seconds for refreshToken, it can be longer: 24 hours
-	secret: "ThisIsAVeryGoodSecretForMyAPI", // Keyboard-cat,
+	secret: "Whw3$=:eb/gEbcrStXz%c$cEj,.E'yF@_'9%-DcH5Q233'mF9(iVc,E=NvgAHu2-ZR,_?[,s+k%n@v[SJs(w:cT%k#?ycQC'N/)_CQP$P;3R:=E3.CZ-Z", // Keyboard-cat
 	algorithms: ["HS256", "RS256"]
 };
 
@@ -240,7 +240,7 @@ twilioSettings = {
 };
 
 /* OTP settings */
-otpKey		 = "Whw3$=:eb/gEbcrStXz%c$cEj,.E'yF@_'9%-DcH5Q233'mF9(iVc,E=NvgAHu2-ZR,_?[,s+k%n@v[SJs(w:cT%k#?ycQC'N/)_CQP$P;3R:=E3.CZ-Z";
+otpKey		 = "Whw3$=:eb/gEbcrStXz%c$cEj,.E'yF@_'9%-DcH5Q233'mF9(iVc,E=NvgAHu2-ZR,_?[,s+k%n@v[SJs(w:cT%k#?ycQC'N/)_CQP$P;3R:=E3.CZ-Z"; // Keyboard-cat
 otpAlgorithm = "sha256";
 otpChars	 = 6;
 otpExpiresAfter = 5;
