@@ -80,6 +80,18 @@ const getDurationInMilliseconds = (start) => {
  */
 
 /**
+ * @apiDefine 307
+ * @apiError 307 Temporary Redirect
+ * @apiErrorExample {json} 307 Temporary Redirect
+ *     HTTP/1.1 307 Temporary Redirect
+ *     {
+ *       "message": "Temporary Redirect",
+ *       "id": "",
+ *       "code": 307
+ *     }
+ */
+
+/**
  * @apiDefine 400
  * @apiError 400 Bad Request, require a Bearer Authentication or revision is incorrect
  * @apiErrorExample {json} 400 Response
@@ -451,6 +463,7 @@ router.delete("/tokens/all", function (req, res) {
  * @apiSuccess {timestamp} refreshTokenExp Expiration timestamp of the Refresh Token
  *
  * @apiUse 200
+ * @apiUse 307
  * @apiUse 400
  * @apiUse 401
  * @apiUse 403
@@ -786,6 +799,23 @@ Connexions à des heures inhabituelles : Si une connexion est effectuée à des 
 	}
 });
 
+
+/**
+ * @api {post} /authenticate/OTPchallenge Send the OTP for a challenge
+ * @apiName Send the OTP for a challenge
+ * @apiGroup 13. Users
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} user_id User ID
+ * @apiBody {String} [email] The User Email address
+ * @apiBody {String} [otp] The User One Time Password (OTP)
+ * @apiBody {String} [hash] The User Hash provided from the server on the challenge
+ * 
+ * @apiUse 200
+ * @apiUse 403
+ * @apiUse 429
+ */
 router.post("/authenticate/OTPchallenge", function (req, res) {
 	let email = req.body.email;
 	let otp = req.body.otp;
