@@ -240,6 +240,7 @@ twilioSettings = {
 };
 
 /* OTP settings */
-otpKey     = "Whw3$=:eb/gEbcrStXz%c$cEj,.E'yF@_'9%-DcH5Q233'mF9(iVc,E=NvgAHu2-ZR,_?[,s+k%n@v[SJs(w:cT%k#?ycQC'N/)_CQP$P;3R:=E3.CZ-Z";
-otpChars = 6;
+otpKey		 = "Whw3$=:eb/gEbcrStXz%c$cEj,.E'yF@_'9%-DcH5Q233'mF9(iVc,E=NvgAHu2-ZR,_?[,s+k%n@v[SJs(w:cT%k#?ycQC'N/)_CQP$P;3R:=E3.CZ-Z";
+otpAlgorithm = "sha256";
+otpChars	 = 6;
 otpExpiresAfter = 5;

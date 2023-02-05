@@ -36,7 +36,7 @@ t6mailer.sendMail = (envelope) => new Promise((resolve, reject) => {
 t6mailer.generateOTP = (user, res) => new Promise((resolve, reject) => {
 	let email = user.email;
 	let otp = otpGen.generate(otpChars, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false, digits: true });
-	let hash = otpTool.createNewOTP(email, otp, otpKey, otpExpiresAfter, algorithm="sha256");
+	let hash = otpTool.createNewOTP(email, otp, otpKey, otpExpiresAfter, otpAlgorithm);
 	t6console.debug("generateOTP for ", user.email);
 	resolve( {email, otp, hash} );
 	

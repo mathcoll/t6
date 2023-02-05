@@ -826,7 +826,7 @@ router.post("/authenticate/OTPchallenge", function (req, res) {
 	//t6console.debug(queryU);
 	let user = users.findOne(queryU);
 	if ( user ) {
-		if ( otpTool.verifyOTP(email, otp, hash, otpKey, "sha256") ) {
+		if ( otpTool.verifyOTP(email, otp, hash, otpKey, otpAlgorithm) ) {
 			user.quotausage = undefined;
 			user.data = undefined;
 			let geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
