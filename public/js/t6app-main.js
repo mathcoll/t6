@@ -2774,7 +2774,7 @@ var touchStartPoint, touchMovePoint;
 				"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
 				"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
 				"					<input name='otp' pattern=\"" + app.patterns.otp + "\" inputmode='otp' class='mdl-textfield__input' type='text' id='otp.otp'>" +
-				"					<label for='otp.otp' class='mdl-textfield__label'>6 digits hash you have received by email</label>" +
+				"					<label for='otp.otp' class='mdl-textfield__label'>6 digits you have received by email</label>" +
 				"					<span class='mdl-textfield__error'>OTP should be 6 digits long</span>" +
 				"				</div>" +
 				"			</div>" +
