@@ -33,4 +33,29 @@ t6mailer.sendMail = (envelope) => new Promise((resolve, reject) => {
 	}
 });
 
+t6mailer.generateOTP = (user, res) => new Promise((resolve, reject) => {
+	let email = user.email;
+	let otp = otpGen.generate(otpChars, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false, digits: true });
+	let hash = otpTool.createNewOTP(email, otp, otpKey, otpExpiresAfter, algorithm="sha256");
+	t6console.debug("generateOTP for ", user.email);
+	resolve( {email, otp, hash} );
+	
+	res.render("emails/otp", {"geoip": user.geoip, "device": user.device, "user": user, "otp": otp, "duration": `${otpExpiresAfter} minutes`}, function(err, html) {
+		let mailOptions = {
+			from: from,
+			bcc: typeof bcc!=="undefined"?bcc:null,
+			to: user.email,
+			user_id: user.user_id,
+			subject: `t6 Two-factor authentication: Enter your OTP ${otp}`,
+			text: "Html email client is required",
+			html: html
+		};
+		t6mailer.sendMail(mailOptions).then(function(info){
+			t6console.debug("generateOTP INFO" + info);
+		}).catch(function(error){
+			t6console.error("t6mailer.generateOTP error" + error.info.code + error.info.response + error.info.responseCode + error.info.command);
+		});
+	});
+});
+
 module.exports = t6mailer;

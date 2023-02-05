@@ -47,6 +47,7 @@ var app = {
 		{ name: "retention1y", value: "1 Year" }
 	],
 	defaultPageTitle: "t6 IoT App",
+	otp: {},
 	sectionsPageTitles: {
 		"index": "t6 IoT App",
 		"profile": "t6 profile",
@@ -60,6 +61,7 @@ var app = {
 		"dashboards": "t6 Dashboards",
 		"dashboard_add": "Add Dashboard to t6",
 		"history": "Data History",
+		"otp": "t6 Two-factor authentication",
 		"snippet": "t6 Snippet %s",
 		"snippets": "t6 Snippets",
 		"snippet_add": "Add Snippet to t6",
@@ -215,6 +217,7 @@ var app = {
 		secret_key_crypt: "^[a-fA-F0-9]{64}$",
 		integerNotNegative: "^[^a-zA-Z]{1,4}$",
 		meta_revision: "^[0-9]{1,}$",
+		otp: "^[0-9]{6}$",
 		ttl: "^[0-9]+$",
 		uuidv4: "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$",
 		date: "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|1[0-9]|2[0-9]|3[0-1]) ([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])$",
@@ -350,6 +353,9 @@ var touchStartPoint, touchMovePoint;
 			return response;
 		} else if (response.status === 204) {
 			return response;
+		} else if (response.status === 307) {
+			toast("Two-factor authentication", { timeout: app.toastDuration, type: "warning" });
+			return response;
 		} else if (response.status === 400) {
 			toast("Bad Request.", { timeout: app.toastDuration, type: "error" });
 			return response;
@@ -409,6 +415,15 @@ var touchStartPoint, touchMovePoint;
 		}
 	};
 
+	app.setOTPAction = function() {
+		for (var i in app.buttons.OTPButtons) {
+			if (app.buttons.OTPButtons[i].childElementCount > -1) {
+				app.buttons.OTPButtons[i].removeEventListener('click', app.onOTPButtonClick, false);
+				app.buttons.OTPButtons[i].addEventListener('click', app.onOTPButtonClick, false);
+			}
+		}
+	};
+
 	app.onLoginButtonClick = function(evt) {
 		if (navigator.onLine) {
 			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
@@ -418,8 +433,24 @@ var touchStartPoint, touchMovePoint;
 
 			var username = myForm.querySelector("form.signin input[name='username']").value;
 			var password = myForm.querySelector("form.signin input[name='password']").value;
+			app.otp.email = username;
 			app.auth = { "username": username, "password": password };
 			app.authenticate();
+		} else {
+			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
+		}
+		evt.preventDefault();
+	};
+
+	app.onOTPButtonClick = function(evt) {
+		if (navigator.onLine) {
+			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
+			myForm.querySelector("form.otp button.login_button i.material-icons").textContent = "cached";
+			myForm.querySelector("form.otp button.login_button i.material-icons").classList.add("animatedIcon");
+			componentHandler.upgradeDom();
+
+			app.otp.otp = myForm.querySelector("form.otp input[name='otp']").value;
+			app.authenticateOTP();
 		} else {
 			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
@@ -722,6 +753,7 @@ var touchStartPoint, touchMovePoint;
 			notifications: document.querySelectorAll('form.notifications input.mdl-checkbox__input'),
 
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
+			OTPButtons: document.querySelectorAll('form.otp button.login_button'),
 			user_create: document.querySelectorAll('form.signup button.createUser'),
 			user_setpassword: document.querySelectorAll('form.resetpassword button.setPassword'),
 			user_forgot: document.querySelectorAll('form.forgotpassword button.forgotPassword'),
@@ -1113,6 +1145,9 @@ var touchStartPoint, touchMovePoint;
 		} else if (section === 'login') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			app.displayLoginForm(document.querySelector('#login').querySelector('.page-content'));
+		} else if (section === 'otp') {
+			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
+			app.displayOTPForm(document.querySelector('#otp').querySelector('.page-content'));
 		} else if (section === 'users-list') {
 			document.title = app.sectionsPageTitles[section] !== undefined ? app.sectionsPageTitles[section] : app.defaultPageTitle;
 			app.getUsersList();
@@ -1165,6 +1200,7 @@ var touchStartPoint, touchMovePoint;
 			if (!app.isLogged && (
 				!document.querySelector('#' + section).querySelector('.page-content form.signin') &&
 				section !== 'signup' &&
+				section !== 'otp' &&
 				section !== 'reset-password' &&
 				section !== 'forgot-password' &&
 				section !== 'settings' &&
@@ -2723,6 +2759,57 @@ var touchStartPoint, touchMovePoint;
 		}
 	};
 
+	app.displayOTPForm = function(container) {
+		container.querySelectorAll('form.otp').forEach(function(e) { if (e) { e.parentNode.remove(); } });
+		if (app.isLogged === false) {
+			var otp = "<section class='content-grid mdl-grid'>" +
+				"	<div class='mdl-layout-spacer'></div>" +
+				"	<form class='otp'>" +
+				"		<div class='mdl-card mdl-card__title mdl-shadow--2dp'>" +
+				"			<img src='" + app.baseUrlCdn + "/img/opl_img.webp' alt='t6 Connect your Objects' aria-hidden='true'>" +
+				"			<div class='mdl-card__title'>" +
+				"				We noticed some recent activity on your account that requires additional security measures. To ensure the protection of your account, check you email inbox including the One-Time Password (OTP) for verification purposes. This OTP expires within 5 minutes" +
+				"			</div>" +
+				"			<div class='mdl-card__supporting-text'>" +
+				"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
+				"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
+				"					<input name='otp' pattern=\"" + app.patterns.otp + "\" inputmode='otp' class='mdl-textfield__input' type='text' id='otp.otp'>" +
+				"					<label for='otp.otp' class='mdl-textfield__label'>6 digits hash you have received by email</label>" +
+				"					<span class='mdl-textfield__error'>OTP should be 6 digits long</span>" +
+				"				</div>" +
+				"			</div>" +
+				"			<div class='mdl-card__supporting-text'>" +
+				//app.getField(null, "Notifications", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'login.notifications', isEdit: true}) +
+				"			</div>" +
+				"			<div class='mdl-card__supporting-text mdl-grid'>" +
+				"				<span class='mdl-layout-spacer'></span>" +
+				"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
+				"					<i class='material-icons'>lock</i>Log in" +
+				"				</button>" +
+				"			</div>" +
+				"			<div class='mdl-card__actions mdl-card--border'>" +
+				"				<span class='mdl-layout-spacer'></span>" +
+				"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button small'>Sign Up</a> or " +
+				"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button small'>Reset password</a>" +
+				"			</div>" +
+				"		</div>" +
+				"	</form>" +
+				"	<div class='mdl-layout-spacer'></div>" +
+				"</section>";
+			container.innerHTML += otp;
+			componentHandler.upgradeDom();
+
+			var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
+			for (var i = 0; i < updated.length; i++) {
+				updated[i].classList.remove('is-upgraded');
+				updated[i].removeAttribute('data-upgraded');
+			}
+			app.refreshButtonsSelectors();
+			app.setOTPAction();
+			app.setSignupAction();
+		}
+	};
+
 	app.showAddFAB = function(type) {
 		let container;
 		let fabs = new Array();
@@ -3485,6 +3572,10 @@ var touchStartPoint, touchMovePoint;
 				return fetchResponse.json();
 			})
 			.then(function(response) {
+				if( typeof response.hash!=="undefined" ) {
+					app.otp.hash = typeof response.hash!=="undefined"?response.hash:null;
+					app.setSection("otp");
+				}
 				if (response.token && response.refresh_token && response.refreshTokenExp) {
 					localStorage.setItem('bearer', response.token);
 					localStorage.setItem('refresh_token', response.refresh_token);
@@ -3518,6 +3609,85 @@ var touchStartPoint, touchMovePoint;
 					app.setVisibleElement("logout_button");
 
 					toast('Hey. Welcome Back! :-)', { timeout: app.toastDuration, type: "done" });
+					if (typeof firebase !== "undefined") {
+						firebase.analytics().setUserProperties({ 'isLoggedIn': 1 });
+						firebase.analytics().logEvent('login');
+					}
+					setInterval(app.refreshAuthenticate, app.refreshExpiresInSeconds);
+					app.getUnits();
+					app.getDatatypes();
+					app.getFlows();
+					app.getSnippets();
+					app.getSources();
+				} else {
+					if (localStorage.getItem("settings.debug") == "true") {
+						toast('Auth internal error', { timeout: app.toastDuration, type: "error" });
+					}
+					app.resetDrawer();
+				}
+			})
+			.catch(function(error) {
+				if (localStorage.getItem("settings.debug") == "true") {
+					toast('We can\'t process your identification. Please resubmit your credentials!', { timeout: app.toastDuration, type: "warning" });
+					document.querySelectorAll(".mdl-spinner").forEach(function(e) { e.parentNode.removeChild(e); });
+				}
+			});
+		app.auth = {};
+	};
+
+	app.authenticateOTP = function() {
+		var myHeaders = new Headers();
+		myHeaders.append("Content-Type", "application/json");
+		app.auth.pushSubscription = {
+			endpoint: app.getSetting('settings.pushSubscription.endpoint'),
+			keys: {
+				auth: app.getSetting('settings.pushSubscription.keys.auth'),
+				p256dh: app.getSetting('settings.pushSubscription.keys.p256dh')
+			}
+		};
+		var myInit = { method: 'POST', headers: myHeaders, body: JSON.stringify(app.otp) };
+		var url = `${app.baseUrl}/${app.api_version}/authenticate/OTPchallenge`;
+
+		fetch(url, myInit)
+			.then(
+				app.fetchStatusHandler
+			).then(function(fetchResponse) {
+				return fetchResponse.json();
+			})
+			.then(function(response) {
+				if (response.token && response.refresh_token && response.refreshTokenExp) {
+					localStorage.setItem('bearer', response.token);
+					localStorage.setItem('refresh_token', response.refresh_token);
+					localStorage.setItem('refreshTokenExp', response.refreshTokenExp);
+					app.isLogged = true;
+					app.resetSections();
+					app.fetchProfile();
+					app.fetchSubscriptions();
+					if (window.location.hash && window.location.hash.substr(1) === 'object_add') {
+						app.displayAddObject(app.defaultResources.object);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'flow_add') {
+						app.displayAddFlow(app.defaultResources.flow);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'dashboard_add') {
+						app.displayAddDashboard(app.defaultResources.dashboard);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'snippet_add') {
+						app.displayAddSnippet(app.defaultResources.snippet);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'rule_add') {
+						app.displayAddRule(app.defaultResources.rule);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'mqtt_add') {
+						app.displayAddMqtt(app.defaultResources.mqtt);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'source_add') {
+						app.displayAddSource(app.defaultResources.source);
+					} else if (window.location.hash && window.location.hash.substr(1) === 'story_add') {
+						app.displayAddStory(app.defaultResources.story);
+					} else if (window.location.hash && window.location.hash.substr(1) !== 'login') {
+						app.setSection(window.location.hash.substr(1));
+					} else {
+						app.setSection('index');
+					}
+					app.setHiddenElement("signin_button");
+					app.setVisibleElement("logout_button");
+
+					toast('Hey. Welcome Back! :-)'+window.location.hash.substr(1), { timeout: app.toastDuration, type: "done" });
 					if (typeof firebase !== "undefined") {
 						firebase.analytics().setUserProperties({ 'isLoggedIn': 1 });
 						firebase.analytics().logEvent('login');
