@@ -99,6 +99,12 @@
 				</thead>
 				<tbody>
 					<tr>
+						<td class="code">307</td>
+						<td>
+							<p>307 Temporary Redirect, OTP challenge</p>
+						</td>
+					</tr>
+					<tr>
 						<td class="code">400</td>
 						<td>
 							<p>Bad Request, require a Bearer Authentication or revision is incorrect</p>
