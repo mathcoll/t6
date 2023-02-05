@@ -277,6 +277,7 @@ router.post("/", function (req, res) {
 				expiration:			"",
 				memo:				"Automatically generated during user creation phase.",
 			};
+			let agent = useragent.parse(req.headers["user-agent"]);
 			let geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 			geo.ip = req.ip;
 			var new_user = {
@@ -290,6 +291,7 @@ router.post("/", function (req, res) {
 				unsubscription_token: passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 				pushSubscription	: pushSubscription,
 				location			: {geo: geo, ip: req.ip,},
+				device				: agent.device.toString(),
 			};
 			t6events.addStat("t6Api", "user add", new_user.id, new_user.id);
 			users.insert(new_user);
