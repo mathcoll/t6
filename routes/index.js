@@ -406,10 +406,12 @@ function checkForTooManyFailure(req, res, email) {
 					t6console.error("t6mailer.sendMail error" + error.info.code + error.info.response + error.info.responseCode + error.info.command);
 				});
 			});
+			return data[0].count_who;
 		}
 	}).catch((err) => {
 		t6console.error(err);
 		t6events.addAudit("t6App", "user login failure", email, email);
+		return undefined;
 	});
 }
 
@@ -468,6 +470,9 @@ router.delete("/tokens/all", function (req, res) {
  * @apiUse 401
  * @apiUse 403
  */
+function isRequireChallenge(element, index, array) {
+	return element===true;
+}
 router.post("/authenticate", function (req, res) {
 	let meta = { pushSubscription : req.body.pushSubscription};
 	if ( (req.body.username !== "" && req.body.password !== "") && (!req.body.grant_type || req.body.grant_type === "password") ) {
@@ -481,36 +486,37 @@ router.post("/authenticate", function (req, res) {
 			user.quotausage = undefined;
 			user.data = undefined;
 			let geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
-			geo.ip = req.ip;
 			let agent = useragent.parse(req.headers["user-agent"]);
-			user.geoip = geo;
-			user.device = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
+			let currentLocationIp = req.ip;
+			let currentDevice = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
 			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
-				let otpChallenge = (geo.ip === "::ffff:127.0.0.1");
-// set condtions
-/*
-Connexions à partir d'une adresse IP inconnue : Si une connexion est effectuée à partir d'une adresse IP qui n'a pas été enregistrée précédemment, il peut être judicieux d'envoyer un challenge OTP.
-
-Changements importants dans les informations de compte : Si des modifications sont apportées à des informations sensibles telles que l'adresse e-mail ou le mot de passe, un challenge OTP peut être nécessaire pour vérifier l'identité de l'utilisateur.
-
-Connexions à partir d'un nouvel appareil : Si une connexion est effectuée à partir d'un nouvel appareil, il peut être judicieux d'envoyer un challenge OTP pour vérifier l'identité de l'utilisateur.
-
-Connexions à partir d'une localisation géographique inhabituelle : Si une connexion est effectuée à partir d'une localisation géographique inhabituelle par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
-
-Connexions à des heures inhabituelles : Si une connexion est effectuée à des heures inhabituelles par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
-*/
+				let otpChallenge = false;
+				otpChallenge = [
+					// Connexions à partir d'une adresse IP inconnue : Si une connexion est effectuée à partir d'une adresse IP qui n'a pas été enregistrée précédemment, il peut être judicieux d'envoyer un challenge OTP.
+					(user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"), // do not challenge on localhost
+					// Connexions à partir d'un nouvel appareil : Si une connexion est effectuée à partir d'un nouvel appareil, il peut être judicieux d'envoyer un challenge OTP pour vérifier l'identité de l'utilisateur.
+					(user.device !== currentDevice && user.device !== "Other 0.0.0")
+					// Changements importants dans les informations de compte : Si des modifications sont apportées à des informations sensibles telles que l'adresse e-mail ou le mot de passe, un challenge OTP peut être nécessaire pour vérifier l'identité de l'utilisateur.
+					// Connexions à partir d'une localisation géographique inhabituelle : Si une connexion est effectuée à partir d'une localisation géographique inhabituelle par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
+					// Connexions à des heures inhabituelles : Si une connexion est effectuée à des heures inhabituelles par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
+				].some(isRequireChallenge);
+				t6console.debug("is otpChallenged ?", otpChallenge);
+				t6console.debug("11", (user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"));
+				t6console.debug("22", (user.device !== currentDevice && user.device !== "Other 0.0.0"));
+				t6console.debug("user.device", (user.device));
+				t6console.debug("currentDevice", currentDevice);
 				if(otpChallenge) {
 					t6console.info("t6 otp challenge");
 					let otp = t6mailer.generateOTP(user, res);
 					otp.then( (otp) => { 
 						return res.status(307).json( {"hash": otp.hash} );
 					});
-					
 				} else {
 					t6console.info("t6 No otp challenge");
-					if ( typeof user.location === "undefined" || user.location === null ) {
-						user.location = {geo: geo, ip: req.ip,};
-					}
+					geo.ip = req.ip;
+					user.location = {geo: geo, ip: req.ip,};
+					user.device = currentDevice;
+					user.geoip = geo;
 					/* pushSubscription */
 					if ( typeof meta.pushSubscription !== "undefined" ) {
 						let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
@@ -595,7 +601,7 @@ Connexions à des heures inhabituelles : Si une connexion est effectuée à des 
 					return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
 				}
 			} else {
-				checkForTooManyFailure(req, res, email);
+				let count = checkForTooManyFailure(req, res, email);
 				t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 403, "error_id": 102.11});
 				t6events.addStat("t6App", "POST_authenticate password", user.id, user.id, {"status": 403, "error_id": 102.11});
 				return res.status(403).send(new ErrorSerializer({"id": 17150, "code": 403, "message": "Forbidden"}).serialize());
@@ -618,21 +624,13 @@ Connexions à des heures inhabituelles : Si une connexion est effectuée à des 
 		if ( u && typeof u.user_id !== "undefined" ) {
 			let user = users.findOne({id: u.user_id});
 			let geo = geoip.lookup(req.ip);
-			if ( typeof user.location === "undefined" || user.location === null ) {
-				user.location = {geo: geo, ip: req.ip,};
-			}
+			user.location = {geo: geo, ip: req.ip,}
 			/* pushSubscription */
 			if ( typeof meta.pushSubscription !== "undefined" ) {
 				let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 				meta.user_id = user.id;
 				timeoutNotification = setTimeout(sendNotification, 5000, meta, payloadMessage);
 				user.pushSubscription = meta.pushSubscription;
-			}
-			//users.update(user);
-			//db_users.save();
-			
-			if ( typeof user.location === "undefined" || user.location === null ) {
-				user.location = {geo: geo, ip: req.ip,};
 			}
 			users.update(user);
 			db_users.save();
@@ -717,9 +715,7 @@ Connexions à des heures inhabituelles : Si une connexion est effectuée à des 
 			// Sign a new token
 			let user = users.findOne({ "id": user_id });
 			let geo = geoip.lookup(req.ip);
-			if ( typeof user.location === "undefined" || user.location === null ) {
-				user.location = {geo: geo, ip: req.ip,};
-			}
+			user.location = {geo: geo, ip: req.ip,}
 			users.update(user);
 			db_users.save();
 
@@ -834,16 +830,13 @@ router.post("/authenticate/OTPchallenge", function (req, res) {
 			let agent = useragent.parse(req.headers["user-agent"]);
 			user.geoip = geo;
 			user.device = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
-	
-			if ( typeof user.location === "undefined" || user.location === null ) {
-				user.location = {geo: geo, ip: req.ip,};
-			}
+			user.location = {geo: geo, ip: req.ip,}
 			users.update(user);
 			db_users.save();
-	
+
 			req.session.cookie.secure = true;
 			req.session.cookie.user_id = user.id;
-	
+
 			let payload = JSON.parse(JSON.stringify(user));
 			payload.unsubscription = user.unsubscription;
 			payload.permissions = undefined;

@@ -17,6 +17,17 @@ Types of changes
 ------------
 
 ## 2023
+### Milestone 23 - 2023-0
+**Added**
+  - [x] Added OTP/2FA challenge as MVP
+
+**Fixed**
+
+**Changed**
+  - [x] Packages updates d3-node@3.0.0 firebase-admin@11.5.0
+
+
+## 2023
 ### Milestone 22 - 2023-01
 **Added**
   - [x] webSocket allows `remindMeToMeasure` command
