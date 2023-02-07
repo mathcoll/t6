@@ -457,6 +457,7 @@ router.delete("/tokens/all", function (req, res) {
  * @apiBody (Body) {String} [key=undefined] Client Api Key, required only when grant_type="access_token"
  * @apiBody {String} [secret=undefined] Client Api Secret, required only when grant_type="access_token"
  * @apiBody {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
+ * @apiQuery {String} [forceOTP] Force One Time Password request
  * 
  * @apiSuccess {String} status Status of the Authentication
  * @apiSuccess {String} token JWT Token
@@ -493,29 +494,36 @@ router.post("/authenticate", function (req, res) {
 				let otpChallenge = false;
 				otpChallenge = [
 					// Connexions à partir d'une adresse IP inconnue : Si une connexion est effectuée à partir d'une adresse IP qui n'a pas été enregistrée précédemment, il peut être judicieux d'envoyer un challenge OTP.
-					(user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"), // do not challenge on localhost
+				//	(user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"), // do not challenge on localhost
 					// Connexions à partir d'un nouvel appareil : Si une connexion est effectuée à partir d'un nouvel appareil, il peut être judicieux d'envoyer un challenge OTP pour vérifier l'identité de l'utilisateur.
-					(user.device !== currentDevice && user.device !== "Other 0.0.0")
+				//	(user.device !== currentDevice && user.device !== "Other 0.0.0") // Api calls are identified as "Other 0.0.0"
 					// Changements importants dans les informations de compte : Si des modifications sont apportées à des informations sensibles telles que l'adresse e-mail ou le mot de passe, un challenge OTP peut être nécessaire pour vérifier l'identité de l'utilisateur.
 					// Connexions à partir d'une localisation géographique inhabituelle : Si une connexion est effectuée à partir d'une localisation géographique inhabituelle par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
 					// Connexions à des heures inhabituelles : Si une connexion est effectuée à des heures inhabituelles par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
 				].some(isRequireChallenge);
-				t6console.debug("is otpChallenged ?", otpChallenge);
-				t6console.debug("11", (user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"));
-				t6console.debug("22", (user.device !== currentDevice && user.device !== "Other 0.0.0"));
-				t6console.debug("user.device", (user.device));
-				t6console.debug("currentDevice", currentDevice);
+				if(str2bool(req.query.forceOTP)===true) {
+					otpChallenge = true;
+				}
+				t6console.error("is otpChallenged ?", otpChallenge);
+				t6console.error("11", (user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"));
+				t6console.error("user.location.ip", user.location.ip);
+				t6console.error("currentLocationIp", currentLocationIp);
+				t6console.error("22", (user.device !== currentDevice && user.device !== "Other 0.0.0"));
+				t6console.error("user.device", user.device);
+				t6console.error("currentDevice", currentDevice);
 				if(otpChallenge) {
 					t6console.info("t6 otp challenge");
 					let otp = t6mailer.generateOTP(user, res);
 					otp.then( (otp) => { 
+						t6events.addAudit("t6App", "OTP challenge", user.id, user.id, {"status": 307, "error_id": 1029});
+						t6events.addStat("t6App", "OTP challenge", user.id, user.id, {"status": 307, "error_id": 1029});
 						return res.status(307).json( {"hash": otp.hash} );
 					});
 				} else {
 					t6console.info("t6 No otp challenge");
 					geo.ip = req.ip;
 					user.location = {geo: geo, ip: req.ip,};
-					user.device = currentDevice;
+					user.device = currentDevice!=="Other 0.0.0"?currentDevice:user.device;
 					user.geoip = geo;
 					/* pushSubscription */
 					if ( typeof meta.pushSubscription !== "undefined" ) {
