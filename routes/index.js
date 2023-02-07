@@ -212,6 +212,12 @@ const getDurationInMilliseconds = (start) => {
  */
 
 /**
+ * @apiDefine NoAuth
+ * @apiHeader {String} [Accept=application/json] application/json
+ * @apiHeader {String} [Content-Type=application/json] application/json
+ */
+
+/**
  * @apiDefine Auth
  * @apiHeader {String} Authorization=Bearer:eyJh...sw5c Bearer &lt;Token&gt;
  * @apiHeader {String} [Accept=application/json] application/json
@@ -415,6 +421,10 @@ function checkForTooManyFailure(req, res, email) {
 	});
 }
 
+function isRequireChallenge(element, index, array) {
+	return element===true;
+}
+
 /**
  * @api {delete} /tokens/all Delete all expired users tokens
  * @apiName Delete all expired users tokens
@@ -465,15 +475,13 @@ router.delete("/tokens/all", function (req, res) {
  * @apiSuccess {String} refresh_token Token that can be used to refresh the Token
  * @apiSuccess {timestamp} refreshTokenExp Expiration timestamp of the Refresh Token
  *
+ * @apiUse NoAuth
  * @apiUse 200
  * @apiUse 307
  * @apiUse 400
  * @apiUse 401
  * @apiUse 403
  */
-function isRequireChallenge(element, index, array) {
-	return element===true;
-}
 router.post("/authenticate", function (req, res) {
 	let meta = { pushSubscription : req.body.pushSubscription};
 	if ( (req.body.username !== "" && req.body.password !== "") && (!req.body.grant_type || req.body.grant_type === "password") ) {
@@ -810,13 +818,13 @@ router.post("/authenticate", function (req, res) {
  * @apiGroup 13. Users
  * @apiVersion 2.0.1
  * 
- * @apiUse Auth
- * @apiParam {uuid-v4} user_id User ID
  * @apiBody {String} [email] The User Email address
  * @apiBody {String} [otp] The User One Time Password (OTP)
  * @apiBody {String} [hash] The User Hash provided from the server on the challenge
  * 
+ * @apiUse NoAuth
  * @apiUse 200
+ * @apiUse 307
  * @apiUse 403
  * @apiUse 429
  */
@@ -824,7 +832,7 @@ router.post("/authenticate/OTPchallenge", function (req, res) {
 	let email = req.body.email;
 	let otp = req.body.otp;
 	let hash = req.body.hash;
-	t6console.log(email, otp, hash);
+	t6console.debug(email, otp, hash);
 
 	let queryU = { "$and": [ { "email": email } ] };
 	//t6console.debug(queryU);
@@ -938,6 +946,7 @@ router.post("/authenticate/OTPchallenge", function (req, res) {
  * @apiHeader {String} [Accept] application/json
  * @apiHeader {String} [Content-Type] application/json
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  * @apiUse 403
  */
@@ -1013,6 +1022,7 @@ router.post("/refresh", function (req, res) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.head("/status", function(req, res, next) {
@@ -1088,6 +1098,7 @@ router.get("/status", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/index", function(req, res, next) {
@@ -1102,6 +1113,7 @@ router.get("/index", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/terms", function(req, res, next) {
@@ -1115,6 +1127,7 @@ router.get("/terms", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/compatible-devices", function(req, res, next) {
@@ -1128,6 +1141,7 @@ router.get("/compatible-devices", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/open-source-licenses", function(req, res, next) {

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apidoc \
+../node_modules/apidoc/bin/apidoc \
 	-i /home/mathieu/Projets/2019/internetcollaboratif.info/t6/routes/ \
 	-f data.js \
 	-f datatypes.js \
@@ -23,11 +23,10 @@ apidoc \
 	-o /home/mathieu/Projets/2019/internetcollaboratif.info/doc/docs/ \
 	--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/apidoc-master/ \
 	--config /home/mathieu/Projets/2019/internetcollaboratif.info/t6/bin/apidoc.json \
+	-v \
 #	-d \
-#	-v \
 	
 	
-	
-	#--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/apidoc-master/ \
-	#--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/templatev4/ \
-	#--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/templatev5.1/template/ \
+#--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/apidoc-master/ \
+#--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/templatev4/ \
+#--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/templatev5.1/template/ \
