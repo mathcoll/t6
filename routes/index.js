@@ -529,10 +529,22 @@ router.post("/authenticate", function (req, res) {
 					});
 				} else {
 					t6console.info("t6 No otp challenge");
-					geo.ip = req.ip;
-					user.location = {geo: geo, ip: req.ip,};
+					user.location = {geo: geo};
+					if(Array.isArray(user.geoip.ip)===true) {
+						if((user.geoip.ip).indexOf(req.ip)===-1) {
+							(user.geoip.ip).push(req.ip);
+							t6console.debug("IP added the the list for that user.");
+						} else {
+							t6console.debug("IP already listed for that user.");
+						}
+					} else {
+						if(user.geoip.ip!==null) {
+							user.geoip.ip = [user.geoip.ip];
+						}
+						(user.geoip.ip).push(req.ip);
+						t6console.debug("IP added the the list for that user.");
+					}
 					user.device = currentDevice!=="Other 0.0.0"?currentDevice:user.device;
-					user.geoip = geo;
 					/* pushSubscription */
 					if ( typeof meta.pushSubscription !== "undefined" ) {
 						let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
