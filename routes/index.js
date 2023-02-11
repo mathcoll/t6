@@ -512,11 +512,11 @@ router.post("/authenticate", function (req, res) {
 				if(str2bool(req.query.forceOTP)===true) {
 					otpChallenge = true;
 				}
-				t6console.error("is otpChallenged ?", otpChallenge);
-				t6console.error("user.geoip.ip", user.geoip.ip);
-				t6console.error("currentLocationIp", currentLocationIp);
-				t6console.error("user.device", user.device);
-				t6console.error("currentDevice", currentDevice);
+				t6console.info("is otpChallenged ?", otpChallenge);
+				t6console.info("user.geoip.ip", user.geoip.ip);
+				t6console.info("currentLocationIp", currentLocationIp);
+				t6console.info("user.device", user.device);
+				t6console.info("currentDevice", currentDevice);
 				if(otpChallenge) {
 					t6console.info("t6 otp challenge");
 					let otp = t6mailer.generateOTP(user, res);
