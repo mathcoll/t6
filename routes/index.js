@@ -501,22 +501,20 @@ router.post("/authenticate", function (req, res) {
 			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
 				let otpChallenge = false;
 				otpChallenge = [
-					// Connexions à partir d'une adresse IP inconnue : Si une connexion est effectuée à partir d'une adresse IP qui n'a pas été enregistrée précédemment, il peut être judicieux d'envoyer un challenge OTP.
-				//	(user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"), // do not challenge on localhost
-					// Connexions à partir d'un nouvel appareil : Si une connexion est effectuée à partir d'un nouvel appareil, il peut être judicieux d'envoyer un challenge OTP pour vérifier l'identité de l'utilisateur.
-				//	(user.device !== currentDevice && user.device !== "Other 0.0.0") // Api calls are identified as "Other 0.0.0"
-					// Changements importants dans les informations de compte : Si des modifications sont apportées à des informations sensibles telles que l'adresse e-mail ou le mot de passe, un challenge OTP peut être nécessaire pour vérifier l'identité de l'utilisateur.
-					// Connexions à partir d'une localisation géographique inhabituelle : Si une connexion est effectuée à partir d'une localisation géographique inhabituelle par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
-					// Connexions à des heures inhabituelles : Si une connexion est effectuée à des heures inhabituelles par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
+					// Connexions à partir d'une adresse IP inconnue
+					((user.geoip?.ip).indexOf(currentLocationIp)===-1 && currentDevice !== "Other 0.0.0"),
+					// Connexions à partir d'une localisation géographique inhabituelle
+					// Connexions à partir d'un nouvel appareil
+					((user.device).indexOf(currentDevice)===-1 && currentDevice !== "Other 0.0.0"),
+					// Connexions à des heures inhabituelles
+					// Changements importants dans les informations de compte
 				].some(isRequireChallenge);
 				if(str2bool(req.query.forceOTP)===true) {
 					otpChallenge = true;
 				}
 				t6console.error("is otpChallenged ?", otpChallenge);
-				t6console.error("11", (user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"));
-				t6console.error("user.location.ip", user.location.ip);
+				t6console.error("user.geoip.ip", user.geoip.ip);
 				t6console.error("currentLocationIp", currentLocationIp);
-				t6console.error("22", (user.device !== currentDevice && user.device !== "Other 0.0.0"));
 				t6console.error("user.device", user.device);
 				t6console.error("currentDevice", currentDevice);
 				if(otpChallenge) {
