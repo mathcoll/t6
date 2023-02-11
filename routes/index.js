@@ -530,21 +530,36 @@ router.post("/authenticate", function (req, res) {
 				} else {
 					t6console.info("t6 No otp challenge");
 					user.location = {geo: geo};
-					if(Array.isArray(user.geoip.ip)===true) {
-						if((user.geoip.ip).indexOf(req.ip)===-1) {
-							(user.geoip.ip).push(req.ip);
+					if(Array.isArray(user.geoip?.ip)===true) {
+						if((user.geoip?.ip).indexOf(req.ip)===-1) {
+							(user.geoip?.ip).push(req.ip);
 							t6console.debug("IP added the the list for that user.");
 						} else {
 							t6console.debug("IP already listed for that user.");
 						}
 					} else {
-						if(user.geoip.ip!==null) {
-							user.geoip.ip = [user.geoip.ip];
+						if(typeof user.geoip!=="undefined" && user.geoip?.ip!==null) {
+							user.geoip.ip = [user.geoip?.ip];
+						} else {
+							user.geoip = {ip:[]};
 						}
-						(user.geoip.ip).push(req.ip);
+						(user.geoip?.ip).push(req.ip);
 						t6console.debug("IP added the the list for that user.");
 					}
-					user.device = currentDevice!=="Other 0.0.0"?currentDevice:user.device;
+					if(Array.isArray(user.device)===true) {
+						if((user.device).indexOf(currentDevice)===-1) {
+							(user.device).push(currentDevice);
+							t6console.debug("Device added the the list for that user.");
+						} else {
+							t6console.debug("Device already listed for that user.");
+						}
+					} else {
+						if(user.device!==null) {
+							user.device = [user.device];
+						}
+						(user.device).push(currentDevice);
+						t6console.debug("Device added the the list for that user.");
+					}
 					/* pushSubscription */
 					if ( typeof meta.pushSubscription !== "undefined" ) {
 						let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
