@@ -35,6 +35,13 @@ jq -cr '(.collections[0].data[]).geoip.ip | select(. != null)' ${SCRIPT_DIR}/../
 
 echo ""
 echo "---------"
+echo "USER LAST LOGON AND OTP"
+jq -cr '(.collections[0].data[]).lastLogon | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json
+jq -cr '(.collections[0].data[]).lastOTP | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json
+
+
+echo ""
+echo "---------"
 echo "USER SUBSCRIPTION"
 totalUsers="$(jq -cr '.collections[].data[] | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json | wc -l)"
 echo "- total Users: ${totalUsers}."
