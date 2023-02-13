@@ -41,7 +41,7 @@ router.get("/newcomers", function (req, res) {
 				}
 				u.firstName = us!==null?us.firstName:"";
 				u.lastName = us!==null?us.lastName:"";
-				u.email = us!==null?us.email:"";
+				u.email = us!==null?us.email.toLowerCase():"";
 				u.id = us!==null?us.who:"";
 				u.pushSubscription = us!==null?us.pushSubscription:"";
 				u.who = us!==null?undefined:u.who;
@@ -262,7 +262,7 @@ router.post("/", function (req, res) {
 	if ( !(req.body.email && escape(req.body.email).match(new RegExp(/^([a-zA-Z0-9_\-\.+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.+)|(([a-zA-Z0-9\-]+\.+)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)))) {
 		res.status(412).send(new ErrorSerializer({"id": 9,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
-		if ( users.find({"email": { "$eq": req.body.email }}).length > 0 ) {
+		if ( users.find({"email": { "$eq": (req.body.email).toLowerCase() }}).length > 0 ) {
 			res.status(409).send(new ErrorSerializer({"id": 9.5,"code": 409, "message": "Conflict: User email already exists"}).serialize());
 		} else {
 			var my_id = uuid.v4();
@@ -284,14 +284,15 @@ router.post("/", function (req, res) {
 				id:					my_id,
 				firstName:			typeof req.body.firstName!=="undefined"?req.body.firstName:"",
 				lastName:			typeof req.body.lastName!=="undefined"?req.body.lastName:"",
-				email:				typeof req.body.email!=="undefined"?req.body.email:"",
+				email:				typeof req.body.email!=="undefined"?(req.body.email).toLowerCase():"",
 				role:				"free", // no admin creation from the API
 				subscription_date:	moment().format("x"),
 				token:				token,
 				unsubscription_token: passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"),
 				pushSubscription	: pushSubscription,
 				location			: {geo: geo, ip: req.ip,},
-				device				: agent.device.toString(),
+				device				: [agent.device.toString()],
+				geoip				: {ip: [req.ip]},
 			};
 			t6events.addStat("t6Api", "user add", new_user.id, new_user.id);
 			users.insert(new_user);
@@ -440,7 +441,7 @@ router.post("/instruction", function (req, res) {
 	if ( !(req.body.email && escape(req.body.email).match(new RegExp(/^([a-zA-Z0-9_\-\.+]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.+)|(([a-zA-Z0-9\-]+\.+)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)))) {
 		res.status(412).send(new ErrorSerializer({"id": 8.3,"code": 412, "message": "Precondition Failed"}).serialize());
 	} else {
-		var query = { "email": req.body.email };
+		var query = { "email": (req.body.email).toLowerCase() };
 		var user = (users.chain().find(query).data())[0];
 		if ( user ) {
 			var token = passgen.create(64, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ.");
@@ -597,8 +598,11 @@ router.put("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 				function(item){
 					item.firstName		= typeof req.body.firstName!=="undefined"?req.body.firstName:item.firstName;
 					item.lastName		= typeof req.body.lastName!=="undefined"?req.body.lastName:item.lastName;
-					item.email			= typeof req.body.email!=="undefined"&&req.body.email!==""?req.body.email:item.email;
+					item.email			= typeof req.body.email!=="undefined"&&req.body.email!==""?(req.body.email).toLowerCase():item.email.toLowerCase();
 					item.update_date	= moment().format("x");
+					item.location		= item.location; // user can't change value
+					item.device			= item.device; // user can't change value
+					item.geoip			= item.geoip; // user can't change value
 					result = item;
 				}
 			);
