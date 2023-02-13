@@ -60,6 +60,58 @@
                     ]
                 },
                 {
+                	"name": "Sign In forcing OTP",
+                	"description": "Sign In forcing OTP",
+                    "api_calls": [
+                        {
+                            "request": "POST /{{app_version}}/authenticate?forceOTP=true",
+                            "params": {
+                                "username": "{{saved.username}}",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "assert": [
+	                            {
+	        	                    "select": "body.status",
+	        	                    "equal": "Temporary Redirect"
+	        	                }
+        	                ],
+                            "status": "307",
+                            "save": {
+                                "saved.hash": "body.hash"
+                            }
+                        }
+                    ]
+                },
+                {
+                	"name": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to wrong OTP",
+                	"description": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to wrong OTP",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/authenticate/OTPchallenge",
+                            "params": {
+                                "email": "{{saved.username}}",
+                                "hash": "{{$saved.hash}}",
+                                "otp": "123456"
+                            },
+                            "assert": [
+	                            {
+	        	                    "select": "body.status",
+	        	                    "equal": "Forbidden"
+	        	                },
+	                            {
+	        	                    "select": "body.data.type",
+	        	                    "equal": "errors"
+	        	                },
+	                            {
+	        	                    "select": "body.data.id",
+	        	                    "equal": "17999"
+	        	                }
+        	                ],
+                            "status": "403"
+                        }
+                    ]
+                },
+                {
                 	"name": "Sign In (/authenticate)",
                 	"description": "Sign In (/authenticate)",
                     "api_calls": [
@@ -136,7 +188,10 @@
                             "assert": {
         	                    "select": "body.message",
         	                    "equal": "Successfully updated"
-        	                }
+        	                },
+                            "save": {
+                                "saved.username": "body.user.data.attributes.email"
+                            }
                         }
                     ]
                 },
