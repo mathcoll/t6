@@ -100,6 +100,7 @@ const challengeOTP = (res, user, rp, defaultUser, currentLocationIp, currentDevi
 				t6events.addAudit("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});
 				t6events.addStat("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});
 				t6console.debug("============================== END OTP ==================================");
+				res.header("Location", `${baseUrl_https}/v${version}/authenticate/OTPchallenge?hash=${otp.hash}`);
 				res.status(307).json( {"hash": otp.hash} );
 				resolve(user);
 			});
@@ -933,18 +934,22 @@ router.post("/authenticate", function (req, res) {
  * @apiUse 200
  * @apiUse 307
  * @apiUse 403
+ * @apiUse 412
  * @apiUse 429
  */
 router.post("/authenticate/OTPchallenge", function (req, res) {
-	let email = req.body.email;
+	let email = typeof (req.body.email)!=="undefined"?(req.body.email).toLowerCase():null;
 	let otp = req.body.otp;
-	let hash = req.body.hash;
-	t6console.debug(email, otp, hash);
+	let hash = typeof req.body.hash!="undefined"?req.body.hash:req.query.hash;
 
 	let queryU = { "$and": [ { "email": email } ] };
 	//t6console.debug(queryU);
 	let user = users.findOne(queryU);
+	if ( !hash || !email || !otp ) {
+		return res.status(412).send(new ErrorSerializer({"id": 17998,"code": 412, "message": "Precondition Failed"}).serialize());
+	}
 	if ( user ) {
+		t6console.debug(email, otp, hash);
 		if ( otpTool.verifyOTP(email, otp, hash, otpKey, otpAlgorithm) ) {
 			user.quotausage = undefined;
 			user.data = undefined;
