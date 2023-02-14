@@ -602,7 +602,7 @@ router.post("/authenticate", function (req, res) {
 				t6console.debug("challengeOTP starting");
 				challengeOTP(res, user, rp, o, currentLocationIp, currentDevice, req.headers["user-agent"], req.query.forceOTP).then((challenge) => {
 					user = challenge;
-					t6console.debug("challengeOTP is completed", user);
+					t6console.debug("challengeOTP is completed");
 					if(Array.isArray(user.geoip?.ip)===true) {
 						if((user.geoip?.ip).indexOf(req.ip)===-1) {
 							(user.geoip?.ip).push(req.ip);
