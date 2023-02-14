@@ -59,6 +59,6 @@ echo "- reminder: ${reminder} subscribers."
 echo ""
 echo "---------"
 echo "SPECIFIC USER"
-jq -cr --arg email "${EMAIL}" '.collections[0].data[] | select(.email == $email) | {password, firstName, lastName}' ${SCRIPT_DIR}/../data/${DATABASE}
+jq -cr --arg email "${EMAIL}" '.collections[0].data[] | select(.email == $email) | {email, password, firstName, lastName}' ${SCRIPT_DIR}/../data/${DATABASE}
 
 
