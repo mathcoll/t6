@@ -30,14 +30,15 @@ echo ""
 echo "---------"
 echo "USER IPs"
 #jq -cr '(.collections[0].data[]).geoip.ip | select(.email == "xxxxxxx") | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json
-jq -cr '(.collections[0].data[]).geoip.ip | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json
+#jq -cr '(.collections[0].data[]).geoip.ip | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json
+jq -cr '.collections[0].data[] | select(.geoip.ip != null) | .email, .geoip.ip' ${SCRIPT_DIR}/../data/t6db-users__pink.json
 
 
 echo ""
 echo "---------"
 echo "USER LAST LOGON AND OTP"
-jq -cr '(.collections[0].data[]).lastLogon | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json
-jq -cr '(.collections[0].data[]).lastOTP | select(. != null)' ${SCRIPT_DIR}/../data/t6db-users__pink.json
+jq -cr '.collections[0].data[] | select(.lastLogon != null) | {email, lastLogon}' ${SCRIPT_DIR}/../data/t6db-users__pink.json
+jq -cr '.collections[0].data[] | select(.lastOTP != null) | {email, lastOTP}' ${SCRIPT_DIR}/../data/t6db-users__pink.json
 
 
 echo ""
@@ -55,5 +56,8 @@ reminder="$(jq -cr '.collections[].data[].subscription.reminder | select(. != nu
 echo "- reminder: ${reminder} subscribers."
 
 
+
+
+jq -cr '.collections[0].data[] | select(.email == "m.lory@free.fr") | .password' ${SCRIPT_DIR}/../data/t6db-users__pink.json
 
 
