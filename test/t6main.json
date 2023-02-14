@@ -60,8 +60,25 @@
                     ]
                 },
                 {
+                	"name": "can create a simple Token for that User",
+                    "description": "create a simple Token",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/authenticate",
+                            "params": {
+                                "username": "{{saved.username}}",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "save": {
+                                "saved.bearer": "body.token"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
                 	"name": "Sign In forcing OTP",
-                	"description": "Sign In forcing OTP",
+                	"description": "Sign In forcing OTP - should be redirected to a 412, considered as 404 in jsonapitest",
                     "api_calls": [
                         {
                             "request": "POST /{{app_version}}/authenticate?forceOTP=true",
@@ -69,34 +86,24 @@
                                 "username": "{{saved.username}}",
                                 "password": "{{$run_id}}:{{$run_id}}"
                             },
-                            "assert": [
-	                            {
-	        	                    "select": "body.status",
-	        	                    "equal": "Temporary Redirect"
-	        	                }
-        	                ],
-                            "status": "307",
-                            "save": {
-                                "saved.hash": "body.hash"
-                            }
+                            "status": "404"
                         }
                     ]
                 },
                 {
-                	"name": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to wrong OTP",
-                	"description": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to wrong OTP",
+                	"name": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to missing OTP",
+                	"description": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to missing OTP",
                     "api_calls": [
                         {
                         	"request": "POST /{{app_version}}/authenticate/OTPchallenge",
                             "params": {
                                 "email": "{{saved.username}}",
-                                "hash": "{{$saved.hash}}",
-                                "otp": "123456"
+                                "hash": "{{saved.hash}}"
                             },
                             "assert": [
 	                            {
-	        	                    "select": "body.status",
-	        	                    "equal": "Forbidden"
+	        	                    "select": "body.data.attributes.message",
+	        	                    "equal": "Precondition Failed"
 	        	                },
 	                            {
 	        	                    "select": "body.data.type",
@@ -108,6 +115,35 @@
 	        	                }
         	                ],
                             "status": "412"
+                        }
+                    ]
+                },
+                {
+                	"name": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to wrong OTP",
+                	"description": "Sign In using an OTP challenge (/authenticate/OTPchallenge) will fails due to wrong OTP",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/authenticate/OTPchallenge",
+                            "params": {
+                                "email": "{{saved.username}}",
+                                "hash": "fake_hash",
+                                "otp": "123456"
+                            },
+                            "assert": [
+	                            {
+	        	                    "select": "body.data.attributes.message",
+	        	                    "equal": "OTP challenge failed"
+	        	                },
+	                            {
+	        	                    "select": "body.data.type",
+	        	                    "equal": "errors"
+	        	                },
+	                            {
+	        	                    "select": "body.data.id",
+	        	                    "equal": "17999"
+	        	                }
+        	                ],
+                            "status": "403"
                         }
                     ]
                 },
@@ -149,23 +185,6 @@
                                 "email": "{{saved.username}}"
                             },
                             "assert": [],
-                            "status": "200"
-                        }
-                    ]
-                },
-                {
-                	"name": "can create a simple Token for that User",
-                    "description": "create a simple Token",
-                    "api_calls": [
-                        {
-                        	"request": "POST /{{app_version}}/authenticate",
-                            "params": {
-                                "username": "{{saved.username}}",
-                                "password": "{{$run_id}}:{{$run_id}}"
-                            },
-                            "save": {
-                                "saved.bearer": "body.token"
-                            },
                             "status": "200"
                         }
                     ]

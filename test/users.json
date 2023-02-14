@@ -126,7 +126,7 @@
                             "status": "200",
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 4
+        	                    "size": 5
         	                }
                         }
                     ]
