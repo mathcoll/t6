@@ -2,6 +2,7 @@
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 DATABASE="t6db-users__pink.json"
+EMAIL=""
 
 echo ""
 echo "---------"
@@ -58,6 +59,6 @@ echo "- reminder: ${reminder} subscribers."
 echo ""
 echo "---------"
 echo "SPECIFIC USER"
-jq -cr '.collections[0].data[] | select(.email == "") | .password' ${SCRIPT_DIR}/../data/${DATABASE}
+jq -cr --arg email "${EMAIL}" '.collections[0].data[] | select(.email == $email) | {password, firstName, lastName}' ${SCRIPT_DIR}/../data/${DATABASE}
 
 
