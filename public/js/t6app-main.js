@@ -2207,6 +2207,10 @@ var touchStartPoint, touchMovePoint;
 							return fetchResponse.json();
 						})
 						.then(function(response) {
+							if( typeof response.hash!=="undefined" ) {
+								app.otp.hash = typeof response.hash!=="undefined"?response.hash:null;
+								app.setSection("otp");
+							}
 							if (page == 1) {
 								container.innerHTML = "";
 							}
@@ -2761,53 +2765,51 @@ var touchStartPoint, touchMovePoint;
 
 	app.displayOTPForm = function(container) {
 		container.querySelectorAll('form.otp').forEach(function(e) { if (e) { e.parentNode.remove(); } });
-		if (app.isLogged === false) {
-			var otp = "<section class='content-grid mdl-grid'>" +
-				"	<div class='mdl-layout-spacer'></div>" +
-				"	<form class='otp'>" +
-				"		<div class='mdl-card mdl-card__title mdl-shadow--2dp'>" +
-				"			<img src='" + app.baseUrlCdn + "/img/opl_img.webp' alt='t6 Connect your Objects' aria-hidden='true'>" +
-				"			<div class='mdl-card__title'>" +
-				"				We noticed some recent activity on your account that requires additional security measures. To ensure the protection of your account, check you email inbox including the One-Time Password (OTP) for verification purposes. This OTP expires within 5 minutes" +
-				"			</div>" +
-				"			<div class='mdl-card__supporting-text'>" +
-				"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
-				"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
-				"					<input name='otp' pattern=\"" + app.patterns.otp + "\" inputmode='otp' class='mdl-textfield__input' type='text' id='otp.otp'>" +
-				"					<label for='otp.otp' class='mdl-textfield__label'>6 digits you have received by email</label>" +
-				"					<span class='mdl-textfield__error'>OTP should be 6 digits long</span>" +
-				"				</div>" +
-				"			</div>" +
-				"			<div class='mdl-card__supporting-text'>" +
-				//app.getField(null, "Notifications", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'login.notifications', isEdit: true}) +
-				"			</div>" +
-				"			<div class='mdl-card__supporting-text mdl-grid'>" +
-				"				<span class='mdl-layout-spacer'></span>" +
-				"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
-				"					<i class='material-icons'>lock</i>Log in" +
-				"				</button>" +
-				"			</div>" +
-				"			<div class='mdl-card__actions mdl-card--border'>" +
-				"				<span class='mdl-layout-spacer'></span>" +
-				"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button small'>Sign Up</a> or " +
-				"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button small'>Reset password</a>" +
-				"			</div>" +
-				"		</div>" +
-				"	</form>" +
-				"	<div class='mdl-layout-spacer'></div>" +
-				"</section>";
-			container.innerHTML += otp;
-			componentHandler.upgradeDom();
+		var otp = "<section class='content-grid mdl-grid'>" +
+			"	<div class='mdl-layout-spacer'></div>" +
+			"	<form class='otp'>" +
+			"		<div class='mdl-card mdl-card__title mdl-shadow--2dp'>" +
+			"			<img src='" + app.baseUrlCdn + "/img/opl_img.webp' alt='t6 Connect your Objects' aria-hidden='true'>" +
+			"			<div class='mdl-card__title'>" +
+			"				We noticed some recent activity on your account that requires additional security measures. To ensure the protection of your account, check you email inbox including the One-Time Password (OTP) for verification purposes. This OTP expires within 5 minutes" +
+			"			</div>" +
+			"			<div class='mdl-card__supporting-text'>" +
+			"				<div class='mdl-textfield mdl-js-textfield mdl-textfield--floating-label'>" +
+			"					<i class='material-icons mdl-textfield__icon'>lock</i>" +
+			"					<input name='otp' pattern=\"" + app.patterns.otp + "\" inputmode='numeric' class='mdl-textfield__input' type='text' id='otp.otp'>" +
+			"					<label for='otp.otp' class='mdl-textfield__label'>6 digits you have received by email</label>" +
+			"					<span class='mdl-textfield__error'>OTP should be 6 digits long</span>" +
+			"				</div>" +
+			"			</div>" +
+			"			<div class='mdl-card__supporting-text'>" +
+			//app.getField(null, "Notifications", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'login.notifications', isEdit: true}) +
+			"			</div>" +
+			"			<div class='mdl-card__supporting-text mdl-grid'>" +
+			"				<span class='mdl-layout-spacer'></span>" +
+			"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
+			"					<i class='material-icons'>lock</i>Log in" +
+			"				</button>" +
+			"			</div>" +
+			"			<div class='mdl-card__actions mdl-card--border'>" +
+			"				<span class='mdl-layout-spacer'></span>" +
+			"				<a onclick=\"app.setSection('signup');\" href='#signup' class='mdl-button small'>Sign Up</a> or " +
+			"				<a onclick=\"app.setSection('forgot-password');\" href='#forgot-password' class='mdl-button small'>Reset password</a>" +
+			"			</div>" +
+			"		</div>" +
+			"	</form>" +
+			"	<div class='mdl-layout-spacer'></div>" +
+			"</section>";
+		container.innerHTML += otp;
+		componentHandler.upgradeDom();
 
-			var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
-			for (var i = 0; i < updated.length; i++) {
-				updated[i].classList.remove('is-upgraded');
-				updated[i].removeAttribute('data-upgraded');
-			}
-			app.refreshButtonsSelectors();
-			app.setOTPAction();
-			app.setSignupAction();
+		var updated = document.querySelectorAll('.page-content form div.mdl-js-textfield');
+		for (var i = 0; i < updated.length; i++) {
+			updated[i].classList.remove('is-upgraded');
+			updated[i].removeAttribute('data-upgraded');
 		}
+		app.refreshButtonsSelectors();
+		app.setOTPAction();
+		app.setSignupAction();
 	};
 
 	app.showAddFAB = function(type) {
