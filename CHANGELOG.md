@@ -17,17 +17,18 @@ Types of changes
 ------------
 
 ## 2023
-### Milestone 23 - 2023-0
+### Milestone 23 - 2023-02
 **Added**
   - [x] Added OTP/2FA challenge as MVP on the authenticate process ; only when grant_type=password
+  - [x] Improve UI for OTP/2FA
+  - [x] Added a threashold (otpBruteForceCount) to settings that trigger an OTP challenge
 
 **Fixed**
+  - [x] Fixed case in-sensitive on login/account creation
 
 **Changed**
   - [x] Packages updates d3-node@3.0.0 firebase-admin@11.5.0
 
-
-## 2023
 ### Milestone 22 - 2023-01
 **Added**
   - [x] webSocket allows `remindMeToMeasure` command
