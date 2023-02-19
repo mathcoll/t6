@@ -40,7 +40,7 @@ t6mailer.generateOTP = (user, res) => new Promise((resolve, reject) => {
 	t6console.debug("OTP challenge Emailed", user.email);
 	resolve( {email, otp, hash} );
 	
-	res.render("emails/otp", {"geoip": user.geoip, "device": user.device, "user": user, "otp": otp, "duration": `${otpExpiresAfter} minutes`}, function(err, html) {
+	res.render("emails/otp", {"geoip": user.currentLocationIp, "device": user.currentDevice, "user": user, "otp": otp, "duration": `${otpExpiresAfter} minutes`}, function(err, html) {
 		let mailOptions = {
 			from: from,
 			bcc: typeof bcc!=="undefined"?bcc:null,
