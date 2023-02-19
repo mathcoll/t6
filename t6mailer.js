@@ -37,7 +37,7 @@ t6mailer.generateOTP = (user, res) => new Promise((resolve, reject) => {
 	let email = user.email;
 	let otp = otpGen.generate(otpChars, { upperCaseAlphabets: false, lowerCaseAlphabets: false, specialChars: false, digits: true });
 	let hash = otpTool.createNewOTP(email, otp, otpKey, otpExpiresAfter, otpAlgorithm);
-	t6console.debug("generateOTP for ", user.email);
+	t6console.debug("OTP challenge Emailed", user.email);
 	resolve( {email, otp, hash} );
 	
 	res.render("emails/otp", {"geoip": user.geoip, "device": user.device, "user": user, "otp": otp, "duration": `${otpExpiresAfter} minutes`}, function(err, html) {
@@ -51,9 +51,9 @@ t6mailer.generateOTP = (user, res) => new Promise((resolve, reject) => {
 			html: html
 		};
 		t6mailer.sendMail(mailOptions).then(function(info){
-			t6console.debug("generateOTP INFO" + info);
+			t6console.debug("OTP challenge INFO", info);
 		}).catch(function(error){
-			t6console.error("t6mailer.generateOTP error" + error.info.code + error.info.response + error.info.responseCode + error.info.command);
+			t6console.error("OTP challenge t6mailer.generateOTP error" + error.info.code + error.info.response + error.info.responseCode + error.info.command);
 		});
 	});
 });
