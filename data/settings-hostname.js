@@ -244,3 +244,5 @@ otpKey		 = "Whw3$=:eb/gEbcrStXz%c$cEj,.E'yF@_'9%-DcH5Q233'mF9(iVc,E=NvgAHu2-ZR,_
 otpAlgorithm = "sha256";
 otpChars	 = 6;
 otpExpiresAfter = 5;
+otpBruteForceCount = 100; // threashold that trigger an OTP challenge
+otpBruteForceWindow = "30m";
