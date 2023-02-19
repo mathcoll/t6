@@ -20,6 +20,5 @@ jsonapitest \
 	$SCRIPT_DIR/../test/users.json \
 	$SCRIPT_DIR/../test/cleaning.json
 
-
 cat $SCRIPT_DIR/../jsonapitest-results.json | jq '.[0].suite'
 cat $SCRIPT_DIR/../jsonapitest-results.json | jq '. | length' | tr '\n' ' ' && echo tests
