@@ -31,11 +31,15 @@ const getDurationInMilliseconds = (start) => {
 	return (diff[0] * NS_PER_SEC + diff[1]) / NS_TO_MS;
 };
 
-const challengeOTP = (res, user, rp, defaultUser, currentLocationIp, currentDevice, ua, forceOTP) => new Promise((resolve, reject) => {
-	user.isOTP = null;
-	if (!(typeof user!=="undefined" || typeof user?.email!=="undefined")) {
+const challengeOTP = (res, req, rp, defaultUser, currentDevice) => new Promise((resolve, reject) => {
+	let user = typeof req.user!=="undefined"?req.user:{isOTP:null};
+	let currentLocationIp = req.ip;
+	let ua = req.headers["user-agent"];
+	let forceOTP = req.query.forceOTP;
+
+	if (typeof user.email==="undefined") {
 		t6console.debug("user undefined ==> No OTP");
-		reject(user);
+		reject("user undefined ==> No OTP");
 	} else {
 		t6console.debug("=============================== OTP ===================================");
 		let geo = geoip.lookup(currentLocationIp)!==null?geoip.lookup(currentLocationIp):{};
@@ -53,7 +57,12 @@ const challengeOTP = (res, user, rp, defaultUser, currentLocationIp, currentDevi
 				t6console.debug("OTP challenge test brute force attempt", bruteForceCount);
 			});
 		}
+		//t6console.debug("REQ", req.path);
+		//t6console.debug("REQ", req.user);
 		otpChallenge = [
+			//(req.path==="/users/"+req.user.id && req.method==="PUT"),
+			//(req.path==="/objects/" && req.method==="GET"),
+			
 			// New IP identified
 			typeof (user.geoip?.ip)!=="undefined"?((user.geoip?.ip).indexOf(currentLocationIp)===-1 && currentDevice !== "Other 0.0.0"):false,
 			
@@ -100,7 +109,7 @@ const challengeOTP = (res, user, rp, defaultUser, currentLocationIp, currentDevi
 				t6events.addAudit("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});
 				t6events.addStat("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});
 				t6console.debug("============================== END OTP ==================================");
-				res.header("Location", `${baseUrl_https}/v${version}/authenticate/OTPchallenge?hash=${otp.hash}`);
+				//res.header("Location", `${baseUrl_https}/v${version}/authenticate/OTPchallenge?hash=${otp.hash}`);
 				res.status(307).json( {"hash": otp.hash} );
 				resolve(user);
 			});
@@ -382,14 +391,17 @@ router.all("*", function (req, res, next) {
 				t6console.debug("challengeOTP starting");
 				let agent = useragent.parse(req.headers["user-agent"]);
 				let currentDevice = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
-				challengeOTP(res, req.user, rp, o, req.ip, currentDevice, req.headers["user-agent"], req.query.forceOTP).then((challenge) => {
+				challengeOTP(res, req, rp, o, currentDevice).then((challenge) => {
 					t6console.debug("challengeOTP is completed");
+					t6console.debug("challengeOTP is completed", req.user);
 					req.user = challenge;
+					t6console.debug("challengeOTP is completed", req.user);
+					next();
 				})
 				.catch((err) => {
-					t6console.debug("challengeOTP error", err);
+					t6console.debug("challengeOTP rejected", err);
+					next();
 				});
-				t6console.debug("challengeOTP after");
 				res.on("close", () => {
 					t6console.debug("Setting up the onClose rule");
 					let tags = {
@@ -420,7 +432,6 @@ router.all("*", function (req, res, next) {
 						t6console.error("Error catch on writting to influxDb", {"err": err, "tags": tags, "fields": fields[0]});
 					});
 				});
-				next();
 			}
 		}).catch((err) => {
 			t6console.error("ERROR", err);
@@ -593,14 +604,13 @@ router.post("/authenticate", function (req, res) {
 			user.quotausage = undefined;
 			user.data = undefined;
 			let geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
-			let currentLocationIp = req.ip;
 			let agent = useragent.parse(req.headers["user-agent"]);
 			let currentDevice = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
 			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
 				user.location = {geo: geo};
 				user.isOTP=false; // reset value
-				t6console.debug("challengeOTP starting");
-				challengeOTP(res, user, rp, o, currentLocationIp, currentDevice, req.headers["user-agent"], req.query.forceOTP).then((challenge) => {
+				req.user = user;
+				challengeOTP(res, req, rp, o, currentDevice).then((challenge) => {
 					user = challenge;
 					t6console.debug("challengeOTP is completed");
 					if(Array.isArray(user.geoip?.ip)===true) {
@@ -644,10 +654,10 @@ router.post("/authenticate", function (req, res) {
 					t6console.debug("User is logged in. Updated the lastLogon value.");
 					users.update(user);
 					db_users.save();
-	
+
 					req.session.cookie.secure = true;
 					req.session.cookie.user_id = user.id;
-	
+
 					let payload = JSON.parse(JSON.stringify(user));
 					payload.unsubscription = user.unsubscription;
 					payload.permissions = undefined;
@@ -721,7 +731,7 @@ router.post("/authenticate", function (req, res) {
 					}
 				})
 				.catch((err) => {
-					t6console.debug("challengeOTP error", err);
+					t6console.debug("challengeOTP rejected", err);
 					return res.status(403).send(new ErrorSerializer({"id": 17350, "code": 403, "message": "Forbidden"}).serialize());
 				});
 			} else {
