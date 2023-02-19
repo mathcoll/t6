@@ -60,6 +60,69 @@
                     ]
                 },
                 {
+                	"name": "can create a simple Token for that User",
+                    "description": "create a simple Token",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/authenticate",
+                            "params": {
+                                "username": "{{saved.username}}",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "save": {
+                                "saved.bearer": "body.token"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "Sign In forcing OTP",
+                	"description": "Sign In forcing OTP - should be redirected to a 307, considered as 404 in jsonapitest",
+                    "api_calls": [
+                        {
+                            "request": "POST /{{app_version}}/authenticate?forceOTP=true",
+                            "params": {
+                                "username": "{{saved.username}}",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "status": "404"
+                        }
+                    ]
+                },
+                {
+                	"name": "Sign In using an OTP challenge (/authenticate) will fails due to wrong OTP",
+                	"description": "Sign In using an OTP challenge (/authenticate) will fails due to wrong OTP",
+                    "api_calls": [
+                        {
+                        	"request": "POST /{{app_version}}/authenticate",
+		                    "headers": {
+                                "hash": "fake_hash",
+                                "otp": "123456"
+		                    },
+                            "params": {
+                                "username": "{{saved.username}}",
+                                "password": "{{$run_id}}:{{$run_id}}"
+                            },
+                            "assert": [
+	                            {
+	        	                    "select": "body.data.attributes.message",
+	        	                    "equal": "OTP challenge rejected"
+	        	                },
+	                            {
+	        	                    "select": "body.data.type",
+	        	                    "equal": "errors"
+	        	                },
+	                            {
+	        	                    "select": "body.data.id",
+	        	                    "equal": "17350"
+	        	                }
+        	                ],
+                            "status": "403"
+                        }
+                    ]
+                },
+                {
                 	"name": "Sign In (/authenticate)",
                 	"description": "Sign In (/authenticate)",
                     "api_calls": [
@@ -102,23 +165,6 @@
                     ]
                 },
                 {
-                	"name": "can create a simple Token for that User",
-                    "description": "create a simple Token",
-                    "api_calls": [
-                        {
-                        	"request": "POST /{{app_version}}/authenticate",
-                            "params": {
-                                "username": "{{saved.username}}",
-                                "password": "{{$run_id}}:{{$run_id}}"
-                            },
-                            "save": {
-                                "saved.bearer": "body.token"
-                            },
-                            "status": "200"
-                        }
-                    ]
-                },
-                {
                 	"name": "can update a User",
                     "description": "update a User",
                     "api_calls": [
@@ -136,7 +182,10 @@
                             "assert": {
         	                    "select": "body.message",
         	                    "equal": "Successfully updated"
-        	                }
+        	                },
+                            "save": {
+                                "saved.username": "body.user.data.attributes.email"
+                            }
                         }
                     ]
                 },

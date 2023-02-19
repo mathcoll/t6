@@ -20,5 +20,13 @@ jsonapitest \
 	$SCRIPT_DIR/../test/users.json \
 	$SCRIPT_DIR/../test/cleaning.json
 
-cat $SCRIPT_DIR/../jsonapitest-results.json | jq '.[0].suite'
-cat $SCRIPT_DIR/../jsonapitest-results.json | jq '. | length' | tr '\n' ' ' && echo tests
+suite="$(jq -cr '.[0].suite' $SCRIPT_DIR/../jsonapitest-results.json)"
+errors="$(jq -cr '.[] | select(.errors != [])' $SCRIPT_DIR/../jsonapitest-results.json | wc -l)"
+errorList="$(jq -cr '.[] | select(.errors != []) | .test, .suite, .errors' $SCRIPT_DIR/../jsonapitest-results.json)"
+test="$(jq -cr '. | length' $SCRIPT_DIR/../jsonapitest-results.json)"
+echo ""
+echo "REPORT :"
+echo "- ${suite}"
+echo "- ${test} test(s)"
+echo "- ${errors} error(s)"
+echo "- ${errorList}"
