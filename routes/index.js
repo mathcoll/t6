@@ -31,6 +31,114 @@ const getDurationInMilliseconds = (start) => {
 	return (diff[0] * NS_PER_SEC + diff[1]) / NS_TO_MS;
 };
 
+const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject) => {
+	let user = typeof req.user!=="undefined"?req.user:{isOTP:null};
+	let currentLocationIp = req.ip;
+	let ua = req.headers["user-agent"];
+	let forceOTP = req.query.forceOTP;
+	let geo = geoip.lookup(currentLocationIp)!==null?geoip.lookup(currentLocationIp):{};
+	let agent = useragent.parse(ua);
+	let currentDevice = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
+
+	if (typeof user.email==="undefined") {
+		t6console.debug("user undefined ==> No OTP");
+		reject("OTP challenge ==> No OTP (user undefined)");
+	} else {
+		t6console.debug("=============================== OTP ===================================");
+		let otpChallenge = false;
+		let bruteForceCount = 0;
+		typeof user.lastLogon!=="undefined"?user.lastLogon:0;
+		typeof user.lastOTP!=="undefined"?user.lastOTP:0;
+		if(defaultUser.session_id!=="") {
+			let queryBruteForce = `SELECT count(url) FROM ${rp}.requests WHERE (session_id='${defaultUser.session_id}') AND (time>now() - ${otpBruteForceWindow}) LIMIT 1`;
+			//t6console.debug("OTP challenge test brute force attempt", queryBruteForce);
+			dbInfluxDB.query(queryBruteForce).then((data) => {
+				bruteForceCount = typeof data[0]!=="undefined"?data[0].count:0;
+				t6console.debug("OTP challenge test brute force attempt", bruteForceCount);
+			});
+		}
+		//t6console.debug("REQ", req.path);
+		//t6console.debug("REQ", req.user);
+		otpChallenge = [
+			//(req.path==="/users/"+req.user.id && req.method==="PUT"),
+			//(req.path==="/objects/" && req.method==="GET"),
+			
+			// New IP identified
+			typeof (user.geoip?.ip)!=="undefined"?((user.geoip?.ip).indexOf(currentLocationIp)===-1 && currentDevice !== "Other 0.0.0"):false,
+			
+			// New localization identified
+			
+			// New device identified
+			typeof (user.device)!=="undefined"?((user.device).indexOf(currentDevice)===-1 && currentDevice !== "Other 0.0.0"):false,
+			
+			// Connexions à des heures inhabituelles
+			//(Date.now() > 1676147987697)
+			
+			// Important user modification
+			
+			// User last logged in for a while
+			//(moment(req.user.lastLogon).isBefore(moment().subtract(1, "days"))), // TODO
+			
+			// Threashold on Brute Force attempt - based on session
+			(bruteForceCount>otpBruteForceCount), // this is async and not available // TODO
+
+			// Do not create OTP challenge if the user already have one in the past 5 min
+			//(moment(req.user.lastOTP).isBefore(moment().subtract(5, "minutes"))), // TODO
+
+		].some(isRequireChallenge);
+		if(str2bool(forceOTP)===true) {
+			otpChallenge = true;
+		}
+		if( (req.headers["otp"] && req.headers["hash"]) || (req.query.otp && req.query.hash) ) {
+			let otp = typeof req.headers["otp"]!=="undefined"?req.headers["otp"]:req.query.otp;
+			let hash = typeof req.headers["hash"]!=="undefined"?req.headers["hash"]:req.query.hash;
+			if ( otpTool.verifyOTP(user.email, otp, hash, otpKey, otpAlgorithm) ) {
+				t6events.addAudit("t6App", "OTP challenge succeed", user.id, user.id, {"status": 200});
+				t6events.addStat("t6App", "OTP challenge succeed", user.id, user.id, {"status": 200});
+				otpChallenge = false;
+				resolve({user, hash:null});
+			} else {
+				t6events.addAudit("t6App", "OTP challenge failed", user.id, user.id, {"status": 200});
+				t6events.addStat("t6App", "OTP challenge failed", user.id, user.id, {"status": 200});
+				reject("OTP challenge failed");
+			}
+		}
+		t6console.debug("OTP: is otpChallenged", otpChallenge);
+		t6console.debug("OTP: is forced OTP", forceOTP);
+		t6console.debug("OTP: req.user.geoip.ip", user.geoip?.ip);
+		t6console.debug("OTP: currentLocationIp", currentLocationIp);
+		t6console.debug("OTP: req.user.device", user.device);
+		t6console.debug("OTP: currentDevice", currentDevice);
+		t6console.debug("OTP: bruteForceCount", bruteForceCount);
+		t6console.debug("OTP: req.user.lastOTP", user.lastOTP);
+		t6console.debug("OTP: moment()", moment().subtract(5, "minutes"));
+		t6console.debug("OTP: req.user.lastLogon", user.lastLogon);
+		t6console.debug("OTP: moment()", moment().subtract(1, "days"));
+		if(otpChallenge) {
+			user.lastOTP = moment().format("x");
+			user.isOTP = true;
+			user.currentLocationIp = currentLocationIp;
+			user.currentDevice = currentDevice;
+			t6console.debug("OTP challenge lastOTP is updated");
+			let otp = t6mailer.generateOTP(user, res);
+			otp.then((otp) => {
+				t6events.addAudit("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});
+				t6events.addStat("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});
+				t6console.debug("============================== END OTP ==================================");
+				if(process.env.NODE_ENV === "development" && ua.match(/node-superagent/gi) ) {
+					// on development environment and when using jsonapitest
+					res.header("Location", `${baseUrl_https}/v${version}${req.path}?hash=${otp.hash}&otp=123456`);
+				}
+				res.status(307).json( {"hash": otp.hash} );
+				resolve({user, hash:otp.hash});
+			});
+		} else {
+			t6console.debug("OTP challenge : not necessary, bypassed");
+			resolve({user, hash:null});
+		}
+	}
+});
+
 /**
  * @apiDefine 200
  * @apiSuccess 200 Server successfully understood the request
@@ -212,6 +320,12 @@ const getDurationInMilliseconds = (start) => {
  */
 
 /**
+ * @apiDefine NoAuth
+ * @apiHeader {String} [Accept=application/json] application/json
+ * @apiHeader {String} [Content-Type=application/json] application/json
+ */
+
+/**
  * @apiDefine Auth
  * @apiHeader {String} Authorization=Bearer:eyJh...sw5c Bearer &lt;Token&gt;
  * @apiHeader {String} [Accept=application/json] application/json
@@ -230,7 +344,7 @@ router.use((req, res, next) => {
 	req.startTime = process.hrtime();
 	next();
 });
-//catch API calls for quotas
+//catch API calls for quotas and OTP
 router.all("*", function (req, res, next) {
 	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
 	var o = {
@@ -268,7 +382,7 @@ router.all("*", function (req, res, next) {
 			}
 		});
 	}
-	if ( 
+	if (
 		req.user &&
 		(
 			(req.headers.authorization && req.headers.authorization.split(" ")[1] !== null && req.headers.authorization.split(" ")[1] !== "null") ||
@@ -294,6 +408,22 @@ router.all("*", function (req, res, next) {
 				res.status(429).send(new ErrorSerializer({"id": 17329, "code": 429, "message": "Too Many Requests"}));
 				//return;
 			} else {
+				t6console.debug("challengeOTP starting");
+				let agent = useragent.parse(req.headers["user-agent"]);
+				let currentDevice = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
+				challengeOTP(res, req, rp, o).then((challenge) => {
+					t6console.debug("challengeOTP is completed", challenge);
+					req.user = challenge.user;
+					if ( challenge.hash!==null ) {
+						return;
+					} else {
+						next();
+					}
+				})
+				.catch((err) => {
+					t6console.debug("challengeOTP rejected", err);
+					return;
+				});
 				res.on("close", () => {
 					t6console.debug("Setting up the onClose rule");
 					let tags = {
@@ -324,7 +454,6 @@ router.all("*", function (req, res, next) {
 						t6console.error("Error catch on writting to influxDb", {"err": err, "tags": tags, "fields": fields[0]});
 					});
 				});
-				next();
 			}
 		}).catch((err) => {
 			t6console.error("ERROR", err);
@@ -338,11 +467,10 @@ router.all("*", function (req, res, next) {
 			} else {
 				t6console.error("Error, i is undefined", i, err);
 				next();
-				//return res.status(501).send(new ErrorSerializer({"id": 17331, "code": 501, "message": "Not Implemented"}));
 			}
 		});
 	} else {
-		t6console.debug("User and authorization are not defined", req.user, req.headers.authorization);
+		t6console.debug("User and authorization are not defined", req.user, req.headers?.authorization);
 		var tags = {
 			rp: rp,
 			user_id: "anonymous",
@@ -415,6 +543,10 @@ function checkForTooManyFailure(req, res, email) {
 	});
 }
 
+function isRequireChallenge(element, index, array) {
+	return element===true;
+}
+
 /**
  * @api {delete} /tokens/all Delete all expired users tokens
  * @apiName Delete all expired users tokens
@@ -457,6 +589,7 @@ router.delete("/tokens/all", function (req, res) {
  * @apiBody (Body) {String} [key=undefined] Client Api Key, required only when grant_type="access_token"
  * @apiBody {String} [secret=undefined] Client Api Secret, required only when grant_type="access_token"
  * @apiBody {String} [refresh_token=undefined] The refresh_token you want to use in order to get a new token
+ * @apiQuery {String} [forceOTP] Force One Time Password request
  * 
  * @apiSuccess {String} status Status of the Authentication
  * @apiSuccess {String} token JWT Token
@@ -464,142 +597,173 @@ router.delete("/tokens/all", function (req, res) {
  * @apiSuccess {String} refresh_token Token that can be used to refresh the Token
  * @apiSuccess {timestamp} refreshTokenExp Expiration timestamp of the Refresh Token
  *
+ * @apiUse NoAuth
  * @apiUse 200
  * @apiUse 307
  * @apiUse 400
  * @apiUse 401
  * @apiUse 403
  */
-function isRequireChallenge(element, index, array) {
-	return element===true;
-}
 router.post("/authenticate", function (req, res) {
 	let meta = { pushSubscription : req.body.pushSubscription};
+	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
+	let o = {
+		key:		typeof req.user!=="undefined"?req.user.key:null,
+		secret:		typeof req.user!=="undefined"?req.user.secret:null,
+		user_id:	typeof req.user!=="undefined",
+		session_id:	typeof req.sessionID!=="undefined"?req.sessionID:(typeof req.user!=="undefined"?req.user.session_id:null),
+		verb:		req.method,
+		url:		typeof req.path!=="undefined"?req.path:req.originalUrl,
+		query:		(Object.keys(req.query).length > 0)?JSON.stringify(req.query):"",
+		date:		moment().format("x")
+	};
 	if ( (req.body.username !== "" && req.body.password !== "") && (!req.body.grant_type || req.body.grant_type === "password") ) {
-		let email = req.body.username;
+		let email = (req.body.username).toLowerCase();
 		let password = req.body.password;
-
 		let queryU = { "$and": [ { "email": email } ] };
-		//t6console.debug(queryU);
 		let user = users.findOne(queryU);
 		if ( user && typeof user.password!=="undefined" ) {
 			user.quotausage = undefined;
 			user.data = undefined;
 			let geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
 			let agent = useragent.parse(req.headers["user-agent"]);
-			let currentLocationIp = req.ip;
 			let currentDevice = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
 			if ( bcrypt.compareSync(password, user.password) || md5(password) === user.password ) {
-				let otpChallenge = false;
-				otpChallenge = [
-					// Connexions à partir d'une adresse IP inconnue : Si une connexion est effectuée à partir d'une adresse IP qui n'a pas été enregistrée précédemment, il peut être judicieux d'envoyer un challenge OTP.
-					(user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"), // do not challenge on localhost
-					// Connexions à partir d'un nouvel appareil : Si une connexion est effectuée à partir d'un nouvel appareil, il peut être judicieux d'envoyer un challenge OTP pour vérifier l'identité de l'utilisateur.
-					(user.device !== currentDevice && user.device !== "Other 0.0.0")
-					// Changements importants dans les informations de compte : Si des modifications sont apportées à des informations sensibles telles que l'adresse e-mail ou le mot de passe, un challenge OTP peut être nécessaire pour vérifier l'identité de l'utilisateur.
-					// Connexions à partir d'une localisation géographique inhabituelle : Si une connexion est effectuée à partir d'une localisation géographique inhabituelle par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
-					// Connexions à des heures inhabituelles : Si une connexion est effectuée à des heures inhabituelles par rapport aux habitudes de l'utilisateur, il peut être judicieux d'envoyer un challenge OTP.
-				].some(isRequireChallenge);
-				t6console.debug("is otpChallenged ?", otpChallenge);
-				t6console.debug("11", (user.location.ip !== currentLocationIp && user.location.ip !== "::ffff:127.0.0.1"));
-				t6console.debug("22", (user.device !== currentDevice && user.device !== "Other 0.0.0"));
-				t6console.debug("user.device", (user.device));
-				t6console.debug("currentDevice", currentDevice);
-				if(otpChallenge) {
-					t6console.info("t6 otp challenge");
-					let otp = t6mailer.generateOTP(user, res);
-					otp.then( (otp) => { 
-						return res.status(307).json( {"hash": otp.hash} );
-					});
-				} else {
-					t6console.info("t6 No otp challenge");
-					geo.ip = req.ip;
-					user.location = {geo: geo, ip: req.ip,};
-					user.device = currentDevice;
-					user.geoip = geo;
-					/* pushSubscription */
-					if ( typeof meta.pushSubscription !== "undefined" ) {
-						let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
-						meta.user_id = user.id;
-						timeoutNotification = setTimeout(sendNotification, 5000, meta, payloadMessage);
-						user.pushSubscription = meta.pushSubscription;
+				user.location = {geo: geo};
+				user.isOTP=false; // reset value
+				req.user = user;
+				challengeOTP(res, req, rp, o).then((challenge) => {
+					t6console.debug("challengeOTP is completed", challenge);
+					req.user = challenge.user;
+					user = req.user;
+					if ( challenge.hash!==null ) {
+						t6console.debug("challengeOTP challenged at login");
+						return;
+					} else {
+						if(Array.isArray(user.geoip?.ip)===true) {
+							if((user.geoip?.ip).indexOf(req.ip)===-1) {
+								(user.geoip?.ip).push(req.ip);
+								t6console.debug("IP added the the list for that user.");
+							} else {
+								t6console.debug("IP already listed for that user.");
+							}
+						} else {
+							if(typeof user.geoip!=="undefined" && user.geoip?.ip!==null) {
+								user.geoip.ip = [user.geoip?.ip];
+							} else {
+								user.geoip = {ip:[]};
+							}
+							(user.geoip?.ip).push(req.ip);
+							t6console.debug("IP added the the list for that user.");
+						}
+						if(Array.isArray(user.device)===true) {
+							if((user.device).indexOf(currentDevice)===-1) {
+								(user.device).push(currentDevice);
+								t6console.debug("Device added the the list for that user.");
+							} else {
+								t6console.debug("Device already listed for that user.");
+							}
+						} else {
+							if(user.device!==null) {
+								user.device = [user.device];
+							}
+							(user.device).push(currentDevice);
+							t6console.debug("Device added the the list for that user.");
+						}
+						/* pushSubscription */
+						if ( typeof meta.pushSubscription !== "undefined" ) {
+							let payloadMessage = "{\"type\": \"message\", \"title\": \"Successfully auth\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+							meta.user_id = user.id;
+							timeoutNotification = setTimeout(sendNotification, 5000, meta, payloadMessage);
+							user.pushSubscription = meta.pushSubscription;
+						}
+						user.lastLogon = moment().format("x");
+						t6console.debug("User is logged in. Updated the lastLogon value.");
+						users.update(user);
+						db_users.save();
+		
+						req.session.cookie.secure = true;
+						req.session.cookie.user_id = user.id;
+		
+						let payload = JSON.parse(JSON.stringify(user));
+						payload.unsubscription = user.unsubscription;
+						payload.permissions = undefined;
+						payload.token = undefined;
+						payload.password = undefined;
+						payload.gravatar = undefined;
+						payload.meta = undefined;
+						payload.$loki = undefined;
+						payload.token_type = "Bearer";
+						payload.scope = "Application";
+						payload.sub = "/users/"+user.id;
+		
+						if ( user.location && user.location.ip ) {
+							payload.iss = req.ip+" - "+user.location.ip;
+						}
+						if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
+							payload.location = undefined;
+							payload.unsubscription_token = undefined;
+							payload.passwordLastUpdated = undefined;
+							payload.iftttCode = undefined;
+							payload.iftttTrigger_identity = undefined;
+							payload.subscription = undefined;
+							payload.unsubscription = undefined;
+							payload.pushSubscription = undefined;
+							payload.reminderMail = undefined;
+							payload.changePassword = undefined;
+							payload.newsletter = undefined;
+							payload.quotausage = undefined;
+							payload.data = undefined;
+							payload.changePasswordMail = undefined;
+							payload.mail_hash = undefined;
+							payload.update_date = undefined;
+							payload.subscription_date = undefined;
+							payload.scope = undefined;
+							payload.firstName = undefined;
+							payload.lastName = undefined;
+							payload.iss = undefined;
+							payload.sub = undefined;
+							payload.token_type = undefined;
+						}
+						var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+		
+						var refreshPayload = crypto.randomBytes(40).toString("hex");
+						var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
+						let t = {
+								user_id: user.id,
+								refresh_token: refreshPayload,
+								expiration: refreshTokenExp,
+								"user-agent": {
+									"agent": agent.toAgent(),
+									"string": agent.toString(),
+									"version": agent.toVersion(),
+									"os": agent.os.toString(),
+									"osVersion": agent.os.toVersion(),
+								},
+								"device": agent.device.toString(),
+								"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
+						};
+						tokens.insert(t);
+						var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
+						if ( expired ) {
+							tokens.remove(expired);
+							db_tokens.save(); // There might be a bug here. not the same tokens !
+						}
+		
+						var refresh_token = user.id + "." + refreshPayload;
+						t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
+						t6events.addStat("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
+						if(!user.isOTP) { // TODO: we should not use that tips ! This is to prevent 'already sent headers'' error
+							return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
+						}
 					}
-					users.update(user);
-					db_users.save();
-	
-					req.session.cookie.secure = true;
-					req.session.cookie.user_id = user.id;
-	
-					let payload = JSON.parse(JSON.stringify(user));
-					payload.unsubscription = user.unsubscription;
-					payload.permissions = undefined;
-					payload.token = undefined;
-					payload.password = undefined;
-					payload.gravatar = undefined;
-					payload.meta = undefined;
-					payload.$loki = undefined;
-					payload.token_type = "Bearer";
-					payload.scope = "Application";
-					payload.sub = "/users/"+user.id;
-	
-					if ( user.location && user.location.ip ) {
-						payload.iss = req.ip+" - "+user.location.ip;
-					}
-					if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
-						payload.location = undefined;
-						payload.unsubscription_token = undefined;
-						payload.passwordLastUpdated = undefined;
-						payload.iftttCode = undefined;
-						payload.iftttTrigger_identity = undefined;
-						payload.subscription = undefined;
-						payload.unsubscription = undefined;
-						payload.pushSubscription = undefined;
-						payload.reminderMail = undefined;
-						payload.changePassword = undefined;
-						payload.newsletter = undefined;
-						payload.quotausage = undefined;
-						payload.data = undefined;
-						payload.changePasswordMail = undefined;
-						payload.mail_hash = undefined;
-						payload.update_date = undefined;
-						payload.subscription_date = undefined;
-						payload.scope = undefined;
-						payload.firstName = undefined;
-						payload.lastName = undefined;
-						payload.iss = undefined;
-						payload.sub = undefined;
-						payload.token_type = undefined;
-					}
-					var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-
-					var refreshPayload = crypto.randomBytes(40).toString("hex");
-					var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
-					let t = {
-							user_id: user.id,
-							refresh_token: refreshPayload,
-							expiration: refreshTokenExp,
-							"user-agent": {
-								"agent": agent.toAgent(),
-								"string": agent.toString(),
-								"version": agent.toVersion(),
-								"os": agent.os.toString(),
-								"osVersion": agent.os.toVersion(),
-							},
-							"device": agent.device.toString(),
-							"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
-					};
-					tokens.insert(t);
-					var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
-					if ( expired ) {
-						tokens.remove(expired);
-						db_tokens.save(); // There might be a bug here. not the same tokens !
-					}
-
-					var refresh_token = user.id + "." + refreshPayload;
-					t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
-					t6events.addStat("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
-					return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
-				}
+				})
+				.catch((err) => {
+					t6console.debug("challengeOTP rejected", err);
+					t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 403, "error_id": 102.31});
+					t6events.addStat("t6App", "POST_authenticate password", user.id, user.id, {"status": 403, "error_id": 102.31});
+					return res.status(403).send(new ErrorSerializer({"id": 17350, "code": 403, "message": "OTP challenge rejected"}).serialize());
+				});
 			} else {
 				let count = checkForTooManyFailure(req, res, email);
 				t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 403, "error_id": 102.11});
@@ -795,129 +959,6 @@ router.post("/authenticate", function (req, res) {
 	}
 });
 
-
-/**
- * @api {post} /authenticate/OTPchallenge Send the OTP for a challenge
- * @apiName Send the OTP for a challenge
- * @apiGroup 13. Users
- * @apiVersion 2.0.1
- * 
- * @apiUse Auth
- * @apiParam {uuid-v4} user_id User ID
- * @apiBody {String} [email] The User Email address
- * @apiBody {String} [otp] The User One Time Password (OTP)
- * @apiBody {String} [hash] The User Hash provided from the server on the challenge
- * 
- * @apiUse 200
- * @apiUse 403
- * @apiUse 429
- */
-router.post("/authenticate/OTPchallenge", function (req, res) {
-	let email = req.body.email;
-	let otp = req.body.otp;
-	let hash = req.body.hash;
-	t6console.log(email, otp, hash);
-
-	let queryU = { "$and": [ { "email": email } ] };
-	//t6console.debug(queryU);
-	let user = users.findOne(queryU);
-	if ( user ) {
-		if ( otpTool.verifyOTP(email, otp, hash, otpKey, otpAlgorithm) ) {
-			user.quotausage = undefined;
-			user.data = undefined;
-			let geo = geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{};
-			geo.ip = req.ip;
-			let agent = useragent.parse(req.headers["user-agent"]);
-			user.geoip = geo;
-			user.device = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
-			user.location = {geo: geo, ip: req.ip,}
-			users.update(user);
-			db_users.save();
-
-			req.session.cookie.secure = true;
-			req.session.cookie.user_id = user.id;
-
-			let payload = JSON.parse(JSON.stringify(user));
-			payload.unsubscription = user.unsubscription;
-			payload.permissions = undefined;
-			payload.token = undefined;
-			payload.password = undefined;
-			payload.gravatar = undefined;
-			payload.meta = undefined;
-			payload.$loki = undefined;
-			payload.token_type = "Bearer";
-			payload.scope = "Application";
-			payload.sub = "/users/"+user.id;
-	
-			if ( user.location && user.location.ip ) {
-				payload.iss = req.ip+" - "+user.location.ip;
-			}
-			if(req.headers && req.headers["user-agent"] && (req.headers["user-agent"]).indexOf("t6iot-library") > -1) {
-				payload.location = undefined;
-				payload.unsubscription_token = undefined;
-				payload.passwordLastUpdated = undefined;
-				payload.iftttCode = undefined;
-				payload.iftttTrigger_identity = undefined;
-				payload.subscription = undefined;
-				payload.unsubscription = undefined;
-				payload.pushSubscription = undefined;
-				payload.reminderMail = undefined;
-				payload.changePassword = undefined;
-				payload.newsletter = undefined;
-				payload.quotausage = undefined;
-				payload.data = undefined;
-				payload.changePasswordMail = undefined;
-				payload.mail_hash = undefined;
-				payload.update_date = undefined;
-				payload.subscription_date = undefined;
-				payload.scope = undefined;
-				payload.firstName = undefined;
-				payload.lastName = undefined;
-				payload.iss = undefined;
-				payload.sub = undefined;
-				payload.token_type = undefined;
-			}
-			var token = jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
-	
-			var refreshPayload = crypto.randomBytes(40).toString("hex");
-			var refreshTokenExp = moment().add(jwtsettings.refreshExpiresInSeconds, "seconds").format("x");
-			let t = {
-					user_id: user.id,
-					refresh_token: refreshPayload,
-					expiration: refreshTokenExp,
-					"user-agent": {
-						"agent": agent.toAgent(),
-						"string": agent.toString(),
-						"version": agent.toVersion(),
-						"os": agent.os.toString(),
-						"osVersion": agent.os.toVersion(),
-					},
-					"device": agent.device.toString(),
-					"geo": geoip.lookup(req.ip)!==null?geoip.lookup(req.ip):{},
-			};
-			tokens.insert(t);
-			var expired = tokens.find( { "$and": [{ "expiration" : { "$lt": moment().format("x") } }, { "expiration" : { "$ne": "" } } ]} );
-			if ( expired ) {
-				tokens.remove(expired);
-				db_tokens.save(); // There might be a bug here. not the same tokens !
-			}
-	
-			var refresh_token = user.id + "." + refreshPayload;
-			t6events.addAudit("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
-			t6events.addStat("t6App", "POST_authenticate password", user.id, user.id, {"status": 200});
-			return res.status(200).json( {status: "ok", token: token, tokenExp: jwtsettings.expiresInSeconds, refresh_token: refresh_token, refreshTokenExp: refreshTokenExp} );
-		} else {
-			return res.status(403).send(new ErrorSerializer({"id": 17999, "code": 403, "message": "OTP challenge failed"}).serialize());
-		}
-	} else {
-		t6console.debug("No user found or no password set yet.");
-		t6events.addAudit("t6App", "POST_authenticate password", email, email, {"status": 403, "error_id": 102.21});
-		t6events.addStat("t6App", "POST_authenticate password", email, email, {"status": 403, "error_id": 102.21});
-		t6console.error("Auth Error", email, req.body.username, {"status": 403, "error_id": 102.21});
-		return res.status(403).send(new ErrorSerializer({"id": 17250, "code": 403, "message": "Forbidden"}).serialize());
-	}
-});
-
 /**
  * @api {post} /refresh Refresh a JWT Token
  * @apiName Refresh a JWT Token
@@ -930,6 +971,7 @@ router.post("/authenticate/OTPchallenge", function (req, res) {
  * @apiHeader {String} [Accept] application/json
  * @apiHeader {String} [Content-Type] application/json
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  * @apiUse 403
  */
@@ -1005,6 +1047,7 @@ router.post("/refresh", function (req, res) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.head("/status", function(req, res, next) {
@@ -1080,6 +1123,7 @@ router.get("/status", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/index", function(req, res, next) {
@@ -1094,6 +1138,7 @@ router.get("/index", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/terms", function(req, res, next) {
@@ -1107,6 +1152,7 @@ router.get("/terms", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/compatible-devices", function(req, res, next) {
@@ -1120,6 +1166,7 @@ router.get("/compatible-devices", function(req, res, next) {
  * @apiGroup 0. General
  * @apiVersion 2.0.1
  * 
+ * @apiUse NoAuth
  * @apiUse 200
  */
 router.get("/open-source-licenses", function(req, res, next) {

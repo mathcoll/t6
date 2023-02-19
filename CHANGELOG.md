@@ -19,7 +19,7 @@ Types of changes
 ## 2023
 ### Milestone 23 - 2023-02
 **Added**
-  - [x] Added OTP/2FA challenge as MVP on the authenticate process ; only when grant_type=password
+  - [x] Added OTP/2FA challenge as MVP on the authenticate process
   - [x] Improve UI for OTP/2FA
   - [x] Added a threashold (otpBruteForceCount) to settings that trigger an OTP challenge
 
@@ -28,6 +28,7 @@ Types of changes
 
 **Changed**
   - [x] Packages updates d3-node@3.0.0 firebase-admin@11.5.0
+  - [x] OTP/2FA on a challenge must be sent via additional headers (hash, otp)
 
 ### Milestone 22 - 2023-01
 **Added**
