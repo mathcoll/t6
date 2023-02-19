@@ -17,7 +17,7 @@
 		"withCompare": true,
 		"withGenerator": true,
 		"forceLanguage": "en",
-		"aloneDisplay": false
+		"aloneDisplay": true
 	},
 	"order": [
 		"0. General",
@@ -30,7 +30,7 @@
 		"6. Source and Over The Air OTA",
 		"7. Mqtt",
 		"8. Administration",
-		"9. Notifications email",
+		"9. Notifications",
 		"10. Exploratory Data Analysis EDA",
 		"11. Classification",
 		"12. Stories",
