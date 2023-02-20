@@ -60,7 +60,6 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 		//t6console.debug("REQ", req.path);
 		//t6console.debug("REQ", req.user);
 		otpChallenge = [
-			//(req.path==="/users/"+req.user.id && req.method==="PUT"),
 			//(req.path==="/objects/" && req.method==="GET"),
 			
 			// New IP identified
@@ -75,9 +74,10 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			//(Date.now() > 1676147987697)
 			
 			// Important user modification
+			//(req.path==="/users/"+req.user.id && req.method==="PUT"),
 			
 			// User last logged in for a while
-			//(moment(req.user.lastLogon).isBefore(moment().subtract(1, "days"))), // TODO
+			(moment(parseInt(user.lastLogon, 10)).isBefore(moment().subtract(15, "days"))),
 			
 			// Threashold on Brute Force attempt - based on session
 			(bruteForceCount>otpBruteForceCount), // this is async and not available // TODO
@@ -110,11 +110,13 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 		t6console.debug("OTP: req.user.device", user.device);
 		t6console.debug("OTP: currentDevice", currentDevice);
 		t6console.debug("OTP: bruteForceCount", bruteForceCount);
-		t6console.debug("OTP: req.user.lastOTP", user.lastOTP);
-		t6console.debug("OTP: moment()", moment().subtract(5, "minutes"));
-		t6console.debug("OTP: req.user.lastLogon", user.lastLogon);
-		t6console.debug("OTP: moment()", moment().subtract(1, "days"));
-		if(otpChallenge) {
+		t6console.debug("OTP: req.user.lastOTP", moment(parseInt(user.lastOTP, 10)));
+		t6console.debug("OTP: moment() -5 min", moment().subtract(5, "minutes"));
+		t6console.debug("OTP: req.user.lastLogon", moment(parseInt(user.lastLogon, 10)));
+		t6console.debug("OTP: isBefore", moment().subtract(15, "days"));
+		t6console.debug("OTP: lastLogon isBefore", (moment(parseInt(user.lastLogon, 10)).isBefore(moment().subtract(15, "days"))));
+		if(otpChallenge && (moment(parseInt(user.lastOTP, 10)).isBefore(moment().subtract(otpExpiresAfter/2, "minutes")))) {
+			// Do not send OTP challenge more than 2 times within the OTP duration
 			user.lastOTP = moment().format("x");
 			user.isOTP = true;
 			user.currentLocationIp = currentLocationIp;
@@ -412,7 +414,7 @@ router.all("*", function (req, res, next) {
 				let agent = useragent.parse(req.headers["user-agent"]);
 				let currentDevice = typeof agent.toAgent()!=="undefined"?agent.toAgent():"";
 				challengeOTP(res, req, rp, o).then((challenge) => {
-					t6console.debug("challengeOTP is completed", challenge);
+					t6console.debug("challengeOTP is completed");
 					req.user = challenge.user;
 					if ( challenge.hash!==null ) {
 						return;
