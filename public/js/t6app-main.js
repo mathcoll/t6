@@ -445,12 +445,16 @@ var touchStartPoint, touchMovePoint;
 	app.onOTPButtonClick = function(evt) {
 		if (navigator.onLine) {
 			var myForm = evt.target.parentNode.parentNode.parentNode.parentNode;
-			myForm.querySelector("form.otp button.login_button i.material-icons").textContent = "cached";
-			myForm.querySelector("form.otp button.login_button i.material-icons").classList.add("animatedIcon");
+			myForm.querySelector("form.otp button.otp_button i.material-icons").textContent = "cached";
+			myForm.querySelector("form.otp button.otp_button i.material-icons").classList.add("animatedIcon");
 			componentHandler.upgradeDom();
 
 			app.otp.otp = myForm.querySelector("form.otp input[name='otp']").value;
-			app.authenticateOTP();
+			navigator.serviceWorker.controller.postMessage({
+				type: "CHALLENGE_OTP",
+				otp: app.otp,
+			});
+			//app.authenticateOTP();
 		} else {
 			toast("No Network detected, please check your connexion.", { timeout: app.toastDuration, type: "warning" });
 		}
@@ -649,7 +653,11 @@ var touchStartPoint, touchMovePoint;
 				).then(function(fetchResponse) {
 					return fetchResponse.json();
 				})
-				.then(function() {
+				.then((response) => {
+					if( typeof response.hash!=="undefined" ) {
+						app.otp.hash = response.hash;
+						app.setSection("otp");
+					}
 					localStorage.setItem('currentUserName', firstName + " " + lastName);
 					app.setDrawer();
 					toast('Your details have been updated.', { timeout: app.toastDuration, type: "done" });
@@ -753,7 +761,7 @@ var touchStartPoint, touchMovePoint;
 			notifications: document.querySelectorAll('form.notifications input.mdl-checkbox__input'),
 
 			loginButtons: document.querySelectorAll('form.signin button.login_button'),
-			OTPButtons: document.querySelectorAll('form.otp button.login_button'),
+			OTPButtons: document.querySelectorAll('form.otp button.otp_button'),
 			user_create: document.querySelectorAll('form.signup button.createUser'),
 			user_setpassword: document.querySelectorAll('form.resetpassword button.setPassword'),
 			user_forgot: document.querySelectorAll('form.forgotpassword button.forgotPassword'),
@@ -2781,13 +2789,10 @@ var touchStartPoint, touchMovePoint;
 			"					<span class='mdl-textfield__error'>OTP should be 6 digits long</span>" +
 			"				</div>" +
 			"			</div>" +
-			"			<div class='mdl-card__supporting-text'>" +
-			//app.getField(null, "Notifications", app.getSetting('settings.notifications')!==undefined?app.getSetting('settings.notifications'):true, {type: 'switch', id:'login.notifications', isEdit: true}) +
-			"			</div>" +
 			"			<div class='mdl-card__supporting-text mdl-grid'>" +
 			"				<span class='mdl-layout-spacer'></span>" +
-			"				<button class='login_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
-			"					<i class='material-icons'>lock</i>Log in" +
+			"				<button class='otp_button mdl-button mdl-js-button mdl-js-ripple-effect'>" +
+			"					<i class='material-icons'>lock</i>Validate OTP challenge" +
 			"				</button>" +
 			"			</div>" +
 			"			<div class='mdl-card__actions mdl-card--border'>" +
@@ -3915,6 +3920,9 @@ var touchStartPoint, touchMovePoint;
 					app.debug = false;
 					toast('Debug mode is disabled.', { timeout: app.toastDuration, type: "done" });
 				}
+				navigator.serviceWorker.controller.postMessage({
+					debug: localStorage.getItem("settings.debug")==="true"?true:false,
+				});
 			});
 		}
 		if (document.getElementById('settings.date_format')) {
@@ -4529,6 +4537,23 @@ var touchStartPoint, touchMovePoint;
 		toast(msg, { timeout: app.toastDuration, type: type });
 	};
 
+	app.setEventListener = function() {
+		const messageChannel = new MessageChannel();
+		navigator.serviceWorker.controller.postMessage({
+			type: "INIT_PORT",
+			debug: localStorage.getItem("settings.debug")==="true"?true:false,
+		}, [messageChannel.port2]);
+
+		messageChannel.port1.onmessage = (event) => {
+			if( event.data.mainAppAction === "historyBack" ) {
+				history.back();
+			}
+			if (localStorage.getItem("settings.debug") == "true") {
+				console.log("messageChannel hash", event.data.hash);
+			}
+		};
+	};
+
 	app.clearCache = function() {
 		toast("Please clear cache manually... :-)", { timeout: app.toastDuration, type: "warning" });
 		if (localStorage.getItem("settings.debug") == "true") {
@@ -4853,6 +4878,7 @@ var touchStartPoint, touchMovePoint;
 			app.setDrawer();
 			app.setHiddenElement("notification");
 			app.setServiceWorker();
+			app.setEventListener();
 
 			if (typeof screen.orientation !== "undefined") {
 				screen.orientation.addEventListener("change", app.showOrientation);

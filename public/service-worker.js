@@ -1,7 +1,6 @@
-var dataCacheName= "t6-cache-8c09eedbf013ba2362f8e45df679a4e1";
+var dataCacheName= "t6-cache-7e8a73ced3cef0876dc156f057014458";
 
 var cacheName= dataCacheName;
-var debug = false;
 var cacheWhitelist = ["internetcollaboratif.info", "css", "img", "js", "secure.gravatar.com", "fonts.g", "cdn.jsdelivr.net", "static-v.tawk.to", "cloudflare", "leaflet"];
 var cacheBlacklist = ["v2", "authenticate", "users/me/token", "/mail/", "hotjar", "analytics", "gtm", "collect", "tawk"];
 var filesToCache = [
@@ -34,6 +33,11 @@ var filesToCache = [
 	"https://cdn.internetcollaboratif.info/fonts/Material-Icons.woff2",
 	"https://fonts.googleapis.com/icon?family=Lato:100,100i,300,300i,400,400i,700,700i,900,900i&subset=latin-ext"
 ];
+let debug = false;
+let getVersionPort;
+let currentOtpHash;
+let originalRequest = null;
+let originalBody = null;
 let isOnline = true;
 function refresh(response) {
 	return self.clients.matchAll().then(function(clients) {
@@ -46,6 +50,36 @@ function refresh(response) {
 			client.postMessage(JSON.stringify(message));
 		});
 	});
+}
+function Utf8ArrayToStr(array) {
+	var out, i, len, c;
+	var char2, char3;
+	out = "";
+	len = array.length;
+	i = 0;
+	while (i < len) {
+		c = array[i++];
+		switch (c >> 4) {
+			case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
+				// 0xxxxxxx
+				out += String.fromCharCode(c);
+				break;
+			case 12: case 13:
+				// 110x xxxx   10xx xxxx
+				char2 = array[i++];
+				out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+				break;
+			case 14:
+				// 1110 xxxx  10xx xxxx  10xx xxxx
+				char2 = array[i++];
+				char3 = array[i++];
+				out += String.fromCharCode(((c & 0x0F) << 12) |
+					((char2 & 0x3F) << 6) |
+					((char3 & 0x3F) << 0));
+				break;
+		}
+	}
+	return out;
 }
 function precache() {
 	if (debug) { console.log("[ServiceWorker]", "Running precache."); }
@@ -68,9 +102,57 @@ function update(request) {
 		});
 	});
 }
-function fromServer(request){
-	return fetch(request).then(function(response){ return response; });
+function fromServer(request) {
+	let clonedRequest = (request.clone());
+	return fetch(request).then((response) => {
+		if (response.status === 307) {
+			response.clone().json().then((response) => {
+				if( typeof response.hash!=="undefined" ) {
+					const reader = (clonedRequest && typeof clonedRequest.body!==null)?clonedRequest.body.getReader():null;
+					if( reader ) {
+						reader.read().then(({ done, value }) => {
+							self.originalBody = JSON.stringify( JSON.parse( self.Utf8ArrayToStr(value) ));
+							if (debug) { console.log("307 Restored request body", self.originalBody) };
+							self.currentOtpHash = response.hash;
+							self.originalRequest = {
+								headers: {
+									...request.headers,
+									"authorization": request.headers.get("authorization"),
+									"content-type": request.headers.get("content-type"),
+									"hash": self.currentOtpHash,
+								},
+								method: request.method,
+								url: request.url,
+								body: self.originalBody,
+							};
+							if (debug) { console.log("307 self.originalRequest prepared for challenge", self.originalRequest) };
+							location.hash = "#otp";
+						});
+					}
+				}
+			});
+		}
+		return response;
+	}).catch((err) => {
+		if (debug) { console.log("[ServiceWorker]", "Error", err); };
+	});
 }
+self.addEventListener("message", (event) => {
+	debug = (typeof event.data.debug!=="undefined" && event.data.debug===true)?true:self.debug;
+	if (debug) { console.log("[ServiceWorker]", "debug event.data", event.data); };
+	if (event.data && event.data.type === "INIT_PORT") {
+		getVersionPort = event.ports[0];
+	}
+	if (event.data && event.data.type === "CHALLENGE_OTP") {
+		self.originalRequest.headers["otp"] = event.data.otp.otp;
+		fetch(self.originalRequest.url, self.originalRequest).then((response) => {
+			getVersionPort.postMessage({ mainAppAction: "historyBack" });
+			return response;
+		}).catch((err) => {
+			if (debug) { console.log("[ServiceWorker]", "Error", err); };
+		});
+	}
+});
 self.addEventListener("install", function(e) {
 	if (debug) { console.log("[ServiceWorker]", "Installing"); }
 	e.waitUntil(
