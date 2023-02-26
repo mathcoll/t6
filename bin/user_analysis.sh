@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-DATABASE="t6db-users__pink.json"
+DATABASE="t6db-users__bleu.json"
 EMAIL=""
 
 echo ""
@@ -36,8 +36,9 @@ jq -cr '.collections[0].data[] | select(.geoip.ip != null) | .email, .geoip.ip' 
 
 echo ""
 echo "---------"
-echo "USER LAST LOGON AND OTP"
+echo "USER LAST LOGON"
 jq -cr '.collections[0].data[] | select(.lastLogon != null) | {email, lastLogon}' ${SCRIPT_DIR}/../data/${DATABASE}
+echo "USER LAST OTP"
 jq -cr '.collections[0].data[] | select(.lastOTP != null) | {email, lastOTP}' ${SCRIPT_DIR}/../data/${DATABASE}
 
 
@@ -59,6 +60,6 @@ echo "- reminder: ${reminder} subscribers."
 echo ""
 echo "---------"
 echo "SPECIFIC USER"
-jq -cr --arg email "${EMAIL}" '.collections[0].data[] | select(.email == $email) | {email, password, firstName, lastName}' ${SCRIPT_DIR}/../data/${DATABASE}
+jq -cr --arg email "${EMAIL}" '.collections[0].data[] | select(.email == $email) | {email, password, id, firstName, lastName, lastOTP, lastLogon}' ${SCRIPT_DIR}/../data/${DATABASE}
 
 
