@@ -125,7 +125,6 @@ function fromServer(request) {
 								url: request.url,
 								body: self.originalBody,
 							};
-							if (debug) { console.log("307 self.originalRequest prepared for challenge", self.originalRequest) };
 							location.hash = "#otp";
 						});
 					}
