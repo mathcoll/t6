@@ -82,8 +82,8 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			// Threashold on Brute Force attempt - based on session
 			(bruteForceCount>otpBruteForceCount), // this is async and not available // TODO
 
-			// Do not create OTP challenge if the user already have one in the past 5 min
-			(req.user.lastOTP!==null && moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(5, "minutes"))), // TODO
+			// Do not create OTP challenge if the user already have one in the past 5 days
+			(req.user.lastOTP!==null && moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(5, "days"))), // TODO
 			// or when user never had an OTP 
 			(typeof req.user.lastOTP==="undefined" || req.user.lastOTP===null),
 
@@ -115,6 +115,7 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			user.currentDevice = currentDevice;
 			t6console.debug("OTP challenge lastOTP is updated");
 			let otp = t6mailer.generateOTP(user, res);
+			req.user = user;
 			otp.then((otp) => {
 				t6events.addAudit("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});
 				t6events.addStat("t6App", "OTP challenge emailed", user.id, user.id, {"status": 307, "error_id": 1029});

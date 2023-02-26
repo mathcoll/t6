@@ -108,7 +108,7 @@ function fromServer(request) {
 		if (response.status === 307) {
 			response.clone().json().then((response) => {
 				if( typeof response.hash!=="undefined" ) {
-					const reader = (clonedRequest && typeof clonedRequest.body!==null)?clonedRequest.body.getReader():null;
+					const reader = (clonedRequest && clonedRequest.body!==null)?clonedRequest.body.getReader():null;
 					if( reader ) {
 						reader.read().then(({ done, value }) => {
 							self.originalBody = JSON.stringify( JSON.parse( self.Utf8ArrayToStr(value) ));
