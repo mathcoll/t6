@@ -74,7 +74,7 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			//(Date.now() > 1676147987697)
 			
 			// Important user modification
-			//(req.path==="/users/"+req.user.id && req.method==="PUT"),
+			(req.path==="/users/"+req.user.id && req.method==="PUT"),
 			
 			// User last logged in for a while
 			(moment(parseInt(user.lastLogon, 10)).isBefore(moment().subtract(15, "days"))),
@@ -83,7 +83,9 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			(bruteForceCount>otpBruteForceCount), // this is async and not available // TODO
 
 			// Do not create OTP challenge if the user already have one in the past 5 min
-			//(moment(req.user.lastOTP).isBefore(moment().subtract(5, "minutes"))), // TODO
+			(req.user.lastOTP!==null && moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(5, "minutes"))), // TODO
+			// or when user never had an OTP 
+			(typeof req.user.lastOTP==="undefined" || req.user.lastOTP===null),
 
 		].some(isRequireChallenge);
 		if(str2bool(forceOTP)===true) {
@@ -103,19 +105,9 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 				reject("OTP challenge failed");
 			}
 		}
-		t6console.debug("OTP: is otpChallenged", otpChallenge);
-		t6console.debug("OTP: is forced OTP", forceOTP);
-		t6console.debug("OTP: req.user.geoip.ip", user.geoip?.ip);
-		t6console.debug("OTP: currentLocationIp", currentLocationIp);
-		t6console.debug("OTP: req.user.device", user.device);
-		t6console.debug("OTP: currentDevice", currentDevice);
-		t6console.debug("OTP: bruteForceCount", bruteForceCount);
-		t6console.debug("OTP: req.user.lastOTP", moment(parseInt(user.lastOTP, 10)));
-		t6console.debug("OTP: moment() -5 min", moment().subtract(5, "minutes"));
-		t6console.debug("OTP: req.user.lastLogon", moment(parseInt(user.lastLogon, 10)));
-		t6console.debug("OTP: isBefore", moment().subtract(15, "days"));
-		t6console.debug("OTP: lastLogon isBefore", (moment(parseInt(user.lastLogon, 10)).isBefore(moment().subtract(15, "days"))));
-		if(otpChallenge && (moment(parseInt(user.lastOTP, 10)).isBefore(moment().subtract(otpExpiresAfter/2, "minutes")))) {
+		
+		// OTP requested from rules AND (either lastOTP never occured OR occured more than half the expiration)
+		if(otpChallenge && ( (typeof req.user.lastOTP==="undefined" || req.user.lastOTP===null) || (moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(otpExpiresAfter/2, "minutes")))) ) {
 			// Do not send OTP challenge more than 2 times within the OTP duration
 			user.lastOTP = moment().format("x");
 			user.isOTP = true;
