@@ -97,8 +97,8 @@
                         {
                         	"request": "POST /{{app_version}}/authenticate",
 		                    "headers": {
-                                "hash": "fake_hash",
-                                "otp": "123456"
+                                "x-hash": "fake_hash",
+                                "x-otp": "1234567"
 		                    },
                             "params": {
                                 "username": "{{saved.username}}",
