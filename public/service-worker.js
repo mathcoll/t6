@@ -119,7 +119,7 @@ function fromServer(request) {
 									...request.headers,
 									"authorization": request.headers.get("authorization"),
 									"content-type": request.headers.get("content-type"),
-									"hash": self.currentOtpHash,
+									"x-hash": self.currentOtpHash,
 								},
 								method: request.method,
 								url: request.url,
@@ -143,7 +143,7 @@ self.addEventListener("message", (event) => {
 		getVersionPort = event.ports[0];
 	}
 	if (event.data && event.data.type === "CHALLENGE_OTP") {
-		self.originalRequest.headers["otp"] = event.data.otp.otp;
+		self.originalRequest.headers["x-otp"] = event.data.otp.otp;
 		fetch(self.originalRequest.url, self.originalRequest).then((response) => {
 			getVersionPort.postMessage({ mainAppAction: "historyBack" });
 			return response;
