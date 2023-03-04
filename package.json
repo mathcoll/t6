@@ -120,7 +120,7 @@
     "string-format": "^2.0.0",
     "striptags": "^3.2.0",
     "suncalc": "^1.9.0",
-    "twilio": "^3.84.1",
+    "twilio": "^4.8.0",
     "uglify-es": "^3.3.9",
     "useragent": "^2.3.0",
     "uuid": "^9.0.0",
