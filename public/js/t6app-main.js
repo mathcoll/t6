@@ -9,6 +9,7 @@
  *  [pushSubscription]
  *  [ServiceWorker]
  *  [setSection]
+ *  [Navigation]
  *  [Network]
  */
 "use strict";
@@ -1238,7 +1239,7 @@ var touchStartPoint, touchMovePoint;
 
 	app.setItemsClickAction = function(type) {
 		if (localStorage.getItem("settings.debug") == "true") {
-			console.log('DEBUG setItemsClickAction', type);
+			console.log('[Navigation]', 'setItemsClickAction', type);
 		}
 		var items = document.querySelectorAll("[data-action='view']");
 		for (var i in items) {
@@ -4888,13 +4889,11 @@ var touchStartPoint, touchMovePoint;
 			window.addEventListener("offline", app.updateNetworkStatus, false);
 			window.addEventListener("clearCache", app.clearCache, false);
 			window.addEventListener("hashchange", function() {
-				if (localStorage.getItem("settings.debug") == "true") {
-					console.log("DEBUG", "hashchange", window.location.hash);
-				}
+				let id, id2;
 				if (window.history && window.history.pushState) {
 					localStorage.setItem("currentPage", window.location.hash.substr(1));
-					var id = getParameterByName('id', null);
-					var id2 = window.location.hash;
+					id = getParameterByName('id', null);
+					id2 = window.location.hash;
 					if (id) {
 						localStorage.setItem("currentResourceId", id);
 					} else {
@@ -4902,7 +4901,7 @@ var touchStartPoint, touchMovePoint;
 					}
 					app.managePage();
 				}
-				if (localStorage.getItem("settings.debug") == "true") {
+				if (localStorage.getItem("settings.debug") == "true" && id2) {
 					console.log('[History]', 'hashchange');
 					console.log('[History]', 'resource id', id2);
 				}
