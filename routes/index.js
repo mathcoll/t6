@@ -91,9 +91,9 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 		if(str2bool(forceOTP)===true) {
 			otpChallenge = true;
 		}
-		if( (req.headers["otp"] && req.headers["hash"]) || (req.query.otp && req.query.hash) ) {
-			let otp = typeof req.headers["otp"]!=="undefined"?req.headers["otp"]:req.query.otp;
-			let hash = typeof req.headers["hash"]!=="undefined"?req.headers["hash"]:req.query.hash;
+		if( (req.headers["x-otp"] && req.headers["x-hash"]) || (req.query.otp && req.query.hash) ) {
+			let otp = typeof req.headers["x-otp"]!=="undefined"?req.headers["x-otp"]:req.query.otp;
+			let hash = typeof req.headers["x-hash"]!=="undefined"?req.headers["x-hash"]:req.query.hash;
 			if ( otpTool.verifyOTP(user.email, otp, hash, otpKey, otpAlgorithm) ) {
 				t6events.addAudit("t6App", "OTP challenge succeed", user.id, user.id, {"status": 200});
 				t6events.addStat("t6App", "OTP challenge succeed", user.id, user.id, {"status": 200});
@@ -325,6 +325,8 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
  * @apiHeader {String} Authorization=Bearer:eyJh...sw5c Bearer &lt;Token&gt;
  * @apiHeader {String} [Accept=application/json] application/json
  * @apiHeader {String} [Content-Type=application/json] application/json
+ * @apiHeader {String} [x-hash] OTP Hash
+ * @apiHeader {String} [x-otp] One Time Password
  */
 
 /**
