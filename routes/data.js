@@ -1147,6 +1147,8 @@ let slicePayloads = function(payloadArray, options) {
  * @apiUse 405
  * @apiUse 412
  * @apiUse 429
+ * @apiHeader {String} [x-api-key] Api Key from "Generate Access Tokens Endpoint"
+ * @apiHeader {String} [x-api-secret] Api Secret from "Generate Access Tokens Endpoint"
  */
 router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms, getToken: function getToken(req) {
 	if ( req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer" && req.headers.authorization.split(" ")[1] !== "" ) {
