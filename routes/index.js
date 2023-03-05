@@ -690,6 +690,8 @@ router.post("/authenticate", function (req, res) {
 						payload.gravatar = undefined;
 						payload.meta = undefined;
 						payload.$loki = undefined;
+						payload.geoip = undefined;
+						payload.device = undefined;
 						payload.token_type = "Bearer";
 						payload.scope = "Application";
 						payload.sub = "/users/"+user.id;
@@ -803,6 +805,8 @@ router.post("/authenticate", function (req, res) {
 			payload.gravatar = undefined;
 			payload.meta = undefined;
 			payload.$loki = undefined;
+			payload.geoip = undefined;
+			payload.device = undefined;
 			payload.token_type = "Bearer";
 			payload.scope = "ClientApi";
 			payload.sub = "/users/"+user.id;
@@ -887,6 +891,8 @@ router.post("/authenticate", function (req, res) {
 			payload.gravatar = undefined;
 			payload.meta = undefined;
 			payload.$loki = undefined;
+			payload.geoip = undefined;
+			payload.device = undefined;
 			payload.token_type = "Bearer";
 			payload.scope = "ClientApi";
 			payload.sub = "/users/"+user.id;
@@ -1005,6 +1011,8 @@ router.post("/refresh", function (req, res) {
 			payload.gravatar = undefined;
 			payload.meta = undefined;
 			payload.$loki = undefined;
+			payload.geoip = undefined;
+			payload.device = undefined;
 			payload.token_type = "Bearer";
 			payload.scope = "Application";
 			payload.sub = "/users/"+user.id;
