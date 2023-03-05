@@ -150,7 +150,41 @@ t6websockets.init = async function() {
 							wss.clients.forEach(function each(client) {
 								let current = wsClients.get(client);
 								if(current.object_id === message.object_id) {
-									client.send(JSON.stringify(message.payload));
+									if (message.payload.arduinoCommand === "tts") {
+										let outputFile = `${tts.outputFolder}/${uuid.v4()}.mp3`;
+										const ttsClient = new textToSpeech.TextToSpeechClient();
+										const request = {
+											input: { text: message.payload.value },
+											voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: "NEUTRAL" },
+											audioConfig: { audioEncoding: "MP3" },
+										};
+										ttsClient.synthesizeSpeech(request, (err, response) => {
+											if (err) {
+												t6console.error(`TTS error: ${err}`);
+												return;
+											}
+											fs.writeFile(outputFile, response.audioContent, (err) => {
+												if (err) {
+													t6console.error(`File write error: ${err}`);
+													return;
+												}
+												const readStream = fs.createReadStream(outputFile);
+												readStream.on("data", (chunk) => {
+													ws.send(chunk);
+												});
+												readStream.on("end", () => {
+													t6console.debug("ws/tts", "File sent");
+													fs.unlink(outputFile, (err) => {
+														if (err) {
+															t6console.error(`File delete error: ${err}`);
+														}
+													});
+												});
+											});
+										});
+									} else {
+										client.send(JSON.stringify(message.payload));
+									}
 									ws.send(`Unicasted to object_id: ${current.object_id}`);
 								}
 							});
@@ -163,7 +197,41 @@ t6websockets.init = async function() {
 						wss.clients.forEach(function each(client) {
 							let current = wsClients.get(client);
 							if(current.user_id === req.user_id) {
-								client.send(JSON.stringify(message.payload));
+								if (message.payload.arduinoCommand === "tts") {
+									let outputFile = `${tts.outputFolder}/${uuid.v4()}.mp3`;
+									const ttsClient = new textToSpeech.TextToSpeechClient();
+									const request = {
+										input: { text: message.payload.value },
+										voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: "NEUTRAL" },
+										audioConfig: { audioEncoding: "MP3" },
+									};
+									ttsClient.synthesizeSpeech(request, (err, response) => {
+										if (err) {
+											t6console.error(`TTS error: ${err}`);
+											return;
+										}
+										fs.writeFile(outputFile, response.audioContent, (err) => {
+											if (err) {
+												t6console.error(`File write error: ${err}`);
+												return;
+											}
+											const readStream = fs.createReadStream(outputFile);
+											readStream.on("data", (chunk) => {
+												ws.send(chunk);
+											});
+											readStream.on("end", () => {
+												t6console.debug("ws/tts", "File sent");
+												fs.unlink(outputFile, (err) => {
+													if (err) {
+														t6console.error(`File delete error: ${err}`);
+													}
+												});
+											});
+										});
+									});
+								} else {
+									client.send(JSON.stringify(message.payload));
+								}
 								ws.send(`Broadcasted (filtered on user_id ${req.user_id}) to object_id: ${current.object_id}`);
 							}
 						});
@@ -174,7 +242,41 @@ t6websockets.init = async function() {
 						wss.clients.forEach(function each(client) {
 							let current = wsClients.get(client);
 							if(current.user_id === req.user_id && (current.channels).indexOf(message.channel) > -1 ) {
-								client.send(JSON.stringify(message.payload));
+								if (message.payload.arduinoCommand === "tts") {
+									let outputFile = `${tts.outputFolder}/${uuid.v4()}.mp3`;
+									const ttsClient = new textToSpeech.TextToSpeechClient();
+									const request = {
+										input: { text: message.payload.value },
+										voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: "NEUTRAL" },
+										audioConfig: { audioEncoding: "MP3" },
+									};
+									ttsClient.synthesizeSpeech(request, (err, response) => {
+										if (err) {
+											t6console.error(`TTS error: ${err}`);
+											return;
+										}
+										fs.writeFile(outputFile, response.audioContent, (err) => {
+											if (err) {
+												t6console.error(`File write error: ${err}`);
+												return;
+											}
+											const readStream = fs.createReadStream(outputFile);
+											readStream.on("data", (chunk) => {
+												ws.send(chunk);
+											});
+											readStream.on("end", () => {
+												t6console.debug("ws/tts", "File sent");
+												fs.unlink(outputFile, (err) => {
+													if (err) {
+														t6console.error(`File delete error: ${err}`);
+													}
+												});
+											});
+										});
+									});
+								} else {
+									client.send(JSON.stringify(message.payload));
+								}
 								ws.send(`Multicasted (filtered on user_id ${req.user_id}) and channel "${message.channel}" to object_id: ${current.object_id}`);
 							}
 						});

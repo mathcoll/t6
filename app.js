@@ -145,6 +145,7 @@ global.strength			= require("strength");
 global.stringformat		= require("string-format");
 global.SunCalc			= require("suncalc");
 global.twilio			= require("twilio");
+global.textToSpeech		= require("@google-cloud/text-to-speech");
 global.util				= require("util");
 global.useragent		= require("useragent");
 global.validator		= require("validator");

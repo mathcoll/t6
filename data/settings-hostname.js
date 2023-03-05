@@ -148,7 +148,7 @@ localization = {latitude: 39.800327, longitude: 6.343530}; // The physical locat
 // https://console.firebase.google.com/u/0/project/t6-app/settings/serviceaccounts/adminsdk
 firebase = {
 	admin: {
-		serviceAccountFile : "/path/to/data/certificates/t6-app-firebase-adminsdk.json"
+		serviceAccountFile : "/path/to/data/certificates/app-name-firebase-adminsdk.json"
 	}
 };
 
@@ -246,3 +246,12 @@ otpChars	 = 6;
 otpExpiresAfter = 5;
 otpBruteForceCount = 100; // threashold that trigger an OTP challenge
 otpBruteForceWindow = "30m";
+
+/* TTS with GCP */
+tts = {
+	admin: {
+		serviceAccountFile : "/path/to/data/certificates/app-name-text-to-speech.json"
+	},
+	outputFolder : "/path/to/data/t6/tmp/tts",
+}
+process.env.GOOGLE_APPLICATION_CREDENTIALS = tts.admin.serviceAccountFile;

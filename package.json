@@ -36,6 +36,7 @@
     "deliver": "./bin/deliver.sh -rbfs"
   },
   "dependencies": {
+    "@google-cloud/text-to-speech": "^4.2.1",
     "@influxdata/influxdb-client": "^1.33.0",
     "@tensorflow/tfjs-node": "^4.2.0",
     "@vladmandic/face-api": "^1.7.8",
