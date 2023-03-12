@@ -190,7 +190,7 @@ t6websockets.init = async function() {
 													let offset = 0;
 													const sendData = () => {
 														const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
-														ws.send(chunk, {binary: true});
+														client.send(chunk, {binary: true});
 														offset += defaultChunkSize;
 														if (offset < readTtsStream.length) {
 															t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
@@ -214,7 +214,7 @@ t6websockets.init = async function() {
 											let offset = 0;
 											const sendData = () => {
 												const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
-												ws.send(chunk, {binary: true});
+												client.send(chunk, {binary: true});
 												offset += defaultChunkSize;
 												if (offset < readTtsStream.length) {
 													t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
@@ -270,7 +270,7 @@ t6websockets.init = async function() {
 												let offset = 0;
 												const sendData = () => {
 													const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
-													ws.send(chunk, {binary: true});
+													client.send(chunk, {binary: true});
 													offset += defaultChunkSize;
 													if (offset < readTtsStream.length) {
 														t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
@@ -294,7 +294,7 @@ t6websockets.init = async function() {
 										let offset = 0;
 										const sendData = () => {
 											const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
-											ws.send(chunk, {binary: true});
+											client.send(chunk, {binary: true});
 											offset += defaultChunkSize;
 											if (offset < readTtsStream.length) {
 												t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
@@ -348,7 +348,7 @@ t6websockets.init = async function() {
 												let offset = 0;
 												const sendData = () => {
 													const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
-													ws.send(chunk, {binary: true});
+													client.send(chunk, {binary: true});
 													offset += defaultChunkSize;
 													if (offset < readTtsStream.length) {
 														t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
@@ -372,7 +372,7 @@ t6websockets.init = async function() {
 										let offset = 0;
 										const sendData = () => {
 											const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
-											ws.send(chunk, {binary: true});
+											client.send(chunk, {binary: true});
 											offset += defaultChunkSize;
 											if (offset < readTtsStream.length) {
 												t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
