@@ -546,15 +546,19 @@ t6websockets.init = async function() {
 			});
 		});
 	});
-	
+
 	wss.on("close", function close() {
-		
+		t6console.warning(`${appName} wsClose.`);
 	});
 
 	wss.onerror = () => {
 		t6console.error(`${appName} wsError.`);
 	};
 
+	t6console.log("-audioEncoding", `${tts.audioEncoding}.`);
+	t6console.log("-ssmlVoiceGender", `${tts.ssmlVoiceGender}.`);
+	t6console.log("-audioFolder", smartTrim(tts.audioFolder, 40));
+	t6console.log("-outputFolder", smartTrim(tts.outputFolder, 40));
 	t6console.log(`${appName} ws(s) listening to ${socketsScheme}${socketsHost}:${socketsPort}.`);
 };
 
