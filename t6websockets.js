@@ -1,6 +1,15 @@
 "use strict";
 var t6websockets = module.exports = {};
 
+let audioExtension;
+switch (tts.audioEncoding) {
+	case "LINEAR16": audioExtension = "wav"; break;
+	case "MP3":
+	default: audioExtension = "mp3"; break;
+}
+const defaultChunkSize = 12 * 1024; // set the size of each chunk to send
+const defaultChunkDelay = 300; // send the next chunk after a delay
+
 t6websockets.init = async function() {
 	t6console.log("");
 	t6console.log("===========================================================");
@@ -83,6 +92,7 @@ t6websockets.init = async function() {
 			}
 		}
 	});
+
 	wss.on("connection", (ws, req) => {
 		let id = uuid.v4();
 		wsClients.set(ws, { id: id, user_id: req.user_id, "channels": [], webSocket: {"ua": req.headers["user-agent"], key: req.headers["sec-websocket-key"]} });
@@ -91,7 +101,9 @@ t6websockets.init = async function() {
 		ws.send(JSON.stringify({"arduinoCommand": "claimRequest", "socket_id": id}));
 		t6events.addStat("t6App", "Socket welcoming", req.user_id, id, {"status": 200});
 		t6mqtt.publish(null, `${mqttSockets}/${id}`, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Socket welcome", "environment": process.env.NODE_ENV}), false);
-	
+
+		//wss.on("pong", t6websockets.heartbeat);
+
 		ws.on("close", () => {
 			let metadata = wsClients.get(ws);
 			let i = t6ConnectedObjects.indexOf(metadata.object_id);
@@ -104,6 +116,11 @@ t6websockets.init = async function() {
 			t6events.addStat("t6App", "Socket closing", req.user_id, metadata.id, {"status": 200});
 			t6mqtt.publish(null, `${mqttSockets}/${metadata.id}`, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": "Socket close", "environment": process.env.NODE_ENV}), false);
 		});
+
+		ws.on("publish", (message) => {
+			t6console.debug("Received publish event", message);
+		});
+
 		ws.on("message", (message) => {
 			let metadata = wsClients.get(ws);
 			t6events.addStat("t6App", "Socket messaging", req.user_id, metadata.id, {"status": 200});
@@ -151,37 +168,70 @@ t6websockets.init = async function() {
 								let current = wsClients.get(client);
 								if(current.object_id === message.object_id) {
 									if (message.payload.arduinoCommand === "tts") {
-										let outputFile = `${tts.outputFolder}/${uuid.v4()}.mp3`;
-										const ttsClient = new textToSpeech.TextToSpeechClient();
-										const request = {
-											input: { text: message.payload.value },
-											voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: "NEUTRAL" },
-											audioConfig: { audioEncoding: "MP3" },
-										};
-										ttsClient.synthesizeSpeech(request, (err, response) => {
-											if (err) {
-												t6console.error(`TTS error: ${err}`);
-												return;
-											}
-											fs.writeFile(outputFile, response.audioContent, (err) => {
+										let outputFile = process.env.NODE_ENV==="development"?`${tts.audioFolder}/unicast.${audioExtension}`:`${tts.outputFolder}/${uuid.v4()}.${audioExtension}`;
+										if (process.env.NODE_ENV==="production" || tts.activateInDevelopment) {
+											const ttsClient = new textToSpeech.TextToSpeechClient();
+											const request = {
+												input: { text: message.payload.value },
+												voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: tts.ssmlVoiceGender },
+												audioConfig: { audioEncoding: tts.audioEncoding },
+											};
+											ttsClient.synthesizeSpeech(request, (err, response) => {
 												if (err) {
-													t6console.error(`File write error: ${err}`);
+													t6console.error(`TTS error: ${err}`);
 													return;
 												}
-												const readStream = fs.createReadStream(outputFile);
-												readStream.on("data", (chunk) => {
-													ws.send(chunk);
-												});
-												readStream.on("end", () => {
-													t6console.debug("ws/tts", "File sent");
-													fs.unlink(outputFile, (err) => {
-														if (err) {
-															t6console.error(`File delete error: ${err}`);
+												fs.writeFile(outputFile, response.audioContent, (err) => {
+													if (err) {
+														t6console.error(`File write error: ${err}`);
+														return;
+													}
+													const readTtsStream = fs.readFileSync(outputFile);
+													let offset = 0;
+													const sendData = () => {
+														const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
+														ws.send(chunk, {binary: true});
+														offset += defaultChunkSize;
+														if (offset < readTtsStream.length) {
+															t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
+															setTimeout(sendData, defaultChunkDelay);
+														} else {
+															t6console.debug("ws/tts", "File sent");
+															if (process.env.NODE_ENV==="production") {
+																fs.unlink(outputFile, (err) => {
+																	if (err) {
+																		t6console.error(`File delete error: ${err}`);
+																	}
+																});
+															}
 														}
-													});
+													};
+													sendData();
 												});
 											});
-										});
+										} else {
+											const readTtsStream = fs.readFileSync(outputFile);
+											let offset = 0;
+											const sendData = () => {
+												const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
+												ws.send(chunk, {binary: true});
+												offset += defaultChunkSize;
+												if (offset < readTtsStream.length) {
+													t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
+													setTimeout(sendData, defaultChunkDelay);
+												} else {
+													t6console.debug("ws/tts", "File sent");
+													if (process.env.NODE_ENV==="production") {
+														fs.unlink(outputFile, (err) => {
+															if (err) {
+																t6console.error(`File delete error: ${err}`);
+															}
+														});
+													}
+												}
+											};
+											sendData();
+										}
 									} else {
 										client.send(JSON.stringify(message.payload));
 									}
@@ -198,37 +248,70 @@ t6websockets.init = async function() {
 							let current = wsClients.get(client);
 							if(current.user_id === req.user_id) {
 								if (message.payload.arduinoCommand === "tts") {
-									let outputFile = `${tts.outputFolder}/${uuid.v4()}.mp3`;
-									const ttsClient = new textToSpeech.TextToSpeechClient();
-									const request = {
-										input: { text: message.payload.value },
-										voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: "NEUTRAL" },
-										audioConfig: { audioEncoding: "MP3" },
-									};
-									ttsClient.synthesizeSpeech(request, (err, response) => {
-										if (err) {
-											t6console.error(`TTS error: ${err}`);
-											return;
-										}
-										fs.writeFile(outputFile, response.audioContent, (err) => {
+									let outputFile = process.env.NODE_ENV==="development"?`${tts.audioFolder}/broadcast.${audioExtension}`:`${tts.outputFolder}/${uuid.v4()}.${audioExtension}`;
+									if (process.env.NODE_ENV==="production" || tts.activateInDevelopment) {
+										const ttsClient = new textToSpeech.TextToSpeechClient();
+										const request = {
+											input: { text: message.payload.value },
+											voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: tts.ssmlVoiceGender },
+											audioConfig: { audioEncoding: tts.audioEncoding },
+										};
+										ttsClient.synthesizeSpeech(request, (err, response) => {
 											if (err) {
-												t6console.error(`File write error: ${err}`);
+												t6console.error(`TTS error: ${err}`);
 												return;
 											}
-											const readStream = fs.createReadStream(outputFile);
-											readStream.on("data", (chunk) => {
-												ws.send(chunk);
-											});
-											readStream.on("end", () => {
-												t6console.debug("ws/tts", "File sent");
-												fs.unlink(outputFile, (err) => {
-													if (err) {
-														t6console.error(`File delete error: ${err}`);
+											fs.writeFile(outputFile, response.audioContent, (err) => {
+												if (err) {
+													t6console.error(`File write error: ${err}`);
+													return;
+												}
+												const readTtsStream = fs.readFileSync(outputFile);
+												let offset = 0;
+												const sendData = () => {
+													const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
+													ws.send(chunk, {binary: true});
+													offset += defaultChunkSize;
+													if (offset < readTtsStream.length) {
+														t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
+														setTimeout(sendData, defaultChunkDelay);
+													} else {
+														t6console.debug("ws/tts", "File sent");
+														if (process.env.NODE_ENV==="production") {
+															fs.unlink(outputFile, (err) => {
+																if (err) {
+																	t6console.error(`File delete error: ${err}`);
+																}
+															});
+														}
 													}
-												});
+												};
+												sendData();
 											});
 										});
-									});
+									} else {
+										const readTtsStream = fs.readFileSync(outputFile);
+										let offset = 0;
+										const sendData = () => {
+											const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
+											ws.send(chunk, {binary: true});
+											offset += defaultChunkSize;
+											if (offset < readTtsStream.length) {
+												t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
+												setTimeout(sendData, defaultChunkDelay);
+											} else {
+												t6console.debug("ws/tts", "File sent");
+												if (process.env.NODE_ENV==="production") {
+													fs.unlink(outputFile, (err) => {
+														if (err) {
+															t6console.error(`File delete error: ${err}`);
+														}
+													});
+												}
+											}
+										};
+										sendData();
+									}
 								} else {
 									client.send(JSON.stringify(message.payload));
 								}
@@ -243,37 +326,70 @@ t6websockets.init = async function() {
 							let current = wsClients.get(client);
 							if(current.user_id === req.user_id && (current.channels).indexOf(message.channel) > -1 ) {
 								if (message.payload.arduinoCommand === "tts") {
-									let outputFile = `${tts.outputFolder}/${uuid.v4()}.mp3`;
-									const ttsClient = new textToSpeech.TextToSpeechClient();
-									const request = {
-										input: { text: message.payload.value },
-										voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: "NEUTRAL" },
-										audioConfig: { audioEncoding: "MP3" },
-									};
-									ttsClient.synthesizeSpeech(request, (err, response) => {
-										if (err) {
-											t6console.error(`TTS error: ${err}`);
-											return;
-										}
-										fs.writeFile(outputFile, response.audioContent, (err) => {
+									let outputFile = process.env.NODE_ENV==="development"?`${tts.audioFolder}/multicast.${audioExtension}`:`${tts.outputFolder}/${uuid.v4()}.${audioExtension}`;
+									if (process.env.NODE_ENV==="production" || tts.activateInDevelopment) {
+										const ttsClient = new textToSpeech.TextToSpeechClient();
+										const request = {
+											input: { text: message.payload.value },
+											voice: { languageCode: typeof message.payload.languageCode!=="undefined"?message.payload.languageCode:"en-US", ssmlGender: tts.ssmlVoiceGender },
+											audioConfig: { audioEncoding: tts.audioEncoding },
+										};
+										ttsClient.synthesizeSpeech(request, (err, response) => {
 											if (err) {
-												t6console.error(`File write error: ${err}`);
+												t6console.error(`TTS error: ${err}`);
 												return;
 											}
-											const readStream = fs.createReadStream(outputFile);
-											readStream.on("data", (chunk) => {
-												ws.send(chunk);
-											});
-											readStream.on("end", () => {
-												t6console.debug("ws/tts", "File sent");
-												fs.unlink(outputFile, (err) => {
-													if (err) {
-														t6console.error(`File delete error: ${err}`);
+											fs.writeFile(outputFile, response.audioContent, (err) => {
+												if (err) {
+													t6console.error(`File write error: ${err}`);
+													return;
+												}
+												const readTtsStream = fs.readFileSync(outputFile);
+												let offset = 0;
+												const sendData = () => {
+													const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
+													ws.send(chunk, {binary: true});
+													offset += defaultChunkSize;
+													if (offset < readTtsStream.length) {
+														t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
+														setTimeout(sendData, defaultChunkDelay);
+													} else {
+														t6console.debug("ws/tts", "File sent");
+														if (process.env.NODE_ENV==="production") {
+															fs.unlink(outputFile, (err) => {
+																if (err) {
+																	t6console.error(`File delete error: ${err}`);
+																}
+															});
+														}
 													}
-												});
+												};
+												sendData();
 											});
 										});
-									});
+									} else {
+										const readTtsStream = fs.readFileSync(outputFile);
+										let offset = 0;
+										const sendData = () => {
+											const chunk = readTtsStream.slice(offset, offset + defaultChunkSize);
+											ws.send(chunk, {binary: true});
+											offset += defaultChunkSize;
+											if (offset < readTtsStream.length) {
+												t6console.debug("ws/tts", "send ttsStream chunk offset", offset);
+												setTimeout(sendData, defaultChunkDelay);
+											} else {
+												t6console.debug("ws/tts", "File sent");
+												if (process.env.NODE_ENV==="production") {
+													fs.unlink(outputFile, (err) => {
+														if (err) {
+															t6console.error(`File delete error: ${err}`);
+														}
+													});
+												}
+											}
+										};
+										sendData();
+									}
 								} else {
 									client.send(JSON.stringify(message.payload));
 								}
@@ -308,10 +424,27 @@ t6websockets.init = async function() {
 									metadata = wsClients.get(ws);
 									metadata.object_id = message.object_id;
 									wsClients.set(ws, metadata);
-									ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id}));
-									t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
-									t6ConnectedObjects.push(metadata.object_id);
-									t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
+
+									//wss.binaryType = "arraybuffer";
+									// Play Audio welcome sound to Object
+									const readWelcomeStream = fs.readFileSync(`${tts.audioFolder}/socketopened.${audioExtension}`);
+									let offset = 0;
+									const sendData = () => {
+										const chunk = readWelcomeStream.slice(offset, offset + defaultChunkSize);
+										ws.send(chunk, {binary: true});
+										offset += defaultChunkSize;
+										if (offset < readWelcomeStream.length) {
+											t6console.debug("ws/tts", "send welcomeStream chunk offset", offset);
+											setTimeout(sendData, defaultChunkDelay);
+										} else {
+											ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id}));
+											t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
+											t6ConnectedObjects.push(metadata.object_id);
+											t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
+										}
+									};
+									sendData();
+									t6console.debug("ws/tts", "Welcome audio sent to", message.object_id);
 								} else {
 									t6console.debug("Error", error);
 									t6console.debug("unsignedObject_id", object.id);
@@ -398,6 +531,7 @@ t6websockets.init = async function() {
 			}
 		});
 	});
+
 	wss.on("upgrade", (request, socket, head) => {
 		authenticate(request, function next(err, client) {
 			t6console.debug(err);
@@ -412,9 +546,15 @@ t6websockets.init = async function() {
 			});
 		});
 	});
+	
+	wss.on("close", function close() {
+		
+	});
+
 	wss.onerror = () => {
 		t6console.error(`${appName} wsError.`);
 	};
+
 	t6console.log(`${appName} ws(s) listening to ${socketsScheme}${socketsHost}:${socketsPort}.`);
 };
 
