@@ -252,6 +252,10 @@ tts = {
 	admin: {
 		serviceAccountFile : "/path/to/data/certificates/app-name-text-to-speech.json"
 	},
+	audioEncoding : "LINEAR16", // LINEAR16 | MP3 | OGG_OPUS | MULAW | ALAW https://cloud.google.com/text-to-speech/docs/reference/rest/v1/text/synthesize?hl=en#AudioEncoding
+	ssmlVoiceGender : "NEUTRAL", // MALE | FEMALE | NEUTRAL
+	audioFolder : "/path/to/data/t6/data/audio",
 	outputFolder : "/path/to/data/t6/tmp/tts",
+	activateInDevelopment: false,
 }
 process.env.GOOGLE_APPLICATION_CREDENTIALS = tts.admin.serviceAccountFile;
