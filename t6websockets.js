@@ -170,6 +170,9 @@ t6websockets.init = async function() {
 									if (message.payload.arduinoCommand === "tts") {
 										let outputFile = process.env.NODE_ENV==="development"?`${tts.audioFolder}/unicast.${audioExtension}`:`${tts.outputFolder}/${uuid.v4()}.${audioExtension}`;
 										if (process.env.NODE_ENV==="production" || tts.activateInDevelopment) {
+											if(process.env.NODE_ENV==="development") {
+												outputFile = `${tts.outputFolder}/${uuid.v4()}.${audioExtension}`; // force uuid filename
+											}
 											const ttsClient = new textToSpeech.TextToSpeechClient();
 											const request = {
 												input: { text: message.payload.value },
@@ -250,6 +253,9 @@ t6websockets.init = async function() {
 								if (message.payload.arduinoCommand === "tts") {
 									let outputFile = process.env.NODE_ENV==="development"?`${tts.audioFolder}/broadcast.${audioExtension}`:`${tts.outputFolder}/${uuid.v4()}.${audioExtension}`;
 									if (process.env.NODE_ENV==="production" || tts.activateInDevelopment) {
+										if(process.env.NODE_ENV==="development") {
+											outputFile = `${tts.outputFolder}/${uuid.v4()}.${audioExtension}`; // force uuid filename
+										}
 										const ttsClient = new textToSpeech.TextToSpeechClient();
 										const request = {
 											input: { text: message.payload.value },
@@ -328,6 +334,9 @@ t6websockets.init = async function() {
 								if (message.payload.arduinoCommand === "tts") {
 									let outputFile = process.env.NODE_ENV==="development"?`${tts.audioFolder}/multicast.${audioExtension}`:`${tts.outputFolder}/${uuid.v4()}.${audioExtension}`;
 									if (process.env.NODE_ENV==="production" || tts.activateInDevelopment) {
+										if(process.env.NODE_ENV==="development") {
+											outputFile = `${tts.outputFolder}/${uuid.v4()}.${audioExtension}`; // force uuid filename
+										}
 										const ttsClient = new textToSpeech.TextToSpeechClient();
 										const request = {
 											input: { text: message.payload.value },
