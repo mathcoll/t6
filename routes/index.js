@@ -82,8 +82,6 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			// Threashold on Brute Force attempt - based on session
 			(bruteForceCount>otpBruteForceCount), // this is async and not available // TODO
 
-			// Do not create OTP challenge if the user already have one in the past 5 days
-			(req.user.lastOTP!==null && moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(5, "days"))), // TODO
 			// or when user never had an OTP 
 			(typeof req.user.lastOTP==="undefined" || req.user.lastOTP===null),
 
@@ -106,8 +104,12 @@ const challengeOTP = (res, req, rp, defaultUser) => new Promise((resolve, reject
 			}
 		}
 		
-		// OTP requested from rules AND (either lastOTP never occured OR occured more than half the expiration)
-		if(otpChallenge && ( (typeof req.user.lastOTP==="undefined" || req.user.lastOTP===null) || (moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(otpExpiresAfter/2, "minutes")))) ) {
+		if(otpChallenge &&
+			// OTP requested from rules AND (either lastOTP never occured OR occured more than half the expiration)
+			( (typeof req.user.lastOTP==="undefined" || req.user.lastOTP===null) || (moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(otpExpiresAfter/2, "minutes")))) &&
+			// Do not create OTP challenge if the user already have one in the past 5 days
+			(req.user.lastOTP!==null && moment(parseInt(req.user.lastOTP, 10)).isBefore(moment().subtract(5, "days")))  // TODO
+		) {
 			// Do not send OTP challenge more than 2 times within the OTP duration
 			user.lastOTP = moment().format("x");
 			user.isOTP = true;

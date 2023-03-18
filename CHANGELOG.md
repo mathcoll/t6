@@ -17,6 +17,18 @@ Types of changes
 ------------
 
 ## 2023
+### Milestone 24 - 2023-03
+**Added**
+  - [x] Implement tts (Text To Speech) to sockets
+  - [x] Added welcoming sound to sockets that can be played on ESP device
+  - [x] Adding "getObjects" to sockets functions in order to list all connected Objects from current user
+
+**Fixed**
+  - [x] Fix OTP challenge rules
+
+**Changed**
+  - [x] Switched otp to x-otp headers
+
 ### Milestone 23 - 2023-02
 **Added**
   - [x] Added OTP/2FA challenge as MVP on the authenticate process
