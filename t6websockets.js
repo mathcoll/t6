@@ -489,6 +489,21 @@ t6websockets.init = async function() {
 							ws.send("undefined");
 						}
 						break;
+					case "getObjects":
+						let listObjects = [];
+						metadata = wsClients.get(ws);
+						if(typeof metadata.user_id!=="undefined") {
+							wss.clients.forEach(function each(client) {
+								let current = wsClients.get(client);
+								if(current.user_id === req.user_id ) {
+									listObjects.push({object_id: current.object_id, socket_id: current.id, channels: current.channels, self: current.id===metadata.id?true:false });
+								}
+							});
+							ws.send(JSON.stringify(listObjects));
+						} else {
+							ws.send("undefined");
+						}
+						break;
 					case "getUser":
 						metadata = wsClients.get(ws);
 						if(typeof metadata.user_id!=="undefined") {
@@ -529,6 +544,7 @@ t6websockets.init = async function() {
 						ws.send("- claimUi: to Claim the id of current UI.");
 						ws.send("- getObject: to get the id of an Object claimed to server.");
 						ws.send("- getUser: to get the user_id of an Object claimed to server.");
+						ws.send("- getObjects: to get the Objects claimed to server.");
 						ws.send("- getUA: to get the user-agent of an Object.");
 						ws.send("- remindMeToMeasure: set a delayed task to call back the object for a measurement.");
 						break;
