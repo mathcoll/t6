@@ -489,14 +489,14 @@ t6websockets.init = async function() {
 					case "getUA":
 						metadata = wsClients.get(ws);
 						if(typeof metadata.webSocket.ua!=="undefined") {
-							ws.send(metadata.webSocket.ua);
+							ws.send(JSON.stringify({ua: metadata.webSocket.ua}));
 						} else {
 							ws.send("undefined");
 						}
 						break;
 					case "getKey":
 						metadata = wsClients.get(ws);
-						ws.send(metadata.webSocket.key);
+						ws.send(JSON.stringify({key: metadata.webSocket.key}));
 						break;
 					case "getObject":
 						metadata = wsClients.get(ws);
@@ -526,7 +526,7 @@ t6websockets.init = async function() {
 					case "getUser":
 						metadata = wsClients.get(ws);
 						if(typeof metadata.user_id!=="undefined") {
-							ws.send(metadata.user_id);
+							ws.send(JSON.stringify({user_id: metadata.user_id}));
 						} else {
 							ws.send("undefined");
 						}
