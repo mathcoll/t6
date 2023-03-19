@@ -66,9 +66,9 @@ t6websockets.init = async function() {
 				let secret = credentials[1];
 				let queryT = {
 				"$and": [
-							{ "key": key },
-							{ "secret": secret },
-						]
+						{ "key": key },
+						{ "secret": secret },
+					]
 				};
 				let u = access_tokens.findOne(queryT);
 				if ( u && typeof u.user_id !== "undefined" ) {
@@ -501,7 +501,7 @@ t6websockets.init = async function() {
 					case "getObject":
 						metadata = wsClients.get(ws);
 						if(typeof metadata.object_id!=="undefined") {
-							ws.send(metadata.object_id);
+							ws.send(JSON.stringify({object_id: metadata.object_id, socket_id: metadata.id, channels: metadata.channels, self: true}));
 						} else {
 							ws.send("undefined");
 						}
@@ -513,7 +513,7 @@ t6websockets.init = async function() {
 							wss.clients.forEach(function each(client) {
 								let current = wsClients.get(client);
 								// list only opened connection for the current user
-								t6console.debug("ws", current.id, ":", client, client.readyState);
+								t6console.debug("ws", current.id, ":", client.readyState);
 								if(current.user_id === req.user_id && client.readyState === 1) {
 									listObjects.push({object_id: current.object_id, socket_id: current.id, channels: current.channels, self: current.id===metadata.id?true:false});
 								}
