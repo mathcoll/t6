@@ -106,11 +106,19 @@ t6websockets.init = async function() {
 
 		ws.on("close", () => {
 			let metadata = wsClients.get(ws);
+			t6console.debug("Closing Closing Closing Closing Closing", metadata.id);
 			let i = t6ConnectedObjects.indexOf(metadata.object_id);
 			if (i > -1) {
 				t6ConnectedObjects.splice(i, 1);
 				t6console.debug(`Object Status Changed: ${metadata.object_id} is hidden`);
 			}
+			wss.clients.forEach(function each(client) {
+				let current = wsClients.get(client);
+				if(current.id === metadata.id) {
+					wss.clients.delete(client);
+					t6console.debug("ws", "clients deleted", current);
+				}
+			});
 			t6console.debug(`Closing ${metadata.id}`);
 			wsClients.delete(ws);
 			t6events.addStat("t6App", "Socket closing", req.user_id, metadata.id, {"status": 200});
@@ -423,16 +431,28 @@ t6websockets.init = async function() {
 						let query = { "$and": [ { "user_id" : req.user_id }, { "id" : message.object_id }, ] };
 						let object = objects.findOne(query);
 						if( message.object_id && object && typeof object.secret_key!=="undefined" && object.secret_key!==null  && object.secret_key!=="" ) {
-							t6console.debug("Found key from Object", object.id);
+							t6console.debug("Found key from Object (for Claim)", object.id);
 							//t6console.debug("secret_key", object.secret_key);
 							t6console.debug("Verifying signature", message.signature);
 							jsonwebtoken.verify(String(message.signature), object.secret_key, (error, unsignedObject_id) => {
 								if(!error && unsignedObject_id && unsignedObject_id.object_id===message.object_id) {
 									//t6console.debug(object);
+									t6console.debug("Signature is valid - Cleaning previous Object");
+									wss.clients.forEach(function each(client) {
+										let current = wsClients.get(client);
+										if(current.object_id === message.object_id) {
+											wss.clients.delete(client);
+											t6console.debug("ws", "clients deleted", current);
+										}
+									});
+
 									t6console.debug("Signature is valid - Claim accepted");
 									metadata = wsClients.get(ws);
 									metadata.object_id = message.object_id;
 									wsClients.set(ws, metadata);
+									t6ConnectedObjects.push(metadata.object_id);
+									t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
+									t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
 
 									//wss.binaryType = "arraybuffer";
 									// Play Audio welcome sound to Object
@@ -447,13 +467,10 @@ t6websockets.init = async function() {
 											setTimeout(sendData, defaultChunkDelay);
 										} else {
 											ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id}));
-											t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
-											t6ConnectedObjects.push(metadata.object_id);
-											t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
+											t6console.debug("ws/tts", "Welcome audio sent to", message.object_id);
 										}
 									};
 									sendData();
-									t6console.debug("ws/tts", "Welcome audio sent to", message.object_id);
 								} else {
 									t6console.debug("Error", error);
 									t6console.debug("unsignedObject_id", object.id);
@@ -495,8 +512,10 @@ t6websockets.init = async function() {
 						if(typeof metadata.user_id!=="undefined") {
 							wss.clients.forEach(function each(client) {
 								let current = wsClients.get(client);
-								if(current.user_id === req.user_id ) {
-									listObjects.push({object_id: current.object_id, socket_id: current.id, channels: current.channels, self: current.id===metadata.id?true:false });
+								// list only opened connection for the current user
+								t6console.debug("ws", current.id, ":", client, client.readyState);
+								if(current.user_id === req.user_id && client.readyState === 1) {
+									listObjects.push({object_id: current.object_id, socket_id: current.id, channels: current.channels, self: current.id===metadata.id?true:false});
 								}
 							});
 							ws.send(JSON.stringify(listObjects));
