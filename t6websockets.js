@@ -144,6 +144,7 @@ t6websockets.init = async function() {
 							if(chan !== "") {
 								t6console.debug(`-> Subscribing to ${chan}`);
 								(metadata.channels).indexOf(chan) === -1?(metadata.channels).push(chan.toLowerCase()):t6console.log(`Already subscribed to ${chan}`);
+								t6events.addStat("t6App", "Socket subscribe", req.user_id, metadata.id, {"status": 200, "channel": chan});
 							}
 						});
 						wsClients.set(ws, metadata);
@@ -157,6 +158,7 @@ t6websockets.init = async function() {
 							let i = (metadata.channels).indexOf(chan);
 							if (i>-1) {
 								(metadata.channels).splice(i, 1);
+								t6events.addStat("t6App", "Socket unsubscribe", req.user_id, metadata.id, {"status": 200, "channel": chan});
 							}
 						});
 						wsClients.set(ws, metadata);
@@ -166,6 +168,7 @@ t6websockets.init = async function() {
 						metadata = wsClients.get(ws);
 						if(typeof metadata.channels!=="undefined") {
 							ws.send(JSON.stringify({"arduinoCommand": "info", "channels": metadata.channels}));
+							t6events.addStat("t6App", "Socket getSubscription", req.user_id, metadata.id, {"status": 200});
 						} else {
 							ws.send(JSON.stringify({"arduinoCommand": "info", "channels": undefined}));
 						}
@@ -218,6 +221,7 @@ t6websockets.init = async function() {
 														}
 													};
 													sendData();
+													t6events.addStat("t6App", "Socket unicast", req.user_id, metadata.id, {"status": 200});
 												});
 											});
 										} else {
@@ -242,6 +246,7 @@ t6websockets.init = async function() {
 												}
 											};
 											sendData();
+											t6events.addStat("t6App", "Socket unicast", req.user_id, metadata.id, {"status": 200});
 										}
 									} else {
 										client.send(JSON.stringify(message.payload));
@@ -301,6 +306,7 @@ t6websockets.init = async function() {
 													}
 												};
 												sendData();
+												t6events.addStat("t6App", "Socket broadcast", req.user_id, metadata.id, {"status": 200});
 											});
 										});
 									} else {
@@ -325,6 +331,7 @@ t6websockets.init = async function() {
 											}
 										};
 										sendData();
+										t6events.addStat("t6App", "Socket broadcast", req.user_id, metadata.id, {"status": 200});
 									}
 								} else {
 									client.send(JSON.stringify(message.payload));
@@ -382,6 +389,7 @@ t6websockets.init = async function() {
 													}
 												};
 												sendData();
+												t6events.addStat("t6App", "Socket multicast", req.user_id, metadata.id, {"status": 200});
 											});
 										});
 									} else {
@@ -406,6 +414,7 @@ t6websockets.init = async function() {
 											}
 										};
 										sendData();
+										t6events.addStat("t6App", "Socket multicast", req.user_id, metadata.id, {"status": 200});
 									}
 								} else {
 									client.send(JSON.stringify(message.payload));
@@ -422,6 +431,7 @@ t6websockets.init = async function() {
 							metadata.ui_id = message.ui_id;
 							wsClients.set(ws, metadata);
 							ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "ui_id": metadata.ui_id, "socket_id": metadata.id}));
+							t6events.addStat("t6App", "Socket claimUI", req.user_id, metadata.id, {"status": 200});
 							t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted ui_id ${metadata.ui_id}`, "environment": process.env.NODE_ENV}), false);
 							t6ConnectedObjects.push(metadata.ui_id);
 							t6console.debug(`Object/UI Status Changed: ${metadata.ui_id} is visible`);
@@ -452,6 +462,7 @@ t6websockets.init = async function() {
 									wsClients.set(ws, metadata);
 									t6ConnectedObjects.push(metadata.object_id);
 									t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
+									t6events.addStat("t6App", "Socket claimObject", req.user_id, metadata.id, {"status": 200});
 									t6console.debug(`Object Status Changed: ${metadata.object_id} is visible`);
 
 									//wss.binaryType = "arraybuffer";
@@ -490,20 +501,23 @@ t6websockets.init = async function() {
 						metadata = wsClients.get(ws);
 						if(typeof metadata.webSocket.ua!=="undefined") {
 							ws.send(JSON.stringify({ua: metadata.webSocket.ua}));
+							t6events.addStat("t6App", "Socket getUA", req.user_id, metadata.id, {"status": 200});
 						} else {
-							ws.send("undefined");
+							ws.send(JSON.stringify({ua: undefined}));
 						}
 						break;
 					case "getKey":
 						metadata = wsClients.get(ws);
 						ws.send(JSON.stringify({key: metadata.webSocket.key}));
+						t6events.addStat("t6App", "Socket getKey", req.user_id, metadata.id, {"status": 200});
 						break;
 					case "getObject":
 						metadata = wsClients.get(ws);
 						if(typeof metadata.object_id!=="undefined") {
 							ws.send(JSON.stringify({object_id: metadata.object_id, socket_id: metadata.id, channels: metadata.channels, self: true}));
+							t6events.addStat("t6App", "Socket metadata", req.user_id, metadata.id, {"status": 200});
 						} else {
-							ws.send("undefined");
+							ws.send(JSON.stringify({object_id: undefined}));
 						}
 						break;
 					case "getObjects":
@@ -519,16 +533,18 @@ t6websockets.init = async function() {
 								}
 							});
 							ws.send(JSON.stringify(listObjects));
+							t6events.addStat("t6App", "Socket getObjects", req.user_id, metadata.id, {"status": 200});
 						} else {
-							ws.send("undefined");
+							ws.send(JSON.stringify([]));
 						}
 						break;
 					case "getUser":
 						metadata = wsClients.get(ws);
 						if(typeof metadata.user_id!=="undefined") {
 							ws.send(JSON.stringify({user_id: metadata.user_id}));
+							t6events.addStat("t6App", "Socket getUser", req.user_id, metadata.id, {"status": 200});
 						} else {
-							ws.send("undefined");
+							ws.send(JSON.stringify({user_id: undefined}));
 						}
 						break;
 					case "remindMeToMeasure":
@@ -546,6 +562,7 @@ t6websockets.init = async function() {
 										ws.send(`Sent scheduled measureRequest command to object_id: ${current.object_id}`);
 										t6console.debug(`Sent scheduled measureRequest command to object_id: ${current.object_id}`);
 									}, message.delay, message.payload, current);
+									t6events.addStat("t6App", "Socket remindMeToMeasure", req.user_id, metadata.id, {"status": 200});
 									t6console.debug(`setTimeout for measureRequest at ${moment().add(message.delay, "milliseconds").format(logDateFormat)}`);
 								}
 							});
