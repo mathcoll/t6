@@ -437,7 +437,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "success", new Date()-start);
 					} else {
-						if (user && typeof user.pushSubscription !== "undefined" && user.pushSubscription.endpoint!==null && user.pushSubscription.endpoint!=="" ) {
+						if (user && user.pushSubscription!==null && typeof user.pushSubscription!=="undefined" && user.pushSubscription.endpoint!==null && user.pushSubscription.endpoint!=="") {
 							t6console.debug(user.pushSubscription);
 							var payload = "{\"type\": \"message\", \"title\": \"Arduino Build\", \"body\": \"An error occured during build v"+version+" (code = "+code+").\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 							let result = t6notifications.sendPush(user, payload);
