@@ -172,7 +172,7 @@
                     ]
                 },
                 {
-                	"name": "can deploy a source to an Object",
+                	"name": "cannot deploy a source to an Object when build is not yet completed",
                 	"description": "Build is required first",
                     "api_calls": [
                         {

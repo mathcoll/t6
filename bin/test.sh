@@ -22,7 +22,7 @@ jsonapitest \
 
 suite="$(jq -cr '.[0].suite' $SCRIPT_DIR/../jsonapitest-results.json)"
 errors="$(jq -cr '.[] | select(.errors != [])' $SCRIPT_DIR/../jsonapitest-results.json | wc -l)"
-errorList="$(jq -cr '.[] | select(.errors != []) | .test, .suite, .errors' $SCRIPT_DIR/../jsonapitest-results.json)"
+errorList="$(jq -cr '.[] | select(.errors != []) | .test, .suite, .errors, .api_call.request.url, .api_call.request.headers' $SCRIPT_DIR/../jsonapitest-results.json)"
 test="$(jq -cr '. | length' $SCRIPT_DIR/../jsonapitest-results.json)"
 echo ""
 echo "REPORT :"

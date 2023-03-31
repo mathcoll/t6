@@ -49,7 +49,14 @@ let preparePayload = function(resolve, reject) {
 	payload.mqtt_topic	 = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
 	payload.latitude	 = typeof payload.latitude!=="undefined"?payload.latitude:"";
 	payload.longitude	 = typeof payload.longitude!=="undefined"?payload.longitude:"";
-	payload.text		 = typeof payload.text!=="undefined"?payload.text:"";
+	t6console.debug(payload.meta);
+	if (typeof payload.meta!=="undefined" && typeof payload.meta !== "object" && payload.meta!=="") {
+		if(typeof payload.meta==="string") {
+			payload.meta		 = {text: payload.meta};
+		} else {
+			payload.meta		 = JSON.parse(payload.meta);
+		}
+	}
 	payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
 	payload.retention	 = typeof payload.retention!=="undefined"?payload.retention:undefined;
@@ -94,7 +101,7 @@ let signatureCheck = function(resolve, reject) {
 		publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
 		retention: payload.retention,
 		save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
-		text: payload.text,
+		meta: payload.meta,
 		time: payload.time,
 		timestamp: payload.timestamp,
 		datapoint_logs: typeof payload.datapoint_logs!=="undefined"?payload.datapoint_logs:{},
@@ -115,7 +122,7 @@ let signatureCheck = function(resolve, reject) {
 				payload.mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:initialPayload.mqtt_topic;
 				payload.latitude = typeof payload.latitude!=="undefined"?payload.latitude:initialPayload.latitude;
 				payload.longitude = typeof payload.longitude!=="undefined"?payload.longitude:initialPayload.longitude;
-				payload.text = typeof payload.text!=="undefined"?payload.text:initialPayload.text;
+				payload.meta = typeof payload.meta!=="undefined"?payload.meta:initialPayload.meta;
 				payload.time = typeof payload.time!=="undefined"?payload.time:initialPayload.time;
 				payload.timestamp = typeof payload.timestamp!=="undefined"?payload.timestamp:initialPayload.timestamp;
 				payload.save = typeof payload.save!=="undefined"?payload.save:initialPayload.save;
@@ -160,7 +167,7 @@ let decrypt = function(resolve, reject) {
 		publish: typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true,
 		retention: payload.retention,
 		save: typeof payload.save!=="undefined"?JSON.parse(payload.save):true,
-		text: payload.text,
+		meta: payload.meta,
 		time: payload.time,
 		timestamp: payload.timestamp,
 		datapoint_logs: typeof payload.datapoint_logs!=="undefined"?payload.datapoint_logs:{},
@@ -188,7 +195,7 @@ let decrypt = function(resolve, reject) {
 			payload.mqtt_topic = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:initialPayload.mqtt_topic;
 			payload.latitude = typeof payload.latitude!=="undefined"?payload.latitude:initialPayload.latitude;
 			payload.longitude = typeof payload.longitude!=="undefined"?payload.longitude:initialPayload.longitude;
-			payload.text = typeof payload.text!=="undefined"?payload.text:initialPayload.text;
+			payload.meta = typeof payload.meta!=="undefined"?payload.meta:initialPayload.meta;
 			payload.time = typeof payload.time!=="undefined"?payload.time:initialPayload.time;
 			payload.timestamp = typeof payload.timestamp!=="undefined"?payload.timestamp:initialPayload.timestamp;
 			payload.save = typeof payload.save!=="undefined"?payload.save:initialPayload.save;
@@ -549,8 +556,8 @@ let ruleEngine = function(resolve, reject) {
 				payloadFact.object = object;
 			}
 		}
-		if ( payload.text ) {
-			payloadFact.text = payload.text;
+		if ( payload.meta ) {
+			payloadFact.meta = payload.meta;
 		}
 		payloadFact.latitude = typeof payload.latitude!=="undefined"?payload.latitude:null;
 		payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
@@ -570,8 +577,8 @@ let saveToLocal = function(resolve, reject) {
 	let chainOrder = this.chainOrder;
 	let fields = this.fields;
 	let current_flow = this.current_flow;
-	t6console.debug("chain 9", "saveToLocal");
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
+	t6console.debug("chain 9", "saveToLocal", save);
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToLocal = "err";
 		chainOrder.push("saveToLocal");
@@ -595,8 +602,8 @@ let saveToLocal = function(resolve, reject) {
 			if(typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null)) {
 				tags.track_id = current_flow.track_id;
 			}
-			if (payload.text!=="") {
-				fields[0].text = payload.text;
+			if (typeof payload.meta!=="undefined" && Object.keys(payload.meta).length > 0) {
+				fields[0].meta = JSON.stringify(payload.meta);
 			}
 			let v = getFieldsFromDatatype(payload.datatype, false, false);
 			(fields[0])[v] = payload.value;
@@ -674,7 +681,7 @@ let saveToCloud = function(resolve, reject) {
 			typeof fields[0].valueJson!=="undefined"?point.stringField("valueJson", fields[0].valueJson):null;
 			typeof fields[0].valueGeo!=="undefined"?point.stringField("valueGeo", fields[0].valueGeo):null;
 			typeof fields[0].valueImage!=="undefined"?point.stringField("valueImage", fields[0].valueImage):null;
-			typeof fields[0].text!=="undefined"?point.stringField("text", fields[0].text):null;
+			typeof fields[0].meta!=="undefined"?point.stringField("meta", fields[0].meta):null;
 			writeApi.writePoint(point);
 			writeApi
 				.close()
@@ -1127,7 +1134,7 @@ let slicePayloads = function(payloadArray, options) {
  * @apiBody {String} [unit=undefined] Unit of the Value
  * @apiBody {String} [mqtt_topic="Default value from the Flow resource"] Mqtt Topic to publish value
  * @apiBody {uuid-v4} [datatype_id="Default value from the Flow resource"] DataType Id
- * @apiBody {String} [text=undefined] Optional text to qualify Value
+ * @apiBody {String} [meta=undefined] Optional meta information to qualify Measurement
  * @apiBody {uuid-v4} [object_id=undefined] Optional object_id uuid used for Signed payload; for decrypt and encrypting in the Mqtt; The object_id must be own by the user in JWT.
  * @apiBody {String} [latitude="39.800327"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)
  * @apiBody {String} [longitude="6.343530"] Optional String to identify where does the datapoint is coming from. (This is only used for rule specific operator)

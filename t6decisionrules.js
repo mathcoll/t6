@@ -268,8 +268,8 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 				if ( typeof payload.message !== "undefined" ) {
 					mqttPayload.message = payload.message;
 				}
-				if ( typeof payload.text !== "undefined" ) {
-					mqttPayload.text = payload.text;
+				if ( typeof payload.meta !== "undefined" ) {
+					mqttPayload.meta = payload.meta;
 				}
 				if ( typeof payload.object_id!=="undefined" ) {
 					mqttPayload.object_id = payload.object_id;
@@ -462,8 +462,8 @@ t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 	if ( !payload.environment ) {
 		payload.environment = process.env.NODE_ENV;
 	}
-	if ( !payload.text ) {
-		payload.text = "";
+	if ( !payload.meta ) {
+		payload.meta = "";
 	}
 	if ( !payload.mqtt_topic ) {
 		payload.mqtt_topic = mqtt_topic;

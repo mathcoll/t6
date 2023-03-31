@@ -78,7 +78,7 @@
                 },
                 {
                 	"name": "Sign In forcing OTP",
-                	"description": "Sign In forcing OTP - should be redirected to a 307, considered as 404 in jsonapitest",
+                	"description": "Sign In forcing OTP - should be redirected to a 307, considered as 200 in jsonapitest",
                     "api_calls": [
                         {
                             "request": "POST /{{app_version}}/authenticate?forceOTP=true",
@@ -86,7 +86,7 @@
                                 "username": "{{saved.username}}",
                                 "password": "{{$run_id}}:{{$run_id}}"
                             },
-                            "status": "404"
+                            "status": "200"
                         }
                     ]
                 },
