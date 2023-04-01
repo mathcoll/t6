@@ -49,13 +49,14 @@ let preparePayload = function(resolve, reject) {
 	payload.mqtt_topic	 = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
 	payload.latitude	 = typeof payload.latitude!=="undefined"?payload.latitude:"";
 	payload.longitude	 = typeof payload.longitude!=="undefined"?payload.longitude:"";
-	t6console.debug(payload.meta);
-	if (typeof payload.meta!=="undefined" && typeof payload.meta !== "object" && payload.meta!=="") {
+	if (typeof payload.meta!=="undefined" && typeof payload.meta!=="object" && payload.meta!=="") {
 		if(typeof payload.meta==="string") {
 			payload.meta		 = {text: payload.meta};
 		} else {
 			payload.meta		 = JSON.parse(payload.meta);
 		}
+	} else if (typeof payload.meta==="undefined") {
+		payload.meta = {};
 	}
 	payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
@@ -505,6 +506,11 @@ let fusion = function(resolve, reject) {
 			(fields[0])[v] = fusionValue;
 			payload.fusion.correction = payload.fusion.initialValue - fusionValue;
 			payload.fusion.algorithm = fusion_algorithm;
+			payload.meta.fusion = {
+				correction: payload.fusion.correction,
+				algorithm: payload.fusion.algorithm,
+				initialValue: payload.fusion.initialValue,
+			}
 			payload.fusion.messages.push("Fusion processed.");
 			
 			// TODO : Do we need to save measure to Primary Flow ? so instead of the track.. :-(
@@ -564,6 +570,9 @@ let ruleEngine = function(resolve, reject) {
 		t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic);
 		payload.datapoint_logs.ruleEngine = true;
 		chainOrder.push("ruleEngine");
+		if (payload.meta.categories && payload.meta.categories.length>0) {
+			t6console.debug("chain 8", "Rule Engine Identified categories from annotation", payload.meta.categories);
+		}
 		resolve({payload, fields, current_flow, chainOrder});
 	} else {
 		t6console.debug("chain 8", "Not Publishing to Rule Engine");
@@ -725,25 +734,25 @@ async function processAllMeasures(payloads, options) {
 			payloads.map(async (current_payload, index) => {
 				let chainOrder = [];
 				t6console.debug("--------", "chaining measure index", index);
-				return await new Promise(preparePayload.bind({payload: current_payload, options, chainOrder})).then((result) => {
-					return new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(decrypt.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(verifyPrerequisites.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(preprocessor.bind({payload: result.payload, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(fusion.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(ruleEngine.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(saveToLocal.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then((result) => {
-					return new Promise(saveToCloud.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then((chainResult) => {
+				return await new Promise(preparePayload.bind({payload: current_payload, options, chainOrder})).then(async (result) => {
+					return await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(decrypt.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(verifyPrerequisites.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(preprocessor.bind({payload: result.payload, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(fusion.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(ruleEngine.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(saveToLocal.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then(async (result) => {
+					return await new Promise(saveToCloud.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
+				}).then(async (chainResult) => {
 					if( chainResult ) {
 						//let r = [];
 						let payload			= chainResult.payload;

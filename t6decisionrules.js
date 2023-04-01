@@ -308,8 +308,11 @@ t6decisionrules.checkRulesFromUser = function(user_id, payload) {
 						.then((message) => t6console.debug("Twilio Message Sid:", message.sid));
 				}
 			} else if ( event.type === "annotate" ) {
+				t6console.debug("ANNOTATE category_id", event.params.category_id);
 				if(typeof event.params.category_id!=="undefined") {
 					let newAnnotation = annotate(payload.user_id?payload.user_id:"", payload.dtepoch*1000, payload.dtepoch*1000, payload.flow, event.params.category_id);
+					payload.meta.categories = typeof payload.meta.categories!=="undefined"?payload.meta.categories:[];
+					payload.meta.categories.push(event.params.category_id);
 					t6events.addStat("t6App", `Annotation added ${newAnnotation.id}`, user_id, user_id, {"user_id": user_id, "rule_id": event.params.rule_id});
 				}
 			} else if ( event.type === "httpWebhook" ) {
@@ -471,12 +474,12 @@ t6decisionrules.action = function(user_id, payload, mqtt_topic) {
 	if ( !payload.flow ) {
 		payload.flow = "";
 	}
+	payload.flow_id = typeof payload.flow_id!=="undefined"?payload.flow_id:payload.flow;
 	if ( !user_id ) {
 		user_id = "unknown_user";
 		t6console.error(`Can't load rule for unknown user: ${user_id}`);
 	} else {
-		t6console.debug(`Loading rules for User: ${user_id}`);
-		//t6console.debug("payload before checkRulesFromUser", payload);
+		t6console.debug(`Loading rules for User: ${user_id}`, payload);
 		t6decisionrules.checkRulesFromUser(user_id, payload);
 	}
 	payload = null;
