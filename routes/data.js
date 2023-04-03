@@ -538,7 +538,7 @@ let fusion = function(resolve, reject) {
 		resolve({payload, fields, current_flow, chainOrder});
 	}
 }
-let ruleEngine = function(resolve, reject) {
+let ruleEngine = async function(resolve, reject) {
 	let payload = this.payload;
 	let chainOrder = this.chainOrder;
 	let fields = this.fields;
@@ -567,7 +567,7 @@ let ruleEngine = function(resolve, reject) {
 		}
 		payloadFact.latitude = typeof payload.latitude!=="undefined"?payload.latitude:null;
 		payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
-		t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic);
+		await t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic);
 		payload.datapoint_logs.ruleEngine = true;
 		chainOrder.push("ruleEngine");
 		if (payload.meta.categories && payload.meta.categories.length>0) {
@@ -734,25 +734,17 @@ async function processAllMeasures(payloads, options) {
 			payloads.map(async (current_payload, index) => {
 				let chainOrder = [];
 				t6console.debug("--------", "chaining measure index", index);
-				return await new Promise(preparePayload.bind({payload: current_payload, options, chainOrder})).then(async (result) => {
-					return await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(decrypt.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(verifyPrerequisites.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(preprocessor.bind({payload: result.payload, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(fusion.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(ruleEngine.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(saveToLocal.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then(async (result) => {
-					return await new Promise(saveToCloud.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder}));
-				}).then(async (chainResult) => {
+				return await new Promise(preparePayload.bind({payload: current_payload, options, chainOrder}))
+					.then(async (result) => await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(decrypt.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(verifyPrerequisites.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(preprocessor.bind({payload: result.payload, current_flow: result.current_flow, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(fusion.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(ruleEngine.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(saveToLocal.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(saveToCloud.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
+					.then(async (chainResult) => {
 					if( chainResult ) {
 						//let r = [];
 						let payload			= chainResult.payload;
