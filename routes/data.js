@@ -746,7 +746,6 @@ async function processAllMeasures(payloads, options) {
 					.then(async (result) => await new Promise(saveToCloud.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
 					.then(async (chainResult) => {
 					if( chainResult ) {
-						//let r = [];
 						let payload			= chainResult.payload;
 						let current_flow	= chainResult.current_flow;
 						chainOrder.map((chain, index) => {
