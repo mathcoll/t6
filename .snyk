@@ -123,10 +123,10 @@ ignore:
   SNYK-JS-USERAGENT-174737:
     - useragent:
         reason: None given
-        expires: '2023-02-17T19:02:36.229Z'
+        expires: '2023-05-08T07:59:47.024Z'
     - device > useragent:
         reason: None given
-        expires: '2023-02-17T19:02:36.229Z'
+        expires: '2023-05-08T07:59:47.024Z'
   SNYK-JS-LODASH-567746:
     - geoip-lite > ip-address > lodash:
         reason: None given
@@ -166,11 +166,11 @@ ignore:
   SNYK-JS-MATHJS-1016401:
     - loess > mathjs:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.024Z'
   SNYK-JS-SVG2PNG-567041:
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
-        expires: '2023-02-17T19:02:36.229Z'
+        expires: '2023-05-08T07:59:47.024Z'
     - d3node-barchart > d3node-output > svg2png:
         reason: None given
         expires: '2022-11-28T08:59:35.638Z'
@@ -201,7 +201,7 @@ ignore:
   SNYK-JS-YARGSPARSER-560381:
     - d3node-barchart > d3node-output > svg2png > yargs > yargs-parser:
         reason: None given
-        expires: '2023-02-17T19:02:36.229Z'
+        expires: '2023-05-08T07:59:47.025Z'
     - nsp > yargs > yargs-parser:
         reason: None given
         expires: '2021-09-09T18:20:24.706Z'
@@ -239,15 +239,27 @@ ignore:
     - d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
+      d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
     - d3node-barchart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
+      d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
     - d3node-linechart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
+      d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
     - d3node-piechart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
+      d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
@@ -541,187 +553,187 @@ ignore:
   SNYK-JS-D3COLOR-1076592:
     - d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.017Z'
     - d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.017Z'
     - d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.017Z'
     - d3-node > d3 > d3-scale-chromatic > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.017Z'
     - d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.017Z'
     - d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3-node > d3 > d3-scale-chromatic > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-barchart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-linechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-piechart > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-voronoi > d3-node > d3 > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-barchart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-linechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-piechart > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-voronoi > d3-node > d3 > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.227Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.018Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-barchart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-linechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-piechart > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-voronoi > d3-node > d3 > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-barchart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-linechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.019Z'
     - d3node-piechart > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-voronoi > d3-node > d3 > d3-scale > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-barchart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-linechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-piechart > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-voronoi > d3-node > d3 > d3-brush > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-barchart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-linechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-piechart > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
     - d3node-voronoi > d3-node > d3 > d3-zoom > d3-transition > d3-interpolate > d3-color:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.020Z'
   SNYK-JS-LOCUTUS-1090597:
     - cidr-js > locutus:
         reason: None given
@@ -757,7 +769,7 @@ ignore:
   SNYK-JS-NETMASK-1089716:
     - libnmap > netmask:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.024Z'
   SNYK-JS-TAR-1536528:
     - npm > libnpmpack > pacote > tar:
         reason: None given
@@ -1044,21 +1056,33 @@ ignore:
     - npm > cli-columns > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.162Z'
-      d3-node > jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
+      d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
         reason: None given
-        expires: '2023-02-22T19:09:55.474Z'
+        expires: '2023-05-08T07:59:47.017Z'
     - npm > columnify > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
+      d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
     - nsp > cli-table2 > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
+      d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
     - nsp > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
+      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
     - npm > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
+      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
     - nsp > yargs > cliui > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
@@ -1503,10 +1527,13 @@ ignore:
     - jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2023-02-20T15:57:16.473Z'
+    - d3-node > jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-02-22T19:09:55.474Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.024Z'
   SNYK-JS-ASYNC-2441827:
     - geoip-lite > async:
         reason: None given
@@ -1531,7 +1558,7 @@ ignore:
   SNYK-JS-LODASHSET-1320032:
     - express-jwt > lodash.set:
         reason: None given
-        expires: '2023-02-17T19:02:36.228Z'
+        expires: '2023-05-08T07:59:47.023Z'
   SNYK-JS-TAFFYDB-2992450:
     - firebase-admin > @google-cloud/firestore > google-gax > protobufjs-cli > jsdoc > taffydb:
         reason: None given
@@ -1556,6 +1583,211 @@ ignore:
     - twilio > jsonwebtoken:
         reason: None given
         expires: '2023-02-22T19:09:55.474Z'
+  SNYK-JS-HTTPCACHESEMANTICS-3248783:
+    - npm > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.020Z'
+    - npm > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.020Z'
+    - npm > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.020Z'
+    - npm > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.020Z'
+    - npm > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.020Z'
+    - npm > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.020Z'
+    - npm > libnpmaccess > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmhook > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmorg > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmpublish > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmsearch > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmteam > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > npm-profile > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmexec > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmpack > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmversion > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmdiff > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmexec > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmpack > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmdiff > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmexec > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmfund > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmpack > @npmcli/arborist > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.021Z'
+    - npm > libnpmdiff > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmexec > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmpack > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmdiff > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmexec > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmfund > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmpack > @npmcli/arborist > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.022Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.023Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.023Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > npm-registry-fetch > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.023Z'
+    - npm > libnpmdiff > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.023Z'
+    - npm > libnpmexec > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.023Z'
+    - npm > libnpmfund > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.023Z'
+    - npm > libnpmpack > @npmcli/arborist > @npmcli/metavuln-calculator > pacote > @npmcli/run-script > node-gyp > make-fetch-happen > http-cache-semantics:
+        reason: None given
+        expires: '2023-05-08T07:59:47.023Z'
+  SNYK-JS-REQUEST-3361831:
+    - request:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-barchart > d3-node > jsdom > request:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-linechart > d3-node > jsdom > request:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-piechart > d3-node > jsdom > request:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-voronoi > d3-node > jsdom > request:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-barchart > d3node-output > svg2png > phantomjs-prebuilt > request:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+  SNYK-JS-WORDWRAP-3149973:
+    - jsdom > escodegen > optionator > word-wrap:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3-node > jsdom > escodegen > optionator > word-wrap:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - '@google-cloud/text-to-speech > google-gax > protobufjs-cli > escodegen > optionator > word-wrap':
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-barchart > d3-node > jsdom > escodegen > optionator > word-wrap:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-linechart > d3-node > jsdom > escodegen > optionator > word-wrap:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-piechart > d3-node > jsdom > escodegen > optionator > word-wrap:
+        reason: None given
+        expires: '2023-05-08T07:59:47.024Z'
+    - d3node-voronoi > d3-node > jsdom > escodegen > optionator > word-wrap:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
+    - firebase-admin > @google-cloud/firestore > google-gax > protobufjs-cli > escodegen > optionator > word-wrap:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
+  SNYK-JS-XML2JS-5414874:
+    - libnmap > xml2js:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:ms:20151024':
