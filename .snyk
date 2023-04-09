@@ -239,27 +239,15 @@ ignore:
     - d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
-      d3node-barchart > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2023-05-08T07:59:47.025Z'
     - d3node-barchart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
-      d3node-linechart > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2023-05-08T07:59:47.025Z'
     - d3node-linechart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
-      d3node-piechart > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2023-05-08T07:59:47.025Z'
     - d3node-piechart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
-      d3node-voronoi > d3-node > jsdom > content-type-parser:
-        reason: None given
-        expires: '2023-05-08T07:59:47.025Z'
     - d3node-voronoi > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2023-02-17T19:02:36.229Z'
@@ -341,6 +329,18 @@ ignore:
     - d3node-piechart > d3-node > jsdom > content-type-parser:
         reason: None given
         expires: '2022-06-25T10:47:10.648Z'
+    - d3node-barchart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
+    - d3node-linechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
+    - d3node-piechart > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
+    - d3node-voronoi > d3-node > jsdom > content-type-parser:
+        reason: None given
+        expires: '2023-05-08T07:59:47.025Z'
   SNYK-JS-Y18N-1021887:
     - d3node-barchart > d3node-output > svg2png > yargs > y18n:
         reason: None given
@@ -1056,33 +1056,18 @@ ignore:
     - npm > cli-columns > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.162Z'
-      d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
     - npm > columnify > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
     - nsp > cli-table2 > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
     - nsp > yargs > cliui > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
     - npm > npmlog > gauge > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
-      d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
-        reason: None given
-        expires: '2023-05-08T07:59:47.017Z'
     - nsp > yargs > cliui > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2021-10-19T20:34:03.163Z'
@@ -1530,6 +1515,21 @@ ignore:
     - d3-node > jsdom > canvas > @mapbox/node-pre-gyp > npmlog > gauge > wide-align > string-width > strip-ansi > ansi-regex:
         reason: None given
         expires: '2023-02-22T19:09:55.474Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
+    - d3node-barchart > d3node-output > svg2png > yargs > cliui > wrap-ansi > string-width > strip-ansi > ansi-regex:
+        reason: None given
+        expires: '2023-05-08T07:59:47.017Z'
   SNYK-JS-RAMDA-1582370:
     - arduino-cli > ramda:
         reason: None given
