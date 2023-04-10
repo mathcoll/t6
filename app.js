@@ -82,14 +82,13 @@ global.smartTrim = function(string, maxLength) {
 	if (!string) return string;
 	if (maxLength < 1) return string;
 	if (string.length <= maxLength) return string;
-	if (maxLength == 1) return string.substring(0, 1) + '...';
+	if (maxLength === 1) return string.substring(0, 1) + "...";
 
 	var midpoint = Math.ceil(string.length / 2);
 	var toremove = string.length - maxLength;
 	var lstrip = Math.ceil(toremove / 2);
 	var rstrip = toremove - lstrip;
-	return string.substring(0, midpoint - lstrip) + '...'
-		+ string.substring(midpoint + rstrip);
+	return string.substring(0, midpoint - lstrip) + "..." + string.substring(midpoint + rstrip);
 };
 
 /* Environment settings */
