@@ -165,6 +165,13 @@ code.nostyle br {
   overflow-x: scroll;
   scroll-snap-type: x mandatory;
 }
+#hof h2 {
+  margin: 24px auto 48px auto;
+  color: #795548;
+}
+#hof p {
+  color: #795548;
+}
 #hof-container div p,
 #hof-container div span {
   margin: 0;
@@ -186,13 +193,6 @@ code.nostyle br {
 #hof-container #illustration-container a {
   width: 240px;
   margin: 5px auto;
-}
-#hof h2 {
-  margin: 24px auto 48px auto;
-  color: #795548;
-}
-#hof p {
-  color: #795548;
 }
 @media screen and (min-width: 760px) {
   #hof .mdl-cell--4-col:nth-child(2n-1) {
@@ -422,9 +422,21 @@ body {
 .mdl-chip .grippy::before {
   content: '.';
   text-shadow:
-    0  0 #000, 0  5px #000, 0  10px #000, 0  15px #000, 0  20px #000,
-    5px  0 #000, 5px  5px #000, 5px  10px #000, 5px  15px #000, 5px  20px #000,
-    10px 0 #000, 10px 5px #000, 10px 10px #000, 10px 15px #000, 10px 20px #000;
+    0 0 #000,
+    0 5px #000,
+    0 10px #000,
+    0 15px #000,
+    0 20px #000,
+    5px 0 #000,
+    5px 5px #000,
+    5px 10px #000,
+    5px 15px #000,
+    5px 20px #000,
+    10px 0 #000,
+    10px 5px #000,
+    10px 10px #000,
+    10px 15px #000,
+    10px 20px #000;
 }
 .mdl-chip .close,
 .mdl-chip .edit {
