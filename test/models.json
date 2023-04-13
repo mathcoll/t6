@@ -1,0 +1,129 @@
+{
+    "config": {
+        "log_path": "./jsonapitest-results.json",
+        "defaults": {
+            "api_call": {
+                "request": {
+                    "base_url": "http://127.0.0.1:3000",
+                    "headers": {
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    }
+                }
+            }
+        }
+    },
+    "data": {"app_version": "v2.0.1"},
+    "suites": [
+        {
+            "name": "t6 Models Suite",
+            "tests": [
+                {
+                	"name": "can create a Model for that User",
+                    "description": "create a Model for that User",
+                    "api_calls": [
+                        {
+		                	"it": "can create a Model for that User",
+                        	"request": "POST /{{app_version}}/models",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "name": "My Model"
+                            },
+                            "save": {
+                                "saved.model_id": "body.model.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can edit a Model for that User",
+                    "description": "edit a Model for that User",
+                    "api_calls": [
+                        {
+		                	"it": "can edit a Model for that User",
+                        	"request": "PUT /{{app_version}}/models/{{saved.model_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "name": "My updated Model"
+                            },
+                            "save": {
+                                "saved.model_id": "body.model.data.id"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get a Model",
+                    "description": "get a Model",
+                    "api_calls": [
+                        {
+		                	"it": "can get a Model",
+                        	"request": "GET /{{app_version}}/models/{{saved.model_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "name": "My updated Model"
+                            },
+                            "save": {
+                                "saved.model_id": "body.data.0.id"
+                            },
+                            "status": "200",
+                            "assert": [{
+        	                    "select": "body.data.0.id",
+        	                    "equal": "{{saved.model_id}}"
+        	                },{
+        	                    "select": "body.data.0.attributes.name",
+        	                    "equal": "My updated Model"
+        	                }]
+                        }
+                    ]
+                },
+                {
+                	"name": "can create another Model for that User",
+                    "description": "create another Model for that User",
+                    "api_calls": [
+                        {
+		                	"it": "can create another Model for that User",
+                        	"request": "POST /{{app_version}}/models",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+                                "name": "My second Model"
+                            },
+                            "save": {
+                                "saved.model_id2": "body.model.data.id"
+                            },
+                            "status": "201"
+                        }
+                    ]
+                },
+                {
+                	"name": "can get list of Models",
+                    "description": "get list of Models",
+                    "api_calls": [
+                        {
+		                	"it": "can get list of Models",
+                        	"request": "GET /{{app_version}}/models",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200",
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 2
+        	                }
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

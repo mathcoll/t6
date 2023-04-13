@@ -293,6 +293,54 @@
                     ]
                 },
                 {
+                	"name": "can delete a Model",
+                	"description": "can delete a Model",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/models/{{saved.model_id}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete another Model",
+                	"description": "can delete another Model",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/models/{{saved.model_id2}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "assert": [],
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can verify a Model has been deleted",
+                    "description": "verify a Model has been deleted",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/models/{{saved.model_id2}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data",
+        	                    "size": 0
+        	                }
+                        }
+                    ]
+                },
+                {
                 	"name": "can delete a User",
                     "description": "delete a User",
                     "api_calls": [

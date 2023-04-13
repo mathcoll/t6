@@ -17,6 +17,7 @@ jsonapitest \
 	$SCRIPT_DIR/../test/exploration.json \
 	$SCRIPT_DIR/../test/admin.json \
 	$SCRIPT_DIR/../test/jobs.json \
+	$SCRIPT_DIR/../test/models.json \
 	$SCRIPT_DIR/../test/users.json \
 	$SCRIPT_DIR/../test/cleaning.json
 

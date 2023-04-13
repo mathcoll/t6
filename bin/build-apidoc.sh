@@ -17,6 +17,7 @@
 	-f exploration.js \
 	-f notifications.js \
 	-f classifications.js \
+	-f models.js \
 	-f stories.js \
 	-f index.js \
 	-f jobs.js \

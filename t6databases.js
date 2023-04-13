@@ -1,6 +1,6 @@
 "use strict";
 var t6databases = module.exports = {};
-global.resources = ["objects", "flows", "rules", "snippets", "dashboards", "tokens", "access_tokens", "users", "units", "datatypes", "categories", "annotations", "otahistory", "uis", "sources", "jobs", "stories", "measures"];
+global.resources = ["objects", "flows", "rules", "snippets", "dashboards", "tokens", "access_tokens", "users", "units", "datatypes", "categories", "annotations", "otahistory", "uis", "sources", "jobs", "stories", "measures", "models"];
 global.loadedResources = [];
 /*
 this.db.getCollection('collName').on('insert', onChange);
@@ -28,6 +28,7 @@ t6databases.onLoad = async function(data) {
 		t6console.log( t6databases.getCount("annotations", annotations).padEnd(59) );
 		t6console.log( t6databases.getCount("dashboards", dashboards).padEnd(59) );
 		t6console.log( t6databases.getCount("sources", sources).padEnd(59) );
+		t6console.log( t6databases.getCount("models", models).padEnd(59) );
 		t6console.log( t6databases.getCount("otaHistory", OtaHistory).padEnd(59) );
 		t6console.log( t6databases.getCount("uis", uis).padEnd(59) );
 		t6console.log( t6databases.getCount("jobs", jobs).padEnd(59) );
@@ -59,6 +60,7 @@ t6databases.init = async function() {
 		path.join(__dirname, "data", `t6db-rules__${os.hostname()}.json`),
 		path.join(__dirname, "data", `t6db-tokens__${os.hostname()}.json`),
 		path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
+		path.join(__dirname, "data", `t6db-models__${os.hostname()}.json`),
 		path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
 		path.join(__dirname, "data", `t6db-classifications__${os.hostname()}.json`),
 		path.join(__dirname, "data", `t6db-stories__${os.hostname()}.json`),
@@ -98,6 +100,10 @@ t6databases.init = async function() {
 	global.db_users = new loki(
 		path.join(__dirname, "data", `t6db-users__${os.hostname()}.json`),
 		{autoload: true, autosave: true, autoloadCallback: t6databases.initDbUsers}
+	);
+	global.db_models = new loki(
+		path.join(__dirname, "data", `t6db-models__${os.hostname()}.json`),
+		{autoload: true, autosave: true, autoloadCallback: t6databases.initDbModels}
 	);
 	global.db_units = new loki(
 		path.join(__dirname, "data", `t6db-units__${os.hostname()}.json`),
@@ -219,6 +225,27 @@ t6databases.initDbSnippets = async function() {
 				//t6console.log(`- Collection ${collectionName} already exists.`);
 			}
 			global.snippets = db.getCollection(collectionName);
+			db.on("loaded", t6databases.onLoad);
+			loadedResources.push(collectionName);
+			resolve(`loaded`);
+		}
+	});
+};
+t6databases.initDbModels = async function() {
+	return new Promise((resolve, reject) => {
+		let collectionName = "models";
+		let db = global.db_models;
+		if ( db === null || typeof db === "undefined" ) {
+			t6console.error(`db for ${collectionName} is not set`);
+			reject(`-n/a resources in ${collectionName} collection.`);
+		} else {
+			if ( db.getCollection(collectionName) === null ) {
+				db.addCollection(collectionName);
+				t6console.warn(`- Collection ${collectionName} is created.`);
+			} else {
+				//t6console.log(`- Collection ${collectionName} already exists.`);
+			}
+			global.models = db.getCollection(collectionName);
 			db.on("loaded", t6databases.onLoad);
 			loadedResources.push(collectionName);
 			resolve(`loaded`);
