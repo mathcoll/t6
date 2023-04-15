@@ -86,12 +86,28 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 		var model = models.findOne( query );
 		if ( model ) {
 			if ( req.body.meta && req.body.meta.revision && (req.body.meta.revision - rule.meta.revision) !== 0 ) {
-				res.status(409).send(new ErrorSerializer({"id": 12001, "code": 409, "message": "Bad Request"}).serialize());
+				res.status(409).send(new ErrorSerializer({"id": 14001, "code": 409, "message": "Bad Request"}).serialize());
 			} else {
 				var result;
 				models.chain().find({ "id": model_id }).update(function(item) {
 					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.meta.revision = typeof item.meta.revision==="number"?(item.meta.revision):1;
+					item.flow_ids	= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
+					item.retention	= typeof req.body.retention!=="undefined"?req.body.retention:item.retention,
+					item.datasets	= {
+						"training": {
+							"start": typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:item.datasets.training.start,
+							"end": typeof req.body.datasets.training.end!=="undefined"?req.body.datasets.training.end:item.datasets.training.end,
+							"duration": typeof req.body.datasets.training.duration!=="undefined"?req.body.datasets.training.duration:item.datasets.training.duration,
+							"limit": typeof req.body.datasets.training.limit!=="undefined"?req.body.datasets.training.limit:item.datasets.training.limit
+						},
+						"testing": {
+							"start": typeof req.body.datasets.testing.start!=="undefined"?req.body.datasets.testing.start:item.datasets.testing.start,
+							"end": typeof req.body.datasets.testing.end!=="undefined"?req.body.datasets.testing.end:item.datasets.testing.end,
+							"duration": typeof req.body.datasets.testing.duration!=="undefined"?req.body.datasets.testing.duration:item.datasets.testing.duration,
+							"limit": typeof req.body.datasets.testing.limit!=="undefined"?req.body.datasets.testing.limit:item.datasets.testing.limit
+						}
+					};
 					result = item;
 				});
 				if ( typeof result !== "undefined" ) {
@@ -100,14 +116,14 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					res.header("Location", "/v"+version+"/models/"+model_id);
 					res.status(200).send({ "code": 200, message: "Successfully updated", model: new ModelSerializer(result).serialize() });
 				} else {
-					res.status(404).send(new ErrorSerializer({"id": 12273, "code": 404, "message": "Not Found"}).serialize());
+					res.status(404).send(new ErrorSerializer({"id": 14273, "code": 404, "message": "Not Found"}).serialize());
 				}
 			}
 		} else {
-			res.status(401).send(new ErrorSerializer({"id": 12272, "code": 401, "message": "Forbidden"}).serialize());
+			res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
 		}
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 12271, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
@@ -135,6 +151,22 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				id:			model_id,
 				user_id:	req.user.id,
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
+				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
+				retention:	typeof req.body.retention!=="undefined"?req.body.retention:"autogen",
+				datasets: {
+					training: {
+						start: typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:new Date(),
+						end: typeof req.body.datasets.training.end!=="undefined"?req.body.datasets.training.end:new Date(),
+						duration: typeof req.body.datasets.training.duration!=="undefined"?req.body.datasets.training.duration:null,
+						limit: typeof req.body.datasets.training.limit!=="undefined"?req.body.datasets.training.limit:null
+					},
+					testing: {
+						start: typeof req.body.datasets.testing.start!=="undefined"?req.body.datasets.testing.start:new Date(),
+						end: typeof req.body.datasets.testing.end!=="undefined"?req.body.datasets.testing.end:new Date(),
+						duration: typeof req.body.datasets.testing.duration!=="undefined"?req.body.datasets.testing.duration:null,
+						limit: typeof req.body.datasets.testing.limit!=="undefined"?req.body.datasets.testing.limit:null
+					}
+				}
 			};
 			t6events.addStat("t6Api", "model add", newModel.id, req.user.id);
 			models.insert(newModel);
@@ -170,7 +202,103 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 		db_models.saveDatabase();
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: model_id }); // TODO: missing serializer
 	} else {
-		res.status(404).send(new ErrorSerializer({"id": 532, "code": 404, "message": "Not Found"}).serialize());
+		res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
+	}
+});
+
+/**
+ * @api {post} /models/:model_id/train Train a Model
+ * @apiName Train a Model
+ * @apiGroup 14. Models
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * 
+ * @apiUse 202
+ */
+router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var model_id = req.params.model_id;
+	if ( model_id ) {
+		let query = {
+			"$and": [
+					{ "id": model_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		var model = models.findOne( query );
+
+		let limit = model.datasets.training.limit;
+		let offset = 0;
+		{
+			let queryTs = model.flow_ids.map( (flow_id, index) => {
+				let flow = flows.findOne({id: flow_id});
+				let retention = flow.retention;
+				let rp = typeof retention!=="undefined"?retention:"autogen";
+				if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+					if ( typeof flow!=="undefined" && flow.retention ) {
+						if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+							rp = flow.retention;
+						} else {
+							rp = influxSettings.retentionPolicies.data[0];
+							//t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+							res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed"}).serialize());
+							return;
+						}
+					} else {
+						rp = influxSettings.retentionPolicies.data[0];
+						//t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+					}
+				}
+				//t6console.debug("Retention is valid:", rp);
+				//t6console.debug("flow:", flow);
+				let fields = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, true, true);
+				let andDates = "";
+				let sorting = "DESC";
+				if( model.datasets.training.start!==null && model.datasets.training.start!=="" ) {
+					andDates += `AND time>='${moment(model.datasets.training.start).toISOString()}' `;
+					sorting = "ASC";
+				}
+				if( model.datasets.training.end!==null && model.datasets.training.end!=="" ) {
+					andDates += `AND time<='${moment(model.datasets.training.end).toISOString()}' `;
+				}
+				return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
+			}).join("; ");
+			t6console.debug("queryTs:", queryTs);
+
+			// Get values from TS
+			dbInfluxDB.query(queryTs).then((data) => {
+				if ( data.length > 0 ) {
+					t6console.debug("length:", data.length);
+					data.map(function(d) {
+						d.map(function(flow_data) {
+							let category = (flow_data.meta && typeof JSON.parse(flow_data.meta)!=="undefined") ? categories.findOne({id: JSON.parse(flow_data.meta).categories[0]}) : {name: null}; // TODY : can have multiple categories
+							t6console.debug(moment(flow_data.time).format("YYYY-MM-DD HH:mm"), flow_data.flow_id, flow_data.value, category.name);
+
+						// split training and testing
+						
+						// train on training
+						
+
+						});
+					});
+				} else {
+					t6console.debug(query);
+					res.status(404).send(new ErrorSerializer({err: "No data found", "id": 14058, "code": 404, "message": "Not found"}).serialize());
+				}
+			}).catch((err) => {
+				t6console.error("id=14059", err);
+				res.status(500).send(new ErrorSerializer({err: err, "id": 14059, "code": 500, "message": "Internal Error"}).serialize());
+			});
+			
+			
+		}
+		if ( model ) {
+			res.status(202).send({ "code": 202, message: "Training started", model_id: model_id }); // TODO: missing serializer
+		} else {
+			res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
+		}
+	} else {
+		res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 
