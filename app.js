@@ -90,6 +90,25 @@ global.smartTrim = function(string, maxLength) {
 	var rstrip = toremove - lstrip;
 	return string.substring(0, midpoint - lstrip) + "..." + string.substring(midpoint + rstrip);
 };
+global.getRandomSample = function(arr, size) {
+	let shuffled = arr.slice(0), i = arr.length, temp, index;
+	while (i--) {
+		index = Math.floor((i + 1) * Math.random());
+		temp = shuffled[index];
+		shuffled[index] = shuffled[i];
+		shuffled[i] = temp;
+	}
+	return [shuffled.slice(0, size), shuffled.slice(size, arr.length)];
+};
+global.shuffle = function(array) {
+	for (let i = array.length - 1; i > 0; i--) {
+		let j = Math.floor(Math.random() * (i + 1));
+		let temp = array[i];
+		array[i] = array[j];
+		array[j] = temp;
+	}
+	return array;
+}
 
 /* Environment settings */
 require(`./data/settings-${os.hostname()}.js`);

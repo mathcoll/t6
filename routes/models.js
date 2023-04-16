@@ -5,7 +5,7 @@ var ModelSerializer = require("../serializers/model");
 var ErrorSerializer = require("../serializers/error");
 
 /**
- * @api {get} /models/:model_id Get Models
+ * @api {get} /models/:model_id? Get Models
  * @apiName Get Models
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
@@ -64,7 +64,7 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 /**
- * @api {put} /models/ Edit Model
+ * @api {put} /models/:model_id Edit Model
  * @apiName Add Models
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
@@ -178,13 +178,12 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 });
 
 /**
- * @api {delete} /models/ Delete Model
+ * @api {delete} /models/:model_id Delete Model
  * @apiName Delete Models
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiBody {String} [name] 
  * 
  * @apiUse 200
  */
@@ -267,18 +266,27 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 			// Get values from TS
 			dbInfluxDB.query(queryTs).then((data) => {
+				if(model.flow_ids.length===1) {
+					data = [data];
+				}
 				if ( data.length > 0 ) {
-					t6console.debug("length:", data.length);
 					data.map(function(d) {
-						d.map(function(flow_data) {
-							let category = (flow_data.meta && typeof JSON.parse(flow_data.meta)!=="undefined") ? categories.findOne({id: JSON.parse(flow_data.meta).categories[0]}) : {name: null}; // TODY : can have multiple categories
-							t6console.debug(moment(flow_data.time).format("YYYY-MM-DD HH:mm"), flow_data.flow_id, flow_data.value, category.name);
-
+						let flow_datas = d.flat();
+						flow_datas = shuffle(flow_datas);
+						let sample_percent = 25;
 						// split training and testing
-						
-						// train on training
-						
+						let [training, testing] = getRandomSample(flow_datas, (sample_percent * flow_datas.length /100));
 
+						training.map(function(dtr) {
+							// TODO : can have multiple categories
+							// TODO : let's begin with only one category and using that category as the only one feature in ML training
+							let category = (dtr.meta && typeof JSON.parse(dtr.meta)!=="undefined") ? categories.findOne({id: JSON.parse(dtr.meta).categories[0]}) : {name: null};
+							t6console.debug({value: dtr.value, category: category.name, time: moment(dtr.time).format("YYYY-MM-DD HH:mm")});
+							//t6console.debug(moment(dtr.time).format("YYYY-MM-DD HH:mm"), dtr.flow_id, dtr.value, category.name);
+						});
+
+						testing.map(function(dts) {
+							
 						});
 					});
 				} else {
