@@ -266,28 +266,23 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 			// Get values from TS
 			dbInfluxDB.query(queryTs).then((data) => {
-				if(model.flow_ids.length===1) {
-					data = [data];
-				}
+				data = data.flat();
+				data = shuffle(data);
 				if ( data.length > 0 ) {
-					data.map(function(d) {
-						let flow_datas = d.flat();
-						flow_datas = shuffle(flow_datas);
-						let sample_percent = 25;
-						// split training and testing
-						let [training, testing] = getRandomSample(flow_datas, (sample_percent * flow_datas.length /100));
+					let sample_percent = 60;
+					// split training and testing
+					let [training, testing] = getRandomSample(data, (sample_percent * data.length /100));
 
-						training.map(function(dtr) {
-							// TODO : can have multiple categories
-							// TODO : let's begin with only one category and using that category as the only one feature in ML training
-							let category = (dtr.meta && typeof JSON.parse(dtr.meta)!=="undefined") ? categories.findOne({id: JSON.parse(dtr.meta).categories[0]}) : {name: null};
-							t6console.debug({value: dtr.value, category: category.name, time: moment(dtr.time).format("YYYY-MM-DD HH:mm")});
-							//t6console.debug(moment(dtr.time).format("YYYY-MM-DD HH:mm"), dtr.flow_id, dtr.value, category.name);
-						});
+					training.map(function(dtr) {
+						// TODO : can have multiple categories
+						// TODO : let's begin with only one category and using that category as the only one feature in ML training
+						let category = (dtr.meta && typeof JSON.parse(dtr.meta)!=="undefined") ? categories.findOne({id: JSON.parse(dtr.meta).categories[0]}) : {name: null};
+						t6console.debug({value: dtr.value, category: category.name, time: moment(dtr.time).format("YYYY-MM-DD HH:mm")});
+						//t6console.debug(moment(dtr.time).format("YYYY-MM-DD HH:mm"), dtr.flow_id, dtr.value, category.name);
+					});
 
-						testing.map(function(dts) {
-							
-						});
+					testing.map(function(dts) {
+						
 					});
 				} else {
 					t6console.debug(query);
