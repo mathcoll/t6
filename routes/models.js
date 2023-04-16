@@ -231,72 +231,69 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		let limit = model.datasets.training.limit;
 		let training_size_ratio = typeof model.training_size_ratio!=="undefined"?model.training_size_ratio:60;
 		let offset = 0;
-		{
-			let queryTs = model.flow_ids.map( (flow_id, index) => {
-				let flow = flows.findOne({id: flow_id});
-				let retention = flow.retention;
-				let rp = typeof retention!=="undefined"?retention:"autogen";
-				if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
-					if ( typeof flow!=="undefined" && flow.retention ) {
-						if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
-							rp = flow.retention;
-						} else {
-							rp = influxSettings.retentionPolicies.data[0];
-							//t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
-							res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed"}).serialize());
-							return;
-						}
+		let queryTs = model.flow_ids.map( (flow_id, index) => {
+			let flow = flows.findOne({id: flow_id});
+			let retention = flow.retention;
+			let rp = typeof retention!=="undefined"?retention:"autogen";
+			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+				if ( typeof flow!=="undefined" && flow.retention ) {
+					if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+						rp = flow.retention;
 					} else {
 						rp = influxSettings.retentionPolicies.data[0];
-						//t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+						//t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+						res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed"}).serialize());
+						return;
 					}
-				}
-				//t6console.debug("Retention is valid:", rp);
-				//t6console.debug("flow:", flow);
-				let fields = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, true, true);
-				let andDates = "";
-				let sorting = "DESC";
-				if( model.datasets.training.start!==null && model.datasets.training.start!=="" ) {
-					andDates += `AND time>='${moment(model.datasets.training.start).toISOString()}' `;
-					sorting = "ASC";
-				}
-				if( model.datasets.training.end!==null && model.datasets.training.end!=="" ) {
-					andDates += `AND time<='${moment(model.datasets.training.end).toISOString()}' `;
-				}
-				return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
-			}).join("; ");
-			t6console.debug("queryTs:", queryTs);
-
-			// Get values from TS
-			dbInfluxDB.query(queryTs).then((data) => {
-				data = data.flat();
-				data = shuffle(data);
-				if ( data.length > 0 ) {
-					// split training and testing
-					let [training, testing] = getRandomSample(data, (training_size_ratio * data.length));
-
-					training.map(function(dtr) {
-						// TODO : can have multiple categories
-						// TODO : let's begin with only one category and using that category as the only one feature in ML training
-						let category = (dtr.meta && typeof JSON.parse(dtr.meta)!=="undefined") ? categories.findOne({id: JSON.parse(dtr.meta).categories[0]}) : {name: null};
-						t6console.debug({value: dtr.value, category: category.name, time: moment(dtr.time).format("YYYY-MM-DD HH:mm")});
-						//t6console.debug(moment(dtr.time).format("YYYY-MM-DD HH:mm"), dtr.flow_id, dtr.value, category.name);
-					});
-
-					testing.map(function(dts) {
-						
-					});
 				} else {
-					t6console.debug(query);
-					res.status(404).send(new ErrorSerializer({err: "No data found", "id": 14058, "code": 404, "message": "Not found"}).serialize());
+					rp = influxSettings.retentionPolicies.data[0];
+					//t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
 				}
-			}).catch((err) => {
-				t6console.error("id=14059", err);
-				res.status(500).send(new ErrorSerializer({err: err, "id": 14059, "code": 500, "message": "Internal Error"}).serialize());
-			});
-			
-			
-		}
+			}
+			//t6console.debug("Retention is valid:", rp);
+			//t6console.debug("flow:", flow);
+			let fields = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, true, true);
+			let andDates = "";
+			let sorting = "DESC";
+			if( model.datasets.training.start!==null && model.datasets.training.start!=="" ) {
+				andDates += `AND time>='${moment(model.datasets.training.start).toISOString()}' `;
+				sorting = "ASC";
+			}
+			if( model.datasets.training.end!==null && model.datasets.training.end!=="" ) {
+				andDates += `AND time<='${moment(model.datasets.training.end).toISOString()}' `;
+			}
+			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
+		}).join("; ");
+		t6console.debug("queryTs:", queryTs);
+
+		// Get values from TS
+		dbInfluxDB.query(queryTs).then((data) => {
+			data = data.flat();
+			data = shuffle(data);
+			if ( data.length > 0 ) {
+				// split training and testing
+				let [training, testing] = getRandomSample(data, (training_size_ratio * data.length));
+
+				training.map(function(dtr) {
+					// TODO : can have multiple categories
+					// TODO : let's begin with only one category and using that category as the only one feature in ML training
+					let category = (dtr.meta && typeof JSON.parse(dtr.meta)!=="undefined") ? categories.findOne({id: JSON.parse(dtr.meta).categories[0]}) : {name: null};
+					t6console.debug({value: dtr.value, category: category.name, time: moment(dtr.time).format("YYYY-MM-DD HH:mm")});
+					//t6console.debug(moment(dtr.time).format("YYYY-MM-DD HH:mm"), dtr.flow_id, dtr.value, category.name);
+				});
+
+				testing.map(function(dts) {
+					
+				});
+			} else {
+				t6console.debug(query);
+				res.status(404).send(new ErrorSerializer({err: "No data found", "id": 14058, "code": 404, "message": "Not found"}).serialize());
+			}
+		}).catch((err) => {
+			t6console.error("id=14059", err);
+			res.status(500).send(new ErrorSerializer({err: err, "id": 14059, "code": 500, "message": "Internal Error"}).serialize());
+		});
+
 		if ( model ) {
 			res.status(202).send({ "code": 202, message: "Training started", model_id: model_id }); // TODO: missing serializer
 		} else {
