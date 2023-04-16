@@ -94,6 +94,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.meta.revision = typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids	= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
 					item.retention	= typeof req.body.retention!=="undefined"?req.body.retention:item.retention,
+					item.training_size_ratio	= typeof req.body.training_size_ratio!=="undefined"?req.body.training_size_ratio:item.training_size_ratio,
 					item.datasets	= {
 						"training": {
 							"start": typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:item.datasets.training.start,
@@ -153,6 +154,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
 				retention:	typeof req.body.retention!=="undefined"?req.body.retention:"autogen",
+				training_size_ratio:	typeof req.body.training_size_ratio!=="undefined"?req.body.training_size_ratio:0.8,
 				datasets: {
 					training: {
 						start: typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:new Date(),
@@ -227,6 +229,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		var model = models.findOne( query );
 
 		let limit = model.datasets.training.limit;
+		let training_size_ratio = typeof model.training_size_ratio!=="undefined"?model.training_size_ratio:60;
 		let offset = 0;
 		{
 			let queryTs = model.flow_ids.map( (flow_id, index) => {
@@ -269,9 +272,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				data = data.flat();
 				data = shuffle(data);
 				if ( data.length > 0 ) {
-					let sample_percent = 60;
 					// split training and testing
-					let [training, testing] = getRandomSample(data, (sample_percent * data.length /100));
+					let [training, testing] = getRandomSample(data, (training_size_ratio * data.length));
 
 					training.map(function(dtr) {
 						// TODO : can have multiple categories
