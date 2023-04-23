@@ -127,6 +127,7 @@ global.t6otahistory		= require("./t6otahistory");
 global.t6preprocessor	= require("./t6preprocessor");
 global.t6jobs			= require("./t6jobs");
 global.t6imagesprocessing = require("./t6imagesprocessing");
+global.t6machinelearning = require("./t6machinelearning");
 global.t6websockets		= require("./t6websockets");
 global.t6databases		= require("./t6databases");
 global.monitor			= require("./t6monitor");

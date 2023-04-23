@@ -222,6 +222,17 @@ ota = {
 	"defaultPort": 8266
 };
 
+/* Image processing */
+ip = {
+	"image_dir" : "/path/to/data/t6/tmp/images", // Folder, must be writable by t6 application
+	"models_dir": "/path/to/data/t6/data/models" // Folder containing the models
+};
+
+/* Machine Learning users models */
+mlModels = {
+	"models_user_dir" : "/path/to/data/t6/tmp/models"
+};
+
 /* custom units */
 customUnits = {
 	"db": "/path/to/data/t6custom.units"

@@ -90,10 +90,12 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 			} else {
 				var result;
 				models.chain().find({ "id": model_id }).update(function(item) {
-					item.name		= typeof req.body.name!=="undefined"?req.body.name:item.name;
-					item.meta.revision = typeof item.meta.revision==="number"?(item.meta.revision):1;
-					item.flow_ids	= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
-					item.retention	= typeof req.body.retention!=="undefined"?req.body.retention:item.retention,
+					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
+					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
+					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
+					item.retention		= typeof req.body.retention!=="undefined"?req.body.retention:item.retention,
+					item.batch_size		= typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
+					item.epochs			= typeof req.body.epochs!=="undefined"?req.body.epochs:100,
 					item.training_size_ratio	= typeof req.body.training_size_ratio!=="undefined"?req.body.training_size_ratio:item.training_size_ratio,
 					item.datasets	= {
 						"training": {
@@ -155,6 +157,8 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
 				retention:	typeof req.body.retention!=="undefined"?req.body.retention:"autogen",
 				training_size_ratio:	typeof req.body.training_size_ratio!=="undefined"?req.body.training_size_ratio:0.8,
+				batch_size:	typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
+				epochs:		typeof req.body.epochs!=="undefined"?req.body.epochs:100,
 				datasets: {
 					training: {
 						start: typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:new Date(),
@@ -226,12 +230,12 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					{ "user_id": req.user.id },
 				]
 			};
-		var model = models.findOne( query );
+		var t6Model = models.findOne( query );
 
-		let limit = model.datasets.training.limit;
-		let training_size_ratio = typeof model.training_size_ratio!=="undefined"?model.training_size_ratio:60;
+		let limit = t6Model.datasets.training.limit;
+		let training_size_ratio = typeof t6Model.training_size_ratio!=="undefined"?t6Model.training_size_ratio:60;
 		let offset = 0;
-		let queryTs = model.flow_ids.map( (flow_id, index) => {
+		let queryTs = t6Model.flow_ids.map( (flow_id, index) => {
 			let flow = flows.findOne({id: flow_id});
 			let retention = flow.retention;
 			let rp = typeof retention!=="undefined"?retention:"autogen";
@@ -255,12 +259,12 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			let fields = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, true, true);
 			let andDates = "";
 			let sorting = "DESC";
-			if( model.datasets.training.start!==null && model.datasets.training.start!=="" ) {
-				andDates += `AND time>='${moment(model.datasets.training.start).toISOString()}' `;
+			if( t6Model.datasets.training.start!==null && t6Model.datasets.training.start!=="" ) {
+				andDates += `AND time>='${moment(t6Model.datasets.training.start).toISOString()}' `;
 				sorting = "ASC";
 			}
-			if( model.datasets.training.end!==null && model.datasets.training.end!=="" ) {
-				andDates += `AND time<='${moment(model.datasets.training.end).toISOString()}' `;
+			if( t6Model.datasets.training.end!==null && t6Model.datasets.training.end!=="" ) {
+				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 			}
 			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
 		}).join("; ");
@@ -272,18 +276,48 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			data = shuffle(data);
 			if ( data.length > 0 ) {
 				// split training and testing
-				let [training, testing] = getRandomSample(data, (training_size_ratio * data.length));
+				let [trainingDatafromDB, testingDatafromDB] = getRandomSample(data, (training_size_ratio * data.length));
 
-				training.map(function(dtr) {
+				trainingDatafromDB.map(function(dtr) {
 					// TODO : can have multiple categories
 					// TODO : let's begin with only one category and using that category as the only one feature in ML training
 					let category = (dtr.meta && typeof JSON.parse(dtr.meta)!=="undefined") ? categories.findOne({id: JSON.parse(dtr.meta).categories[0]}) : {name: null};
 					t6console.debug({value: dtr.value, category: category.name, time: moment(dtr.time).format("YYYY-MM-DD HH:mm")});
 					//t6console.debug(moment(dtr.time).format("YYYY-MM-DD HH:mm"), dtr.flow_id, dtr.value, category.name);
 				});
-
-				testing.map(function(dts) {
-					
+				
+				t6machinelearning.init(3); // TODO
+				const trainData = t6machinelearning.loadDataArray(trainingDatafromDB, t6Model.batch_size);
+				const testData = t6machinelearning.loadDataArray(testingDatafromDB, t6Model.batch_size);
+				const tfModel = t6machinelearning.buildModel();
+				tfModel.summary();
+				t6machinelearning.trainModel(tfModel, trainData, t6Model.epochs).then((info) => {
+					t6console.debug("info", info);
+					t6machinelearning.evaluateModel(tfModel, testData).then((evaluate) => {
+						t6console.debug("evaluate:", evaluate);
+						t6console.debug("evaluate: loss", evaluate.loss);
+						t6console.debug("evaluate: accuracy", evaluate.accuracy);
+						let user = users.findOne({"id": req.user.id });
+						if (user && typeof user.pushSubscription !== "undefined" ) {
+							let payload = `{"type": "message", "title": "Model trained", "body": "loss: ${evaluate.loss}, accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+							let result = t6notifications.sendPush(user, payload);
+							if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+								t6console.debug("pushSubscription", pushSubscription);
+								t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+								users.chain().find({ "id": user.id }).update(function(u) {
+									u.pushSubscription = {};
+									db_users.save();
+								});
+								t6console.debug("pushSubscription is now disabled on User", error);
+							}
+						}
+						let path = `${mlModels.models_user_dir}/${user.id}/`;
+						if (!fs.existsSync(path)) { fs.mkdirSync(path); }
+						t6console.debug("Model saving to", path+t6Model.id);
+						t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
+							t6console.debug("Model saved to", saved);
+						});
+					});
 				});
 			} else {
 				t6console.debug(query);
@@ -294,7 +328,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			res.status(500).send(new ErrorSerializer({err: err, "id": 14059, "code": 500, "message": "Internal Error"}).serialize());
 		});
 
-		if ( model ) {
+		if ( t6Model ) {
 			res.status(202).send({ "code": 202, message: "Training started", model_id: model_id }); // TODO: missing serializer
 		} else {
 			res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
