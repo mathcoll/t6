@@ -241,10 +241,10 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 			if (!fs.existsSync(path)) {
 				res.status(412).send(new ErrorSerializer({"id": 14186, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
 			} else {
-				let tensor = [ {x: predictor, label: null, time: moment().format("x")} ]; // TODO TODO TODO TODO TODO TODO TODO
-				t6machinelearning.init(["0", "11", "22", "33"], t6Model.batch_size, 18, 1021); // TODO TODO TODO TODO TODO
+				let tensor = [ {x: predictor, time: moment().format("x")} ]; // TODO TODO TODO TODO TODO TODO TODO
+				//t6machinelearning.init(["0", "11", "22", "33"], t6Model.batch_size, 18, 1021); // TODO TODO TODO TODO TODO
 				t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then((tfModel) => {
-					t6machinelearning.predict(tfModel, tensor).then((prediction) => {
+					t6machinelearning.predict(tfModel, t6Model, tensor).then((prediction) => {
 						prediction.print();
 						let p = [];
 						prediction.dataSync().map((pre, i) => {
@@ -329,19 +329,18 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			data = data.flat();
 			data = shuffle(data);
 			if ( data.length > 0 ) {
-				let cats = ["0"];
+				let cats = [0];
 				data.map(function(d) {
-					d.label = "0";
+					d.label = 0;
 
 					if(d.flow_id==="6d844fbf-29c0-4a41-8c6a-0e9f3336cea3") { // TODO // TODO // TODO // TODO // TODO // TODO
-						d.label = (d.meta && typeof JSON.parse(d.meta)!=="undefined") ? categories.findOne({id: JSON.parse(d.meta).categories[0]}).name : "0"; // TODO: Take only the first category as label !
+						d.label = (d.meta && typeof JSON.parse(d.meta)!=="undefined") ? categories.findOne({id: JSON.parse(d.meta).categories[0]}).name:0; // TODO: Take only the first category as label !
 					} else {
-						d.label = "0"; // TODO // TODO // TODO // TODO // TODO // TODO
+						d.label = 0; // TODO // TODO // TODO // TODO // TODO // TODO
 					}
 					d.x = d.value;
 					d.value = undefined; delete d.value;
 					d.meta = undefined; delete d.meta;
-
 					if(cats.indexOf(d.label)<=-1) {
 						cats.push(d.label);
 					}
@@ -349,16 +348,15 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 				// split training and testing
 				let [trainingDatafromDB, testingDatafromDB] = getRandomSample(data, ((1-validation_split) * data.length));
-
-				t6console.debug("categories", cats);
-				t6console.debug("categories length", cats.length);
 				t6Model.labels = cats;
+				t6Model.min = Math.min(...data.map(m => m.x));
+				t6Model.max = Math.max(...data.map(m => m.x));
 				const trainData = t6machinelearning.loadDataArray(trainingDatafromDB, t6Model.batch_size);
 				const testData = t6machinelearning.loadDataArray(testingDatafromDB, t6Model.batch_size);
-				t6machinelearning.init(cats, t6Model.batch_size, Math.min(...trainingDatafromDB.map(m => m.x)), Math.max(...trainingDatafromDB.map(m => m.x)));
+				t6machinelearning.init(cats, t6Model.batch_size, t6Model.min, t6Model.max);
 				const tfModel = t6machinelearning.buildModel();
 
-				if ( t6Model ) {
+				if ( tfModel && t6Model ) {
 					res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: trainingDatafromDB.length, test_length: testingDatafromDB.length }); // TODO: missing serializer
 				} else {
 					res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());

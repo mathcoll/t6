@@ -11,36 +11,13 @@ t6machinelearning.init = function(lab, bs, mn, mx) {
 	batch_size = bs;
 	min = mn;
 	max = mx;
-	t6console.debug("================== t6machinelearning.init ==================");
+	t6console.debug("================== t6machinelearning.init =================");
 	t6console.debug("numOfClasses", numOfClasses);
 	t6console.debug("labels", labels);
 	t6console.debug("batch_size", batch_size);
 	t6console.debug("min", min);
 	t6console.debug("max", max);
-};
-
-t6machinelearning.buildModel_timeserie = function() {
-	const model = tf.sequential();
-
-	model.add(tf.layers.lstm({
-		inputShape: [1], // [steps, features]
-		units: 32,
-		activation: 'relu'
-	}));
-	model.add(tf.layers.dense({
-		units: 1
-	}));
-	model.compile({
-		optimizer: 'adam',
-		loss: tf.losses.meanSquaredError, // categoricalCrossentropy | meanSquaredError
-		metrics: ['mse']
-	});
-
-	model.weights.forEach(w => {
-		console.log(w.name, w.shape);
-	});
-
-	return model;
+	t6console.debug("===========================================================");
 };
 
 t6machinelearning.buildModel = function() {
@@ -49,7 +26,7 @@ t6machinelearning.buildModel = function() {
 	model.add(tf.layers.dense({
 		inputShape: [1],
 		units: 32,
-		activation: 'relu'
+		activation: "relu"
 	}));/*
 	model.add(tf.layers.dense({
 		units: numOfClasses,
@@ -78,30 +55,27 @@ t6machinelearning.getIndexedLabel = function(label) {
 	return (typeof label!=="undefined" && labels.indexOf(label)>-1 && label!==null)?labels.indexOf(label):0;
 }
 
-t6machinelearning.loadDataArray = function(dataArray, batches=batch_size) {
+t6machinelearning.loadDataArray = function(dataArray, batches=batch_size, predictLabel=false) {
 	// normalize data values between 0-1
 	const normalize = (n) => {
-		//t6console.debug("INDEX = ", n.label, t6machinelearning.getIndexedLabel(n.label));
-		//t6console.debug(n);
-		//t6console.debug(t6machinelearning.getIndexedLabel(n.label));
 		if (!n || typeof n.x==="undefined") {
 			return null;
 		}
+		let index = t6machinelearning.getIndexedLabel(n.label);
 		return {
 			//xs: parseFloat(n.x).toFixed(4), //
-			xs: (parseFloat(n.x).toFixed(4) - min) / (max - min), // normalize values to be between 0-1
-			ys: typeof t6machinelearning.getIndexedLabel(n.label)!=="undefined"?t6machinelearning.getIndexedLabel(n.label):"0"
+			xs: (parseFloat(n.x) - min) / (max - min), // normalize values to be between 0-1
+			ys: typeof index!=="undefined"?index:0
 		};
 	};
 
 	// transform input array (xs) to 3D tensor
 	// binarize output label (ys)
 	const transform = (t) => {
-		// array of zeros
 		const zeros = (new Array(numOfClasses)).fill(0);
 		return {
-			xs: tf.tensor1d([t.xs]), // convert input value to a tensor
-			//xs: tf.tensor1d([t.xs, t.time]), // convert input value to a tensor
+			//xs: tf.tensor1d([t.xs]), // convert input value to a tensor
+			xs: tf.tensor(parseFloat(t.xs), [1], "float32"), // convert input value to a tensor
 			ys: tf.tensor1d(zeros.map((z, i) => {
 				return i === t.ys ? 1 : 0;
 			}))
@@ -113,15 +87,15 @@ t6machinelearning.loadDataArray = function(dataArray, batches=batch_size) {
 		//t6console.debug("numOfClasses", numOfClasses, f, labels);
 		return f.ys < numOfClasses;
 	};
-
+	
 	// load, normalize, transform, batch
-	const res = tf.data
-		.array(dataArray)
-		.map(normalize)
-		.filter(filter)
-		.map(transform)
-		.batch(batches);
-	//res.forEachAsync(op => console.log(op));
+	let res;
+	if( predictLabel===false ) {
+		res = tf.data.array(dataArray).map(normalize).filter(filter).map(transform).batch(batches);
+	} else {
+		res = tf.data.array(dataArray).map(normalize).map(transform).batch(batches);
+	}
+	//res.forEachAsync(op => t6console.debug(op));
 	return res;
 };
 
@@ -196,9 +170,13 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 	});
 };
 
-t6machinelearning.predict = async function(model, tensor) {
+t6machinelearning.predict = async function(tfModel, t6Model, tensor) {
+	t6machinelearning.init(t6Model.labels, t6Model.batch_size, t6Model.min, t6Model.max)
 	return new Promise((resolve) => {
-		const prediction = model.predict(t6machinelearning.loadDataArray(tensor, batch_size));
+		t6console.log("tensor", tensor, t6Model.batch_size);
+		let inputTensor = t6machinelearning.loadDataArray(tensor, t6Model.batch_size, true);
+		t6console.log("tensor loaded", inputTensor);
+		const prediction = tfModel.predict(inputTensor);
 		resolve(prediction);
 	});
 };
