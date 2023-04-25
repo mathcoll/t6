@@ -4,39 +4,34 @@ const tf = require("@tensorflow/tfjs-node"); // Load the binding (CPU computatio
 //require("@tensorflow/tfjs-node-gpu"); // Or load the binding (GPU computation)
 
 let numOfClasses;
+let labels;
 
-t6machinelearning.init = function(noc) {
-	numOfClasses = noc;
+t6machinelearning.init = function(l) {
+	numOfClasses = l.length;
+	labels = l;
 };
 
 t6machinelearning.buildModel = function() {
 	const model = tf.sequential();
 
-	// add the model layers
 	model.add(tf.layers.dense({
 		inputShape: [1],
 		units: 32,
 		activation: 'relu'
-	}));
-	/*
-	model.add(tf.layers.dense({
-		units: 32,
-		activation: 'relu'
-	}));
-	model.add(tf.layers.dense({
-		units: 64,
-		activation: 'relu'
-	}));
-	*/
+	}));/*
 	model.add(tf.layers.dense({
 		units: numOfClasses,
 		activation: 'softmax'
+	}));*/
+	model.add(tf.layers.dense({
+		units: numOfClasses,
+		activation: 'sigmoid'
 	}));
 
 	// compile the model
 	model.compile({
 		optimizer: 'adam',
-		loss: 'categoricalCrossentropy',
+		loss: 'categoricalCrossentropy', // categoricalCrossentropy | meanSquaredError
 		metrics: ['accuracy']
 	});
 
@@ -47,15 +42,22 @@ t6machinelearning.buildModel = function() {
 	return model;
 };
 
+t6machinelearning.getIndexedLabel = function(label) {
+	return (typeof label!=="undefined" && labels.indexOf(label)>-1 && label!==null)?labels.indexOf(label):0;
+}
+
 t6machinelearning.loadDataArray = function(dataArray, batches) {
 	// normalize data values between 0-1
 	const normalize = (n) => {
-		if (!n || typeof n.value==="undefined") {
+		//t6console.debug("INDEX = ", n.label, t6machinelearning.getIndexedLabel(n.label));
+		//t6console.debug(n);
+		//t6console.debug(t6machinelearning.getIndexedLabel(n.label));
+		if (!n || typeof n.x==="undefined") {
 			return null;
 		}
 		return {
-			xs: parseInt(n.value, 10) / 1000, // normalize values to be between 0-1
-			ys: (typeof n.category!=="undefined" && labels.indexOf(n.category)>-1)?labels.indexOf(n.category):0
+			xs: parseInt(n.x, 10), // normalize values to be between 0-1
+			ys: typeof t6machinelearning.getIndexedLabel(n.label)!=="undefined"?t6machinelearning.getIndexedLabel(n.label):"0"
 		};
 	};
 
@@ -65,7 +67,6 @@ t6machinelearning.loadDataArray = function(dataArray, batches) {
 		// array of zeros
 		const zeros = (new Array(numOfClasses)).fill(0);
 		return {
-			//xs: parseFloat(t.xs),
 			xs: tf.tensor1d([t.xs]), // convert input value to a tensor
 			ys: tf.tensor1d(zeros.map((z, i) => {
 				return i === t.ys ? 1 : 0;
@@ -75,6 +76,7 @@ t6machinelearning.loadDataArray = function(dataArray, batches) {
 
 	// only use a subset of the data
 	const filter = (f) => {
+		//t6console.debug("numOfClasses", numOfClasses, f, labels);
 		return f.ys < numOfClasses;
 	};
 
@@ -93,7 +95,7 @@ t6machinelearning.trainModel = async function(model, trainingData, epochs) {
 	return await new Promise((resolve, reject) => {
 		const options = {
 			epochs: epochs,
-			verbose: 0,
+			verbose: 1,
 			callbacks: {
 				onEpochBegin: async (epoch, logs) => {
 					t6console.debug(`Epoch ${epoch + 1} of ${epochs} ...`)
@@ -127,6 +129,43 @@ t6machinelearning.save = async function(model, path) {
 		model.save(path).then(() => {
 			resolve(path);
 		});
+	});
+};
+
+t6machinelearning.loadSavedModel = async function(path) {
+	return new Promise((resolve, reject) => {
+		tf.node.loadSavedModel(path, ["serve"], "serving_default").then((result) => {
+			resolve(result);
+		}).catch(function(err) {
+			reject(err);
+		});
+	});
+};
+
+t6machinelearning.loadLayersModel = async function(path) {
+	return new Promise((resolve, reject) => {
+		tf.loadLayersModel(path).then((result) => {
+			resolve(result);
+		}).catch(function(err) {
+			reject(err);
+		});
+	});
+};
+
+t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
+	return new Promise((resolve, reject) => {
+		tf.node.getMetaGraphsFromSavedModel(path).then((result) => {
+			resolve(result);
+		}).catch(function(err) {
+			reject(err);
+		});
+	});
+};
+
+t6machinelearning.predict = async function(model, tensor) {
+	return new Promise((resolve) => {
+		const prediction = model.predict(tf.tensor(tensor).reshape([-1, 1]));
+		resolve(prediction);
 	});
 };
 

@@ -96,7 +96,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.retention		= typeof req.body.retention!=="undefined"?req.body.retention:item.retention,
 					item.batch_size		= typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
 					item.epochs			= typeof req.body.epochs!=="undefined"?req.body.epochs:100,
-					item.training_size_ratio	= typeof req.body.training_size_ratio!=="undefined"?req.body.training_size_ratio:item.training_size_ratio,
+					item.validation_split	= typeof req.body.validation_split!=="undefined"?req.body.validation_split:item.validation_split,
 					item.datasets	= {
 						"training": {
 							"start": typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:item.datasets.training.start,
@@ -156,7 +156,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
 				retention:	typeof req.body.retention!=="undefined"?req.body.retention:"autogen",
-				training_size_ratio:	typeof req.body.training_size_ratio!=="undefined"?req.body.training_size_ratio:0.8,
+				validation_split:	typeof req.body.validation_split!=="undefined"?req.body.validation_split:0.8,
 				batch_size:	typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
 				epochs:		typeof req.body.epochs!=="undefined"?req.body.epochs:100,
 				datasets: {
@@ -212,6 +212,53 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 });
 
 /**
+ * @api {get} /models/:model_id/predict Predict over a Model
+ * @apiName Predict over a Model
+ * @apiGroup 14. Models
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * 
+ * @apiUse 200
+ * @apiUse 412
+ */
+router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	let model_id = req.params.model_id;
+	let predictor = parseFloat(req.query.predictor);
+	if ( !predictor ) {
+		return res.status(412).send(new ErrorSerializer({"id": 14185, "code": 412, "message": "Precondition Failed"}).serialize());
+	}
+	if ( model_id ) {
+		let query = {
+			"$and": [
+					{ "id": model_id },
+					{ "user_id": req.user.id },
+				]
+			};
+		let t6Model = models.findOne( query );
+		if ( t6Model ) {
+			const path = `${mlModels.models_user_dir}/${req.user.id}/${t6Model.id}`;
+			if (!fs.existsSync(path)) {
+				res.status(412).send(new ErrorSerializer({"id": 14186, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
+			} else {
+				t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then((tfModel) => {
+					t6machinelearning.predict(tfModel, [predictor]).then((prediction) => {
+						prediction.print();
+						let p = [];
+						prediction.dataSync().map((pre, i) => {
+							p.push({ label: (t6Model.labels)[i], prediction: pre.toFixed(4) });
+						});
+						res.status(200).send({ "code": 200, prediction: p }); // TODO: missing serializer
+					});
+				});
+			}
+		} else {
+			res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
+		}
+	}
+});
+
+/**
  * @api {post} /models/:model_id/train Train a Model
  * @apiName Train a Model
  * @apiGroup 14. Models
@@ -220,21 +267,30 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
  * @apiUse Auth
  * 
  * @apiUse 202
+ * @apiUse 401
+ * @apiUse 404
+ * @apiUse 412
  */
 router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var model_id = req.params.model_id;
+	let model_id = req.params.model_id;
+	let user_id = req.user.id;
 	if ( model_id ) {
 		let query = {
 			"$and": [
 					{ "id": model_id },
-					{ "user_id": req.user.id },
+					{ "user_id": user_id },
 				]
 			};
-		var t6Model = models.findOne( query );
-
+		let t6Model = models.findOne( query );
 		let limit = t6Model.datasets.training.limit;
-		let training_size_ratio = typeof t6Model.training_size_ratio!=="undefined"?t6Model.training_size_ratio:60;
+		let validation_split = typeof t6Model.validation_split!=="undefined"?t6Model.validation_split:60;
 		let offset = 0;
+		if ( t6Model ) {
+			res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification" }); // TODO: missing serializer
+		} else {
+			res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
+		}
+
 		let queryTs = t6Model.flow_ids.map( (flow_id, index) => {
 			let flow = flows.findOne({id: flow_id});
 			let retention = flow.retention;
@@ -266,7 +322,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			if( t6Model.datasets.training.end!==null && t6Model.datasets.training.end!=="" ) {
 				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 			}
-			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
+			let where = ""; //"meta!='' AND ";
+			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
 
@@ -275,26 +332,46 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			data = data.flat();
 			data = shuffle(data);
 			if ( data.length > 0 ) {
-				// split training and testing
-				let [trainingDatafromDB, testingDatafromDB] = getRandomSample(data, (training_size_ratio * data.length));
 
-				trainingDatafromDB.map(function(dtr) {
-					// TODO : can have multiple categories
-					// TODO : let's begin with only one category and using that category as the only one feature in ML training
-					let category = (dtr.meta && typeof JSON.parse(dtr.meta)!=="undefined") ? categories.findOne({id: JSON.parse(dtr.meta).categories[0]}) : {name: null};
-					t6console.debug({value: dtr.value, category: category.name, time: moment(dtr.time).format("YYYY-MM-DD HH:mm")});
-					//t6console.debug(moment(dtr.time).format("YYYY-MM-DD HH:mm"), dtr.flow_id, dtr.value, category.name);
+				let cats = ["0"];
+				data.map(function(d) {
+					d.label = "0";
+
+					if(d.flow_id==="6d844fbf-29c0-4a41-8c6a-0e9f3336cea3") { // TODO // TODO // TODO // TODO // TODO // TODO
+						d.label = (d.meta && typeof JSON.parse(d.meta)!=="undefined") ? categories.findOne({id: JSON.parse(d.meta).categories[0]}).name : "0"; // TODO: Take only the first category as label !
+					} else {
+						d.label = "0"; // TODO // TODO // TODO // TODO // TODO // TODO
+					}
+					d.x = d.value;
+					d.value = undefined; delete d.value;
+					d.meta = undefined; delete d.meta;
+
+					if(cats.indexOf(d.label)<=-1) {
+						cats.push(d.label);
+					}
 				});
-				
-				t6machinelearning.init(3); // TODO
+
+				// split training and testing
+				let [trainingDatafromDB, testingDatafromDB] = getRandomSample(data, (validation_split * data.length));
+
+				t6console.debug("categories", cats);
+				t6console.debug("categories length", cats.length);
+				t6Model.labels = cats;
+				t6machinelearning.init(cats);
 				const trainData = t6machinelearning.loadDataArray(trainingDatafromDB, t6Model.batch_size);
 				const testData = t6machinelearning.loadDataArray(testingDatafromDB, t6Model.batch_size);
 				const tfModel = t6machinelearning.buildModel();
-				tfModel.summary();
+
 				t6machinelearning.trainModel(tfModel, trainData, t6Model.epochs).then((info) => {
-					t6console.debug("info", info);
+					//t6console.debug("EPOCH", info.epoch);
+					//t6console.debug("LOSS", info.history.loss);
+					//t6console.debug("ACCURACY", info.history.acc);
+					t6Model.history = {
+						loss	: info.history.loss,
+						accuracy: info.history.acc
+					};
+					db_models.save();
 					t6machinelearning.evaluateModel(tfModel, testData).then((evaluate) => {
-						t6console.debug("evaluate:", evaluate);
 						t6console.debug("evaluate: loss", evaluate.loss);
 						t6console.debug("evaluate: accuracy", evaluate.accuracy);
 						let user = users.findOne({"id": req.user.id });
@@ -311,11 +388,12 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 								t6console.debug("pushSubscription is now disabled on User", error);
 							}
 						}
-						let path = `${mlModels.models_user_dir}/${user.id}/`;
+						const path = `${mlModels.models_user_dir}/${user.id}/`;
 						if (!fs.existsSync(path)) { fs.mkdirSync(path); }
 						t6console.debug("Model saving to", path+t6Model.id);
+						t6events.addStat("t6App", "Trained Model saved", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
 						t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
-							t6console.debug("Model saved to", saved);
+							t6console.debug("Model saved");
 						});
 					});
 				});
@@ -327,12 +405,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			t6console.error("id=14059", err);
 			res.status(500).send(new ErrorSerializer({err: err, "id": 14059, "code": 500, "message": "Internal Error"}).serialize());
 		});
-
-		if ( t6Model ) {
-			res.status(202).send({ "code": 202, message: "Training started", model_id: model_id }); // TODO: missing serializer
-		} else {
-			res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
-		}
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
 	}
