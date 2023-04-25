@@ -5,7 +5,7 @@ function ModelSerializer(models) {
 	this.serialize = function() {
 		return new JSONAPISerializer("model", {
 			keyForAttribute: "underscore_case",
-			attributes : [ "name", "datasets", "flow_ids", "training_size_ratio", "batch_size", "epochs", "retention" ],
+			attributes : [ "name", "datasets", "flow_ids", "validation_split", "batch_size", "epochs", "history", "labels", "retention" ],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/models", baseUrl_https, version),
 				first : categories.pageFirst!==undefined?sprintf("%s/v%s/models/?page=%s&size=%s", baseUrl_https, version, model.pageFirst, model.size):undefined,
