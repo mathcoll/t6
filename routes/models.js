@@ -241,8 +241,9 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 			if (!fs.existsSync(path)) {
 				res.status(412).send(new ErrorSerializer({"id": 14186, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
 			} else {
+				let tensor = [ {x: predictor, label: null, time: moment().format("x")} ]; // TODO TODO TODO TODO TODO TODO TODO
+				t6machinelearning.init(["0", "11", "22", "33"], t6Model.batch_size, 18, 1021); // TODO TODO TODO TODO TODO
 				t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then((tfModel) => {
-					let tensor = [{x: predictor, label: null, time: moment().format("x")}];
 					t6machinelearning.predict(tfModel, tensor).then((prediction) => {
 						prediction.print();
 						let p = [];
@@ -352,9 +353,9 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				t6console.debug("categories", cats);
 				t6console.debug("categories length", cats.length);
 				t6Model.labels = cats;
-				t6machinelearning.init(cats, t6Model.batch_size);
 				const trainData = t6machinelearning.loadDataArray(trainingDatafromDB, t6Model.batch_size);
 				const testData = t6machinelearning.loadDataArray(testingDatafromDB, t6Model.batch_size);
+				t6machinelearning.init(cats, t6Model.batch_size, Math.min(...trainingDatafromDB.map(m => m.x)), Math.max(...trainingDatafromDB.map(m => m.x)));
 				const tfModel = t6machinelearning.buildModel();
 
 				if ( t6Model ) {
@@ -371,14 +372,18 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						loss	: info.history.loss,
 						accuracy: info.history.acc
 					};
-					db_models.save();
 					if(testingDatafromDB.length>0) {
 						t6machinelearning.evaluateModel(tfModel, testData).then((evaluate) => {
 							t6console.debug("evaluate: loss", evaluate.loss);
 							t6console.debug("evaluate: accuracy", evaluate.accuracy);
+							t6Model.history.evaluation = {
+								loss	: evaluate.loss,
+								accuracy: evaluate.accuracy
+							};
+							db_models.save();
 							let user = users.findOne({"id": req.user.id });
 							if (user && typeof user.pushSubscription !== "undefined" ) {
-								let payload = `{"type": "message", "title": "Model trained", "body": "loss: ${evaluate.loss}, accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+								let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 								let result = t6notifications.sendPush(user, payload);
 								if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 									t6console.debug("pushSubscription", pushSubscription);
