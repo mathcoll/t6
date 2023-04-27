@@ -93,6 +93,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
+					item.features		= typeof req.body.features!=="undefined"?req.body.features:item.features;
 					item.retention		= typeof req.body.retention!=="undefined"?req.body.retention:item.retention,
 					item.batch_size		= typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
 					item.epochs			= typeof req.body.epochs!=="undefined"?req.body.epochs:100,
@@ -155,6 +156,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				user_id:	req.user.id,
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
+				features:	typeof req.body.features!=="undefined"?req.body.features:["value"],
 				retention:	typeof req.body.retention!=="undefined"?req.body.retention:"autogen",
 				validation_split:	typeof req.body.validation_split!=="undefined"?req.body.validation_split:0.8,
 				batch_size:	typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
@@ -252,7 +254,7 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 								let p = [];
 								let arr = Array.from(prediction.dataSync());
 								arr.map((score, i) => {
-									p.push({ label: (t6Model.labels)[i], prediction: score });
+									p.push({ label: (t6Model.labels)[i], prediction: score.toFixed(4) });
 								});
 								res.status(200).send({ "code": 200, prediction: p, bestMatch: (t6Model.labels)[arr.indexOf(Math.max(...arr))] }); // TODO: missing serializer
 							});
