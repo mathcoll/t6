@@ -29,12 +29,12 @@ t6machinelearning.buildModel = async function() {
 		const model = tf.sequential();
 		model.add(tf.layers.dense({
 			inputShape: [featureCount],
-			units: 12,
+			units: 1,
 			activation: "relu"
 		}));
 		model.add(tf.layers.dense({
 			units: 2,
-			activation: 'softmax'
+			activation: "softmax"
 		}));
 		// compile the model
 		/*
@@ -83,8 +83,8 @@ t6machinelearning.loadDataSets = async function(data, features, testSize, batchS
 		resolve({
 			trainDs: ds.take(splitIdx).batch(batchSize),
 			validDs: ds.skip(splitIdx + 1).batch(batchSize),
-			x: tf.tensor(x.slice(splitIdx)),
-			y: tf.tensor(y.slice(splitIdx)),
+			x: tf.tensor(x), //.slice(splitIdx)
+			y: tf.tensor(y), //.slice(splitIdx)
 		});
 	});
 };
@@ -211,10 +211,9 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 	});
 };
 
-t6machinelearning.predict_1 = async function(tfModel, t6Model, inputData) {
+t6machinelearning.predict_1 = async function(tfModel, t6Model, inputDatasetX) {
 	return new Promise((resolve, reject) => {
-		t6machinelearning.init(t6Model.labels, t6Model.batch_size, t6Model.min, t6Model.max)
-		const prediction = tfModel.predict(inputData);
+		const prediction = tfModel.predict(inputDatasetX);
 		resolve(prediction);
 	});
 };

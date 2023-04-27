@@ -241,22 +241,21 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 				res.status(412).send(new ErrorSerializer({"id": 14186, "code": 412, "message": "Model not yet trained: Precondition Failed"}).serialize());
 			} else {
 				t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then((tfModel) => {
-					const inputData = t6machinelearning.loadDataArray(req.body, t6Model.batch_size, true);
-					//t6console.debug("models.js inputData", inputData);
-					//t6machinelearning.predict_1(tfModel, t6Model, inputData).then((prediction) => {
-					//t6machinelearning.predict_2(tfModel, t6Model, inputData, {inputMin:18, inputMax:18, labelMin:"", labelMax:""}).then((prediction) => {
-					t6machinelearning.init(t6Model.labels, t6Model.batch_size, t6Model.min, t6Model.max);
-					t6machinelearning.buildModel().then((tfModel) => {
-						t6machinelearning.predict_1(tfModel, t6Model, inputData).then((prediction) => {
-							/*
-							prediction.print();
-							let p = [];
-							prediction.arraySync().map((pre, i) => {
-								p.push({ label: (t6Model.labels)[i], prediction: pre.toFixed(4) });
+					t6machinelearning.init(t6Model);
+					t6machinelearning.loadDataSets(req.body, t6Model.features, 0, t6Model.batch_size)
+					.then((dataset) => {
+						t6console.debug("x Should be the size of req.body", dataset.x.size);
+						t6machinelearning.buildModel()
+						.then((tfModel) => {
+							t6machinelearning.predict_1(tfModel, t6Model, dataset.x).then((prediction) => {
+								//prediction.print();
+								let p = [];
+								let arr = Array.from(prediction.dataSync());
+								arr.map((score, i) => {
+									p.push({ label: (t6Model.labels)[i], prediction: score });
+								});
+								res.status(200).send({ "code": 200, prediction: p, bestMatch: (t6Model.labels)[arr.indexOf(Math.max(...arr))] }); // TODO: missing serializer
 							});
-							*/
-							t6console.debug(prediction);
-							res.status(200).send({ "code": 200, prediction: prediction }); // TODO: missing serializer
 						});
 					});
 				});
@@ -351,9 +350,9 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				});
 				
 				t6Model.labels = cats;
-				t6Model.features = ["value"];
 				t6Model.min = Math.min(...data.map(m => m.value));
 				t6Model.max = Math.max(...data.map(m => m.value));
+				t6Model.features = typeof t6Model.features!=="undefined"?t6Model.features:["value"];
 				t6machinelearning.init(t6Model);
 				t6machinelearning.loadDataSets(data, t6Model.features, validation_split, t6Model.batch_size)
 				.then((dataset) => {
@@ -382,7 +381,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 										db_models.save();
 										let user = users.findOne({"id": req.user.id });
 										if (user && typeof user.pushSubscription !== "undefined" ) {
-											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- Validate dataset size: ${dataset.validDs.size}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 											let result = t6notifications.sendPush(user, payload);
 											if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 												t6console.debug("pushSubscription", pushSubscription);
