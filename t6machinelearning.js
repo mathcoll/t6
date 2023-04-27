@@ -3,17 +3,21 @@ var t6machinelearning = module.exports = {};
 const tf = require("@tensorflow/tfjs-node"); // Load the binding (CPU computation)
 //require("@tensorflow/tfjs-node-gpu"); // Or load the binding (GPU computation)
 
-let numOfClasses, labels, batch_size, min, max;
+let labelsCount, labels, batch_size, features, featureCount, min, max;
 
-t6machinelearning.init = function(lab, bs, mn, mx) {
-	numOfClasses = lab.length;
-	labels = lab;
-	batch_size = bs;
-	min = mn;
-	max = mx;
+t6machinelearning.init = function(t6Model) {
+	labels = t6Model.labels;
+	labelsCount = t6Model.labels.length;
+	features = t6Model.features;
+	featureCount = t6Model.features.length;
+	batch_size = t6Model.batch_size;
+	min = t6Model.min;
+	max = t6Model.max;
 	t6console.debug("================== t6machinelearning.init =================");
-	t6console.debug("numOfClasses", numOfClasses);
 	t6console.debug("labels", labels);
+	t6console.debug("labelsCount", labelsCount);
+	t6console.debug("features", features);
+	t6console.debug("featureCount", featureCount);
 	t6console.debug("batch_size", batch_size);
 	t6console.debug("min", min);
 	t6console.debug("max", max);
@@ -24,17 +28,13 @@ t6machinelearning.buildModel = async function() {
 	return await new Promise((resolve, reject) => {
 		const model = tf.sequential();
 		model.add(tf.layers.dense({
-			inputShape: [1],
-			units: 32,
+			inputShape: [featureCount],
+			units: 12,
 			activation: "relu"
-		}));/*
+		}));
 		model.add(tf.layers.dense({
-			units: numOfClasses,
+			units: 2,
 			activation: 'softmax'
-		}));*/
-		model.add(tf.layers.dense({
-			units: numOfClasses,
-			activation: 'sigmoid'
 		}));
 		// compile the model
 		/*
@@ -49,12 +49,13 @@ t6machinelearning.buildModel = async function() {
 		SGD - Stochastic Gradient Descent Optimizer.
 		*/
 		model.compile({
-			optimizer: 'adam',
-			loss: 'categoricalCrossentropy', // categoricalCrossentropy | meanSquaredError
+			optimizer: tf.train.adam(0.001),
+			loss: 'binaryCrossentropy', // categoricalCrossentropy | meanSquaredError
 			metrics: ['accuracy']
 		});
+		t6console.debug("Model.weights:");
 		model.weights.forEach(w => {
-			console.log(w.name, w.shape);
+			t6console.debug(" ", w.name, w.shape);
 		});
 		resolve(model);
 	});
@@ -62,7 +63,31 @@ t6machinelearning.buildModel = async function() {
 
 t6machinelearning.getIndexedLabel = function(label) {
 	return (typeof label!=="undefined" && labels.indexOf(label)>-1 && label!==null)?labels.indexOf(label):0;
-}
+};
+
+t6machinelearning.loadDataSets = async function(data, features, testSize, batchSize) {
+	return await new Promise((resolve, reject) => {
+		const oneHot = category => Array.from(tf.oneHot(category, 2).dataSync());
+		const x = data.map(r => features.map(f => {
+			const  val = r[f];
+			return val === undefined ? 0 : val;
+		}));
+		const y = data.map(r => {
+			const category = r.category===undefined?0:(labels.indexOf(r.category)>-1?labels.indexOf(r.category):0);
+			return oneHot(category);
+		});
+		const ds = tf.data
+			.zip({ xs: tf.data.array(x), ys: tf.data.array(y) })
+			.shuffle(data.length);
+		const splitIdx = parseInt((1 - testSize) * data.length, 10);
+		resolve({
+			trainDs: ds.take(splitIdx).batch(batchSize),
+			validDs: ds.skip(splitIdx + 1).batch(batchSize),
+			x: tf.tensor(x.slice(splitIdx)),
+			y: tf.tensor(y.slice(splitIdx)),
+		});
+	});
+};
 
 t6machinelearning.loadDataArray = function(dataArray, batches=batch_size, predictLabel=false) {
 	//t6console.debug("LOAD 0", dataArray, batches);
@@ -85,20 +110,20 @@ t6machinelearning.loadDataArray = function(dataArray, batches=batch_size, predic
 	// binarize output label (ys)
 	const transform = (t) => {
 		//t6console.debug("TRANSFORM", t);
-		const zeros = (new Array(numOfClasses)).fill(0);
+		const zeros = (new Array(labelsCount)).fill(0);
 		let res = {
 			xs: tf.tensor(parseFloat(t.xs), [1], "float32"), // convert input value to a tensor
 			ys: tf.tensor1d(zeros.map((z, i) => {
-				return i === t.ys ? 1 : 0;
-			}))
+				return i === t.ys ?  1 : 0; 
+ 			}))
 		};
-		return res;
+		return res ;
 	};
 
 	// only use a subset of the data
 	const filter = (f) => {
-		//t6console.debug("FILTER", f, numOfClasses);
-		return f.ys < numOfClasses;
+		//t6console.debug("FILTER", f, labelsCount);
+		return f.ys < labelsCount;
 	};
 	
 	// load, normalize, transform, batch
@@ -112,11 +137,12 @@ t6machinelearning.loadDataArray = function(dataArray, batches=batch_size, predic
 	return res;
 };
 
-t6machinelearning.trainModel = async function(model, trainingData, epochs) {
+t6machinelearning.trainModel = async function(model, trainingDataset, testingDataset, epochs) {
 	return await new Promise((resolve, reject) => {
 		const options = {
 			epochs: epochs,
 			verbose: 0,
+			validationData: testingDataset,
 			callbacks: {
 				onEpochBegin: async (epoch, logs) => {
 					t6console.debug(`Epoch ${epoch + 1} of ${epochs} ...`)
@@ -130,7 +156,7 @@ t6machinelearning.trainModel = async function(model, trainingData, epochs) {
 				}
 			}
 		};
-		resolve(model.fitDataset(trainingData, options));
+		resolve(model.fitDataset(trainingDataset, options));
 	});
 };
 

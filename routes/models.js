@@ -339,7 +339,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				let cats = [0];
 				data.map(function(d) {
 					d.category = 0;
-
 					if(d.flow_id==="6d844fbf-29c0-4a41-8c6a-0e9f3336cea3") { // TODO // TODO // TODO // TODO // TODO // TODO
 						d.category = (d.meta && typeof JSON.parse(d.meta)!=="undefined") ? categories.findOne({id: JSON.parse(d.meta).categories[0]}).name:0; // TODO: Take only the first category as label !
 					} else {
@@ -350,64 +349,67 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						cats.push(d.category);
 					}
 				});
-
-				// split training and testing
-				let [trainingDatafromDB, testingDatafromDB] = getRandomSample(data, ((1-validation_split) * data.length));
+				
 				t6Model.labels = cats;
+				t6Model.features = ["value"];
 				t6Model.min = Math.min(...data.map(m => m.value));
 				t6Model.max = Math.max(...data.map(m => m.value));
-				const trainData = t6machinelearning.loadDataArray(trainingDatafromDB, t6Model.batch_size);
-				const testData = t6machinelearning.loadDataArray(testingDatafromDB, t6Model.batch_size);
-				t6machinelearning.init(t6Model.labels, t6Model.batch_size, t6Model.min, t6Model.max);
-				t6machinelearning.buildModel().then((tfModel) => {
-					if ( tfModel && t6Model ) {
-						res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: trainingDatafromDB.length, test_length: testingDatafromDB.length }); // TODO: missing serializer
-						t6machinelearning.trainModel(tfModel, trainData, t6Model.epochs).then((info) => {
-							//t6console.debug("EPOCH", info.epoch);
-							//t6console.debug("LOSS", info.history.loss);
-							//t6console.debug("ACCURACY", info.history.acc);
-							t6Model.history = {
-								loss	: info.history.loss,
-								accuracy: info.history.acc
-							};
-							if(testingDatafromDB.length>0) {
-								t6machinelearning.evaluateModel(tfModel, testData).then((evaluate) => {
-									t6console.debug("evaluate: loss", evaluate.loss);
-									t6console.debug("evaluate: accuracy", evaluate.accuracy);
-									t6Model.history.evaluation = {
-										loss	: evaluate.loss,
-										accuracy: evaluate.accuracy
-									};
-									db_models.save();
-									let user = users.findOne({"id": req.user.id });
-									if (user && typeof user.pushSubscription !== "undefined" ) {
-										let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
-										let result = t6notifications.sendPush(user, payload);
-										if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
-											t6console.debug("pushSubscription", pushSubscription);
-											t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
-											users.chain().find({ "id": user.id }).update(function(u) {
-												u.pushSubscription = {};
-												db_users.save();
-											});
-											t6console.debug("pushSubscription is now disabled on User", error);
+				t6machinelearning.init(t6Model);
+				t6machinelearning.loadDataSets(data, t6Model.features, validation_split, t6Model.batch_size)
+				.then((dataset) => {
+					t6console.debug("trainDs size:", dataset.trainDs.size);
+					t6console.debug("validDs size:", dataset.validDs.size);
+					t6machinelearning.buildModel()
+					.then((tfModel) => {
+						if ( tfModel && t6Model ) {
+							res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.trainDs.size, test_length: dataset.validDs.size }); // TODO: missing serializer
+							t6machinelearning.trainModel(tfModel, dataset.trainDs, dataset.validDs, t6Model.epochs).then((info) => {
+								//t6console.debug("EPOCH", info.epoch);
+								//t6console.debug("LOSS", info.history.loss);
+								//t6console.debug("ACCURACY", info.history.acc);
+								t6Model.history = {
+									loss	: info.history.loss,
+									accuracy: info.history.acc
+								};
+								if(dataset.trainDs.size>0 && dataset.validDs.size>0) {
+									t6machinelearning.evaluateModel(tfModel, dataset.validDs).then((evaluate) => {
+										t6console.debug("evaluate: loss", evaluate.loss);
+										t6console.debug("evaluate: accuracy", evaluate.accuracy);
+										t6Model.history.evaluation = {
+											loss	: evaluate.loss,
+											accuracy: evaluate.accuracy
+										};
+										db_models.save();
+										let user = users.findOne({"id": req.user.id });
+										if (user && typeof user.pushSubscription !== "undefined" ) {
+											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+											let result = t6notifications.sendPush(user, payload);
+											if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+												t6console.debug("pushSubscription", pushSubscription);
+												t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+												users.chain().find({ "id": user.id }).update(function(u) {
+													u.pushSubscription = {};
+													db_users.save();
+												});
+												t6console.debug("pushSubscription is now disabled on User", error);
+											}
 										}
-									}
-									const path = `${mlModels.models_user_dir}/${user.id}/`;
-									if (!fs.existsSync(path)) { fs.mkdirSync(path); }
-									t6console.debug("Model saving to", path+t6Model.id);
-									t6events.addStat("t6App", "Trained Model saved", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
-									t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
-										t6console.debug("Model saved");
+										const path = `${mlModels.models_user_dir}/${user.id}/`;
+										if (!fs.existsSync(path)) { fs.mkdirSync(path); }
+										t6console.debug("Model saving to", path+t6Model.id);
+										t6events.addStat("t6App", "Trained Model saved", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
+										t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
+											t6console.debug("Model saved");
+										});
 									});
-								});
-							} else {
-								t6console.debug("No Testing data", testingDatafromDB.length);
-							}
-						});
-					} else {
-						res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
-					}
+								} else {
+									t6console.debug("Missing Training or Testing data", dataset.trainDs.size, dataset.validDs.size);
+								}
+							});
+						} else {
+							res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
+						}
+					});
 				});
 			} else {
 				t6console.debug(query);
