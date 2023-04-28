@@ -91,8 +91,6 @@ t6machinelearning.loadDataSets = async function(data, features, testSize, batchS
 			.zip({ xs: tf.data.array(x), ys: tf.data.array(y) })
 			.shuffle(data.length);
 		const splitIdx = parseInt((1 - testSize) * data.length, 10);
-		//t6console.debug("data", data);
-		t6console.debug("train batch", ds);
 		labels.map((l, i) => {
 			t6console.debug("oneHot", oneHotEncode(i), l);
 		});
@@ -101,7 +99,7 @@ t6machinelearning.loadDataSets = async function(data, features, testSize, batchS
 			validDs: ds.skip(splitIdx + 1).batch(batchSize),
 			x: tf.tensor(x), //.slice(splitIdx)
 			y: tf.tensor(y), //.slice(splitIdx),
-			xValid: ds.skip(splitIdx + 1)
+			xValidSize: ds.skip(splitIdx + 1).size
 		});
 	});
 };

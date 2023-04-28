@@ -249,7 +249,6 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 					t6machinelearning.init(t6Model);
 					t6machinelearning.loadDataSets(inputData, t6Model.features, 0, t6Model.batch_size)
 					.then((dataset) => {
-						t6console.debug("x Should be the size of req.body", dataset.x.size);
 						t6machinelearning.buildModel()
 						.then((tfModel) => {
 							t6machinelearning.predict_1(tfModel, t6Model, dataset.x).then((prediction) => {
@@ -358,7 +357,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					}
 				});
 				t6console.debug("data.length:", data.length);
-				
+
 				t6Model.labels = cats;
 				t6Model.min = Math.min(...data.map(m => m.x));
 				t6Model.max = Math.max(...data.map(m => m.x));
@@ -370,7 +369,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				if (i > -1) {
 					t6Model.features.splice(i, 1);
 				}
-				
+
 				t6machinelearning.init(t6Model);
 				t6machinelearning.loadDataSets(data, t6Model.features, validation_split, t6Model.batch_size)
 				.then((dataset) => {
@@ -385,7 +384,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						t6console.debug("dataset y dtype", dataset.y.dtype);
 						t6console.debug("dataset y rankType", dataset.y.rankType);
 						if ( tfModel && t6Model ) {
-							res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.x.size, valid_length: dataset.validDs.size }); // TODO: missing serializer
+							res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.x.size, valid_length: dataset.xValidSize }); // TODO: missing serializer
 							t6machinelearning.trainModel(tfModel, dataset.trainDs, dataset.validDs, t6Model.epochs).then((info) => {
 								t6Model.history = {
 									loss	: info.history.loss,
@@ -402,7 +401,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 										db_models.save();
 										let user = users.findOne({"id": req.user.id });
 										if (user && typeof user.pushSubscription !== "undefined" ) {
-											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- Train dataset size: ${dataset.x.size}\\n- Validate dataset: ${dataset.xValid.size}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- Train dataset size: ${dataset.x.size}\\n- Validate dataset: ${dataset.xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 											let result = t6notifications.sendPush(user, payload);
 											if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 												t6console.debug("pushSubscription", pushSubscription);
