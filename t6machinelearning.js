@@ -35,7 +35,7 @@ t6machinelearning.buildModel = async function() {
 		const model = tf.sequential();
 		model.add(tf.layers.dense({
 			inputShape: [featureCount],
-			units: 1,
+			units: 16,
 			activation: "relu"
 		}));
 		model.add(tf.layers.dense({
@@ -72,14 +72,16 @@ t6machinelearning.getIndexedLabel = function(label) {
 };
 
 t6machinelearning.loadDataSets = async function(data, features, testSize, batchSize) {
-	return await new Promise((resolve, reject) => {
+	return await new Promise((resolve) => {
 		const oneHotEncode = category => Array.from(tf.oneHot(category, labelsCount).dataSync());
 		const x = data.map(r => features.map(f => {
-			const  val = r[f];
-			if (f==="x") {
+			const val = r[f];
+			if (f==="x" && r["flow_id"]==="6d844fbf-29c0-4a41-8c6a-0e9f3336cea3") { // TODO 
+				//t6console.debug(" Before normalization:", parseFloat(val));
+				//t6console.debug(" After normalization:", (parseFloat(val) - min) / (max - min));
 				return val === undefined ? 0 : (parseFloat(val) - min) / (max - min); // normalize values to be between 0-1
 			} else {
-				return oneHotEncode(val); // TODO: oneHotEncode the features, not the labels
+				return val; // TODO: oneHotEncode the features, not the labels
 			}
 		}));
 		const y = data.map(r => {
@@ -153,7 +155,7 @@ t6machinelearning.loadDataArray = function(dataArray, batches=batch_size, predic
 };
 
 t6machinelearning.trainModel = async function(model, trainingDataset, testingDataset, epochs) {
-	return await new Promise((resolve, reject) => {
+	return await new Promise((resolve) => {
 		const options = {
 			epochs: epochs,
 			verbose: 0,
@@ -177,7 +179,7 @@ t6machinelearning.trainModel = async function(model, trainingDataset, testingDat
 
 t6machinelearning.evaluateModel = async function(model, testingData) {
 	const result = await model.evaluateDataset(testingData);
-	return await new Promise((resolve, reject) => {
+	return await new Promise((resolve) => {
 		const testLoss = result[0].dataSync()[0];
 		const testAcc = result[1].dataSync()[0];
 		t6console.debug("testLoss", testLoss.toFixed(4));
@@ -189,7 +191,7 @@ t6machinelearning.evaluateModel = async function(model, testingData) {
 };
 
 t6machinelearning.save = async function(model, path) {
-	return await new Promise((resolve, reject) => {
+	return await new Promise((resolve) => {
 		model.save(path).then(() => {
 			resolve(path);
 		});
@@ -197,7 +199,7 @@ t6machinelearning.save = async function(model, path) {
 };
 
 t6machinelearning.loadSavedModel = async function(path) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		tf.node.loadSavedModel(path, ["serve"], "serving_default").then((result) => {
 			resolve(result);
 		}).catch(function(err) {
@@ -207,7 +209,7 @@ t6machinelearning.loadSavedModel = async function(path) {
 };
 
 t6machinelearning.loadLayersModel = async function(path) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		tf.loadLayersModel(path).then((result) => {
 			resolve(result);
 		}).catch(function(err) {
@@ -217,7 +219,7 @@ t6machinelearning.loadLayersModel = async function(path) {
 };
 
 t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		tf.node.getMetaGraphsFromSavedModel(path).then((result) => {
 			resolve(result);
 		}).catch(function(err) {
@@ -227,7 +229,7 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 };
 
 t6machinelearning.predict_1 = async function(tfModel, t6Model, inputDatasetX) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		const prediction = tfModel.predict(inputDatasetX);
 		resolve(prediction);
 	});
@@ -253,7 +255,7 @@ t6machinelearning.predict_2 = async function(tfModel, t6Model, inputData, normal
 	});
 };
 t6machinelearning.predict_3 = async function(tfModel, t6Model, inputData) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		t6machinelearning.init(t6Model.labels, t6Model.batch_size, t6Model.min, t6Model.max);
 		//t6console.debug("inputData", inputData.x);
 		//t6console.debug("inputData.length", inputData.length);
