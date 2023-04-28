@@ -64,8 +64,9 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 /**
- * @api {put} /models/:model_id Edit Model
- * @apiName Add Models
+ * @api {put} /models/:model_id Edit a Model
+ * @apiName Edit a Model
+ * @apiDescription Editing a Model will reset the history
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
  * 
@@ -90,6 +91,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 			} else {
 				var result;
 				models.chain().find({ "id": model_id }).update(function(item) {
+					item.history		= {};
 					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
@@ -226,7 +228,8 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
  */
 router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let model_id = req.params.model_id;
-	if ( !req.body ) {
+	let inputData = Array.isArray(req.body)===false?[req.body]:req.body;
+	if ( !req.body || !inputData ) {
 		return res.status(412).send(new ErrorSerializer({"id": 14185, "code": 412, "message": "Precondition Failed"}).serialize());
 	}
 	if ( model_id ) {
@@ -244,7 +247,7 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 			} else {
 				t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then((tfModel) => {
 					t6machinelearning.init(t6Model);
-					t6machinelearning.loadDataSets(req.body, t6Model.features, 0, t6Model.batch_size)
+					t6machinelearning.loadDataSets(inputData, t6Model.features, 0, t6Model.batch_size)
 					.then((dataset) => {
 						t6console.debug("x Should be the size of req.body", dataset.x.size);
 						t6machinelearning.buildModel()
@@ -256,7 +259,8 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 								arr.map((score, i) => {
 									p.push({ label: (t6Model.labels)[i], prediction: score.toFixed(4) });
 								});
-								res.status(200).send({ "code": 200, prediction: p, bestMatch: (t6Model.labels)[arr.indexOf(Math.max(...arr))] }); // TODO: missing serializer
+								t6console.debug("prediction", arr);
+								res.status(200).send({ "code": 200, labels: t6Model.labels, prediction: p, bestMatch: (t6Model.labels)[arr.indexOf(Math.max(...arr))] }); // TODO: missing serializer
 							});
 						});
 					});
@@ -338,6 +342,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			data = shuffle(data);
 			if ( data.length > 0 ) {
 				let cats = [0];
+				const predictor = "value"; // not customizable!
 				data.map(function(d) {
 					d.category = 0;
 					if(d.flow_id==="6d844fbf-29c0-4a41-8c6a-0e9f3336cea3") { // TODO // TODO // TODO // TODO // TODO // TODO
@@ -345,28 +350,43 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					} else {
 						d.category = 0; // TODO // TODO // TODO // TODO // TODO // TODO
 					}
+					d.x = d[predictor];
+					delete d[predictor]; // remove predictor as it as been added to "x"
 					d.meta = undefined; delete d.meta;
 					if(cats.indexOf(d.category)<=-1) {
 						cats.push(d.category);
 					}
 				});
-		t6console.debug("data.length:", data.length);
+				t6console.debug("data.length:", data.length);
 				
 				t6Model.labels = cats;
-				t6Model.min = Math.min(...data.map(m => m.value));
-				t6Model.max = Math.max(...data.map(m => m.value));
-				t6Model.features = typeof t6Model.features!=="undefined"?t6Model.features:["value"];
+				t6Model.min = Math.min(...data.map(m => m.x));
+				t6Model.max = Math.max(...data.map(m => m.x));
+				t6Model.features = typeof t6Model.features!=="undefined"?t6Model.features:[predictor];
+				if(t6Model.features.indexOf("x")<=-1) {
+					t6Model.features.push("x");
+				}
+				let i = t6Model.features.indexOf(predictor);
+				if (i > -1) {
+					t6Model.features.splice(i, 1);
+				}
+				
 				t6machinelearning.init(t6Model);
 				t6machinelearning.loadDataSets(data, t6Model.features, validation_split, t6Model.batch_size)
 				.then((dataset) => {
 					t6machinelearning.buildModel()
 					.then((tfModel) => {
+						t6console.debug("dataset x size", dataset.x.size);
+						t6console.debug("dataset x shape", dataset.x.shape);
+						t6console.debug("dataset x dtype", dataset.x.dtype);
+						t6console.debug("dataset x rankType", dataset.x.rankType);
+						t6console.debug("dataset y size", dataset.y.size);
+						t6console.debug("dataset y shape", dataset.y.shape);
+						t6console.debug("dataset y dtype", dataset.y.dtype);
+						t6console.debug("dataset y rankType", dataset.y.rankType);
 						if ( tfModel && t6Model ) {
-							res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.trainDs.size, test_length: dataset.validDs.size }); // TODO: missing serializer
+							res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.x.size, valid_length: dataset.validDs.size }); // TODO: missing serializer
 							t6machinelearning.trainModel(tfModel, dataset.trainDs, dataset.validDs, t6Model.epochs).then((info) => {
-								//t6console.debug("EPOCH", info.epoch);
-								//t6console.debug("LOSS", info.history.loss);
-								//t6console.debug("ACCURACY", info.history.acc);
 								t6Model.history = {
 									loss	: info.history.loss,
 									accuracy: info.history.acc
@@ -382,7 +402,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 										db_models.save();
 										let user = users.findOne({"id": req.user.id });
 										if (user && typeof user.pushSubscription !== "undefined" ) {
-											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- Validate dataset batches: ${dataset.validDs.size}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- Train dataset size: ${dataset.x.size}\\n- Validate dataset: ${dataset.xValid.size}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 											let result = t6notifications.sendPush(user, payload);
 											if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 												t6console.debug("pushSubscription", pushSubscription);

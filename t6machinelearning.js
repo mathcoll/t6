@@ -2,6 +2,12 @@
 var t6machinelearning = module.exports = {};
 const tf = require("@tensorflow/tfjs-node"); // Load the binding (CPU computation)
 //require("@tensorflow/tfjs-node-gpu"); // Or load the binding (GPU computation)
+/*
+tf.enableDebugMode();
+tf.env().set("PROD", false);
+//tf.enableProdMode();
+t6console.debug(tf.env().flags);
+*/
 
 let labelsCount, labels, batch_size, features, featureCount, min, max;
 
@@ -33,8 +39,8 @@ t6machinelearning.buildModel = async function() {
 			activation: "relu"
 		}));
 		model.add(tf.layers.dense({
-			units: 2,
-			activation: "softmax"
+			units: labelsCount,
+			activation: "sigmoid"
 		}));
 		// compile the model
 		/*
@@ -50,7 +56,7 @@ t6machinelearning.buildModel = async function() {
 		*/
 		model.compile({
 			optimizer: tf.train.adam(0.001),
-			loss: 'binaryCrossentropy', // categoricalCrossentropy | meanSquaredError
+			loss: "meanSquaredError", // categoricalCrossentropy | meanSquaredError | binaryCrossentropy
 			metrics: ['accuracy']
 		});
 		t6console.debug("Model.weights:");
@@ -67,24 +73,35 @@ t6machinelearning.getIndexedLabel = function(label) {
 
 t6machinelearning.loadDataSets = async function(data, features, testSize, batchSize) {
 	return await new Promise((resolve, reject) => {
-		const oneHot = category => Array.from(tf.oneHot(category, 2).dataSync());
+		const oneHotEncode = category => Array.from(tf.oneHot(category, labelsCount).dataSync());
 		const x = data.map(r => features.map(f => {
 			const  val = r[f];
-			return val === undefined ? 0 : val;
+			if (f==="x") {
+				return val === undefined ? 0 : (parseFloat(val) - min) / (max - min); // normalize values to be between 0-1
+			} else {
+				return oneHotEncode(val); // TODO: oneHotEncode the features, not the labels
+			}
 		}));
 		const y = data.map(r => {
-			const category = r.category===undefined?0:(labels.indexOf(r.category)>-1?labels.indexOf(r.category):0);
-			return oneHot(category);
+			const category = parseInt(r.category===undefined?0:(labels.indexOf(r.category)>-1?labels.indexOf(r.category):0), 10);
+			//t6console.debug("Y category", r, r.category, category, oneHot(category));
+			return oneHotEncode(category);
 		});
 		const ds = tf.data
 			.zip({ xs: tf.data.array(x), ys: tf.data.array(y) })
 			.shuffle(data.length);
 		const splitIdx = parseInt((1 - testSize) * data.length, 10);
+		//t6console.debug("data", data);
+		t6console.debug("train batch", ds);
+		labels.map((l, i) => {
+			t6console.debug("oneHot", oneHotEncode(i), l);
+		});
 		resolve({
 			trainDs: ds.take(splitIdx).batch(batchSize),
 			validDs: ds.skip(splitIdx + 1).batch(batchSize),
 			x: tf.tensor(x), //.slice(splitIdx)
-			y: tf.tensor(y), //.slice(splitIdx)
+			y: tf.tensor(y), //.slice(splitIdx),
+			xValid: ds.skip(splitIdx + 1)
 		});
 	});
 };
