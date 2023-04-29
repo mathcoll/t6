@@ -9,9 +9,10 @@ tf.env().set("PROD", false);
 t6console.debug(tf.env().flags);
 */
 
-let labelsCount, labels, batch_size, features, featureCount, min, max;
+let t6Model, labelsCount, labels, batch_size, features, featureCount, min, max;
 
 t6machinelearning.init = function(t6Model) {
+	t6Model = t6Model;
 	labels = t6Model.labels;
 	labelsCount = t6Model.labels.length;
 	features = t6Model.features;
@@ -31,7 +32,7 @@ t6machinelearning.init = function(t6Model) {
 };
 
 t6machinelearning.buildModel = async function() {
-	return await new Promise((resolve, reject) => {
+	return await new Promise((resolve) => {
 		const model = tf.sequential();
 		model.add(tf.layers.dense({
 			inputShape: [featureCount],
@@ -42,7 +43,6 @@ t6machinelearning.buildModel = async function() {
 			units: labelsCount,
 			activation: "sigmoid"
 		}));
-		// compile the model
 		/*
 		Adadelta -Implements the Adadelta algorithm.
 		Adagrad - Implements the Adagrad algorithm.
@@ -71,30 +71,37 @@ t6machinelearning.getIndexedLabel = function(label) {
 	return (typeof label!=="undefined" && labels.indexOf(label)>-1 && label!==null)?labels.indexOf(label):0;
 };
 
-t6machinelearning.loadDataSets = async function(data, features, testSize, batchSize) {
+t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
+	let batchSize = t6Model.batch_size;
 	return await new Promise((resolve) => {
-		const oneHotEncode = category => Array.from(tf.oneHot(category, labelsCount).dataSync());
-		const x = data.map(r => features.map(f => {
+		//t6Model.flow_ids
+		const oneHotEncodeClasses = category => Array.from(tf.oneHot(category, labelsCount).dataSync());
+		const oneHotEncodeFlows = flow_id => Array.from(tf.oneHot(flow_id, t6Model.flow_ids.length).dataSync());
+		const x = data.map(r => t6Model.features.map(f => {
 			const val = r[f];
-			if (f==="x" && r["flow_id"]==="6d844fbf-29c0-4a41-8c6a-0e9f3336cea3") { // TODO 
-				//t6console.debug(" Before normalization:", parseFloat(val));
-				//t6console.debug(" After normalization:", (parseFloat(val) - min) / (max - min));
+			if (f==="x" && r["flow_id"]===t6Model.flow_ids[0]) {
 				return val === undefined ? 0 : (parseFloat(val) - min) / (max - min); // normalize values to be between 0-1
-			} else {
-				return val; // TODO: oneHotEncode the features, not the labels
+			}
+		}));
+		const flow_id = data.map(r => t6Model.features.map(f => {
+			if(f==="flow_id") {
+				//t6console.debug("oneHot flow_id", oneHotEncodeFlows(r.flow_id), r.flow_id);
+				return oneHotEncodeFlows(r.flow_id);
 			}
 		}));
 		const y = data.map(r => {
 			const category = parseInt(r.category===undefined?0:(labels.indexOf(r.category)>-1?labels.indexOf(r.category):0), 10);
 			//t6console.debug("Y category", r, r.category, category, oneHot(category));
-			return oneHotEncode(category);
+			return oneHotEncodeClasses(category);
 		});
+		//const xs = tf.concat([tf.tensor1d(tf.data.array(x)), tf.tensor1d(flow_id, t6Model.flow_ids)], 1);
 		const ds = tf.data
 			.zip({ xs: tf.data.array(x), ys: tf.data.array(y) })
+			//.zip({ xs: xs, ys: tf.data.array(y)})
 			.shuffle(data.length);
 		const splitIdx = parseInt((1 - testSize) * data.length, 10);
 		labels.map((l, i) => {
-			t6console.debug("oneHot", oneHotEncode(i), l);
+			t6console.debug("oneHot labels", oneHotEncodeClasses(i), l);
 		});
 		resolve({
 			trainDs: ds.take(splitIdx).batch(batchSize),
@@ -182,10 +189,8 @@ t6machinelearning.evaluateModel = async function(model, testingData) {
 	return await new Promise((resolve) => {
 		const testLoss = result[0].dataSync()[0];
 		const testAcc = result[1].dataSync()[0];
-		t6console.debug("testLoss", testLoss.toFixed(4));
-		t6console.debug("testAcc", testAcc.toFixed(4));
-		t6console.debug("result0", result[0].dataSync());
-		t6console.debug("result1", result[1].dataSync());
+		//t6console.debug("testLoss", testLoss.toFixed(4));
+		//t6console.debug("testAcc", testAcc.toFixed(4));
 		resolve({loss: testLoss.toFixed(4), accuracy: testAcc.toFixed(4)});
 	});
 };

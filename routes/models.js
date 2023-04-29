@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 var ModelSerializer = require("../serializers/model");
 var ErrorSerializer = require("../serializers/error");
+const predictor = "value"; // not customizable!
 
 /**
  * @api {get} /models/:model_id? Get Models
@@ -248,7 +249,12 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 			} else {
 				t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then((tfModel) => {
 					t6machinelearning.init(t6Model);
-					t6machinelearning.loadDataSets(inputData, t6Model.features, 0, t6Model.batch_size)
+					inputData.map((d) => {
+						d.x = d[predictor];
+						delete d[predictor]; // remove predictor as it as been added to "x"
+						d.flow_id = typeof d.flow_id!=="undefined"?t6Model.flow_ids.indexOf(d.flow_id):undefined; // encode flow_id
+					});
+					t6machinelearning.loadDataSets(inputData, t6Model, 0)
 					.then((dataset) => {
 						t6console.debug("dataset x size", dataset.x.size);
 						t6console.debug("dataset x shape", dataset.x.shape);
@@ -309,6 +315,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		let limit = t6Model.datasets.training.limit;
 		let validation_split = typeof t6Model.validation_split!=="undefined"?t6Model.validation_split:60;
 		let offset = 0;
+		
+		// TODO: Return an error when another training is currently in progress
 
 		let queryTs = t6Model.flow_ids.map( (flow_id, index) => {
 			let flow = flows.findOne({id: flow_id});
@@ -352,7 +360,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			data = shuffle(data);
 			if ( data.length > 0 ) {
 				let cats = [0];
-				const predictor = "value"; // not customizable!
 				data.map(function(d) {
 					d.category = 0;
 					if(d.flow_id===t6Model.flow_ids[0]) { // TODO Always using the zero-indexed flow from the model
@@ -362,6 +369,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					} else {
 						d.category = 0; // TODO // TODO // TODO // TODO // TODO // TODO
 					}
+					d.flow_id = t6Model.flow_ids.indexOf(d.flow_id); // encode flow_id
 					d.meta = undefined; delete d.meta;
 					if(cats.indexOf(d.category)<=-1) {
 						cats.push(d.category);
@@ -373,17 +381,23 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				t6Model.min = Math.min(...data.filter(d => d.flow_id === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
 				t6Model.max = Math.max(...data.filter(d => d.flow_id === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
 				t6Model.features = typeof t6Model.features!=="undefined"?t6Model.features:[predictor];
-				if(t6Model.features.indexOf("x")<=-1) {
-					t6Model.features.push("x");
-				}
-				let i = t6Model.features.indexOf(predictor);
+				//if(t6Model.features.indexOf("x")<=-1) {
+				//	t6Model.features.push("x");
+				//}
+				t6console.debug("t6Model.features 1:", t6Model.features);
+				let featsTemp = t6Model.features;
+				const feats = [...t6Model.features];
+				featsTemp.push("x");
+				let i = featsTemp.indexOf(predictor);
 				if (i > -1) {
-					t6Model.features.splice(i, 1);
+					featsTemp.splice(i, 1);
 				}
 
 				t6machinelearning.init(t6Model);
-				t6machinelearning.loadDataSets(data, t6Model.features, validation_split, t6Model.batch_size)
+				t6machinelearning.loadDataSets(data, t6Model, validation_split)
 				.then((dataset) => {
+					t6Model.features = feats; // revert the added "x"
+					t6console.debug("t6Model.features 2:", t6Model.features);
 					t6machinelearning.buildModel()
 					.then((tfModel) => {
 						t6console.debug("dataset x size", dataset.x.size);
@@ -394,6 +408,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						t6console.debug("dataset y shape", dataset.y.shape);
 						t6console.debug("dataset y dtype", dataset.y.dtype);
 						t6console.debug("dataset y rankType", dataset.y.rankType);
+						t6console.debug("dataset validDs", dataset.validDs);
 						if ( tfModel && t6Model ) {
 							res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.x.size, valid_length: dataset.xValidSize, features: t6Model.features, labels: t6Model.labels }); // TODO: missing serializer
 							t6machinelearning.trainModel(tfModel, dataset.trainDs, dataset.validDs, t6Model.epochs).then((info) => {
@@ -412,7 +427,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 										db_models.save();
 										let user = users.findOne({"id": req.user.id });
 										if (user && typeof user.pushSubscription !== "undefined" ) {
-											let payload = `{"type": "message", "title": "Model trained", "body": "Evaluate Model Results:\\n- Train dataset size: ${dataset.x.size}\\n- Validate dataset: ${dataset.xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+											let payload = `{"type": "message", "title": "Model trained", "body": "- Labels: ${t6Model.labels.length}\\n- Flows: ${t6Model.flow_ids.length}\\n- Train dataset: ${dataset.x.size}\\n- Validate dataset: ${dataset.xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 											let result = t6notifications.sendPush(user, payload);
 											if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 												t6console.debug("pushSubscription", pushSubscription);
