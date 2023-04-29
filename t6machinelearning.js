@@ -81,12 +81,16 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 			const val = r[f];
 			if (f==="x" && r["flow_id"]===t6Model.flow_ids[0]) {
 				return val === undefined ? 0 : (parseFloat(val) - min) / (max - min); // normalize values to be between 0-1
+			} else {
+				return 0; // TODO: arbitrary zero value
 			}
 		}));
 		const flow_id = data.map(r => t6Model.features.map(f => {
 			if(f==="flow_id") {
 				//t6console.debug("oneHot flow_id", oneHotEncodeFlows(r.flow_id), r.flow_id);
 				return oneHotEncodeFlows(r.flow_id);
+			} else {
+				return 0; // TODO: arbitrary zero value
 			}
 		}));
 		const y = data.map(r => {
