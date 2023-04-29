@@ -317,6 +317,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		let offset = 0;
 		
 		// TODO: Return an error when another training is currently in progress
+		// Maybe using a job and returning job_id with the HTTP 202 status
 
 		let queryTs = t6Model.flow_ids.map( (flow_id, index) => {
 			let flow = flows.findOne({id: flow_id});
@@ -378,13 +379,12 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				t6console.debug("data.length:", data.length);
 
 				t6Model.labels = cats;
-				t6Model.min = Math.min(...data.filter(d => d.flow_id === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
-				t6Model.max = Math.max(...data.filter(d => d.flow_id === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
+				t6Model.min = Math.min(...data.filter(d => t6Model.flow_ids[d.flow_id] === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
+				t6Model.max = Math.max(...data.filter(d => t6Model.flow_ids[d.flow_id] === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
 				t6Model.features = typeof t6Model.features!=="undefined"?t6Model.features:[predictor];
 				//if(t6Model.features.indexOf("x")<=-1) {
 				//	t6Model.features.push("x");
 				//}
-				t6console.debug("t6Model.features 1:", t6Model.features);
 				let featsTemp = t6Model.features;
 				const feats = [...t6Model.features];
 				featsTemp.push("x");
@@ -397,7 +397,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				t6machinelearning.loadDataSets(data, t6Model, validation_split)
 				.then((dataset) => {
 					t6Model.features = feats; // revert the added "x"
-					t6console.debug("t6Model.features 2:", t6Model.features);
 					t6machinelearning.buildModel()
 					.then((tfModel) => {
 						t6console.debug("dataset x size", dataset.x.size);
