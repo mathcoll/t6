@@ -3,7 +3,21 @@ var express = require("express");
 var router = express.Router();
 var ModelSerializer = require("../serializers/model");
 var ErrorSerializer = require("../serializers/error");
-const predictor = "value"; // not customizable!
+const options = {
+	verbose: process.env.NODE_ENV === "production" ?0:2/*,
+	callbacks: {
+		onEpochBegin: async (epoch, logs) => {
+			t6console.debug(`Epoch ${epoch + 1} of ${config.epochs} ...`)
+		},
+		onEpochEnd: async (epoch, logs) => {
+			t6console.debug(`  train-set loss: ${typeof logs.loss!=="undefined"?logs.loss.toFixed(4):"ukn"}`);
+			t6console.debug(`  train-set accuracy: ${typeof logs.acc!=="undefined"?logs.acc.toFixed(4):"ukn"}`);
+		},
+		onTrainBegin: async (epoch, logs) => {
+			t6console.debug(`  train begin`);
+		}
+	}*/
+};
 
 /**
  * @api {get} /models/:model_id? Get Models
@@ -67,7 +81,7 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 /**
  * @api {put} /models/:model_id Edit a Model
  * @apiName Edit a Model
- * @apiDescription Editing a Model will reset the history
+ * @apiDescription Editing a Model will reset the history and current_status
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
  * 
@@ -93,6 +107,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 				var result;
 				models.chain().find({ "id": model_id }).update(function(item) {
 					item.history		= {};
+					item.current_status	= "",
 					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
@@ -164,6 +179,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				validation_split:	typeof req.body.validation_split!=="undefined"?req.body.validation_split:0.8,
 				batch_size:	typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
 				epochs:		typeof req.body.epochs!=="undefined"?req.body.epochs:100,
+				current_status: "",
 				datasets: {
 					training: {
 						start: typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:new Date(),
@@ -249,11 +265,6 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 			} else {
 				t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then((tfModel) => {
 					t6machinelearning.init(t6Model);
-					inputData.map((d) => {
-						d.x = d[predictor];
-						delete d[predictor]; // remove predictor as it as been added to "x"
-						d.flow_id = typeof d.flow_id!=="undefined"?t6Model.flow_ids.indexOf(d.flow_id):undefined; // encode flow_id
-					});
 					t6machinelearning.loadDataSets(inputData, t6Model, 0)
 					.then((dataset) => {
 						t6console.debug("dataset x size", dataset.x.size);
@@ -299,6 +310,7 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
  * @apiUse 202
  * @apiUse 401
  * @apiUse 404
+ * @apiUse 409
  * @apiUse 412
  */
 router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
@@ -315,9 +327,10 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		let limit = t6Model.datasets.training.limit;
 		let validation_split = typeof t6Model.validation_split!=="undefined"?t6Model.validation_split:60;
 		let offset = 0;
-		
-		// TODO: Return an error when another training is currently in progress
-		// Maybe using a job and returning job_id with the HTTP 202 status
+		if (t6Model.current_status==="running") {
+			res.status(409).send(new ErrorSerializer({"id": 14056, "code": 409, "message": "Conflict, Training in progress"}).serialize());
+			return;
+		}
 
 		let queryTs = t6Model.flow_ids.map( (flow_id, index) => {
 			let flow = flows.findOne({id: flow_id});
@@ -360,103 +373,81 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			data = data.flat();
 			data = shuffle(data);
 			if ( data.length > 0 ) {
-				let cats = [0];
-				data.map(function(d) {
-					d.category = 0;
-					if(d.flow_id===t6Model.flow_ids[0]) { // TODO Always using the zero-indexed flow from the model
-						d.category = (d.meta && typeof JSON.parse(d.meta)!=="undefined") ? categories.findOne({id: JSON.parse(d.meta).categories[0]}).name:0; // TODO: Take only the first category as label !
-						d.x = d[predictor];
-						delete d[predictor]; // remove predictor as it as been added to "x"
-					} else {
-						d.category = 0; // TODO // TODO // TODO // TODO // TODO // TODO
-					}
-					d.flow_id = t6Model.flow_ids.indexOf(d.flow_id); // encode flow_id
-					d.meta = undefined; delete d.meta;
-					if(cats.indexOf(d.category)<=-1) {
-						cats.push(d.category);
-					}
-				});
-				t6console.debug("data.length:", data.length);
-
-				t6Model.labels = cats;
-				t6Model.min = Math.min(...data.filter(d => t6Model.flow_ids[d.flow_id] === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
-				t6Model.max = Math.max(...data.filter(d => t6Model.flow_ids[d.flow_id] === t6Model.flow_ids[0]).map(m => m.x)); // TODO Always using the zero-indexed flow from the model
-				t6Model.features = typeof t6Model.features!=="undefined"?t6Model.features:[predictor];
-				//if(t6Model.features.indexOf("x")<=-1) {
-				//	t6Model.features.push("x");
-				//}
-				let featsTemp = t6Model.features;
-				const feats = [...t6Model.features];
-				featsTemp.push("x");
-				let i = featsTemp.indexOf(predictor);
-				if (i > -1) {
-					featsTemp.splice(i, 1);
-				}
-
+				t6console.debug("ML data.length:", data.length);
+				t6Model.min = Math.min(...data.filter(d => t6Model.flow_ids.indexOf(d.flow_id)===0).map(m => m.value));
+				t6Model.max = Math.max(...data.filter(d => t6Model.flow_ids.indexOf(d.flow_id)===0).map(m => m.value));
 				t6machinelearning.init(t6Model);
-				t6machinelearning.loadDataSets(data, t6Model, validation_split)
+				t6machinelearning.loadDataSets(data, t6Model, t6Model.validation_split)
 				.then((dataset) => {
-					t6Model.features = feats; // revert the added "x"
+					t6console.log("ML DATASET COMPLETED");
 					t6machinelearning.buildModel()
 					.then((tfModel) => {
-						t6console.debug("dataset x size", dataset.x.size);
-						t6console.debug("dataset x shape", dataset.x.shape);
-						t6console.debug("dataset x dtype", dataset.x.dtype);
-						t6console.debug("dataset x rankType", dataset.x.rankType);
-						t6console.debug("dataset y size", dataset.y.size);
-						t6console.debug("dataset y shape", dataset.y.shape);
-						t6console.debug("dataset y dtype", dataset.y.dtype);
-						t6console.debug("dataset y rankType", dataset.y.rankType);
-						t6console.debug("dataset validDs", dataset.validDs);
-						if ( tfModel && t6Model ) {
-							res.status(202).send({ "code": 202, message: "Training started", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.x.size, valid_length: dataset.xValidSize, features: t6Model.features, labels: t6Model.labels }); // TODO: missing serializer
-							t6machinelearning.trainModel(tfModel, dataset.trainDs, dataset.validDs, t6Model.epochs).then((info) => {
-								t6Model.history = {
-									loss	: info.history.loss,
-									accuracy: info.history.acc
-								};
-								if(dataset.trainDs.size>0 && dataset.validDs.size>0) {
-									t6machinelearning.evaluateModel(tfModel, dataset.validDs).then((evaluate) => {
-										t6console.debug("evaluate: loss", evaluate.loss);
-										t6console.debug("evaluate: accuracy", evaluate.accuracy);
-										t6Model.history.evaluation = {
-											loss	: evaluate.loss,
-											accuracy: evaluate.accuracy
-										};
-										db_models.save();
-										let user = users.findOne({"id": req.user.id });
-										if (user && typeof user.pushSubscription !== "undefined" ) {
-											let payload = `{"type": "message", "title": "Model trained", "body": "- Labels: ${t6Model.labels.length}\\n- Flows: ${t6Model.flow_ids.length}\\n- Train dataset: ${dataset.x.size}\\n- Validate dataset: ${dataset.xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
-											let result = t6notifications.sendPush(user, payload);
-											if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
-												t6console.debug("pushSubscription", pushSubscription);
-												t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
-												users.chain().find({ "id": user.id }).update(function(u) {
-													u.pushSubscription = {};
-													db_users.save();
-												});
-												t6console.debug("pushSubscription is now disabled on User", error);
-											}
+						t6console.log("ML MODEL BUILT");
+						t6console.debug(" - dataset x size", dataset.x.size);
+						t6console.debug(" - dataset x shape", dataset.x.shape);
+						t6console.debug(" - dataset x dtype", dataset.x.dtype);
+						t6console.debug(" - dataset x rankType", dataset.x.rankType);
+						t6console.debug(" - dataset y size", dataset.y.size);
+						t6console.debug(" - dataset y shape", dataset.y.shape);
+						t6console.debug(" - dataset y dtype", dataset.y.dtype);
+						t6console.debug(" - dataset y rankType", dataset.y.rankType);
+						t6console.debug(" - dataset validDs", dataset.validDs);
+						res.status(202).send({ "code": 202, current_status: "running", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.x.size, valid_length: dataset.xValidSize, features: t6Model.features, labels: t6Model.labels }); // TODO: missing serializer
+						
+						options.validationData	= dataset.testingDataset;
+						options.epochs			= t6Model.epochs;
+						t6Model.current_status = "running";
+						db_models.save(); // saving the status
+						t6machinelearning.trainModel(tfModel, dataset.trainDs, options)
+						.then((trained) => {
+							t6console.log("ML TRAINED");
+							t6Model.history = {
+								loss	: trained.history.loss,
+								accuracy: trained.history.acc
+							};
+							if(dataset.validDs.size>0) {
+								t6machinelearning.evaluateModel(tfModel, dataset.validDs)
+								.then((evaluate) => {
+									t6console.debug("evaluate: loss", evaluate.loss);
+									t6console.debug("evaluate: accuracy", evaluate.accuracy);
+									t6Model.history.evaluation = {
+										loss	: evaluate.loss,
+										accuracy: evaluate.accuracy
+									};
+									let user = users.findOne({"id": req.user.id });
+									if (user && typeof user.pushSubscription !== "undefined" ) {
+										let payload = `{"type": "message", "title": "Model trained", "body": "- Features: ${t6Model.features.length}\\n- Labels: ${t6Model.labels.length}\\n- Flows: ${t6Model.flow_ids.length}\\n- Train dataset: ${dataset.x.size}\\n- Validate dataset: ${dataset.xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+										let result = t6notifications.sendPush(user, payload);
+										if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+											t6console.debug("pushSubscription", pushSubscription);
+											t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+											users.chain().find({ "id": user.id }).update(function(u) {
+												u.pushSubscription = {};
+												db_users.save();
+											});
+											t6console.debug("pushSubscription is now disabled on User", error);
 										}
-										const path = `${mlModels.models_user_dir}/${user.id}/`;
-										if (!fs.existsSync(path)) { fs.mkdirSync(path); }
-										t6console.debug("Model saving to", path+t6Model.id);
-										t6events.addStat("t6App", "ML Trained Model saved", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
-										t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
-											t6console.debug("Model saved");
-										});
+									}
+									const path = `${mlModels.models_user_dir}/${user.id}/`;
+									if (!fs.existsSync(path)) { fs.mkdirSync(path); }
+									t6console.debug("Model saving to", path+t6Model.id);
+									t6events.addStat("t6App", "ML Trained Model saved", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
+									t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
+										t6console.debug("Model saved");
+										t6Model.current_status = "";
+										db_models.save(); // saving the status
 									});
-								} else {
-									t6console.debug("Missing Training or Testing data", dataset.trainDs.size, dataset.validDs.size);
-								}
-							});
-						} else {
-							res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
-						}
+								});
+							} else {
+								t6console.debug("Missing Validating data", dataset.trainDs.size, dataset.validDs.size);
+							}
+						});
 					});
+				})
+				.catch((error) => {
+					t6console.error("ML Error:", error);
 				});
 			} else {
-				t6console.debug(query);
 				res.status(404).send(new ErrorSerializer({err: "No data found", "id": 14058, "code": 404, "message": "Not found"}).serialize());
 			}
 		}).catch((err) => {

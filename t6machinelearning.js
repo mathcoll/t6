@@ -72,46 +72,54 @@ t6machinelearning.getIndexedLabel = function(label) {
 };
 
 t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
-	let batchSize = t6Model.batch_size;
 	return await new Promise((resolve) => {
-		//t6Model.flow_ids
-		const oneHotEncodeClasses = category => Array.from(tf.oneHot(category, labelsCount).dataSync());
-		const oneHotEncodeFlows = flow_id => Array.from(tf.oneHot(flow_id, t6Model.flow_ids.length).dataSync());
-		const x = data.map(r => t6Model.features.map(f => {
-			const val = r[f];
-			if (f==="x" && r["flow_id"]===t6Model.flow_ids[0]) {
-				return val === undefined ? 0 : (parseFloat(val) - min) / (max - min); // normalize values to be between 0-1
-			} else {
-				return 0; // TODO: arbitrary zero value
-			}
-		}));
-		const flow_id = data.map(r => t6Model.features.map(f => {
-			if(f==="flow_id") {
-				//t6console.debug("oneHot flow_id", oneHotEncodeFlows(r.flow_id), r.flow_id);
-				return oneHotEncodeFlows(r.flow_id);
-			} else {
-				return 0; // TODO: arbitrary zero value
-			}
-		}));
-		const y = data.map(r => {
-			const category = parseInt(r.category===undefined?0:(labels.indexOf(r.category)>-1?labels.indexOf(r.category):0), 10);
-			//t6console.debug("Y category", r, r.category, category, oneHot(category));
-			return oneHotEncodeClasses(category);
+		let batchSize = t6Model.batch_size;
+		const oneHotEncode = (classIndex, classCount) => {
+			return Array.from(tf.oneHot(classIndex, classCount).dataSync());
+		};
+		const x = data.map((r) => {
+			return t6Model.features.map(f => {
+				if(f==="value") {
+					if (r.flow_id === t6Model.flow_ids[0]) {
+						//return typeof r.value!=="undefined"?parseFloat(r.value):0;
+						return typeof r.value!=="undefined"?(parseFloat(r.value) - t6Model.min)/(t6Model.max - t6Model.min):0; // normalize 0-1
+					} else {
+						return 0;
+					}
+				} else if (f==="flow_id") {
+					let labelIndex = t6Model.flow_ids.indexOf(r.flow_id);
+					if (labelIndex !== -1) {
+						//t6console.debug("oneHot flow_id =====>", oneHotEncode(labelIndex, t6Model.flow_ids.length));
+						return oneHotEncode(labelIndex, t6Model.flow_ids.length);
+					} else {
+						return Array(t6Model.flow_ids.length).fill(0);
+					}
+				}
+			});
 		});
-		//const xs = tf.concat([tf.tensor1d(tf.data.array(x)), tf.tensor1d(flow_id, t6Model.flow_ids)], 1);
-		const ds = tf.data
-			.zip({ xs: tf.data.array(x), ys: tf.data.array(y) })
-			//.zip({ xs: xs, ys: tf.data.array(y)})
-			.shuffle(data.length);
+		const y = data.map((r) => {
+			r.meta = JSON.parse(typeof r.meta!=="undefined"?r.meta:null);
+			if(r.meta!==null && typeof r.meta.categories[0]!=="undefined") {
+				let category = parseInt(typeof r.meta.categories[0]!=="undefined" ? (t6Model.labels.indexOf(r.meta.categories[0]) > -1 ? config.labels.indexOf(r.meta.categories[0]) : 0) : 0, 10);
+				return oneHotEncode(category, t6Model.labels.length);
+			} else {
+				return Array(t6Model.labels.length).fill(0);
+			}
+		});
+
+		//t6console.log("x", x);
+		//t6console.log("y", y);
+		//const ds = tf.data.zip({ xs: x, ys: y }).shuffle(data.length);
+		const ds = tf.data.zip({ xs: tf.data.array(x), ys: tf.data.array(y) }).shuffle(data.length);
+		//const ds = tf.data.zip({ xs: tf.data.array(tf.tensor(x)), ys: tf.data.array(y) }).shuffle(data.length);
+		//const ds = tf.data.zip({ xs: tf.tensor(x), ys: tf.tensor(y) }).shuffle(data.length);
 		const splitIdx = parseInt((1 - testSize) * data.length, 10);
-		labels.map((l, i) => {
-			t6console.debug("oneHot labels", oneHotEncodeClasses(i), l);
-		});
+
 		resolve({
 			trainDs: ds.take(splitIdx).batch(batchSize),
 			validDs: ds.skip(splitIdx + 1).batch(batchSize),
-			x: tf.tensor(x), //.slice(splitIdx)
-			y: tf.tensor(y), //.slice(splitIdx),
+			x: tf.tensor(x),
+			y: tf.tensor(y),
 			xValidSize: ds.skip(splitIdx + 1).size
 		});
 	});
@@ -165,26 +173,9 @@ t6machinelearning.loadDataArray = function(dataArray, batches=batch_size, predic
 	return res;
 };
 
-t6machinelearning.trainModel = async function(model, trainingDataset, testingDataset, epochs) {
+t6machinelearning.trainModel = async function(model, dataset, options) {
 	return await new Promise((resolve) => {
-		const options = {
-			epochs: epochs,
-			verbose: 0,
-			validationData: testingDataset,
-			callbacks: {
-				onEpochBegin: async (epoch, logs) => {
-					t6console.debug(`Epoch ${epoch + 1} of ${epochs} ...`)
-				},
-				onEpochEnd: async (epoch, logs) => {
-					t6console.debug(`  train-set loss: ${typeof logs.loss!=="undefined"?logs.loss.toFixed(4):"ukn"}`);
-					t6console.debug(`  train-set accuracy: ${typeof logs.acc!=="undefined"?logs.acc.toFixed(4):"ukn"}`);
-				},
-				onTrainBegin: async (epoch, logs) => {
-					t6console.debug(`  train begin`);
-				}
-			}
-		};
-		resolve(model.fitDataset(trainingDataset, options));
+		resolve(model.fitDataset(dataset, options));
 	});
 };
 
