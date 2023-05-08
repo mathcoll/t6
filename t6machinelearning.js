@@ -36,7 +36,7 @@ t6machinelearning.buildModel = async function() {
 		const model = tf.sequential();
 		model.add(tf.layers.dense({
 			inputShape: [featureCount],
-			units: 16,
+			units: 1,
 			activation: "relu"
 		}));
 		model.add(tf.layers.dense({
@@ -73,54 +73,74 @@ t6machinelearning.getIndexedLabel = function(label) {
 
 t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 	return await new Promise((resolve) => {
-		let batchSize = t6Model.batch_size;
-		const oneHotEncode = (classIndex, classCount) => {
-			return Array.from(tf.oneHot(classIndex, classCount).dataSync());
-		};
-		const x = data.map((r) => {
-			return t6Model.features.map(f => {
-				if(f==="value") {
-					if (r.flow_id === t6Model.flow_ids[0]) {
-						//return typeof r.value!=="undefined"?parseFloat(r.value):0;
-						return typeof r.value!=="undefined"?(parseFloat(r.value) - t6Model.min)/(t6Model.max - t6Model.min):0; // normalize 0-1
-					} else {
-						return 0;
+		return tf.tidy(() => {
+			let batchSize = t6Model.batch_size;
+			tf.util.shuffle(data);
+			const oneHotEncode = (classIndex, classCount) => {
+				return Array.from(tf.oneHot(classIndex, classCount).dataSync());
+			};
+			const x = data.map((r) => {
+				return t6Model.features.map(f => {
+					if(f==="value") {
+						if (r.flow_id === t6Model.flow_ids[0]) {
+							//return typeof r.value!=="undefined"?parseFloat(r.value):0;
+							return typeof r.value!=="undefined"?(parseFloat(r.value) - t6Model.min)/(t6Model.max - t6Model.min):0; // normalize 0-1
+						} else {
+							return 0;
+						}
+					} else if (f==="flow_id") {
+						let labelIndex = t6Model.flow_ids.indexOf(r.flow_id);
+						if (labelIndex !== -1) {
+							//t6console.debug("oneHot flow_id =====>", oneHotEncode(labelIndex, t6Model.flow_ids.length));
+							return oneHotEncode(labelIndex, t6Model.flow_ids.length);
+						} else {
+							return Array(t6Model.flow_ids.length).fill(0);
+						}
 					}
-				} else if (f==="flow_id") {
-					let labelIndex = t6Model.flow_ids.indexOf(r.flow_id);
-					if (labelIndex !== -1) {
-						//t6console.debug("oneHot flow_id =====>", oneHotEncode(labelIndex, t6Model.flow_ids.length));
-						return oneHotEncode(labelIndex, t6Model.flow_ids.length);
-					} else {
-						return Array(t6Model.flow_ids.length).fill(0);
-					}
+				});
+			});
+			const y = data.map((r) => {
+				r.meta = JSON.parse(typeof r.meta!=="undefined"?r.meta:null);
+				if(r.meta!==null && typeof r.meta.categories[0]!=="undefined") {
+					let category = parseInt(typeof r.meta.categories[0]!=="undefined" ? (t6Model.labels.indexOf(r.meta.categories[0]) > -1 ? config.labels.indexOf(r.meta.categories[0]) : 0) : 0, 10);
+					return oneHotEncode(category, t6Model.labels.length);
+				} else {
+					return Array(t6Model.labels.length).fill(0);
 				}
 			});
-		});
-		const y = data.map((r) => {
-			r.meta = JSON.parse(typeof r.meta!=="undefined"?r.meta:null);
-			if(r.meta!==null && typeof r.meta.categories[0]!=="undefined") {
-				let category = parseInt(typeof r.meta.categories[0]!=="undefined" ? (t6Model.labels.indexOf(r.meta.categories[0]) > -1 ? config.labels.indexOf(r.meta.categories[0]) : 0) : 0, 10);
-				return oneHotEncode(category, t6Model.labels.length);
-			} else {
-				return Array(t6Model.labels.length).fill(0);
-			}
-		});
-
-		//t6console.log("x", x);
-		//t6console.log("y", y);
-		//const ds = tf.data.zip({ xs: x, ys: y }).shuffle(data.length);
-		const ds = tf.data.zip({ xs: tf.data.array(x), ys: tf.data.array(y) }).shuffle(data.length);
-		//const ds = tf.data.zip({ xs: tf.data.array(tf.tensor(x)), ys: tf.data.array(y) }).shuffle(data.length);
-		//const ds = tf.data.zip({ xs: tf.tensor(x), ys: tf.tensor(y) }).shuffle(data.length);
-		const splitIdx = parseInt((1 - testSize) * data.length, 10);
-
-		resolve({
-			trainDs: ds.take(splitIdx).batch(batchSize),
-			validDs: ds.skip(splitIdx + 1).batch(batchSize),
-			x: tf.tensor(x),
-			y: tf.tensor(y),
-			xValidSize: ds.skip(splitIdx + 1).size
+	
+			//const ds = tf.data.zip({ xs: x, ys: y }).shuffle(data.length);
+			/////////const ds = tf.data.zip({ xs: tf.data.array(x), ys: tf.data.array(y) }).shuffle(data.length);
+			//const ds = tf.data.zip({ xs: tf.data.array(tf.tensor(x)), ys: tf.data.array(y) }).shuffle(data.length);
+			//const ds = tf.data.zip({ xs: tf.tensor(x), ys: tf.tensor(y) }).shuffle(data.length);
+			const xs = tf.tensor2d(x, [data.length, featureCount]);
+			const ys = tf.tensor2d(y);
+			const ds = tf.data
+				.zip({ xs: tf.data.array(xs), ys: tf.data.array(ys) })
+				.shuffle(data.length);
+			const splitIdx = parseInt((1 - testSize) * data.length, 10);
+			t6console.log("xs.shape", xs.shape);
+			t6console.log("xs.rank", xs.rank);
+			/*
+			xs.print();
+			t6console.log("ys.shape", ys.shape);
+			t6console.log("ys.rank", ys.rank);
+			ys.print();
+			*/
+			const trainXs = xs;
+			const trainYs = ys;
+			t6console.log("trainXs", trainXs);
+			t6console.log("trainYs", trainYs);
+	
+			resolve({
+				trainDs: ds.take(splitIdx).batch(batchSize),
+				validDs: ds.skip(splitIdx + 1).batch(batchSize),
+				trainXs: trainXs,
+				trainYs: trainYs,
+				x: tf.tensor(x),
+				y: tf.tensor(y),
+				xValidSize: ds.skip(splitIdx + 1).size
+			});
 		});
 	});
 };
@@ -173,9 +193,15 @@ t6machinelearning.loadDataArray = function(dataArray, batches=batch_size, predic
 	return res;
 };
 
-t6machinelearning.trainModel = async function(model, dataset, options) {
+t6machinelearning.trainModelDs = async function(model, dataset, options) {
 	return await new Promise((resolve) => {
 		resolve(model.fitDataset(dataset, options));
+	});
+};
+
+t6machinelearning.trainModel = async function(model, datasetXs, datasetYs, options) {
+	return await new Promise((resolve) => {
+		resolve(model.fit(datasetXs, datasetYs, options));
 	});
 };
 
