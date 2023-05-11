@@ -25,7 +25,8 @@ t6machinelearning.addContinuous = function(featureName, min, max) {
 
 t6machinelearning.addCategorical = function(featureName, classes) {
 	categoricalFeats[featureName] = (Array.isArray(classes)===true && classes.length>-1)?classes:[];
-	if(featureName!=="flow_id" || featureName!=="value") {
+	t6console.debug("classes =================================", classes);
+	if(featureName!=="flow_id" && featureName!=="value" && categoricalFeats[featureName].indexOf(0)===-1) {
 		categoricalFeats[featureName].unshift(0);
 		t6console.debug(`ADDED value "0" to Categorical list`);
 	}
@@ -35,6 +36,10 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 
 t6machinelearning.init = function(t6Model) {
 	t6Model = t6Model;
+	continuousFeats = [];
+	continuousFeatsMins = [];
+	continuousFeatsMaxs = [];
+	categoricalFeats = [];
 	t6console.debug("================== t6machinelearning.init =================");
 	t6console.debug("labels", t6Model.labels);
 	t6console.debug("labelsCount", t6Model.labels.length);
@@ -129,7 +134,7 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				return tf.util.flatten(result);
 			});
 			const y = data.map((r) => {
-				t6console.debug("LABEL !", r.label);
+				//t6console.debug("LABEL !", r.label);
 				return oneHotEncode(t6Model.labels.indexOf(r.label), t6Model.labels);
 			});
 

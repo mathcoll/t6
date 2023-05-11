@@ -114,7 +114,8 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
 					item.continuous_features	= typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:item.continuous_features;
-					item.categorical_features	= typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:item.categorical_features;
+					item.categorical_features	= typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:item.categorical_features; // TODO depend on datatype
+					item.categorical_features_classes	= typeof req.body.categorical_features_classes!=="undefined"?req.body.categorical_features_classes:item.categorical_features_classes;
 					item.retention		= typeof req.body.retention!=="undefined"?req.body.retention:item.retention;
 					item.batch_size		= typeof req.body.batch_size!=="undefined"?req.body.batch_size:100;
 					item.epochs			= typeof req.body.epochs!=="undefined"?req.body.epochs:100;
@@ -180,6 +181,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				features:	typeof req.body.features!=="undefined"?req.body.features:["value"],
 				continuous_features: typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:["value"],
 				categorical_feature: typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:[], // TODO depend on datatype
+				categorical_features_classes: typeof req.body.categorical_features_classes!=="undefined"?req.body.categorical_features_classes:[],
 				retention:	typeof req.body.retention!=="undefined"?req.body.retention:"autogen",
 				validation_split:	typeof req.body.validation_split!=="undefined"?req.body.validation_split:0.8,
 				batch_size:	typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
@@ -388,20 +390,19 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 					m.label = (category_id!==null)?categories.findOne({id: category_id}).name:0;
 					return m;
 				});
+				t6machinelearning.init(t6Model);
 				t6Model.continuous_features.map((cName) => {
 					t6machinelearning.addContinuous(cName, t6Model.min, t6Model.max);
 				});
 				t6Model.categorical_features.map((cName) => {
-					// TODO // TODO // TODO // TODO // TODO // TODO // TODO
+					let cClasses = t6Model.categorical_features_classes;
+					cClasses = (Array.isArray(cClasses)===true)?cClasses:[];
 					if(cName === "flow_id") {
 						t6machinelearning.addCategorical(cName, t6Model.flow_ids);
-					} else if(cName === "feature2") {
-						t6machinelearning.addCategorical(cName, ["true", "false"]);
-					} else if(cName === "feature3") {
-						t6machinelearning.addCategorical(cName, ["another value", "yolo 2", "genuine"]);
+					} else {
+						t6machinelearning.addCategorical(cName, cClasses.map((c) => c.values)[0]);
 					}
 				});
-				t6machinelearning.init(t6Model);
 				t6machinelearning.loadDataSets(data, t6Model, t6Model.validation_split)
 				.then((dataset) => {
 					t6console.log("ML DATASET COMPLETED");
@@ -425,7 +426,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						t6console.debug("labelTensor shape", dataset.yTensor.shape);
 						t6console.debug("labelTensor rank", dataset.yTensor.rank);
 						t6console.debug("labelTensor rankType", dataset.yTensor.rankType);
-						res.status(202).send({ "code": 202, current_status: "running", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", valid_length: dataset.xValidSize, continuous_features: t6Model.continuous_features, categorical_features: t6Model.categorical_features, labels: t6Model.labels }); // TODO: missing serializer
+						res.status(202).send({ "code": 202, current_status: "running", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", valid_length: dataset.xValidSize, continuous_features: t6Model.continuous_features, categorical_features: t6Model.categorical_features, categorical_features_classes: t6Model.categorical_features_classes, flow_ids: t6Model.flow_ids, labels: t6Model.labels }); // TODO: missing serializer
 						options.validationData	= dataset.validDs;
 						options.epochs			= t6Model.epochs;
 						t6Model.current_status = "running";
