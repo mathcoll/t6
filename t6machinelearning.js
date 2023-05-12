@@ -15,25 +15,6 @@ let continuousFeatsMins = [];
 let continuousFeatsMaxs = [];
 let categoricalFeats = [];
 
-t6machinelearning.addContinuous = function(featureName, min, max) {
-	continuousFeatsMins[featureName] = min;
-	continuousFeatsMaxs[featureName] = max;
-	continuousFeats.push(featureName);
-	t6console.debug(`ADDED "${featureName}" to Continuous Features, and having min: ${min} / max: ${max}`);
-	return true;
-}
-
-t6machinelearning.addCategorical = function(featureName, classes) {
-	categoricalFeats[featureName] = (Array.isArray(classes)===true && classes.length>-1)?classes:[];
-	t6console.debug("classes =================================", classes);
-	if(featureName!=="flow_id" && featureName!=="value" && categoricalFeats[featureName].indexOf(0)===-1) {
-		categoricalFeats[featureName].unshift(0);
-		t6console.debug(`ADDED value "0" to Categorical list`);
-	}
-	t6console.debug(`ADDED "${featureName}" to Categorical Features`);
-	return true;
-}
-
 t6machinelearning.init = function(t6Model) {
 	t6Model = t6Model;
 	continuousFeats = [];
@@ -48,6 +29,24 @@ t6machinelearning.init = function(t6Model) {
 	t6console.debug("max", t6Model.max);
 	t6console.debug("===========================================================");
 };
+
+t6machinelearning.addContinuous = function(featureName, min, max) {
+	continuousFeatsMins[featureName] = min;
+	continuousFeatsMaxs[featureName] = max;
+	continuousFeats.push(featureName);
+	t6console.debug(`ADDED "${featureName}" to Continuous Features, and having min: ${min} / max: ${max}`);
+	return true;
+}
+
+t6machinelearning.addCategorical = function(featureName, classes) {
+	categoricalFeats[featureName] = (Array.isArray(classes)===true && classes.length>-1)?classes:[];
+	if(featureName!=="flow_id" && featureName!=="value" && categoricalFeats[featureName].indexOf(0)===-1) {
+		categoricalFeats[featureName].unshift(0);
+		t6console.debug(`ADDED value "0" to Categorical list`);
+	}
+	t6console.debug(`ADDED "${featureName}" to Categorical Features with ${categoricalFeats[featureName].length} classes`, categoricalFeats[featureName]);
+	return true;
+}
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
 	return await new Promise((resolve) => {
@@ -105,7 +104,6 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 			const x = data.map((r) => {
 				let result = [];
 				let featureValues = [];
-				// continuousFeats
 				continuousFeats.forEach((f) => {
 					featureValues[f] = [];
 					if(continuousFeats.indexOf(f)>-1) {
@@ -123,6 +121,8 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 					featureValues[f] = [];
 					let indexInCategory = categoricalFeats[f].indexOf(r[f]);
 					indexInCategory = indexInCategory>-1?indexInCategory:0; // by default de 0 indexed oneHot.. because we unshifted a "0"
+					// TODO: But, it might bug, since we unshift only when not yet existing ... and user can force a zero value at a index > 0 !!
+					// So we should juste have: let indexInCategory = categoricalFeats[f].indexOf(r[f]); ??
 					const oneHotEncoded = oneHotEncode(indexInCategory, categoricalFeats[f]);
 					return featureValues[f].push(...oneHotEncoded); // ...
 				});
@@ -134,7 +134,6 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				return tf.util.flatten(result);
 			});
 			const y = data.map((r) => {
-				//t6console.debug("LABEL !", r.label);
 				return oneHotEncode(t6Model.labels.indexOf(r.label), t6Model.labels);
 			});
 
@@ -147,7 +146,7 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				.zip({
 					xs: tf.data.array(featureTensor),
 					ys: tf.data.array(labelTensor)
-				}).shuffle(data.length);
+				});
 
 			resolve({
 				trainDs: ds.take(splitIdx).batch(batchSize),
@@ -223,40 +222,10 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 	});
 };
 
-t6machinelearning.predict_1 = async function(tfModel, t6Model, inputDatasetX) {
+t6machinelearning.predict = async function(tfModel, inputDatasetX, options) {
 	return new Promise((resolve) => {
-		const prediction = tfModel.predict(inputDatasetX);
-		resolve(prediction);
-	});
-};
-t6machinelearning.predict_2 = async function(tfModel, t6Model, inputData, normalizationData) {
-	let {inputMax, inputMin, labelMin, labelMax} = normalizationData;
-	inputMax = tf.tensor(inputMax);
-	inputMin = tf.tensor(inputMin);
-	const [xs, preds] = tf.tidy(() => {
-		const xsNorm = tf.linspace(0, 1, 100);
-		const predictions = tfModel.predict(xsNorm.reshape([100, 1]));
-		const unNormXs = xsNorm
-			.mul(inputMax.sub(inputMin))
-			.add(inputMin);
-		const unNormPreds = predictions
-			.mul(labelMax.sub(labelMin))
-			.add(labelMin);
-	    // Un-normalize the data
-		return [unNormXs.dataSync(), unNormPreds.dataSync()];
-	});
-	const predictedPoints = Array.from(xs).map((val, i) => {
-		return {x: val, y: preds[i]}
-	});
-};
-t6machinelearning.predict_3 = async function(tfModel, t6Model, inputData) {
-	return new Promise((resolve) => {
-		t6machinelearning.init(t6Model.labels, t6Model.batch_size, t6Model.min, t6Model.max);
-		//t6console.debug("inputData", inputData.x);
-		//t6console.debug("inputData.length", inputData.length);
-		//t6console.debug("inputData tensor", tf.tensor(inputData, [1, inputData.length]));
-		//const prediction = tfModel.predict(tf.tensor(inputData, [1, inputData.length])).arraySync();
-		const prediction = tfModel.predict(inputData.reshape([100, 1])).arraySync();
+		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
+		//t6console.debug("ML PREDICTION 0",  tf.argMax(prediction, 0));
 		resolve(prediction);
 	});
 };
