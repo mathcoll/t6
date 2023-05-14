@@ -4,6 +4,8 @@ var router = express.Router();
 var ModelSerializer = require("../serializers/model");
 var ErrorSerializer = require("../serializers/error");
 const options = {
+	epochs: 0,
+	validationData: null,
 	verbose: process.env.NODE_ENV === "production" ?0:1/*,
 	callbacks: {
 		onEpochBegin: async (epoch, logs) => {
@@ -254,10 +256,10 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 	let model_id = req.params.model_id;
 	let user_id = req.user.id;
 	let inputData = Array.isArray(req.body)===false?[req.body]:req.body;
-	if ( !req.body || !inputData ) {
-		return res.status(412).send(new ErrorSerializer({"id": 14185, "code": 412, "message": "Precondition Failed"}).serialize());
+	if (!req.body || !inputData) {
+		return res.status(412).send(new ErrorSerializer({ "id": 14185, "code": 412, "message": "Precondition Failed" }).serialize());
 	}
-	if ( model_id ) {
+	if (model_id) {
 		let query = {
 			"$and": [
 					{ "id": model_id },
@@ -274,6 +276,11 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 					t6machinelearning.init(t6Model);
 					tfModel.summary();
 					//inputData.map((m) => m.flow_id=t6Model.flow_ids.indexOf(m.flow_id));
+					inputData.map((m) => {
+						let category_id = (m.meta!==null && typeof m.meta!=="undefined" && typeof m.meta.categories!=="undefined") ? (m.meta.categories[0]) : null;
+						m.label = (category_id!==null && typeof category_id!=="undefined" && category_id!=="") ? categories.findOne({ id: category_id }).name : 0;
+						return m;
+					});
 					t6console.debug("inputData", inputData);
 					t6Model.continuous_features.map((cName) => {
 						t6machinelearning.addContinuous(cName, t6Model.min, t6Model.max);
@@ -289,45 +296,35 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 					});
 					t6machinelearning.loadDataSets(inputData, t6Model, 0)
 					.then((dataset) => {
+						const xs = dataset.trainXs;
 						const xTensor = dataset.xTensor;
-						const trainDs = dataset.trainDs;
-						const trainXs = dataset.trainXs;
+						const xArray = dataset.xArray;
 						t6console.debug("ML DATASET COMPLETED");
 						t6console.debug("== FEATURES ==");
 						t6console.debug("continuous_features", t6Model.continuous_features);
 						t6console.debug("categorical_features", t6Model.categorical_features);
 
-						t6console.debug("== featureTensor ==");
-						t6console.debug("featureTensor trainXs", dataset.trainXs);
-						t6console.debug("featureTensor length", dataset.trainXs.length);
-						t6console.debug("featureTensor shape", dataset.xTensor.shape);
-						t6console.debug("featureTensor size", dataset.xTensor.size);
-						t6console.debug("featureTensor rank", dataset.xTensor.rank);
-						t6console.debug("featureTensor rankType", dataset.xTensor.rankType);
+						t6console.debug("== features ==");
+						t6console.debug("features", xs);
+						t6console.debug("features as zipped datastore taking 100% of data : length", xs.length);
+						t6console.debug("features tensor shape", xTensor.shape);
+						t6console.debug("features tensor size", xTensor.size);
+						t6console.debug("features tensor rank", xTensor.rank);
+						t6console.debug("features tensor rankType", xTensor.rankType);
 
-						t6console.debug("== labelTensor ==");
-						t6console.debug("labelTensor trainYs", dataset.trainYs);
-						t6console.debug("labelTensor shape", dataset.yTensor.shape);
-						t6console.debug("labelTensor rank", dataset.yTensor.rank);
-						t6console.debug("labelTensor rankType", dataset.yTensor.rankType);
-
-						//t6machinelearning.buildModel([t6Model.batch_size, dataset.xTensor.size/dataset.trainXs.length], t6Model.labels.length)
-						//.then((tfModel) => {
 						options.epochs			= t6Model.epochs;
-							t6machinelearning.predict(tfModel, trainXs, options).then((prediction) => {
-								let p = [];
-								let arr = Array.from(prediction.dataSync());
-								// TODO: multiple Tensors when predicting multiple values
-								arr.map((score, i) => {
-									p.push({ label: (t6Model.labels)[i], prediction: score.toFixed(4) });
-								});
-								t6console.debug("prediction", arr);
-								res.status(200).send({ "code": 200, labels: t6Model.labels, prediction: p, bestMatch: (t6Model.labels)[arr.indexOf(Math.max(...arr))] }); // TODO: missing serializer
-								t6events.addStat("t6App", "ML Prediction", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
-							}).catch(function(err) {
-								t6console.debug("Model predict ERROR", err);
+						t6machinelearning.predict(tfModel, xs).then((prediction) => {
+							let p = [];
+							let arr = Array.from(prediction.dataSync()); // TODO: multiple predictions ?
+							arr.map((score, i) => {
+								p.push({ label: (t6Model.labels)[i], prediction: score.toFixed(4) });
 							});
-						//});
+							t6console.debug("prediction", arr);
+							res.status(200).send({ "code": 200, labels: t6Model.labels, prediction: p, bestMatch: (t6Model.labels)[arr.indexOf(Math.max(...arr))] }); // TODO: missing serializer
+							t6events.addStat("t6App", "ML Prediction", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
+						}).catch(function(err) {
+							t6console.debug("Model predict ERROR", err);
+						});
 					});
 				});
 			}
@@ -439,45 +436,112 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				t6machinelearning.loadDataSets(data, t6Model, t6Model.validation_split)
 				.then((dataset) => {
 					t6console.debug("ML DATASET COMPLETED"); // t6Model.batch_size, 
-					t6machinelearning.buildModel([dataset.xTensor.size/dataset.trainXs.length], t6Model.labels.length)
+					const trainDs = dataset.trainDs;
+					const validDs = dataset.validDs;
+					const xTensor = dataset.xTensor;
+					const yTensor = dataset.yTensor;
+					const trainXs = dataset.trainXs;
+					const trainYs = dataset.trainYs;
+					const xValidSize = dataset.xValidSize;
+					t6machinelearning.buildModel([xTensor.size/trainXs.length], t6Model.labels.length)
 					.then((tfModel) => {
-						t6console.debug("ML MODEL BUILT with a shape", [dataset.xTensor.size/dataset.trainXs.length]);
+						t6console.debug("ML MODEL BUILT with inputShape", [xTensor.size/trainXs.length]);
+						t6console.debug("ML MODEL BUILT with outputShape", t6Model.labels.length);
+						tfModel.summary();
 						t6console.debug("== FEATURES ==");
 						t6console.debug("continuous_features", t6Model.continuous_features);
 						t6console.debug("categorical_features", t6Model.categorical_features);
 
 						t6console.debug("== trainDs ==");
-						t6console.debug("trainDs", dataset.trainDs);
+						t6console.debug("trainDs", trainDs);			// class_1 { size: 11 }
+						//trainDs.forEachAsync( (t) => t6console.debug(t))
+						/*
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'ML DATASET COMPLETED' ]
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'MODEL weights:' ]
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense1/kernel', [ 3, 1 ] ]
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense1/bias', [ 1 ] ]
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense2/kernel', [ 1, 4 ] ]
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense2/bias', [ 4 ] ]
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'ML MODEL BUILT with inputShape', [ 3 ] ]
+14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'ML MODEL BUILT with outputShape', 4 ]
+__________________________________________________________________________________________
+Layer (type)                Input Shape               Output shape              Param #   
+==========================================================================================
+dense_Dense1 (Dense)        [[null,3]]                [null,1]                  4         
+__________________________________________________________________________________________
+dense_Dense2 (Dense)        [[null,1]]                [null,4]                  8         
+==========================================================================================
+Total params: 12
+Trainable params: 12
+Non-trainable params: 0
+__________________________________________________________________________________________
+						*/
+						t6console.debug("trainDs size", trainDs.size);	// 11
+						// 11 times the following :
+						/*
+						  {
+						    xs: Tensor {
+						      kept: false,
+						      isDisposedInternal: false,
+						      shape: [0m[36m[Array],
+						      dtype: 'float32',
+						      size: 150,
+						      strides: [0m[36m[Array],
+						      dataId: {},
+						      id: 7247,
+						      rankType: '2'
+						    },
+						    ys: Tensor {
+						      kept: false,
+						      isDisposedInternal: false,
+						      shape: [0m[36m[Array],
+						      dtype: 'float32',
+						      size: 200,
+						      strides: [0m[36m[Array],
+						      dataId: {},
+						      id: 7248,
+						      rankType: '2'
+						    }
+						  }
+						*/
 
-						t6console.debug("== featureTensor ==");
-						t6console.debug("featureTensor", dataset.trainXs);
-						t6console.debug("featureTensor length", dataset.trainXs.length);
-						t6console.debug("featureTensor shape", dataset.xTensor.shape);
-						t6console.debug("featureTensor size", dataset.xTensor.size);
-						t6console.debug("featureTensor rank", dataset.xTensor.rank);
-						t6console.debug("featureTensor rankType", dataset.xTensor.rankType);
+						t6console.debug("== features ==");
+						t6console.debug("trainXs", trainXs);
+						/*
+						14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [
+						  'trainXs',
+						  [
+						    [ 0.25, 1, 0 ],   [ 0.125, 1, 0 ],  [ 0.1875, 1, 0 ], [ 0.0625, 1, 0 ],
+						    [ 0.1875, 1, 0 ], [ 0.125, 1, 0 ],  [ 0, 1, 0 ],      [ 0.1875, 1, 0 ],
+						   ... ... ... ... truncated
+*/
+						t6console.debug("trainXs length", trainXs.length);
+						t6console.debug("xTensor shape", xTensor.shape);
+						t6console.debug("xTensor size", xTensor.size);
+						t6console.debug("xTensor rank", xTensor.rank);
+						t6console.debug("xTensor rankType", xTensor.rankType);
 
 						t6console.debug("== labelTensor ==");
-						t6console.debug("labelTensor", dataset.trainYs);
-						t6console.debug("labelTensor shape", dataset.yTensor.shape);
-						t6console.debug("labelTensor rank", dataset.yTensor.rank);
-						t6console.debug("labelTensor rankType", dataset.yTensor.rankType);
-						res.status(202).send({ "code": 202, current_status: "RUNNING", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: dataset.trainXs.length, valid_length: dataset.xValidSize, continuous_features: t6Model.continuous_features, categorical_features: t6Model.categorical_features, categorical_features_classes: t6Model.categorical_features_classes, flow_ids: t6Model.flow_ids, labels: t6Model.labels }); // TODO: missing serializer
-						options.validationData	= dataset.validDs;
+						t6console.debug("labelTensor", trainYs);
+						t6console.debug("labelTensor shape", yTensor.shape);
+						t6console.debug("labelTensor rank", yTensor.rank);
+						t6console.debug("labelTensor rankType", yTensor.rankType);
+						res.status(202).send({ "code": 202, current_status: "RUNNING", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: trainXs.length, valid_length: xValidSize, continuous_features: t6Model.continuous_features, categorical_features: t6Model.categorical_features, categorical_features_classes: t6Model.categorical_features_classes, flow_ids: t6Model.flow_ids, labels: t6Model.labels }); // TODO: missing serializer
+						options.validationData	= validDs;
 						options.epochs			= t6Model.epochs;
 						t6Model.current_status = "RUNNING";
 						db_models.save(); // saving the status
 
-						t6machinelearning.trainModelDs(tfModel, dataset.trainDs, options)
-						//t6machinelearning.trainModel(tfModel, dataset.trainXs, dataset.trainYs, options)
+						t6machinelearning.trainModelDs(tfModel, trainDs, options)
+						//t6machinelearning.trainModel(tfModel, trainXs, trainYs, options)
 						.then((trained) => {
 							t6console.debug("ML TRAINED");
 							t6Model.history = {
 								loss	: trained.history.loss,
 								accuracy: trained.history.acc
 							};
-							if(dataset.validDs.size>0) {
-								t6machinelearning.evaluateModel(tfModel, dataset.validDs)
+							if(validDs.size>0) {
+								t6machinelearning.evaluateModel(tfModel, validDs)
 								.then((evaluate) => {
 									t6console.debug("evaluate: loss", evaluate.loss);
 									t6console.debug("evaluate: accuracy", evaluate.accuracy);
@@ -487,7 +551,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									};
 									let user = users.findOne({"id": req.user.id });
 									if (user && typeof user.pushSubscription !== "undefined" ) {
-										let payload = `{"type": "message", "title": "Model trained", "body": "- Features[Con]: ${t6Model.continuous_features.length}\\n- Features[Cat]: ${t6Model.categorical_features.length}\\n- Labels: ${t6Model.labels.length}\\n- Flows: ${t6Model.flow_ids.length}\\n- Train dataset: ${dataset.trainXs.length}\\n- Validate dataset: ${dataset.xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+										let payload = `{"type": "message", "title": "Model trained", "body": "- Features[Con]: ${t6Model.continuous_features.length}\\n- Features[Cat]: ${t6Model.categorical_features.length}\\n- Labels: ${t6Model.labels.length}\\n- Flows: ${t6Model.flow_ids.length}\\n- Train dataset: ${trainXs.length}\\n- Validate dataset: ${xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 										let result = t6notifications.sendPush(user, payload);
 										if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 											t6console.debug("pushSubscription", pushSubscription);
@@ -510,7 +574,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									});
 								});
 							} else {
-								t6console.debug("Missing Validating data", dataset.trainDs.size, dataset.validDs.size);
+								t6console.debug("Missing Validating data", trainDs.size, validDs.size);
 							}
 						});
 					});

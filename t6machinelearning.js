@@ -49,6 +49,8 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 }
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
+	t6console.debug("inputShape", inputShape);
+	t6console.debug("outputShape", outputShape);
 	return await new Promise((resolve) => {
 		const model = tf.sequential();
 		model.add(tf.layers.dense({
@@ -73,7 +75,7 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 		*/
 		model.compile({
 			optimizer: tf.train.adam(0.001),
-			loss: "meanSquaredError", // categoricalCrossentropy | meanSquaredError | binaryCrossentropy
+			loss: "categoricalCrossentropy", // categoricalCrossentropy | meanSquaredError | binaryCrossentropy
 			metrics: ['accuracy']
 		});
 		t6console.debug("MODEL weights:");
@@ -120,10 +122,14 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				Object.keys(categoricalFeats).map((f) => {
 					featureValues[f] = [];
 					let indexInCategory = categoricalFeats[f].indexOf(r[f]);
+					let classes = [...categoricalFeats[f]];
+					if(classes.length<2) {
+						classes.unshift(0);
+					}
 					indexInCategory = indexInCategory>-1?indexInCategory:0; // by default de 0 indexed oneHot.. because we unshifted a "0"
 					// TODO: But, it might bug, since we unshift only when not yet existing ... and user can force a zero value at a index > 0 !!
-					// So we should juste have: let indexInCategory = categoricalFeats[f].indexOf(r[f]); ??
-					const oneHotEncoded = oneHotEncode(indexInCategory, categoricalFeats[f]);
+					// So we should juste have: let indexInCategory = classes.indexOf(r[f]); ??
+					const oneHotEncoded = oneHotEncode(indexInCategory, classes);
 					return featureValues[f].push(...oneHotEncoded); // ...
 				});
 				Object.keys(categoricalFeats).map((f) => {
@@ -152,6 +158,7 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				trainDs: ds.take(splitIdx).batch(batchSize),
 				validDs: ds.skip(splitIdx + 1).batch(batchSize),
 				xTensor: xTensor,
+				xArray: tf.data.array(featureTensor),
 				yTensor: yTensor,
 				trainXs: featureTensor,
 				trainYs: labelTensor,
@@ -222,10 +229,13 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 	});
 };
 
-t6machinelearning.predict = async function(tfModel, inputDatasetX, options) {
+t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 	return new Promise((resolve) => {
 		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
-		//t6console.debug("ML PREDICTION 0",  tf.argMax(prediction, 0));
+		const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
+		t6console.debug("ML PREDICTION", argMaxIndex);
+		t6console.debug("ML PREDICTION");
+		prediction.print();
 		resolve(prediction);
 	});
 };
