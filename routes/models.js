@@ -84,7 +84,7 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 /**
  * @api {put} /models/:model_id Edit a Model
  * @apiName Edit a Model
- * @apiDescription Editing a Model will reset the history and current_status
+ * @apiDescription Editing a Model will reset the history, the training_balance, the mins and maxs, and the current_status
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
  * 
@@ -110,11 +110,15 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 				var result;
 				models.chain().find({ "id": model_id }).update(function(item) {
 					item.history		= {};
+					item.training_balance= {};
+					item.min= {};
+					item.max= {};
 					item.current_status	= "READY";
 					item.features = undefined;
 					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
+					item.labels			= typeof req.body.labels!=="undefined"?req.body.labels:item.labels;
 					item.continuous_features	= typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:item.continuous_features;
 					item.categorical_features	= typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:item.categorical_features; // TODO depend on datatype
 					item.categorical_features_classes	= typeof req.body.categorical_features_classes!=="undefined"?req.body.categorical_features_classes:item.categorical_features_classes;
@@ -127,7 +131,8 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 							"start": typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:item.datasets.training.start,
 							"end": typeof req.body.datasets.training.end!=="undefined"?req.body.datasets.training.end:item.datasets.training.end,
 							"duration": typeof req.body.datasets.training.duration!=="undefined"?req.body.datasets.training.duration:item.datasets.training.duration,
-							"limit": typeof req.body.datasets.training.limit!=="undefined"?req.body.datasets.training.limit:item.datasets.training.limit
+							"limit": typeof req.body.datasets.training.limit!=="undefined"?req.body.datasets.training.limit:item.datasets.training.limit,
+							"balance_limit": typeof req.body.datasets.training.balance_limit!=="undefined"?req.body.datasets.training.balance_limit:item.datasets.training.balance_limit
 						},
 						"testing": {
 							"start": typeof req.body.datasets.testing.start!=="undefined"?req.body.datasets.testing.start:item.datasets.testing.start,
@@ -180,6 +185,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				user_id:	req.user.id,
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
+				labels:		typeof req.body.labels!=="undefined"?req.body.labels:["oov"],
 				features:	typeof req.body.features!=="undefined"?req.body.features:["value"],
 				continuous_features: typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:["value"],
 				categorical_feature: typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:[], // TODO depend on datatype
@@ -189,12 +195,14 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				batch_size:	typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
 				epochs:		typeof req.body.epochs!=="undefined"?req.body.epochs:100,
 				current_status: "READY",
+				training_balance:	{},
 				datasets: {
 					training: {
 						start: typeof req.body.datasets.training.start!=="undefined"?req.body.datasets.training.start:new Date(),
 						end: typeof req.body.datasets.training.end!=="undefined"?req.body.datasets.training.end:new Date(),
 						duration: typeof req.body.datasets.training.duration!=="undefined"?req.body.datasets.training.duration:null,
-						limit: typeof req.body.datasets.training.limit!=="undefined"?req.body.datasets.training.limit:null
+						limit: typeof req.body.datasets.training.limit!=="undefined"?req.body.datasets.training.limit:null,
+						balance_limit: typeof req.body.datasets.training.balance_limit!=="undefined"?req.body.datasets.training.balance_limit:null
 					},
 					testing: {
 						start: typeof req.body.datasets.testing.start!=="undefined"?req.body.datasets.testing.start:new Date(),
@@ -283,7 +291,9 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 					});
 					t6console.debug("inputData", inputData);
 					t6Model.continuous_features.map((cName) => {
-						t6machinelearning.addContinuous(cName, t6Model.min, t6Model.max);
+						t6Model.flow_ids.map((f_id) => {
+							t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
+						})
 					});
 					t6Model.categorical_features.map((cName) => {
 						let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
@@ -317,10 +327,12 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 							let p = [];
 							let arr = Array.from(prediction.dataSync()); // TODO: multiple predictions ?
 							arr.map((score, i) => {
-								p.push({ label: (t6Model.labels)[i], prediction: score.toFixed(4) });
+								p.push({ label: (t6Model.labels)[i], prediction: parseFloat(score.toFixed(4)) });
 							});
-							t6console.debug("prediction", arr);
-							res.status(200).send({ "code": 200, labels: t6Model.labels, prediction: p, bestMatch: (t6Model.labels)[arr.indexOf(Math.max(...arr))] }); // TODO: missing serializer
+							//t6console.debug("prediction", arr);
+							const bestMatchPrediction = Math.max(...arr);
+							const bestMatchIndex = arr.indexOf(bestMatchPrediction);
+							res.status(200).send({ "code": 200, value: null, labels: t6Model.labels, predictions: p, bestMatchIndex: bestMatchIndex, bestMatchPrediction: parseFloat(bestMatchPrediction.toFixed(4)), bestMatchLabel: (t6Model.labels)[bestMatchIndex] }); // TODO: missing serializer
 							t6events.addStat("t6App", "ML Prediction", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
 						}).catch(function(err) {
 							t6console.debug("Model predict ERROR", err);
@@ -399,8 +411,11 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 			}
 			let where = ""; //"meta!='' AND ";
-			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
+			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting}`; // LIMIT ${limit} OFFSET ${offset}
 		}).join("; ");
+		/*
+		queryTs = `SELECT time, valueFloat as value, flow_id, meta FROM autogen.data WHERE  user_id='44800701-d6de-48f7-9577-4b3ea1fab81a' AND time>='2021-12-26T23:00:00.000Z' AND time<='2023-06-29T22:00:00.000Z'  AND flow_id='6d844fbf-29c0-4a41-8c6a-0e9f3336cea3' AND valueFloat<19 ORDER BY time ASC LIMIT ${limit};SELECT time, valueFloat as value, flow_id, meta FROM autogen.data WHERE  user_id='44800701-d6de-48f7-9577-4b3ea1fab81a' AND time>='2021-12-26T23:00:00.000Z' AND time<='2023-06-29T22:00:00.000Z'  AND flow_id='6d844fbf-29c0-4a41-8c6a-0e9f3336cea3' AND valueFloat<29 AND valueFloat>=19 ORDER BY time ASC LIMIT ${limit};SELECT time, valueFloat as value, flow_id, meta FROM autogen.data WHERE  user_id='44800701-d6de-48f7-9577-4b3ea1fab81a' AND time>='2021-12-26T23:00:00.000Z' AND time<='2023-06-29T22:00:00.000Z'  AND flow_id='6d844fbf-29c0-4a41-8c6a-0e9f3336cea3' AND valueFloat<39 AND valueFloat>=29 ORDER BY time ASC LIMIT ${limit}`;
+		*/
 		t6console.debug("queryTs:", queryTs);
 
 		// Get values from TS
@@ -409,20 +424,63 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			if ( data.length > 0 ) {
 				t6console.debug("ML data.length:", data.length);
 				// TODO: expecting to have continuous values
-				t6Model.min = Math.min(...data.filter((d) => t6Model.flow_ids.indexOf(d.flow_id)===0).map((m) => m.value));
-				t6Model.max = Math.max(...data.filter((d) => t6Model.flow_ids.indexOf(d.flow_id)===0).map((m) => m.value));
+
+				t6Model.min = {};
+				t6Model.max = {};
+				t6Model.flow_ids.map((f_id) => {
+					t6Model.min[f_id] = Math.min(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
+					t6Model.max[f_id] = Math.max(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
+				});
 				// TODO : check for min < max
-				data.map((m) => {
+				t6Model.training_balance = {};
+				if(t6Model.labels.indexOf("oov")===-1) { t6Model.labels.push("oov"); }
+				t6Model.training_balance["oov"] = 0;
+				data = data.map((m) => {
 					// TODO
 					// Label is only taken from the meta category
-					m.meta = JSON.parse(typeof m.meta!=="undefined"?m.meta:null);
+					m.meta = (typeof m.meta!=="undefined" && m.meta!==null)?m.meta:{categories: ["oov"]};
+					m.meta = getJson(m.meta);
 					let category_id = (m.meta!==null && typeof m.meta!=="undefined" && typeof m.meta.categories!=="undefined")?(m.meta.categories[0]):null;
-					m.label = (category_id!==null)?categories.findOne({id: category_id}).name:0;
+
+					if(category_id!==null && category_id!=="oov") {
+						m.label = categories.findOne({id: category_id}).name;
+						if(t6Model.labels.indexOf(m.label)===-1) {
+							t6Model.labels.push(m.label);
+						}
+						if(typeof t6Model.training_balance[m.label]!=="undefined") {
+							t6Model.training_balance[m.label]++;
+						} else {
+							t6Model.training_balance[m.label] = 1;
+						}
+					} else {
+						m.label = "oov";
+						if(typeof t6Model.training_balance[m.label]!=="undefined") {
+							t6Model.training_balance[m.label]++;
+						} else {
+							t6Model.training_balance[m.label] = 1;
+						}
+					}
 					return m;
 				});
+
+				// GET BALANCED DATA
+				// get random values until it reach balance_limit on each labels
+				let iData = [];
+				t6Model.labels.map( (label) => {
+					const label_name = label;
+					const dataLabel = data.filter((f) => f.label===label_name)	// get only the current label
+						.sort(() => Math.random() - 0.5)						// shuffle the results with the current label
+						.slice(0, t6Model.datasets.training.balance_limit);		// take only requested limit values
+					t6Model.training_balance[label] = dataLabel.length;
+					iData = iData.concat(dataLabel);
+				});
+
+				t6Model.data_length = iData.length;
 				t6machinelearning.init(t6Model);
 				t6Model.continuous_features.map((cName) => {
-					t6machinelearning.addContinuous(cName, t6Model.min, t6Model.max);
+					t6Model.flow_ids.map((f_id) => {
+						t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
+					});
 				});
 				t6Model.categorical_features.map((cName) => {
 					let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
@@ -433,9 +491,9 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						t6machinelearning.addCategorical(cName, cClasses);
 					}
 				});
-				t6machinelearning.loadDataSets(data, t6Model, t6Model.validation_split)
+				t6machinelearning.loadDataSets(iData, t6Model, t6Model.validation_split)
 				.then((dataset) => {
-					t6console.debug("ML DATASET COMPLETED"); // t6Model.batch_size, 
+					t6console.debug("ML DATASET COMPLETED"); // t6Model.batch_size,
 					const trainDs = dataset.trainDs;
 					const validDs = dataset.validDs;
 					const xTensor = dataset.xTensor;
@@ -526,11 +584,26 @@ ________________________________________________________________________________
 						t6console.debug("labelTensor shape", yTensor.shape);
 						t6console.debug("labelTensor rank", yTensor.rank);
 						t6console.debug("labelTensor rankType", yTensor.rankType);
-						res.status(202).send({ "code": 202, current_status: "RUNNING", process: "asynchroneous", model_id: model_id, limit: limit, validation_split: validation_split, notification: "push-notification", train_length: trainXs.length, valid_length: xValidSize, continuous_features: t6Model.continuous_features, categorical_features: t6Model.categorical_features, categorical_features_classes: t6Model.categorical_features_classes, flow_ids: t6Model.flow_ids, labels: t6Model.labels }); // TODO: missing serializer
+						t6Model.current_status = "RUNNING";
+						res.status(202).send(new ModelSerializer({
+							current_status: t6Model.current_status,
+							process: "asynchroneous",
+							notification: "push-notification",
+							model_id: model_id,
+							limit: limit,
+							validation_split: validation_split,
+							train_length: trainXs.length,
+							valid_length: xValidSize,
+							continuous_features: t6Model.continuous_features,
+							categorical_features: t6Model.categorical_features,
+							categorical_features_classes: t6Model.categorical_features_classes,
+							training_balance: t6Model.training_balance,
+							flow_ids: t6Model.flow_ids,
+							labels: t6Model.labels
+						}).serialize());
+						db_models.save(); // saving the status
 						options.validationData	= validDs;
 						options.epochs			= t6Model.epochs;
-						t6Model.current_status = "RUNNING";
-						db_models.save(); // saving the status
 
 						t6machinelearning.trainModelDs(tfModel, trainDs, options)
 						//t6machinelearning.trainModel(tfModel, trainXs, trainYs, options)
