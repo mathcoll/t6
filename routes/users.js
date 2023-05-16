@@ -29,7 +29,7 @@ router.get("/newcomers", function (req, res) {
 	var offset = Math.ceil(size*(page-1));
 	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
 		var query = `SELECT who FROM events WHERE what='user add' ORDER BY time desc LIMIT ${size} OFFSET ${offset}`; // TODO WTF ?? using influx for that ??
-		t6console.log(query);
+		t6console.debug(query);
 		dbInfluxDB.query(query).then((data) => {
 			data.map(function(u) {
 				let us;
