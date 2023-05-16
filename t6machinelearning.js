@@ -25,24 +25,31 @@ t6machinelearning.init = function(t6Model) {
 	t6console.debug("labels", t6Model.labels);
 	t6console.debug("labelsCount", t6Model.labels.length);
 	t6console.debug("batch_size", t6Model.batch_size);
+	t6console.debug("data_length", t6Model.data_length);
 	t6console.debug("min", t6Model.min);
 	t6console.debug("max", t6Model.max);
 	t6console.debug("===========================================================");
 };
 
-t6machinelearning.addContinuous = function(featureName, min, max) {
-	continuousFeatsMins[featureName] = min;
-	continuousFeatsMaxs[featureName] = max;
+t6machinelearning.addContinuous = function(featureName, flow_id, min, max) {
+	if (typeof continuousFeatsMins[featureName] === "undefined") {
+		continuousFeatsMins[featureName] = [];
+	}
+	if (typeof continuousFeatsMaxs[featureName] === "undefined") {
+		continuousFeatsMaxs[featureName] = [];
+	}
+	continuousFeatsMins[featureName][flow_id] = min;
+	continuousFeatsMaxs[featureName][flow_id] = max;
 	continuousFeats.push(featureName);
-	t6console.debug(`ADDED "${featureName}" to Continuous Features, and having min: ${min} / max: ${max}`);
+	t6console.debug(`ADDED "${featureName}" on ${flow_id} to Continuous Features, and having min: ${min} / max: ${max}`);
 	return true;
 }
 
 t6machinelearning.addCategorical = function(featureName, classes) {
 	categoricalFeats[featureName] = (Array.isArray(classes)===true && classes.length>-1)?classes:[];
-	if(featureName!=="flow_id" && featureName!=="value" && categoricalFeats[featureName].indexOf(0)===-1) {
-		categoricalFeats[featureName].unshift(0);
-		t6console.debug(`ADDED value "0" to Categorical list`);
+	if(featureName!=="flow_id" && featureName!=="value" && categoricalFeats[featureName].indexOf("oov")===-1) {
+		categoricalFeats[featureName].unshift("oov");
+		t6console.debug(`ADDED value "oov" to Categorical list`);
 	}
 	t6console.debug(`ADDED "${featureName}" to Categorical Features with ${categoricalFeats[featureName].length} classes`, categoricalFeats[featureName]);
 	return true;
@@ -60,7 +67,7 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 		}));
 		model.add(tf.layers.dense({
 			units: outputShape,
-			activation: "sigmoid"
+			activation: "softmax" // sigmoid
 		}));
 		/*
 		Adadelta -Implements the Adadelta algorithm.
@@ -109,9 +116,9 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				continuousFeats.forEach((f) => {
 					featureValues[f] = [];
 					if(continuousFeats.indexOf(f)>-1) {
-						let min = continuousFeatsMins[f];
-						let max = continuousFeatsMaxs[f];
-						return featureValues[f].push(normalize(r[f], min, max)); // normalize
+						const min = continuousFeatsMins[f][r.flow_id];
+						const max = continuousFeatsMaxs[f][r.flow_id];
+						return featureValues[f].push(normalize(r[f], min, max)); // normalize // TODO: ADDING TWICE because value is on both flows
 					}
 				});
 				continuousFeats.map((f) => {
@@ -145,8 +152,8 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 
 			const featureTensor = x;
 			const labelTensor = y;
-			const xTensor = tf.tensor(featureTensor);
-			const yTensor = tf.tensor(labelTensor);
+			const xTensor = tf.tensor2d(featureTensor);
+			const yTensor = tf.tensor2d(labelTensor);
 			const splitIdx = parseInt((1 - testSize) * data.length, 10);
 			const ds = tf.data
 				.zip({
@@ -174,9 +181,9 @@ t6machinelearning.trainModelDs = async function(model, dataset, options) {
 	});
 };
 
-t6machinelearning.trainModel = async function(model, datasetXs, datasetYs, options) {
+t6machinelearning.trainModel = async function(model, x, y, options) {
 	return await new Promise((resolve) => {
-		resolve(model.fit(datasetXs, datasetYs, options));
+		resolve(model.fit(x, y, options));
 	});
 };
 
@@ -231,9 +238,10 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 
 t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 	return new Promise((resolve) => {
-		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
+		//const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
+		const prediction = tfModel.predict(tf.tensor2d(inputDatasetX), options);
 		const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
-		t6console.debug("ML PREDICTION", argMaxIndex);
+		t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
 		t6console.debug("ML PREDICTION");
 		prediction.print();
 		resolve(prediction);
