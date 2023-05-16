@@ -413,9 +413,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			let where = ""; //"meta!='' AND ";
 			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting}`; // LIMIT ${limit} OFFSET ${offset}
 		}).join("; ");
-		/*
-		queryTs = `SELECT time, valueFloat as value, flow_id, meta FROM autogen.data WHERE  user_id='44800701-d6de-48f7-9577-4b3ea1fab81a' AND time>='2021-12-26T23:00:00.000Z' AND time<='2023-06-29T22:00:00.000Z'  AND flow_id='6d844fbf-29c0-4a41-8c6a-0e9f3336cea3' AND valueFloat<19 ORDER BY time ASC LIMIT ${limit};SELECT time, valueFloat as value, flow_id, meta FROM autogen.data WHERE  user_id='44800701-d6de-48f7-9577-4b3ea1fab81a' AND time>='2021-12-26T23:00:00.000Z' AND time<='2023-06-29T22:00:00.000Z'  AND flow_id='6d844fbf-29c0-4a41-8c6a-0e9f3336cea3' AND valueFloat<29 AND valueFloat>=19 ORDER BY time ASC LIMIT ${limit};SELECT time, valueFloat as value, flow_id, meta FROM autogen.data WHERE  user_id='44800701-d6de-48f7-9577-4b3ea1fab81a' AND time>='2021-12-26T23:00:00.000Z' AND time<='2023-06-29T22:00:00.000Z'  AND flow_id='6d844fbf-29c0-4a41-8c6a-0e9f3336cea3' AND valueFloat<39 AND valueFloat>=29 ORDER BY time ASC LIMIT ${limit}`;
-		*/
 		t6console.debug("queryTs:", queryTs);
 
 		// Get values from TS
@@ -511,68 +508,11 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						t6console.debug("categorical_features", t6Model.categorical_features);
 
 						t6console.debug("== trainDs ==");
-						t6console.debug("trainDs", trainDs);			// class_1 { size: 11 }
+						t6console.debug("trainDs", trainDs);
 						//trainDs.forEachAsync( (t) => t6console.debug(t))
-						/*
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'ML DATASET COMPLETED' ]
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'MODEL weights:' ]
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense1/kernel', [ 3, 1 ] ]
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense1/bias', [ 1 ] ]
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense2/kernel', [ 1, 4 ] ]
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ ' ', 'dense_Dense2/bias', [ 4 ] ]
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'ML MODEL BUILT with inputShape', [ 3 ] ]
-14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [ 'ML MODEL BUILT with outputShape', 4 ]
-__________________________________________________________________________________________
-Layer (type)                Input Shape               Output shape              Param #   
-==========================================================================================
-dense_Dense1 (Dense)        [[null,3]]                [null,1]                  4         
-__________________________________________________________________________________________
-dense_Dense2 (Dense)        [[null,1]]                [null,4]                  8         
-==========================================================================================
-Total params: 12
-Trainable params: 12
-Non-trainable params: 0
-__________________________________________________________________________________________
-						*/
 						t6console.debug("trainDs size", trainDs.size);	// 11
-						// 11 times the following :
-						/*
-						  {
-						    xs: Tensor {
-						      kept: false,
-						      isDisposedInternal: false,
-						      shape: [0m[36m[Array],
-						      dtype: 'float32',
-						      size: 150,
-						      strides: [0m[36m[Array],
-						      dataId: {},
-						      id: 7247,
-						      rankType: '2'
-						    },
-						    ys: Tensor {
-						      kept: false,
-						      isDisposedInternal: false,
-						      shape: [0m[36m[Array],
-						      dtype: 'float32',
-						      size: 200,
-						      strides: [0m[36m[Array],
-						      dataId: {},
-						      id: 7248,
-						      rankType: '2'
-						    }
-						  }
-						*/
-
 						t6console.debug("== features ==");
 						t6console.debug("trainXs", trainXs);
-						/*
-						14/May/2023:20:43:20 +0200 [0m[36m[DEBUG] [
-						  'trainXs',
-						  [
-						    [ 0.25, 1, 0 ],   [ 0.125, 1, 0 ],  [ 0.1875, 1, 0 ], [ 0.0625, 1, 0 ],
-						    [ 0.1875, 1, 0 ], [ 0.125, 1, 0 ],  [ 0, 1, 0 ],      [ 0.1875, 1, 0 ],
-						   ... ... ... ... truncated
-*/
 						t6console.debug("trainXs length", trainXs.length);
 						t6console.debug("xTensor shape", xTensor.shape);
 						t6console.debug("xTensor size", xTensor.size);
