@@ -89,9 +89,33 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiBody {String} [name] 
+ * @apiBody {String} [name=unamed] Name of the model to retrieve it later within the list
+ * @apiBody {String} [retention=autogen] Data retention to look for
+ * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
+ * @apiBody {Integer} [batch_size=100]  Batch size during training
+ * @apiBody {Integer} [epochs=100] Number of epochs in training
+ * @apiBody {String[]} flow_ids Array of Flow Ids involved in training
+ * @apiBody {String[]} [continuous_features] Array of Continuous features
+ * @apiBody {String[]} [categorical_feature] Array of Categorical features
+ * @apiBody {Object[]} [categorical_features_classes] Array of Categorical classes
+ * @apiBody {String} [categorical_features_classes.name] Categorical classes names ; should refers to "categorical_features" from the list above
+ * @apiBody {String[]} [categorical_features_classes.values] Categorical classes values
+ * @apiBody {Object} datasets  
+ * @apiBody {Object} datasets.training Training Object containing details about data to train
+ * @apiBody {Date} datasets.training.start Start date to take Datapoints for training. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {Date} datasets.training.end End date to take Datapoints for training. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {String} datasets.training[duration] Not implemented yet !
+ * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
+ * @apiBody {Integer} datasets.training.balance_limit Restrict the Datapoints to a balanced limit so that all classes have the same amount of Datapoints
+ * @apiBody {Object} datasets.testing Testing Object containing details about data to test
+ * @apiBody {Date} datasets.testing.start Start date to take Datapoints for training. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {Date} datasets.testing.end End date to take Datapoints for testing. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {String} datasets.testing[duration] Not implemented yet !
+ * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * 
  * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
  */
 router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var model_id = req.params.model_id;
@@ -167,9 +191,31 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiBody {String} [name] 
+ * @apiBody {String} [name=unamed] Name of the model to retrieve it later within the list
+ * @apiBody {String} [retention=autogen] Data retention to look for
+ * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
+ * @apiBody {Integer} [batch_size=100]  Batch size during training
+ * @apiBody {Integer} [epochs=100] Number of epochs in training
+ * @apiBody {String[]} flow_ids Array of Flow Ids involved in training
+ * @apiBody {String[]} [continuous_features] Array of Continuous features
+ * @apiBody {String[]} [categorical_feature] Array of Categorical features
+ * @apiBody {Object[]} [categorical_features_classes] Array of Categorical classes
+ * @apiBody {String} [categorical_features_classes.name] Categorical classes names ; should refers to "categorical_features" from the list above
+ * @apiBody {String[]} [categorical_features_classes.values] Categorical classes values
+ * @apiBody {Object} datasets  
+ * @apiBody {Object} datasets.training Training Object containing details about data to train
+ * @apiBody {Date} datasets.training.start Start date to take Datapoints for training. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {Date} datasets.training.end End date to take Datapoints for training. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {String} datasets.training[duration] Not implemented yet !
+ * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
+ * @apiBody {Integer} datasets.training.balance_limit Restrict the Datapoints to a balanced limit so that all classes have the same amount of Datapoints
+ * @apiBody {Object} datasets.testing Testing Object containing details about data to test
+ * @apiBody {Date} datasets.testing.start Start date to take Datapoints for training. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {Date} datasets.testing.end End date to take Datapoints for testing. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
+ * @apiBody {String} datasets.testing[duration] Not implemented yet !
+ * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * 
- * @apiUse 200
+ * @apiUse 201
  */
 router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	/* Check for quota limitation */
@@ -186,7 +232,6 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
 				labels:		typeof req.body.labels!=="undefined"?req.body.labels:["oov"],
-				features:	typeof req.body.features!=="undefined"?req.body.features:["value"],
 				continuous_features: typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:["value"],
 				categorical_feature: typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:[], // TODO depend on datatype
 				categorical_features_classes: typeof req.body.categorical_features_classes!=="undefined"?req.body.categorical_features_classes:[],
@@ -230,6 +275,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
  * @apiUse Auth
  * 
  * @apiUse 200
+ * @apiUse 404
  */
 router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var model_id = req.params.model_id;
@@ -258,6 +304,7 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
  * @apiUse Auth
  * 
  * @apiUse 200
+ * @apiUse 401
  * @apiUse 412
  */
 router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
