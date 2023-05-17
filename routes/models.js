@@ -458,7 +458,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 			}
 			let where = ""; //"meta!='' AND ";
-			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting}`; // LIMIT ${limit} OFFSET ${offset}
+			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
 
@@ -576,7 +576,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 							current_status: t6Model.current_status,
 							process: "asynchroneous",
 							notification: "push-notification",
-							model_id: model_id,
+							id: model_id,
 							limit: limit,
 							validation_split: validation_split,
 							train_length: trainXs.length,
