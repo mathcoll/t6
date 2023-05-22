@@ -13,7 +13,7 @@ global.session			= require("express-session");
 global.FileStore		= require("session-file-store")(session);
 global.firebaseAdmin	= require("firebase-admin");
 
-global.annotate = function(user_id, from_ts, to_ts, flow_id, category_id) {
+global.annotate = function(user_id, from_ts, to_ts, flow_id, category_id, rule_id=null) {
 	annotations	= db_classifications.getCollection("annotations");
 	let annotation_id = uuid.v4();
 	let newAnnotation = {
@@ -24,7 +24,8 @@ global.annotate = function(user_id, from_ts, to_ts, flow_id, category_id) {
 		flow_id:	flow_id,
 		category_id:category_id,
 	};
-	t6events.addStat("t6Api", "annotation add", newAnnotation.id, user_id);
+	let eName = rule_id!==null?"Annotation added from Rule":"Annotation added from custom";
+	t6events.addStat("t6Api", eName, newAnnotation.id, user_id, {"user_id": user_id, annotation_id: newAnnotation.id, flow_id: newAnnotation.flow_id, category_id: newAnnotation.category_id, rule_id: rule_id});
 	annotations.insert(newAnnotation);
 	return newAnnotation;
 };
