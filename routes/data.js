@@ -611,7 +611,7 @@ let saveToLocal = function(resolve, reject) {
 			if(typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null)) {
 				tags.track_id = current_flow.track_id;
 			}
-			if (typeof payload.meta!=="undefined" && Object.keys(payload.meta).length > 0) {
+			if (typeof payload.meta!=="undefined" && payload.meta!==null && Object.keys(payload.meta).length > 0) {
 				fields[0].meta = JSON.stringify(payload.meta);
 			}
 			let v = getFieldsFromDatatype(payload.datatype, false, false);
