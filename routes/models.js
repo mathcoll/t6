@@ -337,20 +337,24 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 						return m;
 					});
 					t6console.debug("inputData", inputData);
-					t6Model.continuous_features.map((cName) => {
-						t6Model.flow_ids.map((f_id) => {
-							t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
-						})
-					});
-					t6Model.categorical_features.map((cName) => {
-						let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
-						cClasses = (Array.isArray(cClasses)===true)?cClasses:[];
-						if(cName === "flow_id") {
-							t6machinelearning.addCategorical(cName, t6Model.flow_ids);
-						} else {
-							t6machinelearning.addCategorical(cName, cClasses);
-						}
-					});
+					if (t6Model.continuous_features?.length > 0) {
+						t6Model.continuous_features.map((cName) => {
+							t6Model.flow_ids.map((f_id) => {
+								t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
+							})
+						});
+					}
+					if (t6Model.categorical_features?.length > 0) {
+						t6Model.categorical_features.map((cName) => {
+							let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
+							cClasses = (Array.isArray(cClasses)===true)?cClasses:[];
+							if(cName === "flow_id") {
+								t6machinelearning.addCategorical(cName, t6Model.flow_ids);
+							} else {
+								t6machinelearning.addCategorical(cName, cClasses);
+							}
+						});
+					}
 					t6machinelearning.loadDataSets(inputData, t6Model, 0)
 					.then((dataset) => {
 						const xs = dataset.trainXs;
@@ -458,7 +462,8 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 			}
 			let where = ""; //"meta!='' AND ";
-			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${offset}`;
+			let lim = limit!==null?` LIMIT ${limit} OFFSET ${offset}`:"";
+			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
 
@@ -521,20 +526,24 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 				t6Model.data_length = iData.length;
 				t6machinelearning.init(t6Model);
-				t6Model.continuous_features.map((cName) => {
-					t6Model.flow_ids.map((f_id) => {
-						t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
+				if (t6Model.continuous_features?.length > 0) {
+					t6Model.continuous_features.map((cName) => {
+						t6Model.flow_ids.map((f_id) => {
+							t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
+						});
 					});
-				});
-				t6Model.categorical_features.map((cName) => {
-					let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
-					cClasses = (Array.isArray(cClasses)===true)?cClasses:[];
-					if(cName === "flow_id") {
-						t6machinelearning.addCategorical(cName, t6Model.flow_ids);
-					} else {
-						t6machinelearning.addCategorical(cName, cClasses);
-					}
-				});
+				}
+				if (t6Model.categorical_features?.length > 0) {
+					t6Model.categorical_features.map((cName) => {
+						let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
+						cClasses = (Array.isArray(cClasses)===true)?cClasses:[];
+						if(cName === "flow_id") {
+							t6machinelearning.addCategorical(cName, t6Model.flow_ids);
+						} else {
+							t6machinelearning.addCategorical(cName, cClasses);
+						}
+					});
+				}
 				t6machinelearning.loadDataSets(iData, t6Model, t6Model.validation_split)
 				.then((dataset) => {
 					t6console.debug("ML DATASET COMPLETED"); // t6Model.batch_size,
@@ -611,7 +620,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									};
 									let user = users.findOne({"id": req.user.id });
 									if (user && typeof user.pushSubscription !== "undefined" ) {
-										let payload = `{"type": "message", "title": "Model trained", "body": "- Features[Con]: ${t6Model.continuous_features.length}\\n- Features[Cat]: ${t6Model.categorical_features.length}\\n- Labels: ${t6Model.labels.length}\\n- Flows: ${t6Model.flow_ids.length}\\n- Train dataset: ${trainXs.length}\\n- Validate dataset: ${xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
+										let payload = `{"type": "message", "title": "Model trained", "body": "- Features[Con]: ${t6Model.continuous_features?.length}\\n- Features[Cat]: ${t6Model.categorical_features?.length}\\n- Labels: ${t6Model.labels?.length}\\n- Flows: ${t6Model.flow_ids?.length}\\n- Train dataset: ${trainXs.length}\\n- Validate dataset: ${xValidSize}\\n- loss: ${evaluate.loss}\\n- accuracy: ${evaluate.accuracy}", "icon": null, "vibrate":[200, 100, 200, 100, 200, 100, 200]}`;
 										let result = t6notifications.sendPush(user, payload);
 										if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
 											t6console.debug("pushSubscription", pushSubscription);
