@@ -35,8 +35,9 @@ let preparePayload = function(resolve, reject) {
 	t6console.debug("chain 1", "preparePayload");
 	payload = getJson(payload);
 	let object;
-	payload.timestamp	 = (payload.timestamp!=="" && typeof payload.timestamp!=="undefined")?parseInt(payload.timestamp, 10):moment().format("x");
-	if ( payload.timestamp.toString().length <= 10 ) { payload.timestamp = moment(payload.timestamp*1000).format("x"); }
+	t6console.debug("DATE", moment(payload.timestamp).format(logDateFormat));
+	t6console.debug("DATE", parseInt(moment(payload.timestamp).format("x"), 10));
+	payload.timestamp	 = (typeof payload.timestamp!=="undefined" && payload.timestamp!=="")?parseInt(moment(payload.timestamp).format("x"), 10):moment().format("x");
 	payload.time		 = payload.timestamp;
 	payload.errorMessage = options.errorMessage;
 	payload.user_id		 = options.user_id;
@@ -599,7 +600,7 @@ let saveToLocal = function(resolve, reject) {
 			rp = payload.retention;
 		}
 		if ( db_type.influxdb === true ) {
-			t6console.debug("chain 9", "Saving to influxdb timeseries");
+			t6console.debug("chain 9", "Saving to influxdb timeseries", payload.time, payload.timestamp);
 			/* InfluxDB database */
 			var tags = {};
 			payload.timestamp = payload.time*1e6;
