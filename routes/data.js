@@ -35,10 +35,27 @@ let preparePayload = function(resolve, reject) {
 	t6console.debug("chain 1", "preparePayload");
 	payload = getJson(payload);
 	let object;
-	t6console.debug("DATE", moment(payload.timestamp).format(logDateFormat));
-	t6console.debug("DATE", parseInt(moment(payload.timestamp).format("x"), 10));
-	payload.timestamp	 = (typeof payload.timestamp!=="undefined" && payload.timestamp!=="")?parseInt(moment(payload.timestamp).format("x"), 10):moment().format("x");
+
+	if ( typeof payload.value!=="undefined" ) {
+		if (typeof payload.timestamp!=="undefined" && payload.timestamp!=="" ) {
+			payload.timestamp = moment(payload.timestamp, ["YYYY-MM-DD", "YYYY-MM-DD HH:mm:ss", "DD.MM.YYYY", "DD.MM.YYYY HH:mm:ss", "x", "X"], true).format("x");
+			// Expected in DB => 13
+			if ( payload.timestamp.toString().length <= 10 ) {
+				payload.timestamp*=1e3;
+			} else if ( payload.timestamp.toString().length === 13 ) {
+				payload.timestamp*=1;
+			} else if ( payload.timestamp.toString().length === 16 ) {
+				payload.timestamp/=1e3;
+			} else if ( payload.timestamp.toString().length === 19 && moment(payload.timestamp) ) {
+				payload.timestamp/=1e6;
+			}
+			payload.timestamp = parseInt(moment(payload.timestamp).format("x"), 10);
+		} else {
+			payload.timestamp = moment().format("x");
+		}
+	}
 	payload.time		 = payload.timestamp;
+
 	payload.errorMessage = options.errorMessage;
 	payload.user_id		 = options.user_id;
 	payload.flow_id		 = (typeof payload.flow_id!=="undefined" && payload.flow_id!==null)?payload.flow_id:((typeof options.flow_id!=="undefined" && options.flow_id!==null)?options.flow_id:undefined);
@@ -115,6 +132,7 @@ let signatureCheck = function(resolve, reject) {
 			payload.datapoint_logs = initialPayload.datapoint_logs;
 			if ( decodedPayload && !err ) {
 				payload = getJson(decodedPayload!==""?decodedPayload:payload);
+				payload.time		 = payload.timestamp;
 				payload.flow_id = typeof payload.flow_id!=="undefined"?payload.flow_id:initialPayload.flow_id;
 				payload.user_id = typeof payload.user_id!=="undefined"?payload.user_id:initialPayload.user_id;
 				payload.unit = typeof payload.unit!=="undefined"?payload.unit:initialPayload.unit;
@@ -125,11 +143,29 @@ let signatureCheck = function(resolve, reject) {
 				payload.latitude = typeof payload.latitude!=="undefined"?payload.latitude:initialPayload.latitude;
 				payload.longitude = typeof payload.longitude!=="undefined"?payload.longitude:initialPayload.longitude;
 				payload.meta = typeof payload.meta!=="undefined"?payload.meta:initialPayload.meta;
-				payload.time = typeof payload.time!=="undefined"?payload.time:initialPayload.time;
 				payload.timestamp = typeof payload.timestamp!=="undefined"?payload.timestamp:initialPayload.timestamp;
 				payload.save = typeof payload.save!=="undefined"?payload.save:initialPayload.save;
 				payload.publish = typeof payload.publish!=="undefined"?payload.publish:initialPayload.publish;
 				payload.retention = typeof payload.retention!=="undefined"?payload.retention:initialPayload.retention;
+				if ( typeof payload.value!=="undefined" ) {
+					if (typeof payload.timestamp!=="undefined" && payload.timestamp!=="" ) {
+						payload.timestamp = moment(payload.timestamp, ["YYYY-MM-DD", "YYYY-MM-DD HH:mm:ss", "DD.MM.YYYY", "DD.MM.YYYY HH:mm:ss", "x", "X"], true).format("x");
+						// Expected in DB => 13
+						if ( payload.timestamp.toString().length <= 10 ) {
+							payload.timestamp*=1e3;
+						} else if ( payload.timestamp.toString().length === 13 ) {
+							payload.timestamp*=1;
+						} else if ( payload.timestamp.toString().length === 16 ) {
+							payload.timestamp/=1e3;
+						} else if ( payload.timestamp.toString().length === 19 && moment(payload.timestamp) ) {
+							payload.timestamp/=1e6;
+						}
+						payload.timestamp = parseInt(moment(payload.timestamp).format("x"), 10);
+					} else {
+						payload.timestamp = moment().format("x");
+					}
+				}
+				payload.time = payload.timestamp;
 				payload.isSigned = true;
 				t6console.debug("chain 2&4", "signatureCheck", payload);
 				payload.datapoint_logs = initialPayload.datapoint_logs;
@@ -198,11 +234,29 @@ let decrypt = function(resolve, reject) {
 			payload.latitude = typeof payload.latitude!=="undefined"?payload.latitude:initialPayload.latitude;
 			payload.longitude = typeof payload.longitude!=="undefined"?payload.longitude:initialPayload.longitude;
 			payload.meta = typeof payload.meta!=="undefined"?payload.meta:initialPayload.meta;
-			payload.time = typeof payload.time!=="undefined"?payload.time:initialPayload.time;
 			payload.timestamp = typeof payload.timestamp!=="undefined"?payload.timestamp:initialPayload.timestamp;
 			payload.save = typeof payload.save!=="undefined"?payload.save:initialPayload.save;
 			payload.publish = typeof payload.publish!=="undefined"?payload.publish:initialPayload.publish;
 			payload.retention = typeof payload.retention!=="undefined"?payload.retention:initialPayload.retention;
+			if ( typeof payload.value!=="undefined" ) {
+				if (typeof payload.timestamp!=="undefined" && payload.timestamp!=="" ) {
+					payload.timestamp = moment(payload.timestamp, ["YYYY-MM-DD", "YYYY-MM-DD HH:mm:ss", "DD.MM.YYYY", "DD.MM.YYYY HH:mm:ss", "x", "X"], true).format("x");
+					// Expected in DB => 13
+					if ( payload.timestamp.toString().length <= 10 ) {
+						payload.timestamp*=1e3;
+					} else if ( payload.timestamp.toString().length === 13 ) {
+						payload.timestamp*=1;
+					} else if ( payload.timestamp.toString().length === 16 ) {
+						payload.timestamp/=1e3;
+					} else if ( payload.timestamp.toString().length === 19 && moment(payload.timestamp) ) {
+						payload.timestamp/=1e6;
+					}
+					payload.timestamp = parseInt(moment(payload.timestamp).format("x"), 10);
+				} else {
+					payload.timestamp = moment().format("x");
+				}
+			}
+			payload.time = payload.timestamp;
 			payload.isEncrypted = true;
 			t6console.debug("chain 3", "decryptedPayload", payload);
 			payload.datapoint_logs = initialPayload.datapoint_logs;
@@ -676,7 +730,7 @@ let saveToCloud = function(resolve, reject) {
 			const dbInfluxDBCloud = new InfluxDB({url: url, token: token});
 			const {Point} = require("@influxdata/influxdb-client");
 			let writeApi = dbInfluxDBCloud.getWriteApi(org, bucket);
-
+			t6console.debug("saveToCloud payload.timestamp", payload.timestamp);
 			let point = new Point("data")
 				.tag("user_id", payload.user_id)
 				.tag("flow_id", payload.flow_id)
