@@ -10,6 +10,7 @@ jsonapitest \
 	$SCRIPT_DIR/../test/rules.json \
 	$SCRIPT_DIR/../test/classifications.json \
 	$SCRIPT_DIR/../test/datapoints.json \
+	$SCRIPT_DIR/../test/datapoints-timestamps.json \
 	$SCRIPT_DIR/../test/snippets.json \
 	$SCRIPT_DIR/../test/dashboards.json \
 	$SCRIPT_DIR/../test/sources.json \

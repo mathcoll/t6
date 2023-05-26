@@ -1,0 +1,157 @@
+{
+	"config": {
+		"log_path": "./jsonapitest-results.json",
+		"defaults": {
+			"api_call": {
+				"request": {
+					"base_url": "http://127.0.0.1:3000",
+					"headers": {
+						"Accept": "application/json",
+						"Content-Type": "application/json"
+					}
+				}
+			}
+		}
+	},
+	"data": {
+		"app_version": "v2.0.1"
+	},
+	"suites": [
+		{
+			"name": "t6 Datapoints Suite for timestamps",
+			"tests": [
+				{
+					"name": "can post datapoint using NULL timestamp",
+					"description": "can post datapoint using NULL timestamp",
+					"api_calls": [
+						{
+							"it": "can post datapoint using NULL timestamp",
+							"request": "POST /{{app_version}}/data",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"params": {
+								"flow_id": "{{saved.flow_id_float}}",
+								"save": true,
+								"value": 1.234,
+								"meta": {"Test1": "NULL", "run_id": "{{$run_id}}"},
+								"retention": "retention1d"
+							},
+							"status": 200
+						}
+					]
+				},
+				{
+					"name": "can post datapoint using NULL timestamp",
+					"description": "can post datapoint using 1716734575000 timestamp",
+					"api_calls": [
+						{
+							"it": "can post datapoint using 1716734575000 timestamp",
+							"request": "POST /{{app_version}}/data",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"params": {
+								"flow_id": "{{saved.flow_id_float}}",
+								"save": true,
+								"timestamp": 1685098804211,
+								"value": 1.234,
+								"meta": {"Test2": "13 1716734575000", "run_id": "{{$run_id}}"},
+								"retention": "retention1d"
+							},
+							"status": 200
+						}
+					]
+				},
+				{
+					"name": "can post datapoint using 1685098804211000 timestamp",
+					"description": "can post datapoint using 1685098804211003 timestamp",
+					"api_calls": [
+						{
+							"it": "can post datapoint using 1685098804211003 timestamp",
+							"request": "POST /{{app_version}}/data",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"params": {
+								"flow_id": "{{saved.flow_id_float}}",
+								"save": true,
+								"timestamp": 1685098804211003,
+								"value": 1.234,
+								"meta": {"Test3": "16 1685098804211003", "run_id": "{{$run_id}}"},
+								"retention": "retention1d"
+							},
+							"status": 200
+						}
+					]
+				},
+				{
+					"name": "can post datapoint using 1716741775000000000 timestamp",
+					"description": "can post datapoint using 1716741775000000000 timestamp",
+					"api_calls": [
+						{
+							"it": "can post datapoint using 1716741775000000000 timestamp",
+							"request": "POST /{{app_version}}/data",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"params": {
+								"flow_id": "{{saved.flow_id_float}}",
+								"save": true,
+								"timestamp": 1716741775000000000,
+								"value": 1.234,
+								"meta": {"Test4": "19 1716741775000000000", "run_id": "{{$run_id}}"},
+								"retention": "retention1d"
+							},
+							"status": 200
+						}
+					]
+				},
+				{
+					"name": "can post datapoint using 'YYYY-MM-DD HH:mm:ss' timestamp",
+					"description": "can post datapoint using 'YYYY-MM-DD HH:mm:ss' +0200 timestamp",
+					"api_calls": [
+						{
+							"it": "can post datapoint using 'YYYY-MM-DD HH:mm:ss' timestamp",
+							"request": "POST /{{app_version}}/data",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"params": {
+								"flow_id": "{{saved.flow_id_float}}",
+								"save": true,
+								"timestamp": "2023-05-26 13:00:04",
+								"value": 1.234,
+								"meta": {"Test5": "2023-05-26 13:00:04", "run_id": "{{$run_id}}"},
+								"retention": "retention1d"
+							},
+							"status": 200
+						}
+					]
+				},
+				{
+					"name": "can post datapoint using 'YYYY-MM-DD' timestamp",
+					"description": "can post datapoint using 'YYYY-MM-DD' timestamp",
+					"api_calls": [
+						{
+							"it": "can post datapoint using 'YYYY-MM-DD' timestamp",
+							"request": "POST /{{app_version}}/data",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"params": {
+								"flow_id": "{{saved.flow_id_float}}",
+								"save": true,
+								"timestamp": "2023-05-26",
+								"value": 1.234,
+								"meta": {"Test6": "2023-05-26", "run_id": "{{$run_id}}"},
+								"retention": "retention1d"
+							},
+							"status": 200
+						}
+					]
+				}
+			]
+		}
+	]
+}
