@@ -38,15 +38,15 @@ t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	}
 }
 
-t6events.addStat = function(where, what, who, client_id=null, params=null) {
+t6events.addStat = function(where, what, who, client_id=null, params=undefined) {
 	where = where + ":" + process.env.NODE_ENV;
 	let d = (logLevel.indexOf("DEBUG")>-1)?"debug/":"";
 	if(client_id!==null) {
 		let user_id = typeof who!=="undefined"?who:null;
 		client_id = typeof client_id!=="undefined"?client_id:"";
 
-		params = typeof params!=="object"?params:{};
-		params.environnment = where;
+		params = typeof params==="object"?params:{};
+		params.environment = where;
 		params.user_id = user_id;
 		
 		var options = {
@@ -67,7 +67,7 @@ t6events.addStat = function(where, what, who, client_id=null, params=null) {
 				t6console.info(`GA4 Event "${what.replace(/[^a-zA-Z]/g,"_")}" on measurement_id: ${trackings.firebaseConfig.server.measurementId}`);
 				t6console.info("GA4 user_id:", user_id);
 				t6console.info("GA4 client_id:", client_id);
-				t6console.info("GA4 environnment:", where);
+				t6console.info("GA4 environment:", where);
 				t6console.info("GA4 params:", params);
 				t6console.info("GA4 statusCode:", response.statusCode);
 				if (d==="debug/") { t6console.debug("GA4 body:", body); }
