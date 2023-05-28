@@ -388,7 +388,7 @@ let verifyPrerequisites = function(resolve, reject) {
 			}
 		}
 		t6console.debug("chain 5", "Retention", payload.retention);
-		t6console.debug("chain 5", "current_flow", current_flow);
+		//t6console.debug("chain 5", "current_flow", current_flow);
 		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
 		if (payload.prerequisite <= 0) {
 			payload.datapoint_logs.verifyPrerequisites = true;
@@ -654,7 +654,7 @@ let saveToLocal = function(resolve, reject) {
 			rp = payload.retention;
 		}
 		if ( db_type.influxdb === true ) {
-			t6console.debug("chain 9", "Saving to influxdb timeseries", payload.time, payload.timestamp);
+			t6console.debug("chain 9", "Saving to influxdb timeseries");
 			/* InfluxDB database */
 			var tags = {};
 			payload.timestamp = payload.time*1e6;
@@ -784,6 +784,7 @@ async function processAllMeasures(payloads, options) {
 	//return new Promise((resolve, reject) => {
 		t6console.debug("processAllMeasures in a chain");
 		t6console.debug("--------", "total of", payloads.length, "measures.");
+		let flow_ids = [];
 
 		let ret = await Promise.all(
 			payloads.map(async (current_payload, index) => {
@@ -827,8 +828,8 @@ async function processAllMeasures(payloads, options) {
 								});
 							}
 						};
-						t6events.addStat("t6Api", "POST data", payload.user_id, payload.user_id, {flow_id: payload.flow_id});
-						t6console.debug("payloads size ---> ", payloads.length);
+						if (flow_ids.indexOf(payload.flow_id)>-1) { flow_ids.push(payload.flow_id); }
+						t6console.debug("payloads ---> ", index, payloads.length);
 						payload.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):null;
 						payload.publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):null;
 						payload.flow_id = payload.flow_id;
@@ -848,6 +849,7 @@ async function processAllMeasures(payloads, options) {
 				});
 			})
 		);
+		t6events.addStat("t6Api", "POST data", payloads[0].user_id, payloads[0].user_id, {flow_ids: flow_ids.join(), payloads_length: payloads.length});
 		return ret;
 	//});
 }
