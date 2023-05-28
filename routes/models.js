@@ -84,7 +84,7 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 /**
  * @api {put} /models/:model_id Edit a Model
  * @apiName Edit a Model
- * @apiDescription Editing a Model will reset the history, the training_balance, the mins and maxs, and the current_status
+ * @apiDescription Editing a Model will reset the history, the training_balance, the mins and maxs, the data_length, and the current_status
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
  * 
@@ -138,6 +138,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.min= {};
 					item.max= {};
 					item.current_status	= "READY";
+					item.data_length	= undefined;
 					item.features = undefined;
 					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
@@ -383,7 +384,7 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 							//t6console.debug("prediction", arr);
 							const bestMatchPrediction = Math.max(...arr);
 							const bestMatchIndex = arr.indexOf(bestMatchPrediction);
-							res.status(200).send({ "code": 200, value: null, labels: t6Model.labels, predictions: p, bestMatchIndex: bestMatchIndex, bestMatchPrediction: parseFloat(bestMatchPrediction.toFixed(4)), bestMatchLabel: (t6Model.labels)[bestMatchIndex] }); // TODO: missing serializer
+							res.status(200).send({ "code": 200, value: inputData[0].value, labels: t6Model.labels, predictions: p, bestMatchIndex: bestMatchIndex, bestMatchPrediction: parseFloat(bestMatchPrediction.toFixed(4)), bestMatchLabel: (t6Model.labels)[bestMatchIndex] }); // TODO: missing serializer
 							t6events.addStat("t6App", "ML Prediction", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
 						}).catch(function(err) {
 							t6console.debug("Model predict ERROR", err);
@@ -429,6 +430,10 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			res.status(409).send(new ErrorSerializer({"id": 14056, "code": 409, "message": "Conflict, Training in progress"}).serialize());
 			return;
 		}
+		if (t6Model.datasets.training.limit <= t6Model.batch_size) {
+			res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed: batch size must be less than the training length"}).serialize());
+			return;
+		}
 
 		let queryTs = t6Model.flow_ids.map( (flow_id) => {
 			let flow = flows.findOne({id: flow_id});
@@ -452,6 +457,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			//t6console.debug("Retention is valid:", rp);
 			//t6console.debug("flow:", flow);
 			let fields = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, true, true);
+			let fieldvalue = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, false, false);
 			let andDates = "";
 			let sorting = "DESC";
 			if( t6Model.datasets.training.start!==null && t6Model.datasets.training.start!=="" ) {
@@ -463,24 +469,25 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			}
 			let where = ""; //"meta!='' AND ";
 			let lim = limit!==null?` LIMIT ${limit} OFFSET ${offset}`:"";
-			return `SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
+			return `SELECT min(${fieldvalue}), max(${fieldvalue}) FROM ${rp}.data WHERE flow_id='${flow_id}' ${andDates} AND user_id='${req.user.id}'; SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
 
 		// Get values from TS
 		dbInfluxDB.query(queryTs).then((data) => {
 			data = data.flat();
+			t6Model.min = {};
+			t6Model.max = {};
+			t6Model.flow_ids.map((f_id) => {
+				const this_flow = data.shift();
+				t6Model.min[f_id] = this_flow.min;//; Math.min(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
+				t6Model.max[f_id] =this_flow.max;//;  Math.max(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
+			});
+			// TODO : check for min < max
+			
 			if ( data.length > 0 ) {
 				t6console.debug("ML data.length:", data.length);
 				// TODO: expecting to have continuous values
-
-				t6Model.min = {};
-				t6Model.max = {};
-				t6Model.flow_ids.map((f_id) => {
-					t6Model.min[f_id] = Math.min(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
-					t6Model.max[f_id] = Math.max(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
-				});
-				// TODO : check for min < max
 				t6Model.training_balance = {};
 				if(t6Model.labels.indexOf("oov")===-1) { t6Model.labels.push("oov"); }
 				t6Model.training_balance["oov"] = 0;
@@ -493,10 +500,10 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 					if(category_id!==null && category_id!=="oov") {
 						m.label = categories.findOne({id: category_id}).name;
-						if(t6Model.labels.indexOf(m.label)===-1) {
+						if(m.label && t6Model.labels.indexOf(m.label)===-1) {
 							t6Model.labels.push(m.label);
 						}
-						if(typeof t6Model.training_balance[m.label]!=="undefined") {
+						if(m.label && typeof t6Model.training_balance[m.label]!=="undefined") {
 							t6Model.training_balance[m.label]++;
 						} else {
 							t6Model.training_balance[m.label] = 1;
