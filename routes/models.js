@@ -138,6 +138,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.min= {};
 					item.max= {};
 					item.current_status	= "READY";
+					item.current_status_last_update	= moment().format(logDateFormat);
 					item.data_length	= undefined;
 					item.features = undefined;
 					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
@@ -241,6 +242,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				batch_size:	typeof req.body.batch_size!=="undefined"?req.body.batch_size:100,
 				epochs:		typeof req.body.epochs!=="undefined"?req.body.epochs:100,
 				current_status: "READY",
+				current_status_last_update: moment().format(logDateFormat),
 				training_balance:	{},
 				datasets: {
 					training: {
@@ -481,7 +483,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			t6Model.flow_ids.map((f_id) => {
 				const this_flow = data.shift();
 				t6Model.min[f_id] = this_flow.min;//; Math.min(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
-				t6Model.max[f_id] =this_flow.max;//;  Math.max(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
+				t6Model.max[f_id] = this_flow.max;//;  Math.max(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
 			});
 			// TODO : check for min < max
 			
@@ -588,8 +590,10 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						t6console.debug("labelTensor rank", yTensor.rank);
 						t6console.debug("labelTensor rankType", yTensor.rankType);
 						t6Model.current_status = "RUNNING";
+						t6Model.current_status_last_update	= moment().format(logDateFormat);
 						res.status(202).send(new ModelSerializer({
 							current_status: t6Model.current_status,
+							current_status_last_update: t6Model.current_status_last_update,
 							process: "asynchroneous",
 							notification: "push-notification",
 							id: model_id,
@@ -646,6 +650,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
 										t6console.debug("Model saved");
 										t6Model.current_status = "TRAINED";
+										t6Model.current_status_last_update	= moment().format(logDateFormat);
 										db_models.save(); // saving the status
 									});
 								});
