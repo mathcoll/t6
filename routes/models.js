@@ -112,6 +112,9 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiBody {Date} datasets.testing.end End date to take Datapoints for testing. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
+ * @apiBody {String="adagrad" "adadelta" "adam" "sgd"} compile.optimizer=adam Training optimizer
+ * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
+ * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
  * 
  * @apiUse 200
  * @apiUse 401
@@ -167,6 +170,11 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 							"limit": typeof req.body.datasets.testing.limit!=="undefined"?req.body.datasets.testing.limit:item.datasets.testing.limit
 						}
 					};
+					item.compile	= {
+						"optimizer": typeof req.body.compile.optimizer!=="undefined"?req.body.compile.optimizer:item.compile.optimizer,
+						"loss": typeof req.body.compile.loss!=="undefined"?req.body.compile.loss:item.compile.loss,
+						"metrics": typeof req.body.compile.metrics!=="undefined"?req.body.compile.metrics:item.compile.metrics,
+					}
 					result = item;
 				});
 				if ( typeof result !== "undefined" ) {
@@ -216,6 +224,9 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {Date} datasets.testing.end End date to take Datapoints for testing. As Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
+ * @apiBody {String="adagrad" "adadelta" "adam" "sgd"} compile.optimizer=adam Training optimizer
+ * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
+ * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
  * 
  * @apiUse 201
  */
@@ -258,6 +269,11 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 						duration: typeof req.body.datasets.testing.duration!=="undefined"?req.body.datasets.testing.duration:null,
 						limit: typeof req.body.datasets.testing.limit!=="undefined"?req.body.datasets.testing.limit:null
 					}
+				},
+				compile:{
+					optimizer: typeof req.body.compile.optimizer!=="undefined"?req.body.compile.optimizer:"adam",
+					loss: typeof req.body.compile.loss!=="undefined"?req.body.compile.loss:"binaryCrossentropy",
+					metrics: typeof req.body.compile.metrics!=="undefined"?req.body.compile.metrics:["accuracy"],
 				}
 			};
 			t6events.addStat("t6Api", "model add", newModel.id, req.user.id);
@@ -474,6 +490,26 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			return `SELECT min(${fieldvalue}), max(${fieldvalue}) FROM ${rp}.data WHERE flow_id='${flow_id}' ${andDates} AND user_id='${req.user.id}'; SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
+		t6Model.current_status = "RUNNING";
+		t6Model.current_status_last_update	= moment().format(logDateFormat);
+		res.status(202).send(new ModelSerializer({
+			current_status: t6Model.current_status,
+			current_status_last_update: t6Model.current_status_last_update,
+			process: "asynchroneous",
+			notification: "push-notification",
+			id: model_id,
+			limit: limit,
+			validation_split: validation_split,
+			//train_length: trainXs.length,
+			//valid_length: xValidSize,
+			continuous_features: t6Model.continuous_features,
+			categorical_features: t6Model.categorical_features,
+			categorical_features_classes: t6Model.categorical_features_classes,
+			training_balance: t6Model.training_balance,
+			flow_ids: t6Model.flow_ids,
+			labels: t6Model.labels
+		}).serialize());
+		db_models.save(); // saving the status
 
 		// Get values from TS
 		dbInfluxDB.query(queryTs).then((data) => {
@@ -489,6 +525,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			
 			if ( data.length > 0 ) {
 				t6console.debug("ML data.length:", data.length);
+
 				// TODO: expecting to have continuous values
 				t6Model.training_balance = {};
 				if(t6Model.labels.indexOf("oov")===-1) { t6Model.labels.push("oov"); }
@@ -589,26 +626,6 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 						t6console.debug("labelTensor shape", yTensor.shape);
 						t6console.debug("labelTensor rank", yTensor.rank);
 						t6console.debug("labelTensor rankType", yTensor.rankType);
-						t6Model.current_status = "RUNNING";
-						t6Model.current_status_last_update	= moment().format(logDateFormat);
-						res.status(202).send(new ModelSerializer({
-							current_status: t6Model.current_status,
-							current_status_last_update: t6Model.current_status_last_update,
-							process: "asynchroneous",
-							notification: "push-notification",
-							id: model_id,
-							limit: limit,
-							validation_split: validation_split,
-							train_length: trainXs.length,
-							valid_length: xValidSize,
-							continuous_features: t6Model.continuous_features,
-							categorical_features: t6Model.categorical_features,
-							categorical_features_classes: t6Model.categorical_features_classes,
-							training_balance: t6Model.training_balance,
-							flow_ids: t6Model.flow_ids,
-							labels: t6Model.labels
-						}).serialize());
-						db_models.save(); // saving the status
 						options.validationData	= validDs;
 						options.epochs			= t6Model.epochs;
 
