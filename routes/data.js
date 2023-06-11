@@ -286,14 +286,14 @@ let verifyPrerequisites = function(resolve, reject) {
 	t6console.debug("chain 5", "verifyPrerequisites");
 	payload.prerequisite = 0;
 	if ( !payload.value ) {
-		t6console.error("chain 5", "Error: verifyPrerequisites : no value.");
+		t6console.warning("chain 5", "Error: verifyPrerequisites : no value.");
 		payload.datapoint_logs.verifyPrerequisites = "err";
 		chainOrder.push("verifyPrerequisites");
 		//resolve("Error: verifyPrerequisites : no value.", payload, object, null, chainOrder);
 		reject({payload, object, chainOrder});
 	}
 	if ( !payload.flow_id || typeof payload.flow_id==="undefined" || payload.flow_id===null ) {
-		t6console.error("chain 5", "Error: verifyPrerequisites : no flow_id.");
+		t6console.warning("chain 5", "Error: verifyPrerequisites : no flow_id.");
 		payload.datapoint_logs.verifyPrerequisites = "err";
 		chainOrder.push("verifyPrerequisites");
 		//resolve("Error: verifyPrerequisites : no flow_id.", payload, object, null, chainOrder);
@@ -1271,7 +1271,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 		res.status(200).send(new DataSerializer(payload).serialize());
 		t6console.debug(`processAllMeasures Completed with ${payload.length} measurement(s)`);
 	}).catch((err) => {
-		t6console.error("Error on processAllMeasures: ", err);
+		t6console.warning("Error on processAllMeasures: ", err);
 		res.status(412).send(new ErrorSerializer({err: err, "id": 2060, "code": 412, "message": "Precondition failed"}).serialize());
 	});
 });
