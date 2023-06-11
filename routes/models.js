@@ -120,6 +120,7 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
+ * @apiUse 409
  */
 router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var model_id = req.params.model_id;
@@ -232,6 +233,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
  * 
  * @apiUse 201
+ * @apiUse 429
  */
 router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	/* Check for quota limitation */
