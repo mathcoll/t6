@@ -113,6 +113,7 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * @apiBody {String="adagrad" "adadelta" "adam" "sgd"} compile.optimizer=adam Training optimizer
+ * @apiBody {Number} compile.learningrate=0.001 Learning Rate
  * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
  * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
  * 
@@ -172,6 +173,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					};
 					item.compile	= {
 						"optimizer": typeof req.body.compile.optimizer!=="undefined"?req.body.compile.optimizer:item.compile.optimizer,
+						"learningrate": typeof req.body.compile.learningrate!=="undefined"?req.body.compile.learningrate:item.compile.learningrate,
 						"loss": typeof req.body.compile.loss!=="undefined"?req.body.compile.loss:item.compile.loss,
 						"metrics": typeof req.body.compile.metrics!=="undefined"?req.body.compile.metrics:item.compile.metrics,
 					}
@@ -225,6 +227,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String} datasets.testing[duration] Not implemented yet !
  * @apiBody {Integer} datasets.training.limit Number of Datapoints to retrieve for each Flows
  * @apiBody {String="adagrad" "adadelta" "adam" "sgd"} compile.optimizer=adam Training optimizer
+ * @apiBody {Number} compile.learningrate=0.001 Learning Rate
  * @apiBody {String="categoricalCrossentropy" "meanSquaredError" "binaryCrossentropy"} compile.loss=binaryCrossentropy Training loss function
  * @apiBody {String[]} compile.metrics="['accuracy']" Training metrics
  * 
@@ -272,6 +275,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				},
 				compile:{
 					optimizer: typeof req.body.compile.optimizer!=="undefined"?req.body.compile.optimizer:"adam",
+					learningrate: typeof req.body.compile.learningrate!=="undefined"?req.body.compile.learningrate:0.001,
 					loss: typeof req.body.compile.loss!=="undefined"?req.body.compile.loss:"binaryCrossentropy",
 					metrics: typeof req.body.compile.metrics!=="undefined"?req.body.compile.metrics:["accuracy"],
 				}
