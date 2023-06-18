@@ -160,6 +160,7 @@ global.passgen			= require("passgen");
 global.md5				= require("md5");
 global.moment			= require("moment");
 global.mqtt				= require("mqtt");
+global.multer			= require("multer");
 global.nodeunits		= require("node-units");
 global.uuid				= require("uuid");
 global.nodemailer		= require("nodemailer");
