@@ -465,7 +465,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 
 		let queryTs = t6Model.flow_ids.map( (flow_id) => {
 			let flow = flows.findOne({id: flow_id});
-			let retention = flow.retention;
+			let retention = flow?.retention;
 			let rp = typeof retention!=="undefined"?retention:"autogen";
 			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
 				if ( typeof flow!=="undefined" && flow.retention ) {
