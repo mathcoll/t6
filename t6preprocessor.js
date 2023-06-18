@@ -105,7 +105,7 @@ async function performSanitize(pp, payload, fields) {
 					resolve(pp);
 					break;
 				case "integer":
-					payload.sanitizedValue = validator.toInt(payload.value, 10);
+					payload.sanitizedValue = validator.toInt(new String(payload.value), 10);
 					if (!isNaN(payload.sanitizedValue)) {
 						fields[0] = {time:""+time, valueInteger: payload.sanitizedValue+"i",};
 					} else {
