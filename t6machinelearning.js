@@ -15,19 +15,23 @@ let continuousFeatsMins = [];
 let continuousFeatsMaxs = [];
 let categoricalFeats = [];
 
-t6machinelearning.init = function(t6Model) {
-	t6Model = t6Model;
+t6machinelearning.init = function(model) {
+	t6Model = model;
 	continuousFeats = [];
 	continuousFeatsMins = [];
 	continuousFeatsMaxs = [];
 	categoricalFeats = [];
 	t6console.debug("================== t6machinelearning.init =================");
+	t6console.debug("Normalize", t6Model.normalize);
 	t6console.debug("labels", t6Model.labels);
 	t6console.debug("labelsCount", t6Model.labels.length);
 	t6console.debug("batch_size", t6Model.batch_size);
 	t6console.debug("data_length", t6Model.data_length);
 	t6console.debug("min", t6Model.min);
 	t6console.debug("max", t6Model.max);
+	t6console.debug("Compile optimizer", t6Model.compile.optimizer);
+	t6console.debug("Compile loss", t6Model.compile.loss);
+	t6console.debug("Compile metrics", t6Model.compile.metrics);
 	t6console.debug("===========================================================");
 };
 
@@ -69,21 +73,36 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 			units: outputShape,
 			activation: "softmax" // sigmoid
 		}));
-		/*
-		Adadelta -Implements the Adadelta algorithm.
-		Adagrad - Implements the Adagrad algorithm.
-		Adam - Implements the Adam algorithm.
-		Adamax - Implements the Adamax algorithm.
-		Ftrl - Implements the FTRL algorithm.
-		Nadam - Implements the NAdam algorithm.
-		Optimizer - Base class for Keras optimizers.
-		RMSprop - Implements the RMSprop algorithm.
-		SGD - Stochastic Gradient Descent Optimizer.
-		*/
+		let optimizer;
+		let learningrate = typeof t6Model.compile.learningrate?t6Model.compile.learningrate:0.001;
+		switch(t6Model.compile.optimizer) {
+			case "adagrad":
+				optimizer = tf.train.adagrad(learningrate);
+				break;
+			case "adadelta":
+				optimizer = tf.train.adadelta(learningrate);
+				break;
+			case "adamax":
+				optimizer = tf.train.adamax(learningrate);
+				break;
+			case "rmsprop":
+				optimizer = tf.train.rmsprop(learningrate);
+				break;
+			case "momentum":
+				optimizer = tf.train.momentum(learningrate);
+				break;
+			case "sgd":
+				optimizer = tf.train.sgd(learningrate);
+				break;
+			case "adam":
+			default:
+				optimizer = tf.train.adam(learningrate);
+				break;
+		}
 		model.compile({
-			optimizer: tf.train.adam(0.001),
-			loss: "categoricalCrossentropy", // categoricalCrossentropy | meanSquaredError | binaryCrossentropy
-			metrics: ['accuracy']
+			optimizer: optimizer,
+			loss: typeof t6Model.compile.loss!=="undefined"?t6Model.compile.loss:"binaryCrossentropy",
+			metrics: typeof t6Model.compile.metrics!=="undefined"?t6Model.compile.metrics:["accuracy"]
 		});
 		t6console.debug("MODEL weights:");
 		model.weights.forEach(w => {
@@ -116,9 +135,13 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				continuousFeats.forEach((f) => {
 					featureValues[f] = [];
 					if(continuousFeats.indexOf(f)>-1) {
-						const min = continuousFeatsMins[f][r.flow_id];
-						const max = continuousFeatsMaxs[f][r.flow_id];
-						return featureValues[f].push(normalize(r[f], min, max)); // normalize // TODO: ADDING TWICE because value is on both flows
+						if(t6Model.normalize===true) {
+							const min = continuousFeatsMins[f][r.flow_id];
+							const max = continuousFeatsMaxs[f][r.flow_id];
+							return featureValues[f].push(normalize(r[f], min, max)); // normalize // TODO: ADDING TWICE because value is on both flows
+						} else {
+							return featureValues[f].push(r[f]);
+						}
 					}
 				});
 				continuousFeats.map((f) => {
