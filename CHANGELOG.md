@@ -17,6 +17,24 @@ Types of changes
 ------------
 
 ## 2023
+### Milestone 25 - 2023-
+**Added**
+  - [x] New endpoints to handle `Models` resources as CRUD
+  - [x] New Machine Learning module including training Endpoint
+  - [x] Added normalize boolean parameter to Models
+  - [x] Allows to upload custom Models binary and weight files
+
+**Fixed**
+  - [x] Allows for custom timestamp with several date formatting as input
+  - [x] Rename attribute in GA4 "environment" as it was mispelled with double "n" before
+  - [x] Fix Integer on preprocessor
+
+**Changed**
+  - [x] allows for custom timestamp with any RFC formatted date as input
+  - [x] RuleEngine on a synchroneous process so that annotation from RuleEngine can be stored to influxDb
+  - [x] Packages updates @vladmandic/face-api@1.7.10 @influxdata/influxdb-client@1.33.2 @tensorflow/tfjs-node@4.4.0 acorn@8.8.2 body-parser@1.20.2 canvas@2.11.2 express-jwt@8.4.1 firebase-admin@11.6.0 fs-extra@11.1.1 geoip-lite@1.4.7 graceful-fs@4.2.11 jsdom@21.1.1 lighthouse@10.1.0 minimist@1.2.8 nodemailer@6.9.1 npm@9.6.4 qs@6.11.1 simple-statistics@7.8.3 twilio@4.10.0 validator@13.9.0 ws@8.13.0
+
+## 2023
 ### Milestone 24 - 2023-03
 **Added**
   - [x] Implement tts (Text To Speech) to sockets
@@ -28,6 +46,7 @@ Types of changes
 
 **Changed**
   - [x] Switched otp to x-otp headers
+  - [x] Changed `text` datapoint attribute to `meta` when posting new Measurement.
 
 ### Milestone 23 - 2023-02
 **Added**

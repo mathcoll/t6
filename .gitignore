@@ -66,3 +66,4 @@ decisionrules/node_modules
 /TESTING/
 /.cache-require-paths.json
 /jsonapitest-results.json
+./bin/send_notification.sh
