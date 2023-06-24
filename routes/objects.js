@@ -337,8 +337,8 @@ router.get("/(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiUse 429
  */
 router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var object_id = req.params.object_id;
-	var source_id = req.params.source_id;
+	var object_id = typeof req.params.object_id==="string"?req.params.object_id:"";
+	var source_id = typeof req.params.source_id==="string"?req.params.source_id:"";
 	var object = objects.findOne({ "$and": [ { "user_id" : req.user.id }, { "id" : object_id } ]});
 	if ( object ) {
 		if(object.source_id === source_id) {
@@ -379,7 +379,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
  * @apiUse 429
  */
 router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var object_id = req.params.object_id;
+	var object_id = typeof req.params.object_id==="string"?req.params.object_id:"";
 	var query = {
 		"$and": [
 			{ "id": object_id },
@@ -577,7 +577,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiUse 409
  */
 router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var object_id = req.params.object_id;
+	var object_id = typeof req.params.object_id==="string"?req.params.object_id:"";
 	var query = {
 	"$and": [
 			{ "id": object_id },
@@ -645,7 +645,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
  * @apiUse 404
  */
 router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var object_id = req.params.object_id;
+	var object_id = typeof req.params.object_id==="string"?req.params.object_id:"";
 	var query = {
 		"$and": [
 			{ "user_id" : req.user.id, }, // delete only object from current user
@@ -682,7 +682,7 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
  * @apiUse 405
  */
 router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var object_id = req.params.object_id;
+	var object_id = typeof req.params.object_id==="string"?req.params.object_id:"";
 	var pName = req.params.pName;
 	if ( !object_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 133, "code": 405, "message": "Method Not Allowed"}).serialize());
@@ -741,7 +741,7 @@ router.put("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.
  * @apiUse 405
  */
 router.get("/:object_id([0-9a-z\-]+)/:pName/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
-	var object_id = req.params.object_id;
+	var object_id = typeof req.params.object_id==="string"?req.params.object_id:"";
 	var pName = req.params.pName;
 	if ( !object_id ) {
 		res.status(405).send(new ErrorSerializer({"id": 136, "code": 405, "message": "Method Not Allowed"}).serialize());
