@@ -604,7 +604,7 @@ router.delete("/tokens/all", function (req, res) {
  * @apiUse 403
  */
 router.post("/authenticate", function (req, res) {
-	let meta = { pushSubscription : req.body.pushSubscription};
+	let meta = { pushSubscription : (typeof req.body.pushSubscription?.endpoint!=="undefined" && typeof req.body.pushSubscription?.keys!=="undefined")?req.body.pushSubscription:undefined};
 	let rp = typeof influxSettings.retentionPolicies.requests!=="undefined"?influxSettings.retentionPolicies.requests:"quota4w";
 	let o = {
 		key:		typeof req.user!=="undefined"?req.user.key:null,
