@@ -125,6 +125,9 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 			const normalize = (inputData, min, max) => {
 				return typeof inputData!=="undefined"?(parseFloat(inputData) - min)/(max - min):0;
 			};
+			const splitToArray = (inputData, splitStr=" ") => {
+				return typeof inputData!=="undefined"?inputData.split(splitStr):0;
+			};
 			const oneHotEncode = (classIndex, classes) => {
 				return Array.from(tf.oneHot(classIndex, classes.length).dataSync());
 				//return tf.oneHot(classIndex, classes.length).dataSync();
@@ -139,6 +142,8 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 							const min = continuousFeatsMins[f][r.flow_id];
 							const max = continuousFeatsMaxs[f][r.flow_id];
 							return featureValues[f].push(normalize(r[f], min, max)); // normalize // TODO: ADDING TWICE because value is on both flows
+						} else if(t6Model.splitToArray===true) {
+							return featureValues[f].push(splitToArray(r[f]));
 						} else {
 							return featureValues[f].push(r[f]);
 						}
@@ -230,7 +235,7 @@ t6machinelearning.save = async function(model, path) {
 };
 
 t6machinelearning.loadSavedModel = async function(path) {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		tf.node.loadSavedModel(path, ["serve"], "serving_default").then((result) => {
 			resolve(result);
 		}).catch(function(err) {
@@ -240,7 +245,7 @@ t6machinelearning.loadSavedModel = async function(path) {
 };
 
 t6machinelearning.loadLayersModel = async function(path) {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		tf.loadLayersModel(path).then((result) => {
 			resolve(result);
 		}).catch(function(err) {
@@ -250,7 +255,7 @@ t6machinelearning.loadLayersModel = async function(path) {
 };
 
 t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		tf.node.getMetaGraphsFromSavedModel(path).then((result) => {
 			resolve(result);
 		}).catch(function(err) {
@@ -261,8 +266,10 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 
 t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 	return new Promise((resolve) => {
-		//const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
-		const prediction = tfModel.predict(tf.tensor2d(inputDatasetX), options);
+		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
+		//const prediction = tfModel.predict(tf.tensor2d(inputDatasetX), options);
+		// FALSE not spam : const prediction = tfModel.predict(tf.tensor2d([[1,3,12,18,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]), options);
+		// TRUE spam : const prediction = tfModel.predict(tf.tensor2d([[172,184,185,212,327,333,477,478,503,504,505,0,0,0,0,0,0,0,0,0]]), options);
 		const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
 		t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
 		t6console.debug("ML PREDICTION");

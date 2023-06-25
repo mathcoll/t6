@@ -92,6 +92,7 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
  * @apiBody {String} [name=unamed] Name of the model to retrieve it later within the list
  * @apiBody {String} [retention=autogen] Data retention to look for
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
+ * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
  * @apiBody {Integer} [epochs=100] Number of epochs in training
@@ -151,6 +152,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
 					item.normalize		= typeof req.body.normalize!=="undefined"?req.body.normalize:item.normalize;
+					item.splitToArray	= typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:item.splitToArray;
 					item.labels			= typeof req.body.labels!=="undefined"?req.body.labels:item.labels;
 					item.continuous_features	= typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:item.continuous_features;
 					item.categorical_features	= typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:item.categorical_features; // TODO depend on datatype
@@ -209,6 +211,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String} [name=unamed] Name of the model to retrieve it later within the list
  * @apiBody {String} [retention=autogen] Data retention to look for
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
+ * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
  * @apiBody {Integer} [epochs=100] Number of epochs in training
@@ -253,6 +256,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
 				normalize:	typeof req.body.normalize!=="undefined"?req.body.normalize:true,
+				splitToArray:typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:false,
 				labels:		typeof req.body.labels!=="undefined"?req.body.labels:["oov"],
 				continuous_features: typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:["value"],
 				categorical_feature: typeof req.body.categorical_features!=="undefined"?req.body.categorical_features:[], // TODO depend on datatype
@@ -417,6 +421,9 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 						}).catch(function(err) {
 							t6console.debug("Model predict ERROR", err);
 						});
+					})
+					.catch((error) => {
+						res.status(412).send(new ErrorSerializer({ "id": 14187, "code": 412, "message": "Precondition Failed", error: error }).serialize());
 					});
 				});
 			}
@@ -495,9 +502,9 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			if( t6Model.datasets.training.end!==null && t6Model.datasets.training.end!=="" ) {
 				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 			}
-			let where = "meta!='' AND valueInteger>-1 AND"; //"meta!='' AND valueInteger>-1 AND";
+			let where = "meta!='' AND"; //"meta!='' AND valueInteger>-1 AND";
 			let lim = limit!==null?` LIMIT ${limit} OFFSET ${offset}`:"";
-			return `SELECT min(${fieldvalue}), max(${fieldvalue}) FROM ${rp}.data WHERE flow_id='${flow_id}' ${andDates} AND user_id='${req.user.id}'; SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
+			return `SELECT min(${fieldvalue}), max(${fieldvalue}), count(${fieldvalue}) FROM ${rp}.data WHERE flow_id='${flow_id}' ${andDates} AND user_id='${req.user.id}'; SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
 		t6Model.current_status = "RUNNING";
@@ -713,7 +720,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
  * @apiUse 404
  */
 let upload = multer({ dest: "/tmp/" });
-router.post("/:model_id([0-9a-z\-]+)/upload/?", upload.array("files[]", 5), expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.post("/:model_id([0-9a-z\-]+)/upload/?", upload.array("files[]", 10), expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	let model_id = req.params.model_id;
 	let user_id = req.user.id;
 	if (model_id) {
