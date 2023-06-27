@@ -15,24 +15,28 @@ let continuousFeatsMins = [];
 let continuousFeatsMaxs = [];
 let categoricalFeats = [];
 
-t6machinelearning.init = function(model) {
-	t6Model = model;
-	continuousFeats = [];
-	continuousFeatsMins = [];
-	continuousFeatsMaxs = [];
-	categoricalFeats = [];
-	t6console.debug("================== t6machinelearning.init =================");
-	t6console.debug("Normalize", t6Model.normalize);
-	t6console.debug("labels", t6Model.labels);
-	t6console.debug("labelsCount", t6Model.labels.length);
-	t6console.debug("batch_size", t6Model.batch_size);
-	t6console.debug("data_length", t6Model.data_length);
-	t6console.debug("min", t6Model.min);
-	t6console.debug("max", t6Model.max);
-	t6console.debug("Compile optimizer", t6Model.compile.optimizer);
-	t6console.debug("Compile loss", t6Model.compile.loss);
-	t6console.debug("Compile metrics", t6Model.compile.metrics);
-	t6console.debug("===========================================================");
+t6machinelearning.init = async function(model) {
+	return new Promise((resolve) => {
+		t6Model = model;
+		continuousFeats = [];
+		continuousFeatsMins = [];
+		continuousFeatsMaxs = [];
+		categoricalFeats = [];
+		t6console.debug("================== t6machinelearning.init =================");
+		t6console.debug("Normalize", t6Model.normalize);
+		t6console.debug("splitToArray", t6Model.splitToArray);
+		t6console.debug("labels", t6Model.labels);
+		t6console.debug("labelsCount", t6Model.labels.length);
+		t6console.debug("batch_size", t6Model.batch_size);
+		t6console.debug("data_length", t6Model.data_length);
+		t6console.debug("min", t6Model.min);
+		t6console.debug("max", t6Model.max);
+		t6console.debug("Compile optimizer", t6Model.compile.optimizer);
+		t6console.debug("Compile loss", t6Model.compile.loss);
+		t6console.debug("Compile metrics", t6Model.compile.metrics);
+		t6console.debug("===========================================================");
+		resolve(t6Model);
+	});
 };
 
 t6machinelearning.addContinuous = function(featureName, flow_id, min, max) {
