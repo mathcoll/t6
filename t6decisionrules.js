@@ -315,6 +315,70 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 						payload.meta.categories.push(event.params.category_id);
 						t6console.debug("ANNOTATE category_id", event.params.category_id);
 					}
+				} else if ( event.type === "model_classify" ) {
+					if(typeof event.params.model_id!=="undefined") {
+						/* PREDICT the category */
+						let query = {
+							"$and": [
+									{ "id": event.params.model_id },
+									{ "user_id": payload.user_id },
+								]
+							};
+						let t6Model = models.findOne( query );
+						const path = `${mlModels.models_user_dir}/${payload.user_id}/${t6Model.id}`;
+						if ( t6Model && fs.existsSync(path)) {
+							t6machinelearning.loadLayersModel(`file:///${path}/model.json`).then(async (tfModel) => await new Promise(function() {
+								t6machinelearning.init(t6Model);
+								let inputData = [{
+									"value": payload.value,			// TODO : WHY IS IT HARDCODED ??
+									"flow_id": payload.flow_id,		// TODO : WHY IS IT HARDCODED ??
+									"meta": { "categories": [] }	// TODO : WHY IS IT HARDCODED ??
+								}];
+								inputData.map((m) => {
+									let category_id = (m.meta!==null && typeof m.meta!=="undefined" && typeof m.meta.categories!=="undefined") ? (m.meta.categories[0]) : null;
+									m.label = (category_id!==null && typeof category_id!=="undefined" && category_id!=="") ? categories.findOne({ id: category_id }).name : 0;
+									return m;
+								});
+								t6console.debug("inputData", inputData);
+								if (t6Model.continuous_features?.length > 0) {
+									t6Model.continuous_features.map((cName) => {
+										t6Model.flow_ids.map((f_id) => {
+											t6Model.min[f_id] = -1;	// TODO : WHY IS IT HARDCODED ??
+											t6Model.max[f_id] = 1;	// TODO : WHY IS IT HARDCODED ??
+											t6machinelearning.addContinuous(cName, f_id, t6Model.min[f_id], t6Model.max[f_id]);
+										})
+									});
+								}
+								if (t6Model.categorical_features?.length > 0) {
+									t6Model.categorical_features.map((cName) => {
+										let cClasses = (t6Model.categorical_features_classes.filter((f) => f.name===cName)).map((m) => m.values)[0];
+										cClasses = (Array.isArray(cClasses)===true)?cClasses:[];
+										if(cName === "flow_id") {
+											t6machinelearning.addCategorical(cName, t6Model.flow_ids);
+										} else {
+											t6machinelearning.addCategorical(cName, cClasses);
+										}
+									});
+								}
+								t6machinelearning.loadDataSets(inputData, t6Model, 0)
+								.then(async (dataset) => await new Promise(function() {
+									const xs = dataset.trainXs;
+									t6machinelearning.predict(tfModel, xs).then(async (prediction) => await new Promise(function() {
+										let arr = Array.from(prediction.dataSync());
+										const bestMatchPrediction = Math.max(...arr);
+										const bestMatchIndex = arr.indexOf(bestMatchPrediction);
+										payload.meta.categories = typeof payload.meta.categories!=="undefined"?payload.meta.categories:[];
+										payload.meta.categories.push(bestMatchIndex);
+										t6console.debug("CLASSIFY labels", t6Model.labels);
+										t6console.debug("CLASSIFY arr", arr);
+										t6console.debug("CLASSIFY label", (t6Model.labels)[bestMatchIndex]);
+										t6console.debug("CLASSIFY category_id", bestMatchIndex);
+										resolve(payload);
+									}));
+								}));
+							}));
+						}
+					}
 				} else if ( event.type === "httpWebhook" ) {
 					let options = {
 						url: event.params.url,
@@ -482,16 +546,19 @@ t6decisionrules.action = async function(user_id, payload, mqtt_topic) {
 		if ( !payload.flow ) {
 			payload.flow = "";
 		}
+		if ( !payload.user_id ) {
+			payload.user_id = user_id;
+		}
 		payload.flow_id = typeof payload.flow_id!=="undefined"?payload.flow_id:payload.flow;
 		if ( !user_id ) {
 			user_id = "unknown_user";
 			t6console.error(`Can't load rule for unknown user: ${user_id}`);
+			reject(payload);
 		} else {
 			t6console.debug(`Loading rules for User: ${user_id}`, payload);
-			resolve (t6decisionrules.checkRulesFromUser(user_id, payload));
+			resolve(t6decisionrules.checkRulesFromUser(user_id, payload));
 		}
 		payload = null;
-		reject(payload);
 	});
 };
 
