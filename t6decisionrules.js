@@ -25,7 +25,7 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 		p.user_id = user_id;
 		p.latitude = typeof p.latitude!=="undefined"?p.latitude:0;
 		p.longitude = typeof p.longitude!=="undefined"?p.longitude:0;
-		
+
 		var query = {
 			"$and": [
 				{ "user_id": { "$eq": p.user_id } },
@@ -247,8 +247,8 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 				//t6console.debug("decisionrule failure almanac : ", almanac);
 			});
 			
-			engine.on("success", function(event, almanac, ruleResult) {
-				t6console.debug(sprintf("onSuccess", event, almanac, ruleResult));
+			engine.on("success", async function(event, almanac, ruleResult) {
+				t6console.debug("onSuccess", event);
 				t6events.addStat("t6App", `Matching_EventType_${event.type}`, user_id, user_id, {"type": event.type, "user_id": user_id, "rule_id": event.params.rule_id});
 				t6console.info(sprintf("Matching EventType '%s' for User '%s' (Rule '%s')", event.type, user_id, event.params.rule_id));
 				if ( !payload.mqtt_topic ) {
@@ -263,7 +263,7 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 						payload.message = event.params.message;
 					}
 				}
-	
+
 				if( event.type === "mqttPublish" ) {
 					let mqttPayload = {date: moment(parseInt(payload.dtepoch, 10)).format("LLL"), dtepoch:parseInt(payload.dtepoch, 10), value:payload.value, flow: payload.flow};
 					if ( typeof payload.message !== "undefined" ) {
@@ -360,11 +360,32 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 										}
 									});
 								}
-								t6machinelearning.loadDataSets(inputData, t6Model, 0)
-								.then(async (dataset) => await new Promise(function() {
-									const xs = dataset.trainXs;
-									t6machinelearning.predict(tfModel, xs).then(async (prediction) => await new Promise(function() {
-										let arr = Array.from(prediction.dataSync());
+
+								(async () => {
+									let ds, pr;
+									const loadDS = await new Promise((resolve) => {
+										t6console.debug("CLASSIFY 1 loadDS");
+										//t6console.debug("CLASSIFY inputData", inputData);
+										//t6console.debug("CLASSIFY t6Model", t6Model);
+										//t6console.debug("CLASSIFY tfModel", tfModel);
+										t6machinelearning.loadDataSets(inputData, t6Model, 0).then(async (dataset) => {
+										t6console.debug("CLASSIFY 2 DATASET");
+											ds = dataset;
+											resolve(payload);
+										});
+									});
+									const predict = await new Promise((resolve) => {
+										t6console.debug("CLASSIFY 3 PREDICT");
+										t6console.debug("CLASSIFY ds.trainXs", ds.trainXs);
+										t6machinelearning.predict(tfModel, ds.trainXs).then(async (prediction) => {
+											t6console.debug("CLASSIFY 4 PREDICTION");
+											pr = prediction;
+											resolve(payload);
+										});
+									});
+									const ending = await new Promise((resolve) => {
+										t6console.debug("CLASSIFY 5 ENDING");
+										let arr = Array.from(pr.dataSync());
 										const bestMatchPrediction = Math.max(...arr);
 										const bestMatchIndex = arr.indexOf(bestMatchPrediction);
 										payload.meta.categories = typeof payload.meta.categories!=="undefined"?payload.meta.categories:[];
@@ -374,10 +395,19 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 										t6console.debug("CLASSIFY label", (t6Model.labels)[bestMatchIndex]);
 										t6console.debug("CLASSIFY category_id", bestMatchIndex);
 										resolve(payload);
-									}));
-								}));
+									});
+									
+									await Promise.all([loadDS, predict, ending]).then((payloads) => {
+										let [p1, p2, payload] = payloads;
+										t6console.debug("CLASSIFY Promise.all OK");
+										t6console.debug("CLASSIFY payload", payload);
+										resolve(payload);
+									});
+								})();
 							}));
 						}
+					} else {
+						reject(payload);
 					}
 				} else if ( event.type === "httpWebhook" ) {
 					let options = {
@@ -480,7 +510,7 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 					}
 				} else if ( event.type === "sockets" ) {
 					let destObject_id = typeof payload.object_id!=="undefined"?payload.object_id:(typeof event.params.destObject_id!=="undefined"?event.params.destObject_id:undefined);
-					
+
 					t6console.debug("socketPayload INIT", event.params.socketPayload);
 					event.params.socketPayload = JSON.stringify(event.params.socketPayload);
 					event.params.socketPayload = (event.params.socketPayload).substring(1, (event.params.socketPayload).length-1);
@@ -519,8 +549,8 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 			});
 			//engine.run(payload);
 			engine.run(payload).then(async (events) => {
-				t6console.debug(payload);
-				t6console.debug(`engine.run is completed`);
+				//t6console.debug(payload);
+				t6console.debug("engine.run is completed");
 				resolve(payload);
 			});
 		}).catch((err) => {
@@ -552,11 +582,21 @@ t6decisionrules.action = async function(user_id, payload, mqtt_topic) {
 		payload.flow_id = typeof payload.flow_id!=="undefined"?payload.flow_id:payload.flow;
 		if ( !user_id ) {
 			user_id = "unknown_user";
-			t6console.error(`Can't load rule for unknown user: ${user_id}`);
+			t6console.error(`DECISION RULES Can't load rule for unknown user: ${user_id}`);
 			reject(payload);
 		} else {
-			t6console.debug(`Loading rules for User: ${user_id}`, payload);
-			resolve(t6decisionrules.checkRulesFromUser(user_id, payload));
+			t6console.debug("DECISION RULES Loading rules for User", user_id);
+			t6console.debug("DECISION RULES Input payload", payload);
+			await t6decisionrules.checkRulesFromUser(user_id, payload)
+			.then(async (checkRulesResult) => await new Promise(function() {
+				t6console.debug("DECISION RULES Output payload", checkRulesResult);
+				resolve(checkRulesResult);
+				//setTimeout(() => {resolve(checkRulesResult);}, 9000);
+			}))
+			.catch((err) => {
+				t6console.error("DECISION RULES checkRulesFromUser error from t6decisionrules.action", err);
+				reject(payload);
+			});
 		}
 		payload = null;
 	});

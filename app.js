@@ -274,7 +274,7 @@ var classificationsRoute	= require("./routes/classifications");
 app							= express();
 if(enableMonitoring) {
 	monitor(app);
-t6console.log("");
+	t6console.log("");
 	t6console.log("===========================================================");
 	t6console.log("================== Initialize monitoring... ===============");
 	t6console.log("===========================================================");

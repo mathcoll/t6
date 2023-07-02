@@ -622,13 +622,18 @@ let ruleEngine = async function(resolve, reject) {
 		}
 		payloadFact.latitude = typeof payload.latitude!=="undefined"?payload.latitude:null;
 		payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
-		await t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic);
-		payload.datapoint_logs.ruleEngine = true;
-		chainOrder.push("ruleEngine");
-		if (payload.meta.categories && payload.meta.categories.length>0) {
-			t6console.debug("chain 8", "Rule Engine Identified categories from annotation", payload.meta.categories);
-		}
-		resolve({payload, fields, current_flow, chainOrder});
+		await t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic)
+		.then(async (actionResult) => await new Promise(function() {
+			payload.datapoint_logs.ruleEngine = true;
+			chainOrder.push("ruleEngine");
+			if (payload.meta.categories && payload.meta.categories.length>0) {
+				t6console.debug("chain 8", "Rule Engine Identified categories from annotation", payload.meta.categories);
+			}
+			resolve({payload, fields, current_flow, chainOrder});
+		}))
+		.catch(() => {
+			reject({payload, fields, current_flow, chainOrder});
+		});
 	} else {
 		t6console.debug("chain 8", "Not Publishing to Rule Engine");
 		payload.datapoint_logs.ruleEngine = false;
@@ -666,12 +671,14 @@ let saveToLocal = function(resolve, reject) {
 			if(typeof current_flow!=="undefined" && (typeof current_flow.track_id!=="undefined" && current_flow.track_id!=="" && current_flow.track_id!==null)) {
 				tags.track_id = current_flow.track_id;
 			}
+			t6console.debug("chain 9 ------> payload.meta", payload.meta);
 			if (typeof payload.meta!=="undefined" && payload.meta!==null && Object.keys(payload.meta).length > 0) {
 				fields[0].meta = JSON.stringify(payload.meta);
 			}
 			let v = getFieldsFromDatatype(payload.datatype, false, false);
 			(fields[0])[v] = payload.value;
 			let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
+			t6console.debug("chain 9 ------> SAVE", {tags, fields: fields[0]});
 			dbWrite.writePoints([{
 				measurement: "data",
 				tags: tags,
@@ -781,7 +788,7 @@ let saveToCloud = function(resolve, reject) {
 	}
 };
 async function processAllMeasures(payloads, options) {
-	//return new Promise((resolve, reject) => {
+	return new Promise(async (resolve, reject) => {
 		t6console.debug("processAllMeasures in a chain");
 		t6console.debug("--------", "total of", payloads.length, "measures.");
 		let flow_ids = [];
@@ -805,7 +812,7 @@ async function processAllMeasures(payloads, options) {
 						let payload			= chainResult.payload;
 						let current_flow	= chainResult.current_flow;
 						chainOrder.map((chain, index) => {
-							t6console.debug("chain end", index, chain, payload.datapoint_logs[chain], payload.value.length);
+							t6console.debug("chain end", index+1, chain, payload.datapoint_logs[chain], payload.value, payload.meta);
 						});
 						t6console.debug("chain end", "---------------------------------------------");
 						if (payload.datatype==="image" || typeof payload.img!=="undefined") {
@@ -840,18 +847,18 @@ async function processAllMeasures(payloads, options) {
 						payload.id = payload.time*1; //*1e6;
 						payload.time = payload.time*1; //*1e6;
 						payload.timestamp = payload.time*1; //*1e6;
-						return (payload);
+						return(payload);
 					} else {
 						t6console.debug("chain ending with error", "---------------------------------------------");
 						t6console.debug(err);
-						return ("Precondition failed");
+						return("Precondition failed");
 					}
 				});
 			})
 		);
 		t6events.addStat("t6Api", "POST data", payloads[0].user_id, payloads[0].user_id, {flow_ids: flow_ids.join(), payloads_length: payloads.length});
-		return ret;
-	//});
+		resolve(ret);
+	});
 }
 
 

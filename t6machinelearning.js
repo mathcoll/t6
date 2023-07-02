@@ -270,6 +270,18 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 
 t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 	return new Promise((resolve) => {
+		/*
+		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options, () => {
+			//const prediction = tfModel.predict(tf.tensor2d(inputDatasetX), options);
+			// FALSE not spam : const prediction = tfModel.predict(tf.tensor2d([[1,3,12,18,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]), options);
+			// TRUE spam : const prediction = tfModel.predict(tf.tensor2d([[172,184,185,212,327,333,477,478,503,504,505,0,0,0,0,0,0,0,0,0]]), options);
+			const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
+			t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
+			t6console.debug("ML PREDICTION");
+			prediction.print();
+			resolve(prediction);
+		});
+		*/
 		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
 		//const prediction = tfModel.predict(tf.tensor2d(inputDatasetX), options);
 		// FALSE not spam : const prediction = tfModel.predict(tf.tensor2d([[1,3,12,18,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]), options);
