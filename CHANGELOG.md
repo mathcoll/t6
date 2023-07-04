@@ -17,12 +17,13 @@ Types of changes
 ------------
 
 ## 2023
-### Milestone 25 - 2023-
+### Milestone 25 - 2023-07
 **Added**
   - [x] New endpoints to handle `Models` resources as CRUD
   - [x] New Machine Learning module including training Endpoint
   - [x] Added normalize boolean parameter to Models
   - [x] Allows to upload custom Models binary and weight files
+  - [x] Store measurements including meta information about predicted categorie - using Machine Learning and Models
 
 **Fixed**
   - [x] Allows for custom timestamp with several date formatting as input
