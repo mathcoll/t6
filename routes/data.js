@@ -622,15 +622,20 @@ let ruleEngine = async function(resolve, reject) {
 		}
 		payloadFact.latitude = typeof payload.latitude!=="undefined"?payload.latitude:null;
 		payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
+		t6console.debug("chain 8", "Rules ---BEFORE AWAIT");
 		await t6decisionrules.action(payload.user_id, payloadFact, payload.mqtt_topic)
-		.then(async (actionResult) => await new Promise(function() {
+		//.then(async (actionResult) => await new Promise(function() {
+		.then(async (actionResult) => {
+			t6console.debug("chain 8", "Rules ---INSIDE THEN");
 			payload.datapoint_logs.ruleEngine = true;
 			chainOrder.push("ruleEngine");
 			if (payload.meta.categories && payload.meta.categories.length>0) {
 				t6console.debug("chain 8", "Rule Engine Identified categories from annotation", payload.meta.categories);
 			}
+			t6console.debug("chain 8", "Rules", actionResult);
+			t6console.debug("chain 8", "Rules --- Resolving should be executed AFTER t6machinelearning.init");
 			resolve({payload, fields, current_flow, chainOrder});
-		}))
+		})
 		.catch(() => {
 			reject({payload, fields, current_flow, chainOrder});
 		});

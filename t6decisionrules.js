@@ -389,11 +389,15 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 										const bestMatchPrediction = Math.max(...arr);
 										const bestMatchIndex = arr.indexOf(bestMatchPrediction);
 										payload.meta.categories = typeof payload.meta.categories!=="undefined"?payload.meta.categories:[];
-										payload.meta.categories.push(bestMatchIndex);
+										// Find the uuid from the label - TODO 
+										let category_label = t6Model.labels[bestMatchIndex];
+										let category_id = categories.findOne({ name: category_label }).id; // TODO : WTF: finding by name w/o filtering user !
+										payload.meta.categories.push(category_id);
+										t6console.debug("CLASSIFY result", arr);
 										t6console.debug("CLASSIFY labels", t6Model.labels);
-										t6console.debug("CLASSIFY arr", arr);
-										t6console.debug("CLASSIFY label", (t6Model.labels)[bestMatchIndex]);
-										t6console.debug("CLASSIFY category_id", bestMatchIndex);
+										t6console.debug("CLASSIFY category index", bestMatchIndex);
+										t6console.debug("CLASSIFY category label", category_label);
+										t6console.debug("CLASSIFY category id", category_id);
 										resolve(payload);
 									});
 									
@@ -549,9 +553,20 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 			});
 			//engine.run(payload);
 			engine.run(payload).then(async (events) => {
-				//t6console.debug(payload);
 				t6console.debug("engine.run is completed");
-				resolve(payload);
+				// TODO : Code refunct needed // /!\
+				let cpt=0;
+				(events.results).map((r) => {
+					if(r.event.type === "model_classify" && r.result === true) {cpt++;}
+					t6console.debug("r.event.type", r.event.type);
+					t6console.debug("r.result", r.result);
+				});
+				t6console.debug("engine.run resolving ???", cpt>0?false:true);
+				// Do we have an async event like machine learning model prediction ?
+				if (cpt===0) {
+					resolve(payload); // TODO BUG /!\ : when no rule match, then no promise is resolved and generate a timeout
+					t6console.debug("engine.run was resolved");
+				}
 			});
 		}).catch((err) => {
 			t6console.critical("dbInfluxDB ERR on decisionRule (checkRulesFromUser)", err);
@@ -586,10 +601,12 @@ t6decisionrules.action = async function(user_id, payload, mqtt_topic) {
 			reject(payload);
 		} else {
 			t6console.debug("DECISION RULES Loading rules for User", user_id);
-			t6console.debug("DECISION RULES Input payload", payload);
+			//t6console.debug("DECISION RULES Input payload", payload);
+			t6console.debug("DECISION RULES BEFORE AWAIT");
 			await t6decisionrules.checkRulesFromUser(user_id, payload)
 			.then(async (checkRulesResult) => await new Promise(function() {
-				t6console.debug("DECISION RULES Output payload", checkRulesResult);
+				t6console.debug("DECISION RULES INSIDE THEN");
+				//t6console.debug("DECISION RULES Output payload", checkRulesResult);
 				resolve(checkRulesResult);
 				//setTimeout(() => {resolve(checkRulesResult);}, 9000);
 			}))
