@@ -6,7 +6,7 @@ var DataSerializer = require("../serializers/data");
 var ErrorSerializer = require("../serializers/error");
 let encoding = "utf8";
 
-function getObjectKey(payload, user_id) {
+let getObjectKey = function(payload, user_id) {
 	return new Promise((resolve, reject) => {
 		payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
 		if ( typeof payload.object_id !== "undefined" ) {
@@ -14,25 +14,28 @@ function getObjectKey(payload, user_id) {
 			let query = { "$and": [ { "user_id" : user_id }, { "id" : payload.object_id }, ] };
 			var object = objects.findOne(query);
 			if ( object && object.secret_key ) {
-				t6console.debug("Retrieve key from Object.");
+				t6console.debug("getObjectKey Retrieve key from Object.");
 				resolve({payload, object});
 			} else {
-				t6console.debug("No Secret Key available on Object or Object is not yours.");
-				payload.errorMessage.push("No Secret Key available on Object or Object is not yours.");
+				t6console.debug("getObjectKey No Secret Key available on Object or Object is not yours.");
+				payload.errorMessage.push("getObjectKey No Secret Key available on Object or Object is not yours.");
 				reject({payload, object});
 			}
 		} else {
-			t6console.debug("No object_id defined to get Key.");
-			payload.errorMessage.push("No object_id defined to get secret Key.");
+			t6console.debug("getObjectKey No object_id defined to get Key.");
+			payload.errorMessage.push("getObjectKey No object_id defined to get secret Key.");
 			reject({payload, object});
 		}
+	}).catch((err) => {
+		t6console.warn("getObjectKey err", err);
+		reject({payload, object});
 	});
 }
 let preparePayload = function(resolve, reject) {
+	t6console.debug("chain 1", "preparePayload");
 	let payload = this.payload;
 	let chainOrder = this.chainOrder;
 	let options = this.options;
-	t6console.debug("chain 1", "preparePayload");
 	payload = getJson(payload);
 	let object;
 
@@ -94,7 +97,7 @@ let preparePayload = function(resolve, reject) {
 				payload.errorMessage.push("Couldn't get secret key from Object. "+error);
 				payload.datapoint_logs = {preparePayload : "err"};
 				chainOrder.push("preparePayload");
-				resolve({payload, chainOrder});
+				reject({payload, chainOrder});
 			});
 	} else {
 		payload.datapoint_logs = {preparePayload : false};
@@ -103,10 +106,10 @@ let preparePayload = function(resolve, reject) {
 	}
 }
 let signatureCheck = function(resolve, reject) {
+	t6console.debug("chain 2&4", "signatureCheck");
 	let payload = this.payload;
 	let object = this.object;
 	let chainOrder = this.chainOrder;
-	t6console.debug("chain 2&4", "signatureCheck");
 	let initialPayload = {
 		flow_id: payload.flow_id,
 		user_id: payload.user_id,
@@ -182,16 +185,17 @@ let signatureCheck = function(resolve, reject) {
 		});
 	} else {
 		t6console.debug("chain 2&4", "Is payload really signed?");
+		payload.isSigned = false;
 		payload.datapoint_logs.signatureCheck = false;
 		chainOrder.push("signatureCheck");
 		resolve({payload, object, chainOrder});
 	}
 }
 let decrypt = function(resolve, reject) {
+	t6console.debug("chain 3", "decrypt");
 	let payload = this.payload;
 	let object = this.object;
 	let chainOrder = this.chainOrder;
-	t6console.debug("chain 3", "decrypt");
 	let initialPayload = {
 		flow_id: payload.flow_id,
 		user_id: payload.user_id,
@@ -279,11 +283,11 @@ let decrypt = function(resolve, reject) {
 		resolve({payload, object, chainOrder});
 	}
 }
-let verifyPrerequisites = function(resolve, reject) {
+let verifyPrerequisites = async function(resolve, reject) {
+	t6console.debug("chain 5", "verifyPrerequisites");
 	let payload = this.payload;
 	let object = this.object;
 	let chainOrder = this.chainOrder;
-	t6console.debug("chain 5", "verifyPrerequisites");
 	payload.prerequisite = 0;
 	if ( !payload.value ) {
 		t6console.warning("chain 5", "Error: verifyPrerequisites : no value.");
@@ -390,6 +394,7 @@ let verifyPrerequisites = function(resolve, reject) {
 		t6console.debug("chain 5", "Retention", payload.retention);
 		//t6console.debug("chain 5", "current_flow", current_flow);
 		t6console.debug("chain 5", "Prerequisite Index=", payload.prerequisite, payload.prerequisite>0?"Something is required.":"All good.");
+		t6console.debug("chain 5", "payload", payload);
 		if (payload.prerequisite <= 0) {
 			payload.datapoint_logs.verifyPrerequisites = true;
 			chainOrder.push("verifyPrerequisites");
@@ -398,15 +403,15 @@ let verifyPrerequisites = function(resolve, reject) {
 			payload.errorMessage.push("Payload is requiring either signature and/or encryption.");
 			payload.datapoint_logs.verifyPrerequisites = true;
 			chainOrder.push("verifyPrerequisites");
-			reject({});
+			reject({payload, object, chainOrder});
 		}
 	}
 }
 let preprocessor = async function(resolve, reject) {
+	t6console.debug("chain 6", "preprocessor");
 	let payload = this.payload;
 	let chainOrder = this.chainOrder;
 	let current_flow = this.current_flow;
-	t6console.debug("chain 6", "preprocessor");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.preprocessor = "err";
 		chainOrder.push("preprocessor");
@@ -474,14 +479,17 @@ let preprocessor = async function(resolve, reject) {
 		chainOrder.push("preprocessor");
 		t6console.debug("chain 6", "Preprocessor going to callback function.", payload.value);
 		resolve({payload, fields, current_flow, chainOrder});
+	}).catch((err) => {
+		t6console.warn("chain 6", "Preprocessor err", err);
+		resolve({payload, fields, current_flow, chainOrder});
 	});
 }
 let fusion = function(resolve, reject) {
+	t6console.debug("chain 7", "fusion");
 	let payload = this.payload;
 	let chainOrder = this.chainOrder;
 	let fields = this.fields;
 	let current_flow = this.current_flow;
-	t6console.debug("chain 7", "fusion");
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.fusion = "err";
 		chainOrder.push("fusion");
@@ -594,11 +602,16 @@ let fusion = function(resolve, reject) {
 	}
 }
 let ruleEngine = async function(resolve, reject) {
+	t6console.debug("chain 8", "ruleEngine");
 	let payload = this.payload;
 	let chainOrder = this.chainOrder;
 	let fields = this.fields;
 	let current_flow = this.current_flow;
-	t6console.debug("chain 8", "ruleEngine");
+	if(!payload) {
+		payload.datapoint_logs.ruleEngine = "err";
+		chainOrder.push("ruleEngine");
+		resolve({payload, fields, current_flow, chainOrder});
+	}
 	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true; // TODO : to be cleaned
 	if ( publish === true ) {														 // TODO : to be cleaned
 		t6console.debug("chain 8", "Publishing to Rule Engine");
@@ -637,7 +650,7 @@ let ruleEngine = async function(resolve, reject) {
 			resolve({payload, fields, current_flow, chainOrder});
 		})
 		.catch(() => {
-			reject({payload, fields, current_flow, chainOrder});
+			resolve({payload, fields, current_flow, chainOrder});
 		});
 	} else {
 		t6console.debug("chain 8", "Not Publishing to Rule Engine");
@@ -647,12 +660,13 @@ let ruleEngine = async function(resolve, reject) {
 	} // end publish
 }
 let saveToLocal = function(resolve, reject) {
+	t6console.debug("chain 9", "saveToLocal");
 	let payload = this.payload;
 	let chainOrder = this.chainOrder;
 	let fields = this.fields;
 	let current_flow = this.current_flow;
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
-	t6console.debug("chain 9", "saveToLocal", save);
+	t6console.debug("chain 9", "payload.save", payload.save);
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToLocal = "err";
 		chainOrder.push("saveToLocal");
@@ -736,7 +750,7 @@ let saveToCloud = function(resolve, reject) {
 		let org = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.org!=="undefined")?payload.influx_db_cloud.org:current_flow.influx_db_cloud.org;
 		let url = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.url!=="undefined")?payload.influx_db_cloud.url:current_flow.influx_db_cloud.url;
 		let bucket = (typeof payload.influx_db_cloud!=="undefined" && typeof payload.influx_db_cloud.bucket!=="undefined")?payload.influx_db_cloud.bucket:current_flow.influx_db_cloud.bucket;
-		
+
 		if(token && org && url && bucket) {
 			t6console.debug("chain 10", "influxDbCloud Saving to Cloud.");
 			const dbInfluxDBCloud = new InfluxDB({url: url, token: token});
@@ -803,11 +817,11 @@ async function processAllMeasures(payloads, options) {
 				let chainOrder = [];
 				t6console.debug("--------", "chaining measure index", index);
 				return await new Promise(preparePayload.bind({payload: current_payload, options, chainOrder}))
-					.then(async (result) => await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
-					.then(async (result) => await new Promise(decrypt.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
-					.then(async (result) => await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
-					.then(async (result) => await new Promise(verifyPrerequisites.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})))
-					.then(async (result) => await new Promise(preprocessor.bind({payload: result.payload, current_flow: result.current_flow, chainOrder: result.chainOrder})))
+					.then(async (result) => await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})).catch((err) => {t6console.debug("processAllMeasures err signatureCheck1", err);}))
+					.then(async (result) => await new Promise(decrypt.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})).catch((err) => {t6console.debug("processAllMeasures err decrypt", err);}))
+					.then(async (result) => await new Promise(signatureCheck.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})).catch((err) => {t6console.debug("processAllMeasures err signatureCheck2", err);}))
+					.then(async (result) => await new Promise(verifyPrerequisites.bind({payload: result.payload, object: result.object, chainOrder: result.chainOrder})).catch((err) => {t6console.debug("processAllMeasures err verifyPrerequisites", err); reject({err: "Precondition failed"});}))
+					.then(async (result) => await new Promise(preprocessor.bind({payload: result.payload, current_flow: result.current_flow, chainOrder: result.chainOrder})).catch((err) => {t6console.debug("processAllMeasures err preprocessor", err);}))
 					.then(async (result) => await new Promise(fusion.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
 					.then(async (result) => await new Promise(ruleEngine.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
 					.then(async (result) => await new Promise(saveToLocal.bind({payload: result.payload, fields: result.fields, current_flow: result.current_flow, chainOrder: result.chainOrder})))
