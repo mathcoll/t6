@@ -19,7 +19,7 @@ let getObjectKey = function(payload, user_id) {
 			} else {
 				t6console.debug("getObjectKey No Secret Key available on Object or Object is not yours.");
 				payload.errorMessage.push("getObjectKey No Secret Key available on Object or Object is not yours.");
-				reject({payload, object});
+				resolve({payload, object});
 			}
 		} else {
 			t6console.debug("getObjectKey No object_id defined to get Key.");
@@ -28,6 +28,7 @@ let getObjectKey = function(payload, user_id) {
 		}
 	}).catch((err) => {
 		t6console.warn("getObjectKey err", err);
+		t6console.warn("getObjectKey errorMessage", err.errorMessage);
 		reject({payload, object});
 	});
 }
