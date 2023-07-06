@@ -165,7 +165,7 @@
                     "description": "Needs to wait a bit for data storage that can be a little bit asynchroneous.",
                     "api_calls": [
                         {
-                            "request": "GET https://postman-echo.com/delay/2",
+                            "request": "GET https://postman-echo.com/delay/5",
                             "status": "200"
                         }
                     ]
