@@ -178,7 +178,7 @@ let signatureCheck = function(resolve, reject) {
 				resolve({payload, object, chainOrder});
 			} else {
 				t6console.error("chain 2&4", "Error: Can't verify signature.");
-				payload.isSigned = false;
+				payload.isSigned = typeof payload.isSigned!=="undefined"?payload.isSigned:false; // set to false only in the second pass
 				payload.datapoint_logs.signatureCheck = "err";
 				chainOrder.push("signatureCheck");
 				resolve({payload, object, chainOrder});
@@ -186,7 +186,7 @@ let signatureCheck = function(resolve, reject) {
 		});
 	} else {
 		t6console.debug("chain 2&4", "Is payload really signed?");
-		payload.isSigned = false;
+		payload.isSigned = typeof payload.isSigned!=="undefined"?payload.isSigned:false; // set to false only in the second pass
 		payload.datapoint_logs.signatureCheck = false;
 		chainOrder.push("signatureCheck");
 		resolve({payload, object, chainOrder});
@@ -367,6 +367,7 @@ let verifyPrerequisites = async function(resolve, reject) {
 
 		if ( typeof current_flow!=="undefined" && current_flow.require_encrypted && !payload.isEncrypted ) {
 			payload.prerequisite += 1;
+			payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
 			payload.errorMessage.push("chain 5", "==> Flow require encrypted payload.");
 			t6console.debug("chain 5", "Flow require isEncrypted -", current_flow.require_encrypted);
 			t6console.debug("chain 5", ".. & Payload isEncrypted", payload.isEncrypted);
@@ -375,6 +376,7 @@ let verifyPrerequisites = async function(resolve, reject) {
 
 		if ( typeof current_flow!=="undefined" && current_flow.require_signed && !payload.isSigned ) {
 			payload.prerequisite += 1;
+			payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
 			payload.errorMessage.push("chain 5", "==> Flow require signed payload.");
 			t6console.debug("chain 5", "Flow require isSigned -", current_flow.require_signed);
 			t6console.debug("chain 5", ".. & Payload isSigned", payload.isSigned);
@@ -401,6 +403,7 @@ let verifyPrerequisites = async function(resolve, reject) {
 			chainOrder.push("verifyPrerequisites");
 			resolve({payload, object, current_flow, chainOrder});
 		} else {
+			payload.errorMessage = typeof payload.errorMessage!=="undefined"?payload.errorMessage:[];
 			payload.errorMessage.push("Payload is requiring either signature and/or encryption.");
 			payload.datapoint_logs.verifyPrerequisites = true;
 			chainOrder.push("verifyPrerequisites");
