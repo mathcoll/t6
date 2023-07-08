@@ -69,8 +69,6 @@ let preparePayload = function(resolve, reject) {
 	payload.datatype	 = (typeof payload.datatype!=="undefined" && payload.datatype!==null)?payload.datatype:undefined;
 	payload.datatype_id	 = (typeof payload.datatype_id!=="undefined" && payload.datatype_id!==null)?payload.datatype_id:undefined;
 	payload.mqtt_topic	 = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
-	payload.latitude	 = typeof payload.latitude!=="undefined"?payload.latitude:"";
-	payload.longitude	 = typeof payload.longitude!=="undefined"?payload.longitude:"";
 	if (typeof payload.meta!=="undefined" && typeof payload.meta!=="object" && payload.meta!=="") {
 		if(typeof payload.meta==="string") {
 			payload.meta		 = {text: payload.meta};
@@ -79,6 +77,18 @@ let preparePayload = function(resolve, reject) {
 		}
 	} else if (typeof payload.meta==="undefined") {
 		payload.meta = {};
+	}
+	if (typeof payload.latitude!=="undefined") {
+		payload.latitude	 = parseFloat(payload.latitude);
+		payload.meta.latitude = payload.latitude;
+	} else {
+		payload.latitude = "";
+	}
+	if (typeof payload.longitude!=="undefined") {
+		payload.longitude	 = parseFloat(payload.longitude);
+		payload.meta.longitude = payload.longitude;
+	} else {
+		payload.longitude = "";
 	}
 	payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
