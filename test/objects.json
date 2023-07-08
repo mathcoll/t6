@@ -45,6 +45,28 @@
         	                    "select": "body.message",
         	                    "equal": "Created"
         	                }]
+                        },
+                        {
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "request": "POST /{{app_version}}/objects",
+                            "params": {
+								"description": "My object for geofencing",
+								"name": "GPS tracker",
+								"type": "phone",
+								"longitude": 2.31807,
+								"latitude": 48.90333,
+								"user_id": "{{saved.user_id}}"
+							},
+                            "save": {
+                                "saved.geofencing_object_id": "body.object.data.id"
+                            },
+                            "status": "201",
+                            "assert": [{
+        	                    "select": "body.message",
+        	                    "equal": "Created"
+        	                }]
                         }
                     ]
                 },
@@ -209,7 +231,7 @@
                             "status": "200",
                             "assert": {
         	                    "select": "body.data",
-        	                    "size": 2
+        	                    "size": 3
         	                }
                         }
                     ]

@@ -17,6 +17,17 @@ Types of changes
 ------------
 
 ## 2023
+### Milestone 26 - 2023-
+**Added**
+  - [x] Allows to set customRules on datapoints
+  - [x] Additional Rule Engine eventType: replaceWithDistance. This event will get the distance in meter between an Object and the longitude-latitude passed along the datapoint payload
+
+**Fixed**
+  - [x] 
+
+**Changed**
+  - [x] 
+
 ### Milestone 25 - 2023-07
 **Added**
   - [x] New endpoints to handle `Models` resources as CRUD
