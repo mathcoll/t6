@@ -114,7 +114,7 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 				t6console.debug("distanceGreaterThan Limit=", jsonValue);
 				t6console.debug("Object", p.object.latitude, p.object.longitude);
 				let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: parseInt(jsonValue, 10)});
-				p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
+				p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: false, unit: "meters"});
 				t6console.debug("dist=", p.distance, "is GreaterThan", jsonValue, !dist);
 				return !dist;
 			} else {
@@ -129,7 +129,7 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 				t6console.debug("distanceLessThan Limit=", jsonValue);
 				t6console.debug("Object", p.object.latitude, p.object.longitude);
 				let dist = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters", limit: parseInt(jsonValue, 10)});
-				p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: true, unit: "meters"});
+				p.distance = geodist({lat: factLatitude, lon: factLongitude}, {lat: p.object.latitude, lon: p.object.longitude}, {format: false, unit: "meters"});
 				t6console.debug("dist=", p.distance, "is LessThan", jsonValue, !dist);
 				return dist;
 			} else {
