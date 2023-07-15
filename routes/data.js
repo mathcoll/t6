@@ -631,7 +631,7 @@ let ruleEngine = async function(resolve, reject) {
 	if ( publish === true ) {														 // TODO : to be cleaned
 		t6console.debug("chain 8", "Publishing to Rule Engine");
 		let flow = payload.flow_id!==null?payload.flow_id:(typeof payload.flow_id!=="undefined"?payload.flow_id:(typeof current_flow!=="undefined"?current_flow.id:""));
-		let payloadFact = {"dtepoch": payload.time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "unit": (typeof payload.unit!=="undefined"?payload.unit:""), "datatype": payload.datatype, "mqtt_topic": payload.mqtt_topic}; // This is the bare minimal payload
+		let payloadFact = {"dtepoch": payload.time, "value": JSON.parse(JSON.stringify(payload.value)), "flow": flow, "unit": (typeof payload.unit!=="undefined"?payload.unit:""), "datatype": payload.datatype, "mqtt_topic": payload.mqtt_topic, "meta": undefined, "rules": undefined, "save": undefined, "latitude": undefined, "longitude": undefined}; // This is the bare minimal payload
 		if ( typeof payload.object_id !== "undefined" ) {
 			payloadFact.object_id = payload.object_id;
 			let query = {
@@ -647,7 +647,7 @@ let ruleEngine = async function(resolve, reject) {
 		}
 		payloadFact.meta = typeof payload.meta!=="undefined"?payload.meta:null;
 		payloadFact.rules = typeof payload.rules!=="undefined"?payload.rules:null;
-		payloadFact.save = typeof payload.save!=="undefined"?payload.save:false;
+		payloadFact.save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 		payloadFact.latitude = typeof payload.latitude!=="undefined"?payload.latitude:null;
 		payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
 		t6console.debug("chain 8", "Rules ---BEFORE AWAIT");
