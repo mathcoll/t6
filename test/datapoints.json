@@ -82,19 +82,19 @@
                     "api_calls": [
                         {
 							"it": "can post a datapoint to fakeFlowForDistance Flow",
-                        	"request": "POST /{{app_version}}/data/fakeFlowForDistance",
+                        	"request": "POST /{{app_version}}/data/fakeFlowForGeofencing",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
                             "params": {
-								"value": "Distance should be '804 meters', this value is going to be overwritten by a customRule.",
+								"value": -1.0,
 								"meta": {
 									"foo": "bar"
 								},
 								"save": false,
 								"retention": "retention1w",
+								"unit": "26a4be78-1c02-4a41-acc1-14d8e6b29a84",
 								"unit": "",
-								"mqtt_topic": "test",
 								"publish": true,
 								"longitude": 2.32907,
 								"latitude": 48.90333,
@@ -106,7 +106,7 @@
 												{
 													"fact": "flow",
 													"operator": "equal",
-													"value": "fakeFlowForDistance"
+													"value": "fakeFlowForGeofencing"
 												},
 												{
 													"fact": "value",
@@ -126,7 +126,7 @@
                             "status": 200,
                             "assert": {
         	                    "select": "body.data.0.attributes.value",
-        	                    "equal": "804 meters"
+        	                    "equal": "804"
         	                }
                         }
                     ]
