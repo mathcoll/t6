@@ -33,11 +33,17 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 			]
 		};
 		var r = rules.chain().find(query).data();
+		if(typeof payload.rules!=="undefined" && Array.isArray(payload.rules)===true) {
+			payload.rules.map((customRule) => {
+				r.push({rule: customRule, id: "customRuleFromPayload"});
+			});
+		}
 		if ( r.length > 0 ) {
 			r.forEach(function(theRule) {
 				if (typeof theRule.rule.event!=="undefined" && typeof theRule.rule.event.params!=="undefined") {
 					theRule.rule.event.params.rule_id = theRule.id;
 					engine.addRule(new Rule(theRule.rule));
+					t6console.debug("Rule added", theRule.id);
 				}
 			});
 		}
@@ -512,9 +518,15 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 					} else {
 						t6console.error("No user or no pushSubscription found, can't sendPush");
 					}
+				} else if ( event.type === "replaceWithDistance" ) {
+					(async () => {
+						payload.value = await payload.distance;
+						t6console.debug("payload.distance", payload.distance);
+						//TODO : we should store the unit as a meta information
+						resolve(payload);
+					})();
 				} else if ( event.type === "sockets" ) {
 					let destObject_id = typeof payload.object_id!=="undefined"?payload.object_id:(typeof event.params.destObject_id!=="undefined"?event.params.destObject_id:undefined);
-
 					t6console.debug("socketPayload INIT", event.params.socketPayload);
 					event.params.socketPayload = JSON.stringify(event.params.socketPayload);
 					event.params.socketPayload = (event.params.socketPayload).substring(1, (event.params.socketPayload).length-1);
@@ -557,7 +569,7 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 				// TODO : Code refunct needed // /!\
 				let cpt=0;
 				(events.results).map((r) => {
-					if(r.event.type === "model_classify" && r.result === true) {cpt++;}
+					if((r.event.type === "model_classify" || r.event.type === "replaceWithDistance") && r.result === true) {cpt++;}
 					t6console.debug("r.event.type", r.event.type);
 					t6console.debug("r.result", r.result);
 				});

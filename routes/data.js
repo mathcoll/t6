@@ -69,8 +69,6 @@ let preparePayload = function(resolve, reject) {
 	payload.datatype	 = (typeof payload.datatype!=="undefined" && payload.datatype!==null)?payload.datatype:undefined;
 	payload.datatype_id	 = (typeof payload.datatype_id!=="undefined" && payload.datatype_id!==null)?payload.datatype_id:undefined;
 	payload.mqtt_topic	 = typeof payload.mqtt_topic!=="undefined"?payload.mqtt_topic:"";
-	payload.latitude	 = typeof payload.latitude!=="undefined"?payload.latitude:"";
-	payload.longitude	 = typeof payload.longitude!=="undefined"?payload.longitude:"";
 	if (typeof payload.meta!=="undefined" && typeof payload.meta!=="object" && payload.meta!=="") {
 		if(typeof payload.meta==="string") {
 			payload.meta		 = {text: payload.meta};
@@ -79,6 +77,18 @@ let preparePayload = function(resolve, reject) {
 		}
 	} else if (typeof payload.meta==="undefined") {
 		payload.meta = {};
+	}
+	if (typeof payload.latitude!=="undefined") {
+		payload.latitude	 = parseFloat(payload.latitude);
+		payload.meta.latitude = payload.latitude;
+	} else {
+		payload.latitude = "";
+	}
+	if (typeof payload.longitude!=="undefined") {
+		payload.longitude	 = parseFloat(payload.longitude);
+		payload.meta.longitude = payload.longitude;
+	} else {
+		payload.longitude = "";
 	}
 	payload.save		 = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	payload.publish		 = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true;
@@ -616,6 +626,7 @@ let ruleEngine = async function(resolve, reject) {
 		chainOrder.push("ruleEngine");
 		resolve({payload, fields, current_flow, chainOrder});
 	}
+	t6console.debug("chain 8", "Custom rules", payload.rules);
 	let publish = typeof payload.publish!=="undefined"?JSON.parse(payload.publish):true; // TODO : to be cleaned
 	if ( publish === true ) {														 // TODO : to be cleaned
 		t6console.debug("chain 8", "Publishing to Rule Engine");
@@ -634,9 +645,9 @@ let ruleEngine = async function(resolve, reject) {
 				payloadFact.object = object;
 			}
 		}
-		if ( payload.meta ) {
-			payloadFact.meta = payload.meta;
-		}
+		payloadFact.meta = typeof payload.meta!=="undefined"?payload.meta:null;
+		payloadFact.rules = typeof payload.rules!=="undefined"?payload.rules:null;
+		payloadFact.save = typeof payload.save!=="undefined"?payload.save:false;
 		payloadFact.latitude = typeof payload.latitude!=="undefined"?payload.latitude:null;
 		payloadFact.longitude = typeof payload.longitude!=="undefined"?payload.longitude:null;
 		t6console.debug("chain 8", "Rules ---BEFORE AWAIT");
@@ -649,7 +660,8 @@ let ruleEngine = async function(resolve, reject) {
 			if (payload.meta.categories && payload.meta.categories.length>0) {
 				t6console.debug("chain 8", "Rule Engine Identified categories from annotation", payload.meta.categories);
 			}
-			t6console.debug("chain 8", "Rules", actionResult);
+			payload.value = actionResult.value; // it can be transformed by rules
+			t6console.debug("chain 8", "Rules from actionResult", actionResult);
 			t6console.debug("chain 8", "Rules --- Resolving should be executed AFTER t6machinelearning.init");
 			resolve({payload, fields, current_flow, chainOrder});
 		})
@@ -671,12 +683,13 @@ let saveToLocal = function(resolve, reject) {
 	let current_flow = this.current_flow;
 	let save = typeof payload.save!=="undefined"?JSON.parse(payload.save):true;
 	t6console.debug("chain 9", "payload.save", payload.save);
+	t6console.debug("chain 9", "payload.value", payload.value);
 	if(!payload || current_flow===null) {
 		payload.datapoint_logs.saveToLocal = "err";
 		chainOrder.push("saveToLocal");
 		resolve({payload, fields, current_flow, chainOrder});
 	}
-	if ( save === true ) {
+	if ( save === true && payload.value ) {
 		let rp = typeof influxSettings.retentionPolicies.data[0]!=="undefined"?influxSettings.retentionPolicies.data[0]:"autogen";
 		if(typeof payload.retention!=="undefined") {
 			rp = payload.retention;
@@ -700,6 +713,7 @@ let saveToLocal = function(resolve, reject) {
 			}
 			let v = getFieldsFromDatatype(payload.datatype, false, false);
 			(fields[0])[v] = payload.value;
+			t6console.debug("chain 9 ------> payload.value", payload.value, (fields[0])[v], v);
 			let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 			t6console.debug("chain 9 ------> SAVE", {tags, fields: fields[0]});
 			dbWrite.writePoints([{
@@ -835,7 +849,7 @@ async function processAllMeasures(payloads, options) {
 						let payload			= chainResult.payload;
 						let current_flow	= chainResult.current_flow;
 						chainOrder.map((chain, index) => {
-							t6console.debug("chain end", index+1, chain, payload.datapoint_logs[chain], payload.value, payload.meta);
+							t6console.debug("chain end", index+1, chain, payload.datapoint_logs[chain], payload.value);
 						});
 						t6console.debug("chain end", "---------------------------------------------");
 						if (payload.datatype==="image" || typeof payload.img!=="undefined") {

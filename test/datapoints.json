@@ -74,6 +74,61 @@
         	                    "size": 1
         	                }
                         }
+                     ]
+                },
+                {
+                	"name": "can post datapoint for geofencing",
+                    "description": "post datapoint for geofencing",
+                    "api_calls": [
+                        {
+							"it": "can post a datapoint to fakeFlowForDistance Flow",
+                        	"request": "POST /{{app_version}}/data/fakeFlowForDistance",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "params": {
+								"value": "Distance should be '804 meters', this value is going to be overwritten by a customRule.",
+								"meta": {
+									"foo": "bar"
+								},
+								"save": false,
+								"retention": "retention1w",
+								"unit": "",
+								"mqtt_topic": "test",
+								"publish": true,
+								"longitude": 2.32907,
+								"latitude": 48.90333,
+								"object_id": "{{saved.geofencing_object_id}}",
+								"rules": [
+									{
+										"conditions": {
+											"all": [
+												{
+													"fact": "flow",
+													"operator": "equal",
+													"value": "fakeFlowForDistance"
+												},
+												{
+													"fact": "value",
+													"operator": "distanceGreaterThan",
+													"value": "803"
+												}
+											]
+										},
+										"event": {
+											"type": "replaceWithDistance",
+											"params": {}
+										},
+										"priority": "1"
+									}
+								]
+							},
+                            "status": 200,
+                            "assert": {
+        	                    "select": "body.data.0.attributes.value",
+        	                    "equal": "804 meters"
+        	                }
+                        }
                     ]
                 },
                 {

@@ -76,7 +76,7 @@
                 },
                 {
                 	"name": "can delete an Object 1",
-                    "description": "can delete an Object",
+                    "description": "can delete an Object 1",
                     "api_calls": [
                         {
                         	"request": "DELETE /{{app_version}}/objects/{{saved.object_id}}",
@@ -89,10 +89,23 @@
                 },
                 {
                 	"name": "can delete an Object 2",
-                    "description": "can delete an Object",
+                    "description": "can delete an Object 2",
                     "api_calls": [
                         {
                         	"request": "DELETE /{{app_version}}/objects/{{saved.object_id2}}",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "status": "200"
+                        }
+                    ]
+                },
+                {
+                	"name": "can delete an Object 3",
+                    "description": "can delete an Object 3",
+                    "api_calls": [
+                        {
+                        	"request": "DELETE /{{app_version}}/objects/{{saved.geofencing_object_id}}",
                             "headers": {
                                 "Authorization": "Bearer {{saved.bearer_token}}"
                             },
