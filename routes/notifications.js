@@ -308,7 +308,7 @@ router.get("/mail/changePassword", expressJwt({secret: jwtsettings.secret, algor
 					var to = user.firstName+" "+user.lastName+" <"+user.email+">";
 					var mailOptions = {
 						from: from,
-						bcc: bcc,
+						//bcc: bcc,
 						to: to,
 						user_id: user.id,
 						list: {
