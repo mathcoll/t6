@@ -20,7 +20,6 @@ var sources;
  * @apiUse 200
  * @apiUse 401
  * @apiUse 404
- * @apiUse 429
  */
 router.get("/(:object_id([0-9a-z\-]+))/ui", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var object_id = req.params.object_id;
@@ -544,6 +543,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 /**
  * @api {put} /objects/:object_id Edit an Object
  * @apiName Edit an Object
+ * @apiDescription This endpoint updates an existing object. The payload for the PUT request must include the data that you want to update. For example, you could update the name, description, or location of the object.
  * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
@@ -633,6 +633,7 @@ router.put("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
 /**
  * @api {delete} /objects/:object_id Delete an Object
  * @apiName Delete an Object
+ * @apiDescription This endpoint deletes an existing object. Once you delete an object, it cannot be restored.
  * @apiGroup 1. Object and User Interfaces
  * @apiVersion 2.0.1
  * 
