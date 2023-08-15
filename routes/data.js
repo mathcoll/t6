@@ -139,8 +139,8 @@ let signatureCheck = function(resolve, reject) {
 		timestamp: payload.timestamp,
 		datapoint_logs: typeof payload.datapoint_logs!=="undefined"?payload.datapoint_logs:{},
 	};
-	object = typeof object!=="undefined"?object:{};
-	object.secret_key = typeof object.secret_key!=="undefined"?object.secret_key:jwtsettings.secret;
+	object = (typeof object!=="undefined" && object!==null)?object:{};
+	object.secret_key = typeof object.secret_key!=="undefined"?object.secret_key:"";
 	if ( typeof payload!=="undefined" && payload.signedPayload && object.secret_key ) {
 		jsonwebtoken.verify(payload.signedPayload, object.secret_key, function(err, decodedPayload) {
 			payload.datapoint_logs = initialPayload.datapoint_logs;
