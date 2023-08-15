@@ -40,7 +40,7 @@ router.get("/:audit_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, a
 	let start;
 	let end;
 	if ( req.user.role === "admin" ) {
-		user_id = typeof req.query.user_id!=="udefined"?req.query.user_id:req.user.id;
+		user_id = typeof req.query.user_id!=="undefined"?req.query.user_id:req.user.id;
 	} else {
 		user_id = req.user.id;
 	}
@@ -103,7 +103,7 @@ router.get("/:audit_id([0-9a-z\-]+)?", expressJwt({secret: jwtsettings.secret, a
 	} else if (limit < 1) {
 		limit = 1;
 	}
-	let query = `SELECT * from events WHERE who='${user_id}' ${where} ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${(page-1)*limit}`;
+	let query = `SELECT * from ${t6events.getRP()}.events WHERE who='${user_id}' ${where} ORDER BY time ${sorting} LIMIT ${limit} OFFSET ${(page-1)*limit}`;
 	t6console.debug("Query:", query);
 	dbInfluxDB.query(query).then((data) => {
 		if ( data.length > 0 ) {

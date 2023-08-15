@@ -15,6 +15,10 @@ t6events.setRP = function(rp) {
 	retention = rp;
 };
 
+t6events.getRP = function() {
+	return retention;
+};
+
 t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
 	params.error_id = (typeof params.error_id!=="undefined" && params.error_id!==null)?params.error_id.toString():"";
