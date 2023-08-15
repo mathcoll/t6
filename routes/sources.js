@@ -182,6 +182,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 			password:	typeof req.body.password!=="undefined"?req.body.password:"",
 		};
 		t6events.addStat("t6Api", "source add", newSource.id, req.user.id);
+		t6events.addAudit("t6Api", "source add", req.user.id, newSource.id, {error_id: null, status: 201});
 		sources.insert(newSource);
 		//t6console.log(sources);
 		

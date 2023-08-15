@@ -96,6 +96,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 		newUi.id = uuid.v4();
 		newUi.user_id = req.user.id;
 		t6events.addStat("t6Api", "ui add", newUi.id, req.user.id);
+		t6events.addAudit("t6Api", "ui add", req.user.id, newUi.id, {error_id: null, status: 201});
 		uis.insert(newUi);
 		res.header("Location", "/v"+version+"/uis/"+newUi.id);
 		res.status(201).send({ "code": 201, message: "Created", ui: new UISerializer(newUi).serialize() });

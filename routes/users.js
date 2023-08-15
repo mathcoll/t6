@@ -295,6 +295,7 @@ router.post("/", function (req, res) {
 				geoip				: {ip: [req.ip]},
 			};
 			t6events.addStat("t6Api", "user add", new_user.id, new_user.id);
+			t6events.addAudit("t6Api", "user add", new_user.id, new_user.id, {error_id: null, status: 201});
 			users.insert(new_user);
 
 			tokens.insert(new_token);

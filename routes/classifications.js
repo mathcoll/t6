@@ -100,6 +100,7 @@ router.post("/categories/?", expressJwt({secret: jwtsettings.secret, algorithms:
 				description:typeof req.body.description!=="undefined"?(req.body.description).substring(0, 1024):"",
 			};
 			t6events.addStat("t6Api", "category add", newCategory.id, req.user.id);
+			t6events.addAudit("t6Api", "category add", req.user.id, newCategory.id, {error_id: null, status: 201});
 			categories.insert(newCategory);
 			
 			res.header("Location", "/v"+version+"/categories/"+newCategory.id);

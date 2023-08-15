@@ -15,12 +15,17 @@ t6events.setRP = function(rp) {
 	retention = rp;
 };
 
+t6events.getRP = function() {
+	return retention;
+};
+
 t6events.addAudit = function(where, what, who, client_id=null, params=null) {
 	where = where + ":" + process.env.NODE_ENV;
+	params.error_id = (typeof params.error_id!=="undefined" && params.error_id!==null)?params.error_id.toString():"";
 	//TODO : make sure 'what' does not contains multiple lines
 	if ( db_type.influxdb ) {
 		var tags = {rp: retention, what: what.replace(/(\r\n|\n|\r)/gm, ""), where: where};
-		var fields = {who: typeof who!=="undefined"?who:"", status: parseFloat((params!==null && typeof params.status!=="undefined")?params.status:""), error_id: ((params!==null && typeof params.error_id!=="undefined")?params.error_id:"").toString()};
+		var fields = {who: typeof who!=="undefined"?who:"", status: parseFloat((params!==null && typeof params.status!=="undefined")?params.status:""), error_id: params.error_id};
 		let dbWrite = typeof dbTelegraf!=="undefined"?dbTelegraf:dbInfluxDB;
 		dbWrite.writePoints([{
 			measurement: measurement,
