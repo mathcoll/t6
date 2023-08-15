@@ -17,14 +17,11 @@ Types of changes
 ------------
 
 ## 2023
-### Milestone 26 - 2023-
+### Milestone 26 - 2023-08
 **Added**
   - [x] Adding new route to get Audit Logs with some parameters to filter results
   - [x] Allows to set customRules on datapoints
   - [x] Additional Rule Engine eventType: replaceWithDistance. This event will get the distance in meter between an Object and the longitude-latitude passed along the datapoint payload
-
-**Fixed**
-  - [x] 
 
 **Changed**
   - [x] Remove BCC on /mail/changePassword
