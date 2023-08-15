@@ -26,6 +26,7 @@ global.annotate = function(user_id, from_ts, to_ts, flow_id, category_id, rule_i
 	};
 	let eName = rule_id!==null?"Annotation added from Rule":"Annotation added from custom";
 	t6events.addStat("t6Api", eName, newAnnotation.id, user_id, {"user_id": user_id, annotation_id: newAnnotation.id, flow_id: newAnnotation.flow_id, category_id: newAnnotation.category_id, rule_id: rule_id});
+	t6events.addAudit("t6Api", eName, user_id, newAnnotation.id, {error_id: null, status: 200});
 	annotations.insert(newAnnotation);
 	return newAnnotation;
 };

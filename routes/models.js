@@ -291,6 +291,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				}
 			};
 			t6events.addStat("t6Api", "model add", newModel.id, req.user.id);
+			t6events.addAudit("t6Api", "model add", req.user.id, newModel.id, {error_id: null, status: 201});
 			models.insert(newModel);
 			
 			res.header("Location", "/v"+version+"/models/"+newModel.id);

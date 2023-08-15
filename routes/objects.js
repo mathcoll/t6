@@ -350,6 +350,7 @@ router.post("/(:object_id([0-9a-z\-]+))/unlink/(:source_id([0-9a-z\-]+))", expre
 			if ( typeof result!=="undefined" ) {
 				db_objects.save();
 				res.header("Location", "/v"+version+"/objects/"+object_id);
+				t6events.addAudit("t6App", "object unlink", req.user.id, object_id, {error_id: null, status: 200});
 				res.status(200).send({ "code": 200, message: "Successfully updated", object: new ObjectSerializer(result).serialize() });
 			} else {
 				res.status(412).send(new ErrorSerializer({"id": 185, "code": 412, "message": "Not Found"}).serialize());
@@ -435,6 +436,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 							}
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "success", new Date()-start);
+						t6events.addAudit("t6App", "object build", req.user.id, object.id, {error_id: null, status: 201});
 					} else {
 						if (user && user.pushSubscription!==null && typeof user.pushSubscription!=="undefined" && user.pushSubscription.endpoint!==null && user.pushSubscription.endpoint!=="") {
 							t6console.debug(user.pushSubscription);
@@ -451,6 +453,7 @@ router.post("/:object_id/build/?:version([0-9]+)?", expressJwt({secret: jwtsetti
 							}
 						}
 						t6otahistory.addEvent(req.user.id, object.id, {fqbn: object.fqbn, ip: object.ipv4}, object.source_id, object.source_version, "build", "failure", new Date()-start);
+						t6events.addAudit("t6App", "object build error", req.user.id, object.id, {error_id: null, status: 201});
 					}
 				});
 			});  
@@ -532,6 +535,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 			});
 		}
 		t6events.addStat("t6Api", "object add", newObject.id, req.user.id);
+		t6events.addAudit("t6Api", "object add", req.user.id, newObject.id, {error_id: null, status: 201});
 		objects.insert(newObject);
 		//t6console.log(newObject);
 		

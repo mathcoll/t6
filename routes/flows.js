@@ -280,6 +280,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					influx_db_cloud:	typeof req.body.influx_db_cloud!=="undefined"?req.body.influx_db_cloud:"",
 				};
 				t6events.addStat("t6Api", "flow add", newFlow.id, req.user.id);
+				t6events.addAudit("t6Api", "flow add", req.user.id, newFlow.id, {error_id: null, status: 201});
 				flows.insert(newFlow);
 				
 				res.header("Location", "/v"+version+"/flows/"+newFlow.id);

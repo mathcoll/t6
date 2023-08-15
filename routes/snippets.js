@@ -104,6 +104,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				options:	typeof req.body.options!=="undefined"?req.body.options:undefined,
 			};
 			t6events.addStat("t6Api", "snippet add", newSnippet.id, req.user.id);
+			t6events.addAudit("t6Api", "snippet add", req.user.id, newSnippet.id, {error_id: null, status: 201});
 			snippets.insert(newSnippet);
 			//t6console.log(snippets);
 			

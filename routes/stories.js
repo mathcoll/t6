@@ -473,6 +473,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 				retention	: req.body.retention
 			};
 			t6events.addStat("t6Api", "story add", newStory.id, req.user.id);
+			t6events.addAudit("t6Api", "story add", req.user.id, newStory.id, {error_id: null, status: 201});
 			stories.insert(newStory);
 
 			res.header("Location", "/v"+version+"/stories/"+newStory.id);
