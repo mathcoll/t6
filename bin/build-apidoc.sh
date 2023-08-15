@@ -2,6 +2,7 @@
 
 ../node_modules/apidoc/bin/apidoc \
 	-i /home/mathieu/Projets/2019/internetcollaboratif.info/t6/routes/ \
+	-f audits.js \
 	-f data.js \
 	-f datatypes.js \
 	-f ota.js \
