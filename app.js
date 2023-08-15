@@ -271,6 +271,7 @@ var newsRoute				= require("./routes/news");
 var explorationRoute		= require("./routes/exploration");
 var jobsRoute				= require("./routes/jobs");
 var classificationsRoute	= require("./routes/classifications");
+var auditsRoute				= require("./routes/audits");
 app							= express();
 if(enableMonitoring) {
 	monitor(app);
@@ -350,6 +351,7 @@ app.use("/v"+version+"/uis", uisRoute);
 app.use("/v"+version+"/exploration", explorationRoute);
 app.use("/v"+version+"/jobs", jobsRoute);
 app.use("/v"+version+"/classifications", classificationsRoute);
+app.use("/v"+version+"/audits", auditsRoute);
 app.use("/news", newsRoute);
 app.use("/", pwaRoute);
 

@@ -1,0 +1,62 @@
+{
+	"config": {
+		"log_path": "./jsonapitest-results.json",
+		"defaults": {
+			"api_call": {
+				"request": {
+					"base_url": "http://127.0.0.1:3000",
+					"headers": {
+						"Accept": "application/json",
+						"Content-Type": "application/json"
+					}
+				}
+			}
+		}
+	},
+	"data": {
+		"app_version": "v2.0.1"
+	},
+	"suites": [
+		{
+			"name": "t6 Audits Suite",
+			"tests": [
+				{
+					"name": "Audit logs",
+					"description": "",
+					"api_calls": [
+						{
+							"it": "can get audits 1 from user",
+							"request": "GET /{{app_version}}/audits/?start=2023-01-01T00:00:00.000Z&end=2023-12-01T23:59:59.999Z&page=1&limit=5&sort=asc&what=authenticate",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"status": "200",
+							"assert": {
+								"select": "body.data",
+								"size": 5
+							}
+						}
+					]
+				},
+				{
+					"name": "Audit logs 2",
+					"description": "",
+					"api_calls": [
+						{
+							"it": "can get audits 2 from user",
+							"request": "GET /{{app_version}}/audits/?start=2023-01-01T00:00:00.000Z&end=2023-12-01T23:59:59.999Z&page=2&limit=2&sort=asc&what=authenticate",
+							"headers": {
+								"Authorization": "Bearer {{saved.bearer_token}}"
+							},
+							"status": "200",
+							"assert": {
+								"select": "body.data",
+								"size": 2
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}
