@@ -323,8 +323,10 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
 	if ( s.length > 0 ) {
 		models.remove(s);
 		db_models.saveDatabase();
+		t6events.addAudit("t6Api", "model delete", req.user.id, model_id, {error_id: null, status: 200});
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: model_id }); // TODO: missing serializer
 	} else {
+		t6events.addAudit("t6Api", "model delete", req.user.id,model_id , {error_id: 14271, status: 404});
 		res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
 	}
 });

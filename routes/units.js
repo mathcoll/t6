@@ -143,11 +143,11 @@ router.delete("/:unit_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 			t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "200", error_id: "00003"});
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: unit_id }); // TODO: missing serializer
 		} else {
-			t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "400", error_id: "00004"});
+			t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "404", error_id: "00004"});
 			res.status(404).send(new ErrorSerializer({"id": 16271, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "400", error_id: "00004"});
+		t6events.addAudit("t6App", "AuthAdmin: {delete} /units/:unit_id", "", "", {"status": "401", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 16052, "code": 401, "message": "Unauthorized"}).serialize());
 	}
 });

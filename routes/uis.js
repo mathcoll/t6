@@ -180,8 +180,10 @@ router.delete("/:ui_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 	if ( u.length > 0 ) {
 		uis.remove(u);
 		dbUis.saveDatabase();
+		t6events.addAudit("t6Api", "ui delete", req.user.id, ui_id, {error_id: null, status: 200});
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: ui_id }); // TODO: missing serializer
 	} else {
+		t6events.addAudit("t6Api", "ui delete", req.user.id, ui_id, {error_id: 15271, status: 404});
 		res.status(404).send(new ErrorSerializer({"id": 15271, "code": 404, "message": "Not Found"}).serialize());
 	}
 });

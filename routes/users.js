@@ -641,11 +641,14 @@ router.delete("/accessTokens/:key([0-9a-z\-.]+)", expressJwt({secret: jwtsetting
 		var u = access_tokens.findOne(queryT);
 		if (u) {
 			access_tokens.remove(u);
+			t6events.addAudit("t6Api", "accessTokens delete", req.user.id, key, {error_id: null, status: 200});
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: key }); // TODO: missing serializer
 		} else {
-			res.status(404).send(new ErrorSerializer({"id": 6,"code": 404, "message": "Not Found"}).serialize());
+			t6events.addAudit("t6Api", "accessTokens delete", req.user.id, key, {error_id: 6, status: 403});
+			res.status(403).send(new ErrorSerializer({"id": 6,"code": 403, "message": "Forbidden"}).serialize());
 		}
 	} else {
+		t6events.addAudit("t6Api", "accessTokens delete", req.user.id, key, {error_id: 106, status: 404});
 		res.status(404).send(new ErrorSerializer({"id": 105,"code": 404, "message": "Not Found"}).serialize());
 	}
 });
@@ -670,11 +673,14 @@ router.delete("/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 		var u = users.find({"id": { "$eq": user_id }});
 		if (u) {
 			users.remove(u);
+			t6events.addAudit("t6Api", "user delete", req.user.id, user_id, {error_id: null, status: 200});
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: user_id }); // TODO: missing serializer
 		} else {
+			t6events.addAudit("t6Api", "user delete", req.user.id, user_id, {error_id: 6, status: 200});
 			res.status(404).send(new ErrorSerializer({"id": 6,"code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
+		t6events.addAudit("t6Api", "user delete", req.user.id, user_id, {error_id: 5, status: 403});
 		res.status(403).send(new ErrorSerializer({"id": 5,"code": 403, "message": "Forbidden"}).serialize());
 	}
 });

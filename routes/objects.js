@@ -662,8 +662,10 @@ router.delete("/:object_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 	if ( o.length > 0 ) {
 		objects.remove(o);
 		db_objects.saveDatabase();
+		t6events.addAudit("t6Api", "object delete", req.user.id, object_id, {error_id: null, status: 200});
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: object_id }); // TODO: missing serializer
 	} else {
+		t6events.addAudit("t6Api", "object delete", req.user.id, object_id, {error_id: 9332, status: 404});
 		res.status(404).send(new ErrorSerializer({"id": 9332, "code": 404, "message": "Not Found"}).serialize());
 	}
 });

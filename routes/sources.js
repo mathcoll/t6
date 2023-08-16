@@ -305,6 +305,9 @@ router.put("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, a
  * 
  * @apiUse Auth
  * @apiParam {uuid-v4} [source_id] Source Id
+ * @apiUse 200
+ * @apiUse 401
+ * @apiUse 404
  */
 router.delete("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
 	var source_id = req.params.source_id;
@@ -326,11 +329,14 @@ router.delete("/:source_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret
 		if ( source ) {
 			sources.remove(source);
 			dbSources.saveDatabase();
+			t6events.addAudit("t6Api", " delete", req.user.id, source_id, {error_id: null, status: 200});
 			res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: source_id }); // TODO: missing serializer
 		} else {
+			t6events.addAudit("t6Api", " delete", req.user.id, source_id, {error_id: 14271, status: 404});
 			res.status(404).send(new ErrorSerializer({"id": 14271, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
+		t6events.addAudit("t6Api", " delete", req.user.id, source_id, {error_id: 14272, status: 401});
 		res.status(401).send(new ErrorSerializer({"id": 14272, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });

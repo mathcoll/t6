@@ -209,9 +209,11 @@ router.delete("/:snippet_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secre
 	if ( s.length > 0 ) {
 		snippets.remove(s);
 		dbSnippets.saveDatabase();
+		t6events.addAudit("t6Api", "snippet delete", req.user.id, snippet_id, {error_id: null, status: 200});
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: snippet_id }); // TODO: missing serializer
 	} else {
-		res.status(401).send(new ErrorSerializer({"id": 13272, "code": 401, "message": "Not Found"}).serialize());
+		t6events.addAudit("t6Api", "snippet delete", req.user.id, snippet_id, {error_id: 13272, status: 404});
+		res.status(404).send(new ErrorSerializer({"id": 13272, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
 

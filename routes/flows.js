@@ -407,8 +407,10 @@ router.delete("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, 
 	if ( f.length > 0 ) {
 		flows.remove(f);
 		db_flows.saveDatabase();
+		t6events.addAudit("t6Api", "flow delete", req.user.id, flow_id, {error_id: null, status: 200});
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: flow_id }); // TODO: missing serializer
 	} else {
+		t6events.addAudit("t6Api", "flow delete", req.user.id, flow_id, {error_id: null, status: 404});
 		res.status(404).send(new ErrorSerializer({"id": 4051, "code": 404, "message": "Not Found"}).serialize());
 	}
 });

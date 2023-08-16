@@ -91,9 +91,11 @@ router.delete("/(:job_id([0-9a-z\-*]+))", expressJwt({secret: jwtsettings.secret
 			query["$and"].push({ "user_id" : req.user.id });
 		}
 		jobs.chain().find(query).remove();
+		t6events.addAudit("t6Api", "job delete", req.user.id, job_id, {error_id: null, status: 200});
 		res.status(200).send({ "code": 200, message: "Successfully deleted", removed_id: job_id });
 		db_jobs.saveDatabase();
 	} else {
+		t6events.addAudit("t6Api", "job delete", req.user.id, job_id, {error_id: 5058, status: 404});
 		res.status(404).send(new ErrorSerializer({"id": 5058, "code": 404, "message": "Not Found"}).serialize());
 	}
 });
