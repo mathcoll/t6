@@ -82,12 +82,65 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 /**
+ * @api {get} /models/:model_id/download/:file(weights.bin|model.json)/? Download Models
+ * @apiName Download Models
+ * @apiGroup 14. Models
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ * @apiParam {uuid-v4} [model_id] Model Id
+ * 
+ * @apiUse 200
+ * @apiUse 404
+ * @apiUse 412
+ * @apiUse 500
+ */
+router.get("/?(:model_id([0-9a-z\-]+))/download/:file(weights\.bin|model\.json)/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+	var model_id = req.params.model_id;
+	var file = req.params.file;
+	var query = {
+		"$and": [
+				{ "user_id" : req.user.id },
+				{ "id" : model_id },
+			]
+		};
+	var json = models.findOne(query);
+	if ( typeof model_id!=="undefined" && model_id!==null ) { // TODO && model_id is uuidv4
+		if(json!==null) {
+			let path = `${mlModels.models_user_dir}/${req.user.id}/${model_id}`;
+			let filename = `${path}/${file}`;
+			if (!fs.existsSync(path)) {
+				res.status(404).send(new ErrorSerializer({"id": 14275, "code": 404, "message": "Not Found"}).serialize());
+			} else {
+				res.attachment(file);
+				try {
+					let stream = fs.createReadStream(filename);
+					res.set({
+						"Content-Disposition": `attachment; filename=${file}`,
+						"Content-Type": "application/octet-stream",
+					});
+					stream.pipe(res);
+				} catch (err) {
+					t6console.debug("err: ", err);
+					t6events.addAudit("t6App", "Download model error: {get} /models/:model_id/download/", "", "", {"status": "500", error_id: 14277});
+					res.status(500).send(new ErrorSerializer({"id": 14277, "code": 500, "message": "Precondition Failed"}).serialize());
+				}
+			}
+		} else {
+			res.status(404).send(new ErrorSerializer({"id": 14274, "code": 404, "message": "Not Found"}).serialize());
+		}
+	} else {
+		res.status(412).send(new ErrorSerializer({"id": 14276, "code": 412, "message": "Precondition Failed"}).serialize());
+	}
+});
+
+/**
  * @api {put} /models/:model_id Edit a Model
  * @apiName Edit a Model
  * @apiDescription Editing a Model will reset the history, the training_balance, the mins and maxs, the data_length, and the current_status
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
- * 
+ *
  * @apiUse Auth
  * @apiBody {String} [name=unamed] Name of the model to retrieve it later within the list
  * @apiBody {String} [retention=autogen] Data retention to look for
