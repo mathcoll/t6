@@ -459,6 +459,7 @@ t6websockets.init = async function() {
 									t6console.debug("Signature is valid - Claim accepted");
 									metadata = wsClients.get(ws);
 									metadata.object_id = message.object_id;
+									metadata.t6_feat_audio = message.t6_feat_audio;
 									wsClients.set(ws, metadata);
 									t6ConnectedObjects.push(metadata.object_id);
 									t6mqtt.publish(null, mqttSockets+"/"+metadata.id, JSON.stringify({date: moment().format("LLL"), "dtepoch": parseInt(moment().format("x"), 10), "message": `Socket Claim accepted object_id ${metadata.object_id}`, "environment": process.env.NODE_ENV}), false);
@@ -467,21 +468,27 @@ t6websockets.init = async function() {
 
 									//wss.binaryType = "arraybuffer";
 									// Play Audio welcome sound to Object
-									const readWelcomeStream = fs.readFileSync(`${tts.audioFolder}/socketopened.${audioExtension}`);
-									let offset = 0;
-									const sendData = () => {
-										const chunk = readWelcomeStream.slice(offset, offset + defaultChunkSize);
-										ws.send(chunk, {binary: true});
-										offset += defaultChunkSize;
-										if (offset < readWelcomeStream.length) {
-											t6console.debug("ws/tts", "send welcomeStream chunk offset", offset);
-											setTimeout(sendData, defaultChunkDelay);
-										} else {
-											ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id}));
-											t6console.debug("ws/tts", "Welcome audio sent to", message.object_id);
-										}
-									};
-									sendData();
+									if (message.t6_feat_audio === true) {
+										const readWelcomeStream = fs.readFileSync(`${tts.audioFolder}/socketopened.${audioExtension}`);
+										let offset = 0;
+										const sendData = () => {
+											const chunk = readWelcomeStream.slice(offset, offset + defaultChunkSize);
+											ws.send(chunk, {binary: true});
+											offset += defaultChunkSize;
+											if (offset < readWelcomeStream.length) {
+												t6console.debug("ws/tts", "send welcomeStream chunk offset", offset);
+												setTimeout(sendData, defaultChunkDelay);
+											} else {
+												ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id, "t6_feat_audio": message.t6_feat_audio}));
+												t6console.debug("ws/tts", "Welcome audio sent to", message.object_id);
+											}
+										};
+										sendData();
+										t6console.debug("Sound-compatible Object: Welcome sound sent.", message.t6_feat_audio);
+									} else {
+										ws.send(JSON.stringify({"arduinoCommand": "claimed", "status": "OK Accepted", "object_id": metadata.object_id, "socket_id": metadata.id, "t6_feat_audio": message.t6_feat_audio}));
+										t6console.debug("Not sound-compatible Object.", message.t6_feat_audio);
+									}
 								} else {
 									t6console.debug("Error", error);
 									t6console.debug("unsignedObject_id", object.id);
