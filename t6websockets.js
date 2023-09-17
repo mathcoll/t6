@@ -521,8 +521,8 @@ t6websockets.init = async function() {
 					case "getObject":
 						metadata = wsClients.get(ws);
 						if(typeof metadata.object_id!=="undefined") {
-							ws.send(JSON.stringify({object_id: metadata.object_id, socket_id: metadata.id, channels: metadata.channels, self: true}));
-							t6events.addStat("t6App", "Socket metadata", req.user_id, metadata.id, {"status": 200});
+							ws.send(JSON.stringify({object_id: metadata.object_id, socket_id: metadata.id, channels: metadata.channels, self: true, t6_feat_audio: metadata.t6_feat_audio}));
+							t6events.addStat("t6App", "Socket getObject", req.user_id, metadata.id, {"status": 200});
 						} else {
 							ws.send(JSON.stringify({object_id: undefined}));
 						}
@@ -536,7 +536,7 @@ t6websockets.init = async function() {
 								// list only opened connection for the current user
 								t6console.debug("ws", current.id, ":", client.readyState);
 								if(current.user_id === req.user_id && client.readyState === 1) {
-									listObjects.push({object_id: current.object_id, socket_id: current.id, channels: current.channels, self: current.id===metadata.id?true:false});
+									listObjects.push({object_id: current.object_id, socket_id: current.id, channels: current.channels, self: current.id===metadata.id?true:false, t6_feat_audio: current.t6_feat_audio});
 								}
 							});
 							ws.send(JSON.stringify(listObjects));
