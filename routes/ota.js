@@ -89,8 +89,41 @@ router.get("/core-list", expressJwt({secret: jwtsettings.secret, algorithms: jwt
  * @apiUse 404
  * @apiUse 412
  * @apiUse 429
+ * @apiHeader {String} [x-api-key] Api Key from "Generate Access Tokens Endpoint"
+ * @apiHeader {String} [x-api-secret] Api Secret from "Generate Access Tokens Endpoint"
  */
-router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms}), function (req, res) {
+router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings.algorithms, getToken: function getToken(req) {
+	if ( req.headers.authorization && req.headers.authorization.split(" ")[0] === "Bearer" && req.headers.authorization.split(" ")[1] !== "" ) {
+		return req.headers.authorization.split(" ")[1];
+	} else if( req.headers["x-api-key"] && req.headers["x-api-secret"] ) {
+		let queryT = {
+		"$and": [
+					{ "key": req.headers["x-api-key"] },
+					{ "secret": req.headers["x-api-secret"] },
+				]
+		};
+		let u = access_tokens.findOne(queryT);
+		if ( u && typeof u.user_id !== "undefined" ) {
+			let user = users.findOne({id: u.user_id});
+			let payload = JSON.parse(JSON.stringify(user));
+			payload.permissions = undefined;
+			payload.token = undefined;
+			payload.password = undefined;
+			payload.gravatar = undefined;
+			payload.meta = undefined;
+			payload.$loki = undefined;
+			payload.token_type = "Bearer";
+			payload.scope = "ClientApi";
+			payload.sub = "/users/"+user.id;
+			req.user = payload;
+			return jsonwebtoken.sign(payload, jwtsettings.secret, { expiresIn: jwtsettings.expiresInSeconds });
+		}
+		// TODO : Rate limit is not checked here ! 
+		//res.header("X-RateLimit-Limit", limit);
+		//res.header("X-RateLimit-Remaining", limit-i);
+	}
+	return null;
+} }), function (req, res, next) {
 	var source_id = req.params.source_id;
 	var object_id = req.params.object_id;
 	// find all objects linked to this source
