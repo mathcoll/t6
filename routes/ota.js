@@ -152,7 +152,7 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 		let start = new Date();
 		json.map(function(o) {
 			let dir = `${ota.build_dir}/${o.source_id}/${o.source_version}/${o.id}`;
-			t6console.info("Deploying from dir", dir);
+			t6console.debug("Deploying from dir", dir);
 			let pai = o.fqbn.split(":");
 			let packager = pai[0];
 			let architecture = pai[1];
@@ -184,8 +184,8 @@ router.post("/:source_id([0-9a-z\-]+)/deploy/?(:object_id([0-9a-z\-]+))?", expre
 					let password = typeof s.password!=="undefined"?s.password:"";
 					let cmd = `${ota.python3} ${ota.espota_py} -i ${o.ipv4} -p ${ota.defaultPort} --auth=${password} -f ${binFile}`;
 
-					t6console.info("Deploying to", o.id);
-					t6console.info("Using", cmd);
+					t6console.debug("Deploying to", o.id);
+					t6console.debug("Using", cmd);
 					
 					const child = exec(`${cmd}`);
 					child.on("close", (code) => {

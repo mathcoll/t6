@@ -223,23 +223,23 @@ router.get("/(:object_id([0-9a-z\-]+))/latest-version", expressJwt({secret: jwts
 		let source = sources.findOne({ "root_source_id": object.source_id });
 		let buildVersions = new Array();
 		if ( source && source.content && source.latest_version ) {
-			let version = source.latest_version;
-			while(version>-1) {
+			let sVersion = source.latest_version;
+			while(sVersion>-1) {
 				let pai = object.fqbn.split(":");
 				let packager = pai[0];
 				let architecture = pai[1];
 				let id = pai[2];
-				let binFile = `/${object.source_id}/${version}/${object.id}/${object.id}.${packager}.${architecture}.${id}.bin`;
+				let binFile = `/${object.source_id}/${sVersion}/${object.id}/${object.id}.${packager}.${architecture}.${id}.bin`;
 				if (!fs.existsSync(ota.build_dir+binFile)) {
-					buildVersions.push({"version": version, "status": "404 Not Found", "binFile": binFile, "build": sprintf("%s/v%s/objects/%s/build/%s", baseUrl_https, version, object.id, version) });
+					buildVersions.push({"version": sVersion, "status": "404 Not Found", "binFile": binFile, "build": sprintf("%s/v%s/objects/%s/build/%s", baseUrl_https, version, object.id, sVersion) });
 				} else {
 					buildVersions.push({"version": version, "status": "200 Ready to deploy", "binFile": binFile });
 				}
-				version--;
+				sVersion--;
 			}
 		}
 
-		res.status(200).send({ "object_id": object_id, "ipv4": object.ipv4, "port": ota.defaultPort, "fqbn": object.fqbn, "source_id": object.source_id, "objectExpectedVersion": object.source_version, "sourceLatestVersion": source.latest_version, "buildVersions": buildVersions });
+		res.status(200).send({ "object_id": object_id, "user_id": req.user.id, "ipv4": object.ipv4, "port": ota.defaultPort, "fqbn": object.fqbn, "source_id": object.source_id, "objectExpectedVersion": object.source_version, "sourceLatestVersion": source.latest_version, "buildVersions": buildVersions });
 	} else {
 		res.status(404).send(new ErrorSerializer({"id": 9272, "code": 404, "message": "Not Found"}).serialize());
 	}
