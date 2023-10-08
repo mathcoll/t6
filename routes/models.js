@@ -230,10 +230,10 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 						}
 					};
 					item.compile	= {
-						"optimizer": typeof req.body.compile.optimizer!=="undefined"?req.body.compile.optimizer:item.compile.optimizer,
-						"learningrate": typeof req.body.compile.learningrate!=="undefined"?req.body.compile.learningrate:item.compile.learningrate,
-						"loss": typeof req.body.compile.loss!=="undefined"?req.body.compile.loss:item.compile.loss,
-						"metrics": typeof req.body.compile.metrics!=="undefined"?req.body.compile.metrics:item.compile.metrics,
+						"optimizer": (typeof req.body.compile!=="undefined" && typeof req.body.compile.optimizer!=="undefined")?req.body.compile.optimizer:item.compile.optimizer,
+						"learningrate": (typeof req.body.compile!=="undefined" && typeof req.body.compile.learningrate!=="undefined")?req.body.compile.learningrate:item.compile.learningrate,
+						"loss": (typeof req.body.compile!=="undefined" && typeof req.body.compile.loss!=="undefined")?req.body.compile.loss:item.compile.loss,
+						"metrics": (typeof req.body.compile!=="undefined" && typeof req.body.compile.metrics!=="undefined")?req.body.compile.metrics:item.compile.metrics,
 					}
 					result = item;
 				});
