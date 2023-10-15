@@ -6,7 +6,7 @@ var ErrorSerializer = require("../serializers/error");
 
 
 /**
- * @api {get} /audits/:audit_id? Get Audits
+ * @api {get} /audits/:audit_id?error_id=:error_id Get Audits
  * @apiName Get Audits
  * @apiGroup 15. Audit Trail
  * @apiVersion 2.0.1
@@ -19,7 +19,7 @@ var ErrorSerializer = require("../serializers/error");
  * @apiParam {Integer} [start] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Integer} [end] Timestamp or formatted date YYYY-MM-DD HH:MM:SS
  * @apiParam {Number{1-5000}} [limit] Set the number of expected resources.
- * @apiParam {uuid-v4} error_id The error Id from errors referential.
+ * @apiParam {uuid-v4} [error_id] The error Id from errors referential.
  * @apiParam {String} [what] The activity traced in the audit log
  * @apiParam {String="Server error", "Client error", "Redirection", "Successful", "Informational"} [result=""] The result (category) of the activity
  * @apiUse 200

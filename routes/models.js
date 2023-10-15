@@ -82,13 +82,14 @@ router.get("/?(:model_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret
 });
 
 /**
- * @api {get} /models/:model_id/download/:file(weights.bin|model.json)/? Download Models
+ * @api {get} /models/:model_id/download/:file/? Download Models
  * @apiName Download Models
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} [model_id] Model Id
+ * @apiParam {uuid-v4} model_id The model Id you'd like to download binary from
+ * @apiParam {String="weights.bin","model.json"} file The file you'd like to download
  * 
  * @apiUse 200
  * @apiUse 404
@@ -142,8 +143,9 @@ router.get("/?(:model_id([0-9a-z\-]+))/download/:file(weights\.bin|model\.json)/
  * @apiVersion 2.0.1
  *
  * @apiUse Auth
- * @apiBody {String} [name=unamed] Name of the model to retrieve it later within the list
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to edit
  * @apiBody {String} [retention=autogen] Data retention to look for
+ * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
  * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
@@ -200,11 +202,12 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.current_status	= "READY";
 					item.current_status_last_update	= moment().format(logDateFormat);
 					item.data_length	= undefined;
-					item.features = undefined;
+					item.features		= undefined;
 					item.name			= typeof req.body.name!=="undefined"?req.body.name:item.name;
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
 					item.normalize		= typeof req.body.normalize!=="undefined"?req.body.normalize:item.normalize;
+					item.strategy		= typeof req.body.strategy!=="undefined"?req.body.strategy:item.strategy,
 					item.splitToArray	= typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:item.splitToArray;
 					item.labels			= typeof req.body.labels!=="undefined"?req.body.labels:item.labels;
 					item.continuous_features	= typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:item.continuous_features;
@@ -261,8 +264,8 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiBody {String} [name=unamed] Name of the model to retrieve it later within the list
  * @apiBody {String} [retention=autogen] Data retention to look for
+ * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
  * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
@@ -309,6 +312,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
 				normalize:	typeof req.body.normalize!=="undefined"?req.body.normalize:true,
+				strategy:	typeof req.body.strategy!=="undefined"?req.body.strategy:"classification",
 				splitToArray:typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:false,
 				labels:		typeof req.body.labels!=="undefined"?req.body.labels:["oov"],
 				continuous_features: typeof req.body.continuous_features!=="undefined"?req.body.continuous_features:["value"],
@@ -360,6 +364,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to edit
  * 
  * @apiUse 200
  * @apiUse 404
@@ -391,6 +396,7 @@ router.delete("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret,
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to edit
  * 
  * @apiUse 200
  * @apiUse 401
@@ -496,6 +502,7 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to edit
  * 
  * @apiUse 202
  * @apiUse 401
@@ -558,31 +565,20 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			if( t6Model.datasets.training.end!==null && t6Model.datasets.training.end!=="" ) {
 				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
 			}
-			let where = "meta!='' AND"; //"meta!='' AND valueInteger>-1 AND";
+
+			t6Model.strategy = typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification";
+			let where = "";
+			if(t6Model.strategy==="classification") {
+				where = "meta!='' AND"; //"meta!='' AND valueInteger>-1 AND";
+			} else if(t6Model.strategy==="forecast") {
+				where = "";
+			}
 			let lim = limit!==null?` LIMIT ${limit} OFFSET ${offset}`:"";
 			return `SELECT min(${fieldvalue}), max(${fieldvalue}), count(${fieldvalue}) FROM ${rp}.data WHERE flow_id='${flow_id}' ${andDates} AND user_id='${req.user.id}'; SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
 		t6Model.current_status = "RUNNING";
 		t6Model.current_status_last_update	= moment().format(logDateFormat);
-		res.status(202).send(new ModelSerializer({
-			current_status: t6Model.current_status,
-			current_status_last_update: t6Model.current_status_last_update,
-			process: "asynchroneous",
-			notification: "push-notification",
-			id: model_id,
-			limit: limit,
-			validation_split: validation_split,
-			//train_length: trainXs.length,
-			//valid_length: xValidSize,
-			continuous_features: t6Model.continuous_features,
-			categorical_features: t6Model.categorical_features,
-			categorical_features_classes: t6Model.categorical_features_classes,
-			training_balance: t6Model.training_balance,
-			flow_ids: t6Model.flow_ids,
-			labels: t6Model.labels
-		}).serialize());
-		db_models.save(); // saving the status
 
 		// Get values from TS
 		dbInfluxDB.query(queryTs).then((data) => {
@@ -756,7 +752,28 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			} else {
 				res.status(404).send(new ErrorSerializer({err: "No data found", "id": 14058, "code": 404, "message": "Not found"}).serialize());
 			}
-		}).catch((err) => {
+		}).then(() => {
+			res.status(202).send(new ModelSerializer({
+				current_status: t6Model.current_status,
+				current_status_last_update: t6Model.current_status_last_update,
+				process: "asynchroneous",
+				notification: "push-notification",
+				id: model_id,
+				limit: limit,
+				validation_split: validation_split,
+				//train_length: trainXs.length,
+				//valid_length: xValidSize,
+				continuous_features: t6Model.continuous_features,
+				categorical_features: t6Model.categorical_features,
+				categorical_features_classes: t6Model.categorical_features_classes,
+				training_balance: t6Model.training_balance,
+				flow_ids: t6Model.flow_ids,
+				labels: t6Model.labels
+			}).serialize());
+			db_models.save(); // saving the status
+
+		})
+		.catch((err) => {
 			t6console.error("id=14059", err);
 			res.status(500).send(new ErrorSerializer({err: err, "id": 14059, "code": 500, "message": "Internal Error"}).serialize());
 		});
@@ -772,6 +789,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
+ * @apiParam {uuid-v4} [model_id] The model Id you'd like to edit
  * 
  * @apiUse 404
  */

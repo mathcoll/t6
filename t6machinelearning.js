@@ -23,6 +23,7 @@ t6machinelearning.init = async function(model) {
 		continuousFeatsMaxs = [];
 		categoricalFeats = [];
 		t6console.debug("================== t6machinelearning.init =================");
+		t6console.debug("strategy", typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification");
 		t6console.debug("Normalize", t6Model.normalize);
 		t6console.debug("splitToArray", t6Model.splitToArray);
 		t6console.debug("labels", t6Model.labels);
@@ -31,9 +32,9 @@ t6machinelearning.init = async function(model) {
 		t6console.debug("data_length", t6Model.data_length);
 		t6console.debug("min", t6Model.min);
 		t6console.debug("max", t6Model.max);
-		t6console.debug("Compile optimizer", t6Model.compile.optimizer);
-		t6console.debug("Compile loss", t6Model.compile.loss);
-		t6console.debug("Compile metrics", t6Model.compile.metrics);
+		t6console.debug("Compile optimizer", typeof t6Model.compile?.optimizer!=="undefined"?t6Model.compile?.optimizer:"adam");
+		t6console.debug("Compile loss", typeof t6Model.compile?.loss!=="undefined"?t6Model.compile?.loss:"binaryCrossentropy");
+		t6console.debug("Compile metrics", typeof t6Model.compile?.metrics!=="undefined"?t6Model.compile?.metrics:["accuracy"]);
 		t6console.debug("===========================================================");
 		resolve(t6Model);
 	});
@@ -68,15 +69,47 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 	t6console.debug("outputShape", outputShape);
 	return await new Promise((resolve) => {
 		const model = tf.sequential();
-		model.add(tf.layers.dense({
-			inputShape: inputShape,
-			units: 1,
-			activation: "relu"
-		}));
-		model.add(tf.layers.dense({
-			units: outputShape,
-			activation: "softmax" // sigmoid
-		}));
+		if(t6Model.strategy==="classification") {
+			model.add(tf.layers.dense({
+				inputShape: inputShape,
+				units: 1,
+				activation: "relu"
+			}));
+			model.add(tf.layers.dense({
+				units: outputShape,
+				activation: "softmax" // sigmoid
+			}));
+		} else if(t6Model.strategy==="forecast") {
+			const input_layer_neurons = 100;
+			const rnn_input_layer_features = 10;
+			const rnn_input_layer_timesteps = input_layer_neurons / rnn_input_layer_features;
+			const n_layers = 5;
+			const rnn_input_shape = [rnn_input_layer_features, rnn_input_layer_timesteps];
+			const rnn_output_neurons = 20;
+			const output_layer_shape = rnn_output_neurons;
+			const output_layer_neurons = 1;
+			t6console.debug("buildModel input_layer_neurons", input_layer_neurons);
+			t6console.debug("buildModel rnn_input_layer_features", rnn_input_layer_features);
+			t6console.debug("buildModel rnn_input_layer_timesteps", rnn_input_layer_timesteps);
+			t6console.debug("buildModel n_layers", n_layers);
+			t6console.debug("buildModel rnn_input_shape", rnn_input_shape);
+			t6console.debug("buildModel rnn_output_neurons", rnn_output_neurons);
+			t6console.debug("buildModel output_layer_shape", output_layer_shape);
+			t6console.debug("buildModel output_layer_neurons", output_layer_neurons);
+			model.add(tf.layers.dense({units: input_layer_neurons, inputShape: inputShape})); // [50] ????
+			model.add(tf.layers.reshape({targetShape: rnn_input_shape}));
+			let lstm_cells = [];
+			for (let index=0; index<n_layers; index++) {
+				lstm_cells.push(tf.layers.lstmCell({ units: rnn_output_neurons }));
+			}
+			model.add(tf.layers.rnn({
+				cell: lstm_cells,
+				inputShape: rnn_input_shape,
+				returnSequences: false
+			}));
+			model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
+		}
+
 		let optimizer;
 		let learningrate = typeof t6Model.compile.learningrate?t6Model.compile.learningrate:0.001;
 		switch(t6Model.compile.optimizer) {
@@ -270,25 +303,16 @@ t6machinelearning.getMetaGraphsFromSavedModel = async function(path) {
 
 t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 	return new Promise((resolve) => {
-		/*
-		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options, () => {
-			//const prediction = tfModel.predict(tf.tensor2d(inputDatasetX), options);
-			// FALSE not spam : const prediction = tfModel.predict(tf.tensor2d([[1,3,12,18,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]), options);
-			// TRUE spam : const prediction = tfModel.predict(tf.tensor2d([[172,184,185,212,327,333,477,478,503,504,505,0,0,0,0,0,0,0,0,0]]), options);
-			const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
-			t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
-			t6console.debug("ML PREDICTION");
-			prediction.print();
-			resolve(prediction);
-		});
-		*/
-		const prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
-		//const prediction = tfModel.predict(tf.tensor2d(inputDatasetX), options);
-		// FALSE not spam : const prediction = tfModel.predict(tf.tensor2d([[1,3,12,18,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]), options);
-		// TRUE spam : const prediction = tfModel.predict(tf.tensor2d([[172,184,185,212,327,333,477,478,503,504,505,0,0,0,0,0,0,0,0,0]]), options);
+		let prediction;
+		t6console.debug("ML PREDICTION strategy", t6Model.strategy);
+		if(t6Model.strategy==="classification") {
+			prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
+		} else if(t6Model.strategy==="forecast") {
+			prediction = tfModel.predict(tf.tensor(inputDatasetX), options);
+		}
 		const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
 		t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
-		t6console.debug("ML PREDICTION");
+		t6console.debug("ML PREDICTION:");
 		prediction.print();
 		resolve(prediction);
 	});
