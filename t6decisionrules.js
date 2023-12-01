@@ -317,6 +317,7 @@ t6decisionrules.checkRulesFromUser = async function(user_id, payload) {
 				} else if ( event.type === "annotate" ) {
 					if(typeof event.params.category_id!=="undefined") {
 						let newAnnotation = annotate(payload.user_id?payload.user_id:"", payload.dtepoch*1000, payload.dtepoch*1000, payload.flow, event.params.category_id, event.params.rule_id);
+						payload.meta = (typeof payload.meta!=="undefined" && payload.meta!=="")?payload.meta:{};
 						payload.meta.categories = typeof payload.meta.categories!=="undefined"?payload.meta.categories:[];
 						payload.meta.categories.push(event.params.category_id);
 						t6console.debug("ANNOTATE category_id", event.params.category_id);
