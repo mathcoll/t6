@@ -26,6 +26,7 @@ t6machinelearning.init = async function(model) {
 		t6console.debug("strategy", typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification");
 		t6console.debug("Normalize", t6Model.normalize);
 		t6console.debug("splitToArray", t6Model.splitToArray);
+		t6console.debug("shuffle", t6Model.shuffle);
 		t6console.debug("labels", t6Model.labels);
 		t6console.debug("labelsCount", t6Model.labels.length);
 		t6console.debug("batch_size", t6Model.batch_size);
@@ -81,7 +82,7 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 			}));
 		} else if(t6Model.strategy==="forecast") {
 			const input_layer_neurons = 100;
-			const rnn_input_layer_features = 10;
+			const rnn_input_layer_features = 2; // TODO : if it's the feature it should be dynamic (10)
 			const rnn_input_layer_timesteps = input_layer_neurons / rnn_input_layer_features;
 			const n_layers = 5;
 			const rnn_input_shape = [rnn_input_layer_features, rnn_input_layer_timesteps];
@@ -157,8 +158,9 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 	return await new Promise((resolve) => {
 		return tf.tidy(() => {
 			let batchSize = t6Model.batch_size;
-			tf.util.shuffle(data);
-
+			if(t6Model.shuffle===true) {
+				tf.util.shuffle(data);
+			}
 			const normalize = (inputData, min, max) => {
 				return typeof inputData!=="undefined"?(parseFloat(inputData) - min)/(max - min):0;
 			};

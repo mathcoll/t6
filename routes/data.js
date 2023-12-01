@@ -334,7 +334,7 @@ let verifyPrerequisites = async function(resolve, reject) {
 			t6console.debug("chain 5", `Getting datatype "${payload.datatype}" from default value`);
 		}
 
-		let imT = imageType(new Buffer.from(payload.value.toString(), "base64"));
+		let imT = payload.value!==null?imageType(new Buffer.from(payload.value.toString(), "base64")):payload.value;
 		if((validator.isBase64(payload.value.toString())===true && imT!==null && imT.mime.includes("image")) || payload.datatype==="image") {
 			const img = new Image();
 			try {

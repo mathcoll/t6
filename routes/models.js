@@ -148,6 +148,7 @@ router.get("/?(:model_id([0-9a-z\-]+))/download/:file(weights\.bin|model\.json)/
  * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
  * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
+ * @apiBody {Boolean=true false} [shuffle=false] shuffle boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
  * @apiBody {Integer} [epochs=100] Number of epochs in training
@@ -207,6 +208,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
 					item.meta.revision	= typeof item.meta.revision==="number"?(item.meta.revision):1;
 					item.flow_ids		= typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:item.flow_ids;
 					item.normalize		= typeof req.body.normalize!=="undefined"?req.body.normalize:item.normalize;
+					item.shuffle		= typeof req.body.shuffle!=="undefined"?req.body.shuffle:item.shuffle;
 					item.strategy		= typeof req.body.strategy!=="undefined"?req.body.strategy:item.strategy,
 					item.splitToArray	= typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:item.splitToArray;
 					item.labels			= typeof req.body.labels!=="undefined"?req.body.labels:item.labels;
@@ -268,6 +270,7 @@ router.put("/:model_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, al
  * @apiBody {String=forecast,classification} [strategy=classification] Strategy
  * @apiBody {Boolean=true false} [normalize=true] Normalize boolean
  * @apiBody {Boolean=true false} [splitToArray=false] splitToArray boolean
+ * @apiBody {Boolean=true false} [shuffle=false] shuffle boolean
  * @apiBody {Number} [validation_split=0.8] Ratio of subset data to use on validation during training
  * @apiBody {Integer} [batch_size=100]  Batch size during training
  * @apiBody {Integer} [epochs=100] Number of epochs in training
@@ -312,6 +315,7 @@ router.post("/?", expressJwt({secret: jwtsettings.secret, algorithms: jwtsetting
 				name: 		typeof req.body.name!=="undefined"?req.body.name:"unamed",
 				flow_ids:	typeof req.body.flow_ids!=="undefined"?req.body.flow_ids:[],
 				normalize:	typeof req.body.normalize!=="undefined"?req.body.normalize:true,
+				shuffle:	typeof req.body.shuffle!=="undefined"?req.body.shuffle:false,
 				strategy:	typeof req.body.strategy!=="undefined"?req.body.strategy:"classification",
 				splitToArray:typeof req.body.splitToArray!=="undefined"?req.body.splitToArray:false,
 				labels:		typeof req.body.labels!=="undefined"?req.body.labels:["oov"],
@@ -524,7 +528,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		let limit = t6Model.datasets.training.limit;
 		let validation_split = typeof t6Model.validation_split!=="undefined"?t6Model.validation_split:60;
 		let offset = 0;
-		if (str2bool(req.query.force)!==true && t6Model.current_status==="RUNNING") {
+		if (str2bool(req.query.force)!==true && t6Model.current_status==="TRAINING") {
 			res.status(409).send(new ErrorSerializer({"id": 14056, "code": 409, "message": "Conflict, Training in progress"}).serialize());
 			return;
 		}
@@ -577,7 +581,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			return `SELECT min(${fieldvalue}), max(${fieldvalue}), count(${fieldvalue}) FROM ${rp}.data WHERE flow_id='${flow_id}' ${andDates} AND user_id='${req.user.id}'; SELECT ${fields}, flow_id, meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ORDER BY time ${sorting} ${lim}`;
 		}).join("; ");
 		t6console.debug("queryTs:", queryTs);
-		t6Model.current_status = "RUNNING";
+		t6Model.current_status = "TRAINING";
 		t6Model.current_status_last_update	= moment().format(logDateFormat);
 
 		// Get values from TS
@@ -591,7 +595,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 				t6Model.max[f_id] = this_flow.max;//;  Math.max(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
 			});
 			// TODO : check for min < max
-			
+
 			if ( data.length > 0 ) {
 				t6console.debug("ML data.length:", data.length);
 
@@ -734,7 +738,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 									t6console.debug("Model saving to", path+t6Model.id);
 									t6events.addStat("t6App", "ML Trained Model saved", user_id, user_id, {"user_id": user_id, "model_path": path+t6Model.id});
 									t6machinelearning.save(tfModel, `file://${path}${t6Model.id}`).then((saved) => {
-										t6console.debug("Model saved");
+										t6console.debug("Model saved", saved);
 										t6Model.current_status = "TRAINED";
 										t6Model.current_status_last_update	= moment().format(logDateFormat);
 										db_models.save(); // saving the status
