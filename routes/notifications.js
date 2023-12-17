@@ -752,7 +752,7 @@ router.post("/push/deadsensors", function (req, res) {
 					sensors_from_flows.push({
 						ttl		: ttl,
 						name	: (currflow!=="undefined" && currflow!==null)?currflow.name:undefined,
-						latest	: f.ts, // Date.parse(f.ts), // moment(f.ts).format("x"),
+						latest	: f.ts,
 						warning	: warning,
 						user_id	: f.user_id,
 						dead_notification : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:undefined,
