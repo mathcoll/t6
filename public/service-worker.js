@@ -286,7 +286,7 @@ self.addEventListener("notificationclick", function(event) {
 			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#objects");
 			synchronizeReader();
 		} else if( event.notification.actions[0].action === "goNews" ) {
-			clients.openWindow("/news/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#news");
+			clients.openWindow("https://www.internetcollaboratif.info/features/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#news");
 			synchronizeReader();
 		} else if( event.notification.actions[0].action === "goResetPassword" ) {
 			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#forgot-password");
