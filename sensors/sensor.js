@@ -9,7 +9,8 @@ var os			= require("os");
 var config		= require(`../data/sensors-${os.hostname()}`);
 var argv		= require("minimist")(process.argv.slice(2));
 console.log(`Reading config from file: "../data/sensors-${os.hostname()}.js.`);
-var auth = config.auth;
+let auth = config.auth;
+let auth_admin = config.auth_admin;
 config = config.sensors[argv.run]!==undefined?config.sensors[argv.run]:null;
 
 if ( argv.run === undefined ) {
@@ -42,8 +43,9 @@ if ( config.exec ) {
 					"Accept": "application/json",
 					"Content-Type": "application/json",
 				},
-				body: auth
+				body: config.isAdmin===true?auth_admin:auth
 			}, function (error, response, body) {
+				//console.debug("BODY", config.isAdmin, config.isAdmin===true?auth_admin:auth);
 				if ( body ) {
 					bearer = body.token!==undefined?body.token:null;
 					if ( bearer && !error ) {
@@ -89,8 +91,9 @@ if ( config.exec ) {
 			"Accept": "application/json",
 			"Content-Type": "application/json",
 		},
-		body: auth
+		body: config.isAdmin===true?auth_admin:auth
 	}, function (error, response, body) {
+		//console.debug("BODY", config.isAdmin, config.isAdmin===true?auth_admin:auth);
 		bearer = body!==undefined?body.token:null;
 		if ( bearer && !error ) {
 			request({
