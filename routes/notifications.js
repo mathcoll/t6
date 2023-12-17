@@ -706,7 +706,7 @@ router.post("/push/send", expressJwt({secret: jwtsettings.secret, algorithms: jw
 		t6console.debug("pushs : ", pushers);
 		if(pushers.length > 0) {
 			let response = sendPush(pushers, dryrun, recurring, req.user.id, limit, 0);
-		t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/send", "", "", {"status": "200", error_id: "00003"});
+			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/send", "", "", {"status": "200", error_id: "00003"});
 			res.status(202).send({"response": response});
 		} else {
 			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/send", "", "", {"status": "400", error_id: "00004"});
@@ -714,6 +714,79 @@ router.post("/push/send", expressJwt({secret: jwtsettings.secret, algorithms: jw
 		}
 	} else {
 		t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/send", "", "", {"status": "400", error_id: "00004"});
+		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
+	}
+});
+
+
+/**
+ * @api {post} /notifications/push/deadsensors Send Push notification on dead sensors
+ * @apiName Send Push notification on dead sensors
+ * @apiDescription Send Push notification on dead sensors
+ * @apiGroup 9. Notifications
+ * @apiVersion 2.0.1
+ * @apiUse AuthAdmin
+ * @apiPermission AuthAdmin
+ *
+ * @apiParam {String} [size=20] Size of the resultset
+ * @apiParam {Number} [page] Page offset
+ * 
+ * @apiUse 201
+ * @apiUse 403
+ */
+router.post("/push/deadsensors", function (req, res) {
+	var size = 1;
+	var page = 1;
+	var offset = 0;
+	if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
+		var query = `SELECT time AS ts, user_id, flow_id, valueBoolean, valueFloat, valueInteger, valueString FROM data GROUP BY flow_id ORDER BY time DESC LIMIT ${size} OFFSET ${offset}`;
+		t6console.debug(query);
+		dbInfluxDB.query(query).then((data) => {
+			let sensors_from_flows = [];
+			data.map((f) => {
+				let query = { "id" : f.flow_id };
+				let currflow = flows.findOne(query);
+				let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:undefined, 10);
+				let warning = moment(f.ts).isBefore( moment().subtract(ttl, "second") );
+				if (ttl > -1 && warning === true && currflow.dead_notification === true) {
+					sensors_from_flows.push({
+						ttl		: ttl,
+						name	: (currflow!=="undefined" && currflow!==null)?currflow.name:undefined,
+						latest	: f.ts, // Date.parse(f.ts), // moment(f.ts).format("x"),
+						warning	: warning,
+						user_id	: f.user_id,
+						dead_notification : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:undefined,
+						flow_id	: f.flow_id
+					});
+					let user = users.findOne({ "$and": [ { "id": { "$eq": f.user_id } }, { "pushSubscription": { "$ne": null } }, ] });
+					if (user!==null && typeof user.pushSubscription!=="undefined" ) {
+						user = typeof user!=="undefined"?user:{pushSubscription:{}};
+						user.pushSubscription = user.pushSubscription!==null?user.pushSubscription:{};
+						user.pushSubscription.user_id = f.user_id;
+						let payload = "{\"type\": \"message\", \"title\": \"Warning on dead sensor!\", \"body\": \"Your sensor for '"+currflow.name+"' has not pushed data since "+moment(f.ts).format("DD/MM/YYYY, HH:mm")+"\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+						t6console.debug(payload);
+						let result = t6notifications.sendPush(user, payload);
+						if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
+							t6console.debug("pushSubscription", pushSubscription);
+							t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+							users.chain().find({ "id": user_id }).update(function(u) {
+								u.pushSubscription = {};
+								db_users.save();
+							});
+							t6console.debug("pushSubscription is now disabled on User", error);
+						}
+					} else {
+						t6console.debug("User can't be found");
+					}
+				}
+			});
+			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "202", error_id: "00003"});
+			res.status(202).send(sensors_from_flows);
+		//}).catch(err => {
+		//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
+		});
+	} else {
+		t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "401", error_id: "00004"});
 		res.status(401).send(new ErrorSerializer({"id": 8052, "code": 401, "message": "Forbidden"}).serialize());
 	}
 });

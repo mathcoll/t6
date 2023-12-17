@@ -17,6 +17,7 @@ app.resources.flows = {
 				ttl: myForm.querySelector("input[name='TTL']").value,
 				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?"true":"false",
 				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
+				dead_notification: myForm.querySelector("label.mdl-switch[data-id='switch-edit_dead_notification']").classList.contains("is-checked")===true?"true":"false",
 				influx_db_cloud: {
 					"token": myForm.querySelector("input[name='Token']").value,
 					"org": myForm.querySelector("input[name='Org']").value,
@@ -73,6 +74,7 @@ app.resources.flows = {
 			ttl: myForm.querySelector("input[name='TTL']").value,
 			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?"true":"false",
 			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
+			dead_notification: myForm.querySelector("label.mdl-switch[data-id='switch-add_dead_notification']").classList.contains("is-checked")===true?"true":"false",
 			influx_db_cloud: {
 				"token": myForm.querySelector("input[name='Token']").value,
 				"org": myForm.querySelector("input[name='Org']").value,
@@ -206,6 +208,7 @@ app.resources.flows = {
 					node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"Default", {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "edit_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
+					node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "edit_dead_notification", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
 					
@@ -273,6 +276,7 @@ app.resources.flows = {
 					node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"", {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "show_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "show_require_encrypted", isEdit: isEdit});
+					node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "show_dead_notification", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
 					
@@ -371,6 +375,13 @@ app.resources.flows = {
 							label.innerText = element2.classList.contains("is-checked")!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object";
 						});
 					}
+					var element3 = document.getElementById("switch-edit_dead_notification").parentNode;
+					if ( element3 ) {
+						element3.addEventListener("change", function(e) {
+							var label = e.target.parentElement.querySelector("div.mdl-switch__label");
+							label.innerText = element3.classList.contains("is-checked")!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore";
+						});
+					}
 				} else {
 					app.buttons.listFlow.addEventListener("click", function(evt) { app.setSection("flows"); evt.preventDefault(); }, false);
 					// buttons.deleteFlow2.addEventListener("click",
@@ -428,6 +439,7 @@ app.resources.flows = {
 		node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"", {type: "select", id: "Retention", isEdit: true, options: app.allRetentions });
 		node += app.getField("verified_user", flow.attributes.require_signed!==false?"Does not require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "add_require_signed", isEdit: true});
 		node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Does not require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "add_require_encrypted", isEdit: true});
+		node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "add_dead_notification", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -496,6 +508,13 @@ app.resources.flows = {
 				label.innerText = element2.classList.contains("is-checked")!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object";
 			});
 		}
+		var element3 = document.getElementById("switch-add_dead_notification").parentNode;
+		if ( element3 ) {
+			element3.addEventListener("change", function(e) {
+				var label = e.target.parentElement.querySelector("div.mdl-switch__label");
+				label.innerText = element3.classList.contains("is-checked")!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore";
+			});
+		}
 		app.setExpandAction();
 	},
 	displayItem: function(flow) {
@@ -534,6 +553,11 @@ app.resources.flows = {
 		if ( flow.attributes.require_encrypted === true ) {
 			element += "	<div class='mdl-list__item-sub-title'>";
 			element += "		<i class='material-icons md-28'>vpn_key</i> Require encrypted payload from Object";
+			element += "	</div>";
+		}
+		if ( flow.attributes.dead_notification === true ) {
+			element += "	<div class='mdl-list__item-sub-title'>";
+			element += "		<i class='material-icons md-28'>bug_report</i> Get notification when sensor on Object is not sending datapoints";
 			element += "	</div>";
 		}
 		element += "</div>";

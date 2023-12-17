@@ -231,6 +231,7 @@ router.get("/:flow_id([0-9a-z\-]+)/categories", expressJwt({secret: jwtsettings.
  * @apiBody {Integer} [ttl] Time To Live before datapoint on Flow will expire
  * @apiBody {Boolean} [require_signed=false] require_signed
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
+ * @apiBody {Boolean} [dead_notification=false] dead_notification
  * @apiBody {Integer} permission Permission is not used anymore (deprecated)
  * @apiBody {String[]} [objects] List of Object Ids
  * @apiBody {String} [retention]] Retention Policy
@@ -271,6 +272,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					mqtt_topic:			typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:"",
 					require_signed:		typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):false,
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
+					dead_notification:	typeof req.body.dead_notification!=="undefined"?str2bool(req.body.dead_notification):false,
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
@@ -307,6 +309,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {Integer} [ttl] Time To Live before datapoint on Flow will expire
  * @apiBody {Boolean} [require_signed=false] require_signed
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
+ * @apiBody {Boolean} [dead_notification=false] dead_notification
  * @apiBody {Object[]} [permission]
  * @apiBody {String[]} [objects] List of Object Ids
  * @apiBody {String} [retention]] Retention Policy
@@ -355,6 +358,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.mqtt_topic			= typeof req.body.mqtt_topic!=="undefined"?req.body.mqtt_topic:item.mqtt_topic;
 						item.require_signed		= typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):str2bool(item.require_signed);
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
+						item.dead_notification	= typeof req.body.dead_notification!=="undefined"?str2bool(req.body.dead_notification):str2bool(item.dead_notification);
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
 						item.time_to_live		= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.time_to_live, 10); // https://github.com/techfort/LokiJS/issues/884

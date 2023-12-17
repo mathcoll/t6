@@ -5,7 +5,7 @@ function FlowSerializer(flow) {
 	this.serialize = function() {
 		return new JSONAPISerializer("flow", {
 			keyForAttribute: "underscore_case",
-			attributes : [ "name", "unit", "objects", "require_signed", "require_encrypted", "permission", "data_type", "mqtt_topic", "track_id", "fusion_algorithm", "ttl", "preprocessor", "influx_db_cloud", "retention", "user_id", "meta" ],
+			attributes : [ "name", "unit", "objects", "require_signed", "require_encrypted", "dead_notification", "permission", "data_type", "mqtt_topic", "track_id", "fusion_algorithm", "ttl", "preprocessor", "influx_db_cloud", "retention", "user_id", "meta" ],
 			topLevelLinks : {
 				parent : sprintf("%s/v%s/flows", baseUrl_https, version),
 				first : flow.pageFirst!==undefined?sprintf("%s/v%s/flows/?page=%s&size=%s", baseUrl_https, version, flow.pageFirst, flow.size):undefined,

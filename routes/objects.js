@@ -7,6 +7,64 @@ var UISerializer = require("../serializers/ui");
 var uis;
 var sources;
 
+
+/**
+ * @api {get} /objects/deadsensors Get dead sensors
+ * @apiName Get dead sensors
+ * @apiDescription Get the list of dead sensors
+ * @apiGroup 1. Object and User Interfaces
+ * @apiVersion 2.0.1
+ * 
+ * @apiUse Auth
+ *
+ * @apiParam {String} [size=20] Size of the resultset
+ * @apiParam {Number} [page] Page offset
+ * 
+ * @apiUse 201
+ * @apiUse 403
+ */
+router.get("/deadsensors", function (req, res) {
+	var size = 1;
+	var page = 1;
+	var offset = 0;
+	var query = `SELECT time AS ts, user_id, flow_id, valueBoolean, valueFloat, valueInteger, valueString FROM data GROUP BY flow_id ORDER BY time DESC LIMIT ${size} OFFSET ${offset}`;
+	t6console.debug(query);
+	dbInfluxDB.query(query).then((data) => {
+		let sensors_from_flows = [];
+		data.map((f) => {
+			let query;
+			if ( typeof req.user!=="undefined" && req.user.role === "admin" ) {
+				query = { "id" : f.flow_id };
+			} else {
+				query = {
+					"$and": [
+							{ "user_id" : req.user.id },
+							{ "id" : f.flow_id },
+						]
+					};
+			}
+			let currflow = flows.findOne(query);
+			let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:undefined, 10);
+			let warning = moment(f.ts).isBefore( moment().subtract(ttl, "second") );
+			if ( ttl > -1 ) {
+				sensors_from_flows.push({
+					ttl		: ttl,
+					name	: (currflow!=="undefined" && currflow!==null)?currflow.name:undefined,
+					latest	: f.ts, // Date.parse(f.ts), // moment(f.ts).format("x"),
+					warning	: warning,
+					user_id	: f.user_id,
+					dead_notification : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:undefined,
+					flow_id	: f.flow_id
+				});
+			}
+		});
+		t6events.addAudit("t6App", "AuthAdmin: {get} /deadsensors", "", "", {"status": "200", error_id: "00003"});
+		res.status(200).send(sensors_from_flows);
+	//}).catch(err => {
+	//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
+	});
+});
+
 /**
  * @api {get} /objects/:object_id/ui Get UI for an Object
  * @apiName Get UI for an Object
