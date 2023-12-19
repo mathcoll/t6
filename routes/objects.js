@@ -54,6 +54,7 @@ router.get("/deadsensors", function (req, res) {
 					warning	: warning,
 					user_id	: f.user_id,
 					dead_notification : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:undefined,
+					dead_notification_interval : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification_interval:undefined,
 					flow_id	: f.flow_id
 				});
 			}

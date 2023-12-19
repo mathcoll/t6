@@ -231,10 +231,11 @@ router.get("/:flow_id([0-9a-z\-]+)/categories", expressJwt({secret: jwtsettings.
  * @apiBody {Integer} [ttl] Time To Live before datapoint on Flow will expire
  * @apiBody {Boolean} [require_signed=false] require_signed
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
- * @apiBody {Boolean} [dead_notification=false] dead_notification
+ * @apiBody {Boolean} [dead_notification=false] Periodically receive notification when sensor is not sending datapoints anymore
+ * @apiBody {String="hourly", "weekly", "monthly"} [dead_notification_interval=""] Interval minimum before receiving another notification
  * @apiBody {Integer} permission Permission is not used anymore (deprecated)
  * @apiBody {String[]} [objects] List of Object Ids
- * @apiBody {String} [retention]] Retention Policy
+ * @apiBody {String="autogen", "retention1d", "retention1w", "retention4w", "retention1y"} [retention="autogen"] Retention Policy
  * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 201
@@ -273,6 +274,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					require_signed:		typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):false,
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
 					dead_notification:	typeof req.body.dead_notification!=="undefined"?str2bool(req.body.dead_notification):false,
+					dead_notification_interval:	typeof req.body.dead_notification_interval!=="undefined"?str2bool(req.body.dead_notification_interval):"",
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
@@ -309,10 +311,11 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {Integer} [ttl] Time To Live before datapoint on Flow will expire
  * @apiBody {Boolean} [require_signed=false] require_signed
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
- * @apiBody {Boolean} [dead_notification=false] dead_notification
- * @apiBody {Object[]} [permission]
+ * @apiBody {Boolean} [dead_notification=false] Periodically receive notification when sensor is not sending datapoints anymore
+ * @apiBody {String="hourly", "weekly", "monthly"} [dead_notification_interval=""] Interval minimum before receiving another notification
+ * @apiBody {Integer} [permission]
  * @apiBody {String[]} [objects] List of Object Ids
- * @apiBody {String} [retention]] Retention Policy
+ * @apiBody {String="autogen", "retention1d", "retention1w", "retention4w", "retention1y"} [retention="autogen"] Retention Policy
  * @apiBody {Object} [influx_db_cloud] influx_db_cloud object to define what bucket should be used to save data on the cloud
  * 
  * @apiUse 200
@@ -359,6 +362,7 @@ router.put("/:flow_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.secret, alg
 						item.require_signed		= typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):str2bool(item.require_signed);
 						item.require_encrypted	= typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):str2bool(item.require_encrypted);
 						item.dead_notification	= typeof req.body.dead_notification!=="undefined"?str2bool(req.body.dead_notification):str2bool(item.dead_notification);
+						item.dead_notification_interval	= typeof req.body.dead_notification_interval!=="undefined"?req.body.dead_notification_interval:item.dead_notification_interval;
 						item.track_id			= typeof req.body.track_id!=="undefined"?req.body.track_id:item.track_id;
 						item.fusion_algorithm	= typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:item.fusion_algorithm;
 						item.time_to_live		= typeof req.body.ttl!=="undefined"?parseInt(req.body.ttl, 10):parseInt(item.time_to_live, 10); // https://github.com/techfort/LokiJS/issues/884
