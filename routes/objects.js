@@ -46,8 +46,8 @@ router.get("/deadsensors", function (req, res) {
 			}
 			let currflow = flows.findOne(query);
 			let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:undefined, 10);
-			let warning = moment(f.ts).isBefore( moment().subtract(ttl, "second") );
-			if ( ttl > -1 ) {
+			let warning = moment(f.ts).isBefore( moment().subtract(ttl, "seconds") ); // BUG ?? ttl might be undefined?
+			if ( ttl > -1 && warning === true ) {
 				sensors_from_flows.push({
 					ttl		: ttl,
 					name	: (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined,
