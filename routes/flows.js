@@ -232,7 +232,7 @@ router.get("/:flow_id([0-9a-z\-]+)/categories", expressJwt({secret: jwtsettings.
  * @apiBody {Boolean} [require_signed=false] require_signed
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
  * @apiBody {Boolean} [dead_notification=false] Periodically receive notification when sensor is not sending datapoints anymore
- * @apiBody {String="hourly", "weekly", "monthly"} [dead_notification_interval=""] Interval minimum before receiving another notification
+ * @apiBody {String="hourly", "daily", "weekly", "monthly"} [dead_notification_interval=""] Interval minimum before receiving another notification
  * @apiBody {Integer} permission Permission is not used anymore (deprecated)
  * @apiBody {String[]} [objects] List of Object Ids
  * @apiBody {String="autogen", "retention1d", "retention1w", "retention4w", "retention1y"} [retention="autogen"] Retention Policy
@@ -312,7 +312,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
  * @apiBody {Boolean} [require_signed=false] require_signed
  * @apiBody {Boolean} [require_encrypted=false] require_encrypted
  * @apiBody {Boolean} [dead_notification=false] Periodically receive notification when sensor is not sending datapoints anymore
- * @apiBody {String="hourly", "weekly", "monthly"} [dead_notification_interval=""] Interval minimum before receiving another notification
+ * @apiBody {String="hourly", "daily", "weekly", "monthly"} [dead_notification_interval=""] Interval minimum before receiving another notification
  * @apiBody {Integer} [permission]
  * @apiBody {String[]} [objects] List of Object Ids
  * @apiBody {String="autogen", "retention1d", "retention1w", "retention4w", "retention1y"} [retention="autogen"] Retention Policy

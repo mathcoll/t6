@@ -4,6 +4,7 @@ var router = express.Router();
 var ObjectSerializer = require("../serializers/object");
 var ErrorSerializer = require("../serializers/error");
 var UISerializer = require("../serializers/ui");
+var DeadsensorSerializer = require("../serializers/deadsensor");
 var uis;
 var sources;
 
@@ -49,18 +50,19 @@ router.get("/deadsensors", function (req, res) {
 			if ( ttl > -1 ) {
 				sensors_from_flows.push({
 					ttl		: ttl,
-					name	: (currflow!=="undefined" && currflow!==null)?currflow.name:undefined,
-					latest	: f.ts,
+					name	: (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined,
+					latest_value	: moment(f.ts).format("MMMM Do YYYY, H:mm:ss"),
 					warning	: warning,
 					user_id	: f.user_id,
-					dead_notification : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:undefined,
-					dead_notification_interval : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification_interval:undefined,
+					dead_notification : (currflow!=="undefined" && currflow!==null && currflow.dead_notification)?currflow.dead_notification:undefined,
+					dead_notification_interval : (currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval)?currflow.dead_notification_interval:"hourly* by default",
+					dead_notification_latest : (currflow!=="undefined" && currflow!==null && currflow.dead_notification_latest)?moment(currflow.dead_notification_latest).format("MMMM Do YYYY, H:mm:ss"):undefined,
 					flow_id	: f.flow_id
 				});
 			}
 		});
 		t6events.addAudit("t6App", "AuthAdmin: {get} /deadsensors", "", "", {"status": "200", error_id: "00003"});
-		res.status(200).send(sensors_from_flows);
+		res.status(200).send(new DeadsensorSerializer(sensors_from_flows).serialize());
 	//}).catch(err => {
 	//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 	});

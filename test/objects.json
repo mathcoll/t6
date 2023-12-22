@@ -235,6 +235,20 @@
         	                }
                         }
                     ]
+                },
+                {
+                	"name": "can get all dead sensors",
+                    "description": "can get all dead sensors",
+                    "api_calls": [
+                        {
+                        	"request": "GET /{{app_version}}/objects/deadsensors",
+                            "headers": {
+                                "Authorization": "Bearer {{saved.bearer_token}}"
+                            },
+                            "save": {},
+                            "status": "200"
+                        }
+                    ]
                 }
             ]
         }

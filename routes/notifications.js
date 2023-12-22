@@ -3,6 +3,7 @@ var express = require("express");
 var router = express.Router();
 var UserSerializer = require("../serializers/user");
 var ErrorSerializer = require("../serializers/error");
+var DeadsensorSerializer = require("../serializers/deadsensor");
 let timer;
 
 async function planNewsletter(req, res, recipients, template, subject, taskType) {
@@ -747,15 +748,43 @@ router.post("/push/deadsensors", function (req, res) {
 				let query = { "id" : f.flow_id };
 				let currflow = flows.findOne(query);
 				let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:undefined, 10);
-				let warning = moment(f.ts).isBefore( moment().subtract(ttl, "second") );
-				if (ttl > -1 && warning === true && currflow.dead_notification === true) {
+				let warning = moment(f.ts).isBefore( moment().subtract(ttl, "seconds") ); // BUG ?? ttl might be undefined?
+				let latest_notification = (currflow!=="undefined" && currflow!==null && currflow.dead_notification_latest)?currflow.dead_notification_latest:moment(0); // default to never sent
+				let itv;
+				if(currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval) {
+					switch(currflow.dead_notification_interval) {
+						case "daily":
+							itv = "days"; break;
+						case "weekly":
+							itv = "weeks"; break;
+						case "monthly":
+							itv = "months"; break;
+						case "hourly":
+						default:
+							itv = "hours"; break;
+					}
+				} else {
+					itv = "hours";
+				}
+				let check_interval = moment(latest_notification).add(1, itv).isBefore( moment() );
+				/*
+				t6console.debug("ttl", ttl);
+				t6console.debug("warning", warning);
+				t6console.debug("currflow.dead_notification_interval", (currflow!=="undefined" && currflow!==null)?currflow.dead_notification_interval:null);
+				t6console.debug("check_interval", check_interval);
+				t6console.debug("currflow.dead_notification", (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:null);
+				t6console.debug("latest_notification", latest_notification);
+				*/
+				if (ttl > -1 && warning === true && check_interval && currflow.dead_notification === true) {
 					sensors_from_flows.push({
 						ttl		: ttl,
-						name	: (currflow!=="undefined" && currflow!==null)?currflow.name:undefined,
-						latest	: f.ts,
+						name	: (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined,
+						latest_value	: moment(f.ts).format("MMMM Do YYYY, H:mm:ss"),
 						warning	: warning,
 						user_id	: f.user_id,
-						dead_notification : (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:undefined,
+						dead_notification : (currflow!=="undefined" && currflow!==null && currflow.dead_notification)?currflow.dead_notification:undefined,
+						dead_notification_interval : (currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval)?currflow.dead_notification_interval:"hourly* by default",
+						dead_notification_latest : moment(parseInt(moment().format("x"), 10)).format("MMMM Do YYYY, H:mm:ss"),
 						flow_id	: f.flow_id
 					});
 					let user = users.findOne({ "$and": [ { "id": { "$eq": f.user_id } }, { "pushSubscription": { "$ne": null } }, ] });
@@ -764,6 +793,7 @@ router.post("/push/deadsensors", function (req, res) {
 						user.pushSubscription = user.pushSubscription!==null?user.pushSubscription:{};
 						user.pushSubscription.user_id = f.user_id;
 						let payload = "{\"type\": \"message\", \"title\": \"Warning on dead sensor!\", \"body\": \"Your sensor for '"+currflow.name+"' has not pushed data since "+moment(f.ts).format("DD/MM/YYYY, HH:mm")+"\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+						t6events.addStat("t6Api", "deadsensors notification", f.user_id, f.user_id, {flow_id: f.flow_id});
 						t6console.debug(payload);
 						let result = t6notifications.sendPush(user, payload);
 						if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
@@ -774,6 +804,19 @@ router.post("/push/deadsensors", function (req, res) {
 								db_users.save();
 							});
 							t6console.debug("pushSubscription is now disabled on User", error);
+						} else {
+							// update dead_notification_latest
+							let result;
+							flows.chain().find({ "id": f.flow_id }).update(function(item) {
+								item.dead_notification_latest = parseInt(moment().format("x"), 10);
+								result = item;
+							});
+							if ( typeof result!=="undefined" ) {
+								db_flows.save();
+								db_flows.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
+							} else {
+								t6console.debug("Flow can't be found");
+							}
 						}
 					} else {
 						t6console.debug("User can't be found");
@@ -781,7 +824,7 @@ router.post("/push/deadsensors", function (req, res) {
 				}
 			});
 			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "202", error_id: "00003"});
-			res.status(202).send(sensors_from_flows);
+			res.status(202).send(new DeadsensorSerializer(sensors_from_flows).serialize());
 		//}).catch(err => {
 		//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 		});
