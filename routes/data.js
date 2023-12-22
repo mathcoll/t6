@@ -1313,7 +1313,7 @@ router.post("/(:flow_id([0-9a-z\-]+))?", expressJwt({secret: jwtsettings.secret,
 		payload.limit		= 20;
 		payload.sort		= "asc";
 		res.status(200).send(new DataSerializer(payload).serialize());
-		t6events.addStat("t6Api", "datapoint add", payload.flow_id, req.user.id);
+		t6events.addStat("t6Api", "datapoint add", req.user.id, req.user.id, {flow_id: payload.flow_id});
 		t6events.addAudit("t6Api", "datapoint add", req.user.id, payload.flow_id, {error_id: null, status: 201});
 		t6console.debug(`processAllMeasures Completed with ${payload.length} measurement(s)`);
 	}).catch((err) => {
