@@ -14,6 +14,20 @@ function DeadsensorSerializer(deadsensor) {
 				last : deadsensor.pageLast!==undefined?sprintf("%s/v%s/objects/deadsensors/?page=%s&size=%s", baseUrl_https, version, deadsensor.pageLast, deadsensor.size):undefined,
 			},
 			dataLinks : {
+				flow : function(deadsensor) {
+					if ( typeof deadsensor.flow_id!=="undefined" ) {
+						return sprintf("%s/v%s/flows/%s", baseUrl_https, version, deadsensor.flow_id);
+					} else {
+						return null;
+					}
+				},
+				latest_value : function(deadsensor) {
+					if ( typeof deadsensor.flow_id!=="undefined" && typeof deadsensor.latest_value_ts!=="undefined" ) {
+						return sprintf("%s/v%s/flows/%s/%s", baseUrl_https, version, deadsensor.flow_id, deadsensor.latest_value_ts);
+					} else {
+						return null;
+					}
+				},
 			}
 		}).serialize(deadsensor);
 	};

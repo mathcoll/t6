@@ -20,16 +20,20 @@ var sources;
  *
  * @apiParam {String} [size=20] Size of the resultset
  * @apiParam {Number} [page] Page offset
+ * @apiParam {String="active","all"} [filter] Filter to active notifications only
  * 
  * @apiUse 201
  * @apiUse 403
  */
 router.get("/deadsensors", function (req, res) {
-	var size = 1;
-	var page = 1;
-	var offset = 0;
-	var query = `SELECT time AS ts, user_id, flow_id, valueBoolean, valueFloat, valueInteger, valueString FROM data GROUP BY flow_id ORDER BY time DESC LIMIT ${size} OFFSET ${offset}`;
-	t6console.debug(query);
+	let size = 1;
+	let page = 1;
+	let offset = 0;
+	let filter = typeof req.query.filter==="active"?"active":req.query.filter;
+	//let flow_id = typeof req.query.flow_id!=="undefined"?req.query.flow_id:undefined;
+	let query = `SELECT time AS ts, user_id, flow_id, valueBoolean, valueFloat, valueInteger, valueString FROM data GROUP BY flow_id ORDER BY time DESC LIMIT ${size} OFFSET ${offset}`;
+	t6console.debug("query", query);
+	t6console.debug("filter", filter);
 	dbInfluxDB.query(query).then((data) => {
 		let sensors_from_flows = [];
 		data.map((f) => {
@@ -45,26 +49,31 @@ router.get("/deadsensors", function (req, res) {
 					};
 			}
 			let currflow = flows.findOne(query);
-			let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:undefined, 10);
-			let warning = moment(f.ts).isBefore( moment().subtract(ttl, "seconds") ); // BUG ?? ttl might be undefined?
-			if ( ttl > -1 && warning === true ) {
+			let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:-1, 10);
+			let name = (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined;
+			let latest_value = moment(f.ts).format("MMMM Do YYYY, H:mm:ss");
+			let latest_value_ts = moment(f.ts).format("x");
+			let dead_notification = (currflow!=="undefined" && currflow!==null && currflow.dead_notification)?currflow.dead_notification:false;
+			let dead_notification_interval = (currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval)?currflow.dead_notification_interval:"hourly*";
+			let dead_notification_latest = (currflow!=="undefined" && currflow!==null && currflow.dead_notification_latest)?moment(currflow.dead_notification_latest).format("MMMM Do YYYY, H:mm:ss"):undefined;
+			let warning = moment(f.ts).isBefore( moment().subtract(ttl, "seconds") );
+			if ( (ttl > -1 && warning === true) && ((filter!=="active") || (filter==="active" && dead_notification===true)) ) {
 				sensors_from_flows.push({
-					ttl		: ttl,
-					name	: (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined,
-					latest_value	: moment(f.ts).format("MMMM Do YYYY, H:mm:ss"),
-					warning	: warning,
-					user_id	: f.user_id,
-					dead_notification : (currflow!=="undefined" && currflow!==null && currflow.dead_notification)?currflow.dead_notification:undefined,
-					dead_notification_interval : (currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval)?currflow.dead_notification_interval:"hourly* by default",
-					dead_notification_latest : (currflow!=="undefined" && currflow!==null && currflow.dead_notification_latest)?moment(currflow.dead_notification_latest).format("MMMM Do YYYY, H:mm:ss"):undefined,
-					flow_id	: f.flow_id
+					ttl							: ttl,
+					name						: name,
+					latest_value				: latest_value,
+					latest_value_ts				: latest_value_ts,
+					warning						: warning,
+					user_id						: f.user_id,
+					dead_notification			: dead_notification,
+					dead_notification_interval	: dead_notification_interval,
+					dead_notification_latest	: dead_notification_latest,
+					flow_id						: f.flow_id
 				});
 			}
 		});
 		t6events.addAudit("t6App", "AuthAdmin: {get} /deadsensors", "", "", {"status": "200", error_id: "00003"});
 		res.status(200).send(new DeadsensorSerializer(sensors_from_flows).serialize());
-	//}).catch(err => {
-	//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 	});
 });
 

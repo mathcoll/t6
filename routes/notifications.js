@@ -747,7 +747,7 @@ router.post("/push/deadsensors", function (req, res) {
 			data.map((f) => {
 				let query = { "id" : f.flow_id };
 				let currflow = flows.findOne(query);
-				let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:undefined, 10);
+				let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:-1, 10);
 				let warning = moment(f.ts).isBefore( moment().subtract(ttl, "seconds") ); // BUG ?? ttl might be undefined?
 				let latest_notification = (currflow!=="undefined" && currflow!==null && currflow.dead_notification_latest)?currflow.dead_notification_latest:moment(0); // default to never sent
 				let itv;
@@ -767,25 +767,24 @@ router.post("/push/deadsensors", function (req, res) {
 					itv = "hours";
 				}
 				let check_interval = moment(latest_notification).add(1, itv).isBefore( moment() );
-				/*
-				t6console.debug("ttl", ttl);
-				t6console.debug("warning", warning);
-				t6console.debug("currflow.dead_notification_interval", (currflow!=="undefined" && currflow!==null)?currflow.dead_notification_interval:null);
-				t6console.debug("check_interval", check_interval);
-				t6console.debug("currflow.dead_notification", (currflow!=="undefined" && currflow!==null)?currflow.dead_notification:null);
-				t6console.debug("latest_notification", latest_notification);
-				*/
-				if (ttl > -1 && warning === true && check_interval && currflow.dead_notification === true) {
+				let name = (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined;
+				let latest_value = moment(f.ts).format("MMMM Do YYYY, H:mm:ss");
+				let latest_value_ts = f.ts;
+				let dead_notification = (currflow!=="undefined" && currflow!==null && currflow.dead_notification)?currflow.dead_notification:undefined;
+				let dead_notification_interval = (currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval)?currflow.dead_notification_interval:"hourly*";
+				let dead_notification_latest = moment(parseInt(moment().format("x"), 10)).format("MMMM Do YYYY, H:mm:ss");
+				if (ttl > -1 && warning === true && check_interval && currflow.dead_notification===true) {
 					sensors_from_flows.push({
-						ttl		: ttl,
-						name	: (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined,
-						latest_value	: moment(f.ts).format("MMMM Do YYYY, H:mm:ss"),
-						warning	: warning,
-						user_id	: f.user_id,
-						dead_notification : (currflow!=="undefined" && currflow!==null && currflow.dead_notification)?currflow.dead_notification:undefined,
-						dead_notification_interval : (currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval)?currflow.dead_notification_interval:"hourly* by default",
-						dead_notification_latest : moment(parseInt(moment().format("x"), 10)).format("MMMM Do YYYY, H:mm:ss"),
-						flow_id	: f.flow_id
+						ttl							: ttl,
+						name						: name,
+						latest_value				: latest_value,
+						latest_value_ts				: latest_value_ts,
+						warning						: warning,
+						user_id						: f.user_id,
+						dead_notification			: dead_notification,
+						dead_notification_interval	: dead_notification_interval,
+						dead_notification_latest	: dead_notification_latest,
+						flow_id						: f.flow_id
 					});
 					let user = users.findOne({ "$and": [ { "id": { "$eq": f.user_id } }, { "pushSubscription": { "$ne": null } }, ] });
 					if (user!==null && typeof user.pushSubscription!=="undefined" ) {
