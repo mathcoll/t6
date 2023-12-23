@@ -52,7 +52,7 @@ router.get("/deadsensors", function (req, res) {
 			let ttl = parseInt( (currflow!=="undefined" && currflow!==null)?currflow.time_to_live:-1, 10);
 			let name = (currflow!=="undefined" && currflow!==null && currflow.name)?currflow.name:undefined;
 			let latest_value = moment(f.ts).format("MMMM Do YYYY, H:mm:ss");
-			let latest_value_ts = moment(f.ts).format("x");
+			let latest_value_ts = moment(f.ts).format("x")*1000;
 			let dead_notification = (currflow!=="undefined" && currflow!==null && currflow.dead_notification)?currflow.dead_notification:false;
 			let dead_notification_interval = (currflow!=="undefined" && currflow!==null && currflow.dead_notification_interval)?currflow.dead_notification_interval:"hourly*";
 			let dead_notification_latest = (currflow!=="undefined" && currflow!==null && currflow.dead_notification_latest)?moment(currflow.dead_notification_latest).format("MMMM Do YYYY, H:mm:ss"):undefined;

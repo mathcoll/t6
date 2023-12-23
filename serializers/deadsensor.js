@@ -23,7 +23,7 @@ function DeadsensorSerializer(deadsensor) {
 				},
 				latest_value : function(deadsensor) {
 					if ( typeof deadsensor.flow_id!=="undefined" && typeof deadsensor.latest_value_ts!=="undefined" ) {
-						return sprintf("%s/v%s/flows/%s/%s", baseUrl_https, version, deadsensor.flow_id, deadsensor.latest_value_ts);
+						return sprintf("%s/v%s/data/%s/%s", baseUrl_https, version, deadsensor.flow_id, deadsensor.latest_value_ts);
 					} else {
 						return null;
 					}
