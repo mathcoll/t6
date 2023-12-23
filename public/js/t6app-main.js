@@ -47,6 +47,12 @@ var app = {
 		{ name: "retention4w", value: "4 weeks" },
 		{ name: "retention1y", value: "1 Year" }
 	],
+	allIntervals: [
+		{ name: "hourly", value: "hourly" },
+		{ name: "daily", value: "daily" },
+		{ name: "weekly", value: "weekly" },
+		{ name: "monthly", value: "monthly" }
+	],
 	defaultPageTitle: "t6 IoT App",
 	otp: {},
 	sectionsPageTitles: {

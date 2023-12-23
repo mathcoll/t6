@@ -18,6 +18,7 @@ app.resources.flows = {
 				require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_signed']").classList.contains("is-checked")===true?"true":"false",
 				require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-edit_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 				dead_notification: myForm.querySelector("label.mdl-switch[data-id='switch-edit_dead_notification']").classList.contains("is-checked")===true?"true":"false",
+				dead_notification_interval: myForm.querySelector("select[id='edit_dead_notification_interval']").value,
 				influx_db_cloud: {
 					"token": myForm.querySelector("input[name='Token']").value,
 					"org": myForm.querySelector("input[name='Org']").value,
@@ -75,6 +76,7 @@ app.resources.flows = {
 			require_signed: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_signed']").classList.contains("is-checked")===true?"true":"false",
 			require_encrypted: myForm.querySelector("label.mdl-switch[data-id='switch-add_require_encrypted']").classList.contains("is-checked")===true?"true":"false",
 			dead_notification: myForm.querySelector("label.mdl-switch[data-id='switch-add_dead_notification']").classList.contains("is-checked")===true?"true":"false",
+			dead_notification_interval: myForm.querySelector("select[id='add_dead_notification_interval']").value,
 			influx_db_cloud: {
 				"token": myForm.querySelector("input[name='Token']").value,
 				"org": myForm.querySelector("input[name='Org']").value,
@@ -208,6 +210,13 @@ app.resources.flows = {
 					node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"Default", {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "edit_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "edit_require_encrypted", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
+					
+					node += app.getSubtitle("Dead sensor Notifications");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField("bug_report", "Notification min interval", flow.attributes.dead_notification_interval!==undefined?flow.attributes.dead_notification_interval:"hourly", {type: "select", id: "edit_dead_notification_interval", isEdit: isEdit, options: app.allIntervals });
 					node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "edit_dead_notification", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
@@ -276,10 +285,17 @@ app.resources.flows = {
 					node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"", {type: "select", id: "Retention", isEdit: isEdit, options: app.allRetentions });
 					node += app.getField("verified_user", flow.attributes.require_signed!==false?"Require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "show_require_signed", isEdit: isEdit});
 					node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "show_require_encrypted", isEdit: isEdit});
-					node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "show_dead_notification", isEdit: isEdit});
 					node += "	</div>";
 					node += "</section>";
-					
+
+					node += app.getSubtitle("Dead sensor Notifications");
+					node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+					node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+					node += app.getField("bug_report", "Notification min interval", flow.attributes.dead_notification_interval!==undefined?flow.attributes.dead_notification_interval:"hourly", {type: "select", id: "dead_notification_interval", isEdit: isEdit, options: app.allIntervals });
+					node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "edit_dead_notification", isEdit: isEdit});
+					node += "	</div>";
+					node += "</section>";
+
 					if ( flow.attributes.influx_db_cloud ) {
 						node += app.getSubtitle("Save datapoints to influxDb Cloud");
 						node += "<section class=\"mdl-grid mdl-cell--12-col\">";
@@ -439,7 +455,6 @@ app.resources.flows = {
 		node += app.getField(app.icons.retention, "Retention", flow.attributes.retention!==undefined?flow.attributes.retention:"", {type: "select", id: "Retention", isEdit: true, options: app.allRetentions });
 		node += app.getField("verified_user", flow.attributes.require_signed!==false?"Does not require signed payload from Object":"Does not require signed payload from Object", flow.attributes.require_signed, {type: "switch", id: "add_require_signed", isEdit: true});
 		node += app.getField("vpn_key", flow.attributes.require_encrypted!==false?"Does not require encrypted payload from Object":"Does not require encrypted payload from Object", flow.attributes.require_encrypted, {type: "switch", id: "add_require_encrypted", isEdit: true});
-		node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "add_dead_notification", isEdit: true});
 		node += "	</div>";
 		node += "</section>";
 		
@@ -461,6 +476,19 @@ app.resources.flows = {
 		node += "			<label>Save</label>";
 		node += "			<div class='mdl-tooltip mdl-tooltip--top' for='"+btnId[1]+"'>Save new Flow</label>";
 		node += "		</button>";
+		node += "	</div>";
+		if( !app.isLtr() ) {
+			node += "	<div class='mdl-layout-spacer'></div>";
+		}
+		node += "</section>";
+
+		node += app.getSubtitle("Dead sensor Notifications");
+		node += "<section class=\"mdl-grid mdl-cell--12-col\">";
+		node += "	<div class=\"mdl-cell--12-col mdl-card mdl-shadow--2dp\">";
+		node += app.getField("bug_report", "Notification min interval", flow.attributes.dead_notification_interval!==undefined?flow.attributes.dead_notification_interval:"hourly", {type: "select", id: "add_dead_notification_interval", isEdit: true, options: app.allIntervals });
+		node += app.getField("bug_report", flow.attributes.dead_notification!==false?"Get notification when sensor on Object is not sending datapoints":"Do not get any notification when sensor is not sending data anymore", flow.attributes.dead_notification, {type: "switch", id: "add_dead_notification", isEdit: true});
+		node += "	</div>";
+		node += "</section>";
 		node += "	</div>";
 		if( !app.isLtr() ) {
 			node += "	<div class='mdl-layout-spacer'></div>";

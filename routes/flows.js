@@ -274,7 +274,7 @@ router.post("/", expressJwt({secret: jwtsettings.secret, algorithms: jwtsettings
 					require_signed:		typeof req.body.require_signed!=="undefined"?str2bool(req.body.require_signed):false,
 					require_encrypted:	typeof req.body.require_encrypted!=="undefined"?str2bool(req.body.require_encrypted):false,
 					dead_notification:	typeof req.body.dead_notification!=="undefined"?str2bool(req.body.dead_notification):false,
-					dead_notification_interval:	typeof req.body.dead_notification_interval!=="undefined"?str2bool(req.body.dead_notification_interval):"",
+					dead_notification_interval:	typeof req.body.dead_notification_interval!=="undefined"?req.body.dead_notification_interval:"",
 					objects:			typeof req.body.objects!=="undefined"?req.body.objects:new Array(),
 					track_id:			typeof req.body.track_id!=="undefined"?req.body.track_id:undefined,
 					fusion_algorithm:	typeof req.body.fusion_algorithm!=="undefined"?req.body.fusion_algorithm:undefined,
