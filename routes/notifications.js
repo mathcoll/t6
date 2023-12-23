@@ -791,7 +791,7 @@ router.post("/push/deadsensors", function (req, res) {
 						user = typeof user!=="undefined"?user:{pushSubscription:{}};
 						user.pushSubscription = user.pushSubscription!==null?user.pushSubscription:{};
 						user.pushSubscription.user_id = f.user_id;
-						let payload = "{\"type\": \"message\", \"title\": \"Warning on dead sensor!\", \"body\": \"Your sensor for '"+currflow.name+"' has not pushed data since "+moment(f.ts).format("DD/MM/YYYY, HH:mm")+"\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+						let payload = "{\"type\": \"message\", \"title\": \"Warning on dead sensor!\", \"body\": \"Your sensor for '"+currflow.name+"' has not pushed data since "+moment(f.ts).format("DD/MM/YYYY, HH:mm")+" ("+dead_notification_interval+" notification)\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 						t6events.addStat("t6Api", "deadsensors notification", f.user_id, f.user_id, {flow_id: f.flow_id});
 						t6console.debug(payload);
 						let result = t6notifications.sendPush(user, payload);
