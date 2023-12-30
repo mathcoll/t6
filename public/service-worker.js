@@ -239,6 +239,7 @@ self.addEventListener("push", function(event) {
 		const body = notif.body!==null?notif.body:"Welcome to t6.";
 		const icon = notif.icon!==null?notif.icon:"/img/m/icons/icon-128x128.png";
 		const tag = notif.tag!==null?notif.tag:"t6notification";
+		const data = notif.data!==null?notif.data:{};
 		const actions = notif.actions!==null?notif.actions:[{action: "goObjects", title: "Go!", icon: "/img/m/icons/icon-128x128.png"}];
 		const vibrate = notif.vibrate!==null?notif.vibrate:[200, 100, 200, 100, 200, 100, 200];
 		const options = {
@@ -246,11 +247,12 @@ self.addEventListener("push", function(event) {
 			icon: icon,
 			actions: actions,
 			tag: tag,
+			data: data,
 			vibrate: vibrate,
 			requireInteraction: true,
 			renotify: tag!==null?false:true
 		};
-		if (debug) { console.log("[pushSubscription]", "notif.type", notif.type); }
+		if (debug) { console.log("[pushSubscription]", "notif.type:", notif.type); }
 		if ( notif.type === "message" ) {
 			event.waitUntil(self.registration.showNotification(title, options));
 			if ( typeof firebase !== "undefined" ) {
@@ -281,6 +283,8 @@ self.addEventListener("error", function(e) {
 });
 self.addEventListener("notificationclick", function(event) {
 	if (typeof event.notification !== "undefined") {
+		let data = event.notification.data;
+		let url = data.url
 		if (debug) { console.log("[pushSubscription]", "onNotificationClick = event.notification.actions", event.notification.actions); }
 		if ( event.notification.actions[0].action === "goObjects" ) {
 			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#objects");
@@ -300,9 +304,9 @@ self.addEventListener("notificationclick", function(event) {
 		} else if( event.notification.actions[0].action === "goGooglePlay" ) {
 			clients.openWindow("https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=notificationClick&utm_campaign=notification");
 			synchronizeReader();
-		} else if( event.notification.actions[0].action === "goExternal" && event.notification.actions[0].url ) {
-			clients.openWindow(`${event.notification.actions[0].url}?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick`);
-			synchronizeReader();
+		} else if( event.notification.actions[0].action === "goExternal" && url ) {
+			if (debug) { console.log("[notificationclick]", "goExternal", url); }
+			clients.openWindow(`${url}?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick`);
 		} else {
 			clients.openWindow("/");
 		}

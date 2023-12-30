@@ -9,6 +9,7 @@ if (firebase.admin.serviceAccountFile) {
 	t6notifications.sendPush = (meta, payload) => new Promise((resolve, reject) => {
 		if ( typeof payload === "object" ) {
 			payload.type = typeof payload.type!=="undefined"?payload.type:"message";
+			payload.data = (typeof payload.actions && payload.actions[0])!=="undefined"?payload.actions[0]:{};
 			payload = JSON.stringify(payload);
 		}
 		let subscriber = meta.pushSubscription;
