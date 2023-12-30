@@ -283,9 +283,13 @@ self.addEventListener("error", function(e) {
 });
 self.addEventListener("notificationclick", function(event) {
 	if (typeof event.notification !== "undefined") {
-		let data = event.notification.data;
-		let url = data.url
-		if (debug) { console.log("[pushSubscription]", "onNotificationClick = event.notification.actions", event.notification.actions); }
+		let data = (typeof event.notification.data==="object" && event.notification.data.olength>-1)?event.notification.data[0]:event.notification.data;
+		if (typeof data==="object" && data.length>-1) {data = data[0];}
+		let url = (data && typeof data.url!=="undefined")?data.url:(typeof event.notification.actions[0]!=="undefined"?event.notification.actions[0].url:null);
+		//if (debug) { console.log("[pushSubscription]", "event:", event); }
+		//if (debug) { console.log("[pushSubscription]", "url:", url); }
+		//if (debug) { console.log("[pushSubscription]", "event.notification.data:", event.notification.data); }
+		//if (debug) { console.log("[pushSubscription]", "event.notification.actions:", event.notification.actions); }
 		if ( event.notification.actions[0].action === "goObjects" ) {
 			clients.openWindow("/?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick#objects");
 			synchronizeReader();
@@ -305,11 +309,12 @@ self.addEventListener("notificationclick", function(event) {
 			clients.openWindow("https://play.google.com/store/apps/details?id=info.internetcollaboratif.api&utm_source=notificationClick&utm_campaign=notification");
 			synchronizeReader();
 		} else if( event.notification.actions[0].action === "goExternal" && url ) {
-			if (debug) { console.log("[notificationclick]", "goExternal", url); }
+			//if (debug) { console.log("[notificationclick]", "goExternal", url); }
 			clients.openWindow(`${url}?utm_source=t6app&utm_medium=push&utm_campaign=notificationclick`);
-		} else {
+			synchronizeReader();
+		}/* else {
 			clients.openWindow("/");
-		}
+		}*/
 		event.notification.close();
 		if ( typeof firebase !== "undefined" ) {
 			firebase.analytics().setUserProperties({"notification_click": 1});

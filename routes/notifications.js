@@ -47,7 +47,7 @@ async function planNewsletter(req, res, recipients, template, subject, taskType)
 function planPush(req, res, recipients, body, title, options) {
 	/* add newsletter to job queue to be sent later */
 	recipients.forEach(function(user) { // TODO foreach or Array.map ?
-		let payload = "{\"type\": \"message\", \"title\": \""+title+"\", \"body\": \""+body+"\", \"badge\": \""+options.badge+"\", \"icon\": \""+options.icon+"\", \"vibrate\":"+JSON.stringify(options.vibrate)+", \"actions\":"+JSON.stringify(options.actions)+"}";
+		let payload = "{\"type\": \"message\", \"title\": \""+title+"\", \"body\": \""+body+"\", \"badge\": \""+options.badge+"\", \"icon\": \""+options.icon+"\", \"vibrate\":"+JSON.stringify(options.vibrate)+", \"actions\":"+JSON.stringify(options.actions)+", \"data\":"+JSON.stringify(options.actions)+"}";
 		t6console.debug(`Rendering push notification to ${user.firstName} ${user.lastName}`);
 		t6console.debug(payload);
 		t6jobs.add({taskType: "push", time: Date.now(), ttl: 3600, user_id: req.user.id, metadata: {"pushSubscription": user.pushSubscription, "payload": payload, "user_id": user.id}});
