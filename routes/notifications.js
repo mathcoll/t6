@@ -426,9 +426,9 @@ router.get("/subscribers/:type(newsletter|monthlyreport|reminder|changePassword|
 			t6events.addAudit("t6App", "AuthAdmin: {get} /notifications/subscribers/newsletter/list", "", "", {"status": "200", error_id: "00003"});
 			if(mode==="list") {
 				let csv = "";
-				csv += `"name","email"\n`;
+				csv += `"id","name","email"\n`;
 				recipients.map(function(user) {
-					csv += `"${user.firstName} ${user.lastName}", "${user.email}"\n`;
+					csv += `"${user.id}", "${user.firstName} ${user.lastName}", "${user.email}"\n`;
 				});
 				res.setHeader("content-type", "application/csv");
 				res.status(200).send(csv);
