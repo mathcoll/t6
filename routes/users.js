@@ -522,25 +522,37 @@ router.post("/sendPush/:user_id([0-9a-z\-]+)", expressJwt({secret: jwtsettings.s
 			user = typeof user!=="undefined"?user:{pushSubscription:{}};
 			user.pushSubscription = user.pushSubscription!==null?user.pushSubscription:{};
 			user.pushSubscription.user_id = user_id;
-			let payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Welcome back to t6! Enjoy.\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
+			let payload = typeof req.body!=="undefined"?req.body:"{\"type\": \"message\", \"title\": \"Test\", \"body\": \"Default t6 message\", \"icon\": null, \"vibrate\":[200, 100, 200, 100, 200, 100, 200]}";
 			let result = t6notifications.sendPush(user, payload);
-			if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
-				t6console.debug("pushSubscription", pushSubscription);
-				t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+			result.then((response) => {
+				if(response && response.info && typeof response.info.statusCode!=="undefined" && (response.info.statusCode === 404 || response.info.statusCode === 410)) {
+					t6console.debug("pushSubscription was", user.pushSubscription);
+					t6console.debug("Can't sendPush because of a status code Error", response.info.statusCode);
+					users.chain().find({ "id": user_id }).update(function(u) {
+						u.pushSubscription = {};
+						db_users.save();
+					});
+					t6console.debug("pushSubscription is now disabled on User");
+				}
+				t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "200", error_id: "00003"});
+				res.status(200).send({"status": "sent", "count": 1});
+			}).catch((error) => {
+				t6console.debug("pushSubscription was", user.pushSubscription);
+				t6console.debug("Can't sendPush because of an Error", error);
 				users.chain().find({ "id": user_id }).update(function(u) {
 					u.pushSubscription = {};
 					db_users.save();
 				});
 				t6console.debug("pushSubscription is now disabled on User", error);
-			}
-			t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "200", error_id: "00003"});
-			res.status(200).send({"status": "sent", "count": 1});
+				t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "400", error_id: "00004", body: error.body});
+				res.status(404).send(new ErrorSerializer({"id": 184, "code": 404, "message": "Not Found"}).serialize());
+			});
 		} else {
-			t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "400", error_id: "00004"});
-			res.status(404).send(new ErrorSerializer({"id": 180, "code": 404, "message": "Not Found"}).serialize());
+			t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "400", error_id: "00005"});
+			res.status(404).send(new ErrorSerializer({"id": 185, "code": 404, "message": "Not Found"}).serialize());
 		}
 	} else {
-		t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "400", error_id: "00004"});
+		t6events.addAudit("t6App", "AuthAdmin: {post} /users/sendPush", "", "", {"status": "400", error_id: "00006"});
 		res.status(401).send(new ErrorSerializer({"id": 17050, "code": 401, "message": "Forbidden, You should be an Admin!"}).serialize());
 	}
 });
