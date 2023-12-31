@@ -795,37 +795,50 @@ router.post("/push/deadsensors", function (req, res) {
 						t6events.addStat("t6Api", "deadsensors notification", f.user_id, f.user_id, {flow_id: f.flow_id});
 						t6console.debug(payload);
 						let result = t6notifications.sendPush(user, payload);
-						if(result && typeof result.statusCode!=="undefined" && (result.statusCode === 404 || result.statusCode === 410)) {
-							t6console.debug("pushSubscription", pushSubscription);
-							t6console.debug("Can't sendPush because of a status code Error", result.statusCode);
+						result.then((response) => {
+							if(response && response.info && typeof response.info.statusCode!=="undefined" && (response.info.statusCode === 404 || response.info.statusCode === 410)) {
+								t6console.debug("pushSubscription was", user.pushSubscription);
+								t6console.debug("Can't sendPush because of a status code Error", response.info.statusCode);
+								users.chain().find({ "id": user_id }).update(function(u) {
+									u.pushSubscription = {};
+									db_users.save();
+								});
+								t6console.debug("pushSubscription is now disabled on User");
+							} else {
+								// update dead_notification_latest
+								let result;
+								flows.chain().find({ "id": f.flow_id }).update(function(item) {
+									item.dead_notification_latest = parseInt(moment().format("x"), 10);
+									result = item;
+								});
+								if ( typeof result!=="undefined" ) {
+									db_flows.save();
+									db_flows.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
+								} else {
+									t6console.debug("Flow can't be found");
+								}
+							}
+							t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "200", error_id: "00003"});
+							res.status(200).send({"status": "sent", "count": 1});
+						}).catch((error) => {
+							t6console.debug("pushSubscription was", user.pushSubscription);
+							t6console.debug("Can't sendPush because of an Error", error);
 							users.chain().find({ "id": user_id }).update(function(u) {
 								u.pushSubscription = {};
 								db_users.save();
 							});
 							t6console.debug("pushSubscription is now disabled on User", error);
-						} else {
-							// update dead_notification_latest
-							let result;
-							flows.chain().find({ "id": f.flow_id }).update(function(item) {
-								item.dead_notification_latest = parseInt(moment().format("x"), 10);
-								result = item;
-							});
-							if ( typeof result!=="undefined" ) {
-								db_flows.save();
-								db_flows.saveDatabase(function(err) {err!==null?t6console.error("Error on saveDatabase", err):null;});
-							} else {
-								t6console.debug("Flow can't be found");
-							}
-						}
+							t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "400", error_id: "00004", body: error.body});
+							res.status(404).send(new ErrorSerializer({"id": 8051, "code": 404, "message": "Not Found"}).serialize());
+						});
 					} else {
 						t6console.debug("User can't be found");
+						res.status(404).send(new ErrorSerializer({"id": 8053, "code": 404, "message": "Not Found"}).serialize());
 					}
 				}
 			});
 			t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "202", error_id: "00003"});
 			res.status(202).send(new DeadsensorSerializer(sensors_from_flows).serialize());
-		//}).catch(err => {
-		//	res.status(500).send({query: query, err: err, "id": 819.1, "code": 500, "message": "Internal Error"});
 		});
 	} else {
 		t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "401", error_id: "00004"});
