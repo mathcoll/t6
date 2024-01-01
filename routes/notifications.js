@@ -105,14 +105,16 @@ function sendNewsletter(newsletters, taskType, dryrun, recurring, user_id, limit
 				} else {
 					t6console.debug(`Not recurring (cpt=${cpt}>=${limit}).`);
 				}
-				return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
+				let totalTime = moment.duration(limit*recurring).asHours();
+				return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients within ${totalTime} hours.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
 			}).catch(function(error){
 				t6console.error("error", error);
 				return { "status": "Internal Error "+app.get("env") };
 			});
 		}
 	});
-	return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
+				let totalTime = moment.duration(limit*recurring).asHours();
+	return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients within ${totalTime} hours.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
 }
 
 /**
