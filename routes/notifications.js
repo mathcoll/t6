@@ -109,11 +109,14 @@ function sendNewsletter(newsletters, taskType, dryrun, recurring, user_id, limit
 				return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients within ${totalTime} hours.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
 			}).catch(function(error){
 				t6console.error("error", error);
+				if(error.responseCode===550) { // 550 5.7.1 Spam Detected - Mail Rejected
+					t6console.debug( "Removing", t6jobs.remove({"job_id": newsletter.job_id}, 1) ); // remove job from list
+				}
 				return { "status": "Internal Error "+app.get("env") };
 			});
 		}
 	});
-				let totalTime = moment.duration(limit*recurring).asHours();
+	let totalTime = moment.duration(limit*recurring).asHours();
 	return (!dryrun || dryrun === false)?{"status": `Sending newsletter to ${limit} recipients within ${totalTime} hours.`}:{"status": `Simulating newsletter to ${limit} recipients.`};
 }
 
@@ -825,7 +828,7 @@ router.post("/push/deadsensors", function (req, res) {
 						}).catch((error) => {
 							t6console.debug("pushSubscription was", user.pushSubscription);
 							t6console.debug("Can't sendPush because of an Error", error);
-							users.chain().find({ "id": user_id }).update(function(u) {
+							users.chain().find({ "id": f.user_id }).update(function(u) {
 								u.pushSubscription = {};
 								db_users.save();
 							});
