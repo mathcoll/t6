@@ -111,6 +111,20 @@ function sendNewsletter(newsletters, taskType, dryrun, recurring, user_id, limit
 				t6console.error("error", error);
 				if(error.responseCode===550) { // 550 5.7.1 Spam Detected - Mail Rejected
 					t6console.debug( "Removing", t6jobs.remove({"job_id": newsletter.job_id}, 1) ); // remove job from list
+					users.findAndUpdate(
+						function(i){return i.id===newsletter.metadata.mailOptions.user_id;},
+						function(user){
+							time = parseInt(moment().format("x"), 10);
+							user.unsubscription = typeof user.unsubscription!=="undefined"?user.unsubscription:{};
+							user.subscription = typeof user.subscription!=="undefined"?user.subscription:{};
+							user.unsubscription[""+taskType] = time;
+							user.subscription[""+taskType] = null;
+							t6console.debug("unsubscription", user.unsubscription);
+							t6console.debug("subscription", user.subscription);
+							result = user;
+						}
+					);
+					db_users.save();
 				}
 				return { "status": "Internal Error "+app.get("env") };
 			});
