@@ -22,6 +22,7 @@
 	-f stories.js \
 	-f index.js \
 	-f jobs.js \
+	-f config.js \
 	-o /home/mathieu/Projets/2019/internetcollaboratif.info/doc/docs/ \
 	--template /home/mathieu/Projets/2019/internetcollaboratif.info/doc/apidoc-master/ \
 	--config /home/mathieu/Projets/2019/internetcollaboratif.info/t6/bin/apidoc.json \

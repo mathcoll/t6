@@ -119,6 +119,7 @@ global.appName			= require("./package.json").name;
 global.appStarted		= start;
 global.t6BuildVersion	= require("./t6BuildVersion.json").t6BuildVersion;
 global.t6BuildDate		= require("./t6BuildVersion.json").t6BuildDate;
+global.t6config			= require("./t6config");
 global.t6decisionrules	= require("./t6decisionrules");
 global.t6mqtt			= require("./t6mqtt");
 global.t6mailer			= require("./t6mailer");
@@ -273,6 +274,7 @@ var explorationRoute		= require("./routes/exploration");
 var jobsRoute				= require("./routes/jobs");
 var classificationsRoute	= require("./routes/classifications");
 var auditsRoute				= require("./routes/audits");
+var configRoute				= require("./routes/config");
 app							= express();
 if(enableMonitoring) {
 	monitor(app);
@@ -353,6 +355,7 @@ app.use("/v"+version+"/exploration", explorationRoute);
 app.use("/v"+version+"/jobs", jobsRoute);
 app.use("/v"+version+"/classifications", classificationsRoute);
 app.use("/v"+version+"/audits", auditsRoute);
+app.use("/v"+version+"/config", configRoute);
 app.use("/news", newsRoute);
 app.use("/", pwaRoute);
 
