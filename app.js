@@ -113,13 +113,13 @@ global.shuffle = function(array) {
 }
 
 /* Environment settings */
+global.t6config			= require("./t6config");
 require(`./data/settings-${os.hostname()}.js`);
 global.VERSION			= require("./package.json").version;
 global.appName			= require("./package.json").name;
 global.appStarted		= start;
 global.t6BuildVersion	= require("./t6BuildVersion.json").t6BuildVersion;
 global.t6BuildDate		= require("./t6BuildVersion.json").t6BuildDate;
-global.t6config			= require("./t6config");
 global.t6decisionrules	= require("./t6decisionrules");
 global.t6mqtt			= require("./t6mqtt");
 global.t6mailer			= require("./t6mailer");

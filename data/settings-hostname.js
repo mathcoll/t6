@@ -49,36 +49,11 @@ logDateFormat		= "DD/MMM/YYYY:H:mm:ss ZZ"; // The "moment.js" date format for lo
 /* Email settings */
 from				= "t6 <contact@domain.tld>"; // The Sender email address
 bcc					= "t6 <contact@domain.tld>"; // To receive New account in your Admin inbox as BCC
-mailhost			= "my_smtp.domain.tld"; // Your Smtp server
+mailhost			= "my_smtp.domain.tld";		 // Your Smtp server
 mailauth			= { user: "my_smtp_username", pass: "my_smtp_password" }; // Your Smtp credentials
+dkim				= { domainName: "", keySelector: "" };				// Your dkim selector // e.g.: dig TXT keySelector._domainkey.internetcollaboratif.info
 mailDKIMCertificate = "/path/to/data/certificates/dkim/privatekey.txt"; // The DKIM cetificate private file
-fs.access(mailDKIMCertificate, fs.constants.W_OK, (err) => {
-	if (err) {
-		transporter = nodemailer.createTransport({
-			host : mailhost,
-			port: 587,
-			ignoreTLS : true,
-			auth : mailauth,
-			dkim : {
-				domainName : "",
-				keySelector : ""
-			}
-		});
-	} else {
-		transporter = nodemailer.createTransport({
-			host : mailhost,
-			port: 587,
-			ignoreTLS : true,
-			auth : mailauth,
-			dkim : {
-				domainName : "",
-				keySelector : "",
-				privateKey : fs.readFileSync(mailDKIMCertificate, "utf8")
-			}
-		});
-	}
-	t6console.info(`mailDKIMCertificate ${err ? "is not not found. Transporter is not using DKIM" : "found. Transporter is using DKIM certificate."}`);
-});
+t6config.set_smtp({mailhost, mailauth, mailDKIMCertificate, dkim});
 
 /* Database settings - Storage */
 db_type	= {
