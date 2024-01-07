@@ -838,7 +838,6 @@ router.post("/push/deadsensors", function (req, res) {
 								}
 							}
 							t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "200", error_id: "00003"});
-							res.status(200).send({"status": "sent", "count": 1});
 						}).catch((error) => {
 							t6console.debug("pushSubscription was", user.pushSubscription);
 							t6console.debug("Can't sendPush because of an Error", error);
@@ -848,11 +847,9 @@ router.post("/push/deadsensors", function (req, res) {
 							});
 							t6console.debug("pushSubscription is now disabled on User", error);
 							t6events.addAudit("t6App", "AuthAdmin: {post} /notifications/push/deadsensors", "", "", {"status": "400", error_id: "00004", body: error.body});
-							res.status(404).send(new ErrorSerializer({"id": 8051, "code": 404, "message": "Not Found"}).serialize());
 						});
 					} else {
 						t6console.debug("User can't be found");
-						res.status(404).send(new ErrorSerializer({"id": 8053, "code": 404, "message": "Not Found"}).serialize());
 					}
 				}
 			});
