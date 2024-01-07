@@ -583,6 +583,7 @@ let fusion = function(resolve, reject) {
 			(fields[0])[v] = fusionValue;
 			payload.fusion.correction = payload.fusion.initialValue - fusionValue;
 			payload.fusion.algorithm = fusion_algorithm;
+			payload.meta = (typeof payload.meta!=="undefined" && payload.meta!==null)?payload.meta:{};
 			payload.meta.fusion = {
 				correction: payload.fusion.correction,
 				algorithm: payload.fusion.algorithm,
