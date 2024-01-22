@@ -30,7 +30,6 @@ router.put("/logLevel", expressJwt({secret: jwtsettings.secret, algorithms: jwts
 
 /**
  * @api {put} /config/smtp Set smtp server
- * @apiDescription 
  * @apiName Set smtp server
  * @apiGroup 8. Administration
  * @apiVersion 2.0.1

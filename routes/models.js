@@ -506,7 +506,8 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
  * @apiVersion 2.0.1
  * 
  * @apiUse Auth
- * @apiParam {uuid-v4} [model_id] The model Id you'd like to edit
+ * @apiParam {uuid-v4} model_id The model Id you'd like to edit
+ * @apiQuery {boolean} [force=false] Force parameter used when a training is already ongoing
  * 
  * @apiUse 202
  * @apiUse 401
@@ -529,7 +530,7 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 		let validation_split = typeof t6Model.validation_split!=="undefined"?t6Model.validation_split:60;
 		let offset = 0;
 		if (str2bool(req.query.force)!==true && t6Model.current_status==="TRAINING") {
-			res.status(409).send(new ErrorSerializer({"id": 14056, "code": 409, "message": "Conflict, Training in progress"}).serialize());
+			res.status(409).send(new ErrorSerializer({"id": 14056, "code": 409, "message": "Conflict, Training already in progress. Please use force query parameter to start a new training or wait."}).serialize());
 			return;
 		}
 		if (t6Model.datasets.training.limit <= t6Model.batch_size) {
@@ -591,9 +592,12 @@ router.post("/:model_id([0-9a-z\-]+)/train/?", expressJwt({secret: jwtsettings.s
 			t6Model.max = {};
 			t6Model.flow_ids.map((f_id) => {
 				const this_flow = data.shift();
+				t6console.debug("this_flow:", this_flow);
 				t6Model.min[f_id] = this_flow.min;//; Math.min(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
 				t6Model.max[f_id] = this_flow.max;//;  Math.max(...data.filter((d) => d.flow_id===f_id).map((m) => m.value));
 			});
+			t6console.debug("t6Model.min:", t6Model.min);
+			t6console.debug("t6Model.max:", t6Model.max); // BUG: min and max are undefined when several Flows 
 			// TODO : check for min < max
 
 			if ( data.length > 0 ) {
