@@ -5,7 +5,7 @@ function DataSerializer(data) {
 	this.serialize = function() {
 		return new JSONAPISerializer("datapoint", {
 			keyForAttribute: "underscore_case",
-			attributes : [ "time", "timestamp", "value", "preprocessor", "fusion", "category_id", "retention" ],
+			attributes : [ "time", "timestamp", "value", "meta", "preprocessor", "fusion", "category_id", "retention" ],
 			topLevelLinks : {
 				parent	: typeof data.parent!=="undefined"?sprintf("%s/v%s/flows/%s", baseUrl_https, version, data.flow_id):undefined,
 				self	: data.pageSelf>0?sprintf("%s/v%s/data/%s?limit=%s&page=%s&sort=%s", baseUrl_https, version, data.flow_id, data.limit, data.pageSelf, data.sort):undefined,

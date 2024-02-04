@@ -3,9 +3,12 @@
   "version": "2.0.1",
   "private": true,
   "dependencies": {
+    "@google-cloud/monitoring": "^4.0.0",
+    "chai": "^5.0.0",
     "diskusage": "^0.1.4",
     "exec": "^0.2.1",
     "minimist": "^1.2.6",
+    "mocha": "^10.2.0",
     "moment": "^2.29.4",
     "request": "^2.88.2",
     "speedtest-net": "^2.2.0",

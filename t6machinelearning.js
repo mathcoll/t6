@@ -156,6 +156,7 @@ t6machinelearning.getIndexedLabel = function(label) {
 
 t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 	return await new Promise((resolve) => {
+		//t6console.debug("raw data", data);
 		return tf.tidy(() => {
 			let batchSize = t6Model.batch_size;
 			if(t6Model.shuffle===true) {
@@ -176,12 +177,12 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				let featureValues = [];
 				continuousFeats.forEach((f) => {
 					featureValues[f] = [];
-					if(continuousFeats.indexOf(f)>-1) {
-						if(t6Model.normalize===true) {
+					if (continuousFeats.indexOf(f) > -1) {
+						if (t6Model.normalize === true) {
 							const min = continuousFeatsMins[f][r.flow_id];
 							const max = continuousFeatsMaxs[f][r.flow_id];
 							return featureValues[f].push(normalize(r[f], min, max)); // normalize // TODO: ADDING TWICE because value is on both flows
-						} else if(t6Model.splitToArray===true) {
+						} else if (t6Model.splitToArray === true) {
 							return featureValues[f].push(splitToArray(r[f]));
 						} else {
 							return featureValues[f].push(r[f]);
@@ -189,7 +190,7 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 					}
 				});
 				continuousFeats.map((f) => {
-					if(featureValues[f].length>0) {
+					if (featureValues[f].length > 0) {
 						result.push(featureValues[f]);
 					}
 				});
@@ -211,9 +212,12 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 						result.push(featureValues[f]);
 					}
 				});
+				//t6console.debug("result1", result);
+				//t6console.debug("result2", tf.util.flatten(result));
 				return tf.util.flatten(result);
 			});
 			const y = data.map((r) => {
+				//t6console.debug("y label", r.value, r.label, r.meta.categories[0]);
 				return oneHotEncode(t6Model.labels.indexOf(r.label), t6Model.labels);
 			});
 
