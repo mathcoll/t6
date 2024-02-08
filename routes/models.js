@@ -499,35 +499,42 @@ router.get("/:model_id([0-9a-z\-]+)/predict/?", expressJwt({secret: jwtsettings.
 	}
 });
 
+const executeQuery = async (query) => {
+	// Execute your InfluxDB query here and return the result
+	// For example:
+	return await dbInfluxDB.query(query);
+};
 
-function combineDataByTimestamp(flowDataArray) {
-	// Combine data by timestamp
-	const combinedData = flowDataArray.reduce((result, flowData, flowIndex) => {
-		flowData.forEach((dataPoint) => {
-			let { time, flow_id, value, meta } = dataPoint;
-			time = time.getNanoTime();
-			if (!result.has(time)) {
-				result.set(time, { time, flows: [] });
-			}
-			const existingTimestampData = result.get(time);
-			//const flowKey = `value_flow_${flow_id}`;
-			existingTimestampData.flows.push({ time, value, meta, flow_id });
-		});
+// Function to execute all queries concurrently and gather their results
+const executeAllQueries = async (queries) => {
+	try {
+		const results = await Promise.all(queries.map(query => executeQuery(query)));
+		return results;
+	} catch (error) {
+		console.error("Error executing queries:", error);
+		throw error;
+	}
+};
 
-		return result;
-	}, new Map());
+// Function to find the nearest timestamp from an array of rows
+const findNearestTimestamp = (timestamp, rows) => {
+	let nearestTimestamp = null;
+	let minDifference = Infinity;
 
-	// Convert the map values to an array
-	const mergedData = [...combinedData.values()].map(({ time, flows }) => {
-		// Combine flows within the same timestamp
-		const mergedPoint = { time, ...Object.assign({}, ...flows) };
-		return mergedPoint;
-	});
-	return mergedData;
-}
+	for (const row of rows) {
+		const currentTimestamp = new Date(row.time);
+		const difference = Math.abs(currentTimestamp - timestamp);
+		if (difference < minDifference) {
+			minDifference = difference;
+			nearestTimestamp = currentTimestamp;
+			nearestRow = row;
+		}
+	}
+	return nearestRow;
+};
 
 /**
- * @api {post} /models/:model_id/train Train a Model
+ * @api {post} /models/:model_id/train_v2 Train a Model
  * @apiName Train a Model
  * @apiGroup 14. Models
  * @apiVersion 2.0.1
@@ -568,108 +575,121 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 		// get data from each flows
 		t6Model.current_status = "TRAINING";
 		t6Model.current_status_last_update	= moment().format(logDateFormat);
-		t6Model.min = {};
-		t6Model.max = {};
-		async function fetchDataForFlows(flowIds) {
-			const promises = flowIds.map(async (flow_id) => {
-				let flow = flows.findOne({id: flow_id});
-				let retention = flow?.retention;
-				let rp = typeof retention!=="undefined"?retention:"autogen";
-				if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
-					if ( typeof flow!=="undefined" && flow.retention ) {
-						if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
-							rp = flow.retention;
-						} else {
-							rp = influxSettings.retentionPolicies.data[0];
-							//t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
-							res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed"}).serialize());
-							return;
-						}
+		t6Model.min = {};	 // reset
+		t6Model.max = {};	 // reset
+		t6Model.labels = []; // reset
+		let queryTs = [];
+		t6Model.flow_ids.map(async (flow_id) => {
+			let flow = flows.findOne({id: flow_id});
+			let retention = flow?.retention;
+			let rp = typeof retention!=="undefined"?retention:"autogen";
+			if( typeof retention==="undefined" || (influxSettings.retentionPolicies.data).indexOf(retention)===-1 ) {
+				if ( typeof flow!=="undefined" && flow.retention ) {
+					if ( (influxSettings.retentionPolicies.data).indexOf(flow.retention)>-1 ) {
+						rp = flow.retention;
 					} else {
 						rp = influxSettings.retentionPolicies.data[0];
-						//t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
+						//t6console.debug("Defaulting Retention from setting (flow.retention is invalid)", flow.retention, rp);
+						res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed"}).serialize());
+						return;
 					}
-				}
-				let fieldvalue = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, false, false);
-				let andDates = "";
-				let sorting = "ORDER BY time DESC";
-				if( t6Model.datasets.training.start!==null && t6Model.datasets.training.start!=="" ) {
-					andDates += `AND time>='${moment(t6Model.datasets.training.start).toISOString()}' `;
-					sorting = "ORDER BY time ASC";
-				}
-				if( t6Model.datasets.training.end!==null && t6Model.datasets.training.end!=="" ) {
-					andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
-				}
-	
-				t6Model.strategy = typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification";
-				let where = "";
-				if(t6Model.strategy==="classification") {
-					where = "meta!='' AND"; //"meta!='' AND valueInteger>-1 AND";
-					//	where = "true AND"; // MODE DEBUG because some Flows does not have meta
-				} else if(t6Model.strategy==="forecast") {
-					where = "";
-				}
-				let window = Math.round((flow.time_to_live!==undefined && flow.time_to_live!==null)?flow.time_to_live/60:60);
-				let group = `GROUP BY time(${window}m)`;
-				let lim = limit!==null?` LIMIT ${limit} OFFSET ${offset}`:"";
-				let queryTs;
-				if(flow.time_to_live!==null) {
-					queryTs = `SELECT time, MEAN(${fieldvalue}) as value, LAST(meta) as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${group} ${lim}`;
 				} else {
-					queryTs = `SELECT time, ${fieldvalue} as value, meta as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${lim}`;
+					rp = influxSettings.retentionPolicies.data[0];
+					//t6console.debug("Defaulting Retention from setting (retention parameter is invalid)", retention, rp);
 				}
-				t6console.debug("queryTs: ", queryTs);
-				try {
-					const result = await dbInfluxDB.query(queryTs);
-					result.map((r) => r.flow_id = flow_id);
-					t6Model.min[flow_id] = Math.min(...result.map((m) => m.value));
-					t6Model.max[flow_id] = Math.max(...result.map((m) => m.value));
-					return result;
-				} catch (error) {
-					t6console.error(`Error querying data for flow ${flow_id}:`, error);
-					return [];
-				}
-			});
-			const allData = await Promise.all(promises);
-			const flattenedData = [].concat(...allData);
-			return flattenedData;
-		}
-		
-		fetchDataForFlows(t6Model.flow_ids)
-		.then((data) => {
-			//t6console.debug('Concatenated Data:', data);
-			//t6console.debug('t6Model', t6Model);
-			// TODO : Training Here :
+			}
+			let fieldvalue = getFieldsFromDatatype(datatypes.findOne({id: flow.data_type}).name, false, false);
+			let andDates = "";
+			let sorting = "ORDER BY time DESC";
+			if( t6Model.datasets.training.start!==null && t6Model.datasets.training.start!=="" ) {
+				andDates += `AND time>='${moment(t6Model.datasets.training.start).toISOString()}' `;
+				sorting = "ORDER BY time ASC";
+			}
+			if( t6Model.datasets.training.end!==null && t6Model.datasets.training.end!=="" ) {
+				andDates += `AND time<='${moment(t6Model.datasets.training.end).toISOString()}' `;
+			}
 
-			// TODO: expecting to have continuous values
+			t6Model.strategy = typeof t6Model.strategy!=="undefined"?t6Model.strategy:"classification";
+			let where = "";
+			if(t6Model.strategy==="classification") {
+				where = "meta!='' AND"; //"meta!='' AND valueInteger>-1 AND";
+				where = "true AND"; // MODE DEBUG because some Flows does not have meta
+			} else if(t6Model.strategy==="forecast") {
+				where = "";
+			}
+			let window = Math.round((flow.time_to_live!==undefined && flow.time_to_live!==null)?flow.time_to_live/60:60);
+			let group = `GROUP BY time(${window}m)`;
+			let lim = limit!==null?` LIMIT ${limit} OFFSET ${offset}`:"";
+			if(flow.time_to_live!==null) {
+				queryTs.push(`SELECT time, MEAN(${fieldvalue}) as value, LAST(meta) as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${group} ${lim}`);
+			} else {
+				queryTs.push(`SELECT time, ${fieldvalue} as value, meta as meta FROM ${rp}.data WHERE ${where} user_id='${req.user.id}' ${andDates} AND flow_id='${flow_id}' ${lim}`);
+			}
+		});
+		executeAllQueries(queryTs)
+		.then((flowData) => {
+			// Calculate min and max values for each flow specified in queryTs
+			const minMaxValues = queryTs.map((query, index) => {
+			const d = flowData[index];
+			//t6console.log("d:", d);
+				const min = Math.min(...d.map((m) => m.value));
+				const max = Math.max(...d.map((m) => m.value));
+				let f_id = t6Model.flow_ids[index]; // Assume the indexes are the sames.. Might be buggy if influxDb return no data on a specific flow
+				t6Model.min[f_id] = min;
+				t6Model.max[f_id] = max;
+				return {
+					query: query,
+					min: min,
+					max: max
+				};
+			});
+			//t6console.log("Min and max values for each flow from queryTs:", minMaxValues);
+	
+			// Here you can proceed with other functions based on flowData
+			const flattenedData = flowData.flat();
+			flattenedData.sort((a, b) => new Date(a.time) - new Date(b.time));
+			const mergedData = {};
+			
+			flattenedData.forEach((row) => {
+				const timestamp = new Date(row.time).toISOString();
+				if (!mergedData[timestamp]) {
+					mergedData[timestamp] = {
+						time: new Date(row.time),
+						values: [],
+						meta: []
+					};
+				}
+				mergedData[timestamp].values.push(row.value);
+				mergedData[timestamp].meta.push(row.meta);
+			});
+	
+			// Convert mergedData object to array
+			const mergedArray = Object.values(mergedData);
+	
 			t6Model.training_balance = {};
 			if(t6Model.labels.indexOf("oov")===-1) { t6Model.labels.push("oov"); }
 			t6Model.training_balance["oov"] = 0;
-			let mergedData = (combineDataByTimestamp([data]))[0];
-			t6console.debug('mergedData:', mergedData);
-			data = data.map((m) => {
+			let data = mergedArray.map((m) => {
 				//t6console.debug('data ROW', m);
 				// TODO
 				// Label is only taken from the meta category
-				m.meta = (typeof m.meta!=="undefined" && m.meta!==null)?m.meta:{categories: ["oov"]};
-				m.meta = getJson(m.meta);
+				m.meta = (typeof m.meta !== "undefined" && m.meta !== null) ? m.meta : { categories: ["oov"] };
+				m.meta = JSON.parse(getJson(m.meta)[0]);
 				m.label = ""; // reset label
 				let category_id = (m.meta!==null && typeof m.meta!=="undefined" && typeof m.meta.categories!=="undefined")?(m.meta.categories[0]):null;
-
 				if(category_id!==null && category_id!=="oov") {
 					m.label = categories.findOne({id: category_id}).name;
 					if(m.label && t6Model.labels.indexOf(m.label)===-1) {
 						t6Model.labels.push(m.label);
+						t6console.debug("category found and added", category_id, t6Model.labels.indexOf(m.label));
 					}
 					if(m.label && typeof t6Model.training_balance[m.label]!=="undefined") {
 						t6Model.training_balance[m.label]++;
 					} else {
 						t6Model.training_balance[m.label] = 1;
 					}
-					//t6console.debug("category found --->", category_id, "==>", categories.findOne({id: category_id}), "A ", t6Model.labels, t6Model.labels.indexOf(m.label));
 				} else {
 					m.label = "oov";
-					//t6console.debug("category not found --->", category_id, "==>", m.label);
 					if(typeof t6Model.training_balance[m.label]!=="undefined") {
 						t6Model.training_balance[m.label]++;
 					} else {
@@ -678,7 +698,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 				}
 				return m;
 			});
-
+			t6console.debug("t6Model.labels 1", t6Model.labels);
 			// GET BALANCED DATA
 			// get random values until it reach balance_limit on each labels
 			let iData = [];
@@ -711,6 +731,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 					}
 				});
 			}
+			//t6console.debug("iData", iData);
 			t6machinelearning.loadDataSets(iData, t6Model, t6Model.validation_split)
 			.then((dataset) => {
 				t6console.debug("ML DATASET COMPLETED"); // t6Model.batch_size,
