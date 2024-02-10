@@ -662,7 +662,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 				mergedData[timestamp].values.push(row.value);
 				mergedData[timestamp].meta.push(row.meta);
 			});
-	
+
 			// Convert mergedData object to array
 			const mergedArray = Object.values(mergedData);
 	
@@ -731,7 +731,7 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 					}
 				});
 			}
-			//t6console.debug("iData", iData);
+			t6console.debug("iData", iData);
 			t6machinelearning.loadDataSets(iData, t6Model, t6Model.validation_split)
 			.then((dataset) => {
 				t6console.debug("ML DATASET COMPLETED"); // t6Model.batch_size,
