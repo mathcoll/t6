@@ -66,20 +66,34 @@ t6machinelearning.addCategorical = function(featureName, classes) {
 }
 
 t6machinelearning.buildModel = async function(inputShape, outputShape) {
-	t6console.debug("inputShape", inputShape);
-	t6console.debug("outputShape", outputShape);
+	t6console.debug("buildModel inputShape", inputShape);
+	t6console.debug("buildModel outputShape", outputShape);
+	t6console.debug("buildModel t6Model.strategy", t6Model.strategy);
 	return await new Promise((resolve) => {
 		const model = tf.sequential();
 		if(t6Model.strategy==="classification") {
+			
+			model.add(tf.layers.lstm({
+				units: 64, // Number of LSTM units
+				inputShape: inputShape, // Shape of the input data (time steps, features)
+				returnSequences: true // Set to true if you have multiple time steps
+			}));
+			model.add(tf.layers.dense({
+				units: 3, // Number of output units
+				activation: 'softmax' // Activation function for the output layer
+			}));
+			/*
 			model.add(tf.layers.dense({
 				inputShape: inputShape,
+				//batchInputShape: inputShape,
 				units: 1,
-				activation: "relu"
+				activation: "sigmoid" // sigmoid | relu
 			}));
 			model.add(tf.layers.dense({
-				units: outputShape,
-				activation: "softmax" // sigmoid
+				units: 4,
+				activation: "softmax" // sigmoid | softmax
 			}));
+			*/
 		} else if(t6Model.strategy==="forecast") {
 			const input_layer_neurons = 100;
 			const rnn_input_layer_features = 2; // TODO : if it's the feature it should be dynamic (10)
@@ -239,6 +253,112 @@ t6machinelearning.loadDataSets = async function(data, t6Model, testSize) {
 				xArray: tf.data.array(featureTensor),
 				yTensor: yTensor,
 				trainXs: featureTensor,
+				trainYs: labelTensor,
+				xValidSize: ds.skip(splitIdx + 1).size
+			});
+		});
+	});
+};
+
+t6machinelearning.loadDataSets_v2 = async function(data, t6Model, testSize) {
+	return await new Promise((resolve) => {
+		//t6console.debug("raw data", data);
+		return tf.tidy(() => {
+			let batchSize = t6Model.batch_size;
+			if(t6Model.shuffle===true) {
+				tf.util.shuffle(data);
+			}
+			const normalize = (inputData, min, max) => {
+				return typeof inputData!=="undefined"?(parseFloat(inputData) - min)/(max - min):0;
+			};
+			const splitToArray = (inputData, splitStr=" ") => {
+				return typeof inputData!=="undefined"?inputData.split(splitStr):0;
+			};
+			const oneHotEncode = (classIndex, classes) => {
+				return Array.from(tf.oneHot(classIndex, classes.length).dataSync());
+				//return tf.oneHot(classIndex, classes.length).dataSync();
+			};
+			/*
+			{
+				time: 2023-10-31T14:00:00.000Z,
+				values: [19, 25, 3400],
+				meta: { "categories": [""]},
+				label: 'Cold temp'
+			},
+			*/
+			const allFlowDatapointsNormalized = t6Model.flow_ids.map((flow_id, flow_id_index) => {
+				const datapoints = data.map((point) => point.values[flow_id_index]);
+				const xDatapoint = tf.tensor2d(datapoints, [datapoints.length, 1]);
+				const min = continuousFeatsMins["value"][flow_id];
+				const max = continuousFeatsMaxs["value"][flow_id];
+				const xDatapointNormalized = normalize(xDatapoint, min, max);
+				return xDatapointNormalized;
+			})
+
+			const x_old = data.map((r) => {
+				let result = [];
+				let featureValues = [];
+				continuousFeats.forEach((f) => {
+					featureValues[f] = [];
+					if (continuousFeats.indexOf(f) > -1) {
+						if (t6Model.normalize === true) {
+							const min = continuousFeatsMins[f][r.flow_id];
+							const max = continuousFeatsMaxs[f][r.flow_id];
+							return featureValues[f].push(normalize(r[f], min, max)); // normalize // TODO: ADDING TWICE because value is on both flows
+						} else if (t6Model.splitToArray === true) {
+							return featureValues[f].push(splitToArray(r[f]));
+						} else {
+							return featureValues[f].push(r[f]);
+						}
+					}
+				});
+				continuousFeats.map((f) => {
+					if (featureValues[f].length > 0) {
+						result.push(featureValues[f]);
+					}
+				});
+				Object.keys(categoricalFeats).map((f) => {
+					featureValues[f] = [];
+					let indexInCategory = categoricalFeats[f].indexOf(r[f]);
+					let classes = [...categoricalFeats[f]];
+					if(classes.length<2) {
+						classes.unshift(0);
+					}
+					indexInCategory = indexInCategory>-1?indexInCategory:0; // by default de 0 indexed oneHot.. because we unshifted a "0"
+					// TODO: But, it might bug, since we unshift only when not yet existing ... and user can force a zero value at a index > 0 !!
+					// So we should juste have: let indexInCategory = classes.indexOf(r[f]); ??
+					const oneHotEncoded = oneHotEncode(indexInCategory, classes);
+					return featureValues[f].push(...oneHotEncoded); // ...
+				});
+				Object.keys(categoricalFeats).map((f) => {
+					if(featureValues[f].length>0) {
+						result.push(featureValues[f]);
+					}
+				});
+				//t6console.debug("result1", result);
+				//t6console.debug("result2", tf.util.flatten(result));
+				return tf.util.flatten(result);
+			});
+			const x = tf.concat([allFlowDatapointsNormalized], 1);
+			const y = data.map((r) => {
+				t6console.debug("y label", r.value, r.label, r.meta.categories[0]);
+				return oneHotEncode(t6Model.labels.indexOf(r.label), t6Model.labels);
+			});
+
+			const featureTensor = x;
+			const labelTensor = y;
+			const xTensor = tf.tensor2d(x_old);
+			const yTensor = tf.tensor2d(labelTensor);
+			const splitIdx = parseInt((1 - testSize) * data.length, 10);
+			const ds = tf.data.zip({ xs: tf.data.array(featureTensor), ys: tf.data.array(labelTensor) });
+
+			resolve({
+				trainDs: ds.take(splitIdx).batch(batchSize),
+				validDs: ds.skip(splitIdx + 1).batch(batchSize),
+				xArray: tf.data.array(featureTensor),
+				xTensor: xTensor,
+				yTensor: yTensor,
+				trainXs: ds,
 				trainYs: labelTensor,
 				xValidSize: ds.skip(splitIdx + 1).size
 			});
