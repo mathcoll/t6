@@ -179,6 +179,7 @@ global.sprintf			= require("sprintf-js").sprintf;
 global.slayer			= require("slayer");
 global.strength			= require("strength");
 global.stringformat		= require("string-format");
+global.tf				= require("@tensorflow/tfjs-node"); // Load the binding (CPU computation) Or load the binding (GPU computation) //require("@tensorflow/tfjs-node-gpu"); 
 global.SunCalc			= require("suncalc");
 global.twilio			= require("twilio");
 global.textToSpeech		= require("@google-cloud/text-to-speech");
