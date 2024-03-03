@@ -260,8 +260,8 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			//const times		= Array.from(dataMap.keys());
 			const times		= Array.from(dataMap.keys()).map(time => time);
 			const values	= Array.from(dataMap.values()).map(data => data.values);
-			const flow_ids	= Array.from(dataMap.values()).map(data => data.flow_ids);
-			const labels	= Array.from(dataMap.values()).map(data => data.labels);
+			const flow_ids	= Array.from(dataMap.values()).map(data => data.flow_ids).flat();
+			const labels	= Array.from(dataMap.values()).map(data => data.labels).flat();
 
 			// Convert arrays to tensors
 			const timeTensor	= tf.tensor2d(times.map((time) => [time]), [times.length, 1]); // TODO : might adjust according to number of features ?
@@ -421,8 +421,12 @@ t6machinelearning.loadSavedModel = async function(path) {
 	});
 };
 
-t6machinelearning.loadLayersModel = async function(path) {
+t6machinelearning.loadLayersModel = async function(path, t6Model) {
+	t6console.debug("loadLayersModel");
 	return new Promise((resolve, reject) => {
+		t6console.debug("before init");
+		t6machinelearning.init(t6Model);
+		t6console.debug("end init");
 		tf.loadLayersModel(path).then((result) => {
 			resolve(result);
 		}).catch(function(err) {
@@ -452,7 +456,7 @@ t6machinelearning.predict = async function(tfModel, inputDatasetX, options={}) {
 		}
 		const argMaxIndex = tf.argMax(prediction, 1).dataSync()[0];
 		t6console.debug("ML PREDICTION argMaxIndex", argMaxIndex);
-		t6console.debug("ML PREDICTION:");
+		t6console.debug("ML PREDICTION:"); // I should not have [ [[1],]] but [ [[1, 0],]] ????
 		prediction.print();
 		resolve(prediction);
 	});
