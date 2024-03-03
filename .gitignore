@@ -67,3 +67,4 @@ decisionrules/node_modules
 /.cache-require-paths.json
 /jsonapitest-results.json
 ./bin/send_notification.sh
+.vscode/t6-workspace.code-workspace
