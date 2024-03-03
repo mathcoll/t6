@@ -103,24 +103,19 @@ t6machinelearning.buildModel = async function(inputShape, outputShape) {
 			for (let index=0; index<n_layers; index++) {
 				lstm_cells.push(tf.layers.lstmCell({ units: rnn_output_neurons }));
 			}
-			model.add(tf.layers.rnn({
-				cell: lstm_cells,
-				inputShape: rnn_input_shape,
-				returnSequences: false
-			}));
-			model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
-			
 			/*
 			model.add(tf.layers.lstm({
 				units: 64, // Number of LSTM units
 				inputShape: inputShape, // Shape of the input data (time steps, features)
 				returnSequences: true // Set to true if you have multiple time steps
 			}));
+			*/
 			model.add(tf.layers.rnn({
 				cell: lstm_cells,
+				inputShape: rnn_input_shape,
 				returnSequences: false
 			}));
-			*/
+			model.add(tf.layers.dense({ units: output_layer_neurons, inputShape: [output_layer_shape] }));
 		}
 
 		let optimizer;
@@ -267,38 +262,29 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			const values	= Array.from(dataMap.values()).map(data => data.values);
 			const flow_ids	= Array.from(dataMap.values()).map(data => data.flow_ids);
 			const labels	= Array.from(dataMap.values()).map(data => data.labels);
-			//t6console.log("LABELS", labels);
 
 			// Convert arrays to tensors
-			// TODO : should adjust according to number of features ?
-			const timeTensor	= tf.tensor2d(times.map((time) => [time]), [times.length, 1]);
+			const timeTensor	= tf.tensor2d(times.map((time) => [time]), [times.length, 1]); // TODO : might adjust according to number of features ?
 			const valuesTensor	= tf.tensor2d(values.map((value) => value));
 			const flowsTensor	= tf.tensor2d(flow_ids);
 			const labelsTensor	= tf.tensor2d(labels);
 
-			//t6console.log("timeTensor data:", timeTensor.arraySync());
-			//t6console.log("valuesTensor data:", valuesTensor.arraySync());
-			//t6console.log("flowsTensor data:", flowsTensor.arraySync());
-			//t6console.log("labelsTensor data:", labelsTensor.arraySync());
-
 			// Concatenate tensors along axis 1
 			const inputTensor = tf.concat([timeTensor, valuesTensor, flowsTensor, labelsTensor], 1);
 			const mergedArray = inputTensor.arraySync();
-			//t6console.log("mergedArray", mergedArray);
-			labels.map((l) => {
-				//t6console.log("LABEL", l);
-			});
-			let data = mergedArray;
-			if(t6Model.shuffle===true) {
-				tf.util.shuffle(data);
-			}
-			if(t6Model.split_to_array===true) {
-				// TODO
-			}
+			//t6console.debug("mergedArray data:", mergedArray);
 			
-			inputTensor.arraySync().map((itensor) => {
-				t6console.log("inputTensor", itensor);
-			});
+			//labels.map((l) => {
+				//t6console.log("LABEL", l);
+			//});
+			let featuresTensor = mergedArray;
+			if(t6Model.shuffle===true) {
+				tf.util.shuffle(inputTensor);
+			}
+			//featuresTensor.map((feat) => {
+			//	if (t6Model.split_to_array === true) {
+			//	}
+			//});
 
 			/*
 				t6Model.training_balance = {};
@@ -334,17 +320,18 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 			//t6console.debug("t6Model", t6Model);
 			// GET BALANCED DATA
 			// get random values until it reach balance_limit on each labels
+			/*
 			let iData = [];
 			t6Model.labels.map( (label) => {
 				const label_name = label;
-				const dataLabel = data.filter((f) => f.label===label_name)	// get only the current label
+				const dataLabel = featuresTensor.filter((f) => f.label===label_name)	// get only the current label
 					.sort(() => Math.random() - 0.5)						// shuffle the results with the current label
 					.slice(0, t6Model.datasets.training.balance_limit);		// take only requested limit values
 				t6Model.training_balance[label] = dataLabel.length;
 				iData = iData.concat(dataLabel);
 			});
-
 			t6Model.data_length = iData.length;
+			*/
 			t6machinelearning.init(t6Model);
 			if (t6Model.continuous_features?.length > 0) {
 				t6Model.continuous_features.map((cName) => {
@@ -365,7 +352,19 @@ t6machinelearning.loadDataSets_v2 = async function(dataMap, t6Model) {
 				});
 			}
 
-			resolve({valuesTensor, flowsTensor, labelsTensor, inputTensor});
+			//t6console.debug("times", times);
+			//t6console.debug("values", values);
+			//t6console.debug("flow_ids", flow_ids);
+			//t6console.debug("labels", labels);
+			//t6console.debug("timeTensor data:", timeTensor.arraySync());
+			//t6console.debug("valuesTensor data:", valuesTensor.arraySync());
+			//t6console.debug("flowsTensor data:", flowsTensor.arraySync());
+			//t6console.debug("labelsTensor data:", labelsTensor.arraySync());
+			//t6console.debug("featuresTensor data:", featuresTensor);
+			// For a single Flow it should looks like: [[ 1709155549184, -1, 0, 0 ], [ 1708966281216, 1, 0, 1 ], ... ]
+			//											  timestamp normalized?Value flowId LabelIndex
+
+			resolve({valuesTensor, flowsTensor, labelsTensor, inputTensor, featuresTensor});
 		//});
 	});
 };
