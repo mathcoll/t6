@@ -20,13 +20,11 @@ const options = {
 		}
 	}*/
 };
-
 const executeQuery = async (query) => {
 	// Execute your InfluxDB query here and return the result
 	// For example:
 	return await dbInfluxDB.query(query);
 };
-
 // Function to execute all queries concurrently and gather their results
 const executeAllQueries = async (queries) => {
 	try {
@@ -37,15 +35,12 @@ const executeAllQueries = async (queries) => {
 		throw error;
 	}
 };
-
 const normalize = (inputData, min, max) => {
 	return typeof inputData!=="undefined"?(parseFloat(inputData) - min)/(max - min):0;
 };
 const oneHotEncode = (classIndex, classes) => {
 	return Array.from(tf.oneHot(classIndex, classes.length).dataSync());
 };
-
-/*
 // Function to find the nearest timestamp from an array of rows
 const findNearestTimestamp = (timestamp, rows) => {
 	let nearestTimestamp = null;
@@ -62,7 +57,6 @@ const findNearestTimestamp = (timestamp, rows) => {
 	}
 	return nearestRow;
 };
-*/
 
 /**
  * @api {get} /models/:model_id? Get Models
@@ -620,7 +614,6 @@ router.post("/:model_id([0-9a-z\-]+)/train_v2/?", expressJwt({secret: jwtsetting
 			res.status(412).send(new ErrorSerializer({"id": 14057, "code": 412, "message": "Precondition Failed: batch size must be less than the training length"}).serialize());
 			return;
 		}
-		
 		// get data from each flows
 		t6Model.current_status = "TRAINING";
 		t6Model.current_status_last_update	= moment().format(logDateFormat);
